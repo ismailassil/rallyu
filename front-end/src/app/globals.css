@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@tailwind utilities;
+
+:root {
+	--background: black;
+	--foreground: #ffffff;
+}
+
+@theme {
+	--color-main: #5a5de9;
+	--color-main-hover: #494bc2;
+	--color-main-active: #3a3b9d;
+	--color-main-ring-active: #7c7eff;
+	--color-main-ring-hover: #686bff;
+	--color-bbg: rgba(255, 255, 255, 0.06);
+	--color-bg: rgba(255, 255, 255, 0.08);
+	--color-hbbg: rgba(255, 255, 255, 0.1);
+	--color-hbg: rgba(255, 255, 255, 0.07);
+}
+
+@theme inline {
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--font-sans: var(--font-geist-sans);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background: #0a0a0a;
+		--foreground: #ededed;
+	}
+}
+
+body {
+	background: var(--background);
+	color: var(--foreground);
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
