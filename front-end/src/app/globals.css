@@ -12,6 +12,8 @@
 	--color-main-active: #3a3b9d;
 	--color-main-ring-active: #7c7eff;
 	--color-main-ring-hover: #686bff;
+	--color-card: rgba(255, 255, 255, 0.04);
+	--color-br-card: rgba(255, 255, 255, 0.06);
 	--color-bbg: rgba(255, 255, 255, 0.06);
 	--color-bg: rgba(255, 255, 255, 0.08);
 	--color-hbbg: rgba(255, 255, 255, 0.1);
