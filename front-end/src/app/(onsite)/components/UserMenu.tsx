@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import lora from "@/app/fonts/lora";
+import { isSea } from "node:sea";
 
 export default function UserMenu() {
 	const [isProfile, setIsProfile] = useState(false);
@@ -13,12 +14,14 @@ export default function UserMenu() {
 
 	useEffect(() => {
 		function handleClick(event: MouseEvent | KeyboardEvent) {
-			if (event instanceof KeyboardEvent && event.key === "Escape") {
-				setIsSearch(false);
+			if (
+				event instanceof KeyboardEvent &&
+				(event.key === "Escape" || (event.metaKey && event.key === "k"))
+			) {
+				setIsSearch((isSearch) => !isSearch);
 				setSearch("");
 				return;
 			}
-
 			if (
 				event instanceof MouseEvent &&
 				div1Ref.current &&
@@ -26,7 +29,7 @@ export default function UserMenu() {
 				!div1Ref.current.contains(event.target as Node) &&
 				!div2Ref.current.contains(event.target as Node)
 			) {
-				setIsSearch(!isSearch);
+				setIsSearch((isSearch) => !isSearch);
 				setSearch("");
 			}
 		}
@@ -35,7 +38,7 @@ export default function UserMenu() {
 			document.addEventListener("mousedown", handleClick);
 			document.addEventListener("keydown", handleClick);
 			inputRef.current?.focus();
-		}
+		} else document.addEventListener("keydown", handleClick);
 
 		return () => {
 			document.removeEventListener("mousedown", handleClick);
@@ -58,15 +61,14 @@ export default function UserMenu() {
 				}}
 			>
 				<Image
-					className="mr-3"
+					className="mr-2"
 					src="/search.svg"
 					alt="Search Logo"
-					width={0}
-					height={0}
-					style={{ width: "auto", height: "auto" }}
+					width={20}
+					height={20}
 				/>
-				<Image src="/command.svg" alt="Command Logo" width={17} height={17} />
-				<span className={`text-xl ${lora.className}`}>K</span>
+				<Image src="/command.svg" alt="Command Logo" width={15} height={15} />
+				<span className={`text-lg ${lora.className}`}>K</span>
 			</div>
 			{isSearch && (
 				<div className="fixed inset-0 z-50 flex p-60 flex-col items-center backdrop-blur-md bg-black/20">
@@ -93,7 +95,10 @@ export default function UserMenu() {
 								setSearch(e.target.value);
 							}}
 						/>
-						<p className="absolute right-6 top-[19px] hover:underline hover:text-main-ring-hover/70 hover:cursor-pointer">
+						<p
+							onClick={() => setSearch("")}
+							className="absolute right-6 top-[19px] hover:underline hover:text-main-ring-hover/70 hover:cursor-pointer"
+						>
 							Clear
 						</p>
 					</div>
