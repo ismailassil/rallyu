@@ -6,8 +6,11 @@ import Link from "next/link";
 import AuthButton from "./components/AuthButton";
 import Input from "./components/Input";
 import ibm from "./fonts/ibm";
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+	const router = useRouter();
 	const api = "call";
 
 	return (
@@ -19,10 +22,15 @@ export default function Home() {
 					width={0}
 					height={0}
 					style={{ width: "auto", height: "auto" }}
+					onClick={(e) => {
+						e.preventDefault();
+						router.push("/");
+					}}
+					className="hover:cursor-pointer hover:scale-101 transition-transform duration-200"
 				></Image>
 			</nav>
 			<main className="flex-1 flex justify-center items-center">
-				<div className="w-[450px]">
+				<motion.div className="w-[450px]">
 					<h1
 						className={`${ibm.className} text-[36px] font-bold flex justify-center`}
 					>
@@ -101,7 +109,7 @@ export default function Home() {
 							</p>
 						</div>
 					</Form>
-				</div>
+				</motion.div>
 			</main>
 		</div>
 	);

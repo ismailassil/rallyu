@@ -22,9 +22,9 @@ export default function Input({
 	width,
 	height,
 	alt,
-	// value,
-	// setValue,
-}: InputProps) {
+}: // value,
+// setValue,
+InputProps) {
 	// function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 	// 	const input = e.target.value.replace(/\s+/g, "");
 	// 	setValue(input);
@@ -38,11 +38,12 @@ export default function Input({
 			<div className="relative">
 				<input
 					className="w-full h-13 pl-[45px] mt-[7px] bg-bg border-bbg flex items-center justify-center
-						gap-[7px] border-2 rounded-lg hover:ring-4 hover:ring-bbg hover:bg-hbbg"
+						gap-[7px] border-2 rounded-lg hover:ring-4 hover:ring-bbg hover:bg-hbbg focus:ring-bbg focus:ring-4 outline-none"
 					type={type}
 					id={unique}
 					name={unique}
 					placeholder={placeholder}
+					autoComplete="off"
 					// value={value}
 					// onChange={handleChange}
 					required

@@ -1,11 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Form from "next/form";
 import Link from "next/link";
 import ibm from "../../fonts/ibm";
 import AuthButton from "../../components/AuthButton";
 import Input from "../../components/Input";
+import { useRouter } from "next/navigation";
 
 export default function SignUp() {
+	const router = useRouter();
 	const api = "Nothing";
 
 	return (
@@ -17,6 +21,11 @@ export default function SignUp() {
 					width={0}
 					height={0}
 					style={{ width: "auto", height: "auto" }}
+					onClick={(e) => {
+						e.preventDefault();
+						router.push("/");
+					}}
+					className="hover:cursor-pointer hover:scale-101 transition-transform duration-200"
 				></Image>
 			</nav>
 			<main className="flex-1 flex pl-20 pr-20 justify-left items-center">

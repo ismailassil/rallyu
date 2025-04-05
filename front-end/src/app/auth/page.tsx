@@ -5,12 +5,14 @@ import Form from "next/form";
 import Link from "next/link";
 import ibm from "../fonts/ibm";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const numberInputStyling =
-	"w-full h-20 .no-spinner text-xl text-center mt-[7px] bg-bg border-bbg flex items-center justify-center \
-						gap-[7px] border-2 rounded-lg hover:ring-4 hover:ring-bbg hover:bg-hbbg";
+	"w-full h-20 .no-spinner text-xl text-center mt-[7px] outline-none bg-bg border-bbg flex items-center justify-center \
+						gap-[7px] border-2 rounded-lg hover:ring-4 hover:ring-bbg hover:bg-hbbg focus:ring-bbg focus:ring-4";
 
 export default function Auth() {
+	const router = useRouter();
 	const [inputs, setInputs] = useState(Array(6).fill(""));
 	const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -39,6 +41,11 @@ export default function Auth() {
 					width={0}
 					height={0}
 					style={{ width: "auto", height: "auto" }}
+					onClick={(e) => {
+						e.preventDefault();
+						router.push("/");
+					}}
+					className="hover:cursor-pointer hover:scale-101 transition-transform duration-200"
 				></Image>
 			</nav>
 			<main className="flex-1 flex justify-center items-center">
@@ -62,6 +69,7 @@ export default function Auth() {
 									className={numberInputStyling}
 									onChange={(e) => handleChange(index, e.target.value)}
 									maxLength={1}
+									placeholder="*"
 									required
 								/>
 							))}
