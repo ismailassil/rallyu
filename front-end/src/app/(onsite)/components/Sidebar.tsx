@@ -5,17 +5,30 @@ export default function SideBar() {
 	const [activeButton, setActiveButton] = useState<number>(0);
 
 	const Links = [
-		{ id: 0, src: "/Home.svg", path: "/dashboard", alt: "" },
-		{ id: 1, src: "/Game.svg", path: "/game", alt: "" },
-		{ id: 2, src: "/Tournament.svg", path: "/tournament", alt: "" },
-		{ id: 3, src: "/Chat.svg", path: "/chat", alt: "" },
-		{ id: 4, src: "/Settings.svg", path: "/settings", alt: "" },
+		{ id: 0, title: "Home", src: "/Home.svg", path: "/dashboard", alt: "" },
+		{ id: 1, title: "Game", src: "/Game.svg", path: "/game", alt: "" },
+		{
+			id: 2,
+			title: "Tournament",
+			src: "/Tournament.svg",
+			path: "/tournament",
+			alt: "",
+		},
+		{ id: 3, title: "Chat", src: "/Chat.svg", path: "/chat", alt: "" },
+		{
+			id: 4,
+			title: "Settings",
+			src: "/Settings.svg",
+			path: "/settings",
+			alt: "",
+		},
 	];
 
 	return (
 		<>
 			{Links.map((link) => (
 				<button
+					title={link.title}
 					key={link.id}
 					className={`relative hover:cursor-pointer
 						transition-transform duration-200
