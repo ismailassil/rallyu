@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import lora from "@/app/fonts/lora";
-import { isSea } from "node:sea";
 
 export default function UserMenu() {
 	const [isProfile, setIsProfile] = useState(false);
@@ -11,6 +10,8 @@ export default function UserMenu() {
 	const div1Ref = useRef<HTMLDivElement>(null);
 	const div2Ref = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
+	const profileRef = useRef<HTMLDivElement>(null);
+	const notificationRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		function handleClick(event: MouseEvent | KeyboardEvent) {
@@ -18,6 +19,7 @@ export default function UserMenu() {
 				event instanceof KeyboardEvent &&
 				(event.key === "Escape" || (event.metaKey && event.key === "k"))
 			) {
+				if (event.key === "Escape" && !isSearch) return;
 				setIsSearch((isSearch) => !isSearch);
 				setSearch("");
 				return;
@@ -46,13 +48,51 @@ export default function UserMenu() {
 		};
 	}, [isSearch]);
 
+	useEffect(() => {
+		function handleClick(event: MouseEvent) {
+			if (
+				event instanceof MouseEvent &&
+				notificationRef.current &&
+				!notificationRef.current.contains(event.target as Node)
+			) {
+				setIsNotif((isNotif) => !isNotif);
+			}
+		}
+
+		if (isNotif) {
+			document.addEventListener("mousedown", handleClick);
+		}
+		return () => {
+			document.removeEventListener("mousedown", handleClick);
+		};
+	}, [isNotif]);
+
+	useEffect(() => {
+		function handleClick(event: MouseEvent) {
+			if (
+				event instanceof MouseEvent &&
+				profileRef.current &&
+				!profileRef.current.contains(event.target as Node)
+			) {
+				setIsProfile((isProfile) => !isProfile);
+			}
+		}
+
+		if (isProfile) {
+			document.addEventListener("mousedown", handleClick);
+		}
+		return () => {
+			document.removeEventListener("mousedown", handleClick);
+		};
+	}, [isProfile]);
+
 	return (
 		<div className="relative flex items-center pr-6">
 			{/* <SearchBar /> */}
 			<div
 				className="flex items-center bg-card h-[55px] w-[100px] rounded-full
 			justify-center pr-1 hover:cursor-pointer hover:ring-2 hover:ring-white/30
-			duration-200 animation-transform hover:scale-105
+			duration-200 transition-transform hover:scale-105
 			"
 				onClick={() => {
 					setIsNotif(false);
@@ -71,7 +111,7 @@ export default function UserMenu() {
 				<span className={`text-lg ${lora.className}`}>K</span>
 			</div>
 			{isSearch && (
-				<div className="fixed inset-0 z-50 flex p-60 flex-col items-center backdrop-blur-md bg-black/20">
+				<div className="fixed inset-0 z-50 flex p-60 flex-col items-center backdrop-blur-lg bg-black/20">
 					<div
 						ref={div1Ref}
 						className="overflow-scroll relative bg-white/10 w-[90%] max-w-2xl rounded-lg"
@@ -118,37 +158,39 @@ export default function UserMenu() {
 				</div>
 			)}
 			{/* NOTIFICATION ICON */}
-			<button
-				className={`relative hover:cursor-pointer ml-4 rounded-full bg-card border-2
+			<div className="relative" ref={notificationRef}>
+				<button
+					className={`ml-4 rounded-full bg-card border-2 hover:cursor-pointer
 					border-br-card w-[55px] h-[55px] flex justify-center items-center
 					${
 						isNotif
 							? "bg-hbg border-hbbg ring-4 \
-					ring-bbg scale-101"
+						ring-bbg scale-101"
 							: "hover:bg-hbg hover:border-hbbg hover:ring-4 \
-					hover:ring-bbg hover:scale-101"
+						hover:ring-bbg hover:scale-101"
 					} transition-transform duration-200
-					
-					`}
-				onClick={() => {
-					setIsProfile(false);
-					setIsSearch(false);
-					setIsNotif(!isNotif);
-				}}
-			>
-				<Image
-					src="/notification.svg"
-					alt="Notification Icon"
-					width={0}
-					height={0}
-					style={{ width: "auto", height: "auto" }}
-					className={`${isNotif && "animate-pulse"}`}
-				/>
+						
+						`}
+					onClick={() => {
+						setIsProfile(false);
+						setIsSearch(false);
+						setIsNotif(!isNotif);
+					}}
+				>
+					<Image
+						src="/notification.svg"
+						alt="Notification Icon"
+						width={0}
+						height={0}
+						style={{ width: "auto", height: "auto" }}
+						className={`${isNotif && "animate-pulse"}`}
+					/>
+				</button>
 				{isNotif && (
 					<div
 						className="absolute right-0 z-10 max-h-[348px] top-18 w-70 divide-y divide-bbg
-						origin-top-right rounded-lg bg-card border-2 border-br-card
-						backdrop-blur-xs overflow-scroll"
+					origin-top-right rounded-lg bg-card border-2 border-br-card
+					backdrop-blur-lg overflow-scroll"
 					>
 						<div className="px-7 py-4 w-full flex sticky top-0 z-20 bg-card/70 backdrop-blur-3xl text-start justify-between items-center">
 							<p>Notification</p>
@@ -163,10 +205,11 @@ export default function UserMenu() {
 						))}
 					</div>
 				)}
-			</button>
+			</div>
 			{/* PROFILE ICON */}
-			<button
-				className={`relative hover:cursor-pointer ml-4 rounded-full bg-card border-2
+			<div className="relative" ref={profileRef}>
+				<button
+					className={`relative hover:cursor-pointer ml-4 rounded-full bg-card border-2
 					border-br-card w-[55px] h-[55px] flex justify-center items-center
 					${
 						isProfile
@@ -177,33 +220,34 @@ export default function UserMenu() {
 					} transition-transform duration-200
 					
 					`}
-				onClick={() => {
-					setIsNotif(false);
-					setIsSearch(false);
-					setIsProfile(!isProfile);
-				}}
-			>
-				<Image
-					src="/profile.svg"
-					alt="Notification Icon"
-					width={30}
-					height={30}
-					className={`${isProfile && "animate-pulse"}`}
-				/>
-				<div
-					className="absolute flex items-center justify-center 
-					rounded-full w-[20px] h-[20px] bg-white bg-opacity-75 bottom-[-3] left-9"
+					onClick={() => {
+						setIsNotif(false);
+						setIsSearch(false);
+						setIsProfile(!isProfile);
+					}}
 				>
 					<Image
-						src="/down-arrow.svg"
-						alt="Arrow down Icon"
-						width={10}
-						height={10}
-						className={`transition duration-300 ${
-							isProfile ? "rotate-180" : "rotate-0"
-						}`}
+						src="/profile.svg"
+						alt="Notification Icon"
+						width={30}
+						height={30}
+						className={`${isProfile && "animate-pulse"}`}
 					/>
-				</div>
+					<div
+						className="absolute flex items-center justify-center 
+					rounded-full w-[20px] h-[20px] bg-white bg-opacity-75 bottom-[-3] left-9"
+					>
+						<Image
+							src="/down-arrow.svg"
+							alt="Arrow down Icon"
+							width={10}
+							height={10}
+							className={`transition duration-300 ${
+								isProfile ? "rotate-180" : "rotate-0"
+							}`}
+						/>
+					</div>
+				</button>
 				{isProfile && (
 					<div className="absolute right-0 z-10 top-18 w-50 divide-y divide-bbg origin-top-right rounded-lg bg-card border-2 border-br-card backdrop-blur-xs">
 						<div className="mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer hover:bg-hbbg">
@@ -235,7 +279,7 @@ export default function UserMenu() {
 						</div>
 					</div>
 				)}
-			</button>
+			</div>
 		</div>
 	);
 }

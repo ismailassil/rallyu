@@ -6,7 +6,7 @@ import Link from "next/link";
 import AuthButton from "./components/AuthButton";
 import Input from "./components/Input";
 import ibm from "./fonts/ibm";
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -30,7 +30,7 @@ export default function Home() {
 				></Image>
 			</nav>
 			<main className="flex-1 flex justify-center items-center">
-				<motion.div className="w-[450px]">
+				<div className="w-[450px]">
 					<h1
 						className={`${ibm.className} text-[36px] font-bold flex justify-center`}
 					>
@@ -63,14 +63,14 @@ export default function Home() {
 					<Form action={api}>
 						<div className="mb-[12px]">
 							<Input
-								text="Email"
-								type="email"
-								unique="email"
-								src="/mail.svg"
-								alt="mail logo"
+								text="Email or Username"
+								type="text"
+								unique="text"
+								src="/at.svg"
+								alt="At Logo"
 								width={19}
 								height={19}
-								placeholder="your@email.com"
+								placeholder="something"
 							/>
 						</div>
 						<div className="mb-[12px]">
@@ -109,7 +109,7 @@ export default function Home() {
 							</p>
 						</div>
 					</Form>
-				</motion.div>
+				</div>
 			</main>
 		</div>
 	);
