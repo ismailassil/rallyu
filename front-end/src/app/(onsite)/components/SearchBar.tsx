@@ -24,7 +24,7 @@ export default function SearchBar() {
 		<div
 			className="flex items-center bg-card h-[55px] w-[100px] rounded-full
 			justify-center pr-1 hover:cursor-pointer hover:ring-2 hover:ring-white/30
-			duration-200 animation-transform hover:scale-105
+			duration-200 transition-transform hover:scale-105
 			"
 		>
 			{/* <input

@@ -18,7 +18,7 @@ export default function SideBar() {
 				<button
 					key={link.id}
 					className={`relative hover:cursor-pointer
-						animation-transform duration-200
+						transition-transform duration-200
 						w-[40px] h-[40px] flex items-center justify-center
 						${link.id === activeButton ? "hover:scale-105" : "hover:scale-120"}
 						`}
