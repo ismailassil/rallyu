@@ -11,7 +11,6 @@ export default function Friend({
 	isOnline = false,
 	img,
 }: friendProps) {
-	if (fullname.length > 10) fullname = fullname.substring(0, 9) + "...";
 
 	return (
 		<div className="flex bg-card border-2 border-br-card rounded-xl hover:bg-hbg hover:border-hbbg hover:scale-101 transition-transform duration-200 p-3 items-center overflow-hidden">

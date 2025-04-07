@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { useState } from "react";
 
@@ -25,16 +27,19 @@ export default function SideBar() {
 	];
 
 	return (
-		<>
+		<nav
+			className="fixed h-[calc(100vh-148px)] ml-6 w-24 mt-30
+		bg-card border-2 border-br-card rounded-lg flex flex-col justify-center items-center gap-16 overflow-clip"
+		>
 			{Links.map((link) => (
 				<button
 					title={link.title}
 					key={link.id}
 					className={`relative hover:cursor-pointer
-						transition-transform duration-200
-						w-[40px] h-[40px] flex items-center justify-center
-						${link.id === activeButton ? "hover:scale-105" : "hover:scale-120"}
-						`}
+					transition-transform duration-200
+					w-[40px] h-[40px] flex items-center justify-center
+					${link.id === activeButton ? "hover:scale-105" : "hover:scale-120"}
+					`}
 					onClick={() => setActiveButton(link.id)}
 				>
 					<Image
@@ -53,11 +58,11 @@ export default function SideBar() {
 									? "scale-300 bg-hbbg"
 									: "hover:scale-150 hover:bg-hbg"
 							}
-						}
-							`}
+								}
+								`}
 					></div>
 				</button>
 			))}
-		</>
+		</nav>
 	);
 }

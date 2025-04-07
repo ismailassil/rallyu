@@ -3,8 +3,12 @@ import Image from "next/image";
 
 export default function UserInfo() {
 	return (
-		<div className="grid grid-cols-[1fr_0.5fr] gap-10 w-full h-full items-center p-13 overflow-hidden">
-			<div className="">
+		<div
+			className="flex sm:grid sm:grid-rows-[0.5fr_1fr] md:grid-rows-none sm:grid-cols-none md:grid-cols-[1fr_1fr] gap-10 w-full h-full
+				items-center p-13 overflow-hidden min-h-[330px] md:min-h-[400px]
+				bg-card border-2 border-br-card rounded-lg"
+		>
+			<div>
 				<div className="relative group select-none">
 					<h1 className={`${unicaOne.className} text-4xl mb-10`}>
 						WELCOME BACK, <span className="text-accent">ISMAIL</span>
@@ -23,7 +27,10 @@ export default function UserInfo() {
 					</div>
 				</div>
 			</div>
-			<div className="flex justify-center items-center mx-auto w-[250px] h-[250px] transition-transform duration-200 hover:scale-101">
+			<div
+				className="justify-left items-left mx-auto hidden md:flex w-[90px] h-[90px] md:w-[250px] md:h-[250px]
+				transition-transform duration-200 hover:scale-101"
+			>
 				<Image
 					className="ring-6 rounded-full ring-br-image object-cover w-full h-full hover:ring-7 transition-transform duration-200 hover:scale-101"
 					src="/image.png"

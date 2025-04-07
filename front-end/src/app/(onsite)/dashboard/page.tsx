@@ -1,61 +1,26 @@
 "use client";
 
-import NavBar from "../components/NavBar";
-import SideBar from "../components/Sidebar";
 import UserInfo from "../components/UserInfo";
 import FriendsPanel from "../components/FriendsPanel";
 import Tournament from "../components/Tournament";
 import SingleFight from "../components/SingleFight";
 import TrainingMatch from "../components/TrainingMatch";
 
-export default function Auth() {
-	// const router = useRouter();
-	// const api = "l";
-
+export default function Dashboard() {
 	return (
-		<div className="min-h-screen w-screen">
-			<main
-				className="grid grid-cols-[6rem_1fr_0.5fr] grid-rows-[4rem_1fr]
-					p-6 gap-6 w-full h-full"
-			>
-				<div className="col-span-3 flex justify-between">
-					<NavBar />
-				</div>
-				<div className="bg-card border-2 border-br-card rounded-lg flex flex-col justify-center items-center gap-16 overflow-hidden">
-					<SideBar />
-				</div>
-				<div className="grid grid-rows-[0.5fr_1fr] gap-6 w-full h-full">
-					<div className="bg-card border-2 border-br-card rounded-lg">
-						<UserInfo />
-					</div>
-					<div className="grid gap-6 w-full h-full grid-rows-1 grid-cols-3 md:grid-rows-2 md:grid-cols-2">
-						<div
-							className="md:row-span-3 md:col-span-full col-span-3 bg-card border-2 border-br-card rounded-lg
-						transition-transform duration-500 transform
-						hover:cursor-pointer group hover:-translate-y-2"
-						>
-							<Tournament />
-						</div>
-						<div
-							className="col-span-3 bg-card border-2 border-br-card rounded-lg
-						transition-transform duration-500 transform
-						hover:cursor-pointer group hover:-translate-y-2"
-						>
-							<SingleFight />
-						</div>
-						<div
-							className="col-span-3 bg-card border-2 border-br-card rounded-lg
-						transition-transform duration-500 transform
-						hover:cursor-pointer group hover:-translate-y-2"
-						>
-							<TrainingMatch />
-						</div>
+		<main className="fixed inset-0 flex gap-6 mx-0 ml-37 mt-30 mr-6 mb-6 h-[calc(100vh-148px)] overflow-scroll">
+			<article className="grid grid-cols-[1fr] md:grid-rows-[0.5fr_1fr] grid-rows-[1fr_fr] gap-6 h-full w-full flex-2">
+				<UserInfo />
+				{/* min-h-[330px] */}
+				<div className="flex flex-col lg:flex-row space-x-6 space-y-6 lg:space-y-0 h-full]">
+					<Tournament />
+					<div className="flex flex-col space-y-6 h-full flex-1">
+						<SingleFight />
+						<TrainingMatch />
 					</div>
 				</div>
-				<div className="bg-card border-2 border-br-card rounded-lg h-full">
-					<FriendsPanel />
-				</div>
-			</main>
-		</div>
+			</article>
+			<FriendsPanel />
+		</main>
 	);
 }

@@ -7,6 +7,7 @@
 }
 
 @theme {
+	--breakpoint-extra: 2000px;
 	--color-main: #5a5de9;
 	--color-main-hover: #494bc2;
 	--color-main-active: #3a3b9d;
