@@ -111,7 +111,7 @@ export default function UserMenu() {
 				<span className={`text-lg ${lora.className}`}>K</span>
 			</div>
 			{isSearch && (
-				<div className="fixed inset-0 z-50 flex p-60 flex-col items-center backdrop-blur-lg bg-black/20">
+				<div className="fixed inset-0 z-50 flex p-60 flex-col items-center backdrop-blur-2xl bg-black/20">
 					<div
 						ref={div1Ref}
 						className="overflow-scroll relative bg-white/10 w-[90%] max-w-2xl rounded-lg"

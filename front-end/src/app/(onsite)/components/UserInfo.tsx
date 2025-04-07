@@ -25,16 +25,12 @@ export default function UserInfo() {
 			</div>
 			<div className="flex justify-center items-center mx-auto w-[250px] h-[250px] transition-transform duration-200 hover:scale-101">
 				<Image
-					className="rounded-full ring-br-image object-cover w-full h-full transition-transform duration-200 hover:scale-101"
+					className="ring-6 rounded-full ring-br-image object-cover w-full h-full hover:ring-7 transition-transform duration-200 hover:scale-101"
 					src="/image.png"
 					alt="Profile Image"
 					width={250}
 					height={250}
 				/>
-				<div
-					className="absolute content-[''] w-[250px]
-				h-[250px] ring-6 rounded-full ring-br-image hover:animate-pulse hover:ring-7 transition-transform duration-200"
-				></div>
 			</div>
 		</div>
 	);
