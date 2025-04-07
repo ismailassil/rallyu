@@ -2,7 +2,12 @@ import Image from "next/image";
 
 export default function TrainingMatch() {
 	return (
-		<div className="relative overflow-hidden h-full rounded-md md:flex md:items-center">
+		<div
+			className="relative overflow-hidden h-full flex items-center lg:items-start lg:justify-center
+				bg-card border-2 border-br-card rounded-lg
+				transition-transform duration-500 transform
+				hover:cursor-pointer group hover:-translate-y-2"
+		>
 			<div
 				className="absolute top-0 left-0 -z-1 w-full h-full"
 				style={{
@@ -14,16 +19,19 @@ export default function TrainingMatch() {
 					opacity: "0.4",
 				}}
 			></div>
-			<div className="text-wrap text-center md:text-left">
+			<div className="text-wrap text-left lg:text-center lg:mt-5 lg:mb-5">
 				<h1 className="p-20 md:p-13 text-2xl leading-13">
-					<p className=" text-3xl">Start</p>
-					<p className="text-5xl ">Training</p>
+					<p className="text-3xl">Start</p>
+					<p className="text-5xl">Training</p>
 				</h1>
 			</div>
 
 			<div
-				className="absolute w-[400px] h-auto top-61 left-1/2 md:md:top-15 md:translate-x-8 md:w-[320px]
-				transform -translate-x-1/2 group-hover:-translate-y-5 group-hover:scale-102 invisible lg:visible
+				className="absolute 
+				hidden h-auto left-1/2
+				md:block md:top-21 md:translate-x-8 md:w-[260px]
+				lg:-translate-x-1/2 lg:top-54 lg:w-[360px]
+				transform group-hover:-translate-y-5 group-hover:scale-102
 				transition-transform duration-500"
 			>
 				<Image

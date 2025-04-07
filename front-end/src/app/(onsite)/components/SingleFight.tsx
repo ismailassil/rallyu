@@ -2,7 +2,12 @@ import Image from "next/image";
 
 export default function SingleFight() {
 	return (
-		<div className="relative overflow-hidden h-full rounded-md md:flex md:items-center">
+		<div
+			className="relative overflow-hidden h-full flex items-center lg:items-start lg:justify-center
+					bg-card border-2 border-br-card rounded-lg
+					transition-transform duration-500 transform
+					hover:cursor-pointer group hover:-translate-y-2"
+		>
 			<div
 				className="absolute top-0 left-0 -z-1 w-full h-full"
 				style={{
@@ -14,16 +19,19 @@ export default function SingleFight() {
 					opacity: "0.3",
 				}}
 			></div>
-			<div className="text-wrap text-center md:text-left">
+			<div className="text-wrap text-left lg:text-center lg:mt-5 lg:mb-5">
 				<h1 className="p-20 md:p-13 text-2xl leading-13">
-					<p className="text-5xl ">1v1</p>
-					<p className=" text-3xl">Fight for Glory</p>
+					<p className="text-5xl">1v1</p>
+					<p className="text-3xl">Fight for Glory</p>
 				</h1>
 			</div>
 
 			<div
-				className="absolute -top-14 w-[500px] h-auto left-1/2 md:-top-40 md:translate-x-0 md:w-[400px]
-				transform -translate-x-1/2 group-hover:-translate-y-5 group-hover:scale-102 invisible lg:visible
+				className="absolute
+				hidden h-auto left-1/2
+				md:block md:-top-31 md:translate-x-2 md:w-[360px]
+				lg:-top-15 lg:-translate-x-1/2 lg:w-[480px]
+				transform group-hover:-translate-y-5 group-hover:scale-102
 				transition-transform duration-500"
 			>
 				<Image

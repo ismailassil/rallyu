@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "../../globals.css";
 import Image from "next/image";
+import Header from "../components/Header";
+import SideBar from "../components/Sidebar";
 
 export const metadata: Metadata = {
 	title: "Rallyu",
@@ -14,7 +16,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<div>
-			<div className="fixed top-0 left-0 w-screen h-screen z-[-1]">
+			<div className="fixed inset-0 -z-1">
 				<Image
 					src="/background.svg"
 					alt="background"
@@ -24,7 +26,11 @@ export default function RootLayout({
 					style={{ objectFit: "cover" }}
 				/>
 			</div>
-			{children}
+			<Header />
+			<div className="w-screen">
+				<SideBar />
+				{children}
+			</div>
 		</div>
 	);
 }
