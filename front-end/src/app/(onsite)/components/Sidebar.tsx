@@ -28,8 +28,11 @@ export default function SideBar() {
 
 	return (
 		<nav
-			className="fixed h-[calc(100vh-148px)] ml-6 w-24 mt-30
-		bg-card border-2 border-br-card rounded-lg flex flex-col justify-center items-center gap-16 overflow-clip"
+			className="fixed flex flex-row justify-center items-center gap-10 w-full
+				bottom-0 left-0 h-22 overflow-clip
+				sm:flex-col sm:h-[calc(100vh-148px)] sm:gap-16 sm:ml-6 sm:w-24 sm:mt-30
+				sm:bottom-auto sm:left-auto sm:transform-none sm:translate-x-none sm:rounded-lg
+				bg-card sm:border-2 border-t-2 border-br-card"
 		>
 			{Links.map((link) => (
 				<button
@@ -55,7 +58,7 @@ export default function SideBar() {
 							transition-all duration-200
 							${
 								activeButton === link.id
-									? "scale-300 bg-hbbg"
+									? "scale-180 sm:scale-300 bg-hbbg"
 									: "hover:scale-150 hover:bg-hbg"
 							}
 								}

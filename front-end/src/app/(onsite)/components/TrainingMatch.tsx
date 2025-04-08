@@ -19,7 +19,7 @@ export default function TrainingMatch() {
 					opacity: "0.4",
 				}}
 			></div>
-			<div className="text-wrap text-left lg:text-center lg:mt-5 lg:mb-5">
+			<div className="text-wrap text-left lg:text-center lg:mt-5 lg:mb-5 lg:text-shadow-md">
 				<h1 className="p-20 md:p-13 text-2xl leading-13">
 					<p className="text-3xl">Start</p>
 					<p className="text-5xl">Training</p>
@@ -28,9 +28,9 @@ export default function TrainingMatch() {
 
 			<div
 				className="absolute 
-				hidden h-auto left-1/2
-				md:block md:top-21 md:translate-x-8 md:w-[260px]
-				lg:-translate-x-1/2 lg:top-54 lg:w-[360px]
+				hidden h-auto left-1/2 -z-1
+				md:block md:bottom-0 md:translate-x-8 md:w-[260px]
+				lg:-translate-x-1/2 lg:-bottom-14 lg:w-[300px]
 				transform group-hover:-translate-y-5 group-hover:scale-102
 				transition-transform duration-500"
 			>
