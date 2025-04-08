@@ -1,3 +1,4 @@
+import LandingHeader from "@/app/components/LandingHeader";
 import "../../globals.css";
 import Image from "next/image";
 
@@ -10,16 +11,17 @@ export default function SignUpLayout({
 		// <html lang="en">
 		// 	<body className={`${dmSans.className} antialiased relative`}>
 		<div>
-			<div className="absolute top-0 left-0 w-screen h-screen z-[-1]">
+			<div className="fixed inset-0 -z-1">
 				<Image
 					src="/signup_background.svg"
 					alt="signup_background"
 					quality={100}
 					fill={true}
 					sizes="100vw"
-					objectFit="cover"
+					style={{ objectFit: "cover", backgroundRepeat: "no-repeat" }}
 				/>
 			</div>
+			<LandingHeader />
 			{children}
 		</div>
 		// 	</body>

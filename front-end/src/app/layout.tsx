@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Image from "next/image";
 import dmSans from "./fonts/dmSans";
+import LandingHeader from "./components/LandingHeader";
 
 export const metadata: Metadata = {
 	title: "Rallyu",
@@ -16,16 +17,17 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={`${dmSans.className} antialiased relative`}>
-				<div className="absolute top-0 left-0 w-screen h-screen z-[-1]">
+				<div className="fixed inset-0 -z-1">
 					<Image
 						src="/background.svg"
 						alt="background"
 						quality={100}
 						fill={true}
 						sizes="100vw"
-						style={{ objectFit: "cover" }}
+						style={{ objectFit: "cover", backgroundRepeat: "no-repeat" }}
 					/>
 				</div>
+				<LandingHeader />
 				{children}
 			</body>
 		</html>
