@@ -40,7 +40,7 @@ export default function SideBar() {
 					key={link.id}
 					className={`relative hover:cursor-pointer
 					transition-transform duration-200
-					w-[40px] h-[40px] flex items-center justify-center
+					w-[30px] h-[30px] md:w-[40px] md:h-[40px] flex items-center justify-center
 					${link.id === activeButton ? "hover:scale-105" : "hover:scale-120"}
 					`}
 					onClick={() => setActiveButton(link.id)}

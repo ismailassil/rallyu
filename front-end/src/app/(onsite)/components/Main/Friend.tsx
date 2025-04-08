@@ -11,9 +11,12 @@ export default function Friend({
 	isOnline = false,
 	img,
 }: friendProps) {
-
 	return (
-		<div className="flex bg-card border-2 border-br-card rounded-xl hover:bg-hbg hover:border-hbbg hover:scale-101 transition-transform duration-200 p-3 items-center overflow-hidden">
+		<div
+			className="flex justify-between bg-card border-2 border-br-card rounded-xl
+				hover:bg-hbg hover:border-hbbg hover:scale-101 transition-transform duration-200
+				p-3 items-center overflow-hidden hover:cursor-pointer"
+		>
 			{/* Profile Image */}
 			<div className="ml-1 flex w-[55px] h-[55px] rounded-full justify-center">
 				<Image
@@ -42,13 +45,13 @@ export default function Friend({
 					height={50}
 					alt="Chat Button Logo"
 				/>
-				<Image
+				{/* <Image
 					className="hover:ring-3 hover:ring-br-card hover:rounded-full hover:cursor-pointer"
 					src="/enter-btn.svg"
 					width={50}
 					height={50}
 					alt="Enter Button Logo"
-				/>
+				/> */}
 			</div>
 		</div>
 	);
