@@ -12,7 +12,7 @@ export default function SignUp() {
 	return (
 		<main className="h-[100vh] w-full pt-30 flex pb-10">
 			<div className="w-full h-full flex overflow-auto">
-				<div className="w-[650px] h-full pt-20 pb-20 pl-10 pr-10 flex items-center justify-center">
+				<div className="w-[650px] h-full pt-20 pb-20 pl-10 pr-10 flex items-start sm:items-center justify-center">
 					<div className="flex-1">
 						<h1
 							className={`${ibm.className} text-[36px] font-bold flex justify-left`}
