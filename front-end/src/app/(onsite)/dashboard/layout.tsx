@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "../../globals.css";
 import Image from "next/image";
-import Header from "../components/Header";
+import Header from "../components/Header/Header";
 import SideBar from "../components/Sidebar";
 
 export const metadata: Metadata = {
@@ -27,7 +27,7 @@ export default function RootLayout({
 				/>
 			</div>
 			<Header />
-			<div className="w-screen">
+			<div>
 				<SideBar />
 				{children}
 			</div>
