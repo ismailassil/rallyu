@@ -18,8 +18,8 @@ export default function Tournament() {
 			<div
 				className="absolute
 				hidden left-1/2 w-[650px] h-auto transform
-				md:block md:top-13 md:w-[350px]
-				lg:w-[600px] lg:top-75 lg:-translate-x-1/2
+				md:block md:bottom-10 md:w-[350px] -z-1
+				lg:w-[500px] lg:-bottom-50 lg:-translate-x-1/2
 				group-hover:-translate-y-5 group-hover:scale-102
 				transition-transform duration-500"
 			>

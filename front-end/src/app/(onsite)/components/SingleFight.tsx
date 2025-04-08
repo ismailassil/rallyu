@@ -29,8 +29,8 @@ export default function SingleFight() {
 			<div
 				className="absolute
 				hidden h-auto left-1/2
-				md:block md:-top-31 md:translate-x-2 md:w-[360px]
-				lg:-top-15 lg:-translate-x-1/2 lg:w-[480px]
+				md:block md:-bottom-31 md:translate-x-2 md:w-[360px]
+				lg:-bottom-10 lg:-translate-x-1/2 lg:w-[300px]
 				transform group-hover:-translate-y-5 group-hover:scale-102
 				transition-transform duration-500"
 			>
