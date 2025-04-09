@@ -4,7 +4,7 @@ import Form from "next/form";
 import Link from "next/link";
 import AuthButton from "./components/AuthButton";
 import Input from "./components/Input";
-import ibm from "./fonts/ibm";
+import ibm from "../fonts/ibm";
 // import { motion } from "framer-motion";
 
 export default function Home() {

@@ -2,7 +2,7 @@
 
 import Form from "next/form";
 import Link from "next/link";
-import ibm from "../fonts/ibm";
+import ibm from "@/app/fonts/ibm";
 import { useRef, useState } from "react";
 
 const numberInputStyling =

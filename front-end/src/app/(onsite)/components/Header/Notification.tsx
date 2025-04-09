@@ -5,7 +5,7 @@ interface NotificationProps {
 	setIsProfile: (value: boolean) => void;
 	setIsSearch: (value: boolean) => void;
 	isNotif: boolean;
-	notificationRef: React.Ref<HTMLDivElement>
+	notificationRef: React.Ref<HTMLDivElement>;
 }
 
 export default function Notification({

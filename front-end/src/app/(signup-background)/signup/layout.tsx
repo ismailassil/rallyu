@@ -1,5 +1,5 @@
-import LandingHeader from "@/app/components/LandingHeader";
-import "../../globals.css";
+import LandingHeader from "@/app/(app)/components/LandingHeader";
+import "@/app/globals.css";
 import Image from "next/image";
 
 export default function SignUpLayout({

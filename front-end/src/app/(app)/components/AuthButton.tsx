@@ -19,7 +19,12 @@ export default function AuthButton({
 		<button
 			className={`relative w-full h-13 bg-bg border-bbg outline-none flex items-center justify-center gap-[7px] border-2 rounded-lg hover:cursor-pointer hover:ring-4 hover:ring-bbg hover:bg-hbbg hover:border-hbg`}
 		>
-			<Image src={src} width={width} height={height} alt={alt}></Image>
+			<Image
+				src={src}
+				width={width}
+				height={height}
+				alt={alt}
+			></Image>
 			{text}
 		</button>
 	);
