@@ -3,8 +3,8 @@
 import Form from "next/form";
 import Link from "next/link";
 import ibm from "../../fonts/ibm";
-import AuthButton from "../../components/AuthButton";
-import Input from "../../components/Input";
+import AuthButton from "../../(app)/components/AuthButton";
+import Input from "../../(app)/components/Input";
 
 export default function SignUp() {
 	const api = "Nothing";

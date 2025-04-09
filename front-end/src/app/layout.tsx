@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Image from "next/image";
 import dmSans from "./fonts/dmSans";
-import LandingHeader from "./components/LandingHeader";
 
 export const metadata: Metadata = {
 	title: "Rallyu",
@@ -27,7 +26,6 @@ export default function RootLayout({
 						style={{ objectFit: "cover", backgroundRepeat: "no-repeat" }}
 					/>
 				</div>
-				<LandingHeader />
 				{children}
 			</body>
 		</html>

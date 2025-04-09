@@ -84,13 +84,14 @@ export default function Search({
 			</div>
 			{isSearch && (
 				<div
-					className="fixed inset-0 z-50 flex pt-10 pb-5 md:p-20 md:10 lg:p-40 lg:pb-20 w-full
-						flex-col items-center backdrop-blur-2xl bg-black/20"
+					className="fixed inset-0 z-50 flex
+						pt-10 pb-5 pl-3 pr-3 md:p-20 md:10 lg:p-40 lg:pb-20
+						w-full flex-col items-center backdrop-blur-2xl bg-black/20"
 				>
 					<div className="w-[100%] lg:w-[80%] h-full">
 						<div ref={div1Ref} className="relative bg-white/10 rounded-lg">
 							<Image
-								className="absolute left-5 top-[18px] opacity-75"
+								className="absolute left-5 top-[19px] opacity-75"
 								src="/search.svg"
 								alt="Search Logo"
 								width={0}
