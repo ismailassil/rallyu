@@ -7,7 +7,9 @@ export default function LeaderboardPanel() {
 
 	return (
 		<aside
-			className={`bg-card border-2 border-br-card rounded-lg flex-1 w-full h-full max-h-[948px] ${!leaderboard && "min-h-[588px]"}`}
+			className={`bg-card border-2 border-br-card rounded-lg flex-1 w-full h-full max-h-[948px] ${
+				!leaderboard && "min-h-[588px]"
+			}`}
 		>
 			<div className="flex flex-col h-full">
 				<div
@@ -26,7 +28,9 @@ export default function LeaderboardPanel() {
 					></div>
 				</div>
 				<div
-					className={`overflow-y-auto flex-1 hide-scrollbar ${leaderboard && "hidden lg:block"}`}
+					className={`overflow-y-auto flex-1 hide-scrollbar ${
+						leaderboard && "hidden lg:block"
+					}`}
 				>
 					<div className="flex flex-col gap-y-2 pl-4 pr-4 pb-4 overflow-auto">
 						{extendedLeaderboard.map((player, i) => (
@@ -48,33 +52,27 @@ export default function LeaderboardPanel() {
 
 const leaderboardData = [
 	{
-		username: "GamingLegend",
+		username: "Rass L7ok",
 		rank: 1,
 		score: 9850,
 		img: "/image_1.jpg",
 	},
 	{
-		username: "ProPlayer99",
+		username: "Lmouch",
 		rank: 2,
 		score: 9720,
 		img: "/image_2.jpg",
 	},
 	{
-		username: "Salah Demnati",
+		username: "Moul Chi",
 		rank: 3,
 		score: 9450,
-		img: "/image_2.jpg",
-	},
-	{
-		username: "EpicGamer",
-		rank: 4,
-		score: 9210,
 		img: "/image_1.jpg",
 	},
 	{
-		username: "GameMaster",
-		rank: 5,
-		score: 8940,
+		username: "Epic Looser",
+		rank: 4,
+		score: 9210,
 		img: "/image_2.jpg",
 	},
 ];
@@ -82,10 +80,10 @@ const leaderboardData = [
 // Generate additional sample data
 const extendedLeaderboard = [
 	...leaderboardData,
-	...Array.from({ length: 50 }).map((_, i) => ({
-		username: `Player${i + 6}`,
+	...Array.from({ length: 5 }).map((_, i) => ({
+		username: `Player ${i + 6}`,
 		rank: i + 6,
-		score: 8900 - i * 50,
-		img: "/image_2.jpg",
+		score: 8500 - i * 100,
+		img: `/image_${(i % 2) + 1}.jpg`,
 	})),
 ];
