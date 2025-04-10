@@ -9,8 +9,8 @@ interface InputProps {
 	height: number;
 	alt: string;
 	unique: string;
-	// value: string;
-	// setValue: (value: string) => void;
+	value: string;
+	setValue: (field: string, value: string) => void;
 }
 
 export default function Input({
@@ -22,13 +22,13 @@ export default function Input({
 	width,
 	height,
 	alt,
-}: // value,
-// setValue,
-InputProps) {
-	// function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-	// 	const input = e.target.value.replace(/\s+/g, "");
-	// 	setValue(input);
-	// }
+	value,
+	setValue,
+}: InputProps) {
+	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+		const input = e.target.value;
+		setValue(unique, input);
+	}
 
 	return (
 		<div className="w-full">
@@ -44,8 +44,11 @@ InputProps) {
 					name={unique}
 					placeholder={placeholder}
 					autoComplete="off"
-					// value={value}
-					// onChange={handleChange}
+					value={value}
+					onChange={(e) => {
+						e.preventDefault();
+						handleChange(e);
+					}}
 					required
 				/>
 				<Image

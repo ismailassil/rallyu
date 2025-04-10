@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import unicaOne from "./fonts/unicaOne";
-import LandingHeader from "./(app)/components/LandingHeader";
 
 export default function Custom404() {
 	return (
@@ -24,7 +23,8 @@ export default function Custom404() {
 				</div>
 				<Link
 					href="/"
-					className="mt-10 py-3 px-6 bg-card border-2 border-white/20 hover:border-white/40 rounded-full"
+					className="mt-10 py-3 px-6 bg-card border-2 border-white/20
+						hover:border-white/40 rounded-full"
 				>
 					Go back
 				</Link>

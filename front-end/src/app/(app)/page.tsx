@@ -5,10 +5,13 @@ import Link from "next/link";
 import AuthButton from "./components/AuthButton";
 import Input from "./components/Input";
 import ibm from "../fonts/ibm";
+import { useState } from "react";
 // import { motion } from "framer-motion";
 
 export default function Home() {
-	const api = "call";
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [error, setError] = useState("");
 
 	return (
 		<main className="h-[100vh] w-full pt-30 flex items-center justify-center pb-10">
@@ -44,7 +47,7 @@ export default function Home() {
 							<span className="text-white">OR</span>
 							<hr className="flex-grow border-t border-gray-300" />
 						</div>
-						<Form action={api}>
+						<Form action="">
 							<div className="mb-[12px]">
 								<Input
 									text="Email or Username"
@@ -55,6 +58,8 @@ export default function Home() {
 									width={19}
 									height={19}
 									placeholder="something"
+									value={email}
+									setValue={setEmail}
 								/>
 							</div>
 							<div className="mb-[12px]">
@@ -67,13 +72,20 @@ export default function Home() {
 									width={19}
 									height={19}
 									placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"
+									value={password}
+									setValue={setPassword}
 								/>
 							</div>
-							<p className="flex justify-end">
-								<span className="underline underline-offset-3 hover:cursor-pointer hover:text-blue-400 text-[15px]">
-									Forgot password?
-								</span>
-							</p>
+							<div className="flex justify-between">
+								<p className="text-sm text-red-400">
+									{error && <>&#10005;</>} {error}
+								</p>
+								<p className="flex justify-end">
+									<span className="underline underline-offset-3 hover:cursor-pointer hover:text-blue-400 text-sm">
+										Forgot password?
+									</span>
+								</p>
+							</div>
 
 							<button
 								type="submit"
