@@ -69,20 +69,14 @@ const leaderboardData = [
 		score: 9450,
 		img: "/image_1.jpg",
 	},
-	{
-		username: "Epic Looser",
-		rank: 4,
-		score: 9210,
-		img: "/image_2.jpg",
-	},
 ];
 
 // Generate additional sample data
 const extendedLeaderboard = [
 	...leaderboardData,
-	...Array.from({ length: 5 }).map((_, i) => ({
+	...Array.from({ length: 6 }).map((_, i) => ({
 		username: `Player ${i + 6}`,
-		rank: i + 6,
+		rank: i + 5,
 		score: 8500 - i * 100,
 		img: `/image_${(i % 2) + 1}.jpg`,
 	})),

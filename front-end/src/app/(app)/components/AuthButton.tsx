@@ -17,14 +17,9 @@ export default function AuthButton({
 }: AuthButtonProps) {
 	return (
 		<button
-			className={`relative w-full h-13 bg-bg border-bbg outline-none flex items-center justify-center gap-[7px] border-2 rounded-lg hover:cursor-pointer hover:ring-4 hover:ring-bbg hover:bg-hbbg hover:border-hbg`}
+			className={`relative w-full h-13 bg-bg border-bbg outline-none flex items-center justify-center gap-[7px] border-2 rounded-lg hover:cursor-pointer hover:ring-4 hover:ring-bbg hover:bg-hbbg hover:border-hbg hover:scale-101 transition-transform duration-300`}
 		>
-			<Image
-				src={src}
-				width={width}
-				height={height}
-				alt={alt}
-			></Image>
+			<Image src={src} width={width} height={height} alt={alt}></Image>
 			{text}
 		</button>
 	);

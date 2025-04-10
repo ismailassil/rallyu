@@ -108,7 +108,7 @@ export default function SignUp() {
 
 							<button
 								type="submit"
-								className="w-full h-13 rounded-lg bg-main mt-[24px] flex justify-center items-center hover:cursor-pointer hover:ring-3 hover:ring-main-ring-hover hover:bg-main-hover active:bg-main-active active:ring-main-ring-active"
+								className="w-full h-13 rounded-lg bg-main mt-[24px] flex justify-center items-center hover:cursor-pointer hover:ring-3 hover:ring-main-ring-hover/20 hover:bg-main-hover active:bg-main-active active:ring-main-ring-active hover:scale-101 transition-transform duration-300"
 							>
 								Sign Up
 							</button>

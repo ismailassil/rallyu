@@ -54,20 +54,6 @@ export default function LeaderboardItem({
 					Score: <span className="text-yellow-400 font-semibold">{score}</span>
 				</p>
 			</div>
-
-			{/* Actions */}
-			{/* <div className="flex gap-1">
-				<button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm">
-					Profile
-				</button>
-				<Image
-					className="hover:ring-2 hover:ring-br-card hover:rounded-full hover:cursor-pointer"
-					src="/trophy-icon.svg"
-					width={50}
-					height={50}
-					alt="Trophy Icon"
-				/>
-			</div> */}
 		</div>
 	);
 }
