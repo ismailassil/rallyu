@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 export default function SideBar() {
 	const [activeButton, setActiveButton] = useState<number>(0);
@@ -27,7 +28,10 @@ export default function SideBar() {
 	];
 
 	return (
-		<nav
+		<motion.nav
+			initial={{ opacity: 0, x: -50 }}
+			animate={{ opacity: 1, x: 0 }}
+			transition={{ duration: 1, delay: 0.5 }}
 			className="fixed flex flex-row justify-center items-center gap-10 w-full
 				bottom-0 left-0 h-22 overflow-clip
 				sm:flex-col sm:h-[calc(100vh-148px)] sm:gap-16 sm:ml-6 sm:w-24 sm:mt-30
@@ -66,6 +70,6 @@ export default function SideBar() {
 					></div>
 				</button>
 			))}
-		</nav>
+		</motion.nav>
 	);
 }

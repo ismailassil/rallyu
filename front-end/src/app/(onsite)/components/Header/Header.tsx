@@ -3,6 +3,7 @@
 import Image from "next/image";
 import HeaderItems from "./HeaderItems";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 export default function Header() {
 	const [setScrolled, setSetScrolled] = useState(false);
@@ -21,12 +22,15 @@ export default function Header() {
 	}, []);
 
 	return (
-		<header
+		<motion.header
+			initial={{ opacity: 0, y: -50 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.5, delay: 1 }}
 			className={`flex fixed w-full top-0 left-0 z-200 justify-between p-6 items-center h-25
-		${setScrolled && "backdrop-blur-2xl"}`}
+				${setScrolled && "backdrop-blur-2xl"}`}
 		>
 			<Image
-				src={!Logo ? "/rallyu-jp.svg" : "/rallyu-logo.svg"}
+				src={!Logo ? "/rallyu-logo.svg" : "/rallyu-jp.svg"}
 				alt="Logo"
 				width={138}
 				height={38}
@@ -39,6 +43,6 @@ export default function Header() {
 				onClick={() => setLogo(!Logo)}
 			></Image>
 			<HeaderItems />
-		</header>
+		</motion.header>
 	);
 }
