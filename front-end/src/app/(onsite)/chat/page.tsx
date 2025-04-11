@@ -10,6 +10,7 @@ export default function Dashboard() {
 	const isWidth = useIsWidth(1024);
 	const [showbox, setShowbox] = useState(false);
 	const [userMessage, setUserMessage] = useState(false);
+	const [selectedFriend, setSelectedFriend] = useState<number | null>(null);
 
 	return (
 		<motion.main
@@ -29,12 +30,15 @@ export default function Dashboard() {
 						setShowbox={setShowbox}
 						userMessage={userMessage}
 						setUserMessage={setUserMessage}
+						selectedFriend={selectedFriend}
+						setSelectedFriend={setSelectedFriend}
 					/>
 					<MessageSection
 						isWidth={isWidth}
 						showbox={showbox}
 						setShowbox={setShowbox}
 						userMessage={userMessage}
+						setSelectedFriend={setSelectedFriend}
 					/>
 				</article>
 			</div>

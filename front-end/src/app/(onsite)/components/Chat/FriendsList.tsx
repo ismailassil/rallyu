@@ -1,4 +1,3 @@
-import { useState } from "react";
 import ChatFriend from "./ChatFriend";
 import Image from "next/image";
 
@@ -8,6 +7,8 @@ interface FriendsListProps {
 	isWidth: boolean;
 	showbox: boolean;
 	setShowbox: (value: boolean) => void;
+	selectedFriend: number | null;
+	setSelectedFriend: (value: number | null) => void;
 }
 
 export default function FriendsList({
@@ -16,9 +17,9 @@ export default function FriendsList({
 	isWidth,
 	userMessage,
 	setUserMessage,
+	selectedFriend,
+	setSelectedFriend,
 }: FriendsListProps) {
-	const [selectedFriend, setSelectedFriend] = useState<number | null>(null);
-
 	return (
 		<section
 			className={`${isWidth && showbox ? "hidden" : "max-w-full lg:max-w-90 flex flex-2"}`}
@@ -58,7 +59,7 @@ export default function FriendsList({
 								if (i !== selectedFriend) setUserMessage(true);
 								if (isWidth) setShowbox(true);
 							}}
-							className={`${selectedFriend === i && "bg-white/10"}`}
+							className={`${selectedFriend === i && userMessage && "bg-white/10"}`}
 						/>
 					))}
 				</div>
