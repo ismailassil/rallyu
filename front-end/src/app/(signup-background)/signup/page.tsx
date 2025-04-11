@@ -32,11 +32,11 @@ const ErrorMessages: Record<PasswordError, string> = {
 
 export default function SignUp() {
 	const [formData, setFormData] = useState({
-		firstname: "asdqwe",
-		lastname: "qweqwe",
-		username: "qwe",
-		email: "qweqwe@sdad",
-		password: "asdqw12312a! sdasdAe",
+		firstname: "",
+		lastname: "",
+		username: "",
+		email: "",
+		password: "",
 	});
 	const [error, setError] = useState("");
 

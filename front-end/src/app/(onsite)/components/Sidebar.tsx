@@ -1,31 +1,42 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function SideBar() {
+	const pathname = usePathname();
+	const router = useRouter();
 	const [activeButton, setActiveButton] = useState<number>(0);
 
-	const Links = [
-		{ id: 0, title: "Home", src: "/Home.svg", path: "/dashboard", alt: "" },
-		{ id: 1, title: "Game", src: "/Game.svg", path: "/game", alt: "" },
-		{
-			id: 2,
-			title: "Tournament",
-			src: "/Tournament.svg",
-			path: "/tournament",
-			alt: "",
-		},
-		{ id: 3, title: "Chat", src: "/Chat.svg", path: "/chat", alt: "" },
-		{
-			id: 4,
-			title: "Settings",
-			src: "/Settings.svg",
-			path: "/settings",
-			alt: "",
-		},
-	];
+	const Links = useMemo(
+		() => [
+			{ id: 0, title: "Home", src: "/Home.svg", path: "/dashboard", alt: "" },
+			{ id: 1, title: "Game", src: "/Game.svg", path: "/game", alt: "" },
+			{
+				id: 2,
+				title: "Tournament",
+				src: "/Tournament.svg",
+				path: "/tournament",
+				alt: "",
+			},
+			{ id: 3, title: "Chat", src: "/Chat.svg", path: "/chat", alt: "" },
+			{
+				id: 4,
+				title: "Settings",
+				src: "/Settings.svg",
+				path: "/settings",
+				alt: "",
+			},
+		],
+		[]
+	);
+
+	useEffect(() => {
+		const currentLink = Links.find((link) => link.path === pathname);
+		if (currentLink) setActiveButton(currentLink.id);
+	}, [Links, pathname]);
 
 	return (
 		<motion.nav
@@ -34,8 +45,8 @@ export default function SideBar() {
 			transition={{ duration: 1, delay: 0.5 }}
 			className="fixed flex flex-row justify-center items-center gap-10 w-full
 				bottom-0 left-0 h-22 overflow-clip
-				sm:flex-col sm:h-[calc(100vh-148px)] sm:gap-16 sm:ml-6 sm:w-24 sm:mt-30
-				sm:bottom-auto sm:left-auto sm:transform-none sm:translate-x-none sm:rounded-lg
+				sm:ml-6 sm:w-18 sm:mt-30 sm:flex-col sm:h-[calc(100vh-148px)] sm:gap-16
+				sm:bottom-auto sm:left-auto sm:transform-none sm:translate-x-none sm:rounded-md
 				bg-card sm:border-2 border-t-2 border-br-card"
 		>
 			{Links.map((link) => (
@@ -44,10 +55,13 @@ export default function SideBar() {
 					key={link.id}
 					className={`relative hover:cursor-pointer
 					transition-transform duration-200
-					w-[30px] h-[30px] md:w-[40px] md:h-[40px] flex items-center justify-center
+					w-[40px] h-[40px] sm:w-[30px] sm:h-[30px] flex items-center justify-center
 					${link.id === activeButton ? "hover:scale-105" : "hover:scale-120"}
 					`}
-					onClick={() => setActiveButton(link.id)}
+					onClick={() => {
+						router.push(link.path);
+						setActiveButton(link.id);
+					}}
 				>
 					<Image
 						src={link.src}
@@ -57,7 +71,7 @@ export default function SideBar() {
 						className={`${activeButton === link.id && "scale-110"}`}
 					/>
 					<div
-						className={`absolute rounded-lg
+						className={`absolute rounded-md
 							inset-0
 							transition-all duration-200
 							${

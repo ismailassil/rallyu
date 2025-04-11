@@ -15,7 +15,9 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${dmSans.className} antialiased relative`}>
+			<body
+				className={`${dmSans.className} antialiased relative`}
+			>
 				<div className="fixed inset-0 -z-1">
 					<Image
 						src="/background.svg"

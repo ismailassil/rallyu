@@ -118,13 +118,7 @@ export default function Search({
 						</div>
 						<div
 							ref={div2Ref}
-							className="bg-white/10 w-full max-h-118 rounded-lg mt-3
-						  	[&::-webkit-scrollbar]:w-2
-  							[&::-webkit-scrollbar-track]:rounded-full
-  							[&::-webkit-scrollbar-track]:bg-none
-  							[&::-webkit-scrollbar-thumb]:rounded-full
-  							[&::-webkit-scrollbar-thumb]:bg-gray-300/30
-							overflow-auto"
+							className="bg-white/10 w-full max-h-118 rounded-lg mt-3 custom-scroll overflow-auto"
 						>
 							{Array.from({ length: 10 }).map((_, i) => (
 								<div

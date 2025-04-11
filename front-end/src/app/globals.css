@@ -19,6 +19,7 @@
 	--color-isOnline: #f2a900;
 	--color-br-image: rgba(255, 255, 255, 0.32);
 	--color-card: rgba(255, 255, 255, 0.04);
+	--color-chat: rgba(255, 255, 255, 0.03);
 	--color-br-card: rgba(255, 255, 255, 0.06);
 	--color-bbg: rgba(255, 255, 255, 0.06);
 	--color-bg: rgba(255, 255, 255, 0.08);
@@ -62,4 +63,16 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .animate-font {
 	transition: font-size 0.3s ease;
+}
+
+.custom-scroll::-webkit-scrollbar {
+	width: 0.5rem;
+}
+.custom-scroll::-webkit-scrollbar-track {
+	border-radius: 9999px;
+	background: none;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+	border-radius: 9999px;
+	background: rgba(209, 213, 219, 0.3);
 }

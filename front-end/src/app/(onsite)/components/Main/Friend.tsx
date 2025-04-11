@@ -15,10 +15,10 @@ export default function Friend({
 		<div
 			className="flex justify-between bg-card border-2 border-br-card rounded-xl
 				hover:bg-hbg hover:border-hbbg hover:scale-101 transition-transform duration-200
-				p-3 items-center overflow-hidden hover:cursor-pointer"
+				p-2 items-center overflow-hidden hover:cursor-pointer"
 		>
 			{/* Profile Image */}
-			<div className="ml-1 flex w-[55px] h-[55px] rounded-full justify-center">
+			<div className="ml-1 flex w-[50px] h-[50px] rounded-full justify-center">
 				<Image
 					className="h-full w-full object-cover rounded-full ring-fr-image ring-2"
 					src={img}
