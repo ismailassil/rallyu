@@ -5,9 +5,10 @@ import { ArrowLeft } from "@phosphor-icons/react";
 
 interface MessageSectionProps {
 	showbox: boolean;
-	setShowbox: (showbox: boolean) => void;
+	setShowbox: (value: boolean) => void;
 	isWidth: boolean;
 	userMessage: boolean;
+	setSelectedFriend: (value: number | null) => void;
 }
 
 export default function MessageSection({
@@ -15,6 +16,7 @@ export default function MessageSection({
 	setShowbox,
 	isWidth,
 	userMessage,
+	setSelectedFriend,
 }: MessageSectionProps) {
 	return (
 		<section
@@ -30,7 +32,10 @@ export default function MessageSection({
 								className="block lg:hidden aspect-square hover:cursor-pointer hover:fill-accent"
 								onClick={(e) => {
 									e.preventDefault();
-									if (isWidth) setShowbox(false);
+									if (isWidth) {
+										setShowbox(false);
+										setSelectedFriend(null);
+									}
 								}}
 							/>
 							<div className="flex w-[40px] h-[40px] lg:w-[50px] lg:h-[50px] rounded-full justify-center aspect-square items-center">
@@ -103,10 +108,12 @@ export default function MessageSection({
 							alt="Thinking"
 							className="rounded-md mb-5"
 						/>
-						<h2 className="text-lg">👋 Welcome to Chat!</h2>
-						<p className="text-md text-gray-400">
-							Select a user from the sidebar to start chatting.
-						</p>
+						<div className="w-full text-center">
+							<h2 className="text-lg">👋 Welcome to Chat!</h2>
+							<p className="text-md text-gray-400">
+								Select a user from the sidebar to start chatting.
+							</p>
+						</div>
 					</div>
 				</>
 			)}

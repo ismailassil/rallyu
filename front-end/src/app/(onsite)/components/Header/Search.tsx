@@ -1,6 +1,7 @@
 import lora from "@/app/fonts/lora";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 
 interface SearchProps {
 	setIsNotif: (value: boolean) => void;
@@ -83,13 +84,19 @@ export default function Search({
 				</div>
 			</div>
 			{isSearch && (
-				<div
+				<motion.div
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					transition={{ duration: 0.2, ease: "easeInOut" }}
 					className="fixed inset-0 z-50 flex
 						pt-10 pb-5 pl-3 pr-3 md:p-20 md:10 lg:p-40 lg:pb-20
 						w-full flex-col items-center backdrop-blur-2xl bg-black/20"
 				>
 					<div className="w-[100%] lg:w-[80%] h-full">
-						<div ref={div1Ref} className="relative bg-white/10 rounded-lg">
+						<div
+							ref={div1Ref}
+							className="relative bg-white/10 rounded-lg border-2 border-br-card"
+						>
 							<Image
 								className="absolute left-5 top-[19px] opacity-75"
 								src="/search.svg"
@@ -101,7 +108,7 @@ export default function Search({
 							<input
 								ref={inputRef}
 								type="text"
-								className="w-full h-16 rounded-t-lg pl-16 pr-20 outline-none"
+								className="w-full h-16 rounded-md pl-16 pr-20 outline-none focus:ring-2 focus:ring-white/20"
 								autoComplete="off"
 								placeholder="Start Searching..."
 								value={search}
@@ -118,19 +125,23 @@ export default function Search({
 						</div>
 						<div
 							ref={div2Ref}
-							className="bg-white/10 w-full max-h-118 rounded-lg mt-3 custom-scroll overflow-auto"
+							className="bg-white/10 w-full min-h-90 max-h-118 h-full rounded-lg border-2 border-br-card mt-3 custom-scroll overflow-auto"
 						>
-							{Array.from({ length: 10 }).map((_, i) => (
+							{/* {Array.from({ length: 10 }).map((_, i) => (
 								<div
 									key={i}
 									className="w-full h-17 flex items-center border-b-1 border-b-br-card pl-10 hover:bg-hbg/30 hover:cursor-pointer"
 								>
 									Person
 								</div>
-							))}
+							))} */}
+							<div className="w-full h-full flex flex-col items-center justify-center gap-3">
+								<Image src="/sad.png" height={12} width={120} alt="Sad Image" />
+								<p className="text-gray-400">Help yourself...</p>
+							</div>
 						</div>
 					</div>
-				</div>
+				</motion.div>
 			)}
 		</>
 	);
