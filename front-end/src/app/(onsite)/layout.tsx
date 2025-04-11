@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import "../../globals.css";
+import "@/app/globals.css";
 import Image from "next/image";
-import Header from "../components/Header/Header";
-import SideBar from "../components/Sidebar";
+import Header from "./components/Header/Header";
+import SideBar from "./components/Sidebar";
 
 export const metadata: Metadata = {
 	title: "Rallyu",

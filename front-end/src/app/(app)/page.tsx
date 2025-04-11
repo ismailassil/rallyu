@@ -9,9 +9,21 @@ import { useState } from "react";
 // import { motion } from "framer-motion";
 
 export default function Home() {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+	const [formData, setFormData] = useState({
+		email: "",
+		password: "",
+	});
+
+	function handleInputChange(field: string, value: string) {
+		setFormData((prev) => ({ ...prev, [field]: value }));
+	}
+
 	const [error, setError] = useState("");
+
+	function handleSubmit() {
+		// API
+		setError("");
+	}
 
 	return (
 		<main className="h-[100vh] w-full pt-30 flex items-center justify-center pb-10">
@@ -47,19 +59,25 @@ export default function Home() {
 							<span className="text-white">OR</span>
 							<hr className="flex-grow border-t border-gray-300" />
 						</div>
-						<Form action="">
+						<Form
+							action=""
+							onSubmit={(e) => {
+								e.preventDefault();
+								handleSubmit();
+							}}
+						>
 							<div className="mb-[12px]">
 								<Input
 									text="Email or Username"
 									type="text"
-									unique="text"
+									unique="email"
 									src="/at.svg"
 									alt="At Logo"
 									width={19}
 									height={19}
 									placeholder="something"
-									value={email}
-									setValue={setEmail}
+									value={formData.email}
+									setValue={handleInputChange}
 								/>
 							</div>
 							<div className="mb-[12px]">
@@ -72,8 +90,8 @@ export default function Home() {
 									width={19}
 									height={19}
 									placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"
-									value={password}
-									setValue={setPassword}
+									value={formData.password}
+									setValue={handleInputChange}
 								/>
 							</div>
 							<div className="flex justify-between">

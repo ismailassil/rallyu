@@ -1,20 +1,27 @@
 import unicaOne from "@/app/fonts/unicaOne";
 import LeaderboardItem from "./LeaderBoardItem";
 import { useState } from "react";
+import useIsWidth from "../useIsWidth";
 
 export default function LeaderboardPanel() {
-	const [leaderboard, setLeaderboard] = useState(false);
+	const isWidth = useIsWidth(1024);
+	const [showbox, setShowbox] = useState(false);
 
 	return (
 		<aside
-			className={`bg-card border-2 border-br-card rounded-lg flex-1 w-full h-full max-h-[948px] ${
-				!leaderboard && "min-h-[588px]"
+			className={`bg-card border-2 border-br-card rounded-lg flex-1 w-full h-full ${
+				isWidth
+					? !showbox
+						? "min-h-[588px]"
+						: "min-h-37 max-h-37"
+					: "max-h-[948px] min-h-[588px]"
 			}`}
+			//
 		>
 			<div className="flex flex-col h-full">
 				<div
 					className="relative overflow-hidden group shrink-0"
-					onClick={() => setLeaderboard(!leaderboard)}
+					onClick={() => setShowbox(!showbox)}
 				>
 					<h1
 						className={`${unicaOne.className} text-4xl p-13 uppercase select-none`}
@@ -29,7 +36,7 @@ export default function LeaderboardPanel() {
 				</div>
 				<div
 					className={`overflow-y-auto flex-1 hide-scrollbar ${
-						leaderboard && "hidden lg:block"
+						showbox && "hidden lg:block"
 					}`}
 				>
 					<div className="flex flex-col gap-y-2 pl-4 pr-4 pb-4 overflow-auto">

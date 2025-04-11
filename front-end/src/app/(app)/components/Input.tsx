@@ -32,7 +32,7 @@ export default function Input({
 
 	return (
 		<div className="w-full">
-			<label htmlFor={type} className="block">
+			<label htmlFor={unique} className="block">
 				{text}
 			</label>
 			<div className="relative">
