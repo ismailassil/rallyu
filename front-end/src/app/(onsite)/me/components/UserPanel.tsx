@@ -1,0 +1,81 @@
+"use client";
+
+import unicaOne from "@/app/fonts/unicaOne";
+import Image from "next/image";
+
+function UserPanel() {
+	return (
+		<header
+			className="flex w-full h-full gap-7
+						items-center p-12 pl-12 overflow-hidden min-h-[350px] sm:min-h-[330px] md:min-h-[400px] max-h-[200px]
+						bg-card border-2 border-br-card rounded-lg"
+		>
+			<div className="flex-5 flex flex-col h-full justify-between items-center w-full">
+				<div className="flex-1 flex items-center w-full h-full">
+					<div className="flex-5 h-full py-5">
+						<h1 className={`text-5xl ${unicaOne.className}`}>
+							{new Date().getHours() < 17 ? "Good Morning" : "Good Evening"},
+							<span className="text-accent font-semibold">
+								{" "}
+								<br />
+								ISMAIL ASSIL
+							</span>
+						</h1>
+						<p className="pt-5 text-gray-500">
+							Step into a World of Classy Gaming
+						</p>
+					</div>
+					<div className="flex-3 h-full flex justify-center items-center">
+						<div className="flex h-[80%] flex-1 justify-center aspect-square items-center ring-white/10 ring-5 rounded-full">
+							<Image
+								className={`h-full w-full object-cover rounded-full`}
+								src={"/image.png"}
+								width={100}
+								height={100}
+								quality={100}
+								alt="Profile Image"
+								// data-tooltip-id={myTooltipId}
+								// data-tooltip-content={myName}
+								// data-tooltip-place="right"
+							/>
+							{/* <Tooltip id={myTooltipId} /> */}
+						</div>
+					</div>
+				</div>
+				<div className="h-[16%] w-full flex flex-col justify-end">
+					<div>
+						<div className="h-full flex flex-col gap-1">
+							<div className="flex justify-between">
+								<p className="font-semibold">Level 10</p>
+								<p className="text-gray-600">60%</p>
+							</div>
+							<div className="w-full h-full">
+								<div className="w-full bg-card h-2 rounded-full">
+									<div className="bg-accent w-[60%] h-2 rounded-full"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div
+				className={`w-[25%] h-full flex flex-col gap-4 uppercase ${unicaOne.className}`}
+			>
+				<div className="flex-1 bg-inner-card border-2 border-br-card rounded-2xl flex p-4 justify-between px-4 items-end">
+					<p className="text-2xl">Wins</p>
+					<p className="text-4xl">50</p>
+				</div>
+				<div className="flex-1 bg-inner-card border-2 border-br-card rounded-2xl flex p-4 justify-between px-4 items-end">
+					<p className="text-2xl">Defeats</p>
+					<p className="text-4xl">9</p>
+				</div>
+				<div className="flex-1 bg-inner-card border-2 border-br-card rounded-2xl flex p-4 justify-between px-4 items-end">
+					<p className="text-2xl">Draws</p>
+					<p className="text-4xl">6</p>
+				</div>
+			</div>
+		</header>
+	);
+}
+
+export default UserPanel;

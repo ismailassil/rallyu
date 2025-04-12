@@ -2,22 +2,12 @@ import { Fragment } from "react";
 import Message from "./Message";
 import Image from "next/image";
 import { ArrowLeft } from "@phosphor-icons/react";
+import { useBox } from "../contexts/boxContext";
 
-interface MessageSectionProps {
-	showbox: boolean;
-	setShowbox: (value: boolean) => void;
-	isWidth: boolean;
-	userMessage: boolean;
-	setSelectedFriend: (value: number | null) => void;
-}
+export default function MessageSection() {
+	const { showbox, setShowbox, isWidth, userMessage, setSelectedFriend } =
+		useBox();
 
-export default function MessageSection({
-	showbox,
-	setShowbox,
-	isWidth,
-	userMessage,
-	setSelectedFriend,
-}: MessageSectionProps) {
 	return (
 		<section
 			className={`${isWidth && (showbox ? "block" : "hidden")} flex-5 h-full w-full bg-card border-2 border-br-card rounded-lg

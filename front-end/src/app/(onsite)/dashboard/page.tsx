@@ -14,12 +14,12 @@ export default function Dashboard() {
 			transition={{ duration: 1, delay: 0.5 }}
 			className="h-[100vh] pt-30 pl-6 sm:pl-30 pr-6 pb-24 sm:pb-6"
 		>
-			<div className="h-full w-full rounded-md flex gap-6">
-				<article className="h-full w-full flex flex-col gap-6 flex-5">
+			<div className="h-full w-full rounded-lg flex gap-6">
+				<article className="h-full w-full flex flex-col gap-4 flex-5">
 					<UserInfo />
-					<section className="flex flex-col lg:flex-row space-x-6 space-y-6 lg:space-y-0 flex-1 overflow-scroll overflow-x-hidden hide-scrollbar">
+					<section className="flex flex-col lg:flex-row space-x-4 space-y-4 lg:space-y-0 flex-1 overflow-scroll overflow-x-hidden hide-scrollbar">
 						<LeaderboardPanel />
-						<div className="flex flex-col gap-6 h-full flex-1">
+						<div className="flex flex-col gap-4 h-full flex-1">
 							<GameCard
 								isBackground={false}
 								src={"/tourn_cup.png"}
