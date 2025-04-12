@@ -1,28 +1,25 @@
+import { useBox } from "../contexts/boxContext";
 import ChatFriend from "./ChatFriend";
 import Image from "next/image";
 
-interface FriendsListProps {
-	userMessage: boolean;
-	setUserMessage: (value: boolean) => void;
-	isWidth: boolean;
-	showbox: boolean;
-	setShowbox: (value: boolean) => void;
-	selectedFriend: number | null;
-	setSelectedFriend: (value: number | null) => void;
-}
+export default function FriendsList() {
+	const {
+		showbox,
+		setShowbox,
+		isWidth,
+		userMessage,
+		setUserMessage,
+		selectedFriend,
+		setSelectedFriend,
+	} = useBox();
 
-export default function FriendsList({
-	showbox,
-	setShowbox,
-	isWidth,
-	userMessage,
-	setUserMessage,
-	selectedFriend,
-	setSelectedFriend,
-}: FriendsListProps) {
 	return (
 		<section
-			className={`${isWidth && showbox ? "hidden" : "max-w-full lg:max-w-90 flex flex-2"}`}
+			className={`${
+				isWidth && showbox
+					? "hidden"
+					: "max-w-full lg:max-w-[40%] lg:min-w-[35%] xl:lg:max-w-[30%] xl:lg:min-w-[20%] flex flex-2"
+			}`}
 		>
 			<div className="w-full flex flex-col gap-5">
 				<h1 className="text-4xl lg:text-5xl py-10 px-5">Chat</h1>

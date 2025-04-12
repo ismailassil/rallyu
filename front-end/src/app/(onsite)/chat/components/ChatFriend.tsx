@@ -22,7 +22,7 @@ export default function ChatFriend({
 			onClick={onClick}
 		>
 			<div className="flex w-full gap-3 items-center">
-				<div className="flex w-[40px] h-[40px] lg:w-[50px] lg:h-[50px] rounded-full justify-center aspect-square">
+				<div className="flex w-[40px] h-[40px] lg:w-[45px] lg:h-[45px] rounded-full justify-center aspect-square">
 					<Image
 						className="h-full w-full object-cover rounded-full ring-fr-image ring-2"
 						src="/image_1.jpg"
@@ -33,13 +33,13 @@ export default function ChatFriend({
 				</div>
 				<div className="flex flex-col w-full overflow-hidden">
 					<div className="flex justify-between items-center w-full">
-						<p className="truncate text-sm lg:text-md">{fullname}</p>
-						<p className="text-gray-400 shrink-0 ml-2 text-sm lg:text-md">
-							12/29/2006
+						<p className="truncate text-md lg:text-lg">{fullname}</p>
+						<p className="text-gray-400 truncate ml-2 text-sm lg:text-md text-wrap">
+							01/01/1999
 						</p>
 					</div>
 					<div className="flex justify-between items-center w-full">
-						<p className="font-light text-gray-400 text-md truncate text-sm lg:text-md">
+						<p className="font-light text-gray-400 text-sm truncate text-md lg:text-[16px]">
 							{mmsg}
 						</p>
 						<p className="h-2 w-2 lg:h-3 lg:w-3 bg-main rounded-full inline-block shrink-0 ml-2"></p>

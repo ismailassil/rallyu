@@ -18,7 +18,13 @@
 	--color-notwhite: #d9d9d9;
 	--color-isOnline: #f2a900;
 	--color-br-image: rgba(255, 255, 255, 0.32);
+	--color-graph-bright-cyan: #00faff;
+	--color-graph-vivid-yellow: #ffe600;
+	--color-graph-fill: #78d369;
+	--color-border-gray-thick: rgba(250, 233, 233, 0.28);
+	--color-gray-thick: rgba(45, 45, 45, 0.65);
 	--color-card: rgba(255, 255, 255, 0.04);
+	--color-inner-card: rgba(255, 255, 255, 0.05);
 	--color-chat: rgba(255, 255, 255, 0.03);
 	--color-br-card: rgba(255, 255, 255, 0.06);
 	--color-bbg: rgba(255, 255, 255, 0.06);

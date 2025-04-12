@@ -12,22 +12,40 @@ export default function SideBar() {
 
 	const Links = useMemo(
 		() => [
-			{ id: 0, title: "Home", src: "/Home.svg", path: "/dashboard", alt: "" },
-			{ id: 1, title: "Game", src: "/Game.svg", path: "/game", alt: "" },
+			{
+				id: 0,
+				title: "Home",
+				src: "/NavBar/Home.svg",
+				path: "/dashboard",
+				alt: "Dashboard Icon",
+			},
+			{
+				id: 1,
+				title: "Game",
+				src: "/NavBar/Game.svg",
+				path: "/game",
+				alt: "Game Icon",
+			},
 			{
 				id: 2,
 				title: "Tournament",
-				src: "/Tournament.svg",
+				src: "/NavBar/Tournament.svg",
 				path: "/tournament",
-				alt: "",
+				alt: "Tournament Icon",
 			},
-			{ id: 3, title: "Chat", src: "/Chat.svg", path: "/chat", alt: "" },
+			{
+				id: 3,
+				title: "Chat",
+				src: "/NavBar/Chat.svg",
+				path: "/chat",
+				alt: "Chat Icon",
+			},
 			{
 				id: 4,
 				title: "Settings",
-				src: "/Settings.svg",
+				src: "/NavBar/Settings.svg",
 				path: "/settings",
-				alt: "",
+				alt: "Settings Icon",
 			},
 		],
 		[]
@@ -45,8 +63,8 @@ export default function SideBar() {
 			transition={{ duration: 1, delay: 0.5 }}
 			className="fixed flex flex-row justify-center items-center gap-10 w-full
 				bottom-0 left-0 h-22 overflow-clip
-				sm:ml-6 sm:w-18 sm:mt-30 sm:flex-col sm:h-[calc(100vh-148px)] sm:gap-16
-				sm:bottom-auto sm:left-auto sm:transform-none sm:translate-x-none sm:rounded-md
+				sm:ml-6 sm:w-20 sm:mt-30 sm:flex-col sm:h-[calc(100vh-143px)] sm:gap-16
+				sm:bottom-auto sm:left-auto sm:transform-none sm:translate-x-none sm:rounded-lg
 				bg-card sm:border-2 border-t-2 border-br-card"
 		>
 			{Links.map((link) => (
@@ -55,7 +73,7 @@ export default function SideBar() {
 					key={link.id}
 					className={`relative hover:cursor-pointer
 					transition-transform duration-200
-					w-[40px] h-[40px] sm:w-[30px] sm:h-[30px] flex items-center justify-center
+					w-[40px] h-[40px] sm:w-[33px] sm:h-[33px] flex items-center justify-center
 					${link.id === activeButton ? "hover:scale-105" : "hover:scale-120"}
 					`}
 					onClick={() => {
@@ -68,7 +86,7 @@ export default function SideBar() {
 						width={40}
 						height={40}
 						alt={link.alt}
-						className={`${activeButton === link.id && "scale-110"}`}
+						className={`${activeButton === link.id && "scale-120"}`}
 					/>
 					<div
 						className={`absolute rounded-md

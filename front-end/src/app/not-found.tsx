@@ -24,7 +24,8 @@ export default function Custom404() {
 				</div>
 				<div
 					className="mt-10 py-3 px-6 bg-card border-2 border-white/20
-						hover:border-white/40 rounded-full"
+						hover:border-white/40 rounded-full hover:cursor-pointer
+						hover:scale-102 duration-300 transition-transform"
 					onClick={(e) => {
 						e.preventDefault();
 						router.back();
