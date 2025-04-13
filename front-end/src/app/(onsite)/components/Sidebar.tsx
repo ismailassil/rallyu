@@ -8,7 +8,7 @@ import { usePathname, useRouter } from "next/navigation";
 export default function SideBar() {
 	const pathname = usePathname();
 	const router = useRouter();
-	const [activeButton, setActiveButton] = useState<number>(0);
+	const [activeButton, setActiveButton] = useState<number>(-1);
 
 	const Links = useMemo(
 		() => [
@@ -73,7 +73,7 @@ export default function SideBar() {
 					key={link.id}
 					className={`relative hover:cursor-pointer
 					transition-transform duration-200
-					w-[40px] h-[40px] sm:w-[33px] sm:h-[33px] flex items-center justify-center
+					w-[33px] h-[33px] sm:w-[33px] sm:h-[33px] flex items-center justify-center
 					${link.id === activeButton ? "hover:scale-105" : "hover:scale-120"}
 					`}
 					onClick={() => {

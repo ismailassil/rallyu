@@ -5,7 +5,7 @@ export default function LandingHeader() {
 	return (
 		<header
 			className="flex fixed top-0 left-0 w-full h-30
-				items-center justify-center sm:justify-normal p-6 pl-16 pr-16"
+				items-center justify-center md:justify-normal p-6 pl-16 pr-16"
 		>
 			<Link href="/">
 				<Image

@@ -6,10 +6,10 @@ export default function UserInfo() {
 		<header
 			className="flex sm:grid sm:grid-rows-[0.5fr_1fr] md:grid-rows-none
 				sm:grid-cols-none md:grid-cols-[1fr_0.5fr] gap-10 w-full h-full
-				items-center p-13 overflow-hidden min-h-[350px] sm:min-h-[330px] md:min-h-[400px] max-h-[200px]
+				items-center p-13 overflow-hidden min-h-[360px] sm:min-h-[330px] md:min-h-[400px] max-h-[200px]
 				bg-card border-2 border-br-card rounded-lg"
 		>
-			<div className="flex flex-col h-full py-5 justify-between">
+			<div className="flex flex-1 flex-col h-full py-5 justify-between">
 				<div>
 					<div className="relative group select-none">
 						<h1 className={`${unicaOne.className} text-4xl mb-10`}>

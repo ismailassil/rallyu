@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface ProfileProps {
 	setIsNotif: (value: boolean) => void;
@@ -15,6 +16,8 @@ export default function Profile({
 	isProfile,
 	profileRef,
 }: ProfileProps) {
+	const router = useRouter();
+
 	return (
 		<div className="relative" ref={profileRef}>
 			<button
@@ -59,7 +62,14 @@ export default function Profile({
 			</button>
 			{isProfile && (
 				<div className="absolute right-0 z-10 top-18 w-50 divide-y divide-bbg origin-top-right rounded-lg bg-card border-2 border-br-card backdrop-blur-xs">
-					<div className="mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer hover:bg-hbbg">
+					<div
+						onClick={(e) => {
+							e.preventDefault();
+							setIsProfile(!isProfile);
+							router.push("/me");
+						}}
+						className="mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer hover:bg-hbbg"
+					>
 						<Image
 							src="/profile-btn.svg"
 							alt="Profile Icon"

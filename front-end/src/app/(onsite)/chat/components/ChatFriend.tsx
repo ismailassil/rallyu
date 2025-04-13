@@ -33,13 +33,13 @@ export default function ChatFriend({
 				</div>
 				<div className="flex flex-col w-full overflow-hidden">
 					<div className="flex justify-between items-center w-full">
-						<p className="truncate text-md lg:text-lg">{fullname}</p>
-						<p className="text-gray-400 truncate ml-2 text-sm lg:text-md text-wrap">
+						<p className="truncate text-base lg:text-lg">{fullname}</p>
+						<p className="text-gray-400 truncate ml-2 text-sm lg:text-base text-wrap">
 							01/01/1999
 						</p>
 					</div>
 					<div className="flex justify-between items-center w-full">
-						<p className="font-light text-gray-400 text-sm truncate text-md lg:text-[16px]">
+						<p className="font-light text-gray-400 truncate text-sm lg:text-[16px]">
 							{mmsg}
 						</p>
 						<p className="h-2 w-2 lg:h-3 lg:w-3 bg-main rounded-full inline-block shrink-0 ml-2"></p>
