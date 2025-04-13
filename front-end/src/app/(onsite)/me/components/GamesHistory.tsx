@@ -6,7 +6,7 @@ import Game from "./Game";
 export default function GamesHistory() {
 	return (
 		<aside
-			className={`bg-card border-2 border-br-card rounded-lg flex-[2.5] w-full h-full min-w-[30%]`}
+			className={`bg-card border-2 border-br-card rounded-lg flex-[2.5] w-full h-full min-w-[30%] min-h-130 max-h-220`}
 		>
 			<div className="flex flex-col h-full">
 				<div className="relative overflow-hidden group shrink-0">

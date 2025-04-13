@@ -41,7 +41,7 @@ export default function MessageSection() {
 								<h2 className="text-lg lg:text-xl">
 									<span className="hover:cursor-pointer">Azouz Nabil</span>
 								</h2>
-								<p className="text-sm lg:text-md text-gray-400">
+								<p className="text-sm lg:text-base text-gray-400">
 									Last seen at 22:40
 								</p>
 							</div>
@@ -100,7 +100,7 @@ export default function MessageSection() {
 						/>
 						<div className="w-full text-center">
 							<h2 className="text-lg">👋 Welcome to Chat!</h2>
-							<p className="text-md text-gray-400">
+							<p className="text-base text-gray-400">
 								Select a user from the sidebar to start chatting.
 							</p>
 						</div>

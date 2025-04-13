@@ -26,7 +26,7 @@ function Game({
 	// const opponentTooltipId = opponent + crypto.randomUUID();
 
 	return (
-		<div className="flex justify-between px-5 py-6 items-center hover:cursor-cell bg-card border-2 border-br-card rounded-2xl relative overflow-hidden hover:scale-101 transition-transform duration-400 hover:bg-hbg hover:border-hbbg">
+		<div className="flex justify-between px-5 py-6 items-center bg-card border-2 border-br-card rounded-2xl relative overflow-hidden hover:scale-101 transition-transform duration-400 hover:bg-hbg hover:border-hbbg">
 			<div
 				className={`absolute -top-1 left-1/2 -translate-x-1/2 w-19 h-8 pb-1 flex justify-center items-end ${matchResult === 0 ? "bg-gray-600" : matchResult >= 1 ? "bg-green-600" : "bg-red-600"} rounded-b-lg ring-2 ring-border-gray-thick/50`}
 			>

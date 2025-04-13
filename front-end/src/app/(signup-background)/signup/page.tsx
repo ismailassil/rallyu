@@ -89,15 +89,17 @@ export default function SignUp() {
 
 	return (
 		<main className="h-[100vh] w-full pt-30 flex pb-10">
-			<div className="w-full h-full flex overflow-auto">
-				<div className="w-[650px] h-full pt-20 pb-20 pl-10 pr-10 flex items-start sm:items-center justify-center">
+			<div className="w-full h-full flex overflow-auto justify-center">
+				<div className="w-[650px] h-full pt-20 pb-20 pl-10 pr-10 flex items-start lg:items-center justify-center">
 					<div className="flex-1">
 						<h1
-							className={`${ibm.className} text-[36px] font-bold flex justify-left`}
+							className={`${ibm.className} text-[36px] font-bold flex justify-left md:justify-center`}
 						>
 							Create an account
 						</h1>
-						<p className={`flex justify-left text-[18px] mb-[47px]`}>
+						<p
+							className={`flex justify-left text-[18px] mb-[47px] md:justify-center`}
+						>
 							Please enter your details to create a new account
 						</p>
 						<div className="flex flex-col sm:flex-row justify-center mb-4 gap-[18px]">
@@ -128,7 +130,7 @@ export default function SignUp() {
 							}}
 							action=""
 						>
-							<div className="mb-[12px] flex gap-3">
+							<div className="mb-[12px] flex flex-col sm:flex-row gap-3">
 								<Input
 									text="First Name"
 									type="text"
@@ -160,7 +162,7 @@ export default function SignUp() {
 									type="text"
 									unique="username"
 									src="/user.svg"
-									alt="mail logo"
+									alt="User logo"
 									width={19}
 									height={19}
 									placeholder="jorgebosh"

@@ -16,7 +16,7 @@ const data = [
 
 export default function Performance() {
 	return (
-		<div className="flex flex-col gap-4 h-full flex-3 w-full">
+		<div className="flex flex-col gap-4 h-full flex-3 w-full min-h-130 max-h-220">
 			<section
 				className={`bg-card border-2 border-br-card rounded-lg flex-1 w-full h-full`}
 			>
@@ -42,10 +42,10 @@ export default function Performance() {
 									bg-card border-2 border-br-card rounded-2xl transition-transform duration-200 hover:scale-101
 									overflow-auto min-h-22"
 							>
-								<p className="text-2xl ">Total XP</p>
+								<p className="text-xl lg:text-2xl ">Total XP</p>
 								<div className="flex gap-2 items-end">
-									<p className="text-5xl">54 895</p>
-									<p className="text-2xl">XP</p>
+									<p className="text-4xl lg:text-5xl">54 895</p>
+									<p className="text-xl lg:text-2xl">XP</p>
 								</div>
 							</div>
 							<div className="flex gap-4 w-full text-center">
@@ -55,8 +55,8 @@ export default function Performance() {
 											overflow-auto
 										"
 								>
-									<p className="text-2xl">Global Rank</p>
-									<p className="text-5xl">3</p>
+									<p className="text-xl lg:text-2xl">Global Rank</p>
+									<p className="text-4xl lg:text-5xl">3</p>
 								</div>
 								<div
 									className="flex-1 bg-card border-2 border-br-card rounded-2xl
@@ -64,8 +64,8 @@ export default function Performance() {
 											max-w-[50%] overflow-auto
 										"
 								>
-									<p className="text-2xl">Games Played</p>
-									<p className="text-5xl truncate">65</p>
+									<p className="text-xl lg:text-2xl">Games Played</p>
+									<p className="text-4xl lg:text-5xl truncate">65</p>
 								</div>
 							</div>
 							<div className="flex gap-4 w-full text-center ">
@@ -75,8 +75,8 @@ export default function Performance() {
 											overflow-auto
 										"
 								>
-									<p className="text-2xl">Ping Pong Games</p>
-									<p className="text-5xl">49</p>
+									<p className="text-xl lg:text-2xl">Ping Pong Games</p>
+									<p className="text-4xl lg:text-5xl">49</p>
 								</div>
 								<div
 									className="flex-1 bg-card border-2 border-br-card rounded-2xl
@@ -84,16 +84,16 @@ export default function Performance() {
 											overflow-auto
 										"
 								>
-									<p className="text-2xl">TIC TAC TOE Games</p>
-									<p className="text-5xl">16</p>
+									<p className="text-xl lg:text-2xl">TIC TAC TOE Games</p>
+									<p className="text-4xl lg:text-5xl">16</p>
 								</div>
 							</div>
 							<div
 								className="flex-1 pt-5 flex flex-col items-center jusitfy-between gap-3
 										bg-card border-2 border-br-card rounded-2xl
-										min-h-70 max-h-80 w-full overflow-hidden"
+										min-h-70 max-h-80 w-full overflow-hidden hover:scale-101 transition-transform duration-200"
 							>
-								<p className="text-2xl">Time Spent on Platform</p>
+								<p className="text-xl lg:text-2xl">Time Spent on Platform</p>
 								<div className="relative h-full w-full">
 									<Chart data={data} />
 								</div>

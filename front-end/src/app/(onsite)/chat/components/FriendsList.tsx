@@ -22,7 +22,7 @@ export default function FriendsList() {
 			}`}
 		>
 			<div className="w-full flex flex-col gap-5">
-				<h1 className="text-4xl lg:text-5xl py-10 px-5">Chat</h1>
+				<h1 className="text-3xl lg:text-4xl py-10 px-5 font-semibold">Chat</h1>
 				<div className="relative w-full">
 					<Image
 						className="absolute left-4 top-3"
