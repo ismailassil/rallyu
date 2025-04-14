@@ -1,6 +1,5 @@
 "use client";
 
-import unicaOne from "@/app/fonts/unicaOne";
 import Image from "next/image";
 
 function ProfileHeader({ fullname, img }: { fullname: string; img: string }) {
@@ -22,11 +21,7 @@ function ProfileHeader({ fullname, img }: { fullname: string; img: string }) {
 						/>
 					</div>
 					<div className="w-full h-full flex flex-col justify-center overflow-hidden truncate text-wrap">
-						<h1
-							className={`${unicaOne.className} text-3xl lg:text-4xl font-semibold`}
-						>
-							{fullname}
-						</h1>
+						<h1 className={`text-3xl lg:text-4xl font-semibold`}>{fullname}</h1>
 						<p className="text-xs lg:text-sm text-gray-300">
 							Manage your details and personal preferences here
 						</p>

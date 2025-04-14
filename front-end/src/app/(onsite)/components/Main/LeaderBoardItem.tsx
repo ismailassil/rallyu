@@ -17,10 +17,14 @@ export default function LeaderboardItem({
 	position,
 }: LeaderboardProps) {
 	return (
-		<div className="flex group bg-card border-2 hover:cursor-pointer border-br-card rounded-xl hover:bg-hbg hover:border-hbbg hover:scale-101 transition-transform duration-500 p-3 items-center overflow-hidden">
+		<div
+			className="flex group bg-card border-2 hover:cursor-pointer border-br-card
+				rounded-xl hover:bg-hbg hover:border-hbbg hover:scale-101 transition-transform
+				duration-500 p-3 items-center overflow-hidden"
+		>
 			{/* Rank Badge */}
 			<div
-				className="flex w-[40px] h-[40px]
+				className="flex w-[38px] h-[38px] lg:w-[40px] lg:h-[40px]
 					rounded-full  text-white font-bold text-xl group-hover:text-2xl
 					justify-center items-center"
 			>
@@ -37,7 +41,7 @@ export default function LeaderboardItem({
 			</div>
 
 			{/* Profile Image */}
-			<div className="ml-3 flex w-[55px] h-[55px] rounded-full justify-center aspect-square">
+			<div className="ml-3 flex w-[45px] h-[45px] lg:w-[55px] lg:h-[55px] rounded-full justify-center aspect-square">
 				<Image
 					className="h-full w-full object-cover rounded-full ring-fr-image ring-2"
 					src={img}
@@ -49,8 +53,10 @@ export default function LeaderboardItem({
 
 			{/* Middle Content */}
 			<div className="ml-5 flex-grow">
-				<h2 className="text-xl capitalize text-wrap">{username}</h2>
-				<p className="text-gray-500">
+				<h2 className="text-base lg:text-lg capitalize text-wrap">
+					{username}
+				</h2>
+				<p className="text-gray-500 text-sm lg:text-base">
 					Score: <span className="text-yellow-400 font-semibold">{score}</span>
 				</p>
 			</div>

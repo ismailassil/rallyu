@@ -45,7 +45,7 @@ export default function FriendsList() {
 					/>
 				</div>
 
-				<div className="flex flex-col gap-1 h-full overflow-auto">
+				<div className="flex flex-col gap-1 h-full overflow-auto custom-scroll">
 					{Array.from({ length: 100 }).map((_, i) => (
 						<ChatFriend
 							key={i}

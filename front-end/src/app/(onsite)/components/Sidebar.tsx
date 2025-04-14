@@ -52,8 +52,8 @@ export default function SideBar() {
 	);
 
 	useEffect(() => {
-		const currentLink = Links.find((link) => link.path === pathname);
-		if (currentLink) setActiveButton(currentLink.id);
+		const currentLink = Links.find((link) => pathname.startsWith(link.path));
+		setActiveButton(currentLink ? currentLink.id : -1);
 	}, [Links, pathname]);
 
 	return (

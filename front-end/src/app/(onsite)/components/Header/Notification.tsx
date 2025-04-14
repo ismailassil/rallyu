@@ -1,4 +1,7 @@
 import Image from "next/image";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import InnerNotification from "./Notification/InnerNotification";
 
 interface NotificationProps {
 	setIsNotif: (value: boolean) => void;
@@ -15,6 +18,9 @@ export default function Notification({
 	isNotif,
 	notificationRef,
 }: NotificationProps) {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const [newNotification, setNewNotification] = useState<boolean>(false);
+
 	return (
 		<div className="relative" ref={notificationRef}>
 			<button
@@ -44,25 +50,41 @@ export default function Notification({
 					className={`${isNotif && "animate-pulse"}`}
 				/>
 			</button>
-			{isNotif && (
-				<div
-					className="absolute right-0 z-10 max-h-[348px] top-18 w-70 divide-y divide-bbg
-							origin-top-right rounded-lg bg-card border-2 border-br-card
-							backdrop-blur-lg overflow-scroll"
-				>
-					<div className="px-7 py-4 w-full flex sticky top-0 z-20 bg-card/70 backdrop-blur-3xl text-start justify-between items-center">
-						<p>Notification</p>
-						<div className="w-1 h-1 p-4 text-center flex items-center justify-center rounded-full bg-hbbg">
-							0
-						</div>
-					</div>
-					{Array.from({ length: 1 }).map((_, i) => (
-						<p key={i} className="px-7 py-4 w-full flex text-start h-14">
-							Nothing &#129488;
-						</p>
-					))}
-				</div>
+			{newNotification && (
+				<div className="absolute right-4 top-4 h-2 w-2 bg-red-500 rounded-full animate-ping ring-1 ring-red-400"></div>
 			)}
+			<AnimatePresence>
+				{isNotif && (
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{ type: "spring", stiffness: 60, duration: 0.1 }}
+						className="absolute flex flex-col right-0 z-10 max-h-[348px]
+							top-18 w-70 
+							origin-top-right rounded-lg bg-card border-2 border-br-card
+							backdrop-blur-xl overflow-hidden"
+					>
+						<div className="px-4 py-3 w-full flex sticky top-0 z-20 bg-card/70 backdrop-blur-3xl text-start justify-between items-center">
+							<p>Notification</p>
+							<div
+								className="w-1 h-1 p-3 text-center flex items-center justify-center text-sm
+									rounded-full bg-hbbg"
+							>
+								0
+							</div>
+						</div>
+						<div className="flex-1 overflow-y-scroll custom-scroll divide-y-1 divide-bg">
+							{Array.from({ length: 12 }).map((_, i) => (
+								// <p key={i} className="px-7 py-4 w-full flex text-start h-14">
+								// 	Nothing &#129488;
+								// </p>
+								<InnerNotification key={i} name={"Ismail Assil"} message={"Hello Ismail! How are you doing"} type={"game"} />
+							))}
+						</div>
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</div>
 	);
 }

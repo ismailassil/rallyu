@@ -11,7 +11,7 @@ export default function MessageSection() {
 	return (
 		<section
 			className={`${isWidth && (showbox ? "block" : "hidden")} flex-5 h-full w-full bg-card border-2 border-br-card rounded-lg
-		divide-white/15 divide-y-1 divide flex flex-col justify-between`}
+						divide-white/15 divide-y-1 divide flex flex-col justify-between`}
 		>
 			{userMessage ? (
 				<>
@@ -28,7 +28,7 @@ export default function MessageSection() {
 									}
 								}}
 							/>
-							<div className="flex w-[40px] h-[40px] lg:w-[50px] lg:h-[50px] rounded-full justify-center aspect-square items-center">
+							<div className="flex w-[40px] h-[40px] lg:w-[43px] lg:h-[43px] rounded-full justify-center aspect-square items-center">
 								<Image
 									className="h-full w-full object-cover rounded-full ring-fr-image ring-2"
 									src="/image_1.jpg"
@@ -38,19 +38,21 @@ export default function MessageSection() {
 								/>
 							</div>
 							<div className="flex flex-col w-full">
-								<h2 className="text-lg lg:text-xl">
+								<h2 className="text-lg lg:text-lg">
 									<span className="hover:cursor-pointer">Azouz Nabil</span>
 								</h2>
-								<p className="text-sm lg:text-base text-gray-400">
-									Last seen at 22:40
-								</p>
+								<p className="text-sm text-gray-400">Last seen at 22:40</p>
 							</div>
-							<button className="w-25 h-[50%] rounded-lg bg-bbg hover:bg-hbbg hover:ring-2 hover:ring-white/20 hover:cursor-pointer">
+							<button
+								className="w-25 h-[50%] rounded-lg bg-bbg hover:bg-white/2
+											hover:ring-2 hover:ring-white/10 hover:cursor-pointer
+											hover:scale-101 transition-all duration-300"
+							>
 								Block
 							</button>
 						</div>
 					</div>
-					<div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col-reverse gap-2">
+					<div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col-reverse gap-2 custom-scroll">
 						{Array.from({ length: 20 }).map((_, i) => (
 							<Fragment key={i}>
 								<Message
