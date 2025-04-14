@@ -12,11 +12,10 @@ export default function LeaderboardPanel() {
 			className={`bg-card border-2 border-br-card rounded-lg flex-1 w-full h-full ${
 				isWidth
 					? !showbox
-						? "min-h-[588px]"
-						: "min-h-37 max-h-37"
+						? "min-h-[588px] cursor-pointer"
+						: "min-h-37 max-h-37 cursor-pointer"
 					: "max-h-[948px] min-h-[588px]"
 			}`}
-			//
 		>
 			<div className="flex flex-col h-full">
 				<div
@@ -35,11 +34,11 @@ export default function LeaderboardPanel() {
 					></div>
 				</div>
 				<div
-					className={`overflow-y-auto flex-1 hide-scrollbar ${
+					className={`overflow-y-auto flex-1 custom-scroll ${
 						showbox && "hidden lg:block"
 					}`}
 				>
-					<div className="flex flex-col gap-y-2 pl-4 pr-4 pb-4 overflow-auto">
+					<div className="flex flex-col gap-y-2 pl-4 pr-4 pb-4">
 						{extendedLeaderboard.map((player, i) => (
 							<LeaderboardItem
 								position={i}

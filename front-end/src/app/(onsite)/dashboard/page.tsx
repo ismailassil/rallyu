@@ -16,8 +16,8 @@ export default function Dashboard() {
 		>
 			<div className="h-full w-full rounded-lg flex gap-6">
 				<article className="h-full w-full flex flex-col gap-4 flex-5">
-					<UserInfo />
-					<section className="flex flex-col lg:flex-row space-x-4 space-y-4 lg:space-y-0 flex-1 overflow-scroll overflow-x-hidden hide-scrollbar">
+					<UserInfo firstname="Ismail" />
+					<section className="flex flex-col lg:flex-row space-x-4 space-y-4 lg:space-y-0 flex-1 overflow-y-scroll hide-scrollbar overflow-x-hidden">
 						<LeaderboardPanel />
 						<div className="flex flex-col gap-4 h-full flex-1">
 							<GameCard

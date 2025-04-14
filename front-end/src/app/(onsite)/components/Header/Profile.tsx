@@ -1,5 +1,7 @@
+import { AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 interface ProfileProps {
 	setIsNotif: (value: boolean) => void;
@@ -60,44 +62,58 @@ export default function Profile({
 					/>
 				</div>
 			</button>
-			{isProfile && (
-				<div className="absolute right-0 z-10 top-18 w-50 divide-y divide-bbg origin-top-right rounded-lg bg-card border-2 border-br-card backdrop-blur-xs">
-					<div
-						onClick={(e) => {
-							e.preventDefault();
-							setIsProfile(!isProfile);
-							router.push("/me");
-						}}
-						className="mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer hover:bg-hbbg"
+			<AnimatePresence>
+				{isProfile && (
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{ type: "spring", stiffness: 60, duration: 0.1 }}
+						className="absolute right-0 z-10 top-18 w-50 divide-y divide-bbg origin-top-right rounded-lg bg-card border-2 border-br-card backdrop-blur-xs"
 					>
-						<Image
-							src="/profile-btn.svg"
-							alt="Profile Icon"
-							width={30}
-							height={30}
-						/>
-						<span className="ml-5">Profile</span>
-					</div>
-					<div className="flex w-full items-center px-7 py-3 hover:cursor-pointer hover:bg-hbbg">
-						<Image
-							src="/setting-btn.svg"
-							alt="Settings Icon"
-							width={30}
-							height={30}
-						/>
-						<span className="ml-5">Settings</span>
-					</div>
-					<div className="mb-2 w-full flex items-center px-7 py-3 hover:cursor-pointer hover:bg-hbbg">
-						<Image
-							src="/logout-btn.svg"
-							alt="Logout Icon"
-							width={30}
-							height={30}
-						/>
-						<p className="ml-5">Logout</p>
-					</div>
-				</div>
-			)}
+						<div
+							onClick={(e) => {
+								e.preventDefault();
+								setIsProfile(!isProfile);
+								router.push("/me");
+							}}
+							className="mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer hover:bg-hbbg"
+							>
+							<Image
+								src="/profile-btn.svg"
+								alt="Profile Icon"
+								width={30}
+								height={30}
+								/>
+							<span className="ml-5">Profile</span>
+						</div>
+						<div className="flex w-full items-center px-7 py-3 hover:cursor-pointer hover:bg-hbbg"
+								onClick={(e) => {
+									e.preventDefault();
+									setIsProfile(!isProfile);
+									router.push("/settings");
+								}}
+						>
+							<Image
+								src="/setting-btn.svg"
+								alt="Settings Icon"
+								width={30}
+								height={30}
+							/>
+							<span className="ml-5">Settings</span>
+						</div>
+						<div className="mb-2 w-full flex items-center px-7 py-3 hover:cursor-pointer hover:bg-hbbg">
+							<Image
+								src="/logout-btn.svg"
+								alt="Logout Icon"
+								width={30}
+								height={30}
+							/>
+							<p className="ml-5">Logout</p>
+						</div>
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</div>
 	);
 }

@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import InlineInput from "./InlineInput";
 import NameInput from "./NameInput";
 import UploadInput from "./UploadInput";
+import { motion } from "framer-motion";
+import BlockedUser from "./BlockedUser";
 
 function General() {
 	const [drop, setDrop] = useState(false);
@@ -68,7 +70,13 @@ function General() {
 	}, [drop]);
 
 	return (
-		<div className="h-full w-full p-4 flex flex-col gap-3 max-w-220 hide-scrollbar overflow-scroll">
+		<motion.div
+			className="h-full w-full p-4 flex flex-col gap-3 max-w-220 hide-scrollbar overflow-y-scroll"
+			initial={{ opacity: 0, x: -50 }}
+			animate={{ opacity: 1, x: 0 }}
+			exit={{ opacity: 0, x: 50 }}
+			transition={{ type: "spring", stiffness: 120 }}
+		>
 			<div>
 				<h2 className="text-xl lg:text-2xl mb-1 mt-2 font-semibold">Basics</h2>
 				<hr className="border-white/10" />
@@ -112,7 +120,7 @@ function General() {
 				<button
 					className="flex items-center gap-4 bg-main rounded-sm py-2 px-4
 										hover:scale-101 transform transition-all duration-300
-										hover:cursor-pointer mt-3"
+										hover:cursor-pointer mt-3 text-sm lg:text-base"
 				>
 					<Check size={22} />
 					<p>Save Changes</p>
@@ -175,35 +183,21 @@ function General() {
 					)}
 				</button>
 			</div>
-			<div className="mt-5">
-				<h2 className="text-xl lg:text-2xl mb-1 mt-2 font-semibold">
-					Be Caution
+			<div>
+				<h2 className="text-xl lg:text-2xl mb-1 mt-5 font-semibold">
+					Blocked Users
 				</h2>
 				<hr className="border-white/10" />
 			</div>
-			<button
-				className="flex flex-col hover:bg-white/2 ring-1 ring-white/20 rounded-md py-4 px-5
-						hover:cursor-pointer hover:ring-2 hover:ring-white/20 hover:scale-101 transform transition-all duration-300 text-left"
-			>
-				<h3 className="lg:text-base text-sm font-bold">Delete Account</h3>
-				<p className="font-light text-sm lg:text-base text-gray-400">
-					This will permanently delete your account and all associated data.
-					Action is final.
-				</p>
-			</button>
-			<button
-				className="flex flex-col hover:bg-white/2 ring-1 ring-white/20 rounded-md py-4 px-5
-						hover:cursor-pointer hover:ring-2 hover:ring-white/20 hover:scale-101 transform transition-all duration-300 text-left"
-			>
-				<h3 className="lg:text-base text-sm font-bold">
-					Anonymizes your personal data
-				</h3>
-				<p className="font-light text-sm lg:text-base text-gray-400">
-					Your personal information will be anonymized to prevent identification
-					or tracking.
-				</p>
-			</button>
-		</div>
+			<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-3">
+				{Array.from({ length: 11 }).map((_, i) => (
+					<BlockedUser
+						key={i}
+						user={{ name: "Salah Moumni", img: "/image_2.jpg" }}
+					/>
+				))}
+			</div>
+		</motion.div>
 	);
 }
 

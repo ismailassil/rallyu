@@ -34,7 +34,7 @@ function InlineInput({
 			<div className="flex-2 w-full">
 				<div className="relative">
 					<input
-						className={`w-full h-11 pl-[45px] bg-bg border-bbg flex items-center justify-center
+						className={`w-full h-11 pl-[45px] pr-[10px] bg-bg border-bbg flex items-center justify-center
 						gap-[7px] border-2 rounded-lg
 						focus:ring-bbg focus:ring-4 outline-none
 						${disabled ? "hover:cursor-no-drop" : "hover:ring-4 hover:ring-bbg hover:bg-hbbg"}

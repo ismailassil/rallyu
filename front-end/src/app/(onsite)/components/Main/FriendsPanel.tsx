@@ -18,7 +18,7 @@ export default function FriendsPanel() {
 					duration-200 transition-all group-hover:scale-105"
 					></div>
 				</div>
-				<div className="overflow-y-auto flex-1 max-h-[calc(100vh-19rem)] hide-scrollbar">
+				<div className="overflow-y-auto flex-1 max-h-[calc(100vh-19rem)] custom-scroll">
 					{/* <div className="flex flex-col mt-20 justify-center items-center">
 						<Image
 							src="/sad.png"

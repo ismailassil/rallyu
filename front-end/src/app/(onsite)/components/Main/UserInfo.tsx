@@ -1,7 +1,11 @@
 import unicaOne from "@/app/fonts/unicaOne";
 import Image from "next/image";
 
-export default function UserInfo() {
+type UserInfoProps = {
+	firstname: string;
+};
+
+export default function UserInfo({ firstname }: UserInfoProps) {
 	return (
 		<header
 			className="flex sm:grid sm:grid-rows-[0.5fr_1fr] md:grid-rows-none
@@ -12,8 +16,10 @@ export default function UserInfo() {
 			<div className="flex flex-1 flex-col h-full py-5 justify-between">
 				<div>
 					<div className="relative group select-none">
-						<h1 className={`${unicaOne.className} text-4xl mb-10`}>
-							WELCOME BACK, <span className="text-accent">ISMAIL</span>
+						<h1
+							className={`${unicaOne.className} text-4xl lg:text-5xl font-semibold mb-10`}
+						>
+							WELCOME BACK, <span className="text-accent">{firstname}</span>
 						</h1>
 						<div
 							className="absolute top-[calc(50%)] -left-17

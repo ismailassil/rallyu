@@ -14,7 +14,7 @@ export default function Dashboard() {
 		>
 			<article
 				className="h-full w-full flex flex-col bg-card rounded-2xl border-2
-						border-br-card p-4 pl-3 gap-5 md:gap-0"
+						border-br-card p-4 pl-3 gap-5 md:gap-0" 
 			>
 				<ProfileHeader fullname="Ismail Assil" img="/image.png" />
 				<SettingsContent />

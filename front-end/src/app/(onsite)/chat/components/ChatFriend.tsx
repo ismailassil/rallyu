@@ -9,11 +9,11 @@ export default function ChatFriend({
 }) {
 	const thefullname = "Azouz Nabil";
 	const fullname =
-		thefullname.length > 16
-			? thefullname.substring(0, 16) + "..."
-			: thefullname;
+		thefullname.trim().length > 16
+			? thefullname.trim().substring(0, 16) + "..."
+			: thefullname.trim();
 	const msg = "Message asfsadkfjl asdklfj askldfjaklsdfj";
-	const mmsg = msg.length > 16 ? msg.substring(0, 16) + "..." : msg;
+	const mmsg = msg.trim().length > 16 ? msg.trim().substring(0, 16) + "..." : msg;
 
 	return (
 		<div

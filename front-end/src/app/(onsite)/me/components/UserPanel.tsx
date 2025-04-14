@@ -31,7 +31,9 @@ function UserPanel() {
 					<div className="flex-3 h-full flex justify-center items-center">
 						<div
 							className="flex h-[80%] justify-center aspect-square items-center
-								ring-white/10 ring-5 rounded-full overflow-hidden"
+								ring-white/10 ring-5 rounded-full overflow-hidden
+								hover:scale-105 transition-all duration-500 hover:ring-6 hover:ring-white/30
+								"
 						>
 							<Image
 								className={`w-full h-full object-cover`}
@@ -61,7 +63,7 @@ function UserPanel() {
 				</div>
 			</div>
 			<div
-				className={`w-full lg:w-[25%] h-full flex flex-row lg:flex-col gap-4 uppercase ${unicaOne.className}`}
+				className={`w-full lg:w-[25%] h-full flex flex-row lg:flex-col gap-4 uppercase *:hover:scale-102 *:duration-200 *:transform ${unicaOne.className}`}
 			>
 				<div className="flex-1 bg-inner-card border-2 border-br-card rounded-2xl flex p-4 justify-between px-4 items-end">
 					<p className="text-lg lg:text-2xl">Wins</p>
