@@ -14,10 +14,11 @@ export default function Message({ username, date, message }: MessageProps) {
 		>
 			<div className="flex flex-col gap-1 w-[90%] md:w-[75%]">
 				<div
-					className={`flex flex-col w-full text-wrap rounded-lg bg-main/25 ${isMe && "border-1 border-white/20 bg-white/0 rounded-br-none"} p-2 px-4`}
+					className={`flex flex-col w-full text-wrap rounded-lg bg-main/25
+						${isMe && "border-1 border-white/20 bg-white/0 rounded-br-none"} p-2 px-4`}
 				>
 					<div className={`flex flex-col`}>
-						<p>{message}</p>
+						<p className="text-sm lg:text-[15px]">{message}</p>
 					</div>
 				</div>
 				<p className={`text-gray-400 text-xs lg:text-sm ${isMe && "text-end"}`}>
