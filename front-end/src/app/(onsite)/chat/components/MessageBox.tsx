@@ -15,7 +15,7 @@ export default function MessageSection() {
 		>
 			{userMessage ? (
 				<>
-					<div className="h-20 flex items-center px-6">
+					<div className="h-17 flex items-center px-6">
 						<div className="flex w-full h-full items-center justify-between gap-5">
 							<ArrowLeft
 								size={40}
@@ -28,7 +28,7 @@ export default function MessageSection() {
 									}
 								}}
 							/>
-							<div className="flex w-[40px] h-[40px] lg:w-[43px] lg:h-[43px] rounded-full justify-center aspect-square items-center">
+							<div className="flex w-[38px] h-[38px] lg:w-[40px] lg:h-[40px] rounded-full justify-center aspect-square items-center">
 								<Image
 									className="h-full w-full object-cover rounded-full ring-fr-image ring-2"
 									src="/image_1.jpg"

@@ -17,12 +17,12 @@ export default function ChatFriend({
 
 	return (
 		<div
-			className={`flex w-full h-14 min-h-14 max-h-14 lg:h-18 lg:min-h-18 lg:max-h-18 justify-between p-3 hover:bg-hbbg
+			className={`flex w-full h-14 min-h-14 max-h-14 lg:h-16 lg:min-h-16 lg:max-h-16 justify-between p-3 hover:bg-hbbg
 					rounded-lg lg:rounded-xl hover:cursor-pointer overflow-hidden ${className}`}
 			onClick={onClick}
 		>
 			<div className="flex w-full gap-3 items-center">
-				<div className="flex w-[40px] h-[40px] lg:w-[45px] lg:h-[45px] rounded-full justify-center aspect-square">
+				<div className="flex w-[40px] h-[40px] lg:w-[42px] lg:h-[42px] rounded-full justify-center aspect-square">
 					<Image
 						className="h-full w-full object-cover rounded-full ring-fr-image ring-2"
 						src="/image_1.jpg"
@@ -33,13 +33,13 @@ export default function ChatFriend({
 				</div>
 				<div className="flex flex-col w-full overflow-hidden">
 					<div className="flex justify-between items-center w-full">
-						<p className="truncate text-base lg:text-lg">{fullname}</p>
-						<p className="text-gray-400 truncate ml-2 text-sm lg:text-base text-wrap">
+						<p className="truncate text-base lg:text-base">{fullname}</p>
+						<p className="text-gray-400 truncate ml-2 text-xs lg:text-sm text-wrap">
 							01/01/1999
 						</p>
 					</div>
 					<div className="flex justify-between items-center w-full">
-						<p className="font-light text-gray-400 truncate text-sm lg:text-[16px]">
+						<p className="font-light text-gray-400 truncate text-xs lg:text-sm">
 							{mmsg}
 						</p>
 						<p className="h-2 w-2 lg:h-3 lg:w-3 bg-main rounded-full inline-block shrink-0 ml-2"></p>
