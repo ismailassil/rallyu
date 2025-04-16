@@ -24,19 +24,21 @@ function Colors({
 		<motion.div
 			initial={{ opacity: 0, x: 100 }}
 			animate={{ opacity: 1, x: 0 }}
-			className={`flex justify-between flex-col md:flex-row items-center gap-2 ${className ? className : "lg:gap-10"} text-sm lg:text-base`}
+			className={`flex flex-col items-center justify-between gap-2 md:flex-row ${
+				className ? className : "lg:gap-10"
+			} text-sm lg:text-base`}
 		>
 			<label
-				className="flex-1 flex gap-2 items-center w-full"
+				className="flex w-full flex-1 items-center gap-2"
 				htmlFor="picture"
 			>
 				{children} {label}
 			</label>
 			<div className={`${className ? "flex-2" : "flex-3"} w-full`}>
 				<div
-					className="flex gap-2 border-2 border-white/10 *:h-10
-							*:flex *:justify-center *:items-center rounded-md py-1 px-1 *:px-1 *:py-1 *:rounded-sm *:gap-2
-							*:hover:scale-101 *:transform *:transition-all *:duration-200 *:cursor-pointer"
+					className="*:h-10 *:flex *:justify-center *:items-center *:px-1
+							*:py-1 *:rounded-sm *:gap-2 *:hover:scale-101 *:transform *:transition-all *:duration-200 *:cursor-pointer flex gap-2
+							rounded-md border-2 border-white/10 px-1 py-1"
 				>
 					<div
 						onClick={(e) => {

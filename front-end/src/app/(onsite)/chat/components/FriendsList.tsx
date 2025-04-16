@@ -18,11 +18,13 @@ export default function FriendsList() {
 			className={`${
 				isWidth && showbox
 					? "hidden"
-					: "max-w-full lg:max-w-[40%] lg:min-w-[35%] xl:lg:max-w-[30%] xl:lg:min-w-[20%] flex flex-2"
+					: "flex-2 flex max-w-full lg:min-w-[35%] lg:max-w-[40%] xl:lg:max-w-[30%] xl:lg:min-w-[20%]"
 			}`}
 		>
-			<div className="w-full flex flex-col gap-5">
-				<h1 className="text-3xl lg:text-4xl py-10 px-5 font-semibold">Chat</h1>
+			<div className="flex w-full flex-col gap-5">
+				<h1 className="px-5 py-10 text-3xl font-semibold lg:text-4xl">
+					Chat
+				</h1>
 				<div className="relative w-full">
 					<Image
 						className="absolute left-4 top-3"
@@ -33,8 +35,8 @@ export default function FriendsList() {
 					/>
 					<input
 						// ref={inputRef}
-						className="w-full flex items-center bg-bg border-2 focus:ring-3
-						focus:ring-hbbg/50 border-br-card rounded-full h-12 pl-12 pr-3 outline-none"
+						className="bg-bg focus:ring-3 focus:ring-hbbg/50 border-br-card flex h-12
+						w-full items-center rounded-full border-2 pl-12 pr-3 outline-none"
 						type="text"
 						autoComplete="off"
 						placeholder="Start Searching..."
@@ -45,18 +47,23 @@ export default function FriendsList() {
 					/>
 				</div>
 
-				<div className="flex flex-col gap-1 h-full overflow-auto custom-scroll">
+				<div className="custom-scroll flex h-full flex-col gap-1 overflow-auto">
 					{Array.from({ length: 100 }).map((_, i) => (
 						<ChatFriend
 							key={i}
 							onClick={(e) => {
 								e.preventDefault();
 								setSelectedFriend(i);
-								if (i === selectedFriend) setUserMessage(!userMessage);
+								if (i === selectedFriend)
+									setUserMessage(!userMessage);
 								if (i !== selectedFriend) setUserMessage(true);
 								if (isWidth) setShowbox(true);
 							}}
-							className={`${selectedFriend === i && userMessage && "bg-white/10"}`}
+							className={`${
+								selectedFriend === i &&
+								userMessage &&
+								"bg-white/10"
+							}`}
 						/>
 					))}
 				</div>

@@ -11,7 +11,7 @@ export default function passwordValidator(password: string) {
 		MissingUpperCase,
 		MissingLowerCase,
 		MissingSpecial,
-		Success = 0
+		Success = 0,
 	}
 
 	if (password.length < minLength) return PasswordError.TooShort;

@@ -37,8 +37,8 @@ export default function Input({
 			</label>
 			<div className="relative">
 				<input
-					className="w-full h-13 pl-[45px] mt-[7px] bg-bg border-bbg flex items-center justify-center
-						gap-[7px] border-2 rounded-lg hover:ring-4 hover:ring-bbg hover:bg-hbbg focus:ring-bbg focus:ring-4 outline-none"
+					className="h-13 bg-bg border-bbg hover:ring-bbg hover:bg-hbbg focus:ring-bbg mt-[7px] flex w-full
+						items-center justify-center gap-[7px] rounded-lg border-2 pl-[45px] outline-none hover:ring-4 focus:ring-4"
 					type={type}
 					id={unique}
 					name={unique}

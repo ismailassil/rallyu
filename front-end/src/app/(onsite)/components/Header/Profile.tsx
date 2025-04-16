@@ -23,14 +23,12 @@ export default function Profile({
 	return (
 		<div className="relative" ref={profileRef}>
 			<button
-				className={`relative hover:cursor-pointer ml-4 rounded-full bg-card border-2
-			border-br-card w-[55px] h-[55px] flex justify-center items-center
+				className={`bg-card border-br-card relative ml-4 flex h-[55px]
+			w-[55px] items-center justify-center rounded-full border-2 hover:cursor-pointer
 			${
 				isProfile
-					? "bg-hbg border-hbbg ring-4 \
-			ring-bbg scale-101"
-					: "hover:bg-hbg hover:border-hbbg hover:ring-4 \
-			hover:ring-bbg hover:scale-101"
+					? "bg-hbg border-hbbg ring-bbg 			scale-101 ring-4"
+					: "hover:bg-hbg hover:border-hbbg hover:ring-bbg 			hover:scale-101 hover:ring-4"
 			} transition-transform duration-200
 			
 			`}
@@ -48,8 +46,8 @@ export default function Profile({
 					className={`${isProfile && "animate-pulse"}`}
 				/>
 				<div
-					className="absolute flex items-center justify-center 
-			rounded-full w-[20px] h-[20px] bg-white bg-opacity-75 bottom-[-3] left-9"
+					className="absolute bottom-[-3] left-9 flex 
+			h-[20px] w-[20px] items-center justify-center rounded-full bg-white bg-opacity-75"
 				>
 					<Image
 						src="/down-arrow.svg"
@@ -68,8 +66,12 @@ export default function Profile({
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
-						transition={{ type: "spring", stiffness: 60, duration: 0.1 }}
-						className="absolute right-0 z-10 top-18 w-50 divide-y divide-bbg origin-top-right rounded-lg bg-card border-2 border-br-card backdrop-blur-xs"
+						transition={{
+							type: "spring",
+							stiffness: 60,
+							duration: 0.1,
+						}}
+						className="top-18 w-50 divide-bbg bg-card border-br-card backdrop-blur-xs absolute right-0 z-10 origin-top-right divide-y rounded-lg border-2"
 					>
 						<div
 							onClick={(e) => {
@@ -77,22 +79,23 @@ export default function Profile({
 								setIsProfile(!isProfile);
 								router.push("/me");
 							}}
-							className="mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer hover:bg-hbbg"
-							>
+							className="hover:bg-hbbg mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer"
+						>
 							<Image
 								src="/profile-btn.svg"
 								alt="Profile Icon"
 								width={30}
 								height={30}
-								/>
+							/>
 							<span className="ml-5">Profile</span>
 						</div>
-						<div className="flex w-full items-center px-7 py-3 hover:cursor-pointer hover:bg-hbbg"
-								onClick={(e) => {
-									e.preventDefault();
-									setIsProfile(!isProfile);
-									router.push("/settings");
-								}}
+						<div
+							className="hover:bg-hbbg flex w-full items-center px-7 py-3 hover:cursor-pointer"
+							onClick={(e) => {
+								e.preventDefault();
+								setIsProfile(!isProfile);
+								router.push("/settings");
+							}}
 						>
 							<Image
 								src="/setting-btn.svg"
@@ -102,7 +105,7 @@ export default function Profile({
 							/>
 							<span className="ml-5">Settings</span>
 						</div>
-						<div className="mb-2 w-full flex items-center px-7 py-3 hover:cursor-pointer hover:bg-hbbg">
+						<div className="hover:bg-hbbg mb-2 flex w-full items-center px-7 py-3 hover:cursor-pointer">
 							<Image
 								src="/logout-btn.svg"
 								alt="Logout Icon"

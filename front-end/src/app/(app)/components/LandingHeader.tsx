@@ -4,8 +4,8 @@ import Image from "next/image";
 export default function LandingHeader() {
 	return (
 		<header
-			className="flex fixed top-0 left-0 w-full h-30
-				items-center justify-center md:justify-normal p-6 pl-16 pr-16"
+			className="h-30 fixed left-0 top-0 flex w-full
+				items-center justify-center p-6 pl-16 pr-16 md:justify-normal"
 		>
 			<Link href="/">
 				<Image
@@ -14,7 +14,7 @@ export default function LandingHeader() {
 					width={138}
 					height={38}
 					priority={true}
-					className="hover:cursor-pointer hover:scale-101 transition-transform duration-200"
+					className="hover:scale-101 transition-transform duration-200 hover:cursor-pointer"
 				></Image>
 			</Link>
 		</header>

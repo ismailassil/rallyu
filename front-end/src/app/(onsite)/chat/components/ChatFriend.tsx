@@ -13,36 +13,39 @@ export default function ChatFriend({
 			? thefullname.trim().substring(0, 16) + "..."
 			: thefullname.trim();
 	const msg = "Message asfsadkfjl asdklfj askldfjaklsdfj";
-	const mmsg = msg.trim().length > 16 ? msg.trim().substring(0, 16) + "..." : msg;
+	const mmsg =
+		msg.trim().length > 16 ? msg.trim().substring(0, 16) + "..." : msg;
 
 	return (
 		<div
-			className={`flex w-full h-14 min-h-14 max-h-14 lg:h-16 lg:min-h-16 lg:max-h-16 justify-between p-3 hover:bg-hbbg
-					rounded-lg lg:rounded-xl hover:cursor-pointer overflow-hidden ${className}`}
+			className={`min-h-14 lg:min-h-16 hover:bg-hbbg flex h-14 max-h-14 w-full justify-between overflow-hidden rounded-lg p-3
+					hover:cursor-pointer lg:h-16 lg:max-h-16 lg:rounded-xl ${className}`}
 			onClick={onClick}
 		>
-			<div className="flex w-full gap-3 items-center">
-				<div className="flex w-[40px] h-[40px] lg:w-[42px] lg:h-[42px] rounded-full justify-center aspect-square">
+			<div className="flex w-full items-center gap-3">
+				<div className="flex aspect-square h-[40px] w-[40px] justify-center rounded-full lg:h-[42px] lg:w-[42px]">
 					<Image
-						className="h-full w-full object-cover rounded-full ring-fr-image ring-2"
+						className="ring-fr-image h-full w-full rounded-full object-cover ring-2"
 						src="/image_1.jpg"
 						width={100}
 						height={100}
 						alt="Profile Image"
 					/>
 				</div>
-				<div className="flex flex-col w-full overflow-hidden">
-					<div className="flex justify-between items-center w-full">
-						<p className="truncate text-base lg:text-base">{fullname}</p>
-						<p className="text-gray-400 truncate ml-2 text-xs lg:text-sm text-wrap">
+				<div className="flex w-full flex-col overflow-hidden">
+					<div className="flex w-full items-center justify-between">
+						<p className="truncate text-base lg:text-base">
+							{fullname}
+						</p>
+						<p className="text-wrap ml-2 truncate text-xs text-gray-400 lg:text-sm">
 							01/01/1999
 						</p>
 					</div>
-					<div className="flex justify-between items-center w-full">
-						<p className="font-light text-gray-400 truncate text-xs lg:text-sm">
+					<div className="flex w-full items-center justify-between">
+						<p className="truncate text-xs font-light text-gray-400 lg:text-sm">
 							{mmsg}
 						</p>
-						<p className="h-2 w-2 lg:h-3 lg:w-3 bg-main rounded-full inline-block shrink-0 ml-2"></p>
+						<p className="bg-main ml-2 inline-block h-2 w-2 shrink-0 rounded-full lg:h-3 lg:w-3"></p>
 					</div>
 				</div>
 			</div>

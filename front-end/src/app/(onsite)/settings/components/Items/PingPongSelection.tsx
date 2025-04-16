@@ -42,7 +42,11 @@ function PingPongSelection({ connectivity }: { connectivity: number }) {
 			/>
 			{connectivity > 0 && (
 				<>
-					<Rounds className="lg:gap-20" round={round} setRound={setRound} />
+					<Rounds
+						className="lg:gap-20"
+						round={round}
+						setRound={setRound}
+					/>
 				</>
 			)}
 		</>

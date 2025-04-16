@@ -40,14 +40,14 @@ function NotificationItem({ type, message, sender, uri }: NotificationProps) {
 						damping: 10,
 					},
 				}}
-				className="absolute top-5 left-1/2 -translate-x-1/2
-					max-w-80 min-w-80 z-201
-					bg-white/9 ring-2 ring-white/15 backdrop-blur-xl rounded-xs overflow-hidden
-					flex flex-col divide-y-1 divide-white/11 text-sm
+				className="max-w-80 min-w-80 z-201 bg-white/9
+					ring-white/15 rounded-xs divide-y-1
+					divide-white/11 absolute left-1/2 top-5 flex -translate-x-1/2
+					flex-col overflow-hidden text-sm ring-2 backdrop-blur-xl
 					"
 			>
-				<div className="flex justify-between p-2 gap-3">
-					<div className="flex rounded-full overflow-hidden aspect-square max-h-10 min-h-10 min-w-10 max-w-10">
+				<div className="flex justify-between gap-3 p-2">
+					<div className="min-h-10 min-w-10 max-w-10 flex aspect-square max-h-10 overflow-hidden rounded-full">
 						<Image
 							src={sender.img}
 							alt="Profile Image"
@@ -66,7 +66,7 @@ function NotificationItem({ type, message, sender, uri }: NotificationProps) {
 						type === "xo" && <Hash size={20} />
 					)}
 				</div>
-				<div className="w-full flex *:w-full *:hover:bg-main divide divide-x-1 divide-white/11 *:text-center *:cursor-pointer">
+				<div className="*:w-full *:hover:bg-main divide divide-x-1 divide-white/11 *:text-center *:cursor-pointer flex w-full">
 					<p
 						className="rounded-b-xs pb-1 pt-1"
 						onClick={(e) => {

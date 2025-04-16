@@ -15,22 +15,23 @@ function Player({
 		<motion.div
 			initial={{ opacity: 0, x: -100 }}
 			animate={{ opacity: 1, x: 0 }}
-			className="flex justify-between flex-col md:flex-row items-center gap-2 lg:gap-10 text-sm lg:text-base lg:min-h-11"
+			className="lg:min-h-11 flex flex-col items-center justify-between gap-2 text-sm md:flex-row lg:gap-10 lg:text-base"
 		>
-			<label className="flex-1 w-full" htmlFor="picture">
+			<label className="w-full flex-1" htmlFor="picture">
 				{label}
 			</label>
 			<div className="flex-3 w-full select-none">
 				<div
-					className="flex gap-2 border-2 border-white/10 min-h-11
-						rounded-md py-1 px-3 items-center
-						*:hover:scale-101 *:transform *:transition-all *:duration-200"
+					className="min-h-11 *:hover:scale-101 *:transform *:transition-all *:duration-200
+						flex items-center gap-2 rounded-md
+						border-2 border-white/10 px-3 py-1"
 				>
 					<input
 						type="text"
-						className="outline-none w-full rounded-sm"
+						className="w-full rounded-sm outline-none"
 						placeholder="Player Name"
 						value={value}
+						maxLength={15}
 						onChange={(e) => {
 							e.preventDefault();
 							setValue(e.target.value);
@@ -40,7 +41,7 @@ function Player({
 						<Trash
 							size={20}
 							weight="light"
-							className="cursor-pointer hover:fill-accent"
+							className="hover:fill-accent cursor-pointer"
 							onClick={(e) => {
 								e.preventDefault();
 								setValue("");
@@ -50,7 +51,7 @@ function Player({
 					<DiceFive
 						size={20}
 						weight="light"
-						className="cursor-pointer hover:fill-accent"
+						className="hover:fill-accent cursor-pointer"
 						onClick={(e) => {
 							e.preventDefault();
 							setValue(random("Player"));

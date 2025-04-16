@@ -10,18 +10,22 @@ export default function Message({ username, date, message }: MessageProps) {
 
 	return (
 		<div
-			className={`flex w-full ${isMe && "justify-end"} lg:text-[17px] text-[15px]`}
+			className={`flex w-full ${
+				isMe && "justify-end"
+			} text-[15px] lg:text-[17px]`}
 		>
-			<div className="flex flex-col gap-1 w-[90%] md:w-[75%]">
+			<div className="flex w-[90%] flex-col gap-1 md:w-[75%]">
 				<div
-					className={`flex flex-col w-full text-wrap rounded-lg bg-main/25
-						${isMe && "border-1 border-white/20 bg-white/0 rounded-br-none"} p-2 px-4`}
+					className={`text-wrap bg-main/25 flex w-full flex-col rounded-lg
+						${isMe && "border-1 rounded-br-none border-white/20 bg-white/0"} p-2 px-4`}
 				>
 					<div className={`flex flex-col`}>
 						<p className="text-sm lg:text-[15px]">{message}</p>
 					</div>
 				</div>
-				<p className={`text-gray-400 text-xs lg:text-sm ${isMe && "text-end"}`}>
+				<p
+					className={`text-xs text-gray-400 lg:text-sm ${isMe && "text-end"}`}
+				>
 					{date}
 				</p>
 			</div>

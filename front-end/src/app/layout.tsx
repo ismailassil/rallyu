@@ -15,17 +15,18 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body
-				className={`${dmSans.className} antialiased relative`}
-			>
-				<div className="fixed inset-0 -z-1">
+			<body className={`${dmSans.className} relative antialiased`}>
+				<div className="-z-1 fixed inset-0">
 					<Image
 						src="/background.svg"
 						alt="background"
 						quality={100}
 						fill={true}
 						sizes="100vw"
-						style={{ objectFit: "cover", backgroundRepeat: "no-repeat" }}
+						style={{
+							objectFit: "cover",
+							backgroundRepeat: "no-repeat",
+						}}
 					/>
 				</div>
 				{children}

@@ -18,15 +18,15 @@ export default function LeaderboardItem({
 }: LeaderboardProps) {
 	return (
 		<div
-			className="flex group bg-card border-2 hover:cursor-pointer border-br-card
-				rounded-xl hover:bg-hbg hover:border-hbbg hover:scale-101 transition-transform
-				duration-500 p-3 items-center overflow-hidden"
+			className="bg-card border-br-card hover:bg-hbg hover:border-hbbg hover:scale-101 group
+				flex items-center overflow-hidden rounded-xl border-2
+				p-3 transition-transform duration-500 hover:cursor-pointer"
 		>
 			{/* Rank Badge */}
 			<div
-				className="flex w-[38px] h-[38px] lg:w-[40px] lg:h-[40px]
-					rounded-full  text-white font-bold text-xl group-hover:text-2xl
-					justify-center items-center"
+				className="flex h-[38px] w-[38px] items-center justify-center
+					rounded-full  text-xl font-bold text-white group-hover:text-2xl
+					lg:h-[40px] lg:w-[40px]"
 			>
 				{position === 0 && (
 					<Crown color="oklch(82.8% 0.189 84.429)" size={32} />
@@ -41,9 +41,9 @@ export default function LeaderboardItem({
 			</div>
 
 			{/* Profile Image */}
-			<div className="ml-3 flex w-[45px] h-[45px] lg:w-[55px] lg:h-[55px] rounded-full justify-center aspect-square">
+			<div className="ml-3 flex aspect-square h-[45px] w-[45px] justify-center rounded-full lg:h-[55px] lg:w-[55px]">
 				<Image
-					className="h-full w-full object-cover rounded-full ring-fr-image ring-2"
+					className="ring-fr-image h-full w-full rounded-full object-cover ring-2"
 					src={img}
 					width={100}
 					height={100}
@@ -53,11 +53,14 @@ export default function LeaderboardItem({
 
 			{/* Middle Content */}
 			<div className="ml-5 flex-grow">
-				<h2 className="text-base lg:text-lg capitalize text-wrap">
+				<h2 className="text-wrap text-base capitalize lg:text-lg">
 					{username}
 				</h2>
-				<p className="text-gray-500 text-sm lg:text-base">
-					Score: <span className="text-yellow-400 font-semibold">{score}</span>
+				<p className="text-sm text-gray-500 lg:text-base">
+					Score:{" "}
+					<span className="font-semibold text-yellow-400">
+						{score}
+					</span>
 				</p>
 			</div>
 		</div>

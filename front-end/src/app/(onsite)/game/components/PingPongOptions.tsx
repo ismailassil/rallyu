@@ -53,7 +53,11 @@ function PingPongOptions({ connectivity }: { connectivity: number }) {
 						value={paddleHeight}
 						setValue={setPaddleHeight}
 					/>
-					<Range label="Ball Size" value={ballSize} setValue={setBallSize} />
+					<Range
+						label="Ball Size"
+						value={ballSize}
+						setValue={setBallSize}
+					/>
 				</>
 			)}
 			<Board
@@ -62,7 +66,9 @@ function PingPongOptions({ connectivity }: { connectivity: number }) {
 				setBoardColor={setBoardColor}
 			/>
 			<AnimatePresence>
-				{connectivity > 0 && <Rounds round={round} setRound={setRound} />}
+				{connectivity > 0 && (
+					<Rounds round={round} setRound={setRound} />
+				)}
 			</AnimatePresence>
 			<AnimatePresence>
 				<>

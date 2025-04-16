@@ -7,15 +7,15 @@ import { useRouter } from "next/navigation";
 export default function Custom404() {
 	const router = useRouter();
 	return (
-		<div className="w-screen h-screen flex items-center justify-center">
-			<div className="flex w-full flex-col items-center px-10 overflow-hidden">
+		<div className="flex h-screen w-screen items-center justify-center">
+			<div className="flex w-full flex-col items-center overflow-hidden px-10">
 				<Image
 					src="/fin-awa-ghadi.gif"
 					alt="404"
 					width={100}
 					height={0}
 					style={{ width: "auto", height: "auto" }}
-					className="rounded-lg mb-10"
+					className="mb-10 rounded-lg"
 					priority={false}
 				/>
 				<div className={`${unicaOne.className} text-center`}>
@@ -23,9 +23,9 @@ export default function Custom404() {
 					<p className="text-6xl">Not Found</p>
 				</div>
 				<div
-					className="mt-10 py-3 px-6 bg-card border-2 border-white/20
-						hover:border-white/40 rounded-full hover:cursor-pointer
-						hover:scale-102 duration-300 transition-transform"
+					className="bg-card hover:scale-102 mt-10 rounded-full border-2 border-white/20
+						px-6 py-3 transition-transform
+						duration-300 hover:cursor-pointer hover:border-white/40"
 					onClick={(e) => {
 						e.preventDefault();
 						router.back();

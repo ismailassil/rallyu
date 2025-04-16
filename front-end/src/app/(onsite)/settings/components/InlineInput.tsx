@@ -27,17 +27,21 @@ function InlineInput({
 	}
 
 	return (
-		<div className="flex justify-between flex-col md:flex-row items-center gap-2 lg:gap-20 text-sm lg:text-base">
-			<label className="flex-1 w-full" htmlFor={unique}>
+		<div className="flex flex-col items-center justify-between gap-2 text-sm md:flex-row lg:gap-20 lg:text-base">
+			<label className="w-full flex-1" htmlFor={unique}>
 				{label}
 			</label>
 			<div className="flex-2 w-full">
 				<div className="relative">
 					<input
-						className={`w-full h-11 pl-[45px] pr-[10px] bg-bg border-bbg flex items-center justify-center
-						gap-[7px] border-2 rounded-lg
-						focus:ring-bbg focus:ring-4 outline-none
-						${disabled ? "hover:cursor-no-drop" : "hover:ring-4 hover:ring-bbg hover:bg-hbbg"}
+						className={`bg-bg border-bbg focus:ring-bbg flex h-11 w-full items-center justify-center gap-[7px]
+						rounded-lg border-2 pl-[45px]
+						pr-[10px] outline-none focus:ring-4
+						${
+							disabled
+								? "hover:cursor-no-drop"
+								: "hover:ring-bbg hover:bg-hbbg hover:ring-4"
+						}
 						`}
 						type={type}
 						id={unique}

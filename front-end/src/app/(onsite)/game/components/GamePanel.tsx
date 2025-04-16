@@ -13,9 +13,9 @@ function GamePanel({ setStart }: { setStart: (value: boolean) => void }) {
 
 	return (
 		<AnimatePresence>
-			<div className="flex-1 h-full flex flex-col hide-scrollbar">
+			<div className="hide-scrollbar flex h-full flex-1 flex-col">
 				<h1
-					className={`text-4xl p-4 ${unicaOne.className} uppercase font-semibold`}
+					className={`p-4 text-4xl ${unicaOne.className} font-semibold uppercase`}
 				>
 					<span className="font-semibold">Custom Your World!</span>
 				</h1>
@@ -23,9 +23,13 @@ function GamePanel({ setStart }: { setStart: (value: boolean) => void }) {
 					initial={{ opacity: 0, x: -100 }}
 					animate={{ opacity: 1, x: 0 }}
 					transition={{ duration: 1, delay: 0.1 }}
-					className={`h-full p-4 flex flex-col gap-5 overflow-y-scroll`}
+					className={`custom-scroll flex h-full flex-col gap-5 overflow-y-scroll p-4`}
 				>
-					<PickGame label="Pick Your Game" game={game} setGame={setGame} />
+					<PickGame
+						label="Pick Your Game"
+						game={game}
+						setGame={setGame}
+					/>
 					<GameStyle
 						connectivity={connectivity}
 						setConnectivity={setConnectivity}

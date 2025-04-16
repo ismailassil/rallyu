@@ -16,14 +16,14 @@ export default function BattleFriend({
 		fullname = fullname.trim().substring(0, 12) + "...";
 	return (
 		<div
-			className="flex justify-between bg-black/10 border-1 border-br-card rounded-lg
-				hover:bg-hbg hover:border-hbbg hover:scale-101 transition-transform duration-200
-				p-2 px-3 items-center overflow-hidden w-full min-h-16 max-h-16 cursor-pointer"
+			className="border-1 border-br-card hover:bg-hbg hover:border-hbbg hover:scale-101 min-h-16
+				flex max-h-16 w-full cursor-pointer items-center
+				justify-between overflow-hidden rounded-lg bg-black/10 p-2 px-3 transition-transform duration-200"
 		>
 			{/* Profile Image */}
-			<div className="ml-1 flex w-[40px] h-[40px] rounded-full justify-center">
+			<div className="ml-1 flex h-[40px] w-[40px] justify-center rounded-full">
 				<Image
-					className="h-full w-full object-cover rounded-full ring-fr-image ring-2"
+					className="ring-fr-image h-full w-full rounded-full object-cover ring-2"
 					src={img}
 					width={100}
 					height={100}
@@ -43,8 +43,8 @@ export default function BattleFriend({
 
 			{/* Buttons */}
 			<div
-				className="flex w-10 h-10 rounded-full hover:bg-card items-center justify-center
-					cursor-pointer ring-1 hover:ring-2 ring-white/40 hover:scale-105 transition-all duration-300"
+				className="hover:bg-card flex h-10 w-10 cursor-pointer items-center justify-center
+					rounded-full ring-1 ring-white/40 transition-all duration-300 hover:scale-105 hover:ring-2"
 			>
 				<Sword size={24} />
 				{/* <Image
