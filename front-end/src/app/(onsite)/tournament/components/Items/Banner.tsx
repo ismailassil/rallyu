@@ -1,9 +1,14 @@
 import unicaOne from "@/app/fonts/unicaOne";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 function Banner() {
 	return (
-		<div
+		<motion.div
+			initial={{ opacity: 0, y: -20, scale: 0.9 }}
+			animate={{ opacity: 1, y: 0, scale: 1 }}
+			exit={{ opacity: 0, y: -20, scale: 0.9 }}
+			transition={{ duration: 0 }}
 			className="md:h-85 min-h-70 max-h-85 hover:scale-101 h-70 group relative flex w-full cursor-crosshair
 			select-none flex-col justify-center overflow-hidden rounded-lg px-10 transition-all duration-700"
 		>
@@ -29,7 +34,7 @@ function Banner() {
 				className="-bottom-45 duration-800 group-hover:scale-102 absolute -right-16 hidden transition-all group-hover:-translate-y-3
 				md:block lg:-right-10"
 			/>
-		</div>
+		</motion.div>
 	);
 }
 

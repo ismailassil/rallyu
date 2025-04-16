@@ -39,17 +39,19 @@ export default function UserInfo({ firstname }: UserInfoProps) {
 					</div>
 				</div>
 			</div>
-			<div
-				className="justify-right hover:scale-101 hidden h-[90px] w-[90px] items-center transition-transform duration-200
-				md:flex md:h-[250px] md:w-[250px]"
-			>
-				<Image
-					className="ring-6 ring-br-image hover:ring-7 hover:scale-101 h-full w-full rounded-full object-cover transition-transform duration-200"
-					src="/image.png"
-					alt="Profile Image"
-					width={250}
-					height={250}
-				/>
+			<div className="hidden w-full justify-center md:flex">
+				<div
+					className="justify-right hover:scale-101 hidden h-[90px] w-[90px] items-center transition-transform duration-200
+				md:flex md:h-[250px] md:w-[250px] md:items-center md:justify-center"
+				>
+					<Image
+						className="ring-6 ring-br-image hover:ring-7 hover:scale-101 h-full w-full rounded-full object-cover transition-transform duration-200"
+						src="/image.png"
+						alt="Profile Image"
+						width={250}
+						height={250}
+					/>
+				</div>
 			</div>
 		</header>
 	);

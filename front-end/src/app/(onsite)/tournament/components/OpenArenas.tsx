@@ -34,7 +34,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 				transition={{ type: "spring", stiffness: 120 }}
 				className="*:border-1 *:border-white/10 *:rounded-sm *:px-2
 					*:py-2 *:min-h-31 *:cursor-cell *:hover:scale-101 *:duration-400 *:transition-all *:bg-card
-					grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4"
+					grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 "
 			>
 				{Array.from({ length: 3 }).map((_, i) => (
 					<Fragment key={i * 100}>

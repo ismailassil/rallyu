@@ -1,8 +1,12 @@
 import unicaOne from "@/app/fonts/unicaOne";
-
+import { motion } from "framer-motion";
 function Stats() {
 	return (
-		<div
+		<motion.div
+			initial={{ opacity: 0, y: -20, scale: 0.9 }}
+			animate={{ opacity: 1, y: 0, scale: 1 }}
+			exit={{ opacity: 0, y: -20, scale: 0.9 }}
+			transition={{ duration: 1.2 }}
 			className={`h-30 lg:h-15 grid w-full grid-cols-2 grid-rows-2 items-center justify-between lg:grid-cols-4
 				lg:grid-rows-none ${unicaOne.className} *:bg-card
 				*:rounded-lg *:min-h-13 *:flex *:flex-1 *:justify-between *:px-4 *:py-2 *:lg:text-lg *:items-center
@@ -41,7 +45,7 @@ function Stats() {
 						h-full w-full opacity-0 transition-all hover:opacity-20"
 				/>
 			</div>
-		</div>
+		</motion.div>
 	);
 }
 
