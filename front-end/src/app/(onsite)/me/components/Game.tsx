@@ -26,15 +26,25 @@ function Game({
 	// const opponentTooltipId = opponent + crypto.randomUUID();
 
 	return (
-		<div className="flex justify-between px-5 py-6 items-center bg-card border-2 border-br-card rounded-2xl relative overflow-hidden hover:scale-101 transition-transform duration-400 hover:bg-hbg hover:border-hbbg">
+		<div className="bg-card border-br-card hover:scale-101 duration-400 hover:bg-hbg hover:border-hbbg relative flex items-center justify-between overflow-hidden rounded-2xl border-2 px-5 py-6 transition-transform">
 			<div
-				className={`absolute -top-1 left-1/2 -translate-x-1/2 w-19 h-8 pb-1 flex justify-center items-end ${matchResult === 0 ? "bg-gray-600" : matchResult >= 1 ? "bg-green-600" : "bg-red-600"} rounded-b-lg ring-2 ring-border-gray-thick/50`}
+				className={`w-19 absolute -top-1 left-1/2 flex h-8 -translate-x-1/2 items-end justify-center pb-1 ${
+					matchResult === 0
+						? "bg-gray-600"
+						: matchResult >= 1
+							? "bg-green-600"
+							: "bg-red-600"
+				} ring-border-gray-thick/50 rounded-b-lg ring-2`}
 			>
 				<p className="text-sm">
-					{matchResult === 0 ? "Draw" : matchResult >= 1 ? "Victory" : "Defeat"}
+					{matchResult === 0
+						? "Draw"
+						: matchResult >= 1
+							? "Victory"
+							: "Defeat"}
 				</p>
 			</div>
-			<div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-19 h-8 flex justify-center items-center bg-gray-thick rounded-t-lg ring-2 ring-border-gray-thick/50">
+			<div className="w-19 bg-gray-thick ring-border-gray-thick/50 absolute -bottom-1 left-1/2 flex h-8 -translate-x-1/2 items-center justify-center rounded-t-lg ring-2">
 				<Image
 					src={type === "xo" ? "/XO.svg" : "ping-pong.svg"}
 					width={type === "xo" ? 30 : 18}
@@ -42,14 +52,20 @@ function Game({
 					alt="Profile Image"
 				/>
 			</div>
-			<div className="flex gap-4 items-center w-[30%]">
+			<div className="flex w-[30%] items-center gap-4">
 				<div
-					className="flex w-[40px] h-[40px] lg:w-[45px] lg:h-[45px]
-						rounded-full justify-center aspect-square items-center"
+					className="flex aspect-square h-[40px] w-[40px] items-center
+						justify-center rounded-full lg:h-[45px] lg:w-[45px]"
 				>
 					<Image
-						className={`h-full w-full object-cover rounded-full ring-fr-image
-							${matchResult === 0 ? "ring-3 ring-gray-600" : matchResult >= 1 ? "ring-3 ring-green-500" : "ring-2"}`}
+						className={`ring-fr-image h-full w-full rounded-full object-cover
+							${
+								matchResult === 0
+									? "ring-3 ring-gray-600"
+									: matchResult >= 1
+										? "ring-3 ring-green-500"
+										: "ring-2"
+							}`}
 						src={myImage}
 						width={100}
 						height={100}
@@ -65,15 +81,21 @@ function Game({
 			<p className="text-xl font-bold">{score.me}</p>
 			<div className="text-sm italic text-gray-500">{matchxp} XP</div>
 			<p className="text-xl font-bold">{score.opponent}</p>
-			<div className="flex gap-4 items-center justify-end w-[30%]">
-				<p className="text-wrap text-right truncate">{opponent}</p>
+			<div className="flex w-[30%] items-center justify-end gap-4">
+				<p className="text-wrap truncate text-right">{opponent}</p>
 				<div
-					className="flex w-[40px] h-[40px] lg:w-[45px] lg:h-[45px]
-					rounded-full justify-center aspect-square items-center"
+					className="flex aspect-square h-[40px] w-[40px] items-center
+					justify-center rounded-full lg:h-[45px] lg:w-[45px]"
 				>
 					<Image
-						className={`h-full w-full object-cover rounded-full ring-fr-image
-							${matchResult === 0 ? "ring-3 ring-gray-600" : matchResult <= -1 ? "ring-3 ring-green-500" : "ring-2"}`}
+						className={`ring-fr-image h-full w-full rounded-full object-cover
+							${
+								matchResult === 0
+									? "ring-3 ring-gray-600"
+									: matchResult <= -1
+										? "ring-3 ring-green-500"
+										: "ring-2"
+							}`}
 						src={opponentImage}
 						width={100}
 						height={100}

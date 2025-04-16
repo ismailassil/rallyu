@@ -69,7 +69,9 @@ function TicTacToeOptions({ connectivity }: { connectivity: number }) {
 				setBoardColor={setBoardColor}
 			/>
 			<AnimatePresence>
-				{connectivity > 0 && <Rounds round={round} setRound={setRound} />}
+				{connectivity > 0 && (
+					<Rounds round={round} setRound={setRound} />
+				)}
 			</AnimatePresence>
 			<AnimatePresence>
 				{connectivity > 1 && (

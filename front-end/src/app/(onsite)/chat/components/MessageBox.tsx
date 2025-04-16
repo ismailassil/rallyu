@@ -10,16 +10,18 @@ export default function MessageSection() {
 
 	return (
 		<section
-			className={`${isWidth && (showbox ? "block" : "hidden")} flex-5 h-full w-full bg-card border-2 border-br-card rounded-lg
-						divide-white/15 divide-y-1 divide flex flex-col justify-between`}
+			className={`${
+				isWidth && (showbox ? "block" : "hidden")
+			} flex-5 bg-card border-br-card divide-white/15 divide-y-1 divide flex
+						h-full w-full flex-col justify-between rounded-lg border-2`}
 		>
 			{userMessage ? (
 				<>
 					<div className="h-17 flex items-center px-6">
-						<div className="flex w-full h-full items-center justify-between gap-5">
+						<div className="flex h-full w-full items-center justify-between gap-5">
 							<ArrowLeft
 								size={40}
-								className="block lg:hidden aspect-square hover:cursor-pointer hover:fill-accent"
+								className="hover:fill-accent block aspect-square hover:cursor-pointer lg:hidden"
 								onClick={(e) => {
 									e.preventDefault();
 									if (isWidth) {
@@ -28,31 +30,35 @@ export default function MessageSection() {
 									}
 								}}
 							/>
-							<div className="flex w-[38px] h-[38px] lg:w-[40px] lg:h-[40px] rounded-full justify-center aspect-square items-center">
+							<div className="flex aspect-square h-[38px] w-[38px] items-center justify-center rounded-full lg:h-[40px] lg:w-[40px]">
 								<Image
-									className="h-full w-full object-cover rounded-full ring-fr-image ring-2"
+									className="ring-fr-image h-full w-full rounded-full object-cover ring-2"
 									src="/image_1.jpg"
 									width={100}
 									height={100}
 									alt="Profile Image"
 								/>
 							</div>
-							<div className="flex flex-col w-full">
+							<div className="flex w-full flex-col">
 								<h2 className="text-lg lg:text-lg">
-									<span className="hover:cursor-pointer">Azouz Nabil</span>
+									<span className="hover:cursor-pointer">
+										Azouz Nabil
+									</span>
 								</h2>
-								<p className="text-sm text-gray-400">Last seen at 22:40</p>
+								<p className="text-sm text-gray-400">
+									Last seen at 22:40
+								</p>
 							</div>
 							<button
-								className="w-25 h-[50%] rounded-lg bg-bbg hover:bg-white/2
-											hover:ring-2 hover:ring-white/10 hover:cursor-pointer
-											hover:scale-101 transition-all duration-300"
+								className="w-25 bg-bbg hover:bg-white/2 hover:scale-101 h-[50%]
+											rounded-lg transition-all duration-300
+											hover:cursor-pointer hover:ring-2 hover:ring-white/10"
 							>
 								Block
 							</button>
 						</div>
 					</div>
-					<div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col-reverse gap-2 custom-scroll">
+					<div className="custom-scroll flex flex-1 flex-col-reverse gap-2 overflow-y-auto px-5 py-5">
 						{Array.from({ length: 20 }).map((_, i) => (
 							<Fragment key={i}>
 								<Message
@@ -71,14 +77,14 @@ export default function MessageSection() {
 					<div className="h-18 flex flex-col justify-center p-3">
 						<div className="relative h-full w-full">
 							<Image
-								className="absolute top-1/2 -translate-y-1/2 right-3 hover:cursor-pointer"
+								className="absolute right-3 top-1/2 -translate-y-1/2 hover:cursor-pointer"
 								src="/send.svg"
 								alt="Send Icon"
 								width={20}
 								height={20}
 							/>
 							<input
-								className="bg-white/5 rounded-md h-full w-full flex items-center px-3 outline-none"
+								className="flex h-full w-full items-center rounded-md bg-white/5 px-3 outline-none"
 								autoComplete="off"
 								type="text"
 								placeholder="Enter your message"
@@ -92,18 +98,19 @@ export default function MessageSection() {
 				</>
 			) : (
 				<>
-					<div className="h-full w-full flex flex-col items-center justify-center select-none">
+					<div className="flex h-full w-full select-none flex-col items-center justify-center">
 						<Image
 							src="/thinking.gif"
 							width={300}
 							height={30}
 							alt="Thinking"
-							className="rounded-md mb-5"
+							className="mb-5 rounded-md"
 						/>
 						<div className="w-full text-center">
 							<h2 className="text-lg">👋 Welcome to Chat!</h2>
 							<p className="text-base text-gray-400">
-								Select a user from the sidebar to start chatting.
+								Select a user from the sidebar to start
+								chatting.
 							</p>
 						</div>
 					</div>

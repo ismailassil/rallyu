@@ -61,9 +61,9 @@ export default function Search({
 		<>
 			{/* <SearchButton /> */}
 			<div
-				className="flex items-center md:bg-card md:h-[55px] md:w-[100px] rounded-full
-				justify-center pr-1 hover:cursor-pointer hover:ring-2 hover:ring-white/30
-				duration-200 transition-transform hover:scale-105
+				className="md:bg-card flex items-center justify-center rounded-full pr-1
+				transition-transform duration-200 hover:scale-105 hover:cursor-pointer hover:ring-2
+				hover:ring-white/30 md:h-[55px] md:w-[100px]
 				"
 				onClick={() => {
 					setIsNotif(false);
@@ -78,8 +78,13 @@ export default function Search({
 					width={20}
 					height={20}
 				/>
-				<div className="md:flex hidden">
-					<Image src="/command.svg" alt="Command Logo" width={15} height={15} />
+				<div className="hidden md:flex">
+					<Image
+						src="/command.svg"
+						alt="Command Logo"
+						width={15}
+						height={15}
+					/>
 					<span className={`text-lg ${lora.className}`}>K</span>
 				</div>
 			</div>
@@ -88,14 +93,14 @@ export default function Search({
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					transition={{ duration: 0.2, ease: "easeInOut" }}
-					className="fixed inset-0 z-50 flex
-						pt-10 pb-5 pl-3 pr-3 md:p-20 md:10 lg:p-40 lg:pb-20
-						w-full flex-col items-center backdrop-blur-2xl bg-black/20"
+					className="md:10 fixed inset-0 z-50
+						flex w-full flex-col items-center bg-black/20 pb-5 pl-3 pr-3
+						pt-10 backdrop-blur-2xl md:p-20 lg:p-40 lg:pb-20"
 				>
-					<div className="w-[100%] lg:w-[80%] h-full">
+					<div className="h-full w-[100%] lg:w-[80%]">
 						<div
 							ref={div1Ref}
-							className="relative bg-white/10 rounded-lg border-2 border-br-card"
+							className="border-br-card relative rounded-lg border-2 bg-white/10"
 						>
 							<Image
 								className="absolute left-5 top-[19px] opacity-75"
@@ -108,7 +113,7 @@ export default function Search({
 							<input
 								ref={inputRef}
 								type="text"
-								className="w-full h-16 rounded-md pl-16 pr-20 outline-none focus:ring-2 focus:ring-white/20"
+								className="h-16 w-full rounded-md pl-16 pr-20 outline-none focus:ring-2 focus:ring-white/20"
 								autoComplete="off"
 								placeholder="Start Searching..."
 								value={search}
@@ -118,14 +123,14 @@ export default function Search({
 							/>
 							<p
 								onClick={() => setSearch("")}
-								className="absolute right-6 top-[19px] hover:underline hover:text-main-ring-hover/70 hover:cursor-pointer"
+								className="hover:text-main-ring-hover/70 absolute right-6 top-[19px] hover:cursor-pointer hover:underline"
 							>
 								Clear
 							</p>
 						</div>
 						<div
 							ref={div2Ref}
-							className="bg-white/10 w-full min-h-90 max-h-118 h-full rounded-lg border-2 border-br-card mt-3 custom-scroll overflow-auto"
+							className="min-h-90 max-h-118 border-br-card custom-scroll mt-3 h-full w-full overflow-auto rounded-lg border-2 bg-white/10"
 						>
 							{/* {Array.from({ length: 10 }).map((_, i) => (
 								<div
@@ -135,9 +140,16 @@ export default function Search({
 									Person
 								</div>
 							))} */}
-							<div className="w-full h-full flex flex-col items-center justify-center gap-3">
-								<Image src="/sad.png" height={12} width={120} alt="Sad Image" />
-								<p className="text-gray-400">Help yourself...</p>
+							<div className="flex h-full w-full flex-col items-center justify-center gap-3">
+								<Image
+									src="/sad.png"
+									height={12}
+									width={120}
+									alt="Sad Image"
+								/>
+								<p className="text-gray-400">
+									Help yourself...
+								</p>
 							</div>
 						</div>
 					</div>

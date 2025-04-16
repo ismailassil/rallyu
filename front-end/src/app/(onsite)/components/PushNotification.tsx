@@ -56,7 +56,11 @@ function PushNotification({
 						opacity: 1,
 						y: 0,
 						scale: 1,
-						transition: { type: "spring", duration: 0.6, bounce: 0.5 },
+						transition: {
+							type: "spring",
+							duration: 0.6,
+							bounce: 0.5,
+						},
 					}}
 					exit={{
 						opacity: 0,
@@ -71,21 +75,21 @@ function PushNotification({
 							damping: 10,
 						},
 					}}
-					className="absolute top-5 left-1/2 -translate-x-1/2
-					max-w-80 min-w-80 z-201
-					bg-white/9 ring-2 ring-white/15 backdrop-blur-xl rounded-xs overflow-hidden
-					flex flex-col divide-y-1 divide-white/11 text-sm
+					className="max-w-80 min-w-80 z-201 bg-white/9
+					ring-white/15 rounded-xs divide-y-1
+					divide-white/11 absolute left-1/2 top-5 flex -translate-x-1/2
+					flex-col overflow-hidden text-sm ring-2 backdrop-blur-xl
 					"
 				>
 					<div
-						className="linear bg-main transition-all h-0.5"
+						className="linear bg-main h-0.5 transition-all"
 						style={{ width: `${progress}%` }}
 					></div>
-					<div className="flex justify-between p-2 gap-3">
+					<div className="flex justify-between gap-3 p-2">
 						<div className="flex-1">{label}</div>
 						<X
 							size={20}
-							className="text-gray-500 cursor-pointer"
+							className="cursor-pointer text-gray-500"
 							onClick={(e) => {
 								e.preventDefault();
 								onClose(false);
@@ -93,9 +97,9 @@ function PushNotification({
 							}}
 						/>
 					</div>
-					<div className="w-full flex *:w-full divide divide-x-1 divide-white/11 *:text-center *:cursor-pointer">
+					<div className="*:w-full divide divide-x-1 divide-white/11 *:text-center *:cursor-pointer flex w-full">
 						<p
-							className="rounded-bl-xs pb-1 pt-1 hover:bg-main"
+							className="rounded-bl-xs hover:bg-main pb-1 pt-1"
 							onClick={(e) => {
 								e.preventDefault();
 								onClose(true);

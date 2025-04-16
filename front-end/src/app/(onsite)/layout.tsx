@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<div>
-			<div className="fixed inset-0 -z-1">
+			<div className="-z-1 fixed inset-0">
 				<Image
 					src="/background.svg"
 					alt="background"

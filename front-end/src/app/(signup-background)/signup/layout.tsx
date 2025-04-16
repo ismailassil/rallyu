@@ -11,14 +11,17 @@ export default function SignUpLayout({
 		// <html lang="en">
 		// 	<body className={`${dmSans.className} antialiased relative`}>
 		<div>
-			<div className="fixed inset-0 -z-1">
+			<div className="-z-1 fixed inset-0">
 				<Image
 					src="/signup_background.svg"
 					alt="signup_background"
 					quality={100}
 					fill={true}
 					sizes="100vw"
-					style={{ objectFit: "cover", backgroundRepeat: "no-repeat" }}
+					style={{
+						objectFit: "cover",
+						backgroundRepeat: "no-repeat",
+					}}
 				/>
 			</div>
 			<LandingHeader />

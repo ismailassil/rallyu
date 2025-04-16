@@ -81,26 +81,28 @@ function Security() {
 
 	return (
 		<motion.div
-			className="h-full w-full p-4 flex flex-col gap-3 max-w-220 hide-scrollbar overflow-y-scroll"
+			className="max-w-220 hide-scrollbar flex h-full w-full flex-col gap-3 overflow-y-scroll p-4"
 			initial={{ opacity: 0, x: -50 }}
 			animate={{ opacity: 1, x: 0 }}
 			exit={{ opacity: 0, x: 50 }}
 			transition={{ type: "spring", stiffness: 120 }}
 		>
 			<div>
-				<h2 className="text-xl lg:text-2xl mb-1 mt-2 font-semibold">Basics</h2>
+				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">
+					Basics
+				</h2>
 				<hr className="border-white/10" />
 			</div>
-			<div className="flex justify-between flex-col md:flex-row items-center gap-2 lg:gap-20 text-sm lg:text-base">
-				<label className="flex-1 w-full">
+			<div className="flex flex-col items-center justify-between gap-2 text-sm md:flex-row lg:gap-20 lg:text-base">
+				<label className="w-full flex-1">
 					Change Password
 					{error && <p className="text-xs text-red-400">{error}</p>}
 				</label>
-				<div className="flex-2 flex gap-3 w-full">
+				<div className="flex-2 flex w-full gap-3">
 					<div className="relative flex-1">
 						<input
-							className={`w-full h-11 pl-[45px] pr-[10px] bg-bg border-bbg flex items-center justify-center
-										gap-[7px] border-2 rounded-lg focus:ring-bbg focus:ring-4 outline-none hover:ring-4 hover:ring-bbg hover:bg-hbbg
+							className={`bg-bg border-bbg focus:ring-bbg hover:ring-bbg hover:bg-hbbg flex h-11 w-full items-center
+										justify-center gap-[7px] rounded-lg border-2 pl-[45px] pr-[10px] outline-none hover:ring-4 focus:ring-4
 								`}
 							type="password"
 							id="oldpassword"
@@ -123,8 +125,8 @@ function Security() {
 					</div>
 					<div className="relative flex-1">
 						<input
-							className={`w-full h-11 pl-[45px] bg-bg border-bbg flex items-center justify-center
-										gap-[7px] border-2 rounded-lg focus:ring-bbg focus:ring-4 outline-none hover:ring-4 hover:ring-bbg hover:bg-hbbg
+							className={`bg-bg border-bbg focus:ring-bbg hover:ring-bbg hover:bg-hbbg flex h-11 w-full
+										items-center justify-center gap-[7px] rounded-lg border-2 pl-[45px] outline-none hover:ring-4 focus:ring-4
 								`}
 							type="password"
 							id="newpassowrd"
@@ -149,9 +151,9 @@ function Security() {
 			</div>
 			<div className="flex justify-end">
 				<button
-					className="flex items-center gap-4 bg-main rounded-sm py-2 px-4
-										hover:scale-101 transform transition-all duration-300
-										hover:cursor-pointer mt-3 text-sm lg:text-base"
+					className="bg-main hover:scale-101 mt-3 flex transform items-center gap-4
+										rounded-sm px-4 py-2 text-sm
+										transition-all duration-300 hover:cursor-pointer lg:text-base"
 					onClick={handleSubmit}
 				>
 					<Check size={22} />
@@ -159,25 +161,30 @@ function Security() {
 				</button>
 			</div>
 			<div className="mt-5">
-				<h2 className="text-xl lg:text-2xl mb-1 mt-2 font-semibold">
+				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">
 					Two-factor authentication
 				</h2>
 				<hr className="border-white/10" />
 			</div>
-			<div className="flex flex-col md:flex-row gap-5 lg:gap-10 text-sm lg:text-base">
+			<div className="flex flex-col gap-5 text-sm md:flex-row lg:gap-10 lg:text-base">
 				<div className="flex gap-6">
-					<div className="w-[110px] h-[110px] bg-white flex items-center justify-center rounded-md">
-						<Image src="/qr.png" alt="2FA Qr-Code" width={95} height={95} />
+					<div className="flex h-[110px] w-[110px] items-center justify-center rounded-md bg-white">
+						<Image
+							src="/qr.png"
+							alt="2FA Qr-Code"
+							width={95}
+							height={95}
+						/>
 					</div>
-					<div className="flex flex-col gap-2 max-w-80 justify-between">
+					<div className="max-w-80 flex flex-col justify-between gap-2">
 						<label htmlFor="2fa" className="text-gray-400">
 							Enter the 6-digit code from your authenticator app
 						</label>
 						<div className="relative">
 							<input
 								type="number"
-								className={`w-full h-11 pl-[45px] pr-[10px] bg-bg border-bbg flex items-center justify-center
-								gap-[7px] border-2 rounded-lg focus:ring-bbg focus:ring-4 outline-none hover:ring-4 hover:ring-bbg hover:bg-hbbg
+								className={`bg-bg border-bbg focus:ring-bbg hover:ring-bbg hover:bg-hbbg flex h-11 w-full items-center
+								justify-center gap-[7px] rounded-lg border-2 pl-[45px] pr-[10px] outline-none hover:ring-4 focus:ring-4
 								`}
 								name="2fa"
 								placeholder="&#x2022; &#x2022; &#x2022; &#x2022; &#x2022; &#x2022;"
@@ -185,18 +192,22 @@ function Security() {
 								onChange={(e) => {
 									e.preventDefault();
 									const inputValue = e.target.value;
-									if (inputValue.length <= 6) setTwofa(Number(inputValue));
+									if (inputValue.length <= 6)
+										setTwofa(Number(inputValue));
 								}}
 							/>
-							<Key size={20} className="absolute bottom-[13px] left-[15px]" />
+							<Key
+								size={20}
+								className="absolute bottom-[13px] left-[15px]"
+							/>
 						</div>
 					</div>
 				</div>
-				<div className="flex h-full items-end justify-end flex-1">
+				<div className="flex h-full flex-1 items-end justify-end">
 					<button
-						className="flex items-center gap-4 bg-main rounded-sm py-2.5 px-8
-										hover:scale-101 transform transition-all duration-300
-										hover:cursor-pointer mt-3 text-sm lg:text-base"
+						className="bg-main hover:scale-101 mt-3 flex transform items-center gap-4
+										rounded-sm px-8 py-2.5 text-sm
+										transition-all duration-300 hover:cursor-pointer lg:text-base"
 						onClick={handleTwoFa}
 					>
 						<ShieldCheck size={22} />
@@ -205,39 +216,41 @@ function Security() {
 				</div>
 			</div>
 			<div className="mt-5">
-				<h2 className="text-xl lg:text-2xl mb-1 mt-2 font-semibold">
+				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">
 					Be Caution
 				</h2>
 				<hr className="border-white/10" />
 			</div>
 			<button
-				className="flex flex-col hover:bg-white/2 ring-1 ring-white/20 rounded-md py-4 px-5
-						hover:cursor-pointer hover:ring-2 hover:ring-white/20 hover:scale-101 transform transition-all duration-300 text-left"
+				className="hover:bg-white/2 hover:scale-101 flex transform flex-col rounded-md px-5 py-4
+						text-left ring-1 ring-white/20 transition-all duration-300 hover:cursor-pointer hover:ring-2 hover:ring-white/20"
 				onClick={(e) => {
 					e.preventDefault();
 					setPopup(0);
 				}}
 			>
-				<h3 className="lg:text-base text-sm font-bold">Delete Account</h3>
-				<p className="font-light text-sm lg:text-base text-gray-400">
-					This will permanently delete your account and all associated data.
-					Action is final.
+				<h3 className="text-sm font-bold lg:text-base">
+					Delete Account
+				</h3>
+				<p className="text-sm font-light text-gray-400 lg:text-base">
+					This will permanently delete your account and all associated
+					data. Action is final.
 				</p>
 			</button>
 			<button
-				className="flex flex-col hover:bg-white/2 ring-1 ring-white/20 rounded-md py-4 px-5
-						hover:cursor-pointer hover:ring-2 hover:ring-white/20 hover:scale-101 transform transition-all duration-300 text-left"
+				className="hover:bg-white/2 hover:scale-101 flex transform flex-col rounded-md px-5 py-4
+						text-left ring-1 ring-white/20 transition-all duration-300 hover:cursor-pointer hover:ring-2 hover:ring-white/20"
 				onClick={(e) => {
 					e.preventDefault();
 					setPopup(1);
 				}}
 			>
-				<h3 className="lg:text-base text-sm font-bold">
+				<h3 className="text-sm font-bold lg:text-base">
 					Anonymizes your personal data
 				</h3>
-				<p className="font-light text-sm lg:text-base text-gray-400">
-					Your personal information will be anonymized to prevent identification
-					or tracking.
+				<p className="text-sm font-light text-gray-400 lg:text-base">
+					Your personal information will be anonymized to prevent
+					identification or tracking.
 				</p>
 			</button>
 			<PushNotification

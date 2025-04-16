@@ -50,7 +50,11 @@ function TicTacToeSelection({ connectivity }: { connectivity: number }) {
 				setBoardColor={setBoardColor}
 			/>
 			{connectivity > 0 && (
-				<Rounds className="lg:gap-20" round={round} setRound={setRound} />
+				<Rounds
+					className="lg:gap-20"
+					round={round}
+					setRound={setRound}
+				/>
 			)}
 		</>
 	);

@@ -52,7 +52,9 @@ export default function SideBar() {
 	);
 
 	useEffect(() => {
-		const currentLink = Links.find((link) => pathname.startsWith(link.path));
+		const currentLink = Links.find((link) =>
+			pathname.startsWith(link.path)
+		);
 		setActiveButton(currentLink ? currentLink.id : -1);
 	}, [Links, pathname]);
 
@@ -61,19 +63,19 @@ export default function SideBar() {
 			initial={{ opacity: 0, x: -50 }}
 			animate={{ opacity: 1, x: 0 }}
 			transition={{ duration: 1, delay: 0.5 }}
-			className="fixed flex flex-row justify-center items-center gap-10 w-full
-				bottom-0 left-0 h-22 overflow-clip
-				sm:ml-6 sm:w-20 sm:mt-30 sm:flex-col sm:h-[calc(100vh-143px)] sm:gap-16
-				sm:bottom-auto sm:left-auto sm:transform-none sm:translate-x-none sm:rounded-lg
-				bg-card sm:border-2 border-t-2 border-br-card"
+			className="h-22 sm:mt-30 sm:translate-x-none bg-card border-br-card fixed bottom-0
+				left-0 flex w-full flex-row
+				items-center justify-center gap-10 overflow-clip border-t-2 sm:bottom-auto
+				sm:left-auto sm:ml-6 sm:h-[calc(100vh-143px)] sm:w-20 sm:transform-none
+				sm:flex-col sm:gap-16 sm:rounded-lg sm:border-2"
 		>
 			{Links.map((link) => (
 				<button
 					title={link.title}
 					key={link.id}
-					className={`relative hover:cursor-pointer
-					transition-transform duration-200
-					w-[33px] h-[33px] sm:w-[33px] sm:h-[33px] flex items-center justify-center
+					className={`relative flex
+					h-[33px] w-[33px]
+					items-center justify-center transition-transform duration-200 hover:cursor-pointer sm:h-[33px] sm:w-[33px]
 					${link.id === activeButton ? "hover:scale-105" : "hover:scale-120"}
 					`}
 					onClick={() => {
@@ -89,13 +91,13 @@ export default function SideBar() {
 						className={`${activeButton === link.id && "scale-120"}`}
 					/>
 					<div
-						className={`absolute rounded-md
-							inset-0
+						className={`absolute inset-0
+							rounded-md
 							transition-all duration-200
 							${
 								activeButton === link.id
 									? "scale-180 sm:scale-300 bg-hbbg"
-									: "hover:scale-150 hover:bg-hbg"
+									: "hover:bg-hbg hover:scale-150"
 							}
 								}
 								`}

@@ -11,33 +11,41 @@ function InviteFriend() {
 	return (
 		// w-full lg:min-w-80 lg:max-w-100
 		<div
-			className={`flex-[0.70] w-full h-full flex flex-col ${isWidth && show && "max-h-22 lg:max-h-27"} cursor-pointer lg:cursor-auto bg-card border-1 border-br-card rounded-lg`}
+			className={`flex h-full w-full flex-[0.70] flex-col ${
+				isWidth && show && "max-h-22 lg:max-h-27"
+			} bg-card border-1 border-br-card cursor-pointer rounded-lg lg:cursor-auto`}
 			onClick={(e) => {
 				e.preventDefault();
 				setShow(!show);
 			}}
 		>
-			<div className="h-auto max-h-30 min-h-20">
-				<div className="relative overflow-hidden group">
+			<div className="max-h-30 min-h-20 h-auto">
+				<div className="group relative overflow-hidden">
 					<h1
-						className={`${unicaOne.className} p-10 py-6 lg:py-9 uppercase text-[28px] lg:text-3xl
-									select-none duration-200 transition-all hover:scale-x-101 origin-left`}
+						className={`${unicaOne.className} hover:scale-x-101 origin-left select-none p-10 py-6 text-[28px]
+									uppercase transition-all duration-200 lg:py-9 lg:text-3xl`}
 					>
 						Invite a friend
 					</h1>
 					<div
-						className="absolute top-[calc(50%)] -left-5
-							-translate-x-1/2 -translate-y-1/2 w-18 h-14 rounded-lg bg-accent
-							duration-200 transition-all group-hover:scale-105"
+						className="w-18 bg-accent absolute
+							-left-5 top-[calc(50%)] h-14 -translate-x-1/2 -translate-y-1/2 rounded-lg
+							transition-all duration-200 group-hover:scale-105"
 					></div>
 				</div>
 			</div>
 			<div
-				className={`flex-1 flex flex-col ${isWidth && show && "hidden"} items-center px-4 gap-2
-							overflow-y-scroll hide-scrollbar pb-4`}
+				className={`flex flex-1 flex-col ${
+					isWidth && show && "hidden"
+				} hide-scrollbar items-center gap-2
+							overflow-y-scroll px-4 pb-4`}
 			>
 				{Array.from({ length: 10 }).map((_, i) => (
-					<BattleFriend key={i} fullname={"Nabil Azouz"} img={"/image_1.jpg"} />
+					<BattleFriend
+						key={i}
+						fullname={"Nabil Azouz"}
+						img={"/image_1.jpg"}
+					/>
 				))}
 			</div>
 			{/* <div className="flex-1 flex flex-col items-center mt-10 lg:mt-50 mb-10 overflow-y-scroll hide-scrollbar">

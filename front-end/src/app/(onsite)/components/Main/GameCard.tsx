@@ -29,14 +29,14 @@ export default function GameCard({
 }: GameCardProps) {
 	return (
 		<div
-			className="relative overflow-hidden h-full flex items-center lg:items-start lg:justify-center
-					bg-card border-2 border-br-card rounded-lg
-					transition-transform duration-500 transform min-h-[180px] max-h-[300px]
-					hover:cursor-pointer group hover:-translate-y-2"
+			className="bg-card border-br-card group relative flex h-full max-h-[300px]
+					min-h-[180px] transform items-center overflow-hidden
+					rounded-lg border-2 transition-transform duration-500 hover:-translate-y-2
+					hover:cursor-pointer lg:items-start lg:justify-center"
 		>
 			{isBackground && (
 				<div
-					className="absolute top-0 left-0 -z-1 w-full h-full"
+					className="-z-1 absolute left-0 top-0 h-full w-full"
 					style={{
 						backgroundImage: `url('${background}')`,
 						backgroundSize: "cover",
@@ -47,15 +47,21 @@ export default function GameCard({
 					}}
 				></div>
 			)}
-			<div className="text-wrap text-left lg:text-center lg:mt-5 lg:mb-5">
-				<h1 className="p-12 lg:p-13 leading-13 text-shadow-lg/30">
+			<div className="text-wrap text-left lg:mb-5 lg:mt-5 lg:text-center">
+				<h1 className="lg:p-13 leading-13 text-shadow-lg/30 p-12">
 					<p className={textClass}>{text}</p>
 					<p className={subtextClass}>{subtext}</p>
 				</h1>
 			</div>
 
 			<div className={position}>
-				<Image src={src} alt={src} width={1200} height={1200} quality={100} />
+				<Image
+					src={src}
+					alt={src}
+					width={1200}
+					height={1200}
+					quality={100}
+				/>
 			</div>
 		</div>
 	);

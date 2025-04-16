@@ -24,11 +24,19 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
+    "@types/prettier": "^3.0.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
+    "eslint-config-prettier": "^10.1.2",
     "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.4.1",
     "typescript": "^5"
+  },
+  "prettier": {
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ]
   }
 }

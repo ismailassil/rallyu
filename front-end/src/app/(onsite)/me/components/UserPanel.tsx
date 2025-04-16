@@ -6,37 +6,42 @@ import Image from "next/image";
 function UserPanel() {
 	return (
 		<header
-			className="flex w-full h-full gap-7
-						flex-col lg:flex-row
-						items-center p-12 pl-12 overflow-hidden
-						min-h-[350px] sm:min-h-[330px] md:min-h-[400px]
-						max-h-[400px] md:max-h-[300px]
-						bg-card border-2 border-br-card rounded-lg"
+			className="bg-card border-br-card flex h-full
+						max-h-[400px] min-h-[350px]
+						w-full flex-col items-center gap-7
+						overflow-hidden rounded-lg border-2
+						p-12 pl-12
+						sm:min-h-[330px] md:max-h-[300px] md:min-h-[400px] lg:flex-row"
 		>
-			<div className="flex-5 flex flex-col h-full justify-between items-center w-full">
-				<div className="flex-1 flex items-center w-full h-full">
+			<div className="flex-5 flex h-full w-full flex-col items-center justify-between">
+				<div className="flex h-full w-full flex-1 items-center">
 					<div className="flex-5 h-full py-5">
-						<h1 className={`text-4xl lg:text-5xl ${unicaOne.className}`}>
-							{new Date().getHours() < 17 ? "Good Morning" : "Good Evening"},
+						<h1
+							className={`text-4xl lg:text-5xl ${unicaOne.className}`}
+						>
+							{new Date().getHours() < 17
+								? "Good Morning"
+								: "Good Evening"}
+							,
 							<span className="text-accent font-semibold">
 								{" "}
 								<br />
 								ISMAIL ASSIL
 							</span>
 						</h1>
-						<p className="pt-5 text-gray-500 text-sm lg:text-lg">
+						<p className="pt-5 text-sm text-gray-500 lg:text-lg">
 							Step into a World of Classy Gaming
 						</p>
 					</div>
-					<div className="flex-3 h-full flex justify-center items-center">
+					<div className="flex-3 flex h-full items-center justify-center">
 						<div
-							className="flex h-[80%] justify-center aspect-square items-center
-								ring-white/10 ring-5 rounded-full overflow-hidden
-								hover:scale-105 transition-all duration-500 hover:ring-6 hover:ring-white/30
+							className="ring-5 hover:ring-6 flex aspect-square h-[80%]
+								items-center justify-center overflow-hidden rounded-full
+								ring-white/10 transition-all duration-500 hover:scale-105 hover:ring-white/30
 								"
 						>
 							<Image
-								className={`w-full h-full object-cover`}
+								className={`h-full w-full object-cover`}
 								src={"/image.png"}
 								width={100}
 								height={100}
@@ -46,16 +51,16 @@ function UserPanel() {
 						</div>
 					</div>
 				</div>
-				<div className="h-[16%] w-full flex flex-col justify-end">
+				<div className="flex h-[16%] w-full flex-col justify-end">
 					<div>
-						<div className="h-full flex flex-col gap-1">
+						<div className="flex h-full flex-col gap-1">
 							<div className="flex justify-between">
 								<p className="font-semibold">Level 10</p>
 								<p className="text-gray-600">60%</p>
 							</div>
-							<div className="w-full h-full">
-								<div className="w-full bg-card h-2 rounded-full">
-									<div className="bg-accent w-[60%] h-2 rounded-full"></div>
+							<div className="h-full w-full">
+								<div className="bg-card h-2 w-full rounded-full">
+									<div className="bg-accent h-2 w-[60%] rounded-full"></div>
 								</div>
 							</div>
 						</div>
@@ -63,17 +68,17 @@ function UserPanel() {
 				</div>
 			</div>
 			<div
-				className={`w-full lg:w-[25%] h-full flex flex-row lg:flex-col gap-4 uppercase *:hover:scale-102 *:duration-200 *:transform ${unicaOne.className}`}
+				className={`*:hover:scale-102 *:duration-200 *:transform flex h-full w-full flex-row gap-4 uppercase lg:w-[25%] lg:flex-col ${unicaOne.className}`}
 			>
-				<div className="flex-1 bg-inner-card border-2 border-br-card rounded-2xl flex p-4 justify-between px-4 items-end">
+				<div className="bg-inner-card border-br-card flex flex-1 items-end justify-between rounded-2xl border-2 p-4 px-4">
 					<p className="text-lg lg:text-2xl">Wins</p>
 					<p className="text-3xl lg:text-4xl">50</p>
 				</div>
-				<div className="flex-1 bg-inner-card border-2 border-br-card rounded-2xl flex p-4 justify-between px-4 items-end">
+				<div className="bg-inner-card border-br-card flex flex-1 items-end justify-between rounded-2xl border-2 p-4 px-4">
 					<p className="text-lg lg:text-2xl">Defeats</p>
 					<p className="text-3xl lg:text-4xl">9</p>
 				</div>
-				<div className="flex-1 bg-inner-card border-2 border-br-card rounded-2xl flex p-4 justify-between px-4 items-end">
+				<div className="bg-inner-card border-br-card flex flex-1 items-end justify-between rounded-2xl border-2 p-4 px-4">
 					<p className="text-lg lg:text-2xl">Draws</p>
 					<p className="text-3xl lg:text-4xl">6</p>
 				</div>

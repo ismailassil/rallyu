@@ -10,13 +10,14 @@ function InnerNotification({
 	message: string;
 	type: "game" | "msg";
 }) {
-	if (name && name.trim().length > 20) name = name.trim().substring(0, 17) + "...";
+	if (name && name.trim().length > 20)
+		name = name.trim().substring(0, 17) + "...";
 	if (message && message.trim().length > 25)
 		message = message.trim().substring(0, 25) + "...";
 	return (
-		<div className="px-2 py-4 w-full flex text-start min-h-16 gap-3 max-h-20 items-center">
-			<div className="flex flex-1 gap-3 items-center">
-				<div className="flex rounded-full overflow-hidden aspect-square max-h-8 min-h-8 min-w-8 max-w-8">
+		<div className="min-h-16 flex max-h-20 w-full items-center gap-3 px-2 py-4 text-start">
+			<div className="flex flex-1 items-center gap-3">
+				<div className="min-h-8 min-w-8 max-w-8 flex aspect-square max-h-8 overflow-hidden rounded-full">
 					<Image
 						src={"/image_1.jpg"}
 						alt="Profile Image"
@@ -26,29 +27,29 @@ function InnerNotification({
 					/>
 				</div>
 				<div className="">
-					<p className="font-semibold text-sm">{name}</p>
+					<p className="text-sm font-semibold">{name}</p>
 					<p className="text-xs">
 						{type === "game" ? "🎮 Ready to play?" : message}
 					</p>
 				</div>
 			</div>
-			<div className="flex gap-2 justify-end">
+			<div className="flex justify-end gap-2">
 				{type === "game" ? (
 					<>
 						<Check
 							size={12}
-							className="w-6 h-6 p-0.5 bg-main/70 rounded-xs cursor-pointer hover:scale-110 transform transition-all duration-300"
+							className="bg-main/70 rounded-xs h-6 w-6 transform cursor-pointer p-0.5 transition-all duration-300 hover:scale-110"
 						/>
 						<X
 							size={12}
-							className="w-6 h-6 p-0.5 bg-red-500/70 rounded-xs cursor-pointer hover:scale-110 transition-all duration-300"
+							className="rounded-xs h-6 w-6 cursor-pointer bg-red-500/70 p-0.5 transition-all duration-300 hover:scale-110"
 						/>
 					</>
 				) : (
 					<ArrowBendUpRight
 						size={12}
-						className="w-6 h-6 p-0.5 bg-card ring-1 ring-br-card hover:bg-white/10
-								cursor-pointer rounded-lg hover:scale-110 transition-all duration-300"
+						className="bg-card ring-br-card h-6 w-6 cursor-pointer rounded-lg p-0.5
+								ring-1 transition-all duration-300 hover:scale-110 hover:bg-white/10"
 					/>
 				)}
 			</div>

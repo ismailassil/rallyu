@@ -88,21 +88,21 @@ export default function SignUp() {
 	}
 
 	return (
-		<main className="h-[100vh] w-full pt-30 flex pb-10">
-			<div className="w-full h-full flex overflow-auto justify-center">
-				<div className="w-[650px] h-full pt-20 pb-20 pl-10 pr-10 flex items-start lg:items-center justify-center">
+		<main className="pt-30 flex h-[100vh] w-full pb-10">
+			<div className="flex h-full w-full justify-center overflow-auto">
+				<div className="flex h-full w-[650px] items-start justify-center pb-20 pl-10 pr-10 pt-20 lg:items-center">
 					<div className="flex-1">
 						<h1
-							className={`${ibm.className} text-[36px] font-bold flex justify-left md:justify-center`}
+							className={`${ibm.className} justify-left flex text-[36px] font-bold md:justify-center`}
 						>
 							Create an account
 						</h1>
 						<p
-							className={`flex justify-left text-[18px] mb-[47px] md:justify-center`}
+							className={`justify-left mb-[47px] flex text-[18px] md:justify-center`}
 						>
 							Please enter your details to create a new account
 						</p>
-						<div className="flex flex-col sm:flex-row justify-center mb-4 gap-[18px]">
+						<div className="mb-4 flex flex-col justify-center gap-[18px] sm:flex-row">
 							<AuthButton
 								src="/google-logo.svg"
 								width={17}
@@ -118,7 +118,7 @@ export default function SignUp() {
 								text="Intra"
 							/>
 						</div>
-						<div className="flex items-center gap-4 text-gray-500 mt-[19px] mb-[19px]">
+						<div className="mb-[19px] mt-[19px] flex items-center gap-4 text-gray-500">
 							<hr className="flex-grow border-t border-gray-300" />
 							<span className="text-white">OR</span>
 							<hr className="flex-grow border-t border-gray-300" />
@@ -130,7 +130,7 @@ export default function SignUp() {
 							}}
 							action=""
 						>
-							<div className="mb-[12px] flex flex-col sm:flex-row gap-3">
+							<div className="mb-[12px] flex flex-col gap-3 sm:flex-row">
 								<Input
 									text="First Name"
 									type="text"
@@ -203,15 +203,17 @@ export default function SignUp() {
 										Minimum length is 8 characters.
 									</p>
 								) : (
-									<p className="mt-[7px] text-sm text-red-400">{error}</p>
+									<p className="mt-[7px] text-sm text-red-400">
+										{error}
+									</p>
 								)}
 							</div>
 
 							<button
 								type="submit"
-								className="w-full h-13 rounded-lg bg-main mt-[24px] flex justify-center
-									items-center hover:cursor-pointer hover:ring-3 hover:ring-main-ring-hover/20 hover:bg-main-hover active:bg-main-active active:ring-main-ring-active
-									hover:scale-101 transition-transform duration-300"
+								className="h-13 bg-main hover:ring-3 hover:ring-main-ring-hover/20 hover:bg-main-hover active:bg-main-active active:ring-main-ring-active
+									hover:scale-101 mt-[24px] flex w-full items-center justify-center rounded-lg
+									transition-transform duration-300 hover:cursor-pointer"
 							>
 								Sign Up
 							</button>

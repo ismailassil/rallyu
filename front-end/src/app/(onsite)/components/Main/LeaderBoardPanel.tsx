@@ -9,7 +9,7 @@ export default function LeaderboardPanel() {
 
 	return (
 		<aside
-			className={`bg-card border-2 border-br-card rounded-lg flex-1 w-full h-full ${
+			className={`bg-card border-br-card h-full w-full flex-1 rounded-lg border-2 ${
 				isWidth
 					? !showbox
 						? "min-h-[588px] cursor-pointer"
@@ -17,28 +17,28 @@ export default function LeaderboardPanel() {
 					: "max-h-[948px] min-h-[588px]"
 			}`}
 		>
-			<div className="flex flex-col h-full">
+			<div className="flex h-full flex-col">
 				<div
-					className="relative overflow-hidden group shrink-0"
+					className="group relative shrink-0 overflow-hidden"
 					onClick={() => setShowbox(!showbox)}
 				>
 					<h1
-						className={`${unicaOne.className} text-4xl p-13 uppercase select-none`}
+						className={`${unicaOne.className} p-13 select-none text-4xl uppercase`}
 					>
 						Leaderboard
 					</h1>
 					<div
-						className="absolute top-[calc(50%)] -left-4
-					-translate-x-1/2 -translate-y-1/2 w-18 h-18 rounded-lg bg-accent
-					duration-200 transition-all group-hover:scale-105"
+						className="w-18 h-18 bg-accent
+					absolute -left-4 top-[calc(50%)] -translate-x-1/2 -translate-y-1/2 rounded-lg
+					transition-all duration-200 group-hover:scale-105"
 					></div>
 				</div>
 				<div
-					className={`overflow-y-auto flex-1 custom-scroll ${
+					className={`custom-scroll flex-1 overflow-y-auto ${
 						showbox && "hidden lg:block"
 					}`}
 				>
-					<div className="flex flex-col gap-y-2 pl-4 pr-4 pb-4">
+					<div className="flex flex-col gap-y-2 pb-4 pl-4 pr-4">
 						{extendedLeaderboard.map((player, i) => (
 							<LeaderboardItem
 								position={i}

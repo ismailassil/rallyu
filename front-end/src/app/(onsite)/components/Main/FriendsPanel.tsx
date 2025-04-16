@@ -4,21 +4,21 @@ import Friend from "./Friend";
 
 export default function FriendsPanel() {
 	return (
-		<aside className="hidden xl:block bg-card border-2 border-br-card rounded-lg h-full w-full flex-2">
-			<div className="flex flex-col h-full">
-				<div className="relative overflow-hidden group shrink-0">
+		<aside className="bg-card border-br-card flex-2 hidden h-full w-full rounded-lg border-2 xl:block">
+			<div className="flex h-full flex-col">
+				<div className="group relative shrink-0 overflow-hidden">
 					<h1
-						className={`${unicaOne.className} text-4xl p-13 uppercase select-none`}
+						className={`${unicaOne.className} p-13 select-none text-4xl uppercase`}
 					>
 						Friends
 					</h1>
 					<div
-						className="absolute top-[calc(50%)] -left-4
-					-translate-x-1/2 -translate-y-1/2 w-18 h-18 rounded-lg bg-accent
-					duration-200 transition-all group-hover:scale-105"
+						className="w-18 h-18 bg-accent
+					absolute -left-4 top-[calc(50%)] -translate-x-1/2 -translate-y-1/2 rounded-lg
+					transition-all duration-200 group-hover:scale-105"
 					></div>
 				</div>
-				<div className="overflow-y-auto flex-1 max-h-[calc(100vh-19rem)] custom-scroll">
+				<div className="custom-scroll max-h-[calc(100vh-19rem)] flex-1 overflow-y-auto">
 					{/* <div className="flex flex-col mt-20 justify-center items-center">
 						<Image
 							src="/sad.png"
@@ -31,7 +31,7 @@ export default function FriendsPanel() {
 						<p className="text-lg text-gray-500">Try find some new friends</p>
 					</div> */}
 
-					<div className="flex flex-col gap-y-2 pl-4 pr-4 pb-4">
+					<div className="flex flex-col gap-y-2 pb-4 pl-4 pr-4">
 						{Array.from({ length: 30 }).map((_, i) => (
 							<Friend
 								key={i}

@@ -16,7 +16,7 @@ function Chart({
 }) {
 	if (!data || data.length === 0) {
 		return (
-			<div className="h-full flex items-center justify-center text-gray-400">
+			<div className="flex h-full items-center justify-center text-gray-400">
 				No data available
 			</div>
 		);
@@ -27,7 +27,13 @@ function Chart({
 			<ResponsiveContainer width="104%" height={230}>
 				<AreaChart data={data}>
 					<defs>
-						<linearGradient id="colorGradient" x1="0" y1="0" x2="1" y2="0">
+						<linearGradient
+							id="colorGradient"
+							x1="0"
+							y1="0"
+							x2="1"
+							y2="0"
+						>
 							<stop offset="0%" stopColor="#ffe600" />
 							<stop offset="100%" stopColor="#00faff" />
 						</linearGradient>
@@ -58,7 +64,7 @@ const CustomTooltip = ({
 }: TooltipProps<number, string>) => {
 	if (active && payload && payload.length) {
 		return (
-			<div className="bg-white/10 backdrop-blur-lg p-2 rounded-lg border-2 border-br-card ring-3 ring-white/5">
+			<div className="border-br-card ring-3 rounded-lg border-2 bg-white/10 p-2 ring-white/5 backdrop-blur-lg">
 				<p>{label}</p>
 				<p className="text-xl">
 					{payload[0].value} <span className="text-sm">hours</span>

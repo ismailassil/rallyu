@@ -71,14 +71,16 @@ function General() {
 
 	return (
 		<motion.div
-			className="h-full w-full p-4 flex flex-col gap-3 max-w-220 hide-scrollbar overflow-y-scroll"
+			className="max-w-220 hide-scrollbar flex h-full w-full flex-col gap-3 overflow-y-scroll p-4"
 			initial={{ opacity: 0, x: -50 }}
 			animate={{ opacity: 1, x: 0 }}
 			exit={{ opacity: 0, x: 50 }}
 			transition={{ type: "spring", stiffness: 120 }}
 		>
 			<div>
-				<h2 className="text-xl lg:text-2xl mb-1 mt-2 font-semibold">Basics</h2>
+				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">
+					Basics
+				</h2>
 				<hr className="border-white/10" />
 			</div>
 			<UploadInput />
@@ -118,25 +120,25 @@ function General() {
 			/>
 			<div className="flex justify-end">
 				<button
-					className="flex items-center gap-4 bg-main rounded-sm py-2 px-4
-										hover:scale-101 transform transition-all duration-300
-										hover:cursor-pointer mt-3 text-sm lg:text-base"
+					className="bg-main hover:scale-101 mt-3 flex transform items-center gap-4
+										rounded-sm px-4 py-2 text-sm
+										transition-all duration-300 hover:cursor-pointer lg:text-base"
 				>
 					<Check size={22} />
 					<p>Save Changes</p>
 				</button>
 			</div>
 			<div className="mt-5">
-				<h2 className="text-xl lg:text-2xl mb-1 mt-2 font-semibold">
+				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">
 					Preferences
 				</h2>
 				<hr className="border-white/10" />
 			</div>
-			<div className="flex justify-between items-center gap-20 max-w-200 text-sm lg:text-base">
-				<h3 className="flex-1 w-full">Language</h3>
+			<div className="max-w-200 flex items-center justify-between gap-20 text-sm lg:text-base">
+				<h3 className="w-full flex-1">Language</h3>
 				<button
 					ref={buttonRef}
-					className="relative bg-card border-2 border-br-card w-full flex-2 h-11 rounded-lg text-left hover:cursor-pointer"
+					className="bg-card border-br-card flex-2 relative h-11 w-full rounded-lg border-2 text-left hover:cursor-pointer"
 					onClick={(e) => {
 						e.preventDefault();
 						setDrop((drop) => !drop);
@@ -144,7 +146,9 @@ function General() {
 				>
 					<CaretDown
 						size={24}
-						className={`absolute right-2 bottom-1/2 translate-y-1/2 transition duration-300 ${drop ? "rotate-180" : "rotate-0"}`}
+						className={`absolute bottom-1/2 right-2 translate-y-1/2 transition duration-300 ${
+							drop ? "rotate-180" : "rotate-0"
+						}`}
 					/>
 					<div className="px-4" style={{ whiteSpace: "pre" }}>
 						{language}
@@ -153,7 +157,7 @@ function General() {
 					{drop && (
 						<ul
 							ref={dropRef}
-							className="absolute top-13 *:text-left *:py-1.5 *:px-4 bg-card w-full z-10 backdrop-blur-xs rounded-md border-2 border-br-card py-1 *:hover:bg-white/10 *:w-full *:cursor-pointer"
+							className="top-13 *:text-left *:py-1.5 *:px-4 bg-card backdrop-blur-xs border-br-card *:hover:bg-white/10 *:w-full *:cursor-pointer absolute z-10 w-full rounded-md border-2 py-1"
 						>
 							<li
 								onClick={(e) => {
@@ -184,12 +188,12 @@ function General() {
 				</button>
 			</div>
 			<div>
-				<h2 className="text-xl lg:text-2xl mb-1 mt-5 font-semibold">
+				<h2 className="mb-1 mt-5 text-xl font-semibold lg:text-2xl">
 					Blocked Users
 				</h2>
 				<hr className="border-white/10" />
 			</div>
-			<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-3">
+			<div className="mt-3 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 				{Array.from({ length: 11 }).map((_, i) => (
 					<BlockedUser
 						key={i}

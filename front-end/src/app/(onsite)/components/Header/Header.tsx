@@ -26,7 +26,7 @@ export default function Header() {
 			initial={{ opacity: 0, y: -50 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.5, delay: 1 }}
-			className={`flex fixed w-full top-0 left-0 z-200 justify-between p-6 items-center h-25
+			className={`z-200 h-25 fixed left-0 top-0 flex w-full items-center justify-between p-6
 				${setScrolled && "backdrop-blur-2xl"}`}
 		>
 			<Image
@@ -37,8 +37,8 @@ export default function Header() {
 				priority={true}
 				className={
 					Logo
-						? "cursor-pointer pl-6 scale-105 transition-transform duration-200"
-						: "cursor-pointer pl-6 scale-100 transition-transform duration-200"
+						? "scale-105 cursor-pointer pl-6 transition-transform duration-200"
+						: "scale-100 cursor-pointer pl-6 transition-transform duration-200"
 				}
 				onClick={() => setLogo(!Logo)}
 			></Image>

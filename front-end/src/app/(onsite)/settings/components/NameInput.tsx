@@ -14,13 +14,13 @@ function NameInput({
 	handleInputChange: (field: string, value: string) => void;
 }) {
 	return (
-		<div className="flex justify-between flex-col md:flex-row items-center gap-2 lg:gap-20 text-sm lg:text-base">
-			<label className="flex-1 w-full">Name</label>
-			<div className="flex-2 flex gap-3 w-full">
+		<div className="flex flex-col items-center justify-between gap-2 text-sm md:flex-row lg:gap-20 lg:text-base">
+			<label className="w-full flex-1">Name</label>
+			<div className="flex-2 flex w-full gap-3">
 				<div className="relative flex-1">
 					<input
-						className={`w-full h-11 pl-[45px] pr-[10px] bg-bg border-bbg flex items-center justify-center
-										gap-[7px] border-2 rounded-lg focus:ring-bbg focus:ring-4 outline-none hover:ring-4 hover:ring-bbg hover:bg-hbbg
+						className={`bg-bg border-bbg focus:ring-bbg hover:ring-bbg hover:bg-hbbg flex h-11 w-full items-center
+										justify-center gap-[7px] rounded-lg border-2 pl-[45px] pr-[10px] outline-none hover:ring-4 focus:ring-4
 								`}
 						type="text"
 						id="firstname"
@@ -43,8 +43,8 @@ function NameInput({
 				</div>
 				<div className="relative flex-1">
 					<input
-						className={`w-full h-11 pl-[45px] bg-bg border-bbg flex items-center justify-center
-										gap-[7px] border-2 rounded-lg focus:ring-bbg focus:ring-4 outline-none hover:ring-4 hover:ring-bbg hover:bg-hbbg
+						className={`bg-bg border-bbg focus:ring-bbg hover:ring-bbg hover:bg-hbbg flex h-11 w-full
+										items-center justify-center gap-[7px] rounded-lg border-2 pl-[45px] outline-none hover:ring-4 focus:ring-4
 								`}
 						type="text"
 						id="lastname"

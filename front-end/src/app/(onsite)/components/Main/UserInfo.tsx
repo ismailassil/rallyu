@@ -8,40 +8,43 @@ type UserInfoProps = {
 export default function UserInfo({ firstname }: UserInfoProps) {
 	return (
 		<header
-			className="flex sm:grid sm:grid-rows-[0.5fr_1fr] md:grid-rows-none
-				sm:grid-cols-none md:grid-cols-[1fr_0.5fr] gap-10 w-full h-full
-				items-center p-13 overflow-hidden min-h-[360px] sm:min-h-[330px] md:min-h-[400px] max-h-[200px]
-				bg-card border-2 border-br-card rounded-lg"
+			className="p-13 bg-card border-br-card flex
+				h-full max-h-[200px] min-h-[360px] w-full items-center
+				gap-10 overflow-hidden rounded-lg border-2 sm:grid sm:min-h-[330px] sm:grid-cols-none
+				sm:grid-rows-[0.5fr_1fr] md:min-h-[400px] md:grid-cols-[1fr_0.5fr] md:grid-rows-none"
 		>
-			<div className="flex flex-1 flex-col h-full py-5 justify-between">
+			<div className="flex h-full flex-1 flex-col justify-between py-5">
 				<div>
-					<div className="relative group select-none">
+					<div className="group relative select-none">
 						<h1
-							className={`${unicaOne.className} text-4xl lg:text-5xl font-semibold mb-10`}
+							className={`${unicaOne.className} mb-10 text-4xl font-semibold lg:text-5xl`}
 						>
-							WELCOME BACK, <span className="text-accent">{firstname}</span>
+							WELCOME BACK,{" "}
+							<span className="text-accent">{firstname}</span>
 						</h1>
 						<div
-							className="absolute top-[calc(50%)] -left-17
-						-translate-x-1/2 -translate-y-1/2 w-18 h-18 rounded-lg bg-accent
-						duration-200 transition-all group-hover:scale-105"
+							className="-left-17 w-18 h-18
+						bg-accent absolute top-[calc(50%)] -translate-x-1/2 -translate-y-1/2 rounded-lg
+						transition-all duration-200 group-hover:scale-105"
 						></div>
 					</div>
-					<p className="text-gray-400">Step into a World of Classy Gaming</p>
+					<p className="text-gray-400">
+						Step into a World of Classy Gaming
+					</p>
 				</div>
 				<div className="">
 					<p className="mb-2 pt-10">Level 10</p>
-					<div className=" bg-notwhite w-[100%] h-2 rounded-full">
-						<div className="bg-accent w-[60%] h-2 rounded-full"></div>
+					<div className=" bg-notwhite h-2 w-[100%] rounded-full">
+						<div className="bg-accent h-2 w-[60%] rounded-full"></div>
 					</div>
 				</div>
 			</div>
 			<div
-				className="justify-right items-center hidden md:flex w-[90px] h-[90px] md:w-[250px] md:h-[250px]
-				transition-transform duration-200 hover:scale-101"
+				className="justify-right hover:scale-101 hidden h-[90px] w-[90px] items-center transition-transform duration-200
+				md:flex md:h-[250px] md:w-[250px]"
 			>
 				<Image
-					className="ring-6 rounded-full ring-br-image object-cover w-full h-full hover:ring-7 transition-transform duration-200 hover:scale-101"
+					className="ring-6 ring-br-image hover:ring-7 hover:scale-101 h-full w-full rounded-full object-cover transition-transform duration-200"
 					src="/image.png"
 					alt="Profile Image"
 					width={250}

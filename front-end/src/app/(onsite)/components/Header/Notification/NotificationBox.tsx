@@ -40,7 +40,9 @@ function NotificationBox() {
 
 		const interval = setInterval(() => {
 			const randomNotif =
-				testNotifications[Math.floor(Math.random() * testNotifications.length)];
+				testNotifications[
+					Math.floor(Math.random() * testNotifications.length)
+				];
 			addNotification({
 				id: Date.now().toString(),
 				message: randomNotif.message,
@@ -63,7 +65,7 @@ function NotificationBox() {
 	}, [notifications]);
 
 	return (
-		<div className="fixed top-0 left-1/2 -translate-x-1/2 z-203">
+		<div className="z-203 fixed left-1/2 top-0 -translate-x-1/2">
 			{notifications.map((notif) => (
 				<NotificationItem
 					key={notif.id}

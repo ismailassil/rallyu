@@ -11,12 +11,12 @@ export default function Dashboard() {
 			initial={{ opacity: 0, y: -50 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 1, delay: 0.5 }}
-			className="h-[100vh] pt-30 pl-6 sm:pl-30 pr-6 pb-24 sm:pb-6"
+			className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
 		>
-			<div className="h-full w-full rounded-md flex gap-6">
+			<div className="flex h-full w-full gap-6 rounded-md">
 				<article
-					className="h-full w-full flex gap-6 flex-5 bg-card rounded-2xl border-2
-						border-br-card p-4 pl-3"
+					className="flex-5 bg-card border-br-card flex h-full w-full gap-6 rounded-2xl
+						border-2 p-4 pl-3"
 				>
 					<BoxProvider>
 						<FriendsList />

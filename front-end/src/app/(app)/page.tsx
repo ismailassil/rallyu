@@ -26,19 +26,21 @@ export default function Home() {
 	}
 
 	return (
-		<main className="h-[100vh] w-full pt-30 flex items-center justify-center pb-10">
-			<div className="w-full h-full flex justify-center overflow-auto">
-				<div className="w-[550px] h-full pt-20 pb-20 pl-10 pr-10 flex items-start lg:items-center">
+		<main className="pt-30 flex h-[100vh] w-full items-center justify-center pb-10">
+			<div className="flex h-full w-full justify-center overflow-auto">
+				<div className="flex h-full w-[550px] items-start pb-20 pl-10 pr-10 pt-20 lg:items-center">
 					<div className="flex-1">
 						<h1
-							className={`${ibm.className} text-[36px] font-bold flex md:justify-center `}
+							className={`${ibm.className} flex text-[36px] font-bold md:justify-center `}
 						>
 							Welcome Back!
 						</h1>
-						<p className={`flex md:justify-center text-[18px] mb-[47px]`}>
+						<p
+							className={`mb-[47px] flex text-[18px] md:justify-center`}
+						>
 							Please enter your details to sign in
 						</p>
-						<div className="flex flex-col sm:flex-row justify-center mb-4 gap-[18px]">
+						<div className="mb-4 flex flex-col justify-center gap-[18px] sm:flex-row">
 							<AuthButton
 								src="/google-logo.svg"
 								width={17}
@@ -54,7 +56,7 @@ export default function Home() {
 								text="Intra"
 							/>
 						</div>
-						<div className="flex items-center gap-4 text-gray-500 mt-[19px] mb-[19px]">
+						<div className="mb-[19px] mt-[19px] flex items-center gap-4 text-gray-500">
 							<hr className="flex-grow border-t border-gray-300" />
 							<span className="text-white">OR</span>
 							<hr className="flex-grow border-t border-gray-300" />
@@ -99,7 +101,7 @@ export default function Home() {
 									{error && <>&#10005;</>} {error}
 								</p>
 								<p className="flex justify-end">
-									<span className="underline underline-offset-3 hover:cursor-pointer hover:text-blue-400 text-sm">
+									<span className="underline-offset-3 text-sm underline hover:cursor-pointer hover:text-blue-400">
 										Forgot password?
 									</span>
 								</p>
@@ -107,7 +109,7 @@ export default function Home() {
 
 							<button
 								type="submit"
-								className="w-full h-13 rounded-lg bg-main mt-[44px] flex justify-center items-center hover:cursor-pointer hover:ring-3 hover:ring-main-ring-hover/20 hover:bg-main-hover active:bg-main-active active:ring-main-ring-active hover:scale-101 transition-transform duration-300"
+								className="h-13 bg-main hover:ring-3 hover:ring-main-ring-hover/20 hover:bg-main-hover active:bg-main-active active:ring-main-ring-active hover:scale-101 mt-[44px] flex w-full items-center justify-center rounded-lg transition-transform duration-300 hover:cursor-pointer"
 							>
 								Sign In
 							</button>

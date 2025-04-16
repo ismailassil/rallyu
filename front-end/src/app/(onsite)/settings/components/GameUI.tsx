@@ -11,14 +11,14 @@ function GameUI() {
 
 	return (
 		<motion.div
-			className="h-full w-full p-4 flex flex-col gap-3 max-w-220 hide-scrollbar overflow-scroll"
+			className="max-w-220 hide-scrollbar flex h-full w-full flex-col gap-3 overflow-scroll p-4"
 			initial={{ opacity: 0, x: -50 }}
 			animate={{ opacity: 1, x: 0 }}
 			exit={{ opacity: 0, x: 50 }}
 			transition={{ type: "spring", stiffness: 120 }}
 		>
 			<div>
-				<h2 className="text-xl lg:text-2xl mb-1 mt-2 font-semibold">
+				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">
 					Default customization
 				</h2>
 				<hr className="border-white/10" />

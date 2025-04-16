@@ -24,14 +24,12 @@ export default function Notification({
 	return (
 		<div className="relative" ref={notificationRef}>
 			<button
-				className={`ml-4 rounded-full bg-card border-2 hover:cursor-pointer
-							border-br-card w-[55px] h-[55px] flex justify-center items-center
+				className={`bg-card border-br-card ml-4 flex h-[55px]
+							w-[55px] items-center justify-center rounded-full border-2 hover:cursor-pointer
 							${
 								isNotif
-									? "bg-hbg border-hbbg ring-4 \
-								ring-bbg scale-101"
-									: "hover:bg-hbg hover:border-hbbg hover:ring-4 \
-								hover:ring-bbg hover:scale-101"
+									? "bg-hbg border-hbbg ring-bbg 								scale-101 ring-4"
+									: "hover:bg-hbg hover:border-hbbg hover:ring-bbg 								hover:scale-101 hover:ring-4"
 							} transition-transform duration-200
 								
 								`}
@@ -51,7 +49,7 @@ export default function Notification({
 				/>
 			</button>
 			{newNotification && (
-				<div className="absolute right-4 top-4 h-2 w-2 bg-red-500 rounded-full animate-ping ring-1 ring-red-400"></div>
+				<div className="absolute right-4 top-4 h-2 w-2 animate-ping rounded-full bg-red-500 ring-1 ring-red-400"></div>
 			)}
 			<AnimatePresence>
 				{isNotif && (
@@ -59,27 +57,36 @@ export default function Notification({
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
-						transition={{ type: "spring", stiffness: 60, duration: 0.1 }}
-						className="absolute flex flex-col right-0 z-10 max-h-[348px]
-							top-18 w-70 
-							origin-top-right rounded-lg bg-card border-2 border-br-card
-							backdrop-blur-xl overflow-hidden"
+						transition={{
+							type: "spring",
+							stiffness: 60,
+							duration: 0.1,
+						}}
+						className="top-18 w-70 bg-card border-br-card absolute right-0
+							z-10 flex 
+							max-h-[348px] origin-top-right flex-col overflow-hidden rounded-lg
+							border-2 backdrop-blur-xl"
 					>
-						<div className="px-4 py-3 w-full flex sticky top-0 z-20 bg-card/70 backdrop-blur-3xl text-start justify-between items-center">
+						<div className="bg-card/70 sticky top-0 z-20 flex w-full items-center justify-between px-4 py-3 text-start backdrop-blur-3xl">
 							<p>Notification</p>
 							<div
-								className="w-1 h-1 p-3 text-center flex items-center justify-center text-sm
-									rounded-full bg-hbbg"
+								className="bg-hbbg flex h-1 w-1 items-center justify-center rounded-full p-3
+									text-center text-sm"
 							>
 								0
 							</div>
 						</div>
-						<div className="flex-1 overflow-y-scroll custom-scroll divide-y-1 divide-bg">
+						<div className="custom-scroll divide-y-1 divide-bg flex-1 overflow-y-scroll">
 							{Array.from({ length: 12 }).map((_, i) => (
 								// <p key={i} className="px-7 py-4 w-full flex text-start h-14">
 								// 	Nothing &#129488;
 								// </p>
-								<InnerNotification key={i} name={"Ismail Assil"} message={"Hello Ismail! How are you doing"} type={"game"} />
+								<InnerNotification
+									key={i}
+									name={"Ismail Assil"}
+									message={"Hello Ismail! How are you doing"}
+									type={"game"}
+								/>
 							))}
 						</div>
 					</motion.div>

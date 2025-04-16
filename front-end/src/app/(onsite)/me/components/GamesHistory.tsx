@@ -6,22 +6,22 @@ import Game from "./Game";
 export default function GamesHistory() {
 	return (
 		<aside
-			className={`bg-card border-2 border-br-card rounded-lg flex-[2.5] w-full h-full min-w-[30%] min-h-130 max-h-220`}
+			className={`bg-card border-br-card min-h-130 max-h-220 h-full w-full min-w-[30%] flex-[2.5] rounded-lg border-2`}
 		>
-			<div className="flex flex-col h-full">
-				<div className="relative overflow-hidden group shrink-0">
+			<div className="flex h-full flex-col">
+				<div className="group relative shrink-0 overflow-hidden">
 					<h1
-						className={`${unicaOne.className} text-4xl p-13 capitalize select-none`}
+						className={`${unicaOne.className} p-13 select-none text-4xl capitalize`}
 					>
 						Games History
 					</h1>
 					<div
-						className="absolute top-[calc(50%)] -left-4
-								-translate-x-1/2 -translate-y-1/2 w-18 h-18 rounded-lg bg-main
-								duration-200 transition-all group-hover:scale-105"
+						className="w-18 h-18 bg-main
+								absolute -left-4 top-[calc(50%)] -translate-x-1/2 -translate-y-1/2 rounded-lg
+								transition-all duration-200 group-hover:scale-105"
 					></div>
 				</div>
-				<div className="overflow-y-auto flex-1 max-h-[calc(100vh-19rem)] hide-scrollbar mb-4">
+				<div className="hide-scrollbar mb-4 max-h-[calc(100vh-19rem)] flex-1 overflow-y-auto">
 					<div className="flex flex-col gap-y-2.5 pl-4 pr-4">
 						{Array.from({ length: 10 }).map((_, i) => (
 							<Game
@@ -31,7 +31,8 @@ export default function GamesHistory() {
 								type={i % 2 ? "xo" : undefined}
 								score={{
 									me: i % 3 === 0 ? 5 : i % 3 === 1 ? 2 : 5,
-									opponent: i % 3 === 0 ? 2 : i % 3 === 1 ? 5 : 5,
+									opponent:
+										i % 3 === 0 ? 2 : i % 3 === 1 ? 5 : 5,
 								}}
 								opponentImage="/image_1.jpg"
 								myImage="/image.png"
