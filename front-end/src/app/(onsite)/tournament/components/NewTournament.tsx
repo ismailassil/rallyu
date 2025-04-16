@@ -8,7 +8,13 @@ import TournamentUI from "./Items/TournamentUI";
 import Connectivity from "../../game/components/Items/Connectivity";
 import Player from "../../game/components/Items/Player";
 
-function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
+function NewTournament({
+	setValue,
+	setEnter,
+}: {
+	setValue: (value: boolean) => void;
+	setEnter: (value: boolean) => void;
+}) {
 	const [game, setGame] = useState(0);
 	const [connectivity, setConnectivity] = useState(0);
 	const [players, setPlayers] = useState<{ name: string; img: string }[]>([
@@ -44,7 +50,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 						<span className="font-semibold">Set the Stage</span>
 					</h2>
 				</div>
-				<StartButton label="Enter the Arena" setValue={setValue} />
+				<StartButton label="Enter the Arena" setValue={setEnter} />
 			</motion.div>
 			<motion.div
 				initial={{ opacity: 0, x: 100 }}
