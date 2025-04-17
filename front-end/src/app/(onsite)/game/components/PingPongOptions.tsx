@@ -26,11 +26,7 @@ function PingPongOptions({ connectivity }: { connectivity: number }) {
 
 	useEffect(() => {
 		if (
-			(connectivity > 0 &&
-				(paddleWidth !== 3 ||
-					paddleHeight !== 6 ||
-					ballSize !== 4 ||
-					round !== 0)) ||
+			(connectivity > 0 && (paddleWidth !== 3 || paddleHeight !== 6 || ballSize !== 4 || round !== 0)) ||
 			boardColor !== 0
 		) {
 			setReset(true);
@@ -43,47 +39,19 @@ function PingPongOptions({ connectivity }: { connectivity: number }) {
 		<>
 			{connectivity > 0 && (
 				<>
-					<Range
-						label="Paddle Width"
-						value={paddleWidth}
-						setValue={setPaddleWidth}
-					/>
-					<Range
-						label="Paddle Height"
-						value={paddleHeight}
-						setValue={setPaddleHeight}
-					/>
-					<Range
-						label="Ball Size"
-						value={ballSize}
-						setValue={setBallSize}
-					/>
+					<Range label="Paddle Width" value={paddleWidth} setValue={setPaddleWidth} />
+					<Range label="Paddle Height" value={paddleHeight} setValue={setPaddleHeight} />
+					<Range label="Ball Size" value={ballSize} setValue={setBallSize} />
 				</>
 			)}
-			<Board
-				label="Board Color"
-				boardColor={boardColor}
-				setBoardColor={setBoardColor}
-			/>
-			<AnimatePresence>
-				{connectivity > 0 && (
-					<Rounds round={round} setRound={setRound} />
-				)}
-			</AnimatePresence>
+			<Board label="Board Color" boardColor={boardColor} setBoardColor={setBoardColor} />
+			<AnimatePresence>{connectivity > 0 && <Rounds round={round} setRound={setRound} />}</AnimatePresence>
 			<AnimatePresence>
 				<>
 					{connectivity === 2 && (
 						<>
-							<Player
-								label="Player 1"
-								value={playerOne}
-								setValue={setPlayerOne}
-							/>
-							<Player
-								label="Player 2"
-								value={playerTwo}
-								setValue={setPlayerTwo}
-							/>
+							<Player label="Player 1" value={playerOne} setValue={setPlayerOne} />
+							<Player label="Player 2" value={playerTwo} setValue={setPlayerTwo} />
 						</>
 					)}
 					{reset && <ResetButton resetValues={resetValues} />}

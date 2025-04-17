@@ -3,15 +3,7 @@ import ChatFriend from "./ChatFriend";
 import Image from "next/image";
 
 export default function FriendsList() {
-	const {
-		showbox,
-		setShowbox,
-		isWidth,
-		userMessage,
-		setUserMessage,
-		selectedFriend,
-		setSelectedFriend,
-	} = useBox();
+	const { showbox, setShowbox, isWidth, userMessage, setUserMessage, selectedFriend, setSelectedFriend } = useBox();
 
 	return (
 		<section
@@ -22,9 +14,7 @@ export default function FriendsList() {
 			}`}
 		>
 			<div className="flex w-full flex-col gap-5">
-				<h1 className="px-5 py-10 text-3xl font-semibold lg:text-4xl">
-					Chat
-				</h1>
+				<h1 className="px-5 py-10 text-3xl font-semibold lg:text-4xl">Chat</h1>
 				<div className="relative w-full">
 					<Image
 						className="absolute left-4 top-3"
@@ -54,16 +44,11 @@ export default function FriendsList() {
 							onClick={(e) => {
 								e.preventDefault();
 								setSelectedFriend(i);
-								if (i === selectedFriend)
-									setUserMessage(!userMessage);
+								if (i === selectedFriend) setUserMessage(!userMessage);
 								if (i !== selectedFriend) setUserMessage(true);
 								if (isWidth) setShowbox(true);
 							}}
-							className={`${
-								selectedFriend === i &&
-								userMessage &&
-								"bg-white/10"
-							}`}
+							className={`${selectedFriend === i && userMessage && "bg-white/10"}`}
 						/>
 					))}
 				</div>

@@ -52,9 +52,7 @@ export default function SideBar() {
 	);
 
 	useEffect(() => {
-		const currentLink = Links.find((link) =>
-			pathname.startsWith(link.path)
-		);
+		const currentLink = Links.find((link) => pathname.startsWith(link.path));
 		setActiveButton(currentLink ? currentLink.id : -1);
 	}, [Links, pathname]);
 
@@ -94,11 +92,7 @@ export default function SideBar() {
 						className={`absolute inset-0
 							rounded-md
 							transition-all duration-200
-							${
-								activeButton === link.id
-									? "scale-180 sm:scale-300 bg-hbbg"
-									: "hover:bg-hbg hover:scale-150"
-							}
+							${activeButton === link.id ? "scale-180 sm:scale-300 bg-hbbg" : "hover:bg-hbg hover:scale-150"}
 								}
 								`}
 					></div>

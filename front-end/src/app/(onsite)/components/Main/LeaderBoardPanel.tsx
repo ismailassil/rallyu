@@ -18,26 +18,15 @@ export default function LeaderboardPanel() {
 			}`}
 		>
 			<div className="flex h-full flex-col">
-				<div
-					className="group relative shrink-0 overflow-hidden"
-					onClick={() => setShowbox(!showbox)}
-				>
-					<h1
-						className={`${unicaOne.className} p-13 select-none text-4xl uppercase`}
-					>
-						Leaderboard
-					</h1>
+				<div className="group relative shrink-0 overflow-hidden" onClick={() => setShowbox(!showbox)}>
+					<h1 className={`${unicaOne.className} p-13 select-none text-4xl uppercase`}>Leaderboard</h1>
 					<div
 						className="w-18 h-18 bg-accent
 					absolute -left-4 top-[calc(50%)] -translate-x-1/2 -translate-y-1/2 rounded-lg
 					transition-all duration-200 group-hover:scale-105"
 					></div>
 				</div>
-				<div
-					className={`custom-scroll flex-1 overflow-y-auto ${
-						showbox && "hidden lg:block"
-					}`}
-				>
+				<div className={`custom-scroll flex-1 overflow-y-auto ${showbox && "hidden lg:block"}`}>
 					<div className="flex flex-col gap-y-2 pb-4 pl-4 pr-4">
 						{extendedLeaderboard.map((player, i) => (
 							<LeaderboardItem

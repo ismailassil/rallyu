@@ -20,8 +20,7 @@ function Game({
 	myImage: string;
 	matchxp: number;
 }) {
-	const matchResult =
-		score.me === score.opponent ? 0 : score.me > score.opponent ? 1 : -1;
+	const matchResult = score.me === score.opponent ? 0 : score.me > score.opponent ? 1 : -1;
 	// const myTooltipId = myName + crypto.randomUUID();
 	// const opponentTooltipId = opponent + crypto.randomUUID();
 
@@ -29,20 +28,10 @@ function Game({
 		<div className="bg-card border-br-card hover:scale-101 duration-400 hover:bg-hbg hover:border-hbbg relative flex items-center justify-between overflow-hidden rounded-2xl border-2 px-5 py-6 transition-transform">
 			<div
 				className={`w-19 absolute -top-1 left-1/2 flex h-8 -translate-x-1/2 items-end justify-center pb-1 ${
-					matchResult === 0
-						? "bg-gray-600"
-						: matchResult >= 1
-							? "bg-green-600"
-							: "bg-red-600"
+					matchResult === 0 ? "bg-gray-600" : matchResult >= 1 ? "bg-green-600" : "bg-red-600"
 				} ring-border-gray-thick/50 rounded-b-lg ring-2`}
 			>
-				<p className="text-sm">
-					{matchResult === 0
-						? "Draw"
-						: matchResult >= 1
-							? "Victory"
-							: "Defeat"}
-				</p>
+				<p className="text-sm">{matchResult === 0 ? "Draw" : matchResult >= 1 ? "Victory" : "Defeat"}</p>
 			</div>
 			<div className="w-19 bg-gray-thick ring-border-gray-thick/50 absolute -bottom-1 left-1/2 flex h-8 -translate-x-1/2 items-center justify-center rounded-t-lg ring-2">
 				<Image
@@ -59,13 +48,7 @@ function Game({
 				>
 					<Image
 						className={`ring-fr-image h-full w-full rounded-full object-cover
-							${
-								matchResult === 0
-									? "ring-3 ring-gray-600"
-									: matchResult >= 1
-										? "ring-3 ring-green-500"
-										: "ring-2"
-							}`}
+							${matchResult === 0 ? "ring-3 ring-gray-600" : matchResult >= 1 ? "ring-3 ring-green-500" : "ring-2"}`}
 						src={myImage}
 						width={100}
 						height={100}
@@ -89,13 +72,7 @@ function Game({
 				>
 					<Image
 						className={`ring-fr-image h-full w-full rounded-full object-cover
-							${
-								matchResult === 0
-									? "ring-3 ring-gray-600"
-									: matchResult <= -1
-										? "ring-3 ring-green-500"
-										: "ring-2"
-							}`}
+							${matchResult === 0 ? "ring-3 ring-gray-600" : matchResult <= -1 ? "ring-3 ring-green-500" : "ring-2"}`}
 						src={opponentImage}
 						width={100}
 						height={100}

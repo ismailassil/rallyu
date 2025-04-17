@@ -78,9 +78,7 @@ function TournamentUI({ players, semi, winner }: TournamentUIPropos) {
 						<ProfileHead img={players.player1.img} />
 						<p
 							className={`${
-								!players.player1?.name
-									? "bg-white/3 h-[50%] w-[60%] animate-pulse rounded-sm"
-									: ""
+								!players.player1?.name ? "bg-white/3 h-[50%] w-[60%] animate-pulse rounded-sm" : ""
 							}`}
 						>
 							{players.player1?.name || ""}
@@ -132,9 +130,7 @@ function TournamentUI({ players, semi, winner }: TournamentUIPropos) {
 				<ol className="round round-winner ml-5 mr-5 flex flex-1 flex-col justify-around">
 					<li className="with-connector tournament-head">
 						<ProfileHead img={winner?.img} />
-						<p
-							className={`${!winner?.name ? "bg-white/3 h-[50%] w-[60%] animate-pulse rounded-sm" : ""}`}
-						>
+						<p className={`${!winner?.name ? "bg-white/3 h-[50%] w-[60%] animate-pulse rounded-sm" : ""}`}>
 							{winner?.name}
 						</p>
 					</li>

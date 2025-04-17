@@ -1,15 +1,7 @@
 import { ArrowUUpRight } from "@phosphor-icons/react";
 import Image from "next/image";
 
-function TournamentCard({
-	name,
-	active,
-	isPingPong,
-}: {
-	name: string;
-	active: number;
-	isPingPong: boolean;
-}) {
+function TournamentCard({ name, active, isPingPong }: { name: string; active: number; isPingPong: boolean }) {
 	if (name && name.length > 25) {
 		name = name.substring(0, 23) + "...";
 	}
@@ -32,8 +24,7 @@ function TournamentCard({
 						<p>{active}/4</p>
 					</div>
 					<button className="hover:bg-main flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm bg-white/20 py-0.5">
-						<span className="text-sm">Join</span>{" "}
-						<ArrowUUpRight size={16} />
+						<span className="text-sm">Join</span> <ArrowUUpRight size={16} />
 					</button>
 				</div>
 			</div>

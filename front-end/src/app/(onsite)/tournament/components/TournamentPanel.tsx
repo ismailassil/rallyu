@@ -20,10 +20,7 @@ function TournamentPanel() {
 						{!newTour ? (
 							<OpenArenas setValue={setNewTour} />
 						) : (
-							<NewTournament
-								setValue={setNewTour}
-								setEnter={setLaunchArena}
-							/>
+							<NewTournament setValue={setNewTour} setEnter={setLaunchArena} />
 						)}
 					</>
 				) : (

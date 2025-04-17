@@ -35,17 +35,11 @@ function InviteFriend() {
 				</div>
 			</div>
 			<div
-				className={`flex flex-1 flex-col ${
-					isWidth && show && "hidden"
-				} hide-scrollbar items-center gap-2
+				className={`flex flex-1 flex-col ${isWidth && show && "hidden"} hide-scrollbar items-center gap-2
 							overflow-y-scroll px-4 pb-4`}
 			>
 				{Array.from({ length: 10 }).map((_, i) => (
-					<BattleFriend
-						key={i}
-						fullname={"Nabil Azouz"}
-						img={"/image_1.jpg"}
-					/>
+					<BattleFriend key={i} fullname={"Nabil Azouz"} img={"/image_1.jpg"} />
 				))}
 			</div>
 			{/* <div className="flex-1 flex flex-col items-center mt-10 lg:mt-50 mb-10 overflow-y-scroll hide-scrollbar">

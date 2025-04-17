@@ -35,11 +35,7 @@ function PickGame({
 							e.preventDefault();
 							setGame(0);
 						}}
-						className={`w-full ${
-							game === 0
-								? "bg-white text-black"
-								: "hover:bg-white hover:text-black"
-						}`}
+						className={`w-full ${game === 0 ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
 					>
 						<PingPong size={18} />
 						Ping Pong
@@ -49,11 +45,7 @@ function PickGame({
 							e.preventDefault();
 							setGame(1);
 						}}
-						className={`w-full ${
-							game === 1
-								? "bg-white text-black"
-								: "hover:bg-white hover:text-black"
-						}`}
+						className={`w-full ${game === 1 ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
 					>
 						<Hash size={18} />
 						Tic Tac Toe

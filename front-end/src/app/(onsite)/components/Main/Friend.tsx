@@ -6,11 +6,7 @@ interface friendProps {
 	img: string;
 }
 
-export default function Friend({
-	fullname,
-	isOnline = false,
-	img,
-}: friendProps) {
+export default function Friend({ fullname, isOnline = false, img }: friendProps) {
 	return (
 		<div
 			className="bg-card border-br-card hover:bg-hbg hover:border-hbbg hover:scale-101 flex
@@ -31,9 +27,7 @@ export default function Friend({
 			{/* Middle Content */}
 			<div className="ml-5 flex-grow">
 				<h2 className="text-lg capitalize">{fullname}</h2>
-				<p
-					className={`${isOnline ? "text-isOnline" : "text-gray-500"} text-sm`}
-				>
+				<p className={`${isOnline ? "text-isOnline" : "text-gray-500"} text-sm`}>
 					{isOnline ? "Online" : "Offline"}
 				</p>
 			</div>

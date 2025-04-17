@@ -5,6 +5,8 @@ const config: Config = {
   tabWidth: 4,
   useTabs: true,
   trailingComma: "es5",
+  printWidth: 120,
+  bracketSpacing: true,
 };
 
 export default config;

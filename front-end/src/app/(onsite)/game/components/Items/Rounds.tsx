@@ -32,20 +32,12 @@ function Rounds({
 							e.preventDefault();
 							setRound(0);
 						}}
-						className={`w-full ${
-							round === 0
-								? "bg-white text-black"
-								: "hover:bg-white hover:text-black"
-						}`}
+						className={`w-full ${round === 0 ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
 					>
 						<NumberFive size={18} />
 					</div>
 					<div
-						className={`w-full ${
-							round === 1
-								? "bg-white text-black"
-								: "hover:bg-white hover:text-black"
-						}`}
+						className={`w-full ${round === 1 ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
 						onClick={(e) => {
 							e.preventDefault();
 							setRound(1);
@@ -58,11 +50,7 @@ function Rounds({
 							e.preventDefault();
 							setRound(2);
 						}}
-						className={`w-full ${
-							round === 2
-								? "bg-white text-black"
-								: "hover:bg-white hover:text-black"
-						}`}
+						className={`w-full ${round === 2 ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
 					>
 						<NumberNine size={18} />
 					</div>

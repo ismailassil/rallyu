@@ -81,10 +81,7 @@ function PushNotification({
 					flex-col overflow-hidden text-sm ring-2 backdrop-blur-xl
 					"
 				>
-					<div
-						className="linear bg-main h-0.5 transition-all"
-						style={{ width: `${progress}%` }}
-					></div>
+					<div className="linear bg-main h-0.5 transition-all" style={{ width: `${progress}%` }}></div>
 					<div className="flex justify-between gap-3 p-2">
 						<div className="flex-1">{label}</div>
 						<X

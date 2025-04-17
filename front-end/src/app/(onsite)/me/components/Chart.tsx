@@ -1,25 +1,10 @@
 "use client";
 
-import {
-	Area,
-	AreaChart,
-	ResponsiveContainer,
-	Tooltip,
-	TooltipProps,
-	XAxis,
-} from "recharts";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, TooltipProps, XAxis } from "recharts";
 
-function Chart({
-	data,
-}: {
-	data: Array<{ date: string; timeSpent: number }> | null;
-}) {
+function Chart({ data }: { data: Array<{ date: string; timeSpent: number }> | null }) {
 	if (!data || data.length === 0) {
-		return (
-			<div className="flex h-full items-center justify-center text-gray-400">
-				No data available
-			</div>
-		);
+		return <div className="flex h-full items-center justify-center text-gray-400">No data available</div>;
 	}
 
 	return (
@@ -27,13 +12,7 @@ function Chart({
 			<ResponsiveContainer width="104%" height={230}>
 				<AreaChart data={data}>
 					<defs>
-						<linearGradient
-							id="colorGradient"
-							x1="0"
-							y1="0"
-							x2="1"
-							y2="0"
-						>
+						<linearGradient id="colorGradient" x1="0" y1="0" x2="1" y2="0">
 							<stop offset="0%" stopColor="#ffe600" />
 							<stop offset="100%" stopColor="#00faff" />
 						</linearGradient>
@@ -57,11 +36,7 @@ function Chart({
 	);
 }
 
-const CustomTooltip = ({
-	active,
-	payload,
-	label,
-}: TooltipProps<number, string>) => {
+const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
 	if (active && payload && payload.length) {
 		return (
 			<div className="border-br-card ring-3 rounded-lg border-2 bg-white/10 p-2 ring-white/5 backdrop-blur-lg">

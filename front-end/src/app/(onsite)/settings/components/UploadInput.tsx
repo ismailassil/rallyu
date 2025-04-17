@@ -8,13 +8,7 @@ function UploadInput() {
 			</label>
 			<div className="flex-2 w-full">
 				<div className="relative flex justify-between gap-10">
-					<input
-						type="file"
-						id="picture"
-						name="picture"
-						accept=".jpg, .jpeg, .png"
-						className="hidden"
-					/>
+					<input type="file" id="picture" name="picture" accept=".jpg, .jpeg, .png" className="hidden" />
 					<label
 						htmlFor="picture"
 						className="bg-main hover:scale-101 flex transform cursor-pointer 
@@ -29,9 +23,7 @@ function UploadInput() {
 								text-white ring-white/20 duration-300 hover:bg-white/5 hover:ring-1"
 					>
 						<Trash size={20} />
-						<p className="block md:hidden lg:block">
-							Remove Picture
-						</p>
+						<p className="block md:hidden lg:block">Remove Picture</p>
 					</button>
 				</div>
 			</div>

@@ -15,15 +15,11 @@ enum PasswordError {
 }
 
 const ErrorMessages: Record<PasswordError, string> = {
-	[PasswordError.TooShort]:
-		"Password is too short. Minimum length is 8 characters.",
+	[PasswordError.TooShort]: "Password is too short. Minimum length is 8 characters.",
 	[PasswordError.MissingNumber]: "Password must include at least one number.",
-	[PasswordError.MissingUpperCase]:
-		"Password must include at least one uppercase letter.",
-	[PasswordError.MissingLowerCase]:
-		"Password must include at least one lowercase letter.",
-	[PasswordError.MissingSpecial]:
-		"Password must include at least one special character.",
+	[PasswordError.MissingUpperCase]: "Password must include at least one uppercase letter.",
+	[PasswordError.MissingLowerCase]: "Password must include at least one lowercase letter.",
+	[PasswordError.MissingSpecial]: "Password must include at least one special character.",
 	[PasswordError.Success]: "",
 };
 
@@ -88,9 +84,7 @@ function Security() {
 			transition={{ type: "spring", stiffness: 120 }}
 		>
 			<div>
-				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">
-					Basics
-				</h2>
+				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">Basics</h2>
 				<hr className="border-white/10" />
 			</div>
 			<div className="flex flex-col items-center justify-between gap-2 text-sm md:flex-row lg:gap-20 lg:text-base">
@@ -161,20 +155,13 @@ function Security() {
 				</button>
 			</div>
 			<div className="mt-5">
-				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">
-					Two-factor authentication
-				</h2>
+				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">Two-factor authentication</h2>
 				<hr className="border-white/10" />
 			</div>
 			<div className="flex flex-col gap-5 text-sm md:flex-row lg:gap-10 lg:text-base">
 				<div className="flex gap-6">
 					<div className="flex h-[110px] w-[110px] items-center justify-center rounded-md bg-white">
-						<Image
-							src="/qr.png"
-							alt="2FA Qr-Code"
-							width={95}
-							height={95}
-						/>
+						<Image src="/qr.png" alt="2FA Qr-Code" width={95} height={95} />
 					</div>
 					<div className="max-w-80 flex flex-col justify-between gap-2">
 						<label htmlFor="2fa" className="text-gray-400">
@@ -192,14 +179,10 @@ function Security() {
 								onChange={(e) => {
 									e.preventDefault();
 									const inputValue = e.target.value;
-									if (inputValue.length <= 6)
-										setTwofa(Number(inputValue));
+									if (inputValue.length <= 6) setTwofa(Number(inputValue));
 								}}
 							/>
-							<Key
-								size={20}
-								className="absolute bottom-[13px] left-[15px]"
-							/>
+							<Key size={20} className="absolute bottom-[13px] left-[15px]" />
 						</div>
 					</div>
 				</div>
@@ -216,9 +199,7 @@ function Security() {
 				</div>
 			</div>
 			<div className="mt-5">
-				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">
-					Be Caution
-				</h2>
+				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">Be Caution</h2>
 				<hr className="border-white/10" />
 			</div>
 			<button
@@ -229,12 +210,9 @@ function Security() {
 					setPopup(0);
 				}}
 			>
-				<h3 className="text-sm font-bold lg:text-base">
-					Delete Account
-				</h3>
+				<h3 className="text-sm font-bold lg:text-base">Delete Account</h3>
 				<p className="text-sm font-light text-gray-400 lg:text-base">
-					This will permanently delete your account and all associated
-					data. Action is final.
+					This will permanently delete your account and all associated data. Action is final.
 				</p>
 			</button>
 			<button
@@ -245,12 +223,9 @@ function Security() {
 					setPopup(1);
 				}}
 			>
-				<h3 className="text-sm font-bold lg:text-base">
-					Anonymizes your personal data
-				</h3>
+				<h3 className="text-sm font-bold lg:text-base">Anonymizes your personal data</h3>
 				<p className="text-sm font-light text-gray-400 lg:text-base">
-					Your personal information will be anonymized to prevent
-					identification or tracking.
+					Your personal information will be anonymized to prevent identification or tracking.
 				</p>
 			</button>
 			<PushNotification

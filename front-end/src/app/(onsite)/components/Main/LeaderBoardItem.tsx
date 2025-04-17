@@ -9,13 +9,7 @@ interface LeaderboardProps {
 	position: number;
 }
 
-export default function LeaderboardItem({
-	username,
-	rank,
-	score,
-	img,
-	position,
-}: LeaderboardProps) {
+export default function LeaderboardItem({ username, rank, score, img, position }: LeaderboardProps) {
 	return (
 		<div
 			className="bg-card border-br-card hover:bg-hbg hover:border-hbbg hover:scale-101 group
@@ -28,15 +22,9 @@ export default function LeaderboardItem({
 					rounded-full  text-xl font-bold text-white group-hover:text-2xl
 					lg:h-[40px] lg:w-[40px]"
 			>
-				{position === 0 && (
-					<Crown color="oklch(82.8% 0.189 84.429)" size={32} />
-				)}
-				{position === 1 && (
-					<CrownSimple color="oklch(82.8% 0.189 84.429)" size={32} />
-				)}
-				{position === 2 && (
-					<CastleTurret color="oklch(82.8% 0.189 84.429)" size={32} />
-				)}
+				{position === 0 && <Crown color="oklch(82.8% 0.189 84.429)" size={32} />}
+				{position === 1 && <CrownSimple color="oklch(82.8% 0.189 84.429)" size={32} />}
+				{position === 2 && <CastleTurret color="oklch(82.8% 0.189 84.429)" size={32} />}
 				{position > 2 && rank}
 			</div>
 
@@ -53,14 +41,9 @@ export default function LeaderboardItem({
 
 			{/* Middle Content */}
 			<div className="ml-5 flex-grow">
-				<h2 className="text-wrap text-base capitalize lg:text-lg">
-					{username}
-				</h2>
+				<h2 className="text-wrap text-base capitalize lg:text-lg">{username}</h2>
 				<p className="text-sm text-gray-500 lg:text-base">
-					Score:{" "}
-					<span className="font-semibold text-yellow-400">
-						{score}
-					</span>
+					Score: <span className="font-semibold text-yellow-400">{score}</span>
 				</p>
 			</div>
 		</div>
