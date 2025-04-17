@@ -7,6 +7,7 @@ import GameChoice from "./Items/GameChoice";
 import TournamentUI from "./Items/TournamentUI";
 import Connectivity from "../../game/components/Items/Connectivity";
 import Player from "../../game/components/Items/Player";
+import TournamentTitle from "./Items/TournamentTitle";
 
 function NewTournament({
 	setValue,
@@ -23,6 +24,7 @@ function NewTournament({
 		{ name: "", img: "" },
 		{ name: "", img: "" },
 	]);
+	const [title, setTitle] = useState("");
 
 	return (
 		<>
@@ -44,57 +46,32 @@ function NewTournament({
 					>
 						<ArrowLeft size={24} className="flex-1" />
 					</div>
-					<h2
-						className={`${unicaOne.className} text-xl uppercase md:text-2xl`}
-					>
+					<h2 className={`${unicaOne.className} text-xl uppercase md:text-2xl`}>
 						<span className="font-semibold">Set the Stage</span>
 					</h2>
 				</div>
 				<StartButton label="Enter the Arena" setValue={setEnter} />
 			</motion.div>
-			<motion.div
-				initial={{ opacity: 0, x: 100 }}
-				animate={{ opacity: 1, x: 0 }}
-				exit={{ opacity: 0, x: 100 }}
-				transition={{ type: "spring", stiffness: 120 }}
-			>
-				<GameChoice game={game} setGame={setGame} />
-			</motion.div>
-			<motion.div
-				initial={{ opacity: 0, x: 100 }}
-				animate={{ opacity: 1, x: 0 }}
-				exit={{ opacity: 0, x: 100 }}
-				transition={{ type: "spring", stiffness: 120 }}
-			>
-				<Connectivity
-					connectivity={connectivity}
-					setConnectivity={setConnectivity}
-				/>
-			</motion.div>
-			<motion.div
-				initial={{ opacity: 0, x: 100 }}
-				animate={{ opacity: 1, x: 0 }}
-				exit={{ opacity: 0, x: 100 }}
-				transition={{ type: "spring", stiffness: 120 }}
-			>
-				<TournamentUI
-					players={
-						connectivity === 0
-							? {
-									player1: {
-										name: "Ismail Assil",
-										img: "/image_1.jpg",
-									},
-								}
-							: {
-									player1: players[0],
-									player2: players[1],
-									player3: players[2],
-									player4: players[3],
-								}
-					}
-				/>
-			</motion.div>
+			<TournamentTitle value={title} setValue={setTitle} />
+			<GameChoice game={game} setGame={setGame} />
+			<Connectivity connectivity={connectivity} setConnectivity={setConnectivity} />
+			<TournamentUI
+				players={
+					connectivity === 0
+						? {
+								player1: {
+									name: "Ismail Assil",
+									img: "/image_1.jpg",
+								},
+							}
+						: {
+								player1: players[0],
+								player2: players[1],
+								player3: players[2],
+								player4: players[3],
+							}
+				}
+			/>
 			<AnimatePresence>
 				{connectivity === 1 && (
 					<>

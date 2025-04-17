@@ -5,8 +5,7 @@ import { ArrowLeft } from "@phosphor-icons/react";
 import { useBox } from "../contexts/boxContext";
 
 export default function MessageSection() {
-	const { showbox, setShowbox, isWidth, userMessage, setSelectedFriend } =
-		useBox();
+	const { showbox, setShowbox, isWidth, userMessage, setSelectedFriend } = useBox();
 
 	return (
 		<section
@@ -41,13 +40,9 @@ export default function MessageSection() {
 							</div>
 							<div className="flex w-full flex-col">
 								<h2 className="text-lg lg:text-lg">
-									<span className="hover:cursor-pointer">
-										Azouz Nabil
-									</span>
+									<span className="hover:cursor-pointer">Azouz Nabil</span>
 								</h2>
-								<p className="text-sm text-gray-400">
-									Last seen at 22:40
-								</p>
+								<p className="text-sm text-gray-400">Last seen at 22:40</p>
 							</div>
 							<button
 								className="w-25 bg-bbg hover:bg-white/2 hover:scale-101 h-[50%]
@@ -99,19 +94,10 @@ export default function MessageSection() {
 			) : (
 				<>
 					<div className="flex h-full w-full select-none flex-col items-center justify-center">
-						<Image
-							src="/thinking.gif"
-							width={300}
-							height={30}
-							alt="Thinking"
-							className="mb-5 rounded-md"
-						/>
+						<Image src="/thinking.gif" width={300} height={30} alt="Thinking" className="mb-5 rounded-md" />
 						<div className="w-full text-center">
 							<h2 className="text-lg">👋 Welcome to Chat!</h2>
-							<p className="text-base text-gray-400">
-								Select a user from the sidebar to start
-								chatting.
-							</p>
+							<p className="text-base text-gray-400">Select a user from the sidebar to start chatting.</p>
 						</div>
 					</div>
 				</>

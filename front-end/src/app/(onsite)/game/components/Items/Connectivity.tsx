@@ -30,9 +30,7 @@ function Connectivity({
 							setConnectivity(0);
 						}}
 						className={`w-full ${
-							connectivity === 0
-								? "bg-white text-black"
-								: "hover:bg-white hover:text-black"
+							connectivity === 0 ? "bg-white text-black" : "hover:bg-white hover:text-black"
 						}`}
 					>
 						<Globe size={18} />
@@ -44,9 +42,7 @@ function Connectivity({
 							setConnectivity(1);
 						}}
 						className={`w-full ${
-							connectivity === 1
-								? "bg-white text-black"
-								: "hover:bg-white hover:text-black"
+							connectivity === 1 ? "bg-white text-black" : "hover:bg-white hover:text-black"
 						}`}
 					>
 						<WifiSlash size={18} />

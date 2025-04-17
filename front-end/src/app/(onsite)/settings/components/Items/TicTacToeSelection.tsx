@@ -10,11 +10,7 @@ function TicTacToeSelection({ connectivity }: { connectivity: number }) {
 	const [boardColor, setBoardColor] = useState(0);
 	const [round, setRound] = useState(0);
 
-	function handleSet(
-		setFunction: (value: number) => void,
-		value: number,
-		rvalue: number
-	) {
+	function handleSet(setFunction: (value: number) => void, value: number, rvalue: number) {
 		if (value == rvalue) {
 			setFunction(value + 1 > 3 ? 0 : value + 1);
 		} else {
@@ -43,19 +39,8 @@ function TicTacToeSelection({ connectivity }: { connectivity: number }) {
 			>
 				<Circle size={28} weight="bold" />
 			</Colors>
-			<Board
-				className="lg:gap-20"
-				label="Board Color"
-				boardColor={boardColor}
-				setBoardColor={setBoardColor}
-			/>
-			{connectivity > 0 && (
-				<Rounds
-					className="lg:gap-20"
-					round={round}
-					setRound={setRound}
-				/>
-			)}
+			<Board className="lg:gap-20" label="Board Color" boardColor={boardColor} setBoardColor={setBoardColor} />
+			{connectivity > 0 && <Rounds className="lg:gap-20" round={round} setRound={setRound} />}
 		</>
 	);
 }

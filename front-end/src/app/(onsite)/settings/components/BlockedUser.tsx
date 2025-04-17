@@ -12,20 +12,11 @@ function BlockedUser({ user }: { user: { name: string; img: string } }) {
 					className="min-h-8 min-w-8 max-w-8
 				flex aspect-square max-h-8 overflow-hidden rounded-full"
 				>
-					<Image
-						src={user.img}
-						alt="Profile Image"
-						width={40}
-						height={40}
-						className="object-cover"
-					/>
+					<Image src={user.img} alt="Profile Image" width={40} height={40} className="object-cover" />
 				</div>
 				<p>{user.name}</p>
 			</div>
-			<MinusCircle
-				size={24}
-				className="cursor-pointer hover:text-red-500"
-			/>
+			<MinusCircle size={24} className="cursor-pointer hover:text-red-500" />
 		</div>
 	);
 }

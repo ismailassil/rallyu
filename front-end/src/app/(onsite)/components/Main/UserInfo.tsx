@@ -16,11 +16,8 @@ export default function UserInfo({ firstname }: UserInfoProps) {
 			<div className="flex h-full flex-1 flex-col justify-between py-5">
 				<div>
 					<div className="group relative select-none">
-						<h1
-							className={`${unicaOne.className} mb-10 text-4xl font-semibold lg:text-5xl`}
-						>
-							WELCOME BACK,{" "}
-							<span className="text-accent">{firstname}</span>
+						<h1 className={`${unicaOne.className} mb-10 text-4xl font-semibold lg:text-5xl`}>
+							WELCOME BACK, <span className="text-accent">{firstname}</span>
 						</h1>
 						<div
 							className="-left-17 w-18 h-18
@@ -28,9 +25,7 @@ export default function UserInfo({ firstname }: UserInfoProps) {
 						transition-all duration-200 group-hover:scale-105"
 						></div>
 					</div>
-					<p className="text-gray-400">
-						Step into a World of Classy Gaming
-					</p>
+					<p className="text-gray-400">Step into a World of Classy Gaming</p>
 				</div>
 				<div className="">
 					<p className="mb-2 pt-10">Level 10</p>

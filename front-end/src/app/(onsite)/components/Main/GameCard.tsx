@@ -55,13 +55,7 @@ export default function GameCard({
 			</div>
 
 			<div className={position}>
-				<Image
-					src={src}
-					alt={src}
-					width={1200}
-					height={1200}
-					quality={100}
-				/>
+				<Image src={src} alt={src} width={1200} height={1200} quality={100} />
 			</div>
 		</div>
 	);

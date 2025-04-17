@@ -30,9 +30,7 @@ function GameStyle({
 							setConnectivity(0);
 						}}
 						className={`w-full ${
-							connectivity === 0
-								? "bg-white text-black"
-								: "hover:bg-white hover:text-black"
+							connectivity === 0 ? "bg-white text-black" : "hover:bg-white hover:text-black"
 						}`}
 					>
 						<Globe size={18} />
@@ -40,9 +38,7 @@ function GameStyle({
 					</div>
 					<div
 						className={`w-full ${
-							connectivity === 1
-								? "bg-white text-black"
-								: "hover:bg-white hover:text-black"
+							connectivity === 1 ? "bg-white text-black" : "hover:bg-white hover:text-black"
 						}`}
 						onClick={(e) => {
 							e.preventDefault();
@@ -58,9 +54,7 @@ function GameStyle({
 							setConnectivity(2);
 						}}
 						className={`w-full ${
-							connectivity === 2
-								? "bg-white text-black"
-								: "hover:bg-white hover:text-black"
+							connectivity === 2 ? "bg-white text-black" : "hover:bg-white hover:text-black"
 						}`}
 					>
 						<WifiSlash size={18} />

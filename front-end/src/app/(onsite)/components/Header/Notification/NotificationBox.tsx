@@ -31,18 +31,14 @@ function NotificationBox() {
 			},
 			{
 				sender: { img: "/image_1.jpg", name: "Mohamed Amine Maila" },
-				message:
-					"Wa fen a sat! hani howa hadak, dar bikhir, l2a7wal houma hadouk?",
+				message: "Wa fen a sat! hani howa hadak, dar bikhir, l2a7wal houma hadouk?",
 				type: "xo",
 				uri: "",
 			},
 		];
 
 		const interval = setInterval(() => {
-			const randomNotif =
-				testNotifications[
-					Math.floor(Math.random() * testNotifications.length)
-				];
+			const randomNotif = testNotifications[Math.floor(Math.random() * testNotifications.length)];
 			addNotification({
 				id: Date.now().toString(),
 				message: randomNotif.message,

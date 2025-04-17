@@ -16,22 +16,15 @@ function UserPanel() {
 			<div className="flex-5 flex h-full w-full flex-col items-center justify-between">
 				<div className="flex h-full w-full flex-1 items-center">
 					<div className="flex-5 h-full py-5">
-						<h1
-							className={`text-4xl lg:text-5xl ${unicaOne.className}`}
-						>
-							{new Date().getHours() < 17
-								? "Good Morning"
-								: "Good Evening"}
-							,
+						<h1 className={`text-4xl lg:text-5xl ${unicaOne.className}`}>
+							{new Date().getHours() < 17 ? "Good Morning" : "Good Evening"},
 							<span className="text-accent font-semibold">
 								{" "}
 								<br />
 								ISMAIL ASSIL
 							</span>
 						</h1>
-						<p className="pt-5 text-sm text-gray-500 lg:text-lg">
-							Step into a World of Classy Gaming
-						</p>
+						<p className="pt-5 text-sm text-gray-500 lg:text-lg">Step into a World of Classy Gaming</p>
 					</div>
 					<div className="flex-3 flex h-full items-center justify-center">
 						<div

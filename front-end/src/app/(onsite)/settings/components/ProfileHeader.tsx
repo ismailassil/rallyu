@@ -21,9 +21,7 @@ function ProfileHeader({ fullname, img }: { fullname: string; img: string }) {
 						/>
 					</div>
 					<div className="text-wrap flex h-full w-full flex-col justify-center overflow-hidden truncate">
-						<h1 className={`text-3xl font-semibold lg:text-4xl`}>
-							{fullname}
-						</h1>
+						<h1 className={`text-3xl font-semibold lg:text-4xl`}>{fullname}</h1>
 						<p className="text-xs text-gray-300 lg:text-sm">
 							Manage your details and personal preferences here
 						</p>

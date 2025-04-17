@@ -9,11 +9,7 @@ export default function Message({ username, date, message }: MessageProps) {
 	if (username === "Me") isMe = true;
 
 	return (
-		<div
-			className={`flex w-full ${
-				isMe && "justify-end"
-			} text-[15px] lg:text-[17px]`}
-		>
+		<div className={`flex w-full ${isMe && "justify-end"} text-[15px] lg:text-[17px]`}>
 			<div className="flex w-[90%] flex-col gap-1 md:w-[75%]">
 				<div
 					className={`text-wrap bg-main/25 flex w-full flex-col rounded-lg
@@ -23,11 +19,7 @@ export default function Message({ username, date, message }: MessageProps) {
 						<p className="text-sm lg:text-[15px]">{message}</p>
 					</div>
 				</div>
-				<p
-					className={`text-xs text-gray-400 lg:text-sm ${isMe && "text-end"}`}
-				>
-					{date}
-				</p>
+				<p className={`text-xs text-gray-400 lg:text-sm ${isMe && "text-end"}`}>{date}</p>
 			</div>
 		</div>
 	);

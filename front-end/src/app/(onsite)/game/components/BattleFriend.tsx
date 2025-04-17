@@ -7,13 +7,8 @@ interface friendProps {
 	img: string;
 }
 
-export default function BattleFriend({
-	fullname,
-	isOnline = false,
-	img,
-}: friendProps) {
-	if (fullname && fullname.trim().length > 12)
-		fullname = fullname.trim().substring(0, 12) + "...";
+export default function BattleFriend({ fullname, isOnline = false, img }: friendProps) {
+	if (fullname && fullname.trim().length > 12) fullname = fullname.trim().substring(0, 12) + "...";
 	return (
 		<div
 			className="border-1 border-br-card hover:bg-hbg hover:border-hbbg hover:scale-101 min-h-16
@@ -34,9 +29,7 @@ export default function BattleFriend({
 			{/* Middle Content */}
 			<div className="ml-5 flex-grow">
 				<h2 className="text-base capitalize">{fullname}</h2>
-				<p
-					className={`${isOnline ? "text-isOnline" : "text-gray-500"} text-sm`}
-				>
+				<p className={`${isOnline ? "text-isOnline" : "text-gray-500"} text-sm`}>
 					{isOnline ? "Online" : "Offline"}
 				</p>
 			</div>

@@ -26,9 +26,7 @@ export function useBox() {
 }
 
 // Provider Component
-export function BoxProvider({
-	children,
-}: Readonly<{ children: React.ReactNode }>) {
+export function BoxProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	const isWidth = useIsWidth(1024);
 	const [showbox, setShowbox] = useState(false);
 	const [userMessage, setUserMessage] = useState(false);

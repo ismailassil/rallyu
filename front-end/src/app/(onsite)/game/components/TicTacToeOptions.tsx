@@ -31,11 +31,7 @@ function TicTacToeOptions({ connectivity }: { connectivity: number }) {
 		}
 	}, [boardColor, connectivity, oColor, round, xColor]);
 
-	function handleSet(
-		setFunction: (value: number) => void,
-		value: number,
-		rvalue: number
-	) {
+	function handleSet(setFunction: (value: number) => void, value: number, rvalue: number) {
 		if (value == rvalue) {
 			setFunction(value + 1 > 3 ? 0 : value + 1);
 		} else {
@@ -45,47 +41,19 @@ function TicTacToeOptions({ connectivity }: { connectivity: number }) {
 
 	return (
 		<>
-			<Colors
-				handleSet={handleSet}
-				setColor={setXColor}
-				Color={oColor}
-				innerColor={xColor}
-				label={"Color"}
-			>
+			<Colors handleSet={handleSet} setColor={setXColor} Color={oColor} innerColor={xColor} label={"Color"}>
 				<X size={28} weight="bold" />
 			</Colors>
-			<Colors
-				handleSet={handleSet}
-				setColor={setOColor}
-				Color={xColor}
-				innerColor={oColor}
-				label={"Color"}
-			>
+			<Colors handleSet={handleSet} setColor={setOColor} Color={xColor} innerColor={oColor} label={"Color"}>
 				<Circle size={28} weight="bold" />
 			</Colors>
-			<Board
-				label="Board Color"
-				boardColor={boardColor}
-				setBoardColor={setBoardColor}
-			/>
-			<AnimatePresence>
-				{connectivity > 0 && (
-					<Rounds round={round} setRound={setRound} />
-				)}
-			</AnimatePresence>
+			<Board label="Board Color" boardColor={boardColor} setBoardColor={setBoardColor} />
+			<AnimatePresence>{connectivity > 0 && <Rounds round={round} setRound={setRound} />}</AnimatePresence>
 			<AnimatePresence>
 				{connectivity > 1 && (
 					<>
-						<Player
-							label="Player 1"
-							value={playerOne}
-							setValue={setPlayerOne}
-						/>
-						<Player
-							label="Player 2"
-							value={playerTwo}
-							setValue={setPlayerTwo}
-						/>
+						<Player label="Player 1" value={playerOne} setValue={setPlayerOne} />
+						<Player label="Player 2" value={playerTwo} setValue={setPlayerTwo} />
 					</>
 				)}
 			</AnimatePresence>

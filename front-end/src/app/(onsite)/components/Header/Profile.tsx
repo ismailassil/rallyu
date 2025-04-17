@@ -11,13 +11,7 @@ interface ProfileProps {
 	profileRef: React.Ref<HTMLDivElement>;
 }
 
-export default function Profile({
-	setIsNotif,
-	setIsProfile,
-	setIsSearch,
-	isProfile,
-	profileRef,
-}: ProfileProps) {
+export default function Profile({ setIsNotif, setIsProfile, setIsSearch, isProfile, profileRef }: ProfileProps) {
 	const router = useRouter();
 
 	return (
@@ -54,9 +48,7 @@ export default function Profile({
 						alt="Arrow down Icon"
 						width={10}
 						height={10}
-						className={`transition duration-300 ${
-							isProfile ? "rotate-180" : "rotate-0"
-						}`}
+						className={`transition duration-300 ${isProfile ? "rotate-180" : "rotate-0"}`}
 					/>
 				</div>
 			</button>
@@ -81,12 +73,7 @@ export default function Profile({
 							}}
 							className="hover:bg-hbbg mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer"
 						>
-							<Image
-								src="/profile-btn.svg"
-								alt="Profile Icon"
-								width={30}
-								height={30}
-							/>
+							<Image src="/profile-btn.svg" alt="Profile Icon" width={30} height={30} />
 							<span className="ml-5">Profile</span>
 						</div>
 						<div
@@ -97,21 +84,11 @@ export default function Profile({
 								router.push("/settings");
 							}}
 						>
-							<Image
-								src="/setting-btn.svg"
-								alt="Settings Icon"
-								width={30}
-								height={30}
-							/>
+							<Image src="/setting-btn.svg" alt="Settings Icon" width={30} height={30} />
 							<span className="ml-5">Settings</span>
 						</div>
 						<div className="hover:bg-hbbg mb-2 flex w-full items-center px-7 py-3 hover:cursor-pointer">
-							<Image
-								src="/logout-btn.svg"
-								alt="Logout Icon"
-								width={30}
-								height={30}
-							/>
+							<Image src="/logout-btn.svg" alt="Logout Icon" width={30} height={30} />
 							<p className="ml-5">Logout</p>
 						</div>
 					</motion.div>

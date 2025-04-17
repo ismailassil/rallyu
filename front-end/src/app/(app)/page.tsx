@@ -30,31 +30,15 @@ export default function Home() {
 			<div className="flex h-full w-full justify-center overflow-auto">
 				<div className="flex h-full w-[550px] items-start pb-20 pl-10 pr-10 pt-20 lg:items-center">
 					<div className="flex-1">
-						<h1
-							className={`${ibm.className} flex text-[36px] font-bold md:justify-center `}
-						>
+						<h1 className={`${ibm.className} flex text-[36px] font-bold md:justify-center `}>
 							Welcome Back!
 						</h1>
-						<p
-							className={`mb-[47px] flex text-[18px] md:justify-center`}
-						>
+						<p className={`mb-[47px] flex text-[18px] md:justify-center`}>
 							Please enter your details to sign in
 						</p>
 						<div className="mb-4 flex flex-col justify-center gap-[18px] sm:flex-row">
-							<AuthButton
-								src="/google-logo.svg"
-								width={17}
-								height={17}
-								alt="Google Logo"
-								text="Google"
-							/>
-							<AuthButton
-								src="/42-logo.svg"
-								width={21}
-								height={15}
-								alt="42 Intra Logo"
-								text="Intra"
-							/>
+							<AuthButton src="/google-logo.svg" width={17} height={17} alt="Google Logo" text="Google" />
+							<AuthButton src="/42-logo.svg" width={21} height={15} alt="42 Intra Logo" text="Intra" />
 						</div>
 						<div className="mb-[19px] mt-[19px] flex items-center gap-4 text-gray-500">
 							<hr className="flex-grow border-t border-gray-300" />
@@ -116,10 +100,7 @@ export default function Home() {
 							<div className="mt-[19px] flex justify-center">
 								<p className="text-wrap text-center">
 									Don&apos;t have an account yet?{" "}
-									<Link
-										href="/signup"
-										className="text-main hover:text-blue-400 hover:underline"
-									>
+									<Link href="/signup" className="text-main hover:text-blue-400 hover:underline">
 										Sign Up
 									</Link>
 								</p>

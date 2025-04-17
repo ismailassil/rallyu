@@ -35,14 +35,9 @@ function InlineInput({
 				<div className="relative">
 					<input
 						className={`bg-bg border-bbg focus:ring-bbg flex h-11 w-full items-center justify-center gap-[7px]
-						rounded-lg border-2 pl-[45px]
-						pr-[10px] outline-none focus:ring-4
-						${
-							disabled
-								? "hover:cursor-no-drop"
-								: "hover:ring-bbg hover:bg-hbbg hover:ring-4"
-						}
-						`}
+							rounded-lg border-2 pl-[45px]
+							pr-[10px] outline-none focus:ring-4
+							${disabled ? "hover:cursor-no-drop" : "hover:ring-bbg hover:bg-hbbg hover:ring-4"} `}
 						type={type}
 						id={unique}
 						name={unique}

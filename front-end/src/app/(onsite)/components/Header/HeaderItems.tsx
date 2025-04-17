@@ -53,12 +53,7 @@ export default function HeaderItems() {
 
 	return (
 		<div className="relative flex items-center pr-6">
-			<Search
-				setIsNotif={setIsNotif}
-				setIsProfile={setIsProfile}
-				setIsSearch={setIsSearch}
-				isSearch={isSearch}
-			/>
+			<Search setIsNotif={setIsNotif} setIsProfile={setIsProfile} setIsSearch={setIsSearch} isSearch={isSearch} />
 			{/* NOTIFICATION ICON */}
 			<Notification
 				setIsNotif={setIsNotif}

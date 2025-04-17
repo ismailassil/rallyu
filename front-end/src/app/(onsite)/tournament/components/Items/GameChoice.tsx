@@ -1,13 +1,7 @@
 import { Hash, PingPong } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 
-function GameChoice({
-	game,
-	setGame,
-}: {
-	game: number;
-	setGame: (value: number) => void;
-}) {
+function GameChoice({ game, setGame }: { game: number; setGame: (value: number) => void }) {
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: -100 }}
@@ -29,11 +23,7 @@ function GameChoice({
 							e.preventDefault();
 							setGame(0);
 						}}
-						className={`w-full ${
-							game === 0
-								? "bg-white text-black"
-								: "hover:bg-white hover:text-black"
-						}`}
+						className={`w-full ${game === 0 ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
 					>
 						<PingPong size={18} />
 						Online
@@ -43,11 +33,7 @@ function GameChoice({
 							e.preventDefault();
 							setGame(1);
 						}}
-						className={`w-full ${
-							game === 1
-								? "bg-white text-black"
-								: "hover:bg-white hover:text-black"
-						}`}
+						className={`w-full ${game === 1 ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
 					>
 						<Hash size={18} />
 						Tic Tac Toe

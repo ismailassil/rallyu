@@ -6,7 +6,7 @@ function Filter() {
 
 	return (
 		<div
-			className="border-1 min-w-30 min-h-10 *:cursor-pointer *:hover:bg-white *:hover:text-black
+			className="border-1 min-w-30 min-h-10 *:cursor-pointer *:hover:bg-white/80 *:hover:text-black
 				*:transition-all *:duration-300 *:flex-1 *:flex *:items-center *:w-full
 				*:h-full *:p-1 *:rounded-sm group
 				relative flex max-h-10 

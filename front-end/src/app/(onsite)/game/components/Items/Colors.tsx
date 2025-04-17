@@ -9,11 +9,7 @@ function Colors({
 	children,
 }: {
 	className?: string;
-	handleSet: (
-		setFunction: (value: number) => void,
-		value: number,
-		rvalue: number
-	) => void;
+	handleSet: (setFunction: (value: number) => void, value: number, rvalue: number) => void;
 	setColor: (value: number) => void;
 	Color: number;
 	innerColor: number;
@@ -28,10 +24,7 @@ function Colors({
 				className ? className : "lg:gap-10"
 			} text-sm lg:text-base`}
 		>
-			<label
-				className="flex w-full flex-1 items-center gap-2"
-				htmlFor="picture"
-			>
+			<label className="flex w-full flex-1 items-center gap-2" htmlFor="picture">
 				{children} {label}
 			</label>
 			<div className={`${className ? "flex-2" : "flex-3"} w-full`}>

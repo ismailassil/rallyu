@@ -78,9 +78,7 @@ function General() {
 			transition={{ type: "spring", stiffness: 120 }}
 		>
 			<div>
-				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">
-					Basics
-				</h2>
+				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">Basics</h2>
 				<hr className="border-white/10" />
 			</div>
 			<UploadInput />
@@ -129,9 +127,7 @@ function General() {
 				</button>
 			</div>
 			<div className="mt-5">
-				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">
-					Preferences
-				</h2>
+				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">Preferences</h2>
 				<hr className="border-white/10" />
 			</div>
 			<div className="max-w-200 flex items-center justify-between gap-20 text-sm lg:text-base">
@@ -188,17 +184,12 @@ function General() {
 				</button>
 			</div>
 			<div>
-				<h2 className="mb-1 mt-5 text-xl font-semibold lg:text-2xl">
-					Blocked Users
-				</h2>
+				<h2 className="mb-1 mt-5 text-xl font-semibold lg:text-2xl">Blocked Users</h2>
 				<hr className="border-white/10" />
 			</div>
 			<div className="mt-3 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 				{Array.from({ length: 11 }).map((_, i) => (
-					<BlockedUser
-						key={i}
-						user={{ name: "Salah Moumni", img: "/image_2.jpg" }}
-					/>
+					<BlockedUser key={i} user={{ name: "Salah Moumni", img: "/image_2.jpg" }} />
 				))}
 			</div>
 		</motion.div>

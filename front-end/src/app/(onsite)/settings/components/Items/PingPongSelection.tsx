@@ -14,24 +14,14 @@ function PingPongSelection({ connectivity }: { connectivity: number }) {
 		<>
 			{connectivity > 0 && (
 				<>
-					<Range
-						className="lg:gap-20"
-						label="Paddle Width"
-						value={paddleWidth}
-						setValue={setPaddleWidth}
-					/>
+					<Range className="lg:gap-20" label="Paddle Width" value={paddleWidth} setValue={setPaddleWidth} />
 					<Range
 						className="lg:gap-20"
 						label="Paddle Height"
 						value={paddleHeight}
 						setValue={setPaddleHeight}
 					/>
-					<Range
-						className="lg:gap-20"
-						label="Ball Size"
-						value={ballSize}
-						setValue={setBallSize}
-					/>
+					<Range className="lg:gap-20" label="Ball Size" value={ballSize} setValue={setBallSize} />
 				</>
 			)}
 			<Board
@@ -42,11 +32,7 @@ function PingPongSelection({ connectivity }: { connectivity: number }) {
 			/>
 			{connectivity > 0 && (
 				<>
-					<Rounds
-						className="lg:gap-20"
-						round={round}
-						setRound={setRound}
-					/>
+					<Rounds className="lg:gap-20" round={round} setRound={setRound} />
 				</>
 			)}
 		</>

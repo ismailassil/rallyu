@@ -18,21 +18,11 @@ function GameUI() {
 			transition={{ type: "spring", stiffness: 120 }}
 		>
 			<div>
-				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">
-					Default customization
-				</h2>
+				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">Default customization</h2>
 				<hr className="border-white/10" />
 			</div>
-			<PickGame
-				label="Default Game"
-				game={game}
-				setGame={setGame}
-				className="lg:gap-20"
-			/>
-			<Connectivity
-				connectivity={connectivity}
-				setConnectivity={setConnectivity}
-			/>
+			<PickGame label="Default Game" game={game} setGame={setGame} className="lg:gap-20" />
+			<Connectivity connectivity={connectivity} setConnectivity={setConnectivity} />
 			{game === 0 ? (
 				<PingPongSelection connectivity={connectivity} />
 			) : (

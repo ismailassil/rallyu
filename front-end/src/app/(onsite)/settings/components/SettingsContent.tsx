@@ -28,9 +28,7 @@ function SettingsContent() {
 					{sections.map((li, i) => (
 						<li
 							key={i}
-							className={
-								section === i ? "bg-white text-black" : ""
-							}
+							className={section === i ? "bg-white text-black" : ""}
 							onClick={(e) => {
 								e.preventDefault();
 								setSection(i);
