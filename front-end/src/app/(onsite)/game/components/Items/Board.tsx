@@ -8,8 +8,10 @@ function Board({
 }: {
 	className?: string;
 	label: string;
-	boardColor: number;
-	setBoardColor: (value: number) => void;
+	boardColor: "bg-theme-one" | "bg-theme-two" | "bg-theme-three" | "bg-theme-four";
+	setBoardColor: React.Dispatch<
+		React.SetStateAction<"bg-theme-one" | "bg-theme-two" | "bg-theme-three" | "bg-theme-four">
+	>;
 }) {
 	return (
 		<motion.div
@@ -31,34 +33,34 @@ function Board({
 					<div
 						onClick={(e) => {
 							e.preventDefault();
-							setBoardColor(0);
+							setBoardColor("bg-theme-one");
 						}}
 						className={`bg-theme-one w-full
-								${boardColor === 0 ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
+								${boardColor === "bg-theme-one" ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
 					></div>
 					<div
 						onClick={(e) => {
 							e.preventDefault();
-							setBoardColor(1);
+							setBoardColor("bg-theme-two");
 						}}
 						className={`bg-theme-two w-full
-								${boardColor === 1 ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
+								${boardColor === "bg-theme-two" ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
 					></div>
 					<div
 						onClick={(e) => {
 							e.preventDefault();
-							setBoardColor(2);
+							setBoardColor("bg-theme-three");
 						}}
 						className={`bg-theme-three w-full
-								${boardColor === 2 ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
+								${boardColor === "bg-theme-three" ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
 					></div>
 					<div
 						onClick={(e) => {
 							e.preventDefault();
-							setBoardColor(3);
+							setBoardColor("bg-theme-four");
 						}}
 						className={`bg-theme-four w-full
-								${boardColor === 3 ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
+								${boardColor === "bg-theme-four" ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
 					></div>
 				</div>
 			</div>

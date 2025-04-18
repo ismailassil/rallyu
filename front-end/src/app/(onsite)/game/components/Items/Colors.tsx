@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+
 function Colors({
 	className,
 	handleSet,
@@ -9,10 +10,18 @@ function Colors({
 	children,
 }: {
 	className?: string;
-	handleSet: (setFunction: (value: number) => void, value: number, rvalue: number) => void;
-	setColor: (value: number) => void;
-	Color: number;
-	innerColor: number;
+	handleSet: (
+		setFunction: (
+			value: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500"
+		) => void,
+		value: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500",
+		rvalue: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500"
+	) => void;
+	setColor: React.Dispatch<
+		React.SetStateAction<"bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500">
+	>;
+	Color: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500";
+	innerColor: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500";
 	label: string;
 	children: React.ReactNode;
 }) {
@@ -36,34 +45,34 @@ function Colors({
 					<div
 						onClick={(e) => {
 							e.preventDefault();
-							handleSet(setColor, 0, Color);
+							handleSet(setColor, "bg-red-700", Color);
 						}}
 						className={`w-full bg-red-700
-								${innerColor === 0 ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
+								${innerColor === "bg-red-700" ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
 					></div>
 					<div
 						onClick={(e) => {
 							e.preventDefault();
-							handleSet(setColor, 1, Color);
+							handleSet(setColor, "bg-yellow-500", Color);
 						}}
 						className={`w-full bg-yellow-500
-								${innerColor === 1 ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
+								${innerColor === "bg-yellow-500" ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
 					></div>
 					<div
 						onClick={(e) => {
 							e.preventDefault();
-							handleSet(setColor, 2, Color);
+							handleSet(setColor, "bg-blue-600", Color);
 						}}
 						className={`w-full bg-blue-600
-								${innerColor === 2 ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
+								${innerColor === "bg-blue-600" ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
 					></div>
 					<div
 						onClick={(e) => {
 							e.preventDefault();
-							handleSet(setColor, 3, Color);
+							handleSet(setColor, "bg-cyan-500", Color);
 						}}
 						className={`w-full bg-cyan-500
-								${innerColor === 3 ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
+								${innerColor === "bg-cyan-500" ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
 					></div>
 				</div>
 			</div>

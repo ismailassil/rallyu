@@ -1,13 +1,10 @@
+import { useGame } from "@/app/(onsite)/contexts/gameContext";
 import { Brain, Globe, WifiSlash } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 
-function GameStyle({
-	connectivity,
-	setConnectivity,
-}: {
-	connectivity: number;
-	setConnectivity: (value: number) => void;
-}) {
+function GameStyle() {
+	const { connectivity, setConnectivity } = useGame();
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: -100 }}
@@ -27,10 +24,10 @@ function GameStyle({
 					<div
 						onClick={(e) => {
 							e.preventDefault();
-							setConnectivity(0);
+							setConnectivity("online");
 						}}
 						className={`w-full ${
-							connectivity === 0 ? "bg-white text-black" : "hover:bg-white hover:text-black"
+							connectivity === "online" ? "bg-white text-black" : "hover:bg-white hover:text-black"
 						}`}
 					>
 						<Globe size={18} />
@@ -38,11 +35,11 @@ function GameStyle({
 					</div>
 					<div
 						className={`w-full ${
-							connectivity === 1 ? "bg-white text-black" : "hover:bg-white hover:text-black"
+							connectivity === "practice" ? "bg-white text-black" : "hover:bg-white hover:text-black"
 						}`}
 						onClick={(e) => {
 							e.preventDefault();
-							setConnectivity(1);
+							setConnectivity("practice");
 						}}
 					>
 						<Brain size={18} />
@@ -51,10 +48,10 @@ function GameStyle({
 					<div
 						onClick={(e) => {
 							e.preventDefault();
-							setConnectivity(2);
+							setConnectivity("offline");
 						}}
 						className={`w-full ${
-							connectivity === 2 ? "bg-white text-black" : "hover:bg-white hover:text-black"
+							connectivity === "offline" ? "bg-white text-black" : "hover:bg-white hover:text-black"
 						}`}
 					>
 						<WifiSlash size={18} />

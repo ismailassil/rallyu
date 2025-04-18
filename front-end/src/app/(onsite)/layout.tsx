@@ -1,13 +1,10 @@
-import type { Metadata } from "next";
+"use client";
+
 import "@/app/globals.css";
 import Image from "next/image";
 import Header from "./components/Header/Header";
 import SideBar from "./components/Sidebar";
-
-export const metadata: Metadata = {
-	title: "Rallyu",
-	description: "Play fast-paced online ping pong battles!",
-};
+import { GameProvider } from "./contexts/gameContext";
 
 export default function RootLayout({
 	children,
@@ -29,7 +26,7 @@ export default function RootLayout({
 			<Header />
 			<div>
 				<SideBar />
-				{children}
+				<GameProvider>{children}</GameProvider>
 			</div>
 		</div>
 	);

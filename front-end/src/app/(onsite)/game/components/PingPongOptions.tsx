@@ -1,43 +1,60 @@
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Rounds from "./Items/Rounds";
 import Player from "./Items/Player";
 import Board from "./Items/Board";
 import Range from "./Items/Range";
 import ResetButton from "./Items/ResetButton";
+import { useGame } from "../../contexts/gameContext";
 
-function PingPongOptions({ connectivity }: { connectivity: number }) {
-	const [paddleWidth, setPaddleWidth] = useState(3);
-	const [paddleHeight, setPaddleHeight] = useState(6);
-	const [ballSize, setBallSize] = useState(4);
-	const [boardColor, setBoardColor] = useState(0);
-	const [round, setRound] = useState(0);
-	const [reset, setReset] = useState(false);
-	const [playerOne, setPlayerOne] = useState("");
-	const [playerTwo, setPlayerTwo] = useState("");
+function PingPongOptions() {
+	const {
+		paddleWidth,
+		setPaddleWidth,
+		paddleHeight,
+		setPaddleHeight,
+		ballSize,
+		setBallSize,
+		boardColor,
+		setBoardColor,
+		round,
+		setRound,
+		reset,
+		setReset,
+		playerOne,
+		setPlayerOneName,
+		playerTwo,
+		setPlayerTwoName,
+	} = useGame();
+
+	const defaultRound = 5;
+	const defaultBoardColor = "bg-theme-one";
+
+	const { connectivity } = useGame();
 
 	function resetValues() {
 		setPaddleWidth(3);
 		setPaddleHeight(6);
 		setBallSize(4);
-		setBoardColor(0);
-		setRound(0);
+		setBoardColor(defaultBoardColor);
+		setRound(defaultRound);
 	}
 
 	useEffect(() => {
 		if (
-			(connectivity > 0 && (paddleWidth !== 3 || paddleHeight !== 6 || ballSize !== 4 || round !== 0)) ||
-			boardColor !== 0
+			(connectivity !== "online" &&
+				(paddleWidth !== 3 || paddleHeight !== 6 || ballSize !== 4 || round !== defaultRound)) ||
+			boardColor !== defaultBoardColor
 		) {
 			setReset(true);
 		} else {
 			setReset(false);
 		}
-	}, [connectivity, paddleWidth, paddleHeight, ballSize, boardColor, round]);
+	}, [connectivity, paddleWidth, paddleHeight, ballSize, boardColor, round, setReset]);
 
 	return (
 		<>
-			{connectivity > 0 && (
+			{connectivity !== "online" && (
 				<>
 					<Range label="Paddle Width" value={paddleWidth} setValue={setPaddleWidth} />
 					<Range label="Paddle Height" value={paddleHeight} setValue={setPaddleHeight} />
@@ -45,13 +62,15 @@ function PingPongOptions({ connectivity }: { connectivity: number }) {
 				</>
 			)}
 			<Board label="Board Color" boardColor={boardColor} setBoardColor={setBoardColor} />
-			<AnimatePresence>{connectivity > 0 && <Rounds round={round} setRound={setRound} />}</AnimatePresence>
+			<AnimatePresence>
+				{connectivity !== "online" && <Rounds round={round} setRound={setRound} />}
+			</AnimatePresence>
 			<AnimatePresence>
 				<>
-					{connectivity === 2 && (
+					{connectivity === "offline" && (
 						<>
-							<Player label="Player 1" value={playerOne} setValue={setPlayerOne} />
-							<Player label="Player 2" value={playerTwo} setValue={setPlayerTwo} />
+							<Player label="Player 1" value={playerOne.name} setValue={setPlayerOneName} />
+							<Player label="Player 2" value={playerTwo.name} setValue={setPlayerTwoName} />
 						</>
 					)}
 					{reset && <ResetButton resetValues={resetValues} />}

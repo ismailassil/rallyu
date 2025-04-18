@@ -1,17 +1,10 @@
+import { useGame } from "@/app/(onsite)/contexts/gameContext";
 import { Hash, PingPong } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 
-function PickGame({
-	label,
-	game,
-	setGame,
-	className,
-}: {
-	className?: string;
-	label: string;
-	game: number;
-	setGame: (value: number) => void;
-}) {
+function PickGame({ label, className }: { className?: string; label: string }) {
+	const { gameType, setGameType } = useGame();
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: -100 }}
@@ -33,9 +26,9 @@ function PickGame({
 					<div
 						onClick={(e) => {
 							e.preventDefault();
-							setGame(0);
+							setGameType("pingpong");
 						}}
-						className={`w-full ${game === 0 ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
+						className={`w-full ${gameType === "pingpong" ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
 					>
 						<PingPong size={18} />
 						Ping Pong
@@ -43,9 +36,9 @@ function PickGame({
 					<div
 						onClick={(e) => {
 							e.preventDefault();
-							setGame(1);
+							setGameType("tictactoe");
 						}}
-						className={`w-full ${game === 1 ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
+						className={`w-full ${gameType === "tictactoe" ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
 					>
 						<Hash size={18} />
 						Tic Tac Toe
