@@ -5,10 +5,11 @@ import Player from "./Items/Player";
 import Board from "./Items/Board";
 import Range from "./Items/Range";
 import ResetButton from "./Items/ResetButton";
-import { useGame } from "../../contexts/gameContext";
+import { usePingPong } from "../../contexts/pingpongContext";
 
 function PingPongOptions() {
 	const {
+		connectivity,
 		paddleWidth,
 		setPaddleWidth,
 		paddleHeight,
@@ -25,12 +26,10 @@ function PingPongOptions() {
 		setPlayerOneName,
 		playerTwo,
 		setPlayerTwoName,
-	} = useGame();
+	} = usePingPong();
 
 	const defaultRound = 5;
 	const defaultBoardColor = "bg-theme-one";
-
-	const { connectivity } = useGame();
 
 	function resetValues() {
 		setPaddleWidth(3);
@@ -69,8 +68,16 @@ function PingPongOptions() {
 				<>
 					{connectivity === "offline" && (
 						<>
-							<Player label="Player 1" value={playerOne.name} setValue={setPlayerOneName} />
-							<Player label="Player 2" value={playerTwo.name} setValue={setPlayerTwoName} />
+							<Player
+								label="Player 1"
+								value={playerOne.name}
+								setValue={setPlayerOneName}
+							/>
+							<Player
+								label="Player 2"
+								value={playerTwo.name}
+								setValue={setPlayerTwoName}
+							/>
 						</>
 					)}
 					{reset && <ResetButton resetValues={resetValues} />}

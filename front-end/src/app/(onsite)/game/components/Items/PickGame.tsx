@@ -1,9 +1,9 @@
-import { useGame } from "@/app/(onsite)/contexts/gameContext";
 import { Hash, PingPong } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
+import { useGameContext } from "../../contexts/gameContext";
 
 function PickGame({ label, className }: { className?: string; label: string }) {
-	const { gameType, setGameType } = useGame();
+	const { gameType, setGameType } = useGameContext();
 
 	return (
 		<motion.div

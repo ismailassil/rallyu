@@ -50,17 +50,11 @@ function Cell({ go, setGo, id, cells, setCells, cell, xColor, oColor, disabled }
 		>
 			{cell ? (
 				cell === "circle" ? (
-					<motion.div
-						initial={{ opacity: 0, scale: 0.5 }}
-						animate={{ opacity: 1, scale: 1 }}
-					>
+					<motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}>
 						<Circle weight="bold" size={120} className={`${xColor}`} />
 					</motion.div>
 				) : (
-					<motion.div
-						initial={{ opacity: 0, scale: 0.5 }}
-						animate={{ opacity: 1, scale: 1 }}
-					>
+					<motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}>
 						<X weight="bold" size={120} className={`${oColor}`} />
 					</motion.div>
 				)

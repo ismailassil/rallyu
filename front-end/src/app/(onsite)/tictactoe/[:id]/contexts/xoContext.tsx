@@ -1,12 +1,6 @@
 import { createContext, useContext } from "react";
 import useCountdown from "../tools/useCountdown";
 
-// type player = {
-// 	img: string;
-// 	name: string;
-// 	score: number;
-// };
-
 type XOContextTypes = {
 	secondsLeft: number;
 	setStart: (value: number) => void;

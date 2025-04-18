@@ -3,22 +3,32 @@
 import { AnimatePresence, motion } from "framer-motion";
 import InviteFriend from "./components/InviteFriend";
 import GamePanel from "./components/GamePanel";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Loading from "./components/Loading";
 import { useRouter } from "next/navigation";
-import { useGame } from "../contexts/gameContext";
+import { useTicTacToe } from "../contexts/tictactoeContext";
+import { useGameContext } from "./contexts/gameContext";
 
 export default function Game() {
-	const { gameType, connectivity } = useGame();
-	const [launch, setLaunch] = useState(false);
+	const { connectivity } = useTicTacToe();
+	const { launch, setLaunch, gameType } = useGameContext();
+
 	const router = useRouter();
 
 	useEffect(() => {
-		if (launch === true && gameType === "tictactoe" && connectivity === "offline")
-			setTimeout(() => {
+		let timeoutId: NodeJS.Timeout;
+
+		if (launch === true && gameType === "tictactoe" && connectivity === "offline") {
+			timeoutId = setTimeout(() => {
 				router.push("/tictactoe/0");
+				setLaunch(false);
 			}, 3000);
-	}, [launch, router, gameType, connectivity]);
+		}
+
+		return () => {
+			clearTimeout(timeoutId);
+		};
+	}, [launch, router, gameType, connectivity, setLaunch]);
 
 	return (
 		<AnimatePresence>
@@ -38,9 +48,9 @@ export default function Game() {
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 1, delay: 0.2 }}
 							className="max-w-300 hide-scrollbar flex h-full w-full
-									flex-col gap-3 overflow-y-scroll p-4 pl-3 md:gap-5 lg:flex-row"
+								flex-col gap-3 overflow-y-scroll p-4 pl-3 md:gap-5 lg:flex-row"
 						>
-							<GamePanel setStart={setLaunch} />
+							<GamePanel />
 							<InviteFriend />
 						</motion.div>
 					) : (
