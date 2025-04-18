@@ -1,15 +1,14 @@
 import unicaOne from "@/app/fonts/unicaOne";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
 import PingPongOptions from "./PingPongOptions";
 import TicTacToeOptions from "./TicTacToeOptions";
 import StartButton from "./Items/StartButton";
 import GameStyle from "./Items/GameStyle";
 import PickGame from "./Items/PickGame";
+import { useGame } from "../../contexts/gameContext";
 
 function GamePanel({ setStart }: { setStart: (value: boolean) => void }) {
-	const [game, setGame] = useState(0);
-	const [connectivity, setConnectivity] = useState(0);
+	const { gameType } = useGame();
 
 	return (
 		<AnimatePresence>
@@ -23,12 +22,12 @@ function GamePanel({ setStart }: { setStart: (value: boolean) => void }) {
 					transition={{ duration: 1, delay: 0.1 }}
 					className={`custom-scroll flex h-full flex-col gap-5 overflow-y-scroll p-4`}
 				>
-					<PickGame label="Pick Your Game" game={game} setGame={setGame} />
-					<GameStyle connectivity={connectivity} setConnectivity={setConnectivity} />
-					{game === 0 ? (
-						<PingPongOptions connectivity={connectivity} />
+					<PickGame label="Pick Your Game" />
+					<GameStyle />
+					{gameType === "pingpong" ? (
+						<PingPongOptions />
 					) : (
-						<TicTacToeOptions connectivity={connectivity} />
+						<TicTacToeOptions />
 					)}
 				</motion.div>
 				<StartButton setStart={setStart} />
