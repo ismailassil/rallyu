@@ -1,7 +1,8 @@
 import geistSans from "@/app/fonts/geistSans";
 import Image from "next/image";
 import { useXO } from "../contexts/xoContext";
-import { useGame } from "@/app/(onsite)/contexts/gameContext";
+import { useTicTacToe } from "@/app/(onsite)/contexts/tictactoeContext";
+import { useMemo } from "react";
 
 type gameInfoType = {
 	pl1: number;
@@ -12,13 +13,15 @@ type gameInfoType = {
 
 function GameInfo({ gameInfo: { pl1, pl2, round, turn } }: { gameInfo: gameInfoType }) {
 	const { secondsLeft } = useXO();
-	const { playerOne, playerTwo } = useGame();
+	const { players } = useTicTacToe();
 
-	let player1 = !playerOne.name || playerOne.name === "" ? "Darth Vader" : playerOne.name;
-	if (player1 && player1.length > 20) player1 = player1.substring(0, 20) + "...";
-
-	let player2 = !playerTwo.name || playerTwo.name === "" ? "Lord Voldmort" : playerTwo.name;
-	if (player2 && player2.length > 20) player2 = player2.substring(0, 20) + "...";
+	const { nameOne, nameTwo } = useMemo(() => {
+		let nameOne = players.playerOne.name;
+		let nameTwo = players.playerTwo.name;
+		if (nameOne.length > 20) nameOne = nameOne.substring(0, 20) + "...";
+		if (nameTwo.length > 20) nameTwo = nameTwo.substring(0, 20) + "...";
+		return { nameOne, nameTwo };
+	}, [players]);
 
 	return (
 		<>
@@ -32,18 +35,16 @@ function GameInfo({ gameInfo: { pl1, pl2, round, turn } }: { gameInfo: gameInfoT
 					<div className="hover:scale-101 flex h-10 w-10 transition-transform duration-200">
 						<Image
 							className="ring-br-image hover:scale-101 hover:ring-3 h-full
-						w-full rounded-full object-cover ring-2 transition-transform duration-500"
-							src={playerOne.img}
+								w-full rounded-full object-cover ring-2 transition-transform duration-500"
+							src={players.playerOne.img}
 							alt="Profile Image"
 							width={250}
 							height={250}
 						/>
 					</div>
-					<p className="text-wrap flex-1">{player1}</p>
+					<p className="text-wrap flex-1">{nameOne}</p>
 				</div>
-				<div className={`flex-[0.5] text-center text-4xl ${geistSans.className}`}>
-					{pl1}
-				</div>
+				<div className={`flex-[0.5] text-center text-4xl ${geistSans.className}`}>{pl1}</div>
 				<div
 					className={`bg-white/8 ring-white/15 *:flex *:items-center *:justify-center
 					transform-all hover:scale-102 flex h-full w-full flex-[0.5]
@@ -53,21 +54,19 @@ function GameInfo({ gameInfo: { pl1, pl2, round, turn } }: { gameInfo: gameInfoT
 				>
 					<span className={`flex-1 text-3xl font-light`}>{secondsLeft}</span>
 				</div>
-				<div className={`flex-[0.5] text-center text-4xl ${geistSans.className}`}>
-					{pl2}
-				</div>
+				<div className={`flex-[0.5] text-center text-4xl ${geistSans.className}`}>{pl2}</div>
 				<div
 					className={`hover:scale-102 flex w-full flex-1 select-none
 							items-center gap-5 rounded-full border-2 bg-white/5 p-2 transition-all duration-500
 							${turn === "pl2" ? "border-main" : "border-white/4"}
 							`}
 				>
-					<p className="text-wrap flex-1 text-right">{player2}</p>
+					<p className="text-wrap flex-1 text-right">{nameTwo}</p>
 					<div className="hover:scale-101 flex h-10 w-10 transition-transform duration-200">
 						<Image
 							className="ring-br-image hover:scale-101 hover:ring-3 h-full
 						w-full rounded-full object-cover ring-2 transition-transform duration-500"
-							src={playerTwo.img}
+							src={players.playerTwo.img}
 							alt="Profile Image"
 							width={250}
 							height={250}

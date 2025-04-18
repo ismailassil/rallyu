@@ -4,7 +4,9 @@ import "@/app/globals.css";
 import Image from "next/image";
 import Header from "./components/Header/Header";
 import SideBar from "./components/Sidebar";
-import { GameProvider } from "./contexts/gameContext";
+import { TicTacToeProvider } from "./contexts/tictactoeContext";
+import { PingPongProvider } from "./contexts/pingpongContext";
+import { GameProvider } from "./game/contexts/gameContext";
 
 export default function RootLayout({
 	children,
@@ -26,7 +28,11 @@ export default function RootLayout({
 			<Header />
 			<div>
 				<SideBar />
-				<GameProvider>{children}</GameProvider>
+				<GameProvider>
+					<TicTacToeProvider>
+						<PingPongProvider>{children}</PingPongProvider>
+					</TicTacToeProvider>
+				</GameProvider>
 			</div>
 		</div>
 	);

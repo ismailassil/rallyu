@@ -11,17 +11,15 @@ function Colors({
 }: {
 	className?: string;
 	handleSet: (
-		setFunction: (
-			value: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500"
-		) => void,
-		value: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500",
-		rvalue: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500"
+		setFunction: (value: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-teal-500") => void,
+		value: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-teal-500",
+		rvalue: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-teal-500"
 	) => void;
 	setColor: React.Dispatch<
-		React.SetStateAction<"bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500">
+		React.SetStateAction<"bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-teal-500">
 	>;
-	Color: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500";
-	innerColor: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500";
+	Color: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-teal-500";
+	innerColor: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-teal-500";
 	label: string;
 	children: React.ReactNode;
 }) {
@@ -69,10 +67,10 @@ function Colors({
 					<div
 						onClick={(e) => {
 							e.preventDefault();
-							handleSet(setColor, "bg-cyan-500", Color);
+							handleSet(setColor, "bg-teal-500", Color);
 						}}
-						className={`w-full bg-cyan-500
-								${innerColor === "bg-cyan-500" ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
+						className={`w-full bg-teal-500
+								${innerColor === "bg-teal-500" ? "ring-2 ring-white" : "hover:ring-2 hover:ring-white/40"}`}
 					></div>
 				</div>
 			</div>

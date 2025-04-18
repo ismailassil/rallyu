@@ -5,22 +5,12 @@ type player = {
 	name: string;
 };
 
-type gameContextTypes = {
-	gameType: "pingpong" | "tictactoe";
-	setGameType: React.Dispatch<React.SetStateAction<"pingpong" | "tictactoe">>;
+type contextTypes = {
 	connectivity: "online" | "practice" | "offline";
 	setConnectivity: React.Dispatch<React.SetStateAction<"online" | "practice" | "offline">>;
 	boardColor: "bg-theme-one" | "bg-theme-two" | "bg-theme-three" | "bg-theme-four";
 	setBoardColor: React.Dispatch<
 		React.SetStateAction<"bg-theme-one" | "bg-theme-two" | "bg-theme-three" | "bg-theme-four">
-	>;
-	xColor: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500";
-	setXColor: React.Dispatch<
-		React.SetStateAction<"bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500">
-	>;
-	oColor: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500";
-	setOColor: React.Dispatch<
-		React.SetStateAction<"bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500">
 	>;
 	round: 5 | 7 | 9;
 	setRound: React.Dispatch<React.SetStateAction<5 | 7 | 9>>;
@@ -38,10 +28,10 @@ type gameContextTypes = {
 	setPlayerTwoName: (value: string) => void;
 };
 
-const GameContext = createContext<gameContextTypes | undefined>(undefined);
+const PingPongContext = createContext<contextTypes | undefined>(undefined);
 
-export function useGame() {
-	const context = useContext(GameContext);
+export function usePingPong() {
+	const context = useContext(PingPongContext);
 
 	if (context === undefined) {
 		throw new Error("useGame should be used within GameProvider");
@@ -50,18 +40,11 @@ export function useGame() {
 	return context;
 }
 
-export function GameProvider({ children }: Readonly<{ children: React.ReactNode }>) {
-	const [gameType, setGameType] = useState<"pingpong" | "tictactoe">("pingpong");
+export function PingPongProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	const [connectivity, setConnectivity] = useState<"online" | "practice" | "offline">("online");
 	const [boardColor, setBoardColor] = useState<
 		"bg-theme-one" | "bg-theme-two" | "bg-theme-three" | "bg-theme-four"
 	>("bg-theme-one");
-	const [xColor, setXColor] = useState<
-		"bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500"
-	>("bg-red-700");
-	const [oColor, setOColor] = useState<
-		"bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-cyan-500"
-	>("bg-yellow-500");
 	const [round, setRound] = useState<5 | 7 | 9>(5);
 	const [reset, setReset] = useState(false);
 	const [playerOne, setPlayerOne] = useState<player>({
@@ -85,10 +68,8 @@ export function GameProvider({ children }: Readonly<{ children: React.ReactNode 
 	}
 
 	return (
-		<GameContext.Provider
+		<PingPongContext.Provider
 			value={{
-				gameType,
-				setGameType,
 				connectivity,
 				paddleWidth,
 				setPaddleWidth,
@@ -99,10 +80,6 @@ export function GameProvider({ children }: Readonly<{ children: React.ReactNode 
 				setConnectivity,
 				boardColor,
 				setBoardColor,
-				xColor,
-				setXColor,
-				oColor,
-				setOColor,
 				round,
 				setRound,
 				reset,
@@ -114,6 +91,6 @@ export function GameProvider({ children }: Readonly<{ children: React.ReactNode 
 			}}
 		>
 			{children}
-		</GameContext.Provider>
+		</PingPongContext.Provider>
 	);
 }

@@ -1,6 +1,11 @@
 import geistSans from "@/app/fonts/geistSans";
+import { useGameContext } from "../../contexts/gameContext";
+import { useTicTacToe } from "@/app/(onsite)/contexts/tictactoeContext";
 
-function StartButton({ setStart }: { setStart: (value: boolean) => void }) {
+function StartButton() {
+	const { setLaunch } = useGameContext();
+	const { playerOne, setPlayerOne, playerTwo, setPlayerTwo, setPlayers } = useTicTacToe();
+
 	return (
 		<button
 			className={`${geistSans.className} min-h-11 lg:h-13 lg:min-h-13 bg-main hover:scale-101 hover:text-main hover:ring-3 h-11
@@ -9,7 +14,22 @@ function StartButton({ setStart }: { setStart: (value: boolean) => void }) {
 					`}
 			onClick={(e) => {
 				e.preventDefault();
-				setStart(true);
+				const p1 = !playerOne || playerOne === "" ? "Darth Vador" : playerOne;
+				const p2 = !playerTwo || playerTwo === "" ? "Lord Voldemort" : playerTwo;
+				const updatedPlayers = {
+					playerOne: {
+						name: p1,
+						img: "/profile/darthVader.jpeg",
+					},
+					playerTwo: {
+						name: p2,
+						img: "/profile/lordVoldemort.jpeg",
+					},
+				};
+				setPlayers(updatedPlayers);
+				setPlayerOne("");
+				setPlayerTwo("");
+				setLaunch(true);
 			}}
 		>
 			Start The Game

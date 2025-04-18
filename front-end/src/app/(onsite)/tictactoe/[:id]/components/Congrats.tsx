@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { ArrowUUpLeft } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
-import { useGame } from "@/app/(onsite)/contexts/gameContext";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useMemo } from "react";
+import { useTicTacToe } from "@/app/(onsite)/contexts/tictactoeContext";
 
 type gameInfoType = {
 	pl1: number;
@@ -21,15 +21,15 @@ function Congrats({
 	setGameInfo: Dispatch<SetStateAction<gameInfoType>>;
 	setGameEnd: Dispatch<SetStateAction<boolean>>;
 }) {
-	const { playerOne, playerTwo } = useGame();
-	const [isDraw, setIsDraw] = useState(false);
+	const { players } = useTicTacToe();
 
 	const router = useRouter();
 
-	useEffect(() => {
-		setIsDraw(gameInfo.pl1 === gameInfo.pl2);
-	}, [setIsDraw, gameInfo]);
-	const wins = gameInfo.pl1 > gameInfo.pl2 ? playerOne : playerTwo;
+	const wins = useMemo(
+		() => (gameInfo.pl1 > gameInfo.pl2 ? players.playerOne : players.playerTwo),
+		[gameInfo.pl1, gameInfo.pl2, players]
+	);
+	const isDraw = useMemo(() => gameInfo.pl1 === gameInfo.pl2, [gameInfo.pl1, gameInfo.pl2]);
 
 	return (
 		<>
@@ -129,7 +129,6 @@ function Congrats({
 					whileTap={{ scale: 0.95 }}
 					onClick={() => {
 						router.push("/game");
-						// setGameEnd(false);
 					}}
 				>
 					<ArrowUUpLeft size={20} />

@@ -5,10 +5,14 @@ import TicTacToeOptions from "./TicTacToeOptions";
 import StartButton from "./Items/StartButton";
 import GameStyle from "./Items/GameStyle";
 import PickGame from "./Items/PickGame";
-import { useGame } from "../../contexts/gameContext";
+import { useGameContext } from "../contexts/gameContext";
+import { useTicTacToe } from "../../contexts/tictactoeContext";
+import { usePingPong } from "../../contexts/pingpongContext";
 
-function GamePanel({ setStart }: { setStart: (value: boolean) => void }) {
-	const { gameType } = useGame();
+function GamePanel() {
+	const { gameType } = useGameContext();
+	const { connectivity: tConnect, setConnectivity: updatetConnect } = useTicTacToe();
+	const { connectivity: pConnect, setConnectivity: updatepConnect } = usePingPong();
 
 	return (
 		<AnimatePresence>
@@ -23,14 +27,13 @@ function GamePanel({ setStart }: { setStart: (value: boolean) => void }) {
 					className={`custom-scroll flex h-full flex-col gap-5 overflow-y-scroll p-4`}
 				>
 					<PickGame label="Pick Your Game" />
-					<GameStyle />
-					{gameType === "pingpong" ? (
-						<PingPongOptions />
-					) : (
-						<TicTacToeOptions />
-					)}
+					<GameStyle
+						connectivity={gameType === "pingpong" ? pConnect : tConnect}
+						setConnectivity={gameType === "pingpong" ? updatepConnect : updatetConnect}
+					/>
+					{gameType === "pingpong" ? <PingPongOptions /> : <TicTacToeOptions />}
 				</motion.div>
-				<StartButton setStart={setStart} />
+				<StartButton />
 			</div>
 		</AnimatePresence>
 	);
