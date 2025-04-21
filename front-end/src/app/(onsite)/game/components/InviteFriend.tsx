@@ -1,7 +1,7 @@
 import unicaOne from "@/app/fonts/unicaOne";
 import BattleFriend from "./BattleFriend";
 import { useState } from "react";
-import useIsWidth from "../../components/useIsWidth";
+import useIsWidth from "../../../hooks/useIsWidth";
 // import Image from "next/image";
 
 function InviteFriend() {

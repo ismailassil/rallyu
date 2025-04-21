@@ -88,15 +88,29 @@ export default function SignUp() {
 			<div className="flex h-full w-full justify-center overflow-auto">
 				<div className="flex h-full w-[650px] items-start justify-center pb-20 pl-10 pr-10 pt-20 lg:items-center">
 					<div className="flex-1">
-						<h1 className={`${ibm.className} justify-left flex text-[36px] font-bold md:justify-center`}>
+						<h1
+							className={`${ibm.className} justify-left flex text-[36px] font-bold md:justify-center`}
+						>
 							Create an account
 						</h1>
 						<p className={`justify-left mb-[47px] flex text-[18px] md:justify-center`}>
 							Please enter your details to create a new account
 						</p>
 						<div className="mb-4 flex flex-col justify-center gap-[18px] sm:flex-row">
-							<AuthButton src="/google-logo.svg" width={17} height={17} alt="Google Logo" text="Google" />
-							<AuthButton src="/42-logo.svg" width={21} height={15} alt="42 Intra Logo" text="Intra" />
+							<AuthButton
+								src="/google-logo.svg"
+								width={17}
+								height={17}
+								alt="Google Logo"
+								text="Google"
+							/>
+							<AuthButton
+								src="/42-logo.svg"
+								width={21}
+								height={15}
+								alt="42 Intra Logo"
+								text="Intra"
+							/>
 						</div>
 						<div className="mb-[19px] mt-[19px] flex items-center gap-4 text-gray-500">
 							<hr className="flex-grow border-t border-gray-300" />
@@ -179,7 +193,9 @@ export default function SignUp() {
 								/>
 
 								{!error ? (
-									<p className="mt-[7px]  text-sm text-[#8996A9]">Minimum length is 8 characters.</p>
+									<p className="mt-[7px]  text-sm text-[#8996A9]">
+										Minimum length is 8 characters.
+									</p>
 								) : (
 									<p className="mt-[7px] text-sm text-red-400">{error}</p>
 								)}
@@ -196,7 +212,10 @@ export default function SignUp() {
 							<div className="mt-[19px] flex justify-center">
 								<p>
 									Already have an account?{" "}
-									<Link href="/" className="text-main hover:text-blue-400 hover:underline">
+									<Link
+										href="/"
+										className="text-main hover:text-blue-400 hover:underline"
+									>
 										Sign In
 									</Link>
 								</p>

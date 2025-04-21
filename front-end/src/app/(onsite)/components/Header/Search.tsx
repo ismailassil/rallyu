@@ -19,7 +19,10 @@ export default function Search({ setIsNotif, setIsProfile, setIsSearch, isSearch
 
 	useEffect(() => {
 		function handleClick(event: MouseEvent | KeyboardEvent) {
-			if (event instanceof KeyboardEvent && (event.key === "Escape" || (event.metaKey && event.key === "k"))) {
+			if (
+				event instanceof KeyboardEvent &&
+				(event.key === "Escape" || (event.metaKey && event.key === "k"))
+			) {
 				if (event.key === "Escape" && !isSearch) return;
 				setIsSearch(!isSearch);
 				setSearch("");
@@ -78,8 +81,11 @@ export default function Search({ setIsNotif, setIsProfile, setIsSearch, isSearch
 						flex w-full flex-col items-center bg-black/20 pb-5 pl-3 pr-3
 						pt-10 backdrop-blur-2xl md:p-20 lg:p-40 lg:pb-20"
 				>
-					<div className="h-full w-[100%] lg:w-[80%]">
-						<div ref={div1Ref} className="border-br-card relative rounded-lg border-2 bg-white/10">
+					<div className="max-w-220 h-full w-[100%] lg:w-[80%]">
+						<div
+							ref={div1Ref}
+							className="border-br-card relative rounded-lg border-2 bg-white/10"
+						>
 							<Image
 								className="absolute left-5 top-[19px] opacity-75"
 								src="/search.svg"

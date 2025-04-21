@@ -135,8 +135,22 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .gameLoader {
 	background:
-		linear-gradient(45deg, transparent 49%, #ffffff0b 10%, #ffffff0b 10%, transparent 51%, transparent),
-		linear-gradient(-45deg, transparent 49%, #ffffff0b 10%, #ffffff0b 10%, transparent 51%, transparent);
+		linear-gradient(
+			45deg,
+			transparent 49%,
+			#ffffff0b 10%,
+			#ffffff0b 10%,
+			transparent 51%,
+			transparent
+		),
+		linear-gradient(
+			-45deg,
+			transparent 49%,
+			#ffffff0b 10%,
+			#ffffff0b 10%,
+			transparent 51%,
+			transparent
+		);
 	background-size: 1em 1em;
 	box-sizing: border-box;
 	animation: barStripe 0.6s linear infinite;

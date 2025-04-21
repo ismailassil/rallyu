@@ -1,7 +1,15 @@
 import { ArrowUUpRight } from "@phosphor-icons/react";
 import Image from "next/image";
 
-function TournamentCard({ name, active, isPingPong }: { name: string; active: number; isPingPong: boolean }) {
+function TournamentCard({
+	name,
+	active,
+	isPingPong,
+}: {
+	name: string;
+	active: number;
+	isPingPong: boolean;
+}) {
 	if (name && name.length > 25) {
 		name = name.substring(0, 23) + "...";
 	}

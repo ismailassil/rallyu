@@ -1,7 +1,7 @@
 import unicaOne from "@/app/fonts/unicaOne";
 import LeaderboardItem from "./LeaderBoardItem";
 import { useState } from "react";
-import useIsWidth from "../useIsWidth";
+import useIsWidth from "../../../hooks/useIsWidth";
 
 export default function LeaderboardPanel() {
 	const isWidth = useIsWidth(1024);
@@ -18,8 +18,13 @@ export default function LeaderboardPanel() {
 			}`}
 		>
 			<div className="flex h-full flex-col">
-				<div className="group relative shrink-0 overflow-hidden" onClick={() => setShowbox(!showbox)}>
-					<h1 className={`${unicaOne.className} p-13 select-none text-4xl uppercase`}>Leaderboard</h1>
+				<div
+					className="group relative shrink-0 overflow-hidden"
+					onClick={() => setShowbox(!showbox)}
+				>
+					<h1 className={`${unicaOne.className} p-13 select-none text-4xl uppercase`}>
+						Leaderboard
+					</h1>
 					<div
 						className="w-18 h-18 bg-accent
 					absolute -left-4 top-[calc(50%)] -translate-x-1/2 -translate-y-1/2 rounded-lg

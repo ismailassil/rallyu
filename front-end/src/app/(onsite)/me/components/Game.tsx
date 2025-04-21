@@ -31,7 +31,9 @@ function Game({
 					matchResult === 0 ? "bg-gray-600" : matchResult >= 1 ? "bg-green-600" : "bg-red-600"
 				} ring-border-gray-thick/50 rounded-b-lg ring-2`}
 			>
-				<p className="text-sm">{matchResult === 0 ? "Draw" : matchResult >= 1 ? "Victory" : "Defeat"}</p>
+				<p className="text-sm">
+					{matchResult === 0 ? "Draw" : matchResult >= 1 ? "Victory" : "Defeat"}
+				</p>
 			</div>
 			<div className="w-19 bg-gray-thick ring-border-gray-thick/50 absolute -bottom-1 left-1/2 flex h-8 -translate-x-1/2 items-center justify-center rounded-t-lg ring-2">
 				<Image

@@ -22,7 +22,9 @@ function Ball({
 			<label className="w-full flex-1" htmlFor="picture">
 				{label}
 			</label>
-			<div className={`relative flex items-center gap-4 ${className ? "flex-2" : "flex-3"} w-full`}>
+			<div
+				className={`relative flex items-center gap-4 ${className ? "flex-2" : "flex-3"} w-full`}
+			>
 				<input
 					type="range"
 					className="custom-range h-0.5 w-full cursor-pointer appearance-none rounded-lg bg-[#92929283] outline-none"

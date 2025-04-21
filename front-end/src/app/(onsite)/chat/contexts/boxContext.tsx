@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import useIsWidth from "../../components/useIsWidth";
+import useIsWidth from "../../../hooks/useIsWidth";
 
 type BoxContextType = {
 	isWidth: boolean;
