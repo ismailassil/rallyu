@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import useCountdown from "../tools/useCountdown";
+import useCountdown from "../../../../hooks/useCountdown";
 
 type XOContextTypes = {
 	secondsLeft: number;

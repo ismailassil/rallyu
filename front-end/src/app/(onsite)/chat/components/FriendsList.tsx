@@ -3,7 +3,15 @@ import ChatFriend from "./ChatFriend";
 import Image from "next/image";
 
 export default function FriendsList() {
-	const { showbox, setShowbox, isWidth, userMessage, setUserMessage, selectedFriend, setSelectedFriend } = useBox();
+	const {
+		showbox,
+		setShowbox,
+		isWidth,
+		userMessage,
+		setUserMessage,
+		selectedFriend,
+		setSelectedFriend,
+	} = useBox();
 
 	return (
 		<section

@@ -48,7 +48,13 @@ function NotificationItem({ type, message, sender, uri }: NotificationProps) {
 			>
 				<div className="flex justify-between gap-3 p-2">
 					<div className="min-h-10 min-w-10 max-w-10 flex aspect-square max-h-10 overflow-hidden rounded-full">
-						<Image src={sender.img} alt="Profile Image" width={40} height={40} className="object-cover" />
+						<Image
+							src={sender.img}
+							alt="Profile Image"
+							width={40}
+							height={40}
+							className="object-cover"
+						/>
 					</div>
 					<div className="flex-1">
 						<p className="font-bold">{sender.name}</p>

@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Cell from "./Items/Cell";
 import dmSans from "@/app/fonts/dmSans";
 import { Dispatch, SetStateAction } from "react";
 import { useXO } from "../contexts/xoContext";
-import useCountdown from "../tools/useCountdown";
+import useCountdown from "../../../../hooks/useCountdown";
 import { useTicTacToe } from "@/app/(onsite)/contexts/tictactoeContext";
 
 type gameInfoType = {
@@ -35,14 +35,11 @@ function GameField({
 	setGameEnd: Dispatch<SetStateAction<boolean>>;
 }) {
 	const { secondsLeft: startSeconds, setStart: setStartSeconds } = useCountdown();
-	const { round, boardColor, xColor, oColor } = useTicTacToe();
+	const { round, boardColor } = useTicTacToe();
 	const { secondsLeft, setStart } = useXO();
 	const [cells, setCells] = useState(["", "", "", "", "", "", "", "", ""]);
 	const [go, setGo] = useState("cross");
 	const [startGame, setStartGame] = useState(false);
-
-	const xColour = useMemo(() => xColor.replace("bg-", "text-"), [xColor]);
-	const oColour = useMemo(() => oColor.replace("bg-", "text-"), [oColor]);
 
 	useEffect(() => {
 		setStartSeconds(3);
@@ -53,7 +50,6 @@ function GameField({
 		}, 3000);
 
 		return () => clearTimeout(timer);
-
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -119,8 +115,6 @@ function GameField({
 						setCells={setCells}
 						cell={cell}
 						disabled={!startGame}
-						xColor={xColour}
-						oColor={oColour}
 					/>
 				))}
 			</div>

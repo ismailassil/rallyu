@@ -18,6 +18,7 @@
         "name": "next"
       }
     ],
+	"baseUrl": "src/",
     "paths": {
       "@/*": ["./src/*"]
     }
@@ -27,7 +28,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/app/(onsite)/me/components/GamesHistory"
   ],
   "exclude": ["node_modules"]
 }

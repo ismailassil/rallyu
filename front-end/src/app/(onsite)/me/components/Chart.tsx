@@ -4,7 +4,11 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip, TooltipProps, XAxis } fr
 
 function Chart({ data }: { data: Array<{ date: string; timeSpent: number }> | null }) {
 	if (!data || data.length === 0) {
-		return <div className="flex h-full items-center justify-center text-gray-400">No data available</div>;
+		return (
+			<div className="flex h-full items-center justify-center text-gray-400">
+				No data available
+			</div>
+		);
 	}
 
 	return (

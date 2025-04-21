@@ -10,7 +10,9 @@ export default function GamesHistory() {
 		>
 			<div className="flex h-full flex-col">
 				<div className="group relative shrink-0 overflow-hidden">
-					<h1 className={`${unicaOne.className} p-13 select-none text-4xl capitalize`}>Games History</h1>
+					<h1 className={`${unicaOne.className} p-13 select-none text-4xl capitalize`}>
+						Games History
+					</h1>
 					<div
 						className="w-18 h-18 bg-main
 								absolute -left-4 top-[calc(50%)] -translate-x-1/2 -translate-y-1/2 rounded-lg

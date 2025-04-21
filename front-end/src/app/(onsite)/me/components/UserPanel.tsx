@@ -24,7 +24,9 @@ function UserPanel() {
 								ISMAIL ASSIL
 							</span>
 						</h1>
-						<p className="pt-5 text-sm text-gray-500 lg:text-lg">Step into a World of Classy Gaming</p>
+						<p className="pt-5 text-sm text-gray-500 lg:text-lg">
+							Step into a World of Classy Gaming
+						</p>
 					</div>
 					<div className="flex-3 flex h-full items-center justify-center">
 						<div

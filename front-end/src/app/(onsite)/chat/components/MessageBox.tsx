@@ -94,10 +94,18 @@ export default function MessageSection() {
 			) : (
 				<>
 					<div className="flex h-full w-full select-none flex-col items-center justify-center">
-						<Image src="/thinking.gif" width={300} height={30} alt="Thinking" className="mb-5 rounded-md" />
+						<Image
+							src="/thinking.gif"
+							width={300}
+							height={30}
+							alt="Thinking"
+							className="mb-5 rounded-md"
+						/>
 						<div className="w-full text-center">
 							<h2 className="text-lg">👋 Welcome to Chat!</h2>
-							<p className="text-base text-gray-400">Select a user from the sidebar to start chatting.</p>
+							<p className="text-base text-gray-400">
+								Select a user from the sidebar to start chatting.
+							</p>
 						</div>
 					</div>
 				</>

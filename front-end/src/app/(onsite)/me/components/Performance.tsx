@@ -20,7 +20,9 @@ export default function Performance() {
 			<section className={`bg-card border-br-card h-full w-full flex-1 rounded-lg border-2`}>
 				<div className="flex h-full flex-col">
 					<div className="group relative shrink-0 overflow-hidden">
-						<h1 className={`${unicaOne.className} p-13 select-none text-4xl capitalize`}>Performance</h1>
+						<h1 className={`${unicaOne.className} p-13 select-none text-4xl capitalize`}>
+							Performance
+						</h1>
 						<div
 							className="w-18 h-18 absolute
 									-left-4 top-[calc(50%)] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-[#E0E0E0]
@@ -28,7 +30,9 @@ export default function Performance() {
 						></div>
 					</div>
 					<div className="hide-scrollbar mb-4 max-h-[calc(100vh-19rem)] flex-1 overflow-y-auto">
-						<div className={`pl-13 pr-13 flex h-full flex-col gap-4 pb-4 ${unicaOne.className}`}>
+						<div
+							className={`pl-13 pr-13 flex h-full flex-col gap-4 pb-4 ${unicaOne.className}`}
+						>
 							<div
 								className="bg-card border-br-card hover:scale-101 min-h-22 flex items-end
 									justify-between overflow-auto rounded-2xl border-2 p-6 py-5 pb-2

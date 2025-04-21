@@ -11,7 +11,13 @@ interface ProfileProps {
 	profileRef: React.Ref<HTMLDivElement>;
 }
 
-export default function Profile({ setIsNotif, setIsProfile, setIsSearch, isProfile, profileRef }: ProfileProps) {
+export default function Profile({
+	setIsNotif,
+	setIsProfile,
+	setIsSearch,
+	isProfile,
+	profileRef,
+}: ProfileProps) {
 	const router = useRouter();
 
 	return (

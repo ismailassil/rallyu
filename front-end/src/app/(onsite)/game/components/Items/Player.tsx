@@ -2,7 +2,15 @@ import { DiceFive, Trash } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import random from "../Utils/random";
 
-function Player({ label, value, setValue }: { label: string; value: string; setValue: (value: string) => void }) {
+function Player({
+	label,
+	value,
+	setValue,
+}: {
+	label: string;
+	value: string;
+	setValue: (value: string) => void;
+}) {
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: -100 }}

@@ -155,7 +155,9 @@ function Security() {
 				</button>
 			</div>
 			<div className="mt-5">
-				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">Two-factor authentication</h2>
+				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">
+					Two-factor authentication
+				</h2>
 				<hr className="border-white/10" />
 			</div>
 			<div className="flex flex-col gap-5 text-sm md:flex-row lg:gap-10 lg:text-base">

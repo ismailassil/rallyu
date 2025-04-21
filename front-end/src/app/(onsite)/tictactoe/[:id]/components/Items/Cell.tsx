@@ -1,7 +1,8 @@
 import { Circle, X } from "@phosphor-icons/react";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useXO } from "../../contexts/xoContext";
+import { useTicTacToe } from "@/app/(onsite)/contexts/tictactoeContext";
 
 type cellProps = {
 	id: number;
@@ -11,12 +12,11 @@ type cellProps = {
 	setCells: Dispatch<SetStateAction<string[]>>;
 	cell: string;
 	disabled: boolean;
-	xColor: string;
-	oColor: string;
 };
 
-function Cell({ go, setGo, id, cells, setCells, cell, xColor, oColor, disabled }: cellProps) {
+function Cell({ go, setGo, id, cells, setCells, cell, disabled }: cellProps) {
 	const { setStart } = useXO();
+	const { xColor, oColor } = useTicTacToe();
 
 	const handleClick = () => {
 		if (disabled || !!cells[id]) return;
@@ -29,6 +29,9 @@ function Cell({ go, setGo, id, cells, setCells, cell, xColor, oColor, disabled }
 		}
 		setStart(15);
 	};
+
+	const xColour = useMemo(() => xColor.replace("bg-", "text-"), [xColor]);
+	const oColour = useMemo(() => oColor.replace("bg-", "text-"), [oColor]);
 
 	function handleCellChange(value: string) {
 		const updatedCells = [...cells];
@@ -51,11 +54,11 @@ function Cell({ go, setGo, id, cells, setCells, cell, xColor, oColor, disabled }
 			{cell ? (
 				cell === "circle" ? (
 					<motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}>
-						<Circle weight="bold" size={120} className={`${xColor}`} />
+						<Circle weight="bold" size={120} className={oColour} />
 					</motion.div>
 				) : (
 					<motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}>
-						<X weight="bold" size={120} className={`${oColor}`} />
+						<X weight="bold" size={120} className={xColour} />
 					</motion.div>
 				)
 			) : (
