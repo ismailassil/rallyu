@@ -30,9 +30,9 @@ export default function GameCard({
 	return (
 		<div
 			className="bg-card border-br-card group relative flex h-full max-h-[300px]
-					min-h-[180px] transform items-center overflow-hidden
-					rounded-lg border-2 transition-transform duration-500 hover:-translate-y-2
-					hover:cursor-pointer lg:items-start lg:justify-center"
+					min-h-[180px] transform cursor-pointer items-center
+					overflow-hidden rounded-lg border-2 transition-transform
+					duration-500 lg:items-start lg:justify-center"
 		>
 			{isBackground && (
 				<div
@@ -48,7 +48,10 @@ export default function GameCard({
 				></div>
 			)}
 			<div className="text-wrap text-left lg:mb-5 lg:mt-5 lg:text-center">
-				<h1 className="lg:p-13 leading-13 text-shadow-lg/30 p-12">
+				<h1
+					className="lg:p-13 leading-13 text-shadow-lg/30
+						hover:scale-102 origin-bottom p-12 transition-transform duration-500"
+				>
 					<p className={textClass}>{text}</p>
 					<p className={subtextClass}>{subtext}</p>
 				</h1>

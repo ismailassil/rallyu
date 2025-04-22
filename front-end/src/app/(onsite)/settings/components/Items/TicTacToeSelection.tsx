@@ -5,14 +5,31 @@ import { Circle, X } from "@phosphor-icons/react";
 import { useState } from "react";
 
 function TicTacToeSelection({ connectivity }: { connectivity: number }) {
-	const [xColor, setXColor] = useState(0);
-	const [oColor, setOColor] = useState(1);
-	const [boardColor, setBoardColor] = useState(0);
-	const [round, setRound] = useState(0);
+	const [xColor, setXColor] = useState<"bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-teal-500">(
+		"bg-red-700"
+	);
+	const [oColor, setOColor] = useState<"bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-teal-500">(
+		"bg-yellow-500"
+	);
+	const [boardColor, setBoardColor] = useState<
+		"bg-theme-one" | "bg-theme-two" | "bg-theme-three" | "bg-theme-four"
+	>("bg-theme-one");
+	const [round, setRound] = useState<5 | 7 | 9>(5);
 
-	function handleSet(setFunction: (value: number) => void, value: number, rvalue: number) {
-		if (value == rvalue) {
-			setFunction(value + 1 > 3 ? 0 : value + 1);
+	function handleSet(
+		setFunction: (value: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-teal-500") => void,
+		value: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-teal-500",
+		rvalue: "bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-teal-500"
+	) {
+		if (value === rvalue) {
+			const colors: ("bg-red-700" | "bg-yellow-500" | "bg-blue-600" | "bg-teal-500")[] = [
+				"bg-red-700",
+				"bg-yellow-500",
+				"bg-blue-600",
+				"bg-teal-500",
+			];
+			const nextIndex = (colors.indexOf(value) + 1) % colors.length;
+			setFunction(colors[nextIndex]);
 		} else {
 			setFunction(value);
 		}

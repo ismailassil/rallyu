@@ -2,7 +2,7 @@
 
 import Form from "next/form";
 import Link from "next/link";
-import ibm from "@/app/fonts/ibm";
+// import ibm from "@/app/fonts/ibm";
 import { useRef, useState } from "react";
 
 const numberInputStyling =
@@ -34,7 +34,7 @@ export default function Auth() {
 			<div className="flex h-full w-full items-center justify-center overflow-auto">
 				<div className="flex h-full w-[550px] items-center pb-20 pl-10 pr-10 pt-20">
 					<div className="text-wrap text-center">
-						<h1 className={`${ibm.className} flex justify-center text-[36px] font-bold`}>
+						<h1 className={`flex justify-center text-[36px] font-bold`}>
 							Authentication
 						</h1>
 						<p className={`mb-[47px] flex justify-center text-[18px]`}>
