@@ -36,14 +36,14 @@ export default function Friend({ fullname, isOnline = false, img }: friendProps)
 			<div className="flex gap-1">
 				<Image
 					className="hover:ring-br-card hover:cursor-pointer hover:rounded-full hover:ring-2"
-					src="/chat-btn.svg"
+					src="/icons/chat-btn.svg"
 					width={50}
 					height={50}
 					alt="Chat Button Logo"
 				/>
 				{/* <Image
 					className="hover:ring-3 hover:ring-br-card hover:rounded-full hover:cursor-pointer"
-					src="/enter-btn.svg"
+					src="/icons/enter-btn.svg"
 					width={50}
 					height={50}
 					alt="Enter Button Logo"

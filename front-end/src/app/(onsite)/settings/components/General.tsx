@@ -96,7 +96,7 @@ function General() {
 				original_value={formData.username}
 				value=""
 				type="text"
-				icon="/user.svg"
+				icon="/icons/user.svg"
 			/>
 			<InlineInput
 				original_value={formData.email}
@@ -105,7 +105,7 @@ function General() {
 				unique="email"
 				value=""
 				type="email"
-				icon="/mail.svg"
+				icon="/icons/mail.svg"
 			/>
 			<InlineInput
 				original_value={originalValues.bio}
@@ -114,7 +114,7 @@ function General() {
 				value={formData.bio}
 				setValue={handleInputChange}
 				type="text"
-				icon="/note.svg"
+				icon="/icons/note.svg"
 			/>
 			<div className="flex justify-end">
 				<button
@@ -190,7 +190,7 @@ function General() {
 			</div>
 			<div className="mt-3 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 				{Array.from({ length: 11 }).map((_, i) => (
-					<BlockedUser key={i} user={{ name: "Salah Moumni", img: "/image_2.jpg" }} />
+					<BlockedUser key={i} user={{ name: "Salah Moumni", img: "/profile/image_2.jpg" }} />
 				))}
 			</div>
 		</motion.div>

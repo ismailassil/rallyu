@@ -30,7 +30,7 @@ export default function Header() {
 				${setScrolled && "backdrop-blur-2xl"}`}
 		>
 			<Image
-				src={!Logo ? "/rallyu-logo.svg" : "/rallyu-jp.svg"}
+				src={!Logo ? "/logo/rallyu-logo.svg" : "/logo/rallyu-jp.svg"}
 				alt="Logo"
 				width={138}
 				height={38}

@@ -25,7 +25,7 @@ export default function Dashboard() {
 						<div className="flex h-full flex-1 flex-col gap-4">
 							<GameCard
 								isBackground={false}
-								src={"/tourn_cup.png"}
+								src={"/design/tourn_cup.png"}
 								position="absolute 
 								hidden h-auto left-1/2 -z-1
 								md:block md:-bottom-27 md:translate-x-8 md:w-[260px]
@@ -40,8 +40,8 @@ export default function Dashboard() {
 								opacity="0.5"
 							/>
 							<GameCard
-								src={"/racket_r.png"}
-								background="/1vs1-dock.svg"
+								src={"/design/racket_r.png"}
+								background="/background/side/1vs1-dock.svg"
 								position="absolute 
 								hidden h-auto left-1/2 -z-1
 								md:block md:bottom-0 md:translate-x-8 md:w-[260px]
@@ -54,8 +54,8 @@ export default function Dashboard() {
 								subtextClass="text-2xl lg:text-3xl"
 							/>
 							<GameCard
-								src={"/single.svg"}
-								background="/training-dock.svg"
+								src={"/design/single.svg"}
+								background="/background/side/training-dock.svg"
 								position="absolute 
 								hidden h-auto left-1/2 -z-1
 								md:block md:bottom-0 md:translate-x-8 md:w-[260px]

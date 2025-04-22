@@ -66,9 +66,9 @@ export default function Search({ setIsNotif, setIsProfile, setIsSearch, isSearch
 					setIsSearch(!isSearch);
 				}}
 			>
-				<Image className="mr-2" src="/search.svg" alt="Search Logo" width={20} height={20} />
+				<Image className="mr-2" src="/icons/search.svg" alt="Search Logo" width={20} height={20} />
 				<div className="hidden md:flex">
-					<Image src="/command.svg" alt="Command Logo" width={15} height={15} />
+					<Image src="/icons/command.svg" alt="Command Logo" width={15} height={15} />
 					<span className={`text-lg`}>K</span>
 				</div>
 			</div>
@@ -90,7 +90,7 @@ export default function Search({ setIsNotif, setIsProfile, setIsSearch, isSearch
 							>
 								<Image
 									className="absolute left-5 top-[19px] opacity-75"
-									src="/search.svg"
+									src="/icons/search.svg"
 									alt="Search Logo"
 									width={0}
 									height={0}
@@ -129,7 +129,7 @@ export default function Search({ setIsNotif, setIsProfile, setIsSearch, isSearch
 									</div>
 							))} */}
 								<div className="flex h-full w-full flex-col items-center justify-center gap-3">
-									<Image src="/sad.png" height={12} width={120} alt="Sad Image" />
+									<Image src="/meme/sad.png" height={12} width={120} alt="Sad Image" />
 									<p className="text-gray-400">Help yourself...</p>
 								</div>
 							</div>

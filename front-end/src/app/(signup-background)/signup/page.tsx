@@ -88,9 +88,7 @@ export default function SignUp() {
 			<div className="flex h-full w-full justify-center overflow-auto">
 				<div className="flex h-full w-[650px] items-start justify-center pb-20 pl-10 pr-10 pt-20 lg:items-center">
 					<div className="flex-1">
-						<h1
-							className={`justify-left flex text-[36px] font-bold md:justify-center`}
-						>
+						<h1 className={`justify-left flex text-[36px] font-bold md:justify-center`}>
 							Create an account
 						</h1>
 						<p className={`justify-left mb-[47px] flex text-[18px] md:justify-center`}>
@@ -98,14 +96,14 @@ export default function SignUp() {
 						</p>
 						<div className="mb-4 flex flex-col justify-center gap-[18px] sm:flex-row">
 							<AuthButton
-								src="/google-logo.svg"
+								src="/logo/google-logo.svg"
 								width={17}
 								height={17}
 								alt="Google Logo"
 								text="Google"
 							/>
 							<AuthButton
-								src="/42-logo.svg"
+								src="/logo/42-logo.svg"
 								width={21}
 								height={15}
 								alt="42 Intra Logo"
@@ -129,7 +127,7 @@ export default function SignUp() {
 									text="First Name"
 									type="text"
 									unique="firstname"
-									src="/firstname.svg"
+									src="/icons/firstname.svg"
 									alt="FirstName logo"
 									width={19}
 									height={19}
@@ -141,7 +139,7 @@ export default function SignUp() {
 									text="Last Name"
 									type="text"
 									unique="lastname"
-									src="/lastname.svg"
+									src="/icons/lastname.svg"
 									alt="LastName logo"
 									width={19}
 									height={19}
@@ -155,7 +153,7 @@ export default function SignUp() {
 									text="Username"
 									type="text"
 									unique="username"
-									src="/user.svg"
+									src="/icons/user.svg"
 									alt="User logo"
 									width={19}
 									height={19}
@@ -169,7 +167,7 @@ export default function SignUp() {
 									text="Email"
 									type="email"
 									unique="email"
-									src="/mail.svg"
+									src="/icons/mail.svg"
 									alt="mail logo"
 									width={19}
 									height={19}
@@ -182,7 +180,7 @@ export default function SignUp() {
 								<Input
 									text="Password"
 									type="password"
-									src="/lock.svg"
+									src="/icons/lock.svg"
 									unique="password"
 									alt="Lock logo"
 									width={19}

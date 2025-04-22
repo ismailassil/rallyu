@@ -26,7 +26,7 @@ function Banner() {
 				h-full w-full opacity-50 transition-all group-hover:opacity-80"
 			></div>
 			<Image
-				src="/tourn_cup.png"
+				src="/design/tourn_cup.png"
 				alt="Cup Icon"
 				width={490}
 				quality={100}

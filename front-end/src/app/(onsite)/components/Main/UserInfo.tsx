@@ -41,7 +41,7 @@ export default function UserInfo({ firstname }: UserInfoProps) {
 				>
 					<Image
 						className="ring-6 ring-br-image hover:ring-7 hover:scale-101 h-full w-full rounded-full object-cover transition-transform duration-200"
-						src="/image.png"
+						src="/profile/image.png"
 						alt="Profile Image"
 						width={250}
 						height={250}

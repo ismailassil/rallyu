@@ -17,7 +17,7 @@ export default function RootLayout({
 		<div>
 			<div className="-z-1 fixed inset-0">
 				<Image
-					src="/background.svg"
+					src="/background/main/background.svg"
 					alt="background"
 					quality={100}
 					fill={true}

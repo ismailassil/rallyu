@@ -37,7 +37,7 @@ function UserPanel() {
 						>
 							<Image
 								className={`h-full w-full object-cover`}
-								src={"/image.png"}
+								src={"/profile/image.png"}
 								width={100}
 								height={100}
 								quality={100}

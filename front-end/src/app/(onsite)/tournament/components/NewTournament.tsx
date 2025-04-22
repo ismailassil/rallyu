@@ -61,7 +61,7 @@ function NewTournament({
 						? {
 								player1: {
 									name: "Ismail Assil",
-									img: "/image_1.jpg",
+									img: "/profile/image_1.jpg",
 								},
 							}
 						: {

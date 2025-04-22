@@ -111,7 +111,7 @@ function Security() {
 						/>
 						<Image
 							className="absolute bottom-[13px] left-[15px]"
-							src="/lock.svg"
+							src="/icons/lock.svg"
 							alt={"First name" + " Logo"}
 							width={19}
 							height={19}
@@ -135,7 +135,7 @@ function Security() {
 						/>
 						<Image
 							className="absolute bottom-[13px] left-[15px]"
-							src="/lock.svg"
+							src="/icons/lock.svg"
 							alt={"First name" + " Logo"}
 							width={19}
 							height={19}
@@ -163,7 +163,7 @@ function Security() {
 			<div className="flex flex-col gap-5 text-sm md:flex-row lg:gap-10 lg:text-base">
 				<div className="flex gap-6">
 					<div className="flex h-[110px] w-[110px] items-center justify-center rounded-md bg-white">
-						<Image src="/qr.png" alt="2FA Qr-Code" width={95} height={95} />
+						<Image src="/design/qr.png" alt="2FA Qr-Code" width={95} height={95} />
 					</div>
 					<div className="max-w-80 flex flex-col justify-between gap-2">
 						<label htmlFor="2fa" className="text-gray-400">

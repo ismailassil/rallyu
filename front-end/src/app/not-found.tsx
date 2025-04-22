@@ -10,7 +10,7 @@ export default function Custom404() {
 		<div className="flex h-screen w-screen items-center justify-center">
 			<div className="flex w-full flex-col items-center overflow-hidden px-10">
 				<Image
-					src="/fin-awa-ghadi.gif"
+					src="/meme/fin-awa-ghadi.gif"
 					alt="404"
 					width={100}
 					height={0}

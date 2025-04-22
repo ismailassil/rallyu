@@ -32,7 +32,7 @@ export default function MessageSection() {
 							<div className="flex aspect-square h-[38px] w-[38px] items-center justify-center rounded-full lg:h-[40px] lg:w-[40px]">
 								<Image
 									className="ring-fr-image h-full w-full rounded-full object-cover ring-2"
-									src="/image_1.jpg"
+									src="/profile/image_1.jpg"
 									width={100}
 									height={100}
 									alt="Profile Image"
@@ -73,7 +73,7 @@ export default function MessageSection() {
 						<div className="relative h-full w-full">
 							<Image
 								className="absolute right-3 top-1/2 -translate-y-1/2 hover:cursor-pointer"
-								src="/send.svg"
+								src="/icons/send.svg"
 								alt="Send Icon"
 								width={20}
 								height={20}
@@ -95,11 +95,12 @@ export default function MessageSection() {
 				<>
 					<div className="flex h-full w-full select-none flex-col items-center justify-center">
 						<Image
-							src="/thinking.gif"
+							src="/meme/thinking.gif"
 							width={300}
 							height={30}
 							alt="Thinking"
 							className="mb-5 rounded-md"
+							unoptimized
 						/>
 						<div className="w-full text-center">
 							<h2 className="text-lg">👋 Welcome to Chat!</h2>

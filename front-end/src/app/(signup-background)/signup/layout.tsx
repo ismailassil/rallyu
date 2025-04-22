@@ -13,7 +13,7 @@ export default function SignUpLayout({
 		<div>
 			<div className="-z-1 fixed inset-0">
 				<Image
-					src="/signup_background.svg"
+					src="/background/main/signup_background.svg"
 					alt="signup_background"
 					quality={100}
 					fill={true}

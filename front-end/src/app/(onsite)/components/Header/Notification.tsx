@@ -40,7 +40,7 @@ export default function Notification({
 				}}
 			>
 				<Image
-					src="/notification.svg"
+					src="/icons/notification.svg"
 					alt="Notification Icon"
 					width={0}
 					height={0}

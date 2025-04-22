@@ -31,8 +31,8 @@ export default function GamesHistory() {
 									me: i % 3 === 0 ? 5 : i % 3 === 1 ? 2 : 5,
 									opponent: i % 3 === 0 ? 2 : i % 3 === 1 ? 5 : 5,
 								}}
-								opponentImage="/image_1.jpg"
-								myImage="/image.png"
+								opponentImage="/profile/image_1.jpg"
+								myImage="/profile/image.png"
 								matchxp={i % 3 === 0 ? 0 : i % 2 ? -50 : 100}
 							/>
 						))}

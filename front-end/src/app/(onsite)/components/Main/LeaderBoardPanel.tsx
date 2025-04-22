@@ -55,19 +55,19 @@ const leaderboardData = [
 		username: "Rass L7ok",
 		rank: 1,
 		score: 9850,
-		img: "/image_1.jpg",
+		img: "/profile/image_1.jpg",
 	},
 	{
 		username: "Lmouch",
 		rank: 2,
 		score: 9720,
-		img: "/image_2.jpg",
+		img: "/profile/image_2.jpg",
 	},
 	{
 		username: "Moul Chi",
 		rank: 3,
 		score: 9450,
-		img: "/image_1.jpg",
+		img: "/profile/image_1.jpg",
 	},
 ];
 

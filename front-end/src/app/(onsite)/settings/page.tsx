@@ -16,7 +16,7 @@ export default function Dashboard() {
 				className="bg-card border-br-card flex h-full w-full flex-col gap-5
 						rounded-2xl border-2 p-4 pl-3 md:gap-0"
 			>
-				<ProfileHeader fullname="Ismail Assil" img="/image.png" />
+				<ProfileHeader fullname="Ismail Assil" img="/profile/image.png" />
 				<SettingsContent />
 			</article>
 		</motion.main>
