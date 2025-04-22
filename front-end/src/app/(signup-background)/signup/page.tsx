@@ -2,7 +2,7 @@
 
 import Form from "next/form";
 import Link from "next/link";
-import ibm from "../../fonts/ibm";
+// import ibm from "../../fonts/ibm";
 import AuthButton from "../../(app)/components/AuthButton";
 import Input from "../../(app)/components/Input";
 import { useState } from "react";
@@ -89,7 +89,7 @@ export default function SignUp() {
 				<div className="flex h-full w-[650px] items-start justify-center pb-20 pl-10 pr-10 pt-20 lg:items-center">
 					<div className="flex-1">
 						<h1
-							className={`${ibm.className} justify-left flex text-[36px] font-bold md:justify-center`}
+							className={`justify-left flex text-[36px] font-bold md:justify-center`}
 						>
 							Create an account
 						</h1>

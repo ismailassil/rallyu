@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Search from "./Search";
 import Notification from "./Notification";
 import Profile from "./Profile";
-import NotificationBox from "./Notification/NotificationBox";
+// import NotificationBox from "./Notification/NotificationBox";
 
 export default function HeaderItems() {
 	const [isSearch, setIsSearch] = useState(false);

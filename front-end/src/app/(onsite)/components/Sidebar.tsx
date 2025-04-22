@@ -65,7 +65,7 @@ export default function SideBar() {
 				left-0 flex w-full flex-row
 				items-center justify-center gap-10 overflow-clip border-t-2 sm:bottom-auto
 				sm:left-auto sm:ml-6 sm:h-[calc(100vh-143px)] sm:w-20 sm:transform-none
-				sm:flex-col sm:gap-16 sm:rounded-lg sm:border-2"
+				sm:flex-col sm:gap-16 sm:rounded-md sm:border-2"
 		>
 			{Links.map((link) => (
 				<button
@@ -90,11 +90,12 @@ export default function SideBar() {
 					/>
 					<div
 						className={`absolute inset-0
-							rounded-md
 							transition-all duration-200
-							${activeButton === link.id ? "scale-180 sm:scale-300 bg-hbbg" : "hover:bg-hbg hover:scale-150"}
-								}
-								`}
+							${
+								activeButton === link.id
+									? "scale-180 sm:scale-300 bg-hbbg rounded-full"
+									: "hover:bg-hbg hover:scale-150 hover:rounded-md"
+							}`}
 					></div>
 				</button>
 			))}

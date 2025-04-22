@@ -7,8 +7,10 @@ function PingPongSelection({ connectivity }: { connectivity: number }) {
 	const [paddleWidth, setPaddleWidth] = useState(3);
 	const [paddleHeight, setPaddleHeight] = useState(6);
 	const [ballSize, setBallSize] = useState(4);
-	const [boardColor, setBoardColor] = useState(0);
-	const [round, setRound] = useState(0);
+	const [boardColor, setBoardColor] = useState<
+		"bg-theme-one" | "bg-theme-two" | "bg-theme-three" | "bg-theme-four"
+	>("bg-theme-one");
+	const [round, setRound] = useState<5 | 7 | 9>(5);
 
 	return (
 		<>

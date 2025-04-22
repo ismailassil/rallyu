@@ -4,7 +4,7 @@ import Form from "next/form";
 import Link from "next/link";
 import AuthButton from "./components/AuthButton";
 import Input from "./components/Input";
-import ibm from "../fonts/ibm";
+// import ibm from "../fonts/ibm";
 import { useState } from "react";
 // import { motion } from "framer-motion";
 
@@ -30,7 +30,7 @@ export default function Home() {
 			<div className="flex h-full w-full justify-center overflow-auto">
 				<div className="flex h-full w-[550px] items-start pb-20 pl-10 pr-10 pt-20 lg:items-center">
 					<div className="flex-1">
-						<h1 className={`${ibm.className} flex text-[36px] font-bold md:justify-center `}>
+						<h1 className={`flex text-[36px] font-bold md:justify-center `}>
 							Welcome Back!
 						</h1>
 						<p className={`mb-[47px] flex text-[18px] md:justify-center`}>

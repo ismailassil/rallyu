@@ -17,7 +17,10 @@ export default function Dashboard() {
 			<div className="flex h-full w-full gap-6 rounded-lg">
 				<article className="flex-5 flex h-full w-full flex-col gap-4">
 					<UserInfo firstname="Ismail" />
-					<section className="hide-scrollbar flex flex-1 flex-col space-x-4 space-y-4 overflow-x-hidden overflow-y-scroll lg:flex-row lg:space-y-0">
+					<section
+						className="hide-scrollbar flex flex-1 flex-col space-x-4 space-y-4 overflow-x-hidden
+							overflow-y-scroll lg:flex-row lg:space-y-0"
+					>
 						<LeaderboardPanel />
 						<div className="flex h-full flex-1 flex-col gap-4">
 							<GameCard
@@ -27,7 +30,7 @@ export default function Dashboard() {
 								hidden h-auto left-1/2 -z-1
 								md:block md:-bottom-27 md:translate-x-8 md:w-[260px]
 								lg:-translate-x-1/2 lg:-bottom-40 lg:w-[300px]
-								transform group-hover:-translate-y-5 group-hover:scale-102
+								transform group-hover:-translate-y-5 group-hover:scale-105
 								transition-transform duration-500"
 								text="Conquer the"
 								textClass="text-2xl lg:text-3xl"
@@ -43,7 +46,7 @@ export default function Dashboard() {
 								hidden h-auto left-1/2 -z-1
 								md:block md:bottom-0 md:translate-x-8 md:w-[260px]
 								lg:-translate-x-1/2 lg:-bottom-14 lg:w-[300px]
-								transform group-hover:-translate-y-5 group-hover:scale-102
+								transform group-hover:-translate-y-5 group-hover:scale-105
 								transition-transform duration-500"
 								text="1v1"
 								textClass="text-4xl lg:text-5xl"
@@ -57,7 +60,7 @@ export default function Dashboard() {
 								hidden h-auto left-1/2 -z-1
 								md:block md:bottom-0 md:translate-x-8 md:w-[260px]
 								lg:-translate-x-1/2 lg:-bottom-21 lg:w-[300px]
-								transform group-hover:-translate-y-5 group-hover:scale-102
+								transform group-hover:-translate-y-5 group-hover:scale-105
 								transition-transform duration-500"
 								text="Start"
 								textClass="text-2xl lg:text-3xl"

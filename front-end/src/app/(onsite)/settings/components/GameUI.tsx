@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import PickGame from "../../game/components/Items/PickGame";
 import Connectivity from "../../game/components/Items/Connectivity";
 import PingPongSelection from "./Items/PingPongSelection";
 import TicTacToeSelection from "./Items/TicTacToeSelection";
+import GameUIChoice from "./Items/GameUIChoice";
 
 function GameUI() {
 	const [game, setGame] = useState(0);
@@ -21,7 +21,7 @@ function GameUI() {
 				<h2 className="mb-1 mt-2 text-xl font-semibold lg:text-2xl">Default customization</h2>
 				<hr className="border-white/10" />
 			</div>
-			<PickGame label="Default Game" game={game} setGame={setGame} className="lg:gap-20" />
+			<GameUIChoice gameType={game} setGameType={setGame} />
 			<Connectivity connectivity={connectivity} setConnectivity={setConnectivity} />
 			{game === 0 ? (
 				<PingPongSelection connectivity={connectivity} />

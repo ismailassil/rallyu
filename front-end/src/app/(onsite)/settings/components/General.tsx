@@ -153,7 +153,8 @@ function General() {
 					{drop && (
 						<ul
 							ref={dropRef}
-							className="top-13 *:text-left *:py-1.5 *:px-4 bg-card backdrop-blur-xs border-br-card *:hover:bg-white/10 *:w-full *:cursor-pointer absolute z-10 w-full rounded-md border-2 py-1"
+							className="top-13 *:text-left *:py-1.5 *:px-4 bg-card border-br-card
+								*:hover:bg-black/40 *:w-full *:cursor-pointer absolute z-10 w-full rounded-md border-2 py-1 backdrop-blur-3xl"
 						>
 							<li
 								onClick={(e) => {
