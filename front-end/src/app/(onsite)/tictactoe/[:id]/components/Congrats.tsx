@@ -58,7 +58,7 @@ function Congrats({
 						>
 							<Image
 								className="object-cover transition-transform duration-500"
-								src="/crown.png"
+								src="/design/crown.png"
 								alt="Crown Image"
 								width={250}
 								height={250}

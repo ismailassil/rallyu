@@ -42,14 +42,14 @@ export default function BattleFriend({ fullname, isOnline = false, img }: friend
 				<Sword size={24} />
 				{/* <Image
 					className="hover:ring-2 hover:ring-br-card hover:rounded-full hover:cursor-pointer"
-					src="/chat-btn.svg"
+					src="/icons/chat-btn.svg"
 					width={50}
 					height={50}
 					alt="Chat Button Logo"
 				/> */}
 				{/* <Image
 					className="hover:ring-3 hover:ring-br-card hover:rounded-full hover:cursor-pointer"
-					src="/enter-btn.svg"
+					src="/icons/enter-btn.svg"
 					width={50}
 					height={50}
 					alt="Enter Button Logo"

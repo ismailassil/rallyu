@@ -4,7 +4,7 @@ function ProfileHead({ img }: { img?: string | null | undefined }) {
 	return (
 		<div className="min-w-10 aspect-square h-full overflow-hidden rounded-full">
 			<Image
-				src={img || "/blank.jpeg"}
+				src={img || "/profile/blank.jpeg"}
 				width={300}
 				height={300}
 				alt="Profile Image"

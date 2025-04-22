@@ -37,7 +37,7 @@ function Game({
 			</div>
 			<div className="w-19 bg-gray-thick ring-border-gray-thick/50 absolute -bottom-1 left-1/2 flex h-8 -translate-x-1/2 items-center justify-center rounded-t-lg ring-2">
 				<Image
-					src={type === "xo" ? "/XO.svg" : "ping-pong.svg"}
+					src={type === "xo" ? "/icons/XO.svg" : "/icons/ping-pong.svg"}
 					width={type === "xo" ? 30 : 18}
 					height={type === "xo" ? 30 : 18}
 					alt="Profile Image"

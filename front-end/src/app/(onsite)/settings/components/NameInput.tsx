@@ -35,7 +35,7 @@ function NameInput({
 					/>
 					<Image
 						className="absolute bottom-[13px] left-[15px]"
-						src="/firstname.svg"
+						src="/icons/firstname.svg"
 						alt={"First name" + " Logo"}
 						width={19}
 						height={19}
@@ -59,7 +59,7 @@ function NameInput({
 					/>
 					<Image
 						className="absolute bottom-[13px] left-[15px]"
-						src="/lastname.svg"
+						src="/icons/lastname.svg"
 						alt={"First name" + " Logo"}
 						width={19}
 						height={19}

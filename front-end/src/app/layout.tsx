@@ -18,7 +18,7 @@ export default function RootLayout({
 			<body className={`${dmSans.className} relative antialiased`}>
 				<div className="-z-1 fixed inset-0">
 					<Image
-						src="/background.svg"
+						src="/background/main/background.svg"
 						alt="background"
 						quality={100}
 						fill={true}

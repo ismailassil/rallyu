@@ -38,14 +38,14 @@ export default function Home() {
 						</p>
 						<div className="mb-4 flex flex-col justify-center gap-[18px] sm:flex-row">
 							<AuthButton
-								src="/google-logo.svg"
+								src="/logo/google-logo.svg"
 								width={17}
 								height={17}
 								alt="Google Logo"
 								text="Google"
 							/>
 							<AuthButton
-								src="/42-logo.svg"
+								src="/logo/42-logo.svg"
 								width={21}
 								height={15}
 								alt="42 Intra Logo"
@@ -69,7 +69,7 @@ export default function Home() {
 									text="Email or Username"
 									type="text"
 									unique="email"
-									src="/at.svg"
+									src="/icons/at.svg"
 									alt="At Logo"
 									width={19}
 									height={19}
@@ -83,7 +83,7 @@ export default function Home() {
 									text="Password"
 									type="password"
 									unique="password"
-									src="/lock.svg"
+									src="/icons/lock.svg"
 									alt="Lock logo"
 									width={19}
 									height={19}

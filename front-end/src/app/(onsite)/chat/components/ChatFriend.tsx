@@ -25,7 +25,7 @@ export default function ChatFriend({
 				<div className="flex aspect-square h-[40px] w-[40px] justify-center rounded-full lg:h-[42px] lg:w-[42px]">
 					<Image
 						className="ring-fr-image h-full w-full rounded-full object-cover ring-2"
-						src="/image_1.jpg"
+						src="/profile/image_1.jpg"
 						width={100}
 						height={100}
 						alt="Profile Image"

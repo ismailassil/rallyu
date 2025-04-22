@@ -17,7 +17,7 @@ function TournamentCard({
 		<div className="*:flex *:justify-between group relative flex select-none flex-col justify-between gap-2 overflow-hidden">
 			<div className="z-1 relative flex w-full flex-1 flex-col gap-3">
 				<Image
-					src={!isPingPong ? "/tictactoe.svg" : "/pingpong.svg"}
+					src={!isPingPong ? "/design/tictactoe.svg" : "/design/pingpong.svg"}
 					width={70}
 					height={70}
 					alt="XO Image"

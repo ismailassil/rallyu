@@ -39,12 +39,12 @@ function InviteFriend() {
 							overflow-y-scroll px-4 pb-4`}
 			>
 				{Array.from({ length: 10 }).map((_, i) => (
-					<BattleFriend key={i} fullname={"Nabil Azouz"} img={"/image_1.jpg"} />
+					<BattleFriend key={i} fullname={"Nabil Azouz"} img={"/profile/image_1.jpg"} />
 				))}
 			</div>
 			{/* <div className="flex-1 flex flex-col items-center mt-10 lg:mt-50 mb-10 overflow-y-scroll hide-scrollbar">
 				<Image
-					src="/sad.png"
+					src="/meme/sad.png"
 					alt="Nothing"
 					width={100}
 					height={100}

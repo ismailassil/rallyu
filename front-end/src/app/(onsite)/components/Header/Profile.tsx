@@ -39,7 +39,7 @@ export default function Profile({
 				}}
 			>
 				<Image
-					src="/profile.svg"
+					src="/icons/profile.svg"
 					alt="Notification Icon"
 					width={30}
 					height={30}
@@ -50,7 +50,7 @@ export default function Profile({
 			h-[20px] w-[20px] items-center justify-center rounded-full bg-white bg-opacity-75"
 				>
 					<Image
-						src="/down-arrow.svg"
+						src="/icons/down-arrow.svg"
 						alt="Arrow down Icon"
 						width={10}
 						height={10}
@@ -79,7 +79,7 @@ export default function Profile({
 							}}
 							className="hover:bg-hbbg mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer"
 						>
-							<Image src="/profile-btn.svg" alt="Profile Icon" width={30} height={30} />
+							<Image src="/icons/profile-btn.svg" alt="Profile Icon" width={30} height={30} />
 							<span className="ml-5">Profile</span>
 						</div>
 						<div
@@ -90,11 +90,11 @@ export default function Profile({
 								router.push("/settings");
 							}}
 						>
-							<Image src="/setting-btn.svg" alt="Settings Icon" width={30} height={30} />
+							<Image src="/icons/setting-btn.svg" alt="Settings Icon" width={30} height={30} />
 							<span className="ml-5">Settings</span>
 						</div>
 						<div className="hover:bg-hbbg mb-2 flex w-full items-center px-7 py-3 hover:cursor-pointer">
-							<Image src="/logout-btn.svg" alt="Logout Icon" width={30} height={30} />
+							<Image src="/icons/logout-btn.svg" alt="Logout Icon" width={30} height={30} />
 							<p className="ml-5">Logout</p>
 						</div>
 					</motion.div>

@@ -18,19 +18,19 @@ function NotificationBox() {
 	useEffect(() => {
 		const testNotifications: Array<Omit<Notification, "id">> = [
 			{
-				sender: { img: "/image_1.jpg", name: "Nabil Azouz" },
+				sender: { img: "/profile/image_1.jpg", name: "Nabil Azouz" },
 				message: "Hello! How are you?",
 				type: "msg",
 				uri: "",
 			},
 			{
-				sender: { img: "/image_2.jpg", name: "Salah Demnati" },
+				sender: { img: "/profile/image_2.jpg", name: "Salah Demnati" },
 				message: "",
 				type: "pingpong",
 				uri: "",
 			},
 			{
-				sender: { img: "/image_1.jpg", name: "Mohamed Amine Maila" },
+				sender: { img: "/profile/image_1.jpg", name: "Mohamed Amine Maila" },
 				message: "Wa fen a sat! hani howa hadak, dar bikhir, l2a7wal houma hadouk?",
 				type: "xo",
 				uri: "",

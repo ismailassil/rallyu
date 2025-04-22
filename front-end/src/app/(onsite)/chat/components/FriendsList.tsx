@@ -26,7 +26,7 @@ export default function FriendsList() {
 				<div className="relative w-full">
 					<Image
 						className="absolute left-4 top-3"
-						src="/user-search.svg"
+						src="/icons/user-search.svg"
 						alt="Search User Icon"
 						width={25}
 						height={25}

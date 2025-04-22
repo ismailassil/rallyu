@@ -19,7 +19,7 @@ export default function FriendsPanel() {
 				<div className="custom-scroll max-h-[calc(100vh-19rem)] flex-1 overflow-y-auto">
 					{/* <div className="flex flex-col mt-20 justify-center items-center">
 						<Image
-							src="/sad.png"
+							src="/meme/sad.png"
 							alt="Nothing"
 							width={200}
 							height={200}
@@ -33,7 +33,7 @@ export default function FriendsPanel() {
 						{Array.from({ length: 30 }).map((_, i) => (
 							<Friend
 								key={i}
-								img="/image_2.jpg"
+								img="/profile/image_2.jpg"
 								fullname="Salah Demnati"
 								isOnline={(i === 0 || i === 1) && true}
 							/>

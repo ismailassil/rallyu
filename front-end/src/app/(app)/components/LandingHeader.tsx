@@ -9,7 +9,7 @@ export default function LandingHeader() {
 		>
 			<Link href="/">
 				<Image
-					src="/rallyu-logo.svg"
+					src="/logo/rallyu-logo.svg"
 					alt="Logo"
 					width={138}
 					height={38}
