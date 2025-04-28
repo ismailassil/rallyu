@@ -30,13 +30,13 @@ export default function Home() {
 			<div className="flex h-full w-full justify-center overflow-auto">
 				<div className="flex h-full w-[550px] items-start pb-20 pl-10 pr-10 pt-20 lg:items-center">
 					<div className="flex-1">
-						<h1 className={`flex text-[36px] font-bold md:justify-center `}>
+						<h1 className={`flex text-4xl mb-3 font-bold md:justify-center `}>
 							Welcome Back!
 						</h1>
-						<p className={`mb-[47px] flex text-[18px] md:justify-center`}>
-							Please enter your details to sign in
+						<p className={`mb-11 flex text-md md:justify-center`}>
+							Please enter your details to Sign In
 						</p>
-						<div className="mb-4 flex flex-col justify-center gap-[18px] sm:flex-row">
+						<div className="mb-4 flex flex-col justify-center gap-4 sm:flex-row">
 							<AuthButton
 								src="/logo/google-logo.svg"
 								width={17}

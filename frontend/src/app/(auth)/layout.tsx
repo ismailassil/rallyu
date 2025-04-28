@@ -1,4 +1,4 @@
-import LandingHeader from "@/app/(app)/components/LandingHeader";
+import LandingHeader from "@/app/(auth)/components/LandingHeader";
 import "@/app/globals.css";
 
 export default function SignUpLayout({

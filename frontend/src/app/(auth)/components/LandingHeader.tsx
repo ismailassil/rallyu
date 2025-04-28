@@ -11,10 +11,10 @@ export default function LandingHeader() {
 				<Image
 					src="/logo/rallyu-logo.svg"
 					alt="Logo"
-					width={138}
-					height={38}
+					width={120}
+					height={30}
 					priority={true}
-					className="hover:scale-101 transition-transform duration-200 hover:cursor-pointer"
+					className="hover:scale-102 duration-400 transition-all hover:cursor-pointer"
 				></Image>
 			</Link>
 		</header>

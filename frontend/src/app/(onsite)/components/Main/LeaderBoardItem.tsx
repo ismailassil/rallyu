@@ -22,14 +22,14 @@ export default function LeaderboardItem({ username, rank, score, img, position }
 					rounded-full  text-xl font-bold text-white group-hover:text-2xl
 					lg:h-[40px] lg:w-[40px]"
 			>
-				{position === 0 && <Crown color="oklch(82.8% 0.189 84.429)" size={32} />}
-				{position === 1 && <CrownSimple color="oklch(82.8% 0.189 84.429)" size={32} />}
-				{position === 2 && <CastleTurret color="oklch(82.8% 0.189 84.429)" size={32} />}
+				{position === 0 && <Crown color="oklch(82.8% 0.189 84.429)" size={30} />}
+				{position === 1 && <CrownSimple color="oklch(82.8% 0.189 84.429)" size={30} />}
+				{position === 2 && <CastleTurret color="oklch(82.8% 0.189 84.429)" size={30} />}
 				{position > 2 && rank}
 			</div>
 
 			{/* Profile Image */}
-			<div className="ml-3 flex aspect-square h-[45px] w-[45px] justify-center rounded-full lg:h-[55px] lg:w-[55px]">
+			<div className="ml-3 flex aspect-square h-[45px] w-[45px] justify-center rounded-full lg:h-[50px] lg:w-[50px]">
 				<Image
 					className="ring-fr-image h-full w-full rounded-full object-cover ring-2"
 					src={img}
@@ -42,7 +42,7 @@ export default function LeaderboardItem({ username, rank, score, img, position }
 			{/* Middle Content */}
 			<div className="ml-5 flex-grow">
 				<h2 className="text-wrap text-base capitalize lg:text-lg">{username}</h2>
-				<p className="text-sm text-gray-500 lg:text-base">
+				<p className="text-sm text-gray-400 lg:text-base">
 					Score: <span className="font-semibold text-yellow-400">{score}</span>
 				</p>
 			</div>

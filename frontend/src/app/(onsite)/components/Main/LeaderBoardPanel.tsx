@@ -78,6 +78,6 @@ const extendedLeaderboard = [
 		username: `Player ${i + 6}`,
 		rank: i + 5,
 		score: 8500 - i * 100,
-		img: `/image_${(i % 2) + 1}.jpg`,
+		img: `/profile/image_${(i % 2) + 1}.jpg`,
 	})),
 ];
