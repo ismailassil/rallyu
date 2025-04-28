@@ -3,10 +3,10 @@
 import Form from "next/form";
 import Link from "next/link";
 // import ibm from "../../fonts/ibm";
-import AuthButton from "../../(app)/components/AuthButton";
-import Input from "../../(app)/components/Input";
+import AuthButton from "../components/AuthButton";
+import Input from "../components/Input";
 import { useState } from "react";
-import passwordValidator from "../passwordValidator";
+import passwordValidator from "./passwordValidator";
 
 enum PasswordError {
 	TooShort = 1,
@@ -88,13 +88,13 @@ export default function SignUp() {
 			<div className="flex h-full w-full justify-center overflow-auto">
 				<div className="flex h-full w-[650px] items-start justify-center pb-20 pl-10 pr-10 pt-20 lg:items-center">
 					<div className="flex-1">
-						<h1 className={`justify-left flex text-[36px] font-bold md:justify-center`}>
+						<h1 className={`justify-left mb-3 flex text-4xl font-bold md:justify-center`}>
 							Create an account
 						</h1>
-						<p className={`justify-left mb-[47px] flex text-[18px] md:justify-center`}>
+						<p className={`justify-left text-md mb-11 flex md:justify-center`}>
 							Please enter your details to create a new account
 						</p>
-						<div className="mb-4 flex flex-col justify-center gap-[18px] sm:flex-row">
+						<div className="mb-4 flex flex-col justify-center gap-4 sm:flex-row">
 							<AuthButton
 								src="/logo/google-logo.svg"
 								width={17}
