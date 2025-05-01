@@ -8,8 +8,10 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
+/database
+# Temporary files
+*.tmp
+# Log files
+*.log
 .dist*
 .env*
-
-*.vscode*
