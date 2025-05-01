@@ -49,8 +49,8 @@ export default function SignUp() {
 			setError("Last name is required.");
 			return;
 		}
-		if (formData.username.trim() === "") {
-			setError("username is required.");
+		if (formData.username.trim().length < 3 || formData.username.trim().length > 20) {
+			setError("Username must be between 3 and 20 characters.");
 			return;
 		}
 
