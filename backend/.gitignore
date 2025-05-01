@@ -1,5 +1,6 @@
 .DS_Store
 # dependencies
+/dist
 /node_modules
 /.pnp
 .pnp.*
