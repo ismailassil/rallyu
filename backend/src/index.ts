@@ -1,12 +1,13 @@
 import authRoutes from './auth/Routes/authRoutes.js';
 import { app as fastify } from './app.js';
 import dotenv from 'dotenv';
-import databasePlugin from './auth/Models/AuthModel.js';
 import fastifyBcrypt from 'fastify-bcrypt';
+import databasePlugin from './auth/Models/AuthModel.js';
 import schemasPlugin from './auth/Plugins/schemasPlugin.js';
 import checkersPlugin from './auth/Plugins/checkersPlugin.js';
 import helpersPlugin from './auth/Plugins/helpersPlugin.js';
 import jwtPlugin from './auth/Plugins/jwtPlugin.js';
+import cookiePlugin from './auth/Plugins/cookiePlugin.js';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ const PORT: number = parseInt(process.env.PORT || '5000', 10);
 fastify.register(databasePlugin);
 fastify.register(jwtPlugin);
 fastify.register(fastifyBcrypt, { saltWorkFactor: 12 });
+fastify.register(cookiePlugin);
 
 fastify.register(helpersPlugin);
 fastify.register(checkersPlugin);

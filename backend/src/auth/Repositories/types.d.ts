@@ -12,4 +12,11 @@ interface signUpType {
 	password: string;
 }
 
-export { userJWT, signUpType };
+interface TokenType {
+	id: number;
+	user_id: number;
+	token: string;
+	device_info: string;
+}
+
+export { userJWT, signUpType, TokenType };

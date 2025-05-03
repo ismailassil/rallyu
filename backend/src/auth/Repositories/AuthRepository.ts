@@ -1,6 +1,5 @@
-import sqlite3 from 'sqlite3';
 import { app as fastify } from '../../app.js';
-import { signUpType } from './types.js';
+import { signUpType, TokenType } from './types.js';
 
 class AuthRepository {
 	async getPasswordByUsername(
@@ -11,6 +10,7 @@ class AuthRepository {
 			username,
 		);
 		if (!user) return undefined;
+
 		return { id: user.id, password: user.password, role: user.role };
 	}
 
@@ -19,6 +19,7 @@ class AuthRepository {
 			'SELECT * FROM users WHERE username = ?',
 			username,
 		);
+
 		return user?.username;
 	}
 
@@ -27,6 +28,7 @@ class AuthRepository {
 			'SELECT * FROM users WHERE id = ?',
 			id,
 		);
+
 		return user?.password;
 	}
 
@@ -44,7 +46,32 @@ class AuthRepository {
 			email,
 			hashedPassword,
 		);
+
 		return user?.lastID;
+	}
+
+	async insertToken(
+		hashedToken: string,
+		id: number,
+		device_info: string | undefined,
+	): Promise<number | undefined> {
+		const token = await fastify.database.run(
+			'INSERT INTO refresh_tokens (user_id, token, device_info) VALUES (?, ?, ?)',
+			id,
+			hashedToken,
+			device_info,
+		);
+
+		return token?.lastID;
+	}
+
+	async getToken(id: number): Promise<TokenType> {
+		const token = await fastify.database.get(
+			'SELECT * FROM refresh_tokens WHERE user_id = ?',
+			id,
+		);
+
+		return token;
 	}
 }
 

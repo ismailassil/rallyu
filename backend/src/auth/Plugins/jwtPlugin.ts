@@ -1,22 +1,16 @@
-import fastifyJwt from '@fastify/jwt';
+import fastifyJwt, { FastifyJWT } from '@fastify/jwt';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
+import refreshTokenHook from '../Hooks/refreshTokenHook';
+import authenticationHook from '../Hooks/authenticationHook';
 
 const jwtPlugin = fp(async function (fastify: FastifyInstance) {
 	fastify.register(fastifyJwt, {
-		secret: process.env.JWT_SIGNING_KEY || 'something_not_safe',
+		secret: process.env.JWT_REFRESHTOKEN_EXPIRATION || 'something_not_safe',
 	});
 
-	fastify.decorate(
-		'jwtAuth',
-		async function (req: FastifyRequest, res: FastifyReply) {
-			try {
-				await req.jwtVerify();
-			} catch (err) {
-				res.status(401).send({ message: 'Unauthorized' });
-			}
-		},
-	);
+	fastify.decorate('authenticate', authenticationHook);
+	fastify.decorate('authRefreshToken', refreshTokenHook);
 });
 
 export default jwtPlugin;
