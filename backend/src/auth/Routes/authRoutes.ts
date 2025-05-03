@@ -2,10 +2,11 @@ import { FastifyInstance } from 'fastify';
 import AuthController from '../Controllers/AuthControllers.js';
 import loginSchema from '../Schemas/loginSchema.js';
 import registerSchema from '../Schemas/registerSchema.js';
-import ILoginBody from './generics/ILoginBody.js';
-import IRegisterBody from './generics/IRegisterBody.js';
+import ILoginBody from './types/ILoginBody.js';
+import IRegisterBody from './types/IRegisterBody.js';
 
 const routes: { [key: string]: string } = {
+	refresh_token: '/refresh-token',
 	login: '/login',
 	register: '/register',
 	logout: '/logout',
@@ -18,6 +19,11 @@ const routes: { [key: string]: string } = {
 async function authRoutes(fastify: FastifyInstance) {
 	const authController = new AuthController();
 
+	fastify.post(
+		routes.refresh_token,
+		{ preHandler: fastify.authRefreshToken },
+		authController.refreshToken.bind(authController),
+	);
 	fastify.post<{ Body: ILoginBody }>(
 		routes.login,
 		{ schema: loginSchema },
@@ -28,9 +34,9 @@ async function authRoutes(fastify: FastifyInstance) {
 		{ schema: registerSchema },
 		authController.register.bind(authController),
 	);
-	fastify.post(
+	fastify.delete(
 		routes.logout,
-		{ preHandler: fastify.jwtAuth },
+		{ preHandler: fastify.authenticate },
 		authController.logout.bind(authController),
 	);
 	fastify.post(
@@ -43,6 +49,7 @@ async function authRoutes(fastify: FastifyInstance) {
 	);
 	fastify.post(
 		routes.changePassword,
+		{ preHandler: fastify.authenticate },
 		authController.changePassword.bind(authController),
 	);
 }

@@ -1,6 +1,7 @@
 import AuthRepository from '../../auth/Repositories/AuthRepository.js';
 import { app as fastify } from '../../app.js';
-import { signUpType, userJWT } from '../../auth/Repositories/types.js';
+import { signUpType, TokenType, userJWT } from '../../auth/Repositories/types.js';
+import { FastifyJWT } from '@fastify/jwt';
 
 class AuthServices {
 	private authRepository = new AuthRepository();
@@ -50,8 +51,61 @@ class AuthServices {
 		};
 	}
 
-	public async createToken(user: userJWT): Promise<string> {
-		return fastify.jwt.sign({ payload: user }, { expiresIn: '2d' });
+	public async registerToken(user: userJWT, deviceInfo: string | undefined) {
+		const refreshToken = await this.createToken(user, 'refresh');
+		const accessToken = await this.createToken(user, 'access');
+
+		const hashedToken = await fastify.bcrypt.hash(refreshToken);
+		const userId = await this.authRepository.insertToken(
+			hashedToken,
+			user.id,
+			deviceInfo,
+		);
+
+		if (!userId) throw new Error('Unknow Error Occurred.');
+
+		return { refreshToken, accessToken };
+	}
+
+	public async createToken(
+		user: userJWT,
+		tokenType: 'refresh' | 'access',
+	): Promise<string> {
+		let jwtKey = process.env.JWT_REFRESHTOKEN_KEY || 'notASafeKey';
+		let exp = process.env.JWT_ACCESSTOKEN_EXPIRATION || '25m';
+
+		return fastify.jwt.sign(
+			{ payload: user },
+			{
+				key: jwtKey,
+				expiresIn: exp,
+			},
+		);
+	}
+
+	public async verifyToken(
+		token: string,
+		deviceInfo: string,
+		tokenSource: 'header' | 'cookie',
+	) {
+		try {
+			const user = fastify.jwt.verify<FastifyJWT['user']>(token);
+
+			if (tokenSource === 'header') return user;
+
+			const tokenInfo = await this.authRepository.getToken(user.id);
+			if (!tokenInfo) throw new Error('Unknown Refresh Token');
+
+			if (tokenInfo.device_info !== deviceInfo) {
+				throw new Error('Device info mismatch for refresh token.');
+			}
+
+			return user;
+		} catch (err) {
+			throw new Error(
+				(err as Error)?.message || 'Unknown error `authentication`',
+			);
+		}
 	}
 }
 

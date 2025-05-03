@@ -17,17 +17,25 @@ const databasePlugin = fp(async function (fastify: FastifyInstance) {
 	});
 
 	// Ensure the table exists
-	await database.exec(`
-			CREATE TABLE IF NOT EXISTS users (
-				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				firstName TEXT NOT NULL,
-				lastName TEXT NOT NULL,
-				username TEXT NOT NULL UNIQUE,
-				email TEXT NOT NULL UNIQUE,
-				password TEXT NOT NULL,
-				role TEXT NOT NULL DEFAULT 'user'
-			);
-		`);
+	const createTables = `
+		CREATE TABLE IF NOT EXISTS users (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			firstName TEXT NOT NULL,
+			lastName TEXT NOT NULL,
+			username TEXT NOT NULL UNIQUE,
+			email TEXT NOT NULL UNIQUE,
+			password VARCHAR(255) NOT NULL,
+			role TEXT NOT NULL DEFAULT 'user'
+		);
+		CREATE TABLE IF NOT EXISTS refresh_tokens (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user_id INTEGER NOT NULL,
+			token VARCHAR(255) NOT NULL,
+			device_info TEXT,
+			FOREIGN KEY (user_id) REFERENCES users(id)
+		);
+	`;
+	await database.exec(createTables);
 
 	fastify.decorate('database', database);
 
