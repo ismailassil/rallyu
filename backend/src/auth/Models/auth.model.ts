@@ -29,12 +29,19 @@ const databasePlugin = fp(async function (fastify: FastifyInstance) {
 		);
 		CREATE TABLE IF NOT EXISTS refresh_tokens (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			session_id TEXT NOT NULL,
 			user_id INTEGER NOT NULL,
 			token VARCHAR(255) NOT NULL,
 			device_info TEXT,
 			FOREIGN KEY (user_id) REFERENCES users(id)
 		);
+		CREATE TABLE IF NOT EXISTS black_tokens (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			session_id TEXT NOT NULL,
+			token VARCHAR(255) NOT NULL
+		);
 	`;
+	// to add expires_at to both tables;
 	await database.exec(createTables);
 
 	fastify.decorate('database', database);
