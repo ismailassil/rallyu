@@ -1,20 +1,44 @@
-import { signUpType } from '../../auth/Repositories/types.js';
-import AuthServices from '../../auth/Services/AuthServices.js';
+import { signUpType, userJWT } from '../repositories/types.js';
+import AuthServices from '../services/auth.services.js';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import ILoginBody from '../Routes/types/ILoginBody.js';
+import ILoginBody from '../routes/types/login.body.js';
+import { app as fastify } from '../../app.js';
+import { extractToken, unsignToken } from '../shared/utils/jwt.js';
 
 class AuthController {
 	private authService = new AuthServices();
 
 	async refreshToken(req: FastifyRequest, res: FastifyReply): Promise<void> {
 		// When refreshing:
-		// 1. Validate incoming refresh token
+		// 1. Validate incoming refresh token => Done in `RefreshTokenHook`
 		// 2. Delete the old one
+		const user = req.user;
+		const deviceInfo = req.headers['user-agent'] || 'unknown';
+
 		// 3. Issue and store new refresh token
+		try {
+			this.authService.revokeToken(user);
+			const token: string = await this.authService.registerNewRefreshToken(
+				user,
+				deviceInfo,
+			);
+
+			res.setRefreshTokenCookie(token);
+
+			return res
+				.status(201)
+				.send({ success: true, message: 'Token Generated Successfully' });
+		} catch (error) {
+			return res.status(500).send({
+				error:
+					(error as Error)?.message ||
+					'Unknown error occurred during refreshToken',
+			});
+		}
 	}
 
 	async login(req: FastifyRequest, res: FastifyReply): Promise<void> {
-		const deviceInfo = req.headers['user-agent'];
+		const deviceInfo = req.headers['user-agent'] || 'unknown';
 		const { username, password } = req.body as ILoginBody;
 
 		try {
@@ -37,7 +61,7 @@ class AuthController {
 	}
 
 	async register(req: FastifyRequest, res: FastifyReply): Promise<void> {
-		const deviceInfo = req.headers['user-agent'];
+		const deviceInfo = req.headers['user-agent'] || 'unknown';
 		const userInfo = req.body as signUpType;
 
 		try {
@@ -62,18 +86,29 @@ class AuthController {
 	}
 
 	async logout(req: FastifyRequest, res: FastifyReply): Promise<void> {
-		// Mark all user's tokens as revoked
+		const payload = req.user;
+		// Mark user's tokens as revoked
 
-		res.clearCookie('refresh_token', {
-			path: '/api',
-			httpOnly: true,
-			secure: false,
-			sameSite: 'strict',
-		});
+		try {
+			this.authService.addToBlacklist(payload);
+			this.authService.revokeToken(payload);
 
-		// this.revokeToken();
+			res.clearCookie('refresh_token', {
+				path: '/api',
+				httpOnly: true,
+				secure: false,
+				sameSite: 'strict',
+			});
 
-		return res.send({ message: 'Logout successful' });
+			// delete the access_token from the front-end
+			return res.send({ message: 'Logout successful' });
+		} catch (err) {
+			return res.status(500).send({
+				error:
+					(err as Error)?.message ||
+					'An Unknow error occurred during Authorization',
+			});
+		}
 	}
 
 	async forgotPassword(req: FastifyRequest, res: FastifyReply): Promise<void> {

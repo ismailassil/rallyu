@@ -1,5 +1,6 @@
 interface userJWT {
 	id: number;
+	sessionId: string;
 	username: string;
 	role: string;
 }

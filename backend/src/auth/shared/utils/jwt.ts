@@ -10,7 +10,7 @@ export function extractToken(req: FastifyRequest, tokenSource: 'header' | 'cooki
 	return token;
 }
 
-export function unsigneToken(fastify: FastifyInstance, token: string) {
+export function unsignToken(fastify: FastifyInstance, token: string) {
 	const { value, valid } = fastify.unsignCookie(token);
 	if (!valid || !value)
 		throw new Error('Invalid or expired token: Unable to verify');

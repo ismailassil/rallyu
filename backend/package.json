@@ -12,13 +12,12 @@
 	},
 	"devDependencies": {
 		"@types/node": "^22.15.3",
-		"@types/sqlite3": "^5.1.0",
 		"@types/uuid": "^10.0.0",
+		"eslint-config-prettier": "^10.1.2",
 		"fastify-tsconfig": "^3.0.0",
 		"globals": "^16.0.0",
 		"pino-pretty": "^13.0.0",
 		"prettier": "^3.5.3",
-		"rimraf": "^6.0.1",
 		"tsc-alias": "^1.8.15",
 		"typescript-eslint": "^8.31.1"
 	},

@@ -1,13 +1,13 @@
-import authRoutes from './auth/Routes/authRoutes.js';
-import { app as fastify } from './app.js';
 import dotenv from 'dotenv';
 import fastifyBcrypt from 'fastify-bcrypt';
-import databasePlugin from './auth/Models/AuthModel.js';
-import schemasPlugin from './auth/Plugins/schemasPlugin.js';
-import checkersPlugin from './auth/Plugins/checkersPlugin.js';
-import helpersPlugin from './auth/Plugins/helpersPlugin.js';
-import jwtPlugin from './auth/Plugins/jwtPlugin.js';
-import cookiePlugin from './auth/Plugins/cookiePlugin.js';
+import authRoutes from './auth/routes/auth.routes.js';
+import { app as fastify } from './app.js';
+import databasePlugin from './auth/models/auth.model.js';
+import schemasPlugin from './auth/shared/plugins/schemas.plugin.js';
+import checkersPlugin from './auth/shared/plugins/checkers.plugin.js';
+import helpersPlugin from './auth/shared/plugins/helpers.plugin.js';
+import jwtPlugin from './auth/shared/plugins/jwt.plugin.js';
+import cookiePlugin from './auth/shared/plugins/cookie.plugin.js';
 
 dotenv.config();
 

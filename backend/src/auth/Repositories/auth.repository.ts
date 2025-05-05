@@ -53,10 +53,12 @@ class AuthRepository {
 	async insertToken(
 		hashedToken: string,
 		id: number,
+		session_id: string,
 		device_info: string | undefined,
 	): Promise<number | undefined> {
 		const token = await fastify.database.run(
-			'INSERT INTO refresh_tokens (user_id, token, device_info) VALUES (?, ?, ?)',
+			'INSERT INTO refresh_tokens (session_id, user_id, token, device_info) VALUES (?, ?, ?, ?)',
+			session_id,
 			id,
 			hashedToken,
 			device_info,
@@ -65,13 +67,42 @@ class AuthRepository {
 		return token?.lastID;
 	}
 
-	async getToken(id: number): Promise<TokenType> {
+	async getToken(id: number, sessionId: string): Promise<TokenType> {
 		const token = await fastify.database.get(
-			'SELECT * FROM refresh_tokens WHERE user_id = ?',
+			'SELECT * FROM refresh_tokens WHERE user_id = ? AND session_id = ?',
 			id,
+			sessionId,
 		);
 
 		return token;
+	}
+
+	async deleteToken(id: number, sessionId: string) {
+		const del = await fastify.database.run(
+			'DELETE FROM refresh_tokens WHERE user_id = ? AND session_id = ?',
+			id,
+			sessionId,
+		);
+
+		return del.changes;
+	}
+
+	async insertBlackToken(sessionId: string, token: string) {
+		const resToken = await fastify.database.run(
+			'INSET INTO black_tokens (session_id, token) VALUES (?, ?)',
+			sessionId,
+			token,
+		);
+
+		return resToken?.lastID;
+	}
+
+	async getBlackToken(sessionId: string): Promise<any | undefined> {
+		const bToken = await fastify.database.get(
+			'SELECT * FROM black_tokens WHERE session_id = ?',
+		);
+
+		return bToken;
 	}
 }
 

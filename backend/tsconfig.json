@@ -115,6 +115,6 @@
 		// "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
 		"skipLibCheck": true /* Skip type checking all .d.ts files. */
 	},
-	"include": ["src/**/*.ts", "src/auth/Models/database.d.ts", "src/types/bcrypt.d.ts", "src/types/cookie.d.ts"],
+	"include": ["src/**/*.ts", "src/auth/Models/database.d.ts", "src/auth/shared/types/bcrypt.d.ts", "src/auth/shared/types/cookie.d.ts"],
 	"exclude": ["node_modules", ".eslintrc.cjs"]
 }
