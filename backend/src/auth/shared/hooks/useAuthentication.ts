@@ -16,6 +16,7 @@ async function authenticationHook(
 		const user = await this.verifyToken(
 			token,
 			req.headers['user-agent'] || 'unknown',
+			req.ip || 'unknown',
 			'header',
 		);
 

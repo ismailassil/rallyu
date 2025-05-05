@@ -1,7 +1,6 @@
 import AuthRepository from '../repositories/auth.repository.js';
 import { app as fastify } from '../../app.js';
 import { signUpType, TokenType, userJWT } from '../repositories/types.js';
-import { FastifyJWT } from '@fastify/jwt';
 import { randomUUID } from 'crypto';
 
 class AuthServices {
@@ -54,7 +53,7 @@ class AuthServices {
 		};
 	}
 
-	public async registerToken(user: userJWT, deviceInfo: string | undefined) {
+	public async registerToken(user: userJWT, ip: string, deviceInfo: string) {
 		const refreshToken = await this.createToken(user, 'cookie');
 		const accessToken = await this.createToken(user, 'header');
 
@@ -63,6 +62,7 @@ class AuthServices {
 			hashedToken,
 			user.id,
 			user.sessionId,
+			ip,
 			deviceInfo,
 		);
 
@@ -87,7 +87,11 @@ class AuthServices {
 		return fastify.jwt.sign({ payload: user }, { key: jwtKey, expiresIn: exp });
 	}
 
-	public async registerNewRefreshToken(user: userJWT, deviceInfo: string) {
+	public async registerNewRefreshToken(
+		user: userJWT,
+		ip: string,
+		deviceInfo: string,
+	) {
 		const ruid = randomUUID();
 		const newPayload: userJWT = {
 			id: user.id,
@@ -102,6 +106,7 @@ class AuthServices {
 			hashedToken,
 			user.id,
 			ruid,
+			ip,
 			deviceInfo,
 		);
 
@@ -112,22 +117,27 @@ class AuthServices {
 
 	public async addToBlacklist(user: userJWT) {
 		// The Token is Encrypted
-		const tokenInfo = await this.authRepository.getToken(
-			user.id,
-			user.sessionId,
-		);
-		if (!tokenInfo) throw new Error('Unknown Refresh Token.');
+		try {
+			const tokenInfo = await this.authRepository.getToken(
+				user.id,
+				user.sessionId,
+			);
+			if (!tokenInfo) throw new Error('Unknown Refresh Token.');
 
-		const result = await this.authRepository.insertBlackToken(
-			user.sessionId,
-			tokenInfo.token,
-		);
-		if (!result) throw new Error('Unknow Error Occurred.');
+			const result = await this.authRepository.insertBlackToken(
+				user.sessionId,
+				tokenInfo.token,
+			);
+			if (!result) throw new Error('Unknow Error Occurred.');
+		} catch (err) {
+			throw new Error((err as Error)?.message || 'Unknown Error Occurred.');
+		}
 	}
 
 	public async verifyToken(
 		token: string,
 		deviceInfo: string,
+		ipAddress: string,
 		source: 'header' | 'cookie',
 	) {
 		const jwtKey =
@@ -150,13 +160,16 @@ class AuthServices {
 				user.id,
 				user.sessionId,
 			);
-			if (!tokenInfo) throw new Error('Unknown Refresh Token.');
+			if (!tokenInfo)
+				throw new Error(
+					'Unknown Refresh TokenDROP TABLE IF EXISTS refresh_tokens;.',
+				);
 
 			// check if the token is blacklisted or not?
 			this.verifyIsBlackToken(user.sessionId, token);
 
-			if (tokenInfo.device_info !== deviceInfo) {
-				throw new Error('Device info mismatch for refresh token.');
+			if (tokenInfo.device_info !== deviceInfo || tokenInfo.ip !== ipAddress) {
+				throw new Error('Device info or IP mismatch for refresh token.');
 			}
 
 			return user;
@@ -181,6 +194,36 @@ class AuthServices {
 			this.authRepository.deleteToken(user.id, user.sessionId);
 		} catch (error) {
 			throw new Error(`Unknow Error: ${String(error)}`);
+		}
+	}
+
+	public async changePassword(user: userJWT, oldpwd: string, newpwd: string) {
+		const { id, username } = user;
+
+		try {
+			const userDb = await this.authRepository.getUserByUsername(username);
+			if (!userDb) throw new Error('User not found.');
+
+			const pass = await this.authRepository.getPasswordByUsername(username);
+			if (!pass) throw new Error('Password not found.');
+
+			const isValid = fastify.bcrypt.compare(oldpwd, pass.password);
+			if (!isValid) {
+				throw new Error('Passowrd is not valid');
+			}
+
+			if (!fastify.pwdCheker(newpwd)) throw new Error('Invalid password.');
+
+			const hashedpwd = await fastify.bcrypt.hash(newpwd);
+
+			const update = await this.authRepository.updatePassword(hashedpwd, id);
+
+			if (!update) {
+				throw new Error('Error Occurred while updating');
+			}
+		} catch (error) {
+			const errorMsg = (error as Error)?.message || 'Unknown Error Occurred.';
+			throw new Error(errorMsg);
 		}
 	}
 }

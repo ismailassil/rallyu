@@ -17,6 +17,7 @@ interface TokenType {
 	id: number;
 	user_id: number;
 	token: string;
+	ip: string;
 	device_info: string;
 }
 

@@ -54,13 +54,15 @@ class AuthRepository {
 		hashedToken: string,
 		id: number,
 		session_id: string,
-		device_info: string | undefined,
+		ip: string,
+		device_info: string,
 	): Promise<number | undefined> {
 		const token = await fastify.database.run(
-			'INSERT INTO refresh_tokens (session_id, user_id, token, device_info) VALUES (?, ?, ?, ?)',
+			'INSERT INTO refresh_tokens (session_id, user_id, token, ip, device_info) VALUES (?, ?, ?, ?, ?)',
 			session_id,
 			id,
 			hashedToken,
+			ip,
 			device_info,
 		);
 
@@ -89,7 +91,7 @@ class AuthRepository {
 
 	async insertBlackToken(sessionId: string, token: string) {
 		const resToken = await fastify.database.run(
-			'INSET INTO black_tokens (session_id, token) VALUES (?, ?)',
+			'INSERT INTO black_tokens (session_id, token) VALUES (?, ?)',
 			sessionId,
 			token,
 		);
@@ -103,6 +105,15 @@ class AuthRepository {
 		);
 
 		return bToken;
+	}
+
+	async updatePassword(password: string, id: number) {
+		const update = await fastify.database.run(
+			'UPDATE users SET password = ? WHERE id = ?',
+			password,
+			id,
+		);
+		return update?.lastID;
 	}
 }
 

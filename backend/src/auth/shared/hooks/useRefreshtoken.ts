@@ -19,6 +19,7 @@ async function refreshTokenHook(
 		const user = await this.verifyToken(
 			cookieToken,
 			req.headers['user-agent'] || 'unknown',
+			req.ip || 'unknown',
 			'cookie',
 		);
 

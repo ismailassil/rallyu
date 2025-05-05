@@ -4,6 +4,7 @@ import loginSchema from '../shared/schemas/login.schema.js';
 import registerSchema from '../shared/schemas/register.schema.js';
 import ILoginBody from './types/login.body.js';
 import IRegisterBody from './types/register.body.js';
+import changepwdSchema from '../shared/schemas/changepwd.schema.js';
 
 const routes: { [key: string]: string } = {
 	refresh_token: '/refresh-token',
@@ -47,9 +48,9 @@ async function authRoutes(fastify: FastifyInstance) {
 		routes.forgotPassword,
 		authController.forgotPassword.bind(authController),
 	);
-	fastify.post(
+	fastify.post<{ Body: IChangePasswordBody }>(
 		routes.changePassword,
-		{ preHandler: fastify.authenticate },
+		{ preHandler: fastify.authenticate, schema: changepwdSchema },
 		authController.changePassword.bind(authController),
 	);
 }

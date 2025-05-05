@@ -32,7 +32,8 @@ const databasePlugin = fp(async function (fastify: FastifyInstance) {
 			session_id TEXT NOT NULL,
 			user_id INTEGER NOT NULL,
 			token VARCHAR(255) NOT NULL,
-			device_info TEXT,
+			device_info TEXT NOT NULL,
+			ip TEXT NOT NULL,
 			FOREIGN KEY (user_id) REFERENCES users(id)
 		);
 		CREATE TABLE IF NOT EXISTS black_tokens (
