@@ -5,7 +5,10 @@ export function extractToken(req: FastifyRequest, tokenSource: 'header' | 'cooki
 		tokenSource === 'header'
 			? req.headers.authorization
 			: req.cookies?.refresh_token;
-	if (!token) throw new Error('Unauthorized: Access token is missing');
+	if (!token)
+		throw new Error(
+			`Unauthorized: ${tokenSource === 'header' ? 'Access' : 'Refresh'} token is missing`,
+		);
 
 	return token;
 }

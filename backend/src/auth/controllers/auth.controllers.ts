@@ -3,7 +3,6 @@ import AuthServices from '../services/auth.services.js';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import ILoginBody from '../routes/types/login.body.js';
 import { app as fastify } from '../../app.js';
-import { extractToken, unsignToken } from '../shared/utils/jwt.js';
 
 class AuthController {
 	private authService = new AuthServices();
@@ -11,15 +10,17 @@ class AuthController {
 	async refreshToken(req: FastifyRequest, res: FastifyReply): Promise<void> {
 		// When refreshing:
 		// 1. Validate incoming refresh token => Done in `RefreshTokenHook`
-		// 2. Delete the old one
 		const user = req.user;
+		const ip = req.ip || 'unknown';
 		const deviceInfo = req.headers['user-agent'] || 'unknown';
 
+		// 2. Delete the old one
 		// 3. Issue and store new refresh token
 		try {
 			this.authService.revokeToken(user);
 			const token: string = await this.authService.registerNewRefreshToken(
 				user,
+				ip,
 				deviceInfo,
 			);
 
@@ -39,12 +40,13 @@ class AuthController {
 
 	async login(req: FastifyRequest, res: FastifyReply): Promise<void> {
 		const deviceInfo = req.headers['user-agent'] || 'unknown';
+		const ip = req.ip || 'unknown';
 		const { username, password } = req.body as ILoginBody;
 
 		try {
 			const user = await this.authService.verifyUser(username, password);
 			const { refreshToken, accessToken } =
-				await this.authService.registerToken(user, deviceInfo);
+				await this.authService.registerToken(user, ip, deviceInfo);
 
 			res.setRefreshTokenCookie(refreshToken);
 
@@ -62,12 +64,13 @@ class AuthController {
 
 	async register(req: FastifyRequest, res: FastifyReply): Promise<void> {
 		const deviceInfo = req.headers['user-agent'] || 'unknown';
+		const ip = req.ip || 'unknown';
 		const userInfo = req.body as signUpType;
 
 		try {
 			const user = await this.authService.registerUser(userInfo);
 			const { refreshToken, accessToken } =
-				await this.authService.registerToken(user, deviceInfo);
+				await this.authService.registerToken(user, ip, deviceInfo);
 
 			res.setRefreshTokenCookie(refreshToken);
 
@@ -126,6 +129,33 @@ class AuthController {
 
 	async changePassword(req: FastifyRequest, res: FastifyReply): Promise<void> {
 		// Logic for changing the password
+		// Change the password from the database.
+		// invalidate the refresh_token
+		// kick the user out (Logout)
+		const user = req.user;
+		const { oldpwd, newpwd } = req.body as IChangePasswordBody;
+
+		try {
+			this.authService.changePassword(user, oldpwd, newpwd);
+
+			this.authService.addToBlacklist(req.user);
+			this.authService.revokeToken(req.user);
+
+			res.clearCookie('refresh_token', {
+				path: '/api',
+				httpOnly: true,
+				secure: false,
+				sameSite: 'strict',
+			});
+
+			return res.send({
+				success: true,
+				message: 'Password Changed Successfully',
+			});
+		} catch (error) {
+			const errorMsg = (error as Error)?.message || 'Unknown Error Occurred.';
+			return res.status(500).send({ error: errorMsg });
+		}
 	}
 }
 
