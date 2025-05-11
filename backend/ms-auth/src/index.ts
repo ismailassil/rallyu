@@ -1,17 +1,17 @@
 import dotenv from 'dotenv';
 import fastifyBcrypt from 'fastify-bcrypt';
-import authRoutes from './auth/routes/auth.routes.js';
+import authRoutes from './routes/auth.routes.js';
 import { app as fastify } from './app.js';
-import databasePlugin from './auth/models/auth.model.js';
-import schemasPlugin from './auth/shared/plugins/schemas.plugin.js';
-import checkersPlugin from './auth/shared/plugins/checkers.plugin.js';
-import helpersPlugin from './auth/shared/plugins/helpers.plugin.js';
-import jwtPlugin from './auth/shared/plugins/jwt.plugin.js';
-import cookiePlugin from './auth/shared/plugins/cookie.plugin.js';
+import databasePlugin from './models/auth.model.js';
+import schemasPlugin from './shared/plugins/schemas.plugin.js';
+import checkersPlugin from './shared/plugins/checkers.plugin.js';
+import helpersPlugin from './shared/plugins/helpers.plugin.js';
+import jwtPlugin from './shared/plugins/jwt.plugin.js';
+import cookiePlugin from './shared/plugins/cookie.plugin.js';
 
 dotenv.config();
 
-const PORT: number = parseInt(process.env.PORT || '5000', 10);
+const PORT: number = parseInt(process.env.PORT || '5000');
 
 // Import && Register Plugins
 fastify.register(databasePlugin);
@@ -22,7 +22,7 @@ fastify.register(cookiePlugin);
 fastify.register(helpersPlugin);
 fastify.register(checkersPlugin);
 fastify.register(schemasPlugin);
-fastify.register(authRoutes, { prefix: '/api/auth' });
+fastify.register(authRoutes, { prefix: '/auth' });
 
 // Start the Server
 async function main() {

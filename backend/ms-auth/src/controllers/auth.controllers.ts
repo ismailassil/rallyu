@@ -2,7 +2,7 @@ import { signUpType, userJWT } from '../repositories/types.js';
 import AuthServices from '../services/auth.services.js';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import ILoginBody from '../routes/types/login.body.js';
-import { app as fastify } from '../../app.js';
+import { app as fastify } from '../app.js';
 
 class AuthController {
 	private authService = new AuthServices();

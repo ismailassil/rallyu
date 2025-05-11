@@ -1,4 +1,4 @@
-import { app as fastify } from '../../app.js';
+import { app as fastify } from '../app.js';
 import { signUpType, TokenType } from './types.js';
 
 class AuthRepository {

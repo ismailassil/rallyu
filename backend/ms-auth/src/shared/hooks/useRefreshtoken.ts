@@ -1,7 +1,7 @@
 import AuthServices from '../../services/auth.services.js';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { extractToken, unsignToken } from '../utils/jwt.js';
-import { app as fastify } from '../../../app.js';
+import { app as fastify } from '../../app.js';
 
 async function refreshTokenHook(
 	this: AuthServices,
