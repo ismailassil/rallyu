@@ -7,6 +7,8 @@ import AuthButton from "../components/AuthButton";
 import Input from "../components/Input";
 import { useState } from "react";
 import passwordValidator from "./passwordValidator";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 enum PasswordError {
 	TooShort = 1,
@@ -27,9 +29,11 @@ const ErrorMessages: Record<PasswordError, string> = {
 };
 
 export default function SignUp() {
+	const router = useRouter();
+	const [loading, setLoading] = useState(false);
 	const [formData, setFormData] = useState({
-		firstname: "",
-		lastname: "",
+		firstName: "",
+		lastName: "",
 		username: "",
 		email: "",
 		password: "",
@@ -40,12 +44,12 @@ export default function SignUp() {
 		setFormData((prev) => ({ ...prev, [field]: value }));
 	};
 
-	function handleSubmit() {
-		if (formData.firstname.trim() === "") {
+	async function handleSubmit() {
+		if (formData.firstName.trim() === "") {
 			setError("First name is required.");
 			return;
 		}
-		if (formData.lastname.trim() === "") {
+		if (formData.lastName.trim() === "") {
 			setError("Last name is required.");
 			return;
 		}
@@ -78,9 +82,23 @@ export default function SignUp() {
 			return;
 		}
 
+		try {
+			setLoading(true);
+			const response = await axios.post(
+				"http://localhost:4004/api/auth/register",
+				JSON.stringify(formData),
+				{ headers: { "Content-Type": "application/json" } }
+			);
+			axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.accessToken}`;
+			router.push("/dashboard");
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				setError(error.response?.data.error);
+			}
+		} finally {
+			setLoading(true);
+		}
 		setError("");
-
-		// ADD API
 	}
 
 	return (
@@ -132,7 +150,7 @@ export default function SignUp() {
 									width={19}
 									height={19}
 									placeholder="Jorge"
-									value={formData.firstname}
+									value={formData.firstName}
 									setValue={handleInputChange}
 								/>
 								<Input
@@ -144,7 +162,7 @@ export default function SignUp() {
 									width={19}
 									height={19}
 									placeholder="Bosh"
-									value={formData.lastname}
+									value={formData.lastName}
 									setValue={handleInputChange}
 								/>
 							</div>
@@ -205,7 +223,11 @@ export default function SignUp() {
 									hover:scale-101 mt-[24px] flex w-full items-center justify-center rounded-lg
 									transition-transform duration-300 hover:cursor-pointer"
 							>
-								Sign Up
+								{!loading ? (
+									<>Sign Up</>
+								) : (
+									<div className="size-5 mr-3 animate-spin rounded-full border-2 border-gray-300 border-t-blue-500" />
+								)}
 							</button>
 							<div className="mt-[19px] flex justify-center">
 								<p>

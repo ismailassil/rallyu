@@ -1,6 +1,6 @@
 export default function passwordValidator(password: string) {
 	const minLength = 8;
-	const hasNumber = /d/.test(password);
+	const hasNumber = /[0-9]/.test(password);
 	const hasUpperCase = /[A-Z]/.test(password);
 	const hasLowerCase = /[a-z]/.test(password);
 	const hasSpecial = /[!@#$%^&*(),.?:{}|<>]/.test(password);
