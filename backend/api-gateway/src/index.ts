@@ -8,7 +8,7 @@ dotenv.config();
 
 // CORS Plugin
 await fastify.register(cors, {
-	origin: ['*'], // Should be specified to the frontend
+	origin: ['http://localhost:3000'], // Should be specified to the frontend
 	allowedHeaders: ['Content-Type', 'Authorization'],
 });
 
