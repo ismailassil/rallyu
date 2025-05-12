@@ -28,11 +28,13 @@ class AuthServices {
 	}
 
 	public async registerUser(userInfo: signUpType): Promise<userJWT> {
-		const { username, password } = userInfo;
+		const { username, password, firstName, lastName, email } = userInfo;
 
 		const isUserExist = await this.authRepository.getUserByUsername(username);
 		if (isUserExist) throw new Error('Username already exists');
 
+		if (fastify.isEmpty(firstName, lastName, email))
+			throw new Error('Inputs should not be empty');
 		if (!fastify.userChecker(username)) throw new Error('Invalid username.');
 		if (!fastify.pwdCheker(password)) throw new Error('Invalid password.');
 

@@ -4,13 +4,21 @@ import Form from "next/form";
 import Link from "next/link";
 import AuthButton from "./components/AuthButton";
 import Input from "./components/Input";
-// import ibm from "../fonts/ibm";
 import { useState } from "react";
-// import { motion } from "framer-motion";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+
+/**
+ * to set the `Set-Cookie` in the header
+ * add this flag to true - `withCredentials: true`
+ */
 
 export default function Home() {
+	const [loading, setLoading] = useState(false);
+	const router = useRouter();
+	const [error, setError] = useState("");
 	const [formData, setFormData] = useState({
-		email: "",
+		username: "",
 		password: "",
 	});
 
@@ -18,11 +26,24 @@ export default function Home() {
 		setFormData((prev) => ({ ...prev, [field]: value }));
 	}
 
-	const [error, setError] = useState("");
-
-	function handleSubmit() {
-		// API
-		setError("");
+	async function handleSubmit() {
+		console.log(formData);
+		try {
+			setLoading(true);
+			const response = await axios.post(
+				"http://localhost:4004/api/auth/login",
+				JSON.stringify(formData),
+				{ headers: { "Content-Type": "application/json" } }
+			);
+			axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.accessToken}`;
+			router.push("/dashboard");
+		} catch (error: unknown) {
+			if (axios.isAxiosError(error)) {
+				setError(error.response?.data.error);
+			}
+		} finally {
+			setLoading(false);
+		}
 	}
 
 	return (
@@ -30,10 +51,10 @@ export default function Home() {
 			<div className="flex h-full w-full justify-center overflow-auto">
 				<div className="flex h-full w-[550px] items-start pb-20 pl-10 pr-10 pt-20 lg:items-center">
 					<div className="flex-1">
-						<h1 className={`flex text-4xl mb-3 font-bold md:justify-center `}>
+						<h1 className={`mb-3 flex text-4xl font-bold md:justify-center `}>
 							Welcome Back!
 						</h1>
-						<p className={`mb-11 flex text-md md:justify-center`}>
+						<p className={`text-md mb-11 flex md:justify-center`}>
 							Please enter your details to Sign In
 						</p>
 						<div className="mb-4 flex flex-col justify-center gap-4 sm:flex-row">
@@ -68,13 +89,13 @@ export default function Home() {
 								<Input
 									text="Email or Username"
 									type="text"
-									unique="email"
+									unique="username"
 									src="/icons/at.svg"
 									alt="At Logo"
 									width={19}
 									height={19}
 									placeholder="something"
-									value={formData.email}
+									value={formData.username}
 									setValue={handleInputChange}
 								/>
 							</div>
@@ -105,9 +126,18 @@ export default function Home() {
 
 							<button
 								type="submit"
-								className="h-13 bg-main hover:ring-3 hover:ring-main-ring-hover/20 hover:bg-main-hover active:bg-main-active active:ring-main-ring-active hover:scale-101 mt-[44px] flex w-full items-center justify-center rounded-lg transition-transform duration-300 hover:cursor-pointer"
+								className={`h-13 bg-main hover:ring-3 hover:ring-main-ring-hover/20
+									hover:bg-main-hover active:bg-main-active
+									active:ring-main-ring-active hover:scale-101 mt-[44px] flex
+									w-full items-center justify-center rounded-lg
+									transition-transform duration-300 hover:cursor-pointer
+									`}
 							>
-								Sign In
+								{!loading ? (
+									<>Sign In</>
+								) : (
+									<div className="size-5 mr-3 animate-spin rounded-full border-2 border-gray-300 border-t-blue-500" />
+								)}
 							</button>
 							<div className="mt-[19px] flex justify-center">
 								<p className="text-wrap text-center">
