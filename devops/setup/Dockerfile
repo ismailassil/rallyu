@@ -4,6 +4,4 @@ USER root
 
 COPY ./script.sh /script.sh
 
-RUN chmod +x /script.sh
-
-ENTRYPOINT [ "./script.sh" ]
+ENTRYPOINT [ "sh", "/script.sh" ]
