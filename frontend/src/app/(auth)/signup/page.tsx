@@ -144,7 +144,7 @@ export default function SignUp() {
 								<Input
 									text="First Name"
 									type="text"
-									unique="firstname"
+									unique="firstName"
 									src="/icons/firstname.svg"
 									alt="FirstName logo"
 									width={19}
@@ -156,7 +156,7 @@ export default function SignUp() {
 								<Input
 									text="Last Name"
 									type="text"
-									unique="lastname"
+									unique="lastName"
 									src="/icons/lastname.svg"
 									alt="LastName logo"
 									width={19}
