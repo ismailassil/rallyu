@@ -34,6 +34,18 @@ if [ ! -f config/certs/certs.zip ]; then
 		"      - localhost\n" \
 		"    ip:\n" \
 		"      - 127.0.0.1\n" \
+		"  - name: logstash\n" \
+		"    dns:\n" \
+		"      - logstash\n" \
+		"      - localhost\n" \
+		"    ip:\n" \
+		"      - 127.0.0.1\n" \
+		"  - name: kibana\n" \
+		"    dns:\n" \
+		"      - kibana\n" \
+		"      - localhost\n" \
+		"    ip:\n" \
+		"      - 127.0.0.1\n" \
 		>config/certs/instances.yml
 
 	bin/elasticsearch-certutil cert --silent --pem \
@@ -50,20 +62,23 @@ fi
 ###########################################
 ###########################################
 echo "Setting file permissions..."
-chown -R root:root config/certs
-find . -type d -exec chmod 750 \{\} \;
-find . -type f -exec chmod 640 \{\} \;
+chown -R 1000:0 config/certs
+find config/certs -type d -exec chmod 750 \{\} \;
+find config/certs -type f -exec chmod 640 \{\} \;
+
+sleep 2
 
 ###########################################
 ###########################################
 echo "Waiting for Elasticsearch to start..."
-until curl -s --cacert config/certs/ca/ca.crt https://elasticsearch:9200 | grep -q "missing authentication credentials"; do sleep 10; done
+until curl -s --cacert config/certs/ca/ca.crt https://elasticsearch:9200 |
+	grep -q "missing authentication credentials" || echo "Not Yet"; do sleep 5; done
 
 ###########################################
 ###########################################
 echo "Setting up Kibana System Password..."
-until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
+until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:securepassword" \
 	-H "Content-Type: application/json" https://elasticsearch:9200/_security/user/kibana_system/_password \
-	-d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done
+	-d "{\"password\":\"securepassword\"}" | grep -q "^{}" || echo "Not Yet"; do sleep 5; done
 
 echo "Kibana System Password set."
