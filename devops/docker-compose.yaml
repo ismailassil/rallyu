@@ -31,23 +31,24 @@ services:
             - certs:/usr/share/elasticsearch/config/certs
             - esdata:/usr/share/elasticsearch/data
         environment:
-            - node.name=elasticsearch
-            - network.host=0.0.0.0
             - cluster.name=${CLUSTER_NAME}
+            - discovery.type=single-node
             - cluster.initial_master_nodes=elasticsearch
-            - discovery.seed_hosts=elasticsearch
-            - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+            - node.name=elasticsearch
+            - ELASTIC_PASSWORD=securepassword # !!!!!!! to change !!!!!!!
             - bootstrap.memory_lock=true # prevent OOM
             - xpack.security.enabled=true # enable security
             - xpack.security.http.ssl.enabled=true # enable HTTP SSL
-            - xpack.security.http.ssl.key=certs/elasticsearch.key # path to the key
-            - xpack.security.http.ssl.certificate=certs/elasticsearch.crt # path to the certificate
-            - xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt # path to the CA
+            - xpack.security.http.ssl.key=config/certs/elasticsearch/elasticsearch.key # path to the key
+            - xpack.security.http.ssl.certificate=config/certs/elasticsearch/elasticsearch.crt # path to the certificate
+            - xpack.security.http.ssl.certificate_authorities=config/certs/ca/ca.crt # path to the CA
             - xpack.security.transport.ssl.enabled=true # enable transport SSL
             - xpack.security.transport.ssl.verification_mode=certificate # set verification mode
-            - xpack.security.transport.ssl.key=certs/elasticsearch.key # path to the key
-            - xpack.security.transport.ssl.certificate=certs/elasticsearch.crt # path to the certificate
-            - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt # path to the CA
+            - xpack.security.transport.ssl.key=config/certs/elasticsearch/elasticsearch.key # path to the key
+            - xpack.security.transport.ssl.certificate=config/certs/elasticsearch/elasticsearch.crt # path to the certificate
+            - xpack.security.transport.ssl.certificate_authorities=config/certs/ca/ca.crt # path to the CA
+            - xpack.license.self_generated.type=trial
+            - xpack.ml.use_auto_machine_memory_percent=true
         ports:
             - ${ES_PORT}:9200
         mem_limit: ${MEM_LIMIT}
@@ -66,13 +67,10 @@ services:
             interval: 10s
             timeout: 10s
             retries: 120
-            start_period: 20s
 
     kibana:
         depends_on:
             elasticsearch:
-                condition: service_healthy
-            setup:
                 condition: service_healthy
         image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
         restart: always
@@ -80,20 +78,26 @@ services:
         ports:
             - ${KIBANA_PORT}:5601
         environment:
-            - SERVER_NAME=kib00
+            - SERVER_NAME=kibana
+            - SERVER_SSL_ENABLED=true
+            - SERVER_SSL_CERTIFICATE=config/certs/kibana/kibana.crt
+            - SERVER_SSL_KEY=config/certs/kibana/kibana.key
+            - XPACK_REPORTING_ENCRYPTIONKEY=${KIBANA_KEY}
             - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
             - ELASTICSEARCH_USERNAME=${KIBANA_USERNAME}
             - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
             - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
+            - ELASTICSEARCH_SSL_VERIFICATIONMODE=certificate
         mem_limit: ${MEM_LIMIT}
         volumes:
             - certs:/usr/share/kibana/config/certs
             - kibdata:/usr/share/kibana/data
         healthcheck:
-            test:
-                [
+            test: [
                     "CMD-SHELL",
-                    "curl -s -I -k https://localhost:5601 | grep -q '200 OK\\|302 Found'",
+                    "curl -s -k https://localhost:5601 | \
+                    grep -q 'Kibana server is not ready yet' || \
+                    curl -s -k https://localhost:5601/login | grep -q 'kibana'",
                 ]
             interval: 10s
             timeout: 10s
@@ -106,23 +110,31 @@ services:
         depends_on:
             setup:
                 condition: service_healthy
+            elasticsearch:
+                condition: service_healthy
+            kibana:
+                condition: service_healthy
         image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
         container_name: logstash
         restart: always
+        user: root
         ports:
             - ${LOGSTASH_PORT}:5044/udp
         volumes:
             - certs:/usr/share/logstash/config/certs
             - ./pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
             - ./logs.log:/usr/share/logstash/logs/access.log
-        user: root
+        # user: root
         environment:
             - NODE_NAME=logstash
             - xpack.monitoring.enabled=false
-            - ELASTIC_USER=${ELASTIC_USERNAME}
-            - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-            - ELASTIC_HOSTS=https://elasticsearch:9200
+            - ELASTICSEARCH_USERNAME=${ELASTIC_USERNAME}
+            - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+            - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
+            - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca.crt
         command: logstash -f /usr/share/logstash/pipeline/logstash.conf
+        env_file:
+            - .env
         networks:
             - elk
 
@@ -154,4 +166,6 @@ volumes:
     esdata:
         driver: local
     kibdata:
+        driver: local
+    logstashdata:
         driver: local
