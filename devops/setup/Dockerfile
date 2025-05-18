@@ -1,7 +1,12 @@
-FROM docker.elastic.co/elasticsearch/elasticsearch:8.13.2
+FROM docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
 
 USER root
 
-COPY ./script.sh /script.sh
+COPY ./conf/instances.yml /conf/instances.yml
 
-ENTRYPOINT [ "sh", "/script.sh" ]
+COPY ./scripts/lib.sh lib.sh
+COPY ./scripts/script.sh script.sh
+
+RUN chmod +x script.sh lib.sh
+
+ENTRYPOINT [ "sh", "-c", "source /lib.sh && /script.sh" ]
