@@ -1,5 +1,10 @@
-import fastify from "fastify";
+import app from "./app.js";
 
-const server = fastify();
-
-console.log("LOL");
+(async () => {
+    try {
+        await app.listen({ port: 3000 });
+        app.log.info(`Server listening on PORT: ${3000}`);
+    } catch (err) {
+        app.log.error("Server launch failed!" );
+    }
+})()
