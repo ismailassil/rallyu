@@ -6,3 +6,15 @@ frontend/
 => useFormState -> useActionState
 => useLinkStatus
 => check the scrollbar in all the pages.
+
+NGINX:
+  add:
+    - log_format
+    - path for frontend
+    - path for backend
+    - path for devops
+
+
+  to modify:
+    - combine the log_format with elk_format log
+    - the path the container's name

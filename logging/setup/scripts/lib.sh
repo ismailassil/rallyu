@@ -1,11 +1,13 @@
 #!/bin/bash
 
 function check_env_vars {
-	if [ -z "$ELASTIC_USERNAME" ] || [ -z "$ELASTIC_PASSWORD" ]; then
-		echo "Error: " "ELASTIC_USERNAME and ELASTIC_PASSWORD must be set"
+	if [ -z "$ELASTIC_USERNAME" ] || [ -z "$ELASTIC_PASSWORD" ] || [ -z "$ELASTIC_HOST" ]; then
+		echo "Error: " "ELASTIC_USERNAME and ELASTIC_PASSWORD and ELASTIC_HOST must be set"
+		exit 1
 	fi
 	if [ -z "$KIBANA_USERNAME" ] || [ -z "$KIBANA_PASSWORD" ]; then
 		echo "Error: " "KIBANA_USERNAME and KIBANA_PASSWORD must be set"
+		exit 1
 	fi
 }
 
@@ -47,47 +49,49 @@ function createCerts {
 function setupFilePermissions {
 	echo "Setting file permissions..."
 	chown -R 1000:0 config/certs
-	find config/certs -type d -exec chmod 750 \{\} \;
-	find config/certs -type f -exec chmod 640 \{\} \;
+	find . -type d -exec chmod 750 \{\} \;
+	find . -type f -exec chmod 640 \{\} \;
 	echo "File permissions set successfully."
 }
 
 function wait_for_elastic {
 	local retries=0
-	local max_retries=12
-	local ELASTIC_HOST="https://elasticsearch:9200"
+	local max_retries=24
+	local error_code=0
 
 	echo "Waiting for Elasticsearch to start..."
 	until curl -s --cacert config/certs/ca/ca.crt ${ELASTIC_HOST} | grep -q "missing authentication credentials"; do
+		error_code=$?
 		((retries++))
 		if [ $retries -eq $max_retries ]; then
 			echo "Error: " "Elasticsearch is not responding after $max_retries attempts."
-			return $?
+			return $error_code
 		fi
-		echo "Waiting for Elasticsearch to start... (attempt $((retries))/$max_retries)"
+		echo "[ ~ ] Waiting for Elasticsearch to start... (attempt $((retries))/$max_retries)"
 		sleep 5
 	done
 	echo "Elasticsearch is up and running."
 }
 
-function setupKibana {
-	local ELASTIC_HOST="https://elasticsearch:9200"
+function setupKibanaConfig {
 	local retries=0
-	local max_retries=12
+	local max_retries=24
+	local error_code=0
 
-	echo "Setting up Kibana user and password..."
+	echo "Setting up Kibana password..."
 	until curl -s -X POST --cacert config/certs/ca/ca.crt \
-		-u "$ELASTIC_USERNAME:$ELASTIC_PASSWORD" \
+		-u "${ELASTIC_USERNAME}:${ELASTIC_PASSWORD}" \
 		-H "Content-Type: application/json" \
-		"${ELASTIC_HOST}/_security/user/${KIBANA_USERNAME}/_password" \
-		-d "{\"password\":\"$KIBANA_PASSWORD\"}" | grep -q "^{}"; do
+		${ELASTIC_HOST}/_security/user/${KIBANA_USERNAME}/_password \
+		-d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do
 
+		error_code=$?
 		((retries++))
 		if [ $retries -eq $max_retries ]; then
 			echo "Error: " "Kibana setup failed after $max_retries attempts."
-			return $?
+			return $error_code
 		fi
-		echo "Kibana setup failed. Retrying...(attempt $((retries))/$max_retries)"
+		echo "[ ~ ] Kibana setup failed. Retrying...(attempt $((retries))/$max_retries)"
 		sleep 5
 	done
 

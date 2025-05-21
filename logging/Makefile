@@ -6,22 +6,25 @@
 #    By: iassil <iassil@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/18 14:42:56 by iassil            #+#    #+#              #
-#    Updated: 2025/05/18 15:04:48 by iassil           ###   ########.fr        #
+#    Updated: 2025/05/20 09:00:00 by iassil           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 all: help
 
 up:
-	@docker compose up -d
+	@docker compose up
+
+down:
+	@docker compose down
 
 clean:
 	@docker compose down -v
 
 fclean:
-	@docker compose down -v --rmi all
-	@docker volume rm $(shell docker volume ls -q)
-	@docker network prune -f
+	@docker compose down -v --rmi all || true
+	@docker volume rm `docker volume ls -q` 2>/dev/null || true
+	@docker network prune -f 2>/dev/null || true
 
 re: clean up
 

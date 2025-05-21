@@ -1,6 +1,7 @@
 .DS_Store
 # dependencies
 /node_modules
+secrets
 /.pnp
 .pnp.*
 .yarn/*

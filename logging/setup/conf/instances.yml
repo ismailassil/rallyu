@@ -1,4 +1,4 @@
-## The certificates will be created in the config/certs 
+## The certificates will be created in the config/certs
 ## Each instance will have its own certificate
 instances:
     - name: kibana
@@ -11,13 +11,6 @@ instances:
     - name: elasticsearch
       dns:
           - elasticsearch
-          - localhost
-      ip:
-          - 127.0.0.1
-
-    - name: logstash
-      dns:
-          - logstash
           - localhost
       ip:
           - 127.0.0.1
