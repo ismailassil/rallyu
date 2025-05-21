@@ -1,0 +1,65 @@
+version: "3.8"
+
+volumes:
+    grafana-data:
+        driver: local
+    prometheus-data:
+        driver: local
+    grafana-ssl:
+        driver: local
+
+networks:
+    monitoring:
+        driver: bridge
+
+services:
+    grafana:
+        depends_on:
+            setup-grafana:
+                condition: service_started
+        image: grafana/grafana:main
+        container_name: grafana
+        restart: always
+        user: "0"
+        volumes:
+            - grafana-data:/var/lib/grafana
+            - ./grafana/provisioning:/etc/grafana/provisioning
+            - grafana-ssl:/grafana-ssl
+        environment:
+            - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+            - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+            - GF_SERVER_PROTOCOL=https
+            - GF_SERVER_CERT_FILE=/grafana-ssl/grafana.crt
+            - GF_SERVER_CERT_KEY=/grafana-ssl/grafana.key
+            - PROMETHEUS_HOST_URL=${PROMETHEUS_HOST_URL}
+        networks:
+            - monitoring
+        ports:
+            - ${GRAFANA_PORT}:3000
+
+    setup-grafana:
+        build:
+            context: ./setup_grafana
+            dockerfile: Dockerfile
+        container_name: setup_grafana
+        volumes:
+            - grafana-ssl:/grafana-ssl
+
+    prometheus:
+        image: prom/prometheus
+        container_name: prometheus
+        restart: always
+        volumes:
+            - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+            - prometheus-data:/prometheus
+        networks:
+            - monitoring
+    
+    nginx-exporter:
+        image: nginx/nginx-prometheus-exporter
+        container_name: nginx-exporter
+        restart: always
+        networks:
+            - monitoring
+        environment:
+            - NGINX_URL=http://nginx:80
