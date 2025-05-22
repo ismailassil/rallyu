@@ -28,9 +28,9 @@ services:
         environment:
             - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
             - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
-            - GF_SERVER_PROTOCOL=https
-            - GF_SERVER_CERT_FILE=/grafana-ssl/grafana.crt
-            - GF_SERVER_CERT_KEY=/grafana-ssl/grafana.key
+            # - GF_SERVER_PROTOCOL=https
+            # - GF_SERVER_CERT_FILE=/grafana-ssl/grafana.crt
+            # - GF_SERVER_CERT_KEY=/grafana-ssl/grafana.key
             - PROMETHEUS_HOST_URL=${PROMETHEUS_HOST_URL}
         networks:
             - monitoring
@@ -54,12 +54,31 @@ services:
             - prometheus-data:/prometheus
         networks:
             - monitoring
-    
+
     nginx-exporter:
         image: nginx/nginx-prometheus-exporter
         container_name: nginx-exporter
         restart: always
         networks:
             - monitoring
+        command:
+            - --nginx.scrape-uri=http://${NGINX_USER}:${NGINX_PASSWORD}@nginx:80/metrics
         environment:
-            - NGINX_URL=http://nginx:80
+            - NGINX_USER=${NGINX_USER}
+            - NGINX_PASSWORD=${NGINX_PASSWORD}
+
+    nginx:
+        build:
+            context: ./nginxprom
+            dockerfile: Dockerfile
+        container_name: nginx
+        restart: always
+        environment:
+            - NGINX_METRICS_USER=${NGINX_USER}
+            - NGINX_METRICS_PASSWORD=${NGINX_PASSWORD}
+        networks:
+            - monitoring
+        ports:
+            - 80:80
+        volumes:
+            - ./nginxprom/conf/default.conf:/etc/nginx/conf.d/default.conf

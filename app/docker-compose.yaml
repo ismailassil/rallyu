@@ -1,0 +1,8 @@
+version: "3.8"
+
+networks:
+  fron-end:
+   driver: bind
+  
+services:
+  
