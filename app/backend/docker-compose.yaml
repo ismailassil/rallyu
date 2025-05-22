@@ -1,0 +1,39 @@
+version: "3.8"
+
+networks:
+    backend:
+        driver: bridge
+    web-app:
+        external: true
+
+volumes:
+    ms-auth-db:
+        driver: local
+
+services:
+    api-gateway:
+        build:
+            context: ./api-gateway
+            dockerfile: Dockerfile
+        image: api-gateway:rallyu
+        container_name: api-gateway
+        restart: always
+        networks:
+            - backend
+            - web-app
+        env_file:
+            - .env
+
+    ms-auth:
+        build:
+            context: ./ms-auth
+            dockerfile: Dockerfile
+        image: ms-auth:rallyu
+        container_name: ms-auth
+        restart: always
+        networks:
+            - backend
+        env_file:
+            - .env
+        volumes:
+            - ms-auth-db:/app/database

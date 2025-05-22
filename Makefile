@@ -6,7 +6,7 @@
 #    By: iassil <iassil@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/18 14:42:56 by iassil            #+#    #+#              #
-#    Updated: 2025/05/20 09:00:00 by iassil           ###   ########.fr        #
+#    Updated: 2025/05/22 18:03:10 by iassil           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,7 @@ prune: fclean
 .PHONY: all up clean fclean re prune
 
 help:
-	@echo "Makefile for ELK Stack Deployment"
+	@echo "Makefile for RALLYU Deployment"
 	@echo "Usage:"
 	@echo "  make up       - Start the containers in detached mode"
 	@echo "  make clean    - Stop and remove the containers and volumes"

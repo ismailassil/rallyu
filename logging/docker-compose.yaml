@@ -11,7 +11,7 @@ volumes:
         driver: local
 
 networks:
-    elk-network:
+    elk:
         driver: bridge
 
 services:
@@ -23,7 +23,7 @@ services:
         container_name: setup
         # restart: always
         networks:
-            - elk-network
+            - elk
         volumes:
             - certs:/usr/share/elasticsearch/config/certs
         env_file:
@@ -46,7 +46,7 @@ services:
         container_name: elasticsearch
         restart: always
         networks:
-            - elk-network
+            - elk
         volumes:
             - certs:/usr/share/elasticsearch/config/certs:ro
             - elasticsearch-data:/usr/share/elasticsearch/data
@@ -92,7 +92,7 @@ services:
         container_name: kibana
         restart: always
         networks:
-            - elk-network
+            - elk
         ports:
             - ${KIBANA_PORT}:5601
         env_file:
@@ -130,7 +130,7 @@ services:
         container_name: logstash
         restart: always
         networks:
-            - elk-network
+            - elk
         volumes:
             - certs:/usr/share/logstash/config/certs:ro
             - logstash-data:/usr/share/logstash/data
