@@ -13,7 +13,7 @@ NGINX:
     - path for frontend
     - path for backend
     - path for devops
-
+	- restrict the paths in nginx to the ones that needs
 
   to modify:
     - combine the log_format with elk_format log
