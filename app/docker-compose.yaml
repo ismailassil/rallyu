@@ -1,8 +1,29 @@
 version: "3.8"
 
 networks:
-  fron-end:
-   driver: bind
-  
+    frontend:
+        driver: bridge
+    web-app:
+        external: true
+
 services:
-  
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        image: frontend:rallyu
+        container_name: frontend
+        restart: always
+        networks:
+            - frontend
+            - web-app
+
+    api-gateway:
+        extends:
+            file: ./backend/docker-compose.yaml
+            service: api-gateway
+
+    ms-auth:
+        extends:
+            file: ./backend/docker-compose.yaml
+            service: ms-auth

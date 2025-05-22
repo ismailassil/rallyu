@@ -3,7 +3,7 @@ import Cell from "./Items/Cell";
 import dmSans from "@/app/fonts/dmSans";
 import { Dispatch, SetStateAction } from "react";
 import { useXO } from "../contexts/xoContext";
-import useCountdown from "../../../../hooks/useCountdown";
+import useCountdown from "../../../hooks/useCountdown";
 import { useTicTacToe } from "@/app/(onsite)/contexts/tictactoeContext";
 
 type gameInfoType = {
