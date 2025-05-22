@@ -1,8 +1,6 @@
 version: "3.8"
 
 volumes:
-    certs:
-        driver: local
     elasticsearch-data:
         driver: local
     kibana-data:
@@ -16,39 +14,36 @@ networks:
 
 services:
     setup:
-        build:
-            context: setup
-            dockerfile: Dockerfile
-        image: setup:latest
+        depends_on:
+            elasticsearch:
+                condition: service_healthy
+        image: curlimages/curl:8.13.0
         container_name: setup
-        # restart: always
+        user: "0"
         networks:
             - elk
-        volumes:
-            - certs:/usr/share/elasticsearch/config/certs
         env_file:
             - .env
-        healthcheck:
-            test:
-                [
-                    "CMD-SHELL",
-                    "[ -f config/certs/elasticsearch/elasticsearch.crt ]",
-                ]
-            interval: 1s
-            timeout: 2s
-            retries: 120
+        entrypoint: sh
+        command: >
+            -c "
+            echo 'Setting password for ${KIBANA_USERNAME}';
+            until curl -s -X POST -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
+            -H 'Content-Type: application/json' \
+            -d '{\"password\":\"${KIBANA_PASSWORD}\"}' \
+            ${ELASTIC_HOST}/_security/user/${KIBANA_USERNAME}/_password; do
+              echo 'Waiting for Elasticsearch...';
+              sleep 5;
+            done;
+            echo 'Password set successfully.'"
 
     elasticsearch:
-        depends_on:
-            setup:
-                condition: service_healthy
         image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
         container_name: elasticsearch
         restart: always
         networks:
             - elk
         volumes:
-            - certs:/usr/share/elasticsearch/config/certs:ro
             - elasticsearch-data:/usr/share/elasticsearch/data
         env_file:
             - .env
@@ -58,17 +53,11 @@ services:
             - discovery.type=single-node
             - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
             - bootstrap.memory_lock=true
-            - xpack.security.enabled=true
-            - xpack.security.http.ssl.enabled=true
-            - xpack.security.http.ssl.key=certs/elasticsearch/elasticsearch.key
-            - xpack.security.http.ssl.certificate=certs/elasticsearch/elasticsearch.crt
-            - xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt
-            - xpack.security.transport.ssl.enabled=true
-            - xpack.security.transport.ssl.key=certs/elasticsearch/elasticsearch.key
-            - xpack.security.transport.ssl.certificate=certs/elasticsearch/elasticsearch.crt
-            - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
-            - xpack.security.transport.ssl.verification_mode=certificate
             - xpack.license.self_generated.type=${LICENSE_TYPE}
+            - ES_JAVA_OPTS=-Xms1g -Xmx1g
+            - xpack.security.enabled=true
+            - xpack.security.http.ssl.enabled=false
+            - xpack.security.transport.ssl.enabled=false
         mem_limit: 2g
         ulimits:
             memlock:
@@ -77,8 +66,9 @@ services:
         healthcheck:
             test: [
                     "CMD-SHELL",
-                    "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 \
-                    | grep -q 'missing authentication credentials'",
+                    "curl -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
+                    -X GET 'http://localhost:9200/_cluster/health?pretty' \
+                    | grep -q '\"status\" : \"green\"'",
                 ]
             interval: 10s
             timeout: 10s
@@ -93,29 +83,24 @@ services:
         restart: always
         networks:
             - elk
+        ## PORT TO BE REMOVED AND USED FROM NGINX
         ports:
             - ${KIBANA_PORT}:5601
         env_file:
             - .env
         volumes:
-            - certs:/usr/share/kibana/config/certs:ro
             - kibana-data:/usr/share/kibana/data
         environment:
             - SERVERNAME=kibana
             - ELASTICSEARCH_HOSTS=${ELASTIC_HOST}
             - ELASTICSEARCH_USERNAME=${KIBANA_USERNAME}
             - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
-            - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
-            - ELASTICSEARCH_SSL_VERIFICATIONMODE=certificate
-            - SERVER_SSL_ENABLED=true
-            - SERVER_SSL_CERTIFICATE=config/certs/kibana/kibana.crt
-            - SERVER_SSL_KEY=config/certs/kibana/kibana.key
         mem_limit: 1g
         healthcheck:
             test: [
                     "CMD-SHELL",
                     "curl -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
-                    --cacert config/certs/kibana/kibana.crt -I https://localhost:5601/app/home \
+                    -I http://localhost:5601/app/home \
                     | grep -q 'HTTP/2 200'",
                 ]
             interval: 10s
@@ -132,10 +117,9 @@ services:
         networks:
             - elk
         volumes:
-            - certs:/usr/share/logstash/config/certs:ro
             - logstash-data:/usr/share/logstash/data
             - ./logstash/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
-            - ./nginx/logs/access.log:/usr/share/logstash/data/access.log:ro
+            - ../nginx/logs/access.log:/usr/share/logstash/data/access.log:ro
         env_file:
             - .env
         environment:
