@@ -1,23 +1,33 @@
-import fastify from "fastify"
+import fastify, { FastifyInstance, FastifyRequest } from "fastify"
+import fastifyWebsocket from "@fastify/websocket";
+import serverObject from "./config/serverObject.js";
+import matchmakingRoutes from "./routes/macthmakingRoutes.js";
+import { WebSocket } from "ws";
 
-const serverOptions = {
-    logger: true,
-}
+const app = fastify(serverObject);
 
-const app = fastify(serverOptions);
+app.register(fastifyWebsocket);
 
-app.route({
-    url: '/hello',
-    method: "GET",
-    handler: function myHandler(req, res) {
-        
-        res.send("World")
-    }
-});
+app.get('/lol', { websocket: true }, (connection) => {
 
-app.get("/world", function handler(req, res) {
+    const { socket }: WebSocket = connection;
 
-    return { helloFrom: this.server.address() }
+    console.log(`Client connected ${socket.readyState}`)
+
+    socket.on('message', (message: string) => {
+        console.log('Received:', message.toString())
+        socket.send(`You said: ${message}`)
+    })
+
+    socket.on('close', () => {
+        console.log('Client disconnected')
+    })
 })
+
+app.register(async function (appInstance: FastifyInstance) {
+    appInstance.register(matchmakingRoutes, { prefix: "/matchmaking" });
+
+}, { prefix: "api/v1"});
+
 
 export default app;
