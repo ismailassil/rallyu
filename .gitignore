@@ -12,5 +12,6 @@ secrets
 
 .dist*
 .env*
+*.env*
 
 *.vscode*

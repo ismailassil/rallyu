@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-export CERT_PATH="/etc/nginx/ssl"
+export CERT_PATH="/certs/"
 export HTPASSWD_PATH="/etc/nginx/.htpasswd"
 
 if [ -z "${NGINX_METRICS_USER}" ] || [ -z "${NGINX_METRICS_PASSWORD}" ]; then

@@ -1,10 +1,6 @@
-version: "3.8"
-
 networks:
     frontend:
         driver: bridge
-    web-app:
-        external: true
 
 services:
     frontend:
