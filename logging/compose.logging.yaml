@@ -1,5 +1,3 @@
-version: "3.8"
-
 volumes:
     elasticsearch-data:
         driver: local
@@ -83,9 +81,7 @@ services:
         restart: always
         networks:
             - elk
-        ## PORT TO BE REMOVED AND USED FROM NGINX
-        ports:
-            - ${KIBANA_PORT}:5601
+            - web-app
         env_file:
             - .env
         volumes:
@@ -100,8 +96,8 @@ services:
             test: [
                     "CMD-SHELL",
                     "curl -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
-                    -I http://localhost:5601/app/home \
-                    | grep -q 'HTTP/2 200'",
+                    -I http://localhost:5601/app/home 2>/dev/null \
+                    | grep -qE '^HTTP/(1\\.1|2) 200'",
                 ]
             interval: 10s
             timeout: 10s
@@ -124,9 +120,18 @@ services:
             - .env
         environment:
             - NODE_NAME=logstash
-            - xpack.monitoring.enabled=false
+            # - xpack.monitoring.enabled=true
             - ELASTIC_USERNAME=${ELASTIC_USERNAME}
             - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
             - ELASTIC_HOSTS=${ELASTIC_HOST}
         command: logstash -f /usr/share/logstash/pipeline/logstash.conf
         mem_limit: 1g
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    'curl -Ss localhost:9600 | grep -o ''"status":"[a-z]*"'' | awk -F'':'' ''{print $2}'' | grep -q green || exit 1',
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 5

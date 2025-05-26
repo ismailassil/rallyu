@@ -6,3 +6,4 @@ datasources:
       type: prometheus
       access: proxy
       isDefault: true
+      uid: prometheusdatasource

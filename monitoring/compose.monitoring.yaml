@@ -1,5 +1,3 @@
-version: "3.8"
-
 volumes:
     grafana-data:
         driver: local
@@ -14,28 +12,24 @@ networks:
 
 services:
     grafana:
-        depends_on:
-            setup-grafana:
-                condition: service_started
-        image: grafana/grafana:main
+        image: grafana/grafana:12.0.1
         container_name: grafana
         restart: always
-        # user: "0"
         volumes:
             - grafana-data:/var/lib/grafana
             - ./grafana/provisioning:/etc/grafana/provisioning
-            - grafana-ssl:/grafana-ssl
         environment:
             - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
             - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
             - PROMETHEUS_HOST_URL=${PROMETHEUS_HOST_URL}
         networks:
             - monitoring
-        ports:
-            - ${GRAFANA_PORT}:3000
+            - web-app
+        env_file:
+            - .env
 
     prometheus:
-        image: prom/prometheus
+        image: prom/prometheus:v3.4.0
         container_name: prometheus
         restart: always
         volumes:
@@ -44,14 +38,5 @@ services:
         networks:
             - monitoring
 
-    nginx-exporter:
-        image: nginx/nginx-prometheus-exporter
-        container_name: nginx-exporter
-        restart: always
-        networks:
-            - monitoring
-        command:
-            - --nginx.scrape-uri=http://${NGINX_USER}:${NGINX_PASSWORD}@nginx:80/metrics
-        environment:
-            - NGINX_USER=${NGINX_USER}
-            - NGINX_PASSWORD=${NGINX_PASSWORD}
+include:
+    - ./compose.exporters.yaml
