@@ -76,7 +76,11 @@ services:
         depends_on:
             elasticsearch:
                 condition: service_healthy
-        image: docker.elastic.co/kibana/kibana:${ELK_VERSION}
+        build:
+            context: ./kibana
+            dockerfile: Dockerfile
+            args:
+              ELK_VERSION: ${ELK_VERSION}
         container_name: kibana
         restart: always
         networks:
@@ -86,6 +90,7 @@ services:
             - .env
         volumes:
             - kibana-data:/usr/share/kibana/data
+            - ./kibana/dashboards:/dashboards/:ro
         environment:
             - SERVERNAME=kibana
             - ELASTICSEARCH_HOSTS=${ELASTIC_HOST}
@@ -120,7 +125,6 @@ services:
             - .env
         environment:
             - NODE_NAME=logstash
-            # - xpack.monitoring.enabled=true
             - ELASTIC_USERNAME=${ELASTIC_USERNAME}
             - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
             - ELASTIC_HOSTS=${ELASTIC_HOST}

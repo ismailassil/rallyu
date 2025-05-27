@@ -7,5 +7,6 @@ ENV NGINX_METRICS_PASSWORD=yourpassword
 
 COPY ./scripts/entrypoint.sh /entrypoint.sh
 COPY ./conf/default.conf /etc/nginx/conf.d/default.conf
+COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 
 ENTRYPOINT ["sh", "/entrypoint.sh"]
