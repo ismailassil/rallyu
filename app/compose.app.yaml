@@ -7,7 +7,6 @@ services:
         build:
             context: ./frontend
             dockerfile: Dockerfile
-        image: frontend:rallyu
         container_name: frontend
         restart: always
         networks:
@@ -16,13 +15,12 @@ services:
         healthcheck:
             test:
                 [
-                   "CMD",
-                    "curl -I http://localhost:3000 | grep -qE 'HTTP/(1\\.1|2) 200'",
+                    "CMD-SHELL",
+                    "curl -sfI http://localhost:3000 | grep -qE '^HTTP/(1\\.1|2) 200'",
                 ]
             interval: 30s
             timeout: 10s
-            retries: 10
-            start_period: 10s
+            retries: 20
 
 include:
     - ./backend/compose.backend.yaml

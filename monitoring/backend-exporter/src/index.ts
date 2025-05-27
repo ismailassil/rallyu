@@ -6,16 +6,14 @@ dotenv.config();
 
 let cached_metrics = "";
 
-const authHeader = "Basic " + Buffer.from("").toString("base64");
-
 // Retrive metrics every 5s
 setInterval(async () => {
 	try {
 		const res = await axios.get("http://localhost:4004/metrics", {
 			auth: {
 				// TODO: .env
-				username: "",
-				password: "",
+				username: "admin",
+				password: "password",
 			},
 		});
 		cached_metrics = res.data;

@@ -33,7 +33,7 @@ fastify.register(fastifyMetrics, { endpoint: '/inter-metrics' });
 fastify.addHook('preHandler', async (req: FastifyRequest, rep: FastifyReply) => {
 	if (req.url === '/inter-metrics') {
 		const auth = req.headers['authorization'];
-		const expected = 'Basic ' + Buffer.from('').toString('base64'); // TODO: .env
+		const expected = 'Basic ' + Buffer.from('admin:password').toString('base64'); // TODO: .env
 
 		if (auth !== expected) {
 			return rep
