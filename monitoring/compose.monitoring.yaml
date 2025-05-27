@@ -27,6 +27,12 @@ services:
             - web-app
         env_file:
             - .env
+        healthcheck:
+          test: ["CMD-SHELL", "curl -f http://localhost:3000"]
+          interval: 30s
+          timeout: 10s
+          retries: 10
+          
 
     prometheus:
         image: prom/prometheus:v3.4.0
