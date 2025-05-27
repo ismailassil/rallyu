@@ -25,3 +25,9 @@ providers:
       disableDeletion: true
       options:
           path: /etc/grafana/provisioning/dashboards-json/logstash.json
+    - name: "Fastify - API-Gateway"
+      type: "file"
+      folder: "APP"
+      disableDeletion: true
+      options:
+          path: /etc/grafana/provisioning/dashboards-json/nodejs.json

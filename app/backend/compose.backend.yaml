@@ -1,11 +1,9 @@
 networks:
     backend:
         driver: bridge
-    web-app:
-        external: true
 
 volumes:
-    ms-auth-db:
+    ms-auth-data:
         driver: local
 
 services:
@@ -20,7 +18,17 @@ services:
             - backend
             - web-app
         env_file:
-            - .env
+            - ./api-gateway/.env
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    'curl -I http://localhost:4004/health | grep -q ''"status": "up"''',
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 10
+            start_period: 10s
 
     ms-auth:
         build:
@@ -32,6 +40,6 @@ services:
         networks:
             - backend
         env_file:
-            - .env
+            - ./ms-auth/.env
         volumes:
-            - ms-auth-db:/app/database
+            - ms-auth-data:/app/database

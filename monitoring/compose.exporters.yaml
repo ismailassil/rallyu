@@ -64,3 +64,15 @@ services:
         networks:
             - monitoring
             - elk
+
+    backend-exporter:
+        depends_on:
+            api-gateway:
+                condition: service_healthy
+        build:
+            context: ./backend-exporter
+            dockerfile: Dockerfile
+        container_name: backend-exporter
+        networks:
+            - monitoring
+            - web-app
