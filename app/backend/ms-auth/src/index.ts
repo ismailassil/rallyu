@@ -27,7 +27,7 @@ fastify.register(authRoutes, { prefix: '/auth' });
 // Start the Server
 async function main() {
 	try {
-		const address = await fastify.listen({ port: PORT });
+		const address = await fastify.listen({ host: '::', port: PORT });
 		fastify.log.info(`Server is running at ${address}`);
 	} catch (error) {
 		fastify.log.error(error);

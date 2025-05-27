@@ -13,13 +13,16 @@ services:
         networks:
             - frontend
             - web-app
+        healthcheck:
+            test:
+                [
+                   "CMD",
+                    "curl -I http://localhost:3000 | grep -qE 'HTTP/(1\\.1|2) 200'",
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 10
+            start_period: 10s
 
-    api-gateway:
-        extends:
-            file: ./backend/docker-compose.yaml
-            service: api-gateway
-
-    ms-auth:
-        extends:
-            file: ./backend/docker-compose.yaml
-            service: ms-auth
+include:
+    - ./backend/compose.backend.yaml
