@@ -14,7 +14,6 @@ services:
         build:
             context: ./nginx/
             dockerfile: Dockerfile
-        # image: nginx-app:rallyu
         volumes:
             - ./nginx/logs/access.log:/var/log/nginx/access.log
             - certs:/certs/
