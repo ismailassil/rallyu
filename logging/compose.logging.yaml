@@ -52,11 +52,11 @@ services:
             - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
             - bootstrap.memory_lock=true
             - xpack.license.self_generated.type=${LICENSE_TYPE}
-            - ES_JAVA_OPTS=-Xms1g -Xmx1g
             - xpack.security.enabled=true
             - xpack.security.http.ssl.enabled=false
             - xpack.security.transport.ssl.enabled=false
-        mem_limit: 2g
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        mem_limit: 4g
         ulimits:
             memlock:
                 soft: -1
@@ -80,7 +80,7 @@ services:
             context: ./kibana
             dockerfile: Dockerfile
             args:
-              ELK_VERSION: ${ELK_VERSION}
+                ELK_VERSION: ${ELK_VERSION}
         container_name: kibana
         restart: always
         networks:

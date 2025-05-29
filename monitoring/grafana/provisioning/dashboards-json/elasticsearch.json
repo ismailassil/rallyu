@@ -6251,7 +6251,6 @@
 	"refresh": false,
 	"schemaVersion": 26,
 	"style": "dark",
-	"tags": ["elasticsearch", "App"],
 	"templating": {
 		"list": [
 			{
