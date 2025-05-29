@@ -91,7 +91,7 @@
 					"disableTextWrap": false,
 					"editorMode": "builder",
 					"exemplar": false,
-					"expr": "sum by(version) (nodejs_version_info{instance=\"backend-exporter:9434\"})",
+					"expr": "sum by(version) (nodejs_version_info{instance=~\"$instance\"})",
 					"format": "time_series",
 					"fullMetaSearch": false,
 					"includeNullMetadata": true,
