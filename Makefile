@@ -6,7 +6,7 @@
 #    By: iassil <iassil@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/18 14:42:56 by iassil            #+#    #+#              #
-#    Updated: 2025/05/27 10:57:22 by iassil           ###   ########.fr        #
+#    Updated: 2025/05/29 17:35:14 by iassil           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,9 @@ down:
 
 clean:
 	@docker-compose down -v
+
+ps:
+	@docker-compose ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
 fclean:
 	@docker-compose down -v --rmi all || true

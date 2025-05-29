@@ -144,7 +144,7 @@
 			"thresholds": "1,1",
 			"timeFrom": null,
 			"timeShift": null,
-			"title": "NGINX Status for $instance",
+			"title": "NGINX Status",
 			"type": "singlestat",
 			"valueFontSize": "100%",
 			"valueMaps": [
@@ -477,7 +477,6 @@
 	"refresh": "5s",
 	"schemaVersion": 18,
 	"style": "dark",
-	"tags": ["nginx", "prometheus", "nginx prometheus exporter"],
 	"templating": {
 		"list": [
 			{

@@ -9,7 +9,7 @@ let cached_metrics = "";
 // Retrive metrics every 5s
 setInterval(async () => {
 	try {
-		const res = await axios.get("http://localhost:4004/metrics", {
+		const res = await axios.get("http://api-gateway:4004/inter-metrics", {
 			auth: {
 				// TODO: .env
 				username: "admin",
@@ -24,7 +24,7 @@ setInterval(async () => {
 }, 5000);
 
 fastify.get("/metrics", (req, rep) => {
-	rep.header("content-Type", "text-plain; version=0.0.4");
+	rep.header("content-Type", "text/plain; version=0.0.4");
 	return cached_metrics || "# No metrics available yet";
 });
 

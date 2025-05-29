@@ -1,41 +1,4 @@
 {
-	"__inputs": [
-		{
-			"name": "DS_PROMETHEUS",
-			"label": "Prometheus",
-			"description": "",
-			"type": "datasource",
-			"pluginId": "prometheus",
-			"pluginName": "Prometheus"
-		}
-	],
-	"__elements": {},
-	"__requires": [
-		{
-			"type": "grafana",
-			"id": "grafana",
-			"name": "Grafana",
-			"version": "9.1.5"
-		},
-		{
-			"type": "datasource",
-			"id": "prometheus",
-			"name": "Prometheus",
-			"version": "1.0.0"
-		},
-		{
-			"type": "panel",
-			"id": "stat",
-			"name": "Stat",
-			"version": ""
-		},
-		{
-			"type": "panel",
-			"id": "timeseries",
-			"name": "Time series",
-			"version": ""
-		}
-	],
 	"annotations": {
 		"list": [
 			{
@@ -58,12 +21,12 @@
 			}
 		]
 	},
-	"editable": false,
+	"description": "Simple Kibana dashboard",
+	"editable": true,
 	"fiscalYearStartMonth": 0,
 	"graphTooltip": 0,
-	"id": null,
+	"id": 4,
 	"links": [],
-	"liveNow": false,
 	"panels": [
 		{
 			"datasource": "prometheusdatasource",
@@ -87,8 +50,7 @@
 						"mode": "absolute",
 						"steps": [
 							{
-								"color": "green",
-								"value": null
+								"color": "green"
 							},
 							{
 								"color": "dark-red",
@@ -119,14 +81,17 @@
 				"graphMode": "none",
 				"justifyMode": "auto",
 				"orientation": "auto",
+				"percentChangeColorMode": "standard",
 				"reduceOptions": {
 					"calcs": ["lastNotNull"],
 					"fields": "",
 					"values": false
 				},
-				"textMode": "auto"
+				"showPercentChange": false,
+				"textMode": "auto",
+				"wideLayout": true
 			},
-			"pluginVersion": "9.1.5",
+			"pluginVersion": "12.0.1",
 			"targets": [
 				{
 					"datasource": "prometheusdatasource",
@@ -137,8 +102,7 @@
 					"refId": "A"
 				}
 			],
-			"title": " ",
-			"transparent": true,
+			"title": " Kibana Status",
 			"type": "stat"
 		},
 		{
@@ -149,11 +113,13 @@
 						"mode": "palette-classic"
 					},
 					"custom": {
+						"axisBorderShow": false,
 						"axisCenteredZero": false,
 						"axisColorMode": "text",
 						"axisLabel": "",
 						"axisPlacement": "auto",
 						"barAlignment": 0,
+						"barWidthFactor": 0.6,
 						"drawStyle": "line",
 						"fillOpacity": 0,
 						"gradientMode": "none",
@@ -162,6 +128,7 @@
 							"tooltip": false,
 							"viz": false
 						},
+						"insertNulls": false,
 						"lineInterpolation": "linear",
 						"lineWidth": 1,
 						"pointSize": 5,
@@ -183,8 +150,7 @@
 						"mode": "absolute",
 						"steps": [
 							{
-								"color": "green",
-								"value": null
+								"color": "green"
 							},
 							{
 								"color": "red",
@@ -211,10 +177,12 @@
 					"showLegend": true
 				},
 				"tooltip": {
+					"hideZeros": false,
 					"mode": "single",
 					"sort": "none"
 				}
 			},
+			"pluginVersion": "12.0.1",
 			"targets": [
 				{
 					"datasource": "prometheusdatasource",
@@ -246,11 +214,13 @@
 						"mode": "fixed"
 					},
 					"custom": {
+						"axisBorderShow": false,
 						"axisCenteredZero": false,
 						"axisColorMode": "text",
 						"axisLabel": "",
 						"axisPlacement": "auto",
 						"barAlignment": 0,
+						"barWidthFactor": 0.6,
 						"drawStyle": "line",
 						"fillOpacity": 0,
 						"gradientMode": "none",
@@ -259,6 +229,7 @@
 							"tooltip": false,
 							"viz": false
 						},
+						"insertNulls": false,
 						"lineInterpolation": "linear",
 						"lineWidth": 1,
 						"pointSize": 5,
@@ -281,8 +252,7 @@
 						"mode": "absolute",
 						"steps": [
 							{
-								"color": "green",
-								"value": null
+								"color": "green"
 							},
 							{
 								"color": "red",
@@ -333,10 +303,12 @@
 					"showLegend": true
 				},
 				"tooltip": {
+					"hideZeros": false,
 					"mode": "single",
 					"sort": "none"
 				}
 			},
+			"pluginVersion": "12.0.1",
 			"targets": [
 				{
 					"datasource": "prometheusdatasource",
@@ -367,11 +339,13 @@
 						"mode": "palette-classic"
 					},
 					"custom": {
+						"axisBorderShow": false,
 						"axisCenteredZero": false,
 						"axisColorMode": "text",
 						"axisLabel": "",
 						"axisPlacement": "auto",
 						"barAlignment": 0,
+						"barWidthFactor": 0.6,
 						"drawStyle": "line",
 						"fillOpacity": 0,
 						"gradientMode": "none",
@@ -380,6 +354,7 @@
 							"tooltip": false,
 							"viz": false
 						},
+						"insertNulls": false,
 						"lineInterpolation": "linear",
 						"lineWidth": 1,
 						"pointSize": 5,
@@ -401,8 +376,7 @@
 						"mode": "absolute",
 						"steps": [
 							{
-								"color": "green",
-								"value": null
+								"color": "green"
 							},
 							{
 								"color": "red",
@@ -428,10 +402,12 @@
 					"showLegend": true
 				},
 				"tooltip": {
+					"hideZeros": false,
 					"mode": "single",
 					"sort": "none"
 				}
 			},
+			"pluginVersion": "12.0.1",
 			"targets": [
 				{
 					"datasource": "prometheusdatasource",
@@ -476,8 +452,7 @@
 						"mode": "absolute",
 						"steps": [
 							{
-								"color": "green",
-								"value": null
+								"color": "green"
 							}
 						]
 					},
@@ -497,14 +472,17 @@
 				"graphMode": "none",
 				"justifyMode": "auto",
 				"orientation": "auto",
+				"percentChangeColorMode": "standard",
 				"reduceOptions": {
 					"calcs": ["lastNotNull"],
 					"fields": "",
 					"values": false
 				},
-				"textMode": "auto"
+				"showPercentChange": false,
+				"textMode": "auto",
+				"wideLayout": true
 			},
-			"pluginVersion": "9.1.5",
+			"pluginVersion": "12.0.1",
 			"targets": [
 				{
 					"datasource": "prometheusdatasource",
@@ -515,8 +493,7 @@
 					"refId": "A"
 				}
 			],
-			"title": " ",
-			"transparent": true,
+			"title": " Kibana Uptime",
 			"type": "stat"
 		},
 		{
@@ -540,11 +517,13 @@
 						"mode": "palette-classic"
 					},
 					"custom": {
+						"axisBorderShow": false,
 						"axisCenteredZero": false,
 						"axisColorMode": "text",
 						"axisLabel": "",
 						"axisPlacement": "auto",
 						"barAlignment": 0,
+						"barWidthFactor": 0.6,
 						"drawStyle": "line",
 						"fillOpacity": 0,
 						"gradientMode": "none",
@@ -553,6 +532,7 @@
 							"tooltip": false,
 							"viz": false
 						},
+						"insertNulls": false,
 						"lineInterpolation": "linear",
 						"lineWidth": 1,
 						"pointSize": 5,
@@ -574,8 +554,7 @@
 						"mode": "absolute",
 						"steps": [
 							{
-								"color": "green",
-								"value": null
+								"color": "green"
 							},
 							{
 								"color": "red",
@@ -601,10 +580,12 @@
 					"showLegend": false
 				},
 				"tooltip": {
+					"hideZeros": false,
 					"mode": "single",
 					"sort": "none"
 				}
 			},
+			"pluginVersion": "12.0.1",
 			"targets": [
 				{
 					"datasource": "prometheusdatasource",
@@ -627,12 +608,14 @@
 						"mode": "fixed"
 					},
 					"custom": {
+						"axisBorderShow": false,
 						"axisCenteredZero": false,
 						"axisColorMode": "text",
 						"axisLabel": "",
 						"axisPlacement": "auto",
 						"axisSoftMin": 0,
 						"barAlignment": 0,
+						"barWidthFactor": 0.6,
 						"drawStyle": "line",
 						"fillOpacity": 49,
 						"gradientMode": "none",
@@ -641,6 +624,7 @@
 							"tooltip": false,
 							"viz": false
 						},
+						"insertNulls": false,
 						"lineInterpolation": "linear",
 						"lineWidth": 1,
 						"pointSize": 5,
@@ -662,8 +646,7 @@
 						"mode": "absolute",
 						"steps": [
 							{
-								"color": "green",
-								"value": null
+								"color": "green"
 							},
 							{
 								"color": "red",
@@ -689,11 +672,12 @@
 					"showLegend": false
 				},
 				"tooltip": {
+					"hideZeros": false,
 					"mode": "single",
 					"sort": "none"
 				}
 			},
-			"pluginVersion": "9.1.5",
+			"pluginVersion": "12.0.1",
 			"targets": [
 				{
 					"datasource": "prometheusdatasource",
@@ -716,11 +700,13 @@
 						"mode": "fixed"
 					},
 					"custom": {
+						"axisBorderShow": false,
 						"axisCenteredZero": false,
 						"axisColorMode": "text",
 						"axisLabel": "",
 						"axisPlacement": "auto",
 						"barAlignment": 0,
+						"barWidthFactor": 0.6,
 						"drawStyle": "bars",
 						"fillOpacity": 0,
 						"gradientMode": "none",
@@ -729,6 +715,7 @@
 							"tooltip": false,
 							"viz": false
 						},
+						"insertNulls": false,
 						"lineInterpolation": "smooth",
 						"lineStyle": {
 							"fill": "solid"
@@ -753,8 +740,7 @@
 						"mode": "absolute",
 						"steps": [
 							{
-								"color": "green",
-								"value": null
+								"color": "green"
 							}
 						]
 					}
@@ -776,10 +762,12 @@
 					"showLegend": false
 				},
 				"tooltip": {
+					"hideZeros": false,
 					"mode": "single",
 					"sort": "none"
 				}
 			},
+			"pluginVersion": "12.0.1",
 			"targets": [
 				{
 					"datasource": "prometheusdatasource",
@@ -801,11 +789,13 @@
 						"mode": "palette-classic"
 					},
 					"custom": {
+						"axisBorderShow": false,
 						"axisCenteredZero": false,
 						"axisColorMode": "text",
 						"axisLabel": "",
 						"axisPlacement": "auto",
 						"barAlignment": 0,
+						"barWidthFactor": 0.6,
 						"drawStyle": "line",
 						"fillOpacity": 34,
 						"gradientMode": "none",
@@ -814,6 +804,7 @@
 							"tooltip": false,
 							"viz": false
 						},
+						"insertNulls": false,
 						"lineInterpolation": "smooth",
 						"lineWidth": 1,
 						"pointSize": 5,
@@ -835,8 +826,7 @@
 						"mode": "absolute",
 						"steps": [
 							{
-								"color": "green",
-								"value": null
+								"color": "green"
 							},
 							{
 								"color": "red",
@@ -863,10 +853,12 @@
 					"showLegend": false
 				},
 				"tooltip": {
+					"hideZeros": false,
 					"mode": "single",
 					"sort": "none"
 				}
 			},
+			"pluginVersion": "12.0.1",
 			"targets": [
 				{
 					"datasource": "prometheusdatasource",
@@ -888,12 +880,14 @@
 						"mode": "continuous-reds"
 					},
 					"custom": {
+						"axisBorderShow": false,
 						"axisCenteredZero": false,
 						"axisColorMode": "text",
 						"axisLabel": "",
 						"axisPlacement": "auto",
 						"axisSoftMin": 0,
 						"barAlignment": 0,
+						"barWidthFactor": 0.6,
 						"drawStyle": "line",
 						"fillOpacity": 63,
 						"gradientMode": "scheme",
@@ -902,6 +896,7 @@
 							"tooltip": false,
 							"viz": false
 						},
+						"insertNulls": false,
 						"lineInterpolation": "linear",
 						"lineStyle": {
 							"fill": "solid"
@@ -926,8 +921,7 @@
 						"mode": "absolute",
 						"steps": [
 							{
-								"color": "semi-dark-red",
-								"value": null
+								"color": "semi-dark-red"
 							}
 						]
 					}
@@ -949,11 +943,12 @@
 					"showLegend": true
 				},
 				"tooltip": {
+					"hideZeros": false,
 					"mode": "single",
 					"sort": "none"
 				}
 			},
-			"pluginVersion": "9.1.5",
+			"pluginVersion": "12.0.1",
 			"targets": [
 				{
 					"datasource": "prometheusdatasource",
@@ -968,9 +963,9 @@
 			"type": "timeseries"
 		}
 	],
+	"preload": false,
 	"refresh": false,
-	"schemaVersion": 37,
-	"style": "dark",
+	"schemaVersion": 41,
 	"tags": [],
 	"templating": {
 		"list": [
@@ -978,9 +973,7 @@
 				"current": {},
 				"datasource": "prometheusdatasource",
 				"definition": "query_result(kibana_millis_uptime)",
-				"hide": 0,
 				"includeAll": false,
-				"multi": false,
 				"name": "instance",
 				"options": [],
 				"query": {
@@ -989,8 +982,6 @@
 				},
 				"refresh": 1,
 				"regex": "/.*instance=\"([^\"]*).*/",
-				"skipUrlSync": false,
-				"sort": 0,
 				"type": "query"
 			}
 		]
@@ -1003,8 +994,5 @@
 	"timezone": "",
 	"title": "Kibana",
 	"uid": "D2dThHT4z",
-	"version": 17,
-	"weekStart": "",
-	"gnetId": 21420,
-	"description": "Simple Kibana dashboard"
+	"version": 1
 }
