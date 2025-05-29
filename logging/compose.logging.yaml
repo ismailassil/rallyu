@@ -139,3 +139,17 @@ services:
             interval: 30s
             timeout: 10s
             retries: 20
+    
+    elastic-policy:
+      depends_on:
+        elasticsearch:
+          condition: service_healthy
+      build:
+        context: elasticsearch-policies
+        dockerfile: Dockerfile
+      container_name: elastic-policy
+      networks:
+        - elk
+      env_file:
+        - .env
+
