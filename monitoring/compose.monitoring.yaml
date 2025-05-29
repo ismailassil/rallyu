@@ -44,8 +44,8 @@ services:
             - monitoring
         command:
           - "--storage.tsdb.retention.time=15d"
-        ports:
-            - 9090:9090 ## TODO: Remove this!
+          - "--config.file=/etc/prometheus/prometheus.yml"
+          - "--storage.tsdb.path=/prometheus"
 
 include:
     - ./compose.exporters.yaml
