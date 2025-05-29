@@ -2,9 +2,9 @@ import app from "./app.js";
 
 (async () => {
     try {
-        await app.listen({ port: 3001 });
-        app.log.info(`Server listening on PORT: ${3001}`);
+        await app.listen({ port: 3002 });
+        app.log.info(`Server listening on PORT: ${3002}`);
     } catch (err) {
         app.log.error("Server launch faild!" );
     }
-})()
+})();
