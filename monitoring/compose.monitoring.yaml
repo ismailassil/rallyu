@@ -38,12 +38,14 @@ services:
         container_name: prometheus
         restart: always
         volumes:
-            - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+            - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
             - prometheus-data:/prometheus
         networks:
             - monitoring
+        command:
+          - "--storage.tsdb.retention.time=15d"
         ports:
-            - 9090:9090
+            - 9090:9090 ## TODO: Remove this!
 
 include:
     - ./compose.exporters.yaml
