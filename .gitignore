@@ -16,4 +16,4 @@ secrets
 
 *.vscode*
 
-nginx/logs/
+./nginx/logs/*
