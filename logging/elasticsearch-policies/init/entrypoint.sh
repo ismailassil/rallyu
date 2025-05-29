@@ -5,9 +5,9 @@ GREEN="\033[32m"
 CYAN="\033[36m"
 RESET="\033[0m"
 
-until curl -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
-	-X GET 'http://localhost:9200/_cluster/health?pretty' |
-	grep -q '\"status\" : \"green\"'; do
+until curl -s -u "${ELASTIC_USERNAME}:${ELASTIC_PASSWORD}" \
+	http://elasticsearch:9200/_cluster/health?pretty |
+	grep -q '"status" : "green"'; do
 	printf "${CYAN}Waiting for Elasticsearch to be ready...${RESET}\n"
 	sleep 5
 done
@@ -32,10 +32,10 @@ done
 curl -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
 	-X PUT "http://elasticsearch:9200/_ilm/policy/logs_policy" \
 	-H 'Content-Type: application/json' \
-	--date @/init/conf/ilm-policy.json
+	--data @/init/conf/ilm-policy.json
 
 ## Apply index template
 curl -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
 	-X PUT "http://elasticsearch:9200/_template/logs_template" \
 	-h 'Content-Type: application/json' \
-	--date @/init/conf/index-template.json
+	--data @/init/conf/index-template.json
