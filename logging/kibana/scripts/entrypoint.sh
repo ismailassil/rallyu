@@ -22,23 +22,23 @@ done
 printf "${GREEN}Kibana is up${RESET}\n"
 
 printf "${CYAN}Importing Dashboard -- 1${RESET}\n"
-curl -u "${ELASTIC_USERNAME}:${ELASTIC_PASSWORD}" \
+curl -s -u "${ELASTIC_USERNAME}:${ELASTIC_PASSWORD}" \
 	-X POST 'http://localhost:5601/api/saved_objects/_import' \
 	-H 'kbn-xsrf: true' \
 	-F file=@/dashboards/nginx-dashboard.ndjson
 
 if [ $? -ne 0 ]; then
-	printf "\n${RED}Dashboards failed to import${RESET}"
+	printf "\n${RED}Dashboard -- 1 -- failed to import${RESET}"
 fi
 
 printf "\n${CYAN}Importing Dashboard -- 2${RESET}\n"
-curl -u "${ELASTIC_USERNAME}:${ELASTIC_PASSWORD}" \
+curl -s -u "${ELASTIC_USERNAME}:${ELASTIC_PASSWORD}" \
 	-X POST 'http://localhost:5601/api/saved_objects/_import?overwrite=true' \
 	-H 'kbn-xsrf: true' \
 	-F file=@/dashboards/nginx-logs-dashboard.ndjson
 
 if [ $? -ne 0 ]; then
-	printf "\n${RED}Dashboards failed to import${RESET}"
+	printf "\n${RED}Dashboard -- 2 -- failed to import${RESET}"
 fi
 
 printf "\n${GREEN}All done!${RESET}\n"

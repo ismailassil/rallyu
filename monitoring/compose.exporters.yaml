@@ -72,6 +72,7 @@ services:
         build:
             context: ./backend-exporter
             dockerfile: Dockerfile
+        image: rallyu/backend-exporter:v1.0
         container_name: backend-exporter
         networks:
             - monitoring

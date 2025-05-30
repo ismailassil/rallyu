@@ -11,6 +11,7 @@ services:
         build:
             context: ./api-gateway
             dockerfile: Dockerfile
+        image: rallyu/api-gateway:v1.0
         container_name: api-gateway
         restart: always
         networks:
@@ -28,6 +29,7 @@ services:
         build:
             context: ./ms-auth
             dockerfile: Dockerfile
+        image: rallyu/ms-auth:v1.0
         container_name: ms-auth
         restart: always
         networks:
