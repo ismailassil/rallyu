@@ -1,20 +1,12 @@
 # rallyu
 
-frontend/
+## frontend/
 
 => Check Delba X Account
 => useFormState -> useActionState
 => useLinkStatus
-=> check the scrollbar in all the pages.
+=> check the scrollbar in all the pages + multi-browsers
 
-NGINX:
-  add:
-    - log_format
-    - path for frontend
-    - path for backend
-    - path for devops
-	- restrict the paths in nginx to the ones that needs
+## devops
 
-  to modify:
-    - combine the log_format with elk_format log
-    - the path the container's name
+=> rabbitmq + microservices arch
