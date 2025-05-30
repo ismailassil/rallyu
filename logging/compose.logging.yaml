@@ -11,17 +11,19 @@ networks:
         driver: bridge
 
 services:
-    setup:
+    elastic-setup:
         depends_on:
             elasticsearch:
                 condition: service_healthy
         image: curlimages/curl:8.13.0
-        container_name: setup
+        container_name: elastic-setup
         user: "0"
         networks:
             - elk
         env_file:
             - .env
+        # volumes:
+        #     - ${HOME}/.docker/run/docker.sock:/var/run/docker.sock
         entrypoint: sh
         command: >
             -c "
@@ -33,7 +35,8 @@ services:
               echo 'Waiting for Elasticsearch...';
               sleep 5;
             done;
-            echo 'Password set successfully.'"
+            echo \"\\nPassword set successfully.\";
+            "
 
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
@@ -55,8 +58,8 @@ services:
             - xpack.security.enabled=true
             - xpack.security.http.ssl.enabled=false
             - xpack.security.transport.ssl.enabled=false
-            - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
-        mem_limit: 4g
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        mem_limit: 2g
         ulimits:
             memlock:
                 soft: -1
@@ -81,6 +84,7 @@ services:
             dockerfile: Dockerfile
             args:
                 ELK_VERSION: ${ELK_VERSION}
+        image: rallyu/kibana:v1.2
         container_name: kibana
         restart: always
         networks:
@@ -139,17 +143,19 @@ services:
             interval: 30s
             timeout: 10s
             retries: 20
-    
-    elastic-policy:
-      depends_on:
-        elasticsearch:
-          condition: service_healthy
-      build:
-        context: elasticsearch-policies
-        dockerfile: Dockerfile
-      container_name: elastic-policy
-      networks:
-        - elk
-      env_file:
-        - .env
 
+    elastic-policy:
+        depends_on:
+            elasticsearch:
+                condition: service_healthy
+        build:
+            context: elasticsearch-policy
+            dockerfile: Dockerfile
+        image: rallyu/elastic-policy:v1.1
+        container_name: elastic-policy
+        # volumes:
+        #     - ${HOME}/.docker/run/docker.sock:/var/run/docker.sock
+        networks:
+            - elk
+        env_file:
+            - .env
