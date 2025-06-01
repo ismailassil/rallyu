@@ -1,7 +1,4 @@
-"use client"
-import { useState } from "react"
 import Image from "next/image"
-import { Check, X } from "@phosphor-icons/react";
 import NotificationButton from "./components/NotificationButton";
 import ProfileButton from "./components/ProfileButton";
 import SearchButton from "./components/SearchButton";

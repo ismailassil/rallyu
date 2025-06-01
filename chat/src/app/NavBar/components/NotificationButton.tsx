@@ -21,7 +21,7 @@ function NotificationItems() {
 				<h3>Notification</h3>
 				<span>0</span>
 			</div>
-			<ul className=" h-64 overflow-auto">
+			<ul className=" h-64 overflow-auto custom-scrollbar">
 				{Notification.map((item, index) => (
 					<li key={index} className=" flex py-4 px-1 gap-2 items-center backdrop-blur-sm bg-white/10">
 						<Image width={40} height={40} src={item.userImage} alt={`${item.userName} image`} className="rounded-full w-8 h-8" />

@@ -1,12 +1,11 @@
 "use client";
-import React from 'react'
 import Image from 'next/image'
 import { Checks } from "@phosphor-icons/react";
+import user from "../../Users.json"
 
 
 
 const UserMessage = () => {
-  const user = { image: "/profile/image_1.jpg", name: "Salah Demnati", message: "Message djsdj", date: "01/01/2000", isSeen: false }
   return (
     <div className='flex gap-4 hover:cursor-pointer hover:bg-white/15 hover:rounded-lg p-2'>
       <Image width={50} height={50} src={user.image} alt='texter Image'
