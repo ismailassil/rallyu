@@ -1,8 +1,10 @@
 "use client"
-import UserMessage from "./components/MessagesList"
+
 import Image from "next/image"
 import { useState } from "react"
-import ConversationBody from "./components/ConversationBody"
+import ConversationBody from "./ConversationBody";
+import UserMessage from "./MessagesList";
+
 
 const ChatBody = () => {
 	const [conversation, setConversation] = useState(false)

@@ -1,7 +1,7 @@
 import Image from "next/image"
-import NotificationButton from "./components/NotificationButton";
-import ProfileButton from "./components/ProfileButton";
-import SearchButton from "./components/SearchButton";
+import NotificationButton from "./NotificationButton";
+import ProfileButton from "./ProfileButton";
+import SearchButton from "./SearchButton";
 
 const NavBar = () => {
 	
