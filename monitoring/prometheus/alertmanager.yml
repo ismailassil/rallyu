@@ -1,0 +1,19 @@
+global:
+    smtp_smarthost: "smtp.gmail.com:587"
+    smtp_from: "ismailassil00@gmail.com"
+    smtp_auth_username: "ismailassil00@gmail.com"
+    smtp_auth_password_file: "/etc/alertmanager/secrets/mail.key"
+    resolve_timeout: 5m
+
+route:
+    group_by: [alertname]
+    group_wait: 30s
+    group_interval: 10s
+    repeat_interval: 1h
+    receiver: "web.email"
+
+receivers:
+    - name: "web.email"
+      email_configs:
+          - to: ismailassil00@gmail.com
+            send_resolved: true
