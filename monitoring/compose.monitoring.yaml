@@ -3,6 +3,8 @@ volumes:
         driver: local
     prometheus-data:
         driver: local
+    alertmanager-data:
+        driver: local
     grafana-ssl:
         driver: local
 
@@ -39,13 +41,25 @@ services:
         restart: always
         volumes:
             - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+            - ./prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
             - prometheus-data:/prometheus
         networks:
             - monitoring
         command:
-          - "--storage.tsdb.retention.time=15d"
-          - "--config.file=/etc/prometheus/prometheus.yml"
-          - "--storage.tsdb.path=/prometheus"
+            - "--storage.tsdb.retention.time=20d" # Data retention (20 days)
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+
+    alertmanager:
+        image: prom/alertmanager:v0.28.0
+        container_name: alertmanager
+        restart: always
+        volumes:
+            - ./prometheus/alertmanager.yml:/config/alertmanager.yml
+            - ./prometheus/mail.key:/etc/alertmanager/secrets/mail.key
+            - alertmanager-data:/data
+        command:
+            - "--config.file=/config/alertmanager.yml --log.level=debug"
 
 include:
     - ./compose.exporters.yaml

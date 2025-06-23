@@ -3,7 +3,7 @@ import proxy from '@fastify/http-proxy';
 import dotenv from 'dotenv';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
-import fastifyMetrics, { IMetricsPluginOptions } from 'fastify-metrics';
+import fastifyMetrics from 'fastify-metrics';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 dotenv.config();
