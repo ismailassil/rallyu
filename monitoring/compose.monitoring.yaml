@@ -46,9 +46,12 @@ services:
         networks:
             - monitoring
         command:
-            - "--storage.tsdb.retention.time=20d" # Data retention (20 days)
             - "--config.file=/etc/prometheus/prometheus.yml"
             - "--storage.tsdb.path=/prometheus"
+            - "--storage.tsdb.retention.time=20d"
+            - "--storage.tsdb.retention.size=10GB"
+        ports:
+          - 9090:9090
 
     alertmanager:
         image: prom/alertmanager:v0.28.0
@@ -59,7 +62,10 @@ services:
             - ./prometheus/mail.key:/etc/alertmanager/secrets/mail.key
             - alertmanager-data:/data
         command:
-            - "--config.file=/config/alertmanager.yml --log.level=debug"
+            - "--config.file=/config/alertmanager.yml"
+            - "--log.level=debug"
+        networks:
+            - monitoring
 
 include:
     - ./compose.exporters.yaml
