@@ -1,17 +1,32 @@
 import { app as fastify } from './app.js';
-import proxy from '@fastify/http-proxy';
 import dotenv from 'dotenv';
+import proxy from '@fastify/http-proxy';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
+import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyMetrics from 'fastify-metrics';
+import { timingSafeEqual } from 'crypto';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 dotenv.config();
 
+const PORT = parseInt(process.env.PORT || '4004');
+const FRONT_PORT = process.env.FRONT_PORT;
+const AUTH_PORT = process.env.AUTH_PORT;
+
 // CORS Plugin
 await fastify.register(cors, {
-	origin: ['http://localhost:3000'], // Should be specified to the frontend
+	origin: [`http://frontend:${FRONT_PORT}`], // Should be specified to the frontend
 	allowedHeaders: ['Content-Type', 'Authorization'],
+});
+
+// RATE LIMIT Plugin
+await fastify.register(fastifyRateLimit, {
+	max: 20,
+	timeWindow: '1 minute',
+	allowList: (req, key) => {
+		return req.hostname === 'backend-exporter';
+	},
 });
 
 // HELMET Plugin
@@ -21,7 +36,7 @@ await fastify.register(helmet, {
 
 // PROXY Plugin
 const authProxyOptions = {
-	upstream: 'http://localhost:3300',
+	upstream: `http://localhost:${AUTH_PORT}`,
 	prefix: '/api/auth',
 	rewritePrefix: '/auth',
 	httpMethods: ['GET', 'POST', 'DELETE', 'PUT'],
@@ -33,9 +48,23 @@ fastify.register(fastifyMetrics, { endpoint: '/inter-metrics' });
 fastify.addHook('preHandler', async (req: FastifyRequest, rep: FastifyReply) => {
 	if (req.url === '/inter-metrics') {
 		const auth = req.headers['authorization'];
-		const expected = 'Basic ' + Buffer.from('admin:password').toString('base64'); // TODO: .env
+		const expected =
+			'Basic ' +
+			Buffer.from(`${process.env.USER}:${process.env.PASSWORD}`).toString(
+				'base64',
+			);
+		if (!auth)
+			return rep
+				.status(401)
+				.header('www-authenticate', 'Basic')
+				.send('Unauthorized');
+		const authBuffer = Buffer.from(auth);
+		const expectedBuffer = Buffer.from(expected);
 
-		if (auth !== expected) {
+		if (
+			authBuffer.length !== expectedBuffer.length ||
+			!timingSafeEqual(authBuffer, expectedBuffer)
+		) {
 			return rep
 				.status(401)
 				.header('www-authenticate', 'Basic')
@@ -47,8 +76,6 @@ fastify.addHook('preHandler', async (req: FastifyRequest, rep: FastifyReply) => 
 fastify.get('/health', async (_, res: FastifyReply) => {
 	return res.status(200).send({ status: 'up' });
 });
-
-const PORT = parseInt(process.env.PORT || '5000');
 
 async function main() {
 	try {
