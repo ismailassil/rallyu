@@ -1,12 +1,21 @@
 # rallyu
 
-## frontend
-
+################
+### frontend ###
+################
 [ ] `useFormState` -> `useActionState`
 [ ] `useLinkStatus`
 [ ] Check the scrollbar in all the pages + multi-browsers
 
-## devops
+################
+#### devops ####
+################
 
 [ ] ModSecurity + WAF + HashiCorp Vault
 [x] Ensure proper data retention and storage strategies for historical metrics data.
+
+################
+##### env ######
+################
+
+[ ] Store password in docker secrets
