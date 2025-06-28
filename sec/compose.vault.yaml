@@ -1,0 +1,31 @@
+volumes:
+  vault-data:
+    driver: local
+
+networks:
+  security:
+    driver: bridge
+
+services:
+  vault:
+    image: hashicorp/vault:1.20
+    container_name: vault
+    restart: always
+    volumes:
+      - vault-data:/vault/data
+      - ./hashicorp-vault/config/vault-config.hcl:/vault/config/vault-config.hcl
+    networks:
+      - security
+    cap_add:
+      - IPC_LOCK
+    entrypoint: ["vault", "server", "-config=/vault/config/vault-config.hcl"]
+
+  vault-init:
+    build:
+      context: ./hashicorp-init
+      dockerfile: Dockerfile
+    container_name: vault-init
+    depends_on:
+      - vault
+    networks:
+      - security
