@@ -8,7 +8,7 @@ listener "tcp" {
 
 # Default Persistent Storage
 storage "raft" {
-	path = "./vault/data"
+	path = "/vault/data"
 	node = "rallyu"
 }
 cluster_addr = "http://127.0.0.1:8401"
