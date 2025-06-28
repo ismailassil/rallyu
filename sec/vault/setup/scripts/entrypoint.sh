@@ -44,7 +44,7 @@ curl --fail -s -X POST \
 curl --fail -s -X POST \
 	--header "X-Vault-Token: $ROOT_KEY" \
 	--data "{\"myData\": \"NoData\"}" \
-	$VAULT_ADDR/v1/sys/mounts/secret/didi
+	$VAULT_ADDR/v1/secret/data/$SECRET_NAME
 
 POLICY_NAME=custom-policy
 
