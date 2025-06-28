@@ -32,6 +32,7 @@ services:
     depends_on:
       - vault
     volumes:
+      - ./vault/config/vault-policy.hcl:/vault/policy.hcl
       - vault-keys:/vault/
     networks:
       - security
