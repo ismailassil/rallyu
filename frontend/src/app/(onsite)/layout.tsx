@@ -1,12 +1,12 @@
 "use client";
 
 import "@/app/globals.css";
-import Image from "next/image";
 import Header from "./components/Header/Header";
 import SideBar from "./components/Sidebar";
 import { TicTacToeProvider } from "./contexts/tictactoeContext";
 import { PingPongProvider } from "./contexts/pingpongContext";
 import { GameProvider } from "./game/contexts/gameContext";
+import Background from "./components/Background";
 
 export default function RootLayout({
 	children,
@@ -15,16 +15,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<div>
-			<div className="-z-1 fixed inset-0">
-				<Image
-					src="/background/main/background.svg"
-					alt="background"
-					quality={100}
-					fill={true}
-					sizes="100vw"
-					style={{ objectFit: "cover" }}
-				/>
-			</div>
+			<Background />
 			<Header />
 			<div>
 				<SideBar />
