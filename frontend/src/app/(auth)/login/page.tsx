@@ -12,6 +12,9 @@ export default function LoginPage() {
 	const router = useRouter();
 
 	useEffect(() => {
+		console.log('useEffect in /login');
+		console.log('isLoading: ', isLoading);
+		console.log('isAuthenticated: ', isAuthenticated);
 		if (!isLoading && isAuthenticated)
 			router.replace('/dashboard');
 	}, [isLoading, isAuthenticated]);
