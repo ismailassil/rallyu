@@ -306,3 +306,35 @@ input[type="number"]::-webkit-inner-spin-button {
 .tournament-head {
 	@apply h-13 bg-card relative mr-4 flex items-center gap-3 rounded-full px-1.5 py-1.5 ring-1 ring-white/20;
 }
+
+/* GLOBAL CSS (xezzuz) */
+
+/* --------- OR --------- */
+.or-separator::before,
+.or-separator::after {
+	content: "";
+	display: block;
+	background-color: white;
+	height: 1.5px;
+	flex: 1;
+}
+
+/* out */
+.custom-input {
+	transition-property: box-shadow, backdrop-filter;
+	transition-duration: 0.3s, 0.6s;
+	transition-timing-function: ease-out, ease-out;
+	transition-delay: 0s, 0s;
+}
+
+/* in */
+.custom-input:hover,
+.custom-input:focus-within {
+	transition-property: box-shadow, backdrop-filter;
+	transition-duration: 0.4s, 2s;
+	transition-timing-function: ease-out, ease-out;
+	transition-delay: 0s, 0.1s;
+
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(1000px);
+}

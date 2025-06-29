@@ -2,8 +2,8 @@
 
 import Form from "next/form";
 import Link from "next/link";
-import AuthButton from "./components/AuthButton";
-import Input from "./components/Input";
+import AuthButton from "./deprecatedcomponents/AuthButton";
+import Input from "./deprecatedcomponents/Input";
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
