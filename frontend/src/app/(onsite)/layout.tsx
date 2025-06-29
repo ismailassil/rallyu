@@ -7,6 +7,7 @@ import { TicTacToeProvider } from "./contexts/tictactoeContext";
 import { PingPongProvider } from "./contexts/pingpongContext";
 import { GameProvider } from "./game/contexts/gameContext";
 import Background from "./components/Background";
+import AuthProvider from "./contexts/AuthContext";
 
 export default function RootLayout({
 	children,
@@ -18,12 +19,14 @@ export default function RootLayout({
 			<Background />
 			<Header />
 			<div>
-				<SideBar />
-				<GameProvider>
-					<TicTacToeProvider>
-						<PingPongProvider>{children}</PingPongProvider>
-					</TicTacToeProvider>
-				</GameProvider>
+				<AuthProvider>
+					<SideBar />
+					<GameProvider>
+						<TicTacToeProvider>
+							<PingPongProvider>{children}</PingPongProvider>
+						</TicTacToeProvider>
+					</GameProvider>
+				</AuthProvider>
 			</div>
 		</div>
 	);

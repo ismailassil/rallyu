@@ -1,12 +1,32 @@
-"use client";
-
+/* eslint-disable react-hooks/exhaustive-deps */
+'use client';
 import UserInfo from "../components/Main/UserInfo";
 import LeaderboardPanel from "../components/Main/LeaderBoardPanel";
 import FriendsPanel from "../components/Main/FriendsPanel";
 import GameCard from "../components/Main/GameCard";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import LoadingSpinner from "@/app/(auth)/components/Loading";
 
 export default function Dashboard() {
+	const { isAuthenticated, isLoading } = useAuth();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (!isLoading && !isAuthenticated)
+			router.replace('/login');
+	}, [isLoading, isAuthenticated]);
+
+	if (isLoading) {
+		return (
+			<main className="pt-30 flex h-[100vh] w-full pb-10 justify-center items-center">
+				<LoadingSpinner />
+			</main>
+		);
+	}
+
 	return (
 		<motion.main
 			initial={{ opacity: 0, y: -50 }}

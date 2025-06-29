@@ -1,8 +1,29 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import Image from "next/image";
 import LoginForm from "./components/LoginForm";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import LoadingSpinner from "../components/Loading";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+	const { isAuthenticated, isLoading } = useAuth();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (!isLoading && isAuthenticated)
+			router.replace('/dashboard');
+	}, [isLoading, isAuthenticated]);
+
+	if (isLoading) {
+		return (
+			<main className="pt-30 flex h-[100vh] w-full pb-10 justify-center items-center">
+				<LoadingSpinner />
+			</main>
+		);
+	}
+
 	return (
 		<>
 			<main className="pt-30 flex h-[100vh] w-full pb-10">
