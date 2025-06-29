@@ -2,14 +2,25 @@
 
 import unicaOne from "@/app/fonts/unicaOne";
 import Image from "next/image";
+import { useAuth } from "../../contexts/AuthContext";
 
 function UserPanel() {
+	const { user } = useAuth();
+
 	return (
+		// <header
+		// 	className="bg-card border-br-card flex h-full
+		// 				max-h-[400px] min-h-[350px]
+		// 				w-full flex-col items-center gap-7
+		// 				overflow-hidden rounded-lg border-2
+		// 				p-12 pl-12
+		// 				sm:min-h-[330px] md:max-h-[300px] md:min-h-[400px] lg:flex-row"
+		// >
 		<header
-			className="bg-card border-br-card flex h-full
+			className=" flex h-full bg-white/6 border-white/10 backdrop-blur-[2.5px]
 						max-h-[400px] min-h-[350px]
 						w-full flex-col items-center gap-7
-						overflow-hidden rounded-lg border-2
+						overflow-hidden rounded-2xl border-1
 						p-12 pl-12
 						sm:min-h-[330px] md:max-h-[300px] md:min-h-[400px] lg:flex-row"
 		>
@@ -21,11 +32,11 @@ function UserPanel() {
 							<span className="text-accent font-semibold">
 								{" "}
 								<br />
-								ISMAIL ASSIL
+								{user.first_name + ' ' + user.last_name}
 							</span>
 						</h1>
 						<p className="pt-5 text-sm text-gray-500 lg:text-lg">
-							Step into a World of Classy Gaming
+							{user.bio}
 						</p>
 					</div>
 					<div className="flex-3 flex h-full items-center justify-center">

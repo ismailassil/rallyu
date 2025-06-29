@@ -11,7 +11,7 @@ export default function Background({ type } : BackgroundProps) {
 	const background = type !== 'secondary' ? mainBackground : secondaryBackground;
 
 	return (
-		<div className='background fixed top-0 left-0 h-full w-full bg-black -z-[1] brightness-70'>
+		<div className='background fixed top-0 left-0 h-full w-full bg-black -z-[1] brightness-60'>
 			<Image
 				src={background}
 				alt='Background'
