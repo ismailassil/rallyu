@@ -16,6 +16,9 @@ export default function Me() {
 	const router = useRouter();
 
 	useEffect(() => {
+		console.log('useEffect in /me');
+		console.log('isLoading: ', isLoading);
+		console.log('isAuthenticated: ', isAuthenticated);
 		if (!isLoading && !isAuthenticated)
 			router.replace('/login');
 	}, [isLoading, isAuthenticated]);

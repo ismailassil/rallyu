@@ -66,7 +66,10 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			const { data } = await response.json();
 
 			setAccessToken(data.accessToken);
-			setUser(data.user);
+			console.log('accessToken from refresh: ', data.accessToken);
+			const usr = await getCurrentUser(data.accessToken);
+			console.log('user returned from getCurrentUser()', usr);
+			// setUser(data.user);
 			setIsAuthenticated(true);
 
 			return data.accessToken;
@@ -137,15 +140,18 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		}
 	}
 
-	async function getCurrentUser() : Promise<User | null> {
-		if (!accessToken) return null;
+	async function getCurrentUser(tokenOverride?: string) : Promise<User | null> {
+		const token = tokenOverride || accessToken;
+		console.log('getCurrentUser with AccessToken: ', token);
+		if (!token) return null;
+		console.log('token is present');
 
 		try {
 			const response = await fetch(`http://localhost:4000/api/users/me`, {
 				method: 'GET',
 				credentials: 'include',
 				headers: {
-					'Authorization': `Bearer ${accessToken}`,
+					'Authorization': `Bearer ${token}`,
 					'Content-Type': `application/json`
 				}
 			});
@@ -155,9 +161,10 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			}
 			
 			const { data } = await response.json();
+			console.log('res', data);
 
-			setUser(data.user);
-			return data.user;
+			setUser(data);
+			return data;
 		} catch (err) {
 			console.log('Get current user failed: ', err);
 			throw err;

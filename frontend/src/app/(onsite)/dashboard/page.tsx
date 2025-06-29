@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/app/(auth)/components/Loading";
 
 export default function Dashboard() {
-	const { isAuthenticated, isLoading } = useAuth();
+	const { isAuthenticated, isLoading, user } = useAuth();
 	const router = useRouter();
 
 	useEffect(() => {
@@ -21,6 +21,8 @@ export default function Dashboard() {
 		if (!isLoading && !isAuthenticated)
 			router.replace('/login');
 	}, [isLoading, isAuthenticated]);
+	
+	console.log('User', user);
 
 	if (isLoading) {
 		return (
@@ -29,6 +31,7 @@ export default function Dashboard() {
 			</main>
 		);
 	}
+
 
 	return (
 		<motion.main
