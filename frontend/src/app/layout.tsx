@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Image from "next/image";
+// import Image from "next/image";
 import dmSans from "./fonts/dmSans";
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={`${dmSans.className} relative antialiased`}>
-				<div className="-z-1 fixed inset-0">
+				{/* <div className="-z-1 fixed inset-0">
 					<Image
 						src="/background/main/background.svg"
 						alt="background"
@@ -28,7 +28,7 @@ export default function RootLayout({
 							backgroundRepeat: "no-repeat",
 						}}
 					/>
-				</div>
+				</div> */}
 				{children}
 			</body>
 		</html>

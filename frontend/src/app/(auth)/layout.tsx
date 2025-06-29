@@ -9,7 +9,7 @@ export default function SignUpLayout({
 }>) {
 	return (
 		<>
-			<Background type='main' />
+			<Background type='secondary' />
 			<LandingHeader />
 			{children}
 		</>
