@@ -14,27 +14,28 @@ const PORT = parseInt(process.env.PORT || '4004');
 const FRONT_PORT = process.env.FRONT_PORT;
 const AUTH_PORT = process.env.AUTH_PORT;
 
-// CORS Plugin
+// ** CORS Plugin
 await fastify.register(cors, {
-	origin: [`http://frontend:${FRONT_PORT}`], // Should be specified to the frontend
+	// TODO: Should be specified to the frontend
+	origin: [`http://frontend:${FRONT_PORT}`],
 	allowedHeaders: ['Content-Type', 'Authorization'],
 });
 
-// RATE LIMIT Plugin
+// ** RATE LIMIT Plugin
 await fastify.register(fastifyRateLimit, {
-	max: 20,
+	max: 200,
 	timeWindow: '1 minute',
 	allowList: (req, key) => {
 		return req.hostname === 'backend-exporter';
 	},
 });
 
-// HELMET Plugin
+// ** HELMET Plugin
 await fastify.register(helmet, {
 	global: true,
 });
 
-// PROXY Plugin
+// ** PROXY Plugin
 const authProxyOptions = {
 	upstream: `http://localhost:${AUTH_PORT}`,
 	prefix: '/api/auth',
@@ -45,14 +46,15 @@ const authProxyOptions = {
 fastify.register(proxy, authProxyOptions);
 fastify.register(fastifyMetrics, { endpoint: '/inter-metrics' });
 
+// ** Metrics Endpoint Authorization (verification)
 fastify.addHook('preHandler', async (req: FastifyRequest, rep: FastifyReply) => {
 	if (req.url === '/inter-metrics') {
 		const auth = req.headers['authorization'];
 		const expected =
 			'Basic ' +
-			Buffer.from(`${process.env.USER}:${process.env.PASSWORD}`).toString(
-				'base64',
-			);
+			Buffer.from(
+				`${process.env.METRIC_USER}:${process.env.METRIC_PASSWORD}`,
+			).toString('base64');
 		if (!auth)
 			return rep
 				.status(401)

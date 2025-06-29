@@ -5,8 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"build": "tsc -p tsconfig.json && tsc-alias",
-		"prestart": "npm run build",
-		"start": "concurrently \"tsc -w\" \"nodemon dist/index.js\""
+		"start": "npm run build && concurrently \"tsc -w\" \"nodemon ./dist/index.js\""
 	},
 	"keywords": [],
 	"author": "",
@@ -24,7 +23,6 @@
 	},
 	"devDependencies": {
 		"@types/node": "^22.15.17",
-		"pino-pretty": "^13.0.0",
-		"typescript": "^5.8.3"
+		"pino-pretty": "^13.0.0"
 	}
 }
