@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { motion } from "framer-motion";
@@ -5,8 +6,28 @@ import FriendsPanel from "../components/Main/FriendsPanel";
 import Performance from "./components/Performance";
 import GamesHistory from "./components/GamesHistory";
 import UserPanel from "./components/UserPanel";
+import { useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import LoadingSpinner from "@/app/(auth)/components/Loading";
 
 export default function Me() {
+	const { isAuthenticated, isLoading } = useAuth();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (!isLoading && !isAuthenticated)
+			router.replace('/login');
+	}, [isLoading, isAuthenticated]);
+
+	if (isLoading) {
+		return (
+			<main className="pt-30 flex h-[100vh] w-full pb-10 justify-center items-center">
+				<LoadingSpinner />
+			</main>
+		);
+	}
+
 	return (
 		<motion.main
 			initial={{ opacity: 0, y: -50 }}

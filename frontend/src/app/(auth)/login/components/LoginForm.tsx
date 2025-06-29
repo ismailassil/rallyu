@@ -4,9 +4,11 @@ import { useState } from 'react';
 import Image from 'next/image';
 import FormFieldError from '../../signup/components/FormFieldError';
 import { AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 
 
 export default function LoginForm() {
+	const { login } = useAuth();
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [usernameError, setUsernameError] = useState('');
@@ -24,6 +26,11 @@ export default function LoginForm() {
 		if (!password)
 			setPasswordError('Password is required');
 
+		// code for actually loggin in
+		// ...
+
+		await login(username, password);
+
 		setIsSubmitting(false);
 	}
 
@@ -38,9 +45,6 @@ export default function LoginForm() {
 			if (value) setPasswordError('');
 			setPassword(value);
 		}
-
-		// code for actually loggin in
-		// ...
 	}
 
 	function handleToggleShowPassword() {

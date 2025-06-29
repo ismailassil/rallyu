@@ -1,8 +1,30 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+'use client';
 import Image from "next/image";
 import SignUpForm from "./components/SignUpForm";
 // import Background from "../components/Background";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import LoadingSpinner from "../components/Loading";
 
 export default function SignUpPage() {
+	const { isAuthenticated, isLoading } = useAuth();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (!isLoading && isAuthenticated)
+			router.replace('/dashboard');
+	}, []);
+
+	if (isLoading) {
+		return (
+			<main className="pt-30 flex h-[100vh] w-full pb-10 justify-center items-center">
+				<LoadingSpinner />
+			</main>
+		);
+	}
+
 	return (
 		<>
 			<main className="pt-30 flex h-[100vh] w-full pb-10">
