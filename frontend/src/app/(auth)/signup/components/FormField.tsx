@@ -58,7 +58,7 @@ function FormField({
 					onChange={onChange}
 				/>
 				{hidden && 
-					<Image alt='Hide' 
+					<Image alt='Hide Password' 
 						src	={!inputHidden ? '/icons/eye.svg' : '/icons/eye-slash-light.svg' } 
 						width={!inputHidden ? 18.5 : 20} 
 						height={!inputHidden ? 18.5 : 20}
