@@ -104,7 +104,7 @@ export default function LoginForm() {
 				<AnimatePresence>
 					{passwordError && <FormFieldError error={passwordError} />}
 				</AnimatePresence>
-				<a href='/reset' className='text-blue-50 font-light text-sm text-right hover:underline font-poppins'>Forgot Password?</a>
+				<a href='/reset-password' className='text-blue-50 font-light text-sm text-right hover:underline font-poppins'>Forgot Password?</a>
 			</div>
 			<button className={`h-11 mt-2 rounded-lg transition-all duration-200 ${
 					isSubmitting 
