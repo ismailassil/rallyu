@@ -8,19 +8,11 @@ function UserPanel() {
 	const { user } = useAuth();
 
 	return (
-		// <header
-		// 	className="bg-card border-br-card flex h-full
-		// 				max-h-[400px] min-h-[350px]
-		// 				w-full flex-col items-center gap-7
-		// 				overflow-hidden rounded-lg border-2
-		// 				p-12 pl-12
-		// 				sm:min-h-[330px] md:max-h-[300px] md:min-h-[400px] lg:flex-row"
-		// >
 		<header
-			className=" flex h-full bg-white/6 border-white/10 backdrop-blur-[2.5px]
+			className="bg-card border-br-card flex h-full
 						max-h-[400px] min-h-[350px]
 						w-full flex-col items-center gap-7
-						overflow-hidden rounded-2xl border-1
+						overflow-hidden rounded-lg border-2
 						p-12 pl-12
 						sm:min-h-[330px] md:max-h-[300px] md:min-h-[400px] lg:flex-row"
 		>
