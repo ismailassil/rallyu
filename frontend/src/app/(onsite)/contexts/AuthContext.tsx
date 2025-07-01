@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
@@ -12,6 +13,7 @@ type AuthContextType = {
 	user: User | null;
 	isLoading: boolean;
 	isAuthenticated: boolean;
+	register: (first_name: string, last_name: string, username: string, email: string, password: string) => Promise<void>;
 	login: (username: string, password: string) => Promise<void>;
 	logout: () => Promise<void>;
 	refreshToken: () => Promise<string>;
@@ -78,6 +80,42 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			setUser(null);
 			setIsAuthenticated(false);
 			throw err;
+		}
+	}
+
+	async function register(
+		first_name: string,
+		last_name: string,
+		username: string,
+		email: string,
+		password: string
+	) : Promise<void> {
+		try {
+			setIsLoading(true);
+
+			const response = await fetch(`http://localhost:4000/api/auth/register`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': `application/json`
+				},
+				body: JSON.stringify({
+					first_name,
+					last_name,
+					username,
+					email,
+					password
+				})
+			});
+
+			if (!response.ok) {
+				const { error: errorMsg } = await response.json();
+				throw new Error(errorMsg || 'Registration failed');
+			}
+
+		} catch (err) {
+			throw err;
+		} finally {
+			setIsLoading(false);
 		}
 	}
 
@@ -208,6 +246,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		isAuthenticated,
 
 		// actions
+		register,
 		login,
 		logout,
 		refreshToken,

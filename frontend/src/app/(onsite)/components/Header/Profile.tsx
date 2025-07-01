@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface ProfileProps {
 	setIsNotif: (value: boolean) => void;
@@ -18,6 +19,7 @@ export default function Profile({
 	isProfile,
 	profileRef,
 }: ProfileProps) {
+	const { logout } = useAuth();
 	const router = useRouter();
 
 	return (
@@ -93,7 +95,9 @@ export default function Profile({
 							<Image src="/icons/setting-btn.svg" alt="Settings Icon" width={30} height={30} />
 							<span className="ml-5">Settings</span>
 						</div>
-						<div className="hover:bg-hbbg mb-2 flex w-full items-center px-7 py-3 hover:cursor-pointer">
+						<div className="hover:bg-hbbg mb-2 flex w-full items-center px-7 py-3 hover:cursor-pointer"
+							onClick={logout}
+						>
 							<Image src="/icons/logout-btn.svg" alt="Logout Icon" width={30} height={30} />
 							<p className="ml-5">Logout</p>
 						</div>
