@@ -1,37 +1,15 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
-import { useEffect, useState } from "react";
-import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import LoadingSpinner from "../components/Loading";
 import { ForgotPassword } from "./components/ForgotPassword";
 import { CheckEmail } from "./components/CheckEmail";
 import { SetNewPassword } from "./components/SetNewPassword";
 
 export default function ResetPasswordPage() {
-	const [step, setStep] = useState<'forgot' | 'check' | 'new'>('forgot');
-	const { isAuthenticated, isLoading } = useAuth();
-	const router = useRouter();
 	const [email, setEmail] = useState('');
 	const [code, setCode] = useState('');
-	// const [newPassword, setNewPassword] = useState('');
-
-	useEffect(() => {
-		console.log('useEffect in /reset-password');
-		console.log('isLoading: ', isLoading);
-		console.log('isAuthenticated: ', isAuthenticated);
-		if (!isLoading && isAuthenticated)
-			router.replace('/dashboard');
-	}, [isLoading, isAuthenticated]);
-
-	if (isLoading) {
-		return (
-			<main className="pt-30 flex h-[100vh] w-full pb-10 justify-center items-center">
-				<LoadingSpinner />
-			</main>
-		);
-	}
-
+	const [step, setStep] = useState<'forgot' | 'check' | 'new'>('forgot');
+	const router = useRouter();
 
 	return (
 		<>
