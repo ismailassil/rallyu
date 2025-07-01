@@ -3,8 +3,10 @@ import React, { useCallback } from 'react';
 import { useState } from 'react';
 import useForm from '../hooks/useForm';
 import FormField from './FormField';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 
 export default function SignUpForm() {
+	const { register } = useAuth();
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 	const [fieldsAvailable, setFieldsAvailable] = useState({
 		username: false,
@@ -34,9 +36,14 @@ export default function SignUpForm() {
 			return ;
 
 		setIsSubmitting(true);
-		setTimeout(() => {
-			setIsSubmitting(false);
-		}, 2000);
+		await register(
+			formData.fname,
+			formData.lname,
+			formData.username,
+			formData.email,
+			formData.password
+		);
+		setIsSubmitting(false);
 	}
 
 	return (
