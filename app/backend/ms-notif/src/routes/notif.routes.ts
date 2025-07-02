@@ -14,6 +14,19 @@ const NotifRoutes = async (fastify: FastifyInstance) => {
 		{ schema: notifySchema },
 		notifControllers.notify.bind(notifControllers),
 	);
+
+	fastify.get(
+		'/history/:username',
+		// TODO: add schema for validating the params and queries { schema: }
+		// Params: IFetchParams; Querystring: IFetchQuery
+		notifControllers.fetchHistory.bind(notifControllers),
+	);
+
+	fastify.put(
+		'/update',
+		// TODO: add schema for validating the body { schema: }
+		notifControllers.updateNotification.bind(notifControllers),
+	);
 };
 
 export default NotifRoutes;
