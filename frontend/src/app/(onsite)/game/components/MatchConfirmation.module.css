@@ -1,0 +1,7 @@
+@keyframes borderShrink {
+  0%   { transform: scaleX(1); transform-origin: left; border-color: #60A5FA; }
+  100% { transform: scaleX(0); transform-origin: left; border-color: #3B82F6; }
+}
+#timeout-border {
+  animation: borderShrink 10s linear forwards;
+}

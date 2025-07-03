@@ -1,16 +1,17 @@
 import geistSans from "@/app/fonts/geistSans";
 import { motion } from "framer-motion";
 import { useGameContext } from "../contexts/gameContext";
+import MatchConfirmation from "./MatchConfirmation";
 
 function Loading() {
-	const { setLaunch } = useGameContext();
+	const { setLaunch, ws } = useGameContext();
 
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: -50 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 1, delay: 0.3 }}
-			className="max-w-300 flex h-full w-full flex-col items-center justify-center p-3"
+			className="max-w-300 flex h-full w-full flex-col items-center justify-center p-3 relative"
 		>
 			<h1 className="loadingText text-3xl font-bold lg:text-5xl">
 				{"Setting Things Up".split("").map((char, index) => (
@@ -51,11 +52,14 @@ function Loading() {
 				transition={{ duration: 1, delay: 0.4 }}
 				onClick={(e) => {
 					e.preventDefault();
+					ws.current?.send(JSON.stringify({ type: "MATCH-CANCEL" }));
 					setLaunch(false);
 				}}
+				// disabled
 			>
 				Cancel
 			</motion.button>
+			<MatchConfirmation />
 		</motion.div>
 	);
 }

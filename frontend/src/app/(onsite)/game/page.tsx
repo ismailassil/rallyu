@@ -43,12 +43,10 @@ export default function Game() {
         
         sock.onopen = () => {
             console.log('Connected to websocket!');
-            sock.send('Hello, Webscoket!');
         };
 
         sock.onmessage = (message) => {
-            console.log(message);
-            console.log(message.data);
+			console.log(JSON.parse(message.data));
         };
 
 		sock.onerror = (event) => {
