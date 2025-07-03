@@ -7,6 +7,7 @@ import schemasPlugin from './shared/plugins/schemaPlugin.js';
 import databasePlugin from './models/notif.model.js';
 import fastifyRedis from '@fastify/redis';
 import socketIOPlugin from './shared/plugins/socketIOPlugin.js';
+import fastifySchedule from '@fastify/schedule';
 
 const PORT = parseInt(process.env.PORT || '9012');
 
@@ -24,6 +25,8 @@ await fastify.register(fastifyRedis, redisOptions);
 await fastify.register(databasePlugin);
 await fastify.register(NotifRoutes, routesPrefix);
 await fastify.register(socketIOPlugin);
+await fastify.register(fastifySchedule);
+// await fastify.register(CronJobPlugin);
 
 function main() {
 	fastify.listen({ host: '::', port: PORT }, (err) => {
