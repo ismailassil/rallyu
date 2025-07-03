@@ -1,6 +1,7 @@
 import INotifyBody, { notifType } from '../shared/types/notifyBody.types.js';
 import fastify from '../app.js';
 import INotifMessage, { statusType } from '../shared/types/notifMessage.types.js';
+import { NotificationNotFoundException } from '../shared/exceptions/NotificationNotFoundException.js';
 
 class NotifRepository {
 	async checkUser(username: string): Promise<number | null> {
@@ -52,7 +53,7 @@ class NotifRepository {
 		from_id: number,
 		to_id: number,
 		body: INotifyBody,
-	): Promise<number> {
+	): Promise<INotifMessage> {
 		const { from_user, to_user, msg, type, action_url } = body;
 
 		return new Promise((resolve, reject) => {
@@ -66,28 +67,22 @@ class NotifRepository {
 						return;
 					}
 					fastify.log.info(`✅ msg registration done`);
-					await fastify.redis.set(
-						`notif?id=${row.id}`,
-						JSON.stringify(row),
-					);
-					resolve(row.id);
+					resolve(row);
 				},
 			);
 		});
 	}
 
-	getMessages(
-		user_id: number,
-		limit: number,
-		offset: number,
-	): Promise<INotifMessage[]> {
-		fastify.log.info(
-			`user_id: ${user_id} + limit: ${limit} + offset: ${offset}`,
-		);
+	getMessages(user_id: number, page: number): Promise<INotifMessage[]> {
+		fastify.log.info(`user_id: ${user_id} + page: ${page}`);
+
+		const LIMIT = 10;
+
+		const offset = (page - 1) * LIMIT;
 		return new Promise((resolve, reject) => {
 			fastify.database.all<INotifMessage>(
-				"SELECT * FROM messages WHERE to_user_id = ? AND type != 'dismissed' ORDER BY created_at ASC LIMIT ? OFFSET ?",
-				[user_id, limit, offset],
+				"SELECT * FROM messages WHERE to_user_id = ? AND type != 'dismissed' ORDER BY updated_at ASC LIMIT 10 OFFSET ?",
+				[user_id, offset],
 				function (error, rows) {
 					if (error) {
 						fastify.log.error('4- DB Error: ' + error);
@@ -123,7 +118,7 @@ class NotifRepository {
 					if (this.changes === 1) {
 						resolve(true);
 					} else {
-						reject('No changes affected');
+						reject(new NotificationNotFoundException());
 					}
 				},
 			);
@@ -132,7 +127,7 @@ class NotifRepository {
 
 	updateAllNotif(status: statusType, user_id: number): Promise<void> {
 		return new Promise((_, reject) => {
-			fastify.database.all(
+			fastify.database.run(
 				'UPDATE messages SET status = ? WHERE to_user_id = ?',
 				[status, user_id],
 				(error) => {

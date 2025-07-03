@@ -18,12 +18,10 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 		fastify.log.info('Database opened successfully');
 	});
 
-	// Add msg msg_count and unread_count - search for triggers to auto update
 	const createTable = `
 		CREATE TABLE IF NOT EXISTS notification_users (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			username TEXT UNIQUE NOT NULL,
-			msg_count INTEGER NOT NULL
+			username TEXT UNIQUE NOT NULL
 		);
 
 		CREATE TABLE IF NOT EXISTS messages (
@@ -41,6 +39,15 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 			FOREIGN KEY (from_user_id) REFERENCES notification_users(id),
 			FOREIGN KEY (to_user_id) REFERENCES notification_users(id)
 		);
+
+		CREATE TRIGGER IF NOT EXISTS UpdateMessagesTimestamp
+		AFTER UPDATE OF status ON messages
+		FOR EACH ROW
+		BEGIN
+			UPDATE messages SET updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
+		END;
+
+		CREATE INDEX IF NOT EXISTS idx_messages_to_user_status ON messages(to_user_id, status);
 	`;
 
 	db.exec(createTable, (err) => {

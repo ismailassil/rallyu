@@ -1,6 +1,8 @@
-import notifySchema from '../shared/schemas/notification.schema.js';
+import notifySchema from '../shared/schemas/notify.schema.js';
 import NotifControllers from '../controllers/notif.controllers.js';
 import { FastifyInstance, FastifyReply } from 'fastify';
+import historySchema from '../shared/schemas/history.schema.js';
+import updateSchema from '../shared/schemas/update.schema.js';
 
 const NotifRoutes = async (fastify: FastifyInstance) => {
 	const notifControllers = new NotifControllers();
@@ -17,14 +19,13 @@ const NotifRoutes = async (fastify: FastifyInstance) => {
 
 	fastify.get(
 		'/history/:username',
-		// TODO: add schema for validating the params and queries { schema: }
-		// Params: IFetchParams; Querystring: IFetchQuery
+		{ schema: historySchema },
 		notifControllers.fetchHistory.bind(notifControllers),
 	);
 
 	fastify.put(
 		'/update',
-		// TODO: add schema for validating the body { schema: }
+		{ schema: updateSchema },
 		notifControllers.updateNotification.bind(notifControllers),
 	);
 };

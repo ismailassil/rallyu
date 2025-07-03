@@ -1,7 +1,9 @@
+import { statusType } from './notifMessage.types';
+
 interface IUpdateBody {
 	username: string;
 	notificationId: number;
-	status: 'read' | 'dismissed';
+	status: statusType;
 	all?: boolean;
 }
 

@@ -13,6 +13,8 @@ const notifySchema = {
 	},
 	response: {
 		201: { $ref: 'responseSchema#/properties/created' },
+		404: { $ref: 'responseSchema#/properties/not_found' },
+		500: { $ref: 'responseSchema#/properties/server_error' },
 	},
 };
 
