@@ -1,10 +1,11 @@
-import { createContext, Dispatch, SetStateAction, useContext, useState } from "react";
+import { createContext, Dispatch, RefObject, SetStateAction, useContext, useRef, useState } from "react";
 
 type gameTypes = {
 	gameType: "pingpong" | "tictactoe";
 	setGameType: Dispatch<SetStateAction<"pingpong" | "tictactoe">>;
 	launch: boolean;
 	setLaunch: Dispatch<SetStateAction<boolean>>;
+	ws: RefObject<WebSocket | null>;
 };
 
 const GameContext = createContext<gameTypes | undefined>(undefined);
@@ -22,6 +23,7 @@ export function useGameContext() {
 export function GameProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	const [gameType, setGameType] = useState<"pingpong" | "tictactoe">("pingpong");
 	const [launch, setLaunch] = useState(false);
+	const ws = useRef<WebSocket | null>(null);
 
 	return (
 		<GameContext.Provider
@@ -30,6 +32,7 @@ export function GameProvider({ children }: Readonly<{ children: React.ReactNode 
 				setGameType,
 				launch,
 				setLaunch,
+				ws
 			}}
 		>
 			{children}

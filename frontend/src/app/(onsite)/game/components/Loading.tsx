@@ -1,7 +1,10 @@
 import geistSans from "@/app/fonts/geistSans";
 import { motion } from "framer-motion";
+import { useGameContext } from "../contexts/gameContext";
 
-function Loading({ setStart }: { setStart: (value: boolean) => void }) {
+function Loading() {
+	const { setLaunch } = useGameContext();
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: -50 }}
@@ -48,7 +51,7 @@ function Loading({ setStart }: { setStart: (value: boolean) => void }) {
 				transition={{ duration: 1, delay: 0.4 }}
 				onClick={(e) => {
 					e.preventDefault();
-					setStart(false);
+					setLaunch(false);
 				}}
 			>
 				Cancel

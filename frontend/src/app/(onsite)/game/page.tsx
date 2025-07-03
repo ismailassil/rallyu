@@ -11,24 +11,66 @@ import { useGameContext } from "./contexts/gameContext";
 
 export default function Game() {
 	const { connectivity } = useTicTacToe();
-	const { launch, setLaunch, gameType } = useGameContext();
+	const { launch, setLaunch, gameType, ws } = useGameContext();
 
 	const router = useRouter();
 
 	useEffect(() => {
-		let timeoutId: NodeJS.Timeout;
+		// let timeoutId: NodeJS.Timeout;
 
-		if (launch === true && gameType === "tictactoe" && connectivity === "offline") {
-			timeoutId = setTimeout(() => {
-				router.push("/tictactoe/0");
-				setLaunch(false);
-			}, 3000);
+		// if (launch === true && gameType === "tictactoe" && connectivity === "offline") {
+		// 	timeoutId = setTimeout(() => {
+		// 		router.push("/tictactoe/0");
+		// 		setLaunch(false);
+		// 	}, 3000);
+		// }
+
+		// return () => {
+		// 	clearTimeout(timeoutId);
+		// };
+
+		if (launch === false) {
+			ws.current?.close();
+			return ;
 		}
 
-		return () => {
-			clearTimeout(timeoutId);
+		if (ws.current) return;
+
+		const sock = new WebSocket("ws://localhost:3002/api/v1/matchmaking/join");
+		ws.current = sock;
+
+        console.log(sock.url);
+        
+        sock.onopen = () => {
+            console.log('Connected to websocket!');
+            sock.send('Hello, Webscoket!');
+        };
+
+        sock.onmessage = (message) => {
+            console.log(message);
+            console.log(message.data);
+        };
+
+		sock.onerror = (event) => {
+			console.log(event);
+			console.log("Websocket fails!");
+			sock.close();
+			setLaunch(false);
 		};
-	}, [launch, router, gameType, connectivity, setLaunch]);
+
+        sock.onclose = () => {
+            console.log("Websocket connection closed!");
+			ws.current = null;
+        };
+
+		return () => {
+			if (ws.current === sock) {
+				ws.current?.close();
+				ws.current = null;
+			}
+		};
+
+	}, [launch, router, gameType, connectivity, ws]);
 
 	return (
 		<AnimatePresence>
@@ -54,7 +96,7 @@ export default function Game() {
 							<InviteFriend />
 						</motion.div>
 					) : (
-						<Loading setStart={setLaunch} />
+						<Loading />
 					)}
 				</article>
 			</motion.main>
