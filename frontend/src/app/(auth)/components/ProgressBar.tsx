@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 
 export default function ProgressBar({ message, complete } : { message?: string, complete: boolean } ) {
 	// const [progress, setProgress] = useState(0);

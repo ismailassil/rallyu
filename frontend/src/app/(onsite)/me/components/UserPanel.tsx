@@ -1,11 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import unicaOne from "@/app/fonts/unicaOne";
 import Image from "next/image";
-import { useAuth } from "../../contexts/AuthContext";
 
-function UserPanel() {
-	const { user } = useAuth();
+function UserPanel({ user, stats } : { user: any, stats: any}) {
+	// const { user } = useAuth();
 
 	return (
 		<header
@@ -53,7 +53,7 @@ function UserPanel() {
 					<div>
 						<div className="flex h-full flex-col gap-1">
 							<div className="flex justify-between">
-								<p className="font-semibold">Level 10</p>
+								<p className="font-semibold">Level {stats.level}</p>
 								<p className="text-gray-600">60%</p>
 							</div>
 							<div className="h-full w-full">

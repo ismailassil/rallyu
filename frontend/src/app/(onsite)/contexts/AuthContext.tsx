@@ -16,6 +16,7 @@ type AuthContextType = {
 	register: (first_name: string, last_name: string, username: string, email: string, password: string) => Promise<void>;
 	login: (username: string, password: string) => Promise<void>;
 	logout: () => Promise<void>;
+	api: APIClient;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -113,6 +114,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		register,
 		login,
 		logout,
+		api
 		// refreshToken,
 		// getCurrentUser,
 		// authFetch

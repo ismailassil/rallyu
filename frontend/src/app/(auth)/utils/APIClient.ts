@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance } from 'axios';
 
 export class APIClient {
@@ -13,6 +14,7 @@ export class APIClient {
 		});
 
 		this.client.interceptors.request.use(config => {
+			console.log('in interceptor, accessToken: ', this.accessToken);
 			if (this.accessToken) {
 				config.headers.Authorization = `Bearer ${this.accessToken}`;
 			}
@@ -90,6 +92,34 @@ export class APIClient {
 	get instance(): AxiosInstance {
 		return this.client;
 	}
+
+	async getUserProfile(username: string) {
+		const { data: res } = await this.client.get(`/users/${username}`);
+		return res.data;
+	}
+
+	async getUserPerformance(username: string) {
+		const { data: res } = await this.client.get(`/users/${username}/stats`);
+		return res.data;
+	}
+
+	async getUserGamesHistory(username: string) {
+		const { data: res } = await this.client.get(`/users/${username}/matches`);
+		return res.data;
+	}
+
+	// async getCurrentUserStats() {
+	// 	console.log('in my stats: ', this.accessToken);
+	// 	const { data } = await this.client.get(`/users/me/stats`);
+	// 	console.log(`My Stats: `, data.data);
+	// 	return data.data;
+	// }
+
+	// async getUserStats(user_id: number) {
+	// 	const { data } = await this.client.get(`/users/${user_id}/stats`);
+	// 	console.log(`User Stats: `, data.data);
+	// 	return data.data;
+	// }
 
 	async login(payload: { username: string, password: string }) {
 		console.log('APIClient::login();');
