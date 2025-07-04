@@ -10,16 +10,12 @@ type User = {
 }
 
 type AuthContextType = {
-	// accessToken: string | null;
 	user: User | null;
 	isLoading: boolean;
 	isAuthenticated: boolean;
 	register: (first_name: string, last_name: string, username: string, email: string, password: string) => Promise<void>;
 	login: (username: string, password: string) => Promise<void>;
 	logout: () => Promise<void>;
-	// refreshToken: () => Promise<string>;
-	// getCurrentUser: () => Promise<User | null>;
-	// authFetch: (url: string) => Promise<Response>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -43,16 +39,11 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	// will run one on page refresh
 	useEffect(() => {
-		if (document.cookie.includes('refreshToken'))
-			initializeAuth();
-		else {
-			setIsAuthenticated(false);
-			setIsLoading(false);
-		}
+		console.log('useEffect in AuthProvider');
+		initializeAuth();
 	}, []);
 
 	async function initializeAuth() {
-		console.log('refreshToken exists? ', document.cookie.includes('refreshToken'));
 		try {
 			await api.refreshToken();
 			const currentUser = await api.fetchCurrentUser();
@@ -72,10 +63,18 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		password: string
 	) {
 		try {
+			// setIsLoading(true);
 			await api.login({ username, password });
+			const data = await api.fetchCurrentUser();
+			setUser(data.user);
+			setIsAuthenticated(true);
 		} catch (err) {
 			console.log('Login Error Catched in AuthContext: ', err);
 			throw err;
+			// setUser(null);
+			// setIsAuthenticated(false);
+		} finally {
+			setIsLoading(false);
 		}
 	}
 
@@ -121,6 +120,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	return (
 		<AuthContext.Provider value={value}>
+			<h1>AuthProvider</h1>
 			{children}
 		</AuthContext.Provider>
 	);

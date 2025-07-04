@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import React from 'react';
 import { useState } from 'react';
@@ -6,7 +7,7 @@ import FormFieldError from '../../signup/components/FormFieldError';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toast } from 'sonner';
-import { alertError } from '../../components/Alert';
+import { alertError, alertSuccess } from '../../components/Alert';
 
 export default function LoginForm() {
 	const { login } = useAuth();
@@ -17,33 +18,13 @@ export default function LoginForm() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	async function handleSubmit(e: React.FormEvent) {
-		e.preventDefault();
-
-		setIsSubmitting(true);
-
-		if (!username)
-			setUsernameError('Username is required');
-		if (!password)
-			setPasswordError('Password is required');
-		if (!username || !password) {
-			setIsSubmitting(false);
-			return ;
-		}
-
-		try {
-			await login(username, password);
-		} catch (err: any) {
-			const msg = err.message;
-			alertError(msg);
-		}
-
-		setIsSubmitting(false);
+	function handleToggleShowPassword() {
+		setShowPassword(!showPassword);
 	}
-
+	
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const { name, value } = e.target;
-
+		
 		if (name === 'username') {
 			if (value) setUsernameError('');
 			setUsername(value);
@@ -53,19 +34,34 @@ export default function LoginForm() {
 			setPassword(value);
 		}
 	}
+	
+	async function handleSubmit(e: React.FormEvent) {
+		e.preventDefault();
+		toast.dismiss();
 
-	function handleToggleShowPassword() {
-		setShowPassword(!showPassword);
-	}
+		const usernameErr = username ? '' : 'Username is required';
+		const passwordErr = password ? '' : 'Password is required';
+		setUsernameError(usernameErr);
+		setPasswordError(passwordErr);
 
-	function handleToast() {
-		console.log('toasting...');
-		toast('fjdklsfjdkl');
+		if (usernameErr || passwordErr)
+			return ;
+		
+		setIsSubmitting(true);
+		try {
+			// alertLoading('Loggin you in...');
+			await login(username, password);
+			alertSuccess('Logged in successfully');
+		} catch (err: any) {
+			const msg = err.message;
+			alertError(msg);
+		} finally {
+			setIsSubmitting(false);
+		}
 	}
 
 	return (
 		<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-			<button onClick={handleToast}>Toast</button>
 			<div className='field flex flex-col gap-0.5 box-border'>
 				<label htmlFor="username">Username</label>
 				<div className='flex flex-row pl-3.5 pr-3.5 pb-2 pt-2 gap-3 items-center h-11 bg-white/6 rounded-lg custom-input border border-white/10'>

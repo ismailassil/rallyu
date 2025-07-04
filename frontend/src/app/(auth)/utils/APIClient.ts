@@ -45,7 +45,7 @@ export class APIClient {
 		console.log('failedQueue: ', this.failedQueue);
 		if (err.response?.status === 401 && !originalRequest._retry && this.accessToken) {
 			if (this.isRefreshing) {
-				console.log('isRefreshing is true');
+				console.log('pushing to failed queue');
 				return new Promise((resolve, reject) => {
 					this.failedQueue.push({
 						resolve: (token: string) => {
@@ -62,7 +62,7 @@ export class APIClient {
 
 			try {
 				const { data } = await this.client.get('/auth/refresh');
-				this.setAccessToken(data.accessToken);
+				this.setAccessToken(data.data.accessToken);
 				this.processQueue(null, data.accessToken);
 				originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
 				return this.client(originalRequest);
@@ -83,6 +83,7 @@ export class APIClient {
 	}
 
 	setAccessToken(token: string) {
+		console.log('Setting accessToken: ', token);
 		this.accessToken = token;
 	}
 
@@ -94,7 +95,7 @@ export class APIClient {
 		console.log('APIClient::login();');
 		const { data } = await this.client.post('/auth/login', payload);
 		console.log('login: ', data);
-		this.setAccessToken(data.accessToken);
+		this.setAccessToken(data.data.accessToken);
 		return data;
 	}
 
@@ -108,15 +109,16 @@ export class APIClient {
 		console.log('APIClient::refreshToken();');
 		const { data } = await this.client.get('/auth/refresh');
 		console.log('refreshToken: ', data);
-		this.setAccessToken(data.accessToken);
+		this.setAccessToken(data.data.accessToken);
 		return data;
 	}
 	
 	async fetchCurrentUser() {
 		console.log('APIClient::fetchCurrentUser();');
-		const { data } = await this.client.post('/users/me');
+		console.log('accessToken: ', this.accessToken);
+		const { data } = await this.client.get('/users/me');
 		console.log('fetchCurrentUser: ', data);
-		return data;
+		return data.data;
 	}
 	
 	async register(payload: { 
@@ -134,7 +136,7 @@ export class APIClient {
 
 	private classifyError(err: any) {
 		if (!err.response) {
-			return { type: 'network', message: 'Network error. Check connection.' };
+			return { type: 'network', message: 'Something went wrong. Please try again.' };
 		}
 		// const status = err.response.status;
 		// if (status === 401) {
