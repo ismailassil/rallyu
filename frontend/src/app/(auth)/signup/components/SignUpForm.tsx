@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import React, { useCallback } from 'react';
 import { useState } from 'react';
 import useForm from '../hooks/useForm';
 import FormField from './FormField';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
+import { alertError, alertSuccess } from '../../components/Alert';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export default function SignUpForm() {
 	const { register } = useAuth();
@@ -12,6 +16,7 @@ export default function SignUpForm() {
 		username: false,
 		email: false
 	});
+	const router = useRouter();
 
 	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm({
 		fname: '',
@@ -27,6 +32,7 @@ export default function SignUpForm() {
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
+		toast.dismiss();
 
 		const isValid = validateAll();
 		if (!isValid)
@@ -36,14 +42,25 @@ export default function SignUpForm() {
 			return ;
 
 		setIsSubmitting(true);
-		await register(
-			formData.fname,
-			formData.lname,
-			formData.username,
-			formData.email,
-			formData.password
-		);
-		setIsSubmitting(false);
+		try {
+			await register(
+				formData.fname,
+				formData.lname,
+				formData.username,
+				formData.email,
+				formData.password
+			);
+			alertSuccess('Account created successfully...');
+			setTimeout(() => {
+				toast.dismiss();
+				router.replace('/login');
+			}, 2000);
+		} catch (err: any) {
+			const msg = err.message;
+			alertError(msg);
+		} finally {
+			setIsSubmitting(false);
+		}
 	}
 
 	return (
