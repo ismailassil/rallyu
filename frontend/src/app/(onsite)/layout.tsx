@@ -7,6 +7,7 @@ import { TicTacToeProvider } from "./contexts/tictactoeContext";
 import { PingPongProvider } from "./contexts/pingpongContext";
 import { GameProvider } from "./game/contexts/gameContext";
 import Background from "./components/Background";
+import ProtectedRoute from "../(auth)/components/ProtectedRoute";
 
 export default function RootLayout({
 	children,
@@ -19,12 +20,16 @@ export default function RootLayout({
 			<h1>main layout</h1>
 			<Header />
 			<div>
+				<ProtectedRoute>
+
 					<SideBar />
 					<GameProvider>
 						<TicTacToeProvider>
 							<PingPongProvider>{children}</PingPongProvider>
 						</TicTacToeProvider>
 					</GameProvider>
+					
+				</ProtectedRoute>
 			</div>
 		</div>
 	);
