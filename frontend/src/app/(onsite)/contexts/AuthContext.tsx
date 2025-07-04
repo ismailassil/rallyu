@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
+import { APIClient } from '@/app/(auth)/utils/APIClient';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 type User = {
@@ -9,19 +10,20 @@ type User = {
 }
 
 type AuthContextType = {
-	accessToken: string | null;
+	// accessToken: string | null;
 	user: User | null;
 	isLoading: boolean;
 	isAuthenticated: boolean;
 	register: (first_name: string, last_name: string, username: string, email: string, password: string) => Promise<void>;
 	login: (username: string, password: string) => Promise<void>;
 	logout: () => Promise<void>;
-	refreshToken: () => Promise<string>;
-	getCurrentUser: () => Promise<User | null>;
-	authFetch: (url: string) => Promise<Response>;
+	// refreshToken: () => Promise<string>;
+	// getCurrentUser: () => Promise<User | null>;
+	// authFetch: (url: string) => Promise<Response>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
+const api = new APIClient('http://localhost:4000/api');
 
 export function useAuth() : AuthContextType {
 	const ctx = useContext(AuthContext);
@@ -35,212 +37,72 @@ type AuthProviderType = {
 }
 
 export default function AuthProvider({ children } : AuthProviderType ) {
-	const [accessToken, setAccessToken] = useState<string | null>(null);
 	const [user, setUser] = useState<User | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 
 	// will run one on page refresh
 	useEffect(() => {
-		initializeAuth();
+		if (document.cookie.includes('refreshToken'))
+			initializeAuth();
+		else {
+			setIsAuthenticated(false);
+			setIsLoading(false);
+		}
 	}, []);
 
 	async function initializeAuth() {
+		console.log('refreshToken exists? ', document.cookie.includes('refreshToken'));
 		try {
-			await refreshToken();
+			await api.refreshToken();
+			const currentUser = await api.fetchCurrentUser();
+			setUser(currentUser);
+			setIsAuthenticated(true);
 		} catch {
 			console.log('No valid refresh token found!');
+			setUser(null);
+			setIsAuthenticated(false);
 		} finally {
 			setIsLoading(false);
 		}
 	}
 
-	async function refreshToken() : Promise<string> {
-		try {
-			const response = await fetch(`http://localhost:4000/api/auth/refresh`, {
-				method: 'GET',
-				credentials: 'include',
-			});
-
-			if (!response.ok)
-				throw new Error('Token refresh failed');
-
-			const { data } = await response.json();
-
-			setAccessToken(data.accessToken);
-			console.log('accessToken from refresh: ', data.accessToken);
-			const usr = await getCurrentUser(data.accessToken);
-			console.log('user returned from getCurrentUser()', usr);
-			// setUser(data.user);
-			setIsAuthenticated(true);
-
-			return data.accessToken;
-		} catch (err) {
-			setAccessToken(null);
-			setUser(null);
-			setIsAuthenticated(false);
-			throw err;
-		}
-	}
-
-	async function register(
-		first_name: string,
-		last_name: string,
-		username: string,
-		email: string,
+	async function login(
+		username: string, 
 		password: string
-	) : Promise<void> {
+	) {
 		try {
-			setIsLoading(true);
-
-			const response = await fetch(`http://localhost:4000/api/auth/register`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': `application/json`
-				},
-				body: JSON.stringify({
-					first_name,
-					last_name,
-					username,
-					email,
-					password
-				})
-			});
-
-			if (!response.ok) {
-				const { error: errorMsg } = await response.json();
-				throw new Error(errorMsg || 'Registration failed');
-			}
-
+			await api.login({ username, password });
 		} catch (err) {
-			throw err;
-		} finally {
-			setIsLoading(false);
+			console.log('Login Error Catched in AuthContext: ', err);
 		}
 	}
 
-	async function login(username: string, password: string) : Promise<void> {
+	async function logout() {
 		try {
-			setIsLoading(true);
-
-			const response = await fetch(`http://localhost:4000/api/auth/login`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: {
-					'Content-Type': `application/json`
-				},
-				body: JSON.stringify({
-					username,
-					password
-				})
-			});
-
-			if (!response.ok) {
-				const { error: errorMsg } = await response.json();
-				throw new Error(errorMsg || 'Login failed');
-			}
-
-			const { data } = await response.json();
-
-			setAccessToken(data.accessToken);
-			setUser(data.user);
-			setIsAuthenticated(true);
+			await api.logout();
 		} catch (err) {
-			setAccessToken(null);
-			setUser(null);
-			setIsAuthenticated(false);
-			throw err;
-		} finally {
-			setIsLoading(false);
+			console.log('Logout Error Catched in AuthContext: ', err);
 		}
 	}
-
-	async function logout() : Promise<void> {
+	
+	async function register(
+		first_name: string, 
+		last_name: string, 
+		username: string, 
+		email: string, 
+		password: string 
+	) {
 		try {
-			const response = await fetch(`http://localhost:4000/api/auth/logout`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: {
-					'Authorization': `Bearer ${accessToken}`
-				}
-			});
-
-			if (!response.ok) {
-				const { error: errorMsg } = await response.json();
-				throw new Error(errorMsg || 'Logout failed');
-			}
+			await api.register({ first_name, last_name, username, email, password });
 		} catch (err) {
-			console.log('Logout request failed: ', err);
-		} finally {
-			setAccessToken(null);
-			setUser(null);
-			setIsAuthenticated(false);
-		}
-	}
-
-	async function getCurrentUser(tokenOverride?: string) : Promise<User | null> {
-		const token = tokenOverride || accessToken;
-		console.log('getCurrentUser with AccessToken: ', token);
-		if (!token) return null;
-		console.log('token is present');
-
-		try {
-			const response = await fetch(`http://localhost:4000/api/users/me`, {
-				method: 'GET',
-				credentials: 'include',
-				headers: {
-					'Authorization': `Bearer ${token}`,
-					'Content-Type': `application/json`
-				}
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to get user data');
-			}
-			
-			const { data } = await response.json();
-			console.log('res', data);
-
-			setUser(data);
-			return data;
-		} catch (err) {
-			console.log('Get current user failed: ', err);
-			throw err;
-		}
-	}
-
-	async function authFetch(url: string) : Promise<Response> {
-		async function makeRequest(token: string | null) {
-			return fetch(url, {
-				credentials: 'include',
-				headers: {
-					'Authorization': `Bearer ${token}`
-				},
-			});
-		}
-
-		try {
-			let response = await makeRequest(accessToken);
-
-			if (response.status === 401 && accessToken) {
-				try {
-					const newToken = await refreshToken();
-					response = await makeRequest(newToken);
-				} catch {
-					logout();
-					throw new Error('Session expired. Please login again.');
-				}
-			}
-
-			return response;
-		} catch (err) {
-			throw err;
+			console.log('Register Error Catched in AuthContext: ', err);
 		}
 	}
 
 	const value = {
 		// state
-		accessToken,
+		// accessToken,
 		user,
 		isLoading,
 		isAuthenticated,
@@ -249,9 +111,9 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		register,
 		login,
 		logout,
-		refreshToken,
-		getCurrentUser,
-		authFetch
+		// refreshToken,
+		// getCurrentUser,
+		// authFetch
 	};
 
 	return (
