@@ -1,42 +1,12 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import UserInfo from "../components/Main/UserInfo";
 import LeaderboardPanel from "../components/Main/LeaderBoardPanel";
 import FriendsPanel from "../components/Main/FriendsPanel";
 import GameCard from "../components/Main/GameCard";
 import { motion } from "framer-motion";
-import ProtectedRoute from "@/app/(auth)/components/ProtectedRoute";
-// import { useEffect } from "react";
-// import { useAuth } from "../contexts/AuthContext";
-// import { useRouter } from "next/navigation";
-// import LoadingSpinner from "@/app/(auth)/components/Loading";
 
 export default function Dashboard() {
-	// const { isAuthenticated, isLoading, user } = useAuth();
-	// const router = useRouter();
-
-	// useEffect(() => {
-	// 	console.log('useEffect in /dashboard');
-	// 	console.log('isLoading: ', isLoading);
-	// 	console.log('isAuthenticated: ', isAuthenticated);
-	// 	if (!isLoading && !isAuthenticated)
-	// 		router.replace('/login');
-	// }, [isLoading, isAuthenticated]);
-	
-	// console.log('User', user);
-
-	// if (isLoading) {
-	// 	return (
-	// 		<main className="pt-30 flex h-[100vh] w-full pb-10 justify-center items-center">
-	// 			<LoadingSpinner />
-	// 		</main>
-	// 	);
-	// }
-
-
 	return (
-		<ProtectedRoute>
-
 		<motion.main
 			initial={{ opacity: 0, y: -50 }}
 			animate={{ opacity: 1, y: 0 }}
@@ -104,7 +74,5 @@ export default function Dashboard() {
 				<FriendsPanel />
 			</div>
 		</motion.main>
-		
-		</ProtectedRoute>
 	);
 }

@@ -1,11 +1,9 @@
 'use client';
 import Image from "next/image";
 import SignUpForm from "./components/SignUpForm";
-import PublicRoute from "../components/PublicRoute";
 
 export default function SignUpPage() {
 	return (
-		<PublicRoute>
 			<main className="pt-30 flex h-[100vh] w-full pb-10">
 				<div className="flex h-full w-full justify-center overflow-auto">
 					<div className="mine flex h-full w-[650px] items-start justify-center pb-20 pl-10 pr-10 pt-20 lg:items-center">
@@ -32,6 +30,5 @@ export default function SignUpPage() {
 					</div>
 				</div>
 			</main>
-		</PublicRoute>
 	);
 }
