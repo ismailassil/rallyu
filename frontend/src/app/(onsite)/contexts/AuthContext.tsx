@@ -75,6 +75,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			await api.login({ username, password });
 		} catch (err) {
 			console.log('Login Error Catched in AuthContext: ', err);
+			throw err;
 		}
 	}
 
@@ -83,6 +84,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			await api.logout();
 		} catch (err) {
 			console.log('Logout Error Catched in AuthContext: ', err);
+			throw err;
 		}
 	}
 	
@@ -97,6 +99,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			await api.register({ first_name, last_name, username, email, password });
 		} catch (err) {
 			console.log('Register Error Catched in AuthContext: ', err);
+			throw err;
 		}
 	}
 

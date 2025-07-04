@@ -5,7 +5,8 @@ import Image from 'next/image';
 import FormFieldError from '../../signup/components/FormFieldError';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-
+import { toast } from 'sonner';
+import { alertError } from '../../components/Alert';
 
 export default function LoginForm() {
 	const { login } = useAuth();
@@ -25,11 +26,17 @@ export default function LoginForm() {
 			setUsernameError('Username is required');
 		if (!password)
 			setPasswordError('Password is required');
+		if (!username || !password) {
+			setIsSubmitting(false);
+			return ;
+		}
 
-		// code for actually loggin in
-		// ...
-
-		await login(username, password);
+		try {
+			await login(username, password);
+		} catch (err: any) {
+			const msg = err.message;
+			alertError(msg);
+		}
 
 		setIsSubmitting(false);
 	}
@@ -51,8 +58,14 @@ export default function LoginForm() {
 		setShowPassword(!showPassword);
 	}
 
+	function handleToast() {
+		console.log('toasting...');
+		toast('fjdklsfjdkl');
+	}
+
 	return (
 		<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+			<button onClick={handleToast}>Toast</button>
 			<div className='field flex flex-col gap-0.5 box-border'>
 				<label htmlFor="username">Username</label>
 				<div className='flex flex-row pl-3.5 pr-3.5 pb-2 pt-2 gap-3 items-center h-11 bg-white/6 rounded-lg custom-input border border-white/10'>
