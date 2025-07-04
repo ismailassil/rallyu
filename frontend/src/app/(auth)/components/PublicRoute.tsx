@@ -3,7 +3,7 @@
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import LoadingSpinner from "./Loading";
+import ProgressBar from "./ProgressBar";
 
 export default function PublicRoute({ children }: { children: React.ReactNode }) {
 	const { isAuthenticated, isLoading } = useAuth();
@@ -19,13 +19,10 @@ export default function PublicRoute({ children }: { children: React.ReactNode })
 		}
 	}, [isLoading, isAuthenticated]);
 
-	if (isLoading) {
-		return (
-			<main className="pt-30 flex h-[100vh] w-full pb-10 justify-center items-center">
-				<h1>{'<PublicRoute />'}</h1>
-				<LoadingSpinner />
-			</main>
-		);
+	const authFinished = !isLoading;
+
+	if (!authFinished) {
+		return ( <ProgressBar complete={authFinished}/> );
 	}
 
 	return (
