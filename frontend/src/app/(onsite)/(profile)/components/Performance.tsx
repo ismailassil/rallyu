@@ -2,6 +2,7 @@
 
 import unicaOne from "@/app/fonts/unicaOne";
 import Chart from "./Chart";
+import { IUserPerformance } from "../users/[username]/page";
 
 const data = [
 	{ date: "2023-01-01", timeSpent: 5 },
@@ -14,7 +15,7 @@ const data = [
 	{ date: "2023-01-07", timeSpent: 3 },
 ];
 
-export default function Performance() {
+export default function Performance({ userPerformance } : { userPerformance: IUserPerformance }) {
 	return (
 		<div className="flex-3 min-h-130 max-h-220 flex h-full w-full flex-col gap-4">
 			<section className={`bg-card border-br-card h-full w-full flex-1 rounded-lg border-2`}>
@@ -40,7 +41,7 @@ export default function Performance() {
 							>
 								<p className="text-xl lg:text-2xl ">Total XP</p>
 								<div className="flex items-end gap-2">
-									<p className="text-4xl lg:text-5xl">54 895</p>
+									<p className="text-4xl lg:text-5xl">{userPerformance.xp}</p>
 									<p className="text-xl lg:text-2xl">XP</p>
 								</div>
 							</div>
@@ -52,7 +53,7 @@ export default function Performance() {
 										"
 								>
 									<p className="text-xl lg:text-2xl">Global Rank</p>
-									<p className="text-4xl lg:text-5xl">3</p>
+									<p className="text-4xl lg:text-5xl">{userPerformance.rank}</p>
 								</div>
 								<div
 									className="bg-card border-br-card hover:scale-101 flex max-w-[50%]
@@ -61,7 +62,7 @@ export default function Performance() {
 										"
 								>
 									<p className="text-xl lg:text-2xl">Games Played</p>
-									<p className="truncate text-4xl lg:text-5xl">65</p>
+									<p className="truncate text-4xl lg:text-5xl">{userPerformance.games.games}</p>
 								</div>
 							</div>
 							<div className="flex w-full gap-4 text-center ">
@@ -72,7 +73,7 @@ export default function Performance() {
 										"
 								>
 									<p className="text-xl lg:text-2xl">Ping Pong Games</p>
-									<p className="text-4xl lg:text-5xl">49</p>
+									<p className="text-4xl lg:text-5xl">{userPerformance.games.ping_pong.games}</p>
 								</div>
 								<div
 									className="bg-card border-br-card hover:scale-101 flex flex-1
@@ -81,7 +82,7 @@ export default function Performance() {
 										"
 								>
 									<p className="text-xl lg:text-2xl">TIC TAC TOE Games</p>
-									<p className="text-4xl lg:text-5xl">16</p>
+									<p className="text-4xl lg:text-5xl">{userPerformance.games.tic_tac_toe.games}</p>
 								</div>
 							</div>
 							<div

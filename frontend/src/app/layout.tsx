@@ -17,7 +17,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={`${dmSans.className} relative antialiased`}>
-			<h1>root layout</h1>
+			<h1 className="fixed top-0">RootLayout</h1>
 				{/* <div className="-z-1 fixed inset-0">
 					<Image
 						src="/background/main/background.svg"

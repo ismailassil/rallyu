@@ -1,4 +1,4 @@
-import passwordValidator from "@/app/(auth)/deprecatedsignup/passwordValidator";
+// import passwordValidator from "@/app/(auth)/deprecatedsignup/passwordValidator";
 import { Check, Key, ShieldCheck } from "@phosphor-icons/react";
 import Image from "next/image";
 import { useState } from "react";

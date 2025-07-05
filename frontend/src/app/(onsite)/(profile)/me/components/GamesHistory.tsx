@@ -2,8 +2,9 @@
 
 import unicaOne from "@/app/fonts/unicaOne";
 import Game from "./Game";
+import { IGameHistory } from "../page";
 
-export default function GamesHistory() {
+export default function GamesHistory({ userGames } : { userGames: Array<IGameHistory> }) {
 	return (
 		<aside
 			className={`bg-card border-br-card min-h-130 max-h-220 h-full w-full min-w-[30%] flex-[2.5] rounded-lg border-2`}
@@ -21,7 +22,7 @@ export default function GamesHistory() {
 				</div>
 				<div className="hide-scrollbar mb-4 max-h-[calc(100vh-19rem)] flex-1 overflow-y-auto">
 					<div className="flex flex-col gap-y-2.5 pl-4 pr-4">
-						{Array.from({ length: 10 }).map((_, i) => (
+						{/* {Array.from({ length: 10 }).map((_, i) => (
 							<Game
 								key={i}
 								opponent="Nabil Azouz"
@@ -35,6 +36,9 @@ export default function GamesHistory() {
 								myImage="/profile/image.png"
 								matchxp={i % 3 === 0 ? 0 : i % 2 ? -50 : 100}
 							/>
+						))} */}
+						{userGames.map((game, index) => (
+							<Game key={index} gameInfo={game} />
 						))}
 					</div>
 				</div>
