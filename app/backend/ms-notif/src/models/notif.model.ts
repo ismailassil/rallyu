@@ -15,7 +15,7 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 			fastify.log.error('Error: ' + error.message);
 			return;
 		}
-		fastify.log.info('Database opened successfully');
+		fastify.log.info('✅ Database opened successfully');
 	});
 
 	const createTable = `
@@ -52,7 +52,7 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 
 	db.exec(createTable, (err) => {
 		if (err) fastify.log.error(err.message);
-		else fastify.log.info('Tables created');
+		else fastify.log.info('✅ Tables created');
 	});
 
 	fastify.decorate('database', db);
@@ -60,7 +60,11 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 	fastify.addHook('onClose', async (instance) => {
 		if (instance.database) {
 			instance.database.close((err) => {
-				instance.log.error('Error closing DB ' + err?.message);
+				if (err) {
+					instance.log.error('Error closing DB ' + err?.message);
+					return;
+				}
+				fastify.log.info('⚾️ DB Closed Successfully');
 			});
 		}
 	});
