@@ -54,24 +54,11 @@ class NotifSerives {
 		let user_id = await this.notifRepository.checkUser(username);
 		if (user_id === null) throw new UserNotFoundException();
 
-		const redisData = await fastify.redis.get(
-			`notif?user_id=${user_id}&page=${page}`,
-		);
-		if (redisData) {
-			fastify.log.info(
-				`✅ Data retrieved from redis for user ID: ${user_id} - page ${page}`,
-			);
-			return JSON.parse(redisData);
-		}
 		const data: INotifMessage[] = await this.notifRepository.getMessages(
 			user_id,
 			page,
 		);
 
-		fastify.redis.set(
-			`notif?user_id=${user_id}&page=${page}`,
-			JSON.stringify(data),
-		);
 		return data;
 	}
 
