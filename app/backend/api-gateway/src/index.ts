@@ -77,8 +77,7 @@ fastify.get('/health', async (_, res: FastifyReply) => {
 
 async function main() {
 	try {
-		const address = await fastify.listen({ host: '::', port: PORT });
-		fastify.log.info(`Server is running at ${address}`);
+		await fastify.listen({ host: '::', port: PORT });
 	} catch (error) {
 		fastify.log.error(error);
 		process.exit(1);
@@ -86,3 +85,11 @@ async function main() {
 }
 
 main();
+
+process.on('SIGINT', async () => {
+	fastify.log.info('[ ~ ] CLOSING FASTIFY');
+	await fastify.close();
+	fastify.log.info('[ + ] FASTIFY Closed Successfully');
+
+	process.exit(1);
+});

@@ -16,12 +16,13 @@ export const socketioPlugin = fp(async function (fastify: FastifyInstance) {
 			},
 		});
 
-		fastify.log.info('✅ Socket IO Server is Running');
+		fastify.log.info('✅ SocketIO Server is Running');
 
 		fastify.decorate('io', io);
 
 		fastify.addHook('onClose', async (fastify) => {
 			await fastify.io.close();
+			fastify.log.info('⚾️ SocketIO Closed Successfully');
 		});
 	} catch (error) {
 		fastify.log.error(error);
