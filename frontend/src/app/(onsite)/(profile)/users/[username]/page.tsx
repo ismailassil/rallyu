@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import FriendsPanel from "../../../components/Main/FriendsPanel";
 import Performance from "../../components/Performance";
 import GamesHistory from "../../components/GamesHistory";
-import UserPanel from "../../components/UserPanel";
+import UserPanel from "../components/UserPanel";
  
 export default function UserProfilePage({ params } : { params: Promise<{ username: string }> }) {
 	const { api } = useAuth();
