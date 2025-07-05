@@ -1,9 +1,8 @@
 import INotifMessage from '../shared/types/notifMessage.types.js';
 import NotifRepository from '../repositories/notif.repository.js';
-import INotifyBody from '../shared/types/notifyBody.types';
+import INotifyBody from '../shared/types/notifyBody.types.js';
 import fastify from '../app.js';
 import IUpdateBody from '../shared/types/update.types.js';
-import { emitType } from '../shared/types/socketio.types.js';
 import { IFetchResponse } from '../shared/types/fetch.types.js';
 import { UserNotFoundException } from '../shared/exceptions/UserNotFoundException.js';
 
@@ -50,14 +49,6 @@ class NotifSerives {
 		return data.id;
 	}
 
-	getSocketId(to_user: string): string[] {
-		let userSocketId: string[] = [];
-		for (let [key, value] of fastify.connectedUsers.entries()) {
-			if (value === to_user) userSocketId.push(key);
-		}
-
-		return userSocketId;
-	}
 
 	async getUserMessages(username: string, page: number): Promise<INotifMessage[]> {
 		let user_id = await this.notifRepository.checkUser(username);
@@ -96,17 +87,6 @@ class NotifSerives {
 		await (all
 			? this.notifRepository.updateAllNotif(status, user_id)
 			: this.notifRepository.updateNotif(status, user_id, notificationId));
-	}
-
-	broadcastMessage(emit: emitType, userSocketId: string[], ...resData: [any]) {
-		if (userSocketId.length !== 0) {
-			userSocketId.forEach((id) =>
-				fastify.io.sockets.to(id).emit(emit, ...resData),
-			);
-			fastify.log.info('✅ Notification sent via Socket.IO');
-		} else {
-			fastify.log.warn('🧩 User Not Connected');
-		}
 	}
 
 	unpackMessage(fullData: INotifMessage[]): IFetchResponse[] {

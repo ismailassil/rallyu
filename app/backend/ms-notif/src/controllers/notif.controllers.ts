@@ -11,6 +11,7 @@ import IUpdateBody from '../shared/types/update.types.js';
 import INotifMessage from '../shared/types/notifMessage.types.js';
 import { UserNotFoundException } from '../shared/exceptions/UserNotFoundException.js';
 import { NotificationNotFoundException } from '../shared/exceptions/NotificationNotFoundException.js';
+import { JSONCodec } from 'nats';
 
 class NotifControllers {
 	private notifServices: NotifServices;
@@ -41,14 +42,36 @@ class NotifControllers {
 			const resData = JSON.parse(result);
 
 			// Emit notification event to all connected clients
-			let userSocketId: string[] = this.notifServices.getSocketId(
-				req.body.to_user,
-			);
-			this.notifServices.broadcastMessage(
+			// ? THIS IS SocketIO
+			// let userSocketId: string[] = this.notifServices.getSocketId(
+			// 	req.body.to_user,
+			// );
+			// this.notifServices.broadcastMessage(
+			// 	'notification',
+			// 	userSocketId,
+			// 	resData,
+			// );
+
+			// Send back to API & SocketIO Gateway through NATS Server
+			const jc = JSONCodec();
+			fastify.nats.publish(
 				'notification',
-				userSocketId,
-				resData,
+				jc.encode({
+					username: req.body.to_user,
+					type: 'notify',
+					data: resData,
+				}),
 			);
+			try {
+				fastify.nats.flush();
+				fastify.log.info(
+					'✅ Notification arrived to the API & SocketIO Gateway',
+				);
+			} catch {
+				fastify.log.error(
+					'❌ Notification DID NOT arrived to the API & SocketIO Gateway',
+				);
+			}
 
 			return res
 				.status(201)
@@ -103,12 +126,37 @@ class NotifControllers {
 			await this.notifServices.updateNotification(req.body);
 			fastify.log.info('✅ Notification updated');
 
+			// ? THIS IS SocketIO
 			// Let the other Connected Session update the changes real-time
-			let userSocketId: string[] = this.notifServices.getSocketId(username);
-			this.notifServices.broadcastMessage('update', userSocketId, [
-				all || notificationId,
-				status,
-			]);
+			// let userSocketId: string[] = this.notifServices.getSocketId(username);
+			// this.notifServices.broadcastMessage('update', userSocketId, [
+			// 	all || notificationId,
+			// 	status,
+			// ]);
+
+			// Send back to API & SocketIO Gateway through NATS Server
+			const jc = JSONCodec();
+			fastify.nats.publish(
+				'notification',
+				jc.encode({
+					username: username,
+					type: 'update',
+					data: {
+						notifStatus: status,
+						notifType: all || notificationId,
+					},
+				}),
+			);
+			try {
+				fastify.nats.flush();
+				fastify.log.info(
+					'✅ Notification arrived to the API & SocketIO Gateway',
+				);
+			} catch {
+				fastify.log.error(
+					'❌ Notification DID NOT arrived to the API & SocketIO Gateway',
+				);
+			}
 
 			return res
 				.status(201)
