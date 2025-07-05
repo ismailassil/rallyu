@@ -1,12 +1,15 @@
 import { app as fastify } from './app.js';
-import dotenv from 'dotenv';
+import dotenv from '@dotenvx/dotenvx';
 import proxy from '@fastify/http-proxy';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyMetrics from 'fastify-metrics';
-import { timingSafeEqual } from 'crypto';
 import { FastifyReply, FastifyRequest } from 'fastify';
+import { metricsAuthEndpoint } from './endpoint/metrics.endpoint.js';
+import { natsPlugin } from './plugin/nats/nats.plugin.js';
+import { socketioPlugin } from './plugin/socketio/socketio.plugin.js';
+import fastifyJwt from '@fastify/jwt';
 
 dotenv.config();
 
@@ -35,6 +38,23 @@ await fastify.register(helmet, {
 	global: true,
 });
 
+// ** JWT Plugin
+await fastify.register(fastifyJwt, {
+	secret: process.env.JWT_KEY ?? '',
+});
+
+// ** NATS Plugin
+const natsOptions = {
+	NATS_USER: process.env.NATS_USER ?? '',
+	NATS_PASSWORD: process.env.NATS_PASSWORD ?? '',
+};
+
+await fastify.register(natsPlugin, natsOptions);
+
+// ** SocketIO Plugin
+// TODO: Add Authentication to Sockets
+await fastify.register(socketioPlugin);
+
 // ** PROXY Plugin
 const authProxyOptions = {
 	upstream: `http://localhost:${AUTH_PORT}`,
@@ -44,36 +64,12 @@ const authProxyOptions = {
 };
 
 fastify.register(proxy, authProxyOptions);
+
+// ** METRICS Plugin
 fastify.register(fastifyMetrics, { endpoint: '/inter-metrics' });
 
 // ** Metrics Endpoint Authorization (verification)
-fastify.addHook('preHandler', async (req: FastifyRequest, rep: FastifyReply) => {
-	if (req.url === '/inter-metrics') {
-		const auth = req.headers['authorization'];
-		const expected =
-			'Basic ' +
-			Buffer.from(
-				`${process.env.METRIC_USER}:${process.env.METRIC_PASSWORD}`,
-			).toString('base64');
-		if (!auth)
-			return rep
-				.status(401)
-				.header('www-authenticate', 'Basic')
-				.send('Unauthorized');
-		const authBuffer = Buffer.from(auth);
-		const expectedBuffer = Buffer.from(expected);
-
-		if (
-			authBuffer.length !== expectedBuffer.length ||
-			!timingSafeEqual(authBuffer, expectedBuffer)
-		) {
-			return rep
-				.status(401)
-				.header('www-authenticate', 'Basic')
-				.send('Unauthorized');
-		}
-	}
-});
+fastify.addHook('preHandler', metricsAuthEndpoint);
 
 fastify.get('/health', async (_, res: FastifyReply) => {
 	return res.status(200).send({ status: 'up' });
