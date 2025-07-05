@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import useCountdown from "../../../../hooks/useCountdown";
+// import useCountdown from "../../../../hooks/useCountdown";
 
 type XOContextTypes = {
 	secondsLeft: number;
@@ -19,7 +19,7 @@ export function useXO() {
 }
 
 export function XOProvider({ children }: Readonly<{ children: React.ReactNode }>) {
-	const { secondsLeft, setStart } = useCountdown();
+	// const { secondsLeft, setStart } = useCountdown();
 
 	return (
 		<XOContext.Provider

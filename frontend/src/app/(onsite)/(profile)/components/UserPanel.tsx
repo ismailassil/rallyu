@@ -1,11 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import unicaOne from "@/app/fonts/unicaOne";
 import Image from "next/image";
+import { useAuth } from "../../contexts/AuthContext";
+import { IUserInfo, IUserPerformance } from "../me/page";
 
-function UserPanel({ user, stats } : { user: any, stats: any}) {
-	// const { user } = useAuth();
+function UserPanel({ userInfo, userPerformance } : { userInfo: IUserInfo, userPerformance: IUserPerformance } ) {
+	const { user } = useAuth();
+	console.log('UserPanel');
+	console.log('AuthUsername: ', user?.username);
+	console.log('DynamicUsername: ', userInfo.username);
 
 	return (
 		<header
@@ -20,15 +25,20 @@ function UserPanel({ user, stats } : { user: any, stats: any}) {
 				<div className="flex h-full w-full flex-1 items-center">
 					<div className="flex-5 h-full py-5">
 						<h1 className={`text-4xl lg:text-5xl ${unicaOne.className}`}>
-							{new Date().getHours() < 17 ? "Good Morning" : "Good Evening"},
+						{user!.username !== userInfo.username && (
+							<>
+							{new Date().getHours() < 17 ? "Good Morning" : "Good Evening"}
+							<br />
+							</>
+						)}
 							<span className="text-accent font-semibold">
 								{" "}
 								<br />
-								{user.first_name + ' ' + user.last_name}
+								{userInfo.first_name + ' ' + userInfo.last_name}
 							</span>
 						</h1>
 						<p className="pt-5 text-sm text-gray-500 lg:text-lg">
-							{user.bio}
+							{userInfo.bio}
 						</p>
 					</div>
 					<div className="flex-3 flex h-full items-center justify-center">
@@ -41,6 +51,7 @@ function UserPanel({ user, stats } : { user: any, stats: any}) {
 							<Image
 								className={`h-full w-full object-cover`}
 								src={"/profile/image.png"}
+								// src={userInfo.avatar_url}
 								width={100}
 								height={100}
 								quality={100}
@@ -53,7 +64,7 @@ function UserPanel({ user, stats } : { user: any, stats: any}) {
 					<div>
 						<div className="flex h-full flex-col gap-1">
 							<div className="flex justify-between">
-								<p className="font-semibold">Level {stats.level}</p>
+								<p className="font-semibold">Level {userPerformance.level}</p>
 								<p className="text-gray-600">60%</p>
 							</div>
 							<div className="h-full w-full">
@@ -70,15 +81,15 @@ function UserPanel({ user, stats } : { user: any, stats: any}) {
 			>
 				<div className="bg-inner-card border-br-card flex flex-1 items-end justify-between rounded-2xl border-2 p-4 px-4">
 					<p className="text-lg lg:text-2xl">Wins</p>
-					<p className="text-3xl lg:text-4xl">50</p>
+					<p className="text-3xl lg:text-4xl">{userPerformance.games.wins}</p>
 				</div>
 				<div className="bg-inner-card border-br-card flex flex-1 items-end justify-between rounded-2xl border-2 p-4 px-4">
 					<p className="text-lg lg:text-2xl">Defeats</p>
-					<p className="text-3xl lg:text-4xl">9</p>
+					<p className="text-3xl lg:text-4xl">{userPerformance.games.losses}</p>
 				</div>
 				<div className="bg-inner-card border-br-card flex flex-1 items-end justify-between rounded-2xl border-2 p-4 px-4">
 					<p className="text-lg lg:text-2xl">Draws</p>
-					<p className="text-3xl lg:text-4xl">6</p>
+					<p className="text-3xl lg:text-4xl">{userPerformance.games.draws}</p>
 				</div>
 			</div>
 		</header>

@@ -17,7 +17,7 @@ export default function RootLayout({
 	return (
 		<div>
 			<Background />
-			<h1>main layout</h1>
+			<h1 className="fixed top-0 left-60">MainLayout</h1>
 			<Header />
 			<div>
 				<ProtectedRoute>
@@ -25,7 +25,9 @@ export default function RootLayout({
 					<SideBar />
 					<GameProvider>
 						<TicTacToeProvider>
-							<PingPongProvider>{children}</PingPongProvider>
+							<PingPongProvider>
+								{children}
+							</PingPongProvider>
 						</TicTacToeProvider>
 					</GameProvider>
 					

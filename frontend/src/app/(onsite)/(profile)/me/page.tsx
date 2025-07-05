@@ -1,13 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
+
 "use client";
 
 import { motion } from "framer-motion";
-import FriendsPanel from "../components/Main/FriendsPanel";
+import FriendsPanel from "../../components/Main/FriendsPanel";
 import Performance from "./components/Performance";
 import GamesHistory from "./components/GamesHistory";
 import UserPanel from "./components/UserPanel";
 import { useEffect, useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 /*
 	-- USER INFO
@@ -35,14 +36,8 @@ import { useAuth } from "../contexts/AuthContext";
 		- XP GAIN
 */
 
-type UserInfo = {
-	full_name: string,
-	bio: string,
-	avatar: string,
-	level: number
-};
-
-type UserPerformance = {
+export interface IUserPerformance {
+	level: number,
 	xp: number,
 	rank: number,
 	win_rate: number,
@@ -70,7 +65,7 @@ type UserPerformance = {
 	}
 };
 
-type GameHistory = {
+export interface IGameHistory {
 	game_type: string,
 	player_home: {
 		username: string,
@@ -84,35 +79,37 @@ type GameHistory = {
 	}
 }
 
-type UserGamesHistory = {
-	games: GameHistory[];
-};
+export interface IUserInfo {
+	first_name: string,
+	last_name: string,
+	email: string,
+	username: string,
+	bio: string,
+	avatar_url: string,
+	role: string
+}
 
+export interface IUserProfile {
+	profile: IUserInfo,
+	performance: IUserPerformance,
+	games_history: Array<IGameHistory>
+}
 
 export default function Me() {
 	const { user, api } = useAuth();
-	const [stats, setStats] = useState(null);
+	const [userProfile, setUserProfile] = useState<IUserProfile | null>(null);
 	
 	
 	useEffect(() => {
-		console.log('useEffect in /me');
-
-		async function fetchUserPage() {
+		async function fetchProfile() {
 			const profile = await api.getUserProfile(user!.username);
-			const performance = await api.getUserPerformance(user!.username);
-			const games = await api.getUserGamesHistory(user!.username);
-
-			console.log('Profile: ', profile);
-			console.log('Performance: ', performance);
-			console.log('Games: ', games);
+			setUserProfile(profile);
 		}
-
-		fetchUserPage();
+		fetchProfile();
 	}, []);
 
-	if (!stats) {
+	if (!userProfile)
 		return null;
-	}
 
 	return (
 		<motion.main
@@ -123,13 +120,13 @@ export default function Me() {
 		>
 			<div className="flex h-full w-full gap-6 rounded-lg">
 				<article className="flex-5 flex h-full w-full flex-col gap-4">
-					<UserPanel user={user} stats={stats} />
+					<UserPanel userInfo={userProfile.profile} userPerformance={userProfile.performance}/>
 					<div
 						className="hide-scrollbar flex flex-1 flex-col space-x-4
 							space-y-4 overflow-scroll overflow-x-hidden lg:flex-row lg:space-y-0"
 					>
-						<Performance />
-						<GamesHistory />
+						<Performance userPerformance={userProfile.performance} />
+						<GamesHistory userGames={userProfile.games_history} />
 					</div>
 				</article>
 				<FriendsPanel />

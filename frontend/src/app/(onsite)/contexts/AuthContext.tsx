@@ -122,7 +122,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	return (
 		<AuthContext.Provider value={value}>
-			<h1>AuthProvider</h1>
+			<h1 className='fixed top-0 left-30'>AuthProvider</h1>
 			{children}
 		</AuthContext.Provider>
 	);
