@@ -1,6 +1,5 @@
 ##### NO CHATGPT
 
-0. [X] Change the return type of Notification data for sockets
 1. [X] REDIS CACHING
 2. [X] CRON JOB FOR DIMISSED MESSAGES
 
