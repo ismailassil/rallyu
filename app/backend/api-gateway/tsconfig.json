@@ -4,7 +4,7 @@
 		"module": "ESNext",
 		"rootDir": "./src",
 		"moduleResolution": "node",
-		"baseUrl": "./src",
+		// "baseUrl": "./src",
 		"types": ["node"],
 		"resolveJsonModule": true,
 		"outDir": "./dist",
