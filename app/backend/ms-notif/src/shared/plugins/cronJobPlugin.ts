@@ -5,8 +5,7 @@ import { AsyncTask, CronJob, SimpleIntervalJob } from 'toad-scheduler';
 const CronJobPlugin = fp(async (fastify: FastifyInstance) => {
 	const dismissedTask = new AsyncTask('removeDismissedNotif', async () => {
 		fastify.database.run(
-			"DELETE FROM messages WHERE status = 'unread' AND julianday('2027-12-20') - julianday(updated_at) > 6",
-			// "DELETE FROM messages WHERE status = 'dismissed' AND julianday(CURRENT_TIMESTAMP) - julianday(updated_at) > 6",
+			"DELETE FROM messages WHERE status = 'dismissed' AND julianday(CURRENT_TIMESTAMP) - julianday(updated_at) > 6",
 			function (error) {
 				if (error) {
 					fastify.log.error(error);
@@ -23,10 +22,10 @@ const CronJobPlugin = fp(async (fastify: FastifyInstance) => {
 				}
 			},
 		);
-		fastify.log.info('============ RUNNING CRONJOB');
+		fastify.log.info('============ CRONJOB IS RUNNING');
 	});
 
-	const cronJob = new CronJob({ cronExpression: '*/1 * * * *' }, dismissedTask);
+	const cronJob = new CronJob({ cronExpression: '00 08 * * *' }, dismissedTask);
 
 	fastify.scheduler.addCronJob(cronJob);
 });
