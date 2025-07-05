@@ -8,7 +8,7 @@ const NATS_PASSWORD = process.env.NATS_PASSWORD;
 export const natsPlugin = fp(async (fastify: FastifyInstance) => {
 	try {
 		const nats: NatsConnection = await connect({
-			servers: 'nats://localhost:4222',
+			servers: 'nats://localhost:4222', // TODO: Change this to Nats container name
 			user: NATS_USER,
 			pass: NATS_PASSWORD,
 		});
@@ -18,7 +18,12 @@ export const natsPlugin = fp(async (fastify: FastifyInstance) => {
 		fastify.decorate('nats', nats);
 
 		fastify.addHook('onClose', async () => {
-			await nats.close();
+			try {
+				await nats.close();
+				fastify.log.info('⚾️ NATS Closed Successfully');
+			} catch (error) {
+				fastify.log.error(error);
+			}
 		});
 	} catch (err) {
 		fastify.log.error(err);
