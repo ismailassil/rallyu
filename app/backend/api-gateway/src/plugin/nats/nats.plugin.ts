@@ -37,6 +37,7 @@ export const natsPlugin = fp(
 
 			fastify.addHook('onClose', async () => {
 				await nats.close();
+				fastify.log.info('⚾️ NATS Closed Successfully');
 			});
 		} catch (err) {
 			fastify.log.error(err);
