@@ -79,11 +79,10 @@ export const socketioPlugin = fp(async function (fastify: FastifyInstance) {
 	// ! DOCS
 	// Socket Middleware that verifies the User
 	fastify.io.use((socket, next) => {
+		// TODO: Only used for Testing
 		const vToekn = '8)@zNX[3cZ:xfn_';
 		const jwtToken =
 			socket.handshake.auth.token ?? socket.handshake.headers.token;
-
-		fastify.log.info(jwtToken);
 
 		try {
 			const res = socket.handshake.auth.token
