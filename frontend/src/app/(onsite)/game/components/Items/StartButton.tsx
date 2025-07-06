@@ -38,13 +38,13 @@ function StartButton() {
 
 				// 	Requesting to join a match!
 				const results = await joinMatch();
-
+				
 				if (!results) {
 					console.log("Service not avaible!");
 					return ;
 				}
-
 				setLaunch(true);
+
 
 				// const p1 = !playerOne || playerOne === "" ? "Darth Vador" : playerOne;
 				// const p2 = !playerTwo || playerTwo === "" ? "Lord Voldemort" : playerTwo;

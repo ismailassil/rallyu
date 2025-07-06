@@ -11,7 +11,7 @@ import { useGameContext } from "./contexts/gameContext";
 
 export default function Game() {
 	const { connectivity } = useTicTacToe();
-	const { launch, setLaunch, gameType, ws } = useGameContext();
+	const { launch, setLaunch, gameType, ws, setMatchFound } = useGameContext();
 
 	const router = useRouter();
 
@@ -46,7 +46,21 @@ export default function Game() {
         };
 
         sock.onmessage = (message) => {
-			console.log(JSON.parse(message.data));
+			const data = JSON.parse(message.data);
+
+			if (data.type === "MATCH-FOUND")
+				setMatchFound(true);
+			if (data.type === "MATCH-CANCEL") {
+				setMatchFound(false);
+				setLaunch(false);
+			}
+			if (data.type === "BACK-TO-QUEUE")
+				setMatchFound(false);
+			if (data.type === "MATCH-CONFIRMED") {
+				sock.close();
+				setLaunch(false);
+				setMatchFound(false);
+			}
         };
 
 		sock.onerror = (event) => {

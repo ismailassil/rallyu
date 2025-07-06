@@ -1,26 +1,20 @@
 import { WebSocket } from "@fastify/websocket";
 import { FastifyInstance, FastifyRequest } from "fastify";
 
-type Players = {
-    player1?: WebSocket,
-    player2?: WebSocket
-}
-
 const matchQueue: WebSocket[] = [];
 const waitingQueue = [];
 const decisionQueue = [];
 
 const socketPlayers = new Map<number, WebSocket>();
-const rooms = new Map<number, Players>();
+// const rooms = new Map<id, Players>();
 
-rooms.set(1, Object.create(null));
+let roomId = 1;
 let id = 1;
 
 const matchmakingSocketRoutes = async function (app: FastifyInstance) {
     app.addHook("onReady", async () => {
         console.log("Well , looking for players...")
         setInterval(() => {
-
             if (matchQueue.length >= 2) {
                 waitingQueue.push({ player1: matchQueue[0], player2: matchQueue[1]});
                 matchQueue[0].send(JSON.stringify({ type: "MATCH-FOUND" }));
@@ -28,7 +22,7 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
                 matchQueue.shift();
                 matchQueue.shift();
             }
-
+            console.log("Sockets: ", socketPlayers.size);
             console.log("Matching: ", matchQueue.length);
             console.log("Waiting: ", waitingQueue.length);
             console.log("Decision: ", decisionQueue.length);
@@ -36,19 +30,39 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
         }, 3000)
 
         setInterval(() => {
-
-            const players = decisionQueue.find((ele) => ele.length == 2);
-
+            const players = decisionQueue.find((ele) => Object.keys(ele).length == 2);
             if (players) {
                 if (players.player1.status && players.player2.status) {
-                    // Make room and set the game up YOOOOOOOO
-                } else if (players.player1.status || players.player2.status) {
-                    if (players.player1.status == 1)
-                        matchQueue.push(players.player1.sock);
-                    else
-                        matchQueue.push(players.player2.sock)
-                }
+                    players.player1.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED" }));
+                    players.player2.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED" }));
+                    const room = {
+                            roomId: roomId++,
+                            players: { playerId1: players.player1.sock, playerId2: players.player2.sock } 
+                        };
 
+                    // Fetch Post request send room over network to game service!!!!!!!!!
+                    // await = fetch("http://localhost:3000/api/v1/game/create/room", {
+                    //         method: "POST",
+                    //         headers: {
+                    //             'Content-Type': 'application/json'
+                    //         },
+                    //         body: JSON.stringify(room);
+                    //     });
+                    
+                } else if (players.player1.status || players.player2.status) {
+                    if (players.player1.status == 1) {
+                        matchQueue.push(players.player1.sock);
+                        players.player2.sock.send(JSON.stringify({ type: "MATCH-CANCEL" }));
+                        players.player1.sock.send(JSON.stringify({ type: "BACK-TO-QUEUE" }));
+                    } else {
+                        matchQueue.push(players.player2.sock)
+                        players.player1.sock.send(JSON.stringify({ type: "MATCH-CANCEL" }));
+                        players.player2.sock.send(JSON.stringify({ type: "BACK-TO-QUEUE" }));
+                    }
+                } else {
+                    players.player1.sock.send(JSON.stringify({ type: "MATCH-CANCEL" }));
+                    players.player2.sock.send(JSON.stringify({ type: "MATCH-CANCEL" }));
+                }
                 decisionQueue.splice(decisionQueue.indexOf(players), 1);
             }
         })
@@ -56,13 +70,6 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
 
     app.get("/join", { websocket: true }, (connection: WebSocket, req: FastifyRequest) => {
         if (connection.OPEN) {
-            // const players: Players | undefined = rooms.get(1);
-            
-            // if (players && !Object.keys(players).length)
-            //     players.player1 = connection;
-            // else if (players && Object.keys(players).length == 1)
-            //     players.player2 = connection;
-
             matchQueue.push(connection);
             socketPlayers.set(id++, connection)
         }
@@ -70,7 +77,7 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
         connection.on('message', (message) => {
             const data = message.toString('utf-8');
             const dataObj = JSON.parse(data);
-            console.log(`Received ${dataObj}`);
+            console.log(`Received ${dataObj.type}`);
 
             if (dataObj.type == "MATCH-CONFIRMATION") {
                 let player;
@@ -92,7 +99,7 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
                 })
                 
                 decisionQueue.forEach((val, ind) => {
-                    if (val.length == 1 && val.player1.sock == opponent) {
+                    if (Object.keys(val).length == 1 && val.player1.sock === opponent) {
                         val.player2 = { sock: player, status: dataObj.status };
                         done = 1;
                         waitingQueue.splice(playersIndex, 1);
@@ -121,14 +128,6 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
         connection.on('close', () => {
             console.log("Connection closed!");
             const ind = matchQueue.indexOf(connection);
-            
-            for (const [key, value] of rooms.entries()) {
-                if (value.player1 == connection || value.player2 == connection) {
-                    rooms.delete(key);
-                    break ;
-                }
-            }
-
 
             for (let i = 0; i < waitingQueue.length; i++) {
                 if (waitingQueue[i].player1 === connection || waitingQueue[i].player2 === connection) {

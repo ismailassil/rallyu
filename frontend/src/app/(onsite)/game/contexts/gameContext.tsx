@@ -6,6 +6,8 @@ type gameTypes = {
 	launch: boolean;
 	setLaunch: Dispatch<SetStateAction<boolean>>;
 	ws: RefObject<WebSocket | null>;
+	matchFound: boolean;
+	setMatchFound: Dispatch<SetStateAction<boolean>>
 };
 
 const GameContext = createContext<gameTypes | undefined>(undefined);
@@ -22,7 +24,8 @@ export function useGameContext() {
 
 export function GameProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	const [gameType, setGameType] = useState<"pingpong" | "tictactoe">("pingpong");
-	const [launch, setLaunch] = useState(false);
+	const [launch, setLaunch] = useState<boolean>(false);
+	const [matchFound, setMatchFound] = useState<boolean>(false);
 	const ws = useRef<WebSocket | null>(null);
 
 	return (
@@ -32,7 +35,9 @@ export function GameProvider({ children }: Readonly<{ children: React.ReactNode 
 				setGameType,
 				launch,
 				setLaunch,
-				ws
+				ws,
+				matchFound,
+				setMatchFound
 			}}
 		>
 			{children}
