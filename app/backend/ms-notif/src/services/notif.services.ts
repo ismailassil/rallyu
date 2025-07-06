@@ -18,11 +18,16 @@ class NotifSerives {
 
 		// Register the Notification Senders
 		let from_id = await this.notifRepository.checkUser(from_user);
-		if (from_id === null)
+		if (from_id === null) {
+			// TODO: Request the user's image
 			from_id = await this.notifRepository.registerUser(from_user);
+		}
 
 		let to_id = await this.notifRepository.checkUser(to_user);
-		if (to_id === null) to_id = await this.notifRepository.registerUser(to_user);
+		if (to_id === null) {
+			// TODO: Request the user's image
+			to_id = await this.notifRepository.registerUser(to_user);
+		}
 
 		// Register the Notification Message
 		const fullData: INotifMessage = await this.notifRepository.registerMessage(
@@ -48,7 +53,6 @@ class NotifSerives {
 
 		return data.id;
 	}
-
 
 	async getUserMessages(username: string, page: number): Promise<INotifMessage[]> {
 		let user_id = await this.notifRepository.checkUser(username);

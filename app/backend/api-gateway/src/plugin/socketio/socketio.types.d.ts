@@ -20,3 +20,7 @@ interface ServerToClientEvents {
 	update: (data: any) => void;
 	notify: (data: any) => void;
 }
+
+interface socketioOpts {
+	FRONT_PORT: string;
+}
