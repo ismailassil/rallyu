@@ -31,6 +31,7 @@
 	--color-bg: rgba(255, 255, 255, 0.08);
 	--color-hbbg: rgba(255, 255, 255, 0.1);
 	--color-hbg: rgba(255, 255, 255, 0.07);
+	--font-fdisplay: var(--font-funnel-display);
 }
 
 @layer utilities {

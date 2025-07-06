@@ -5,8 +5,8 @@ import { useAuth } from '../../../contexts/AuthContext';
 import ProgressBar from '@/app/(auth)/components/ProgressBar';
 import { motion } from "framer-motion";
 import FriendsPanel from "../../../components/Main/FriendsPanel";
-import Performance from "../../components/Performance";
-import GamesHistory from "../../components/GamesHistory";
+import Performance from "../components/Performance";
+import GamesHistory from "../components/GamesHistory";
 import UserPanel from "../components/UserPanel";
  
 export default function UserProfilePage({ params } : { params: Promise<{ username: string }> }) {
