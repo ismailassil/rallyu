@@ -4,7 +4,7 @@
 import unicaOne from "@/app/fonts/unicaOne";
 import Image from "next/image";
 import { useAuth } from "../../contexts/AuthContext";
-import { IUserInfo, IUserPerformance } from "../me/page";
+import { IUserInfo, IUserPerformance } from "../oldme/page";
 
 function UserPanel({ userInfo, userPerformance } : { userInfo: IUserInfo, userPerformance: IUserPerformance } ) {
 	const { user } = useAuth();

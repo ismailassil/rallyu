@@ -1,11 +1,11 @@
 "use client";
 
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { IUserInfo, IUserPerformance } from "../../me/page";
+import { IUserInfo, IUserPerformance } from "../../../types";
 import ProfileCard from "./ProfileCard";
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 
-function UserPanel({ userInfo, userPerformance } : { userInfo: IUserInfo, userPerformance: IUserPerformance } ) {
+function HeroCard({ userInfo, userPerformance } : { userInfo: IUserInfo, userPerformance: IUserPerformance } ) {
 	const { user } = useAuth();
 	console.log('UserPanel');
 	console.log('AuthUsername: ', user?.username);
@@ -65,4 +65,4 @@ function UserPanel({ userInfo, userPerformance } : { userInfo: IUserInfo, userPe
 	);
 }
 
-export default UserPanel;
+export default HeroCard;

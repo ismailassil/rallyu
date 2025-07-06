@@ -1,20 +1,22 @@
 import React from 'react';
 import Image from 'next/image';
-import { IUserInfo, IUserPerformance } from '../../me/page';
+import { IUserInfo, IUserPerformance } from '../../../types';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
+import RelationsButtons from '../Relations/Relations';
 
 export default function ProfileCard({ userInfo, userPerformance } : { userInfo: IUserInfo, userPerformance: IUserPerformance } ) {
 	return (
 		<div className="flex-3 flex h-full w-full flex-col items-center gap-4 lg:gap-0">
-			<div className="flex h-full w-full flex-1 items-center">
-				<div className="flex-5">
+			<div className="flex h-full w-full flex-1">
+				<div className="flex-5 flex flex-col justify-center gap-5">
 					<h1 className={`text-4xl lg:text-5xl text-accent font-bold ${funnelDisplay.className} uppercase`}>
 						{userInfo.first_name + ' ' + userInfo.last_name}
 					</h1>
-					<p className="text-sm text-gray-400 lg:text-lg">
+					<p className={`text-sm text-gray-400 lg:text-lg`}>
 						{/* {userInfo.bio} */}
 						Something went wrong, please try again later.
 					</p>
+					<RelationsButtons />
 				</div>
 				<div className="flex-3 flex h-full items-center justify-end">
 					<div

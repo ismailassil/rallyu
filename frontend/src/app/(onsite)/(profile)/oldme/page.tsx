@@ -1,31 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-'use client';
-import { use, useState, useEffect } from 'react';
-import { IUserProfile } from '../../types';
-import { useAuth } from '../../../contexts/AuthContext';
-import ProgressBar from '@/app/(auth)/components/ProgressBar';
+
+"use client";
+
 import { motion } from "framer-motion";
-import FriendsPanel from "../../../components/Main/FriendsPanel";
-import Performance from "../components/Performance/Performance";
-import GamesHistory from "../components/GamesHistory/GamesHistory";
-import HeroCard from '../components/Hero/HeroCard';
- 
-export default function UserProfilePage({ params } : { params: Promise<{ username: string }> }) {
-	const { api } = useAuth();
-	const { username } = use(params);
+import FriendsPanel from "../../components/Main/FriendsPanel";
+import Performance from "./components/Performance";
+import GamesHistory from "./components/GamesHistory";
+import UserPanel from "./components/UserPanel";
+import { useEffect, useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { IUserProfile } from "../types";
 
+export default function Me() {
+	const { user, api } = useAuth();
 	const [userProfile, setUserProfile] = useState<IUserProfile | null>(null);
-
+	
+	
 	useEffect(() => {
 		async function fetchProfile() {
-			const profile = await api.getUserProfile(username);
+			const profile = await api.getUserProfile(user!.username);
 			setUserProfile(profile);
 		}
 		fetchProfile();
 	}, []);
 
 	if (!userProfile)
-		return ( <ProgressBar complete={userProfile !== null} /> );
+		return null;
 
 	return (
 		<motion.main
@@ -36,7 +36,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 		>
 			<div className="flex h-full w-full gap-6 rounded-lg">
 				<article className="flex-5 flex h-full w-full flex-col gap-4">
-					<HeroCard userInfo={userProfile.profile} userPerformance={userProfile.performance}/>
+					<UserPanel userInfo={userProfile.profile} userPerformance={userProfile.performance}/>
 					<div
 						className="hide-scrollbar flex flex-1 flex-col space-x-4
 							space-y-4 overflow-scroll overflow-x-hidden lg:flex-row lg:space-y-0"

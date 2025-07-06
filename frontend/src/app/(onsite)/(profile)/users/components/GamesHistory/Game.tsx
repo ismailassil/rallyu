@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { IGameHistory } from "../../me/page";
+import { IGameHistory } from "../../../types";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 
 function Game({ gameInfo } : { gameInfo: IGameHistory }) {
@@ -23,17 +23,17 @@ function Game({ gameInfo } : { gameInfo: IGameHistory }) {
 	console.log('matchResult: ', matchResult);
 
 	return (
-		<div className="bg-card border-br-card hover:scale-101 duration-400 hover:bg-hbg hover:border-hbbg relative flex items-center justify-between overflow-hidden rounded-2xl border-2 px-5 py-6 transition-transform">
+		<div className="bg-white/4 border border-white/10 hover:scale-101 duration-200 hover:bg-hbg hover:border-hbbg relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-6 transition-all">
 			<div
-				className={`w-19 absolute -top-1 left-1/2 flex h-8 -translate-x-1/2 items-end justify-center pb-1 ${
+				className={`w-19 h-8 absolute -top-1 left-1/2 flex -translate-x-1/2 items-end justify-center pb-1 ${
 					matchResult === 0 ? "bg-gray-600" : matchResult >= 1 ? "bg-green-600" : "bg-red-600"
-				} ring-border-gray-thick/50 rounded-b-lg ring-2`}
+				} border-1 border-gray-600 rounded-b-lg`}
 			>
 				<p className="text-sm">
 					{matchResult === 0 ? "Draw" : matchResult >= 1 ? "Victory" : "Defeat"}
 				</p>
 			</div>
-			<div className="w-19 bg-gray-thick ring-border-gray-thick/50 absolute -bottom-1 left-1/2 flex h-8 -translate-x-1/2 items-center justify-center rounded-t-lg ring-2">
+			<div className="w-19 bg-gray-thick border border-white/15 absolute -bottom-1 left-1/2 flex h-8 -translate-x-1/2 items-center justify-center rounded-t-lg">
 				<Image
 					src={type === "XO" ? "/icons/XO.svg" : "/icons/ping-pong.svg"}
 					width={type === "XO" ? 30 : 18}
