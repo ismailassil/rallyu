@@ -1,6 +1,5 @@
 import { app as fastify } from './app.js';
 import dotenv from '@dotenvx/dotenvx';
-import proxy from '@fastify/http-proxy';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import fastifyRateLimit from '@fastify/rate-limit';
@@ -10,6 +9,7 @@ import { metricsAuthEndpoint } from './endpoint/metrics.endpoint.js';
 import { natsPlugin } from './plugin/nats/nats.plugin.js';
 import { socketioPlugin } from './plugin/socketio/socketio.plugin.js';
 import fastifyJwt from '@fastify/jwt';
+import endpointsPlugin from './plugin/backendEnpoints/endpoints.plugin.js';
 
 dotenv.config();
 
@@ -20,7 +20,8 @@ const AUTH_PORT = process.env.AUTH_PORT;
 // ** CORS Plugin
 await fastify.register(cors, {
 	// TODO: Should be specified to the frontend
-	origin: [`http://frontend:${FRONT_PORT}`],
+	// origin: [`http://frontend:${FRONT_PORT}`],
+	origin: [`http://localhost:${FRONT_PORT}`],
 	allowedHeaders: ['Content-Type', 'Authorization'],
 });
 
@@ -52,18 +53,19 @@ const natsOptions = {
 await fastify.register(natsPlugin, natsOptions);
 
 // ** SocketIO Plugin
-// TODO: Add Authentication to Sockets
-await fastify.register(socketioPlugin);
 
-// ** PROXY Plugin
-const authProxyOptions = {
-	upstream: `http://localhost:${AUTH_PORT}`,
-	prefix: '/api/auth',
-	rewritePrefix: '/auth',
-	httpMethods: ['GET', 'POST', 'DELETE', 'PUT'],
+const socketioOptions = {
+	FRONT_PORT: FRONT_PORT ?? '',
 };
 
-fastify.register(proxy, authProxyOptions);
+// TODO: Add Authentication to Sockets
+await fastify.register(socketioPlugin, socketioOptions);
+
+// ** PROXY Plugin
+await fastify.register(endpointsPlugin, {
+	NOTIF_PORT: process.env.NOTIF_PORT ?? '',
+	AUTH_PORT: process.env.AUTH_PORT ?? '',
+});
 
 // ** METRICS Plugin
 fastify.register(fastifyMetrics, { endpoint: '/inter-metrics' });

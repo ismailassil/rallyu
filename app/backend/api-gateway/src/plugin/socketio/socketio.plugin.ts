@@ -1,16 +1,19 @@
 import fastify, { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import { Server as SocketIOServer } from 'socket.io';
+import { socketioOpts } from './socketio.types';
 
-const FRONT_PORT = process.env.FRONT_PORT;
-
-export const socketioPlugin = fp(async function (fastify: FastifyInstance) {
+export const socketioPlugin = fp(async function (
+	fastify: FastifyInstance,
+	opts: socketioOpts,
+) {
 	fastify.decorate('connectedUsers', new Map<string, Set<string>>());
 
 	try {
 		const io = new SocketIOServer(fastify.server, {
 			cors: {
-				origin: `http://frontend:${FRONT_PORT}`,
+				// origin: `http://frontend:${FRONT_PORT}`,
+				origin: `http://localhost:${opts.FRONT_PORT}`,
 				methods: ['GET', 'POST'],
 				// credentials: true // TODO: Enable this for secure connection
 			},
@@ -57,6 +60,7 @@ export const socketioPlugin = fp(async function (fastify: FastifyInstance) {
 		// ! DOCS
 		// The user should sent after connection its identity
 		// through `username`
+		// TODO: To be removed, retrieve the username from the JWT when the user authenticate
 		socket.on('identify', async (data) => {
 			const username = data.username;
 
@@ -89,6 +93,9 @@ export const socketioPlugin = fp(async function (fastify: FastifyInstance) {
 			const res = socket.handshake.auth.token
 				? fastify.jwt.verify(jwtToken)
 				: jwtToken === vToekn;
+
+			// TODO: Save the username in the socket
+			// socket.data.username = res.username;
 
 			if (res !== true) throw new Error();
 			next();

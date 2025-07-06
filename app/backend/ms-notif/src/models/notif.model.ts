@@ -22,6 +22,7 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 		CREATE TABLE IF NOT EXISTS notification_users (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			username TEXT UNIQUE NOT NULL
+			image BLOB NOT NULL,
 		);
 
 		CREATE TABLE IF NOT EXISTS messages (

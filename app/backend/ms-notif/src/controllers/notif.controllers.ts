@@ -41,17 +41,6 @@ class NotifControllers {
 			// Parse the Notification
 			const resData = JSON.parse(result);
 
-			// Emit notification event to all connected clients
-			// ? THIS IS SocketIO
-			// let userSocketId: string[] = this.notifServices.getSocketId(
-			// 	req.body.to_user,
-			// );
-			// this.notifServices.broadcastMessage(
-			// 	'notification',
-			// 	userSocketId,
-			// 	resData,
-			// );
-
 			// Send back to API & SocketIO Gateway through NATS Server
 			const jc = JSONCodec();
 			fastify.nats.publish(
@@ -84,6 +73,7 @@ class NotifControllers {
 	}
 
 	// Limit-Offset Pagination
+	// ?? PATH/:username&page=?
 	async fetchHistory(
 		req: FastifyRequest<{ Params: IFetchParams; Querystring: IFetchQuery }>,
 		res: FastifyReply,
@@ -125,14 +115,6 @@ class NotifControllers {
 			// Update the Notification in DB
 			await this.notifServices.updateNotification(req.body);
 			fastify.log.info('✅ Notification updated');
-
-			// ? THIS IS SocketIO
-			// Let the other Connected Session update the changes real-time
-			// let userSocketId: string[] = this.notifServices.getSocketId(username);
-			// this.notifServices.broadcastMessage('update', userSocketId, [
-			// 	all || notificationId,
-			// 	status,
-			// ]);
 
 			// Send back to API & SocketIO Gateway through NATS Server
 			const jc = JSONCodec();

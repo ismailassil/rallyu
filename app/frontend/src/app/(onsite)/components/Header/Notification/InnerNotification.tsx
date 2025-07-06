@@ -13,7 +13,7 @@ function InnerNotification({
 	if (name && name.trim().length > 20) name = name.trim().substring(0, 17) + "...";
 	if (message && message.trim().length > 25) message = message.trim().substring(0, 25) + "...";
 	return (
-		<div className="min-h-16 flex max-h-20 w-full items-center gap-3 px-2 py-4 text-start">
+		<div className="min-h-16 flex max-h-20 w-full items-center hover:bg-black/10 gap-3 px-2 py-4 text-start">
 			<div className="flex flex-1 items-center gap-3">
 				<div className="min-h-8 min-w-8 max-w-8 flex aspect-square max-h-8 overflow-hidden rounded-full">
 					<Image

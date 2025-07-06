@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import InnerNotification from "./Notification/InnerNotification";
 
 interface NotificationProps {
 	setIsNotif: (value: boolean) => void;
@@ -65,7 +64,7 @@ export default function Notification({
 						className="top-18 w-70 bg-card border-br-card absolute right-0
 							z-10 flex 
 							max-h-[348px] origin-top-right flex-col overflow-hidden rounded-lg
-							border-2 backdrop-blur-xl"
+							border-2 backdrop-blur-3xl"
 					>
 						<div className="bg-card/70 sticky top-0 z-20 flex w-full items-center justify-between px-4 py-3 text-start backdrop-blur-3xl">
 							<p>Notification</p>
@@ -77,17 +76,15 @@ export default function Notification({
 							</div>
 						</div>
 						<div className="custom-scroll divide-y-1 divide-bg flex-1 overflow-y-scroll">
-							{Array.from({ length: 12 }).map((_, i) => (
-								// <p key={i} className="px-7 py-4 w-full flex text-start h-14">
-								// 	Nothing &#129488;
-								// </p>
+							<p className="flex h-14 w-full px-7 py-4 text-start">Nothing &#129488;</p>
+							{/* {Array.from({ length: 12 }).map((_, i) => (
 								<InnerNotification
 									key={i}
 									name={"Ismail Assil"}
 									message={"Hello Ismail! How are you doing"}
 									type={"game"}
 								/>
-							))}
+							))} */}
 						</div>
 					</motion.div>
 				)}
