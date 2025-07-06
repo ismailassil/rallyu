@@ -1,7 +1,7 @@
 "use client";
 
 import Chart from "./Chart";
-import { IUserPerformance } from "../../me/page";
+import { IUserPerformance } from '../../../types';
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import CountUp from "react-countup";
 
@@ -75,7 +75,7 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 							<div
 								className="bg-white/4 border border-white/10 hover:scale-101 rounded-2xl pl-4 pr-4 pt-2 pb-2
 											flex flex-row items-center justify-between backdrop-blur-xl
-											lg:flex-row transition-transform duration-200"
+											lg:flex-row transition-transform duration-200 hover:bg-white/6"
 							>
 								<p className="text-2xl text-white/60 font-bold">Total XP</p>
 								<p className="text-3xl text-white/80 font-bold">
@@ -86,9 +86,9 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 							<div className="flex w-full gap-3 text-center">
 								<div
 									className="bg-white/4 border border-white/10 hover:scale-101 flex flex-1
-											flex-col items-center justify-center overflow-auto rounded-2xl p-5 py-2 transition-transform backdrop-blur-xl
+											flex-col items-center justify-center overflow-auto rounded-2xl p-5 py-2 transition-all backdrop-blur-xl
 											duration-200
-											sm:flex-row sm:justify-between
+											sm:flex-row sm:justify-between hover:bg-white/6
 										"
 								>
 									<p className="text-lg text-white/60 font-bold sm:text-xl sm:text-start">
@@ -103,9 +103,9 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 								</div>
 								<div
 									className="bg-white/4 border border-white/10 hover:scale-101 flex flex-1
-										flex-col items-center justify-center overflow-auto rounded-2xl p-5 py-2 transition-transform backdrop-blur-xl
+										flex-col items-center justify-center overflow-auto rounded-2xl p-5 py-2 transition-all backdrop-blur-xl
 										duration-200
-										sm:flex-row sm:justify-between
+										sm:flex-row sm:justify-between hover:bg-white/6
 									"
 								>
 									<p className="text-lg text-white/60 font-bold sm:text-xl sm:text-start">
@@ -124,9 +124,9 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 							<div className="flex w-full gap-3 text-center ">
 								<div
 									className="bg-white/4 border border-white/10 hover:scale-101 flex flex-1
-										flex-col items-center justify-center overflow-auto rounded-2xl p-5 py-2 transition-transform backdrop-blur-xl
+										flex-col items-center justify-center overflow-auto rounded-2xl p-5 py-2 transition-all backdrop-blur-xl
 										duration-200
-										sm:flex-row sm:justify-between"
+										sm:flex-row sm:justify-between hover:bg-white/6"
 								>
 									<p className="text-lg text-white/60 font-bold">Wins</p>
 									<p className="text-3xl text-white/80 font-bold">
@@ -135,9 +135,9 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 								</div>
 								<div
 									className="bg-white/4 border border-white/10 hover:scale-101 flex flex-1
-										flex-col items-center justify-center overflow-auto rounded-2xl p-5 py-2 transition-transform backdrop-blur-xl
+										flex-col items-center justify-center overflow-auto rounded-2xl p-5 py-2 transition-all backdrop-blur-xl
 										duration-200
-										sm:flex-row sm:justify-between
+										sm:flex-row sm:justify-between hover:bg-white/6
 									"
 								>
 									<p className="text-lg text-white/60 font-bold">Losses</p>
@@ -147,7 +147,7 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 								</div>
 								<div
 									className="bg-white/4 border border-white/10 hover:scale-101 flex flex-1
-										flex-col items-center justify-center overflow-auto rounded-2xl p-5 py-2 transition-transform backdrop-blur-xl
+										flex-col items-center justify-center overflow-auto rounded-2xl p-5 py-2 transition-all backdrop-blur-xl
 										duration-200
 										sm:flex-row sm:justify-between
 									"
@@ -162,7 +162,7 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 							<div
 								className="jusitfy-between bg-white/4 border border-white/10 min-h-70 hover:scale-101 flex max-h-80
 										w-full flex-1 flex-col items-center backdrop-blur-xl
-										gap-3 overflow-hidden rounded-2xl pt-5 transition-transform duration-200"
+										gap-3 overflow-hidden rounded-2xl pt-5 transition-all duration-200 hover:bg-white/6"
 							>
 								<p className="text-xl text-white/60 font-bold">Time Spent on Platform</p>
 								<div className="relative h-full w-full">

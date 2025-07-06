@@ -1,7 +1,7 @@
 "use client";
 
 import Game from "./Game";
-import { IGameHistory } from "../../me/page";
+import { IGameHistory } from "../../../oldme/page";
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 
 export default function GamesHistory({ userGames } : { userGames: Array<IGameHistory> }) {
