@@ -18,7 +18,7 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: endpointsOpts)
 		upstream: `http://localhost:${NOTIF_PORT}`,
 		prefix: '/api/notif',
 		rewritePrefix: '/notif',
-		httpMethods: ['GET'],
+		httpMethods: ['GET', 'PUT'],
 	};
 
 	await fastify.register(proxy, authProxyOptions);

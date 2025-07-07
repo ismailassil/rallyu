@@ -7,6 +7,7 @@ import SideBar from "./components/Sidebar";
 import { TicTacToeProvider } from "./contexts/tictactoeContext";
 import { PingPongProvider } from "./contexts/pingpongContext";
 import { GameProvider } from "./game/contexts/gameContext";
+import NotificationCenter from "./components/PushNotification/NotificationCenter";
 
 export default function RootLayout({
 	children,
@@ -28,6 +29,7 @@ export default function RootLayout({
 			<Header />
 			<div>
 				<SideBar />
+				<NotificationCenter />
 				<GameProvider>
 					<TicTacToeProvider>
 						<PingPongProvider>{children}</PingPongProvider>

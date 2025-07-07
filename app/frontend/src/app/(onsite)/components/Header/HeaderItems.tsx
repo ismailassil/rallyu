@@ -9,7 +9,7 @@ import Profile from "./Profile";
 export default function HeaderItems() {
 	const [isSearch, setIsSearch] = useState(false);
 	const [isProfile, setIsProfile] = useState(false);
-	const [isNotif, setIsNotif] = useState(false);
+	const [isNotif, setIsNotif] = useState(true);
 	const profileRef = useRef<HTMLDivElement>(null);
 	const notificationRef = useRef<HTMLDivElement>(null);
 

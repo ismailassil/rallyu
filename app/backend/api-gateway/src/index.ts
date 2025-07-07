@@ -14,8 +14,7 @@ import endpointsPlugin from './plugin/backendEnpoints/endpoints.plugin.js';
 dotenv.config();
 
 const PORT = parseInt(process.env.PORT || '4004');
-const FRONT_PORT = process.env.FRONT_PORT;
-const AUTH_PORT = process.env.AUTH_PORT;
+const FRONT_PORT = process.env.FRONT_PORT ?? '';
 
 // ** CORS Plugin
 await fastify.register(cors, {
@@ -54,9 +53,7 @@ await fastify.register(natsPlugin, natsOptions);
 
 // ** SocketIO Plugin
 
-const socketioOptions = {
-	FRONT_PORT: FRONT_PORT ?? '',
-};
+const socketioOptions = { FRONT_PORT: FRONT_PORT };
 
 // TODO: Add Authentication to Sockets
 await fastify.register(socketioPlugin, socketioOptions);
@@ -70,23 +67,21 @@ await fastify.register(endpointsPlugin, {
 // ** METRICS Plugin
 fastify.register(fastifyMetrics, { endpoint: '/inter-metrics' });
 
-// ** Metrics Endpoint Authorization (verification)
+// ** Metrics Endpoint Authorization
 fastify.addHook('preHandler', metricsAuthEndpoint);
 
 fastify.get('/health', async (_, res: FastifyReply) => {
 	return res.status(200).send({ status: 'up' });
 });
 
-async function main() {
-	try {
-		await fastify.listen({ host: '::', port: PORT });
-	} catch (error) {
-		fastify.log.error(error);
-		process.exit(1);
-	}
-}
-
-main();
+(function () {
+	fastify.listen({ host: '::', port: PORT }, (error) => {
+		if (error) {
+			fastify.log.error(error);
+			process.exit(1);
+		}
+	});
+})();
 
 process.on('SIGINT', async () => {
 	fastify.log.info('[ ~ ] CLOSING FASTIFY');

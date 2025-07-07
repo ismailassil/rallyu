@@ -60,7 +60,7 @@ export const socketioPlugin = fp(async function (
 		// ! DOCS
 		// The user should sent after connection its identity
 		// through `username`
-		// TODO: To be removed, retrieve the username from the JWT when the user authenticate
+		// TODO: To be removed, retrieve the username from the JWT when the user successfully authenticate
 		socket.on('identify', async (data) => {
 			const username = data.username;
 
@@ -96,6 +96,8 @@ export const socketioPlugin = fp(async function (
 
 			// TODO: Save the username in the socket
 			// socket.data.username = res.username;
+			// addUserSocket(username, socket.id);
+			// await socket.join(data.username);
 
 			if (res !== true) throw new Error();
 			next();

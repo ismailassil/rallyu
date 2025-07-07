@@ -11,7 +11,8 @@ import { natsPlugin } from './shared/plugins/natsPlugin.js';
 const PORT = parseInt(process.env.PORT || '9012');
 
 const redisOptions = {
-	host: '127.0.0.1', // TODO: Change this into the redis container name
+	host: '127.0.0.1', // TODO: Change host into the redis container name
+	// host: 'redis',
 	password: process.env.REDIS_PASSWORD,
 	port: 6379,
 };
@@ -26,16 +27,14 @@ await fastify.register(fastifySchedule);
 // await fastify.register(CronJobPlugin); // TODO: Activate this in Production
 await fastify.register(natsPlugin);
 
-function main() {
+(function () {
 	fastify.listen({ host: '::', port: PORT }, (err) => {
 		if (err) {
 			console.error(err);
 			process.exit(1);
 		}
 	});
-}
-
-main();
+})();
 
 process.on('SIGINT', async () => {
 	fastify.log.info('[ ~ ] CLOSING FASTIFY');

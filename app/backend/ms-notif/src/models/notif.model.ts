@@ -18,11 +18,11 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 		fastify.log.info('✅ Database opened successfully');
 	});
 
+	// TODO: add image column
 	const createTable = `
 		CREATE TABLE IF NOT EXISTS notification_users (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			username TEXT UNIQUE NOT NULL
-			image BLOB NOT NULL,
 		);
 
 		CREATE TABLE IF NOT EXISTS messages (
