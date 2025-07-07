@@ -5,7 +5,7 @@ interface INotifMessage {
 	to_user_id: string | number;
 	to_user: string;
 	message: string;
-	type: 'chat' | 'game' | 'friend_request';
+	type: notifType;
 	created_at: string;
 	updated_at: string;
 	status: statusType;
@@ -17,6 +17,8 @@ interface IMessage {
 }
 
 type statusType = 'read' | 'unread' | 'dismissed';
+
+type notifType = 'chat' | 'game' | 'friend_request';
 
 export { IMessage, statusType };
 

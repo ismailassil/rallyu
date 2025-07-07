@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import InnerNotification from "./Notification/InnerNotification";
+import { Check } from "@phosphor-icons/react";
 
 interface NotificationProps {
 	setIsNotif: (value: boolean) => void;
@@ -19,6 +21,12 @@ export default function Notification({
 }: NotificationProps) {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [newNotification, setNewNotification] = useState<boolean>(false);
+	const notificationCount = 1;
+
+	const notifSubTitle =
+		notificationCount >= 1
+			? `You have ${notificationCount} unread notification${notificationCount > 1 ? "s" : ""}`
+			: `You have no new notifications`;
 
 	return (
 		<div className="relative" ref={notificationRef}>
@@ -27,11 +35,9 @@ export default function Notification({
 							w-[55px] items-center justify-center rounded-full border-2 hover:cursor-pointer
 							${
 								isNotif
-									? "bg-hbg border-hbbg ring-bbg 								scale-101 ring-4"
-									: "hover:bg-hbg hover:border-hbbg hover:ring-bbg 								hover:scale-101 hover:ring-4"
-							} transition-transform duration-200
-								
-								`}
+									? "bg-hbg border-hbbg ring-bbg scale-101 ring-4"
+									: "hover:bg-hbg hover:border-hbbg hover:ring-bbg hover:scale-101 hover:ring-4"
+							} transition-transform duration-200`}
 				onClick={() => {
 					setIsProfile(false);
 					setIsSearch(false);
@@ -61,30 +67,44 @@ export default function Notification({
 							stiffness: 60,
 							duration: 0.1,
 						}}
-						className="top-18 w-70 bg-card border-br-card absolute right-0
-							z-10 flex 
-							max-h-[348px] origin-top-right flex-col overflow-hidden rounded-lg
+						className="top-18 w-75 bg-card border-br-card max-h-130 absolute
+							right-0 z-10 
+							flex origin-top-right flex-col overflow-hidden rounded-lg
 							border-2 backdrop-blur-3xl"
 					>
-						<div className="bg-card/70 sticky top-0 z-20 flex w-full items-center justify-between px-4 py-3 text-start backdrop-blur-3xl">
-							<p>Notification</p>
-							<div
-								className="bg-hbbg flex h-1 w-1 items-center justify-center rounded-full p-3
-									text-center text-sm"
-							>
-								0
-							</div>
+						<div className="bg-card  sticky top-0 z-20 flex w-full flex-col px-4 py-3 text-start backdrop-blur-3xl">
+							<p className="font-bold">Notification</p>
+							<p className="text-gray text-sm text-gray-400">{notifSubTitle}</p>
 						</div>
 						<div className="custom-scroll divide-y-1 divide-bg flex-1 overflow-y-scroll">
-							<p className="flex h-14 w-full px-7 py-4 text-start">Nothing &#129488;</p>
-							{/* {Array.from({ length: 12 }).map((_, i) => (
-								<InnerNotification
-									key={i}
-									name={"Ismail Assil"}
-									message={"Hello Ismail! How are you doing"}
-									type={"game"}
-								/>
-							))} */}
+							{/* <p className="flex h-14 w-full px-7 py-4 text-start">Nothing &#129488;</p> */}
+							{Array.from({ length: 12 }).map((_, i) => (
+								<>
+									<InnerNotification
+										key={i}
+										name={"iassil_trucker"}
+										message={"Hello Ismail! How are you doing?"}
+										type={"chat"}
+										date={Date.now()}
+									/>
+									<InnerNotification
+										key={i * 100}
+										name={"iassil"}
+										message={"Hello Ismail! How are you doing?"}
+										type={"game"}
+										date={Date.now()}
+									/>
+								</>
+							))}
+						</div>
+						<div className="bg-card top-0 z-20 flex w-full justify-between px-4 py-3 text-start backdrop-blur-3xl">
+							<p className="flex cursor-pointer items-end gap-2 text-xs hover:underline">
+								<Check size={18} />
+								Mark all as read
+							</p>
+							<p className="flex cursor-pointer items-end gap-2 text-xs hover:underline">
+								Clear All
+							</p>
 						</div>
 					</motion.div>
 				)}

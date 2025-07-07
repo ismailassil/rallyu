@@ -1,4 +1,5 @@
 import { statusType } from './notifMessage.types';
+import { notifType } from './notifyBody.types';
 
 interface IFetchParams {
 	username: string;
@@ -13,7 +14,7 @@ interface IFetchResponse {
 	from_user: string;
 	to_user: string;
 	message: string;
-	type: 'chat' | 'game' | 'friend_request';
+	type: notifType;
 	created_at: string;
 	updated_at: string;
 	status: statusType;

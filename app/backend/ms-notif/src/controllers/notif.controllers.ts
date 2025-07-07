@@ -53,13 +53,9 @@ class NotifControllers {
 			);
 			try {
 				fastify.nats.flush();
-				fastify.log.info(
-					'✅ Notification arrived to the API & SocketIO Gateway',
-				);
+				fastify.log.info('✅ Notification => `Gateway`');
 			} catch {
-				fastify.log.error(
-					'❌ Notification DID NOT arrived to the API & SocketIO Gateway',
-				);
+				fastify.log.error('❌ Notification => `Gateway`');
 			}
 
 			return res
@@ -131,13 +127,9 @@ class NotifControllers {
 			);
 			try {
 				fastify.nats.flush();
-				fastify.log.info(
-					'✅ Notification arrived to the API & SocketIO Gateway',
-				);
+				fastify.log.info('✅ Notification => `Gateway`');
 			} catch {
-				fastify.log.error(
-					'❌ Notification DID NOT arrived to the API & SocketIO Gateway',
-				);
+				fastify.log.error('❌ Notification => `Gateway`');
 			}
 
 			return res
