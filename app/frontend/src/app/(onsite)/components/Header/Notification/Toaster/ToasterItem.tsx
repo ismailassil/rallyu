@@ -1,38 +1,30 @@
-import { X } from "@phosphor-icons/react";
 import Image from "next/image";
-import types from "./types";
-import React, { useEffect } from "react";
+import types, { PushNotifProps } from "../types/Toaster.types";
+import React, { useEffect, useState } from "react";
 
-interface Props {
-	id: string;
-	image: string;
-	username: string;
-	type: "game" | "friend_request" | "chat";
-	onClose: () => void;
-}
-
-function PushNotificationItem({
-	id,
+function ToasterItem({
 	image = "/profile/darthVader.jpeg",
 	username = "iassil",
 	type = "chat",
-	onClose,
-}: Props) {
+}: PushNotifProps) {
+	const [progress, setProgress] = useState(100);
+
 	useEffect(() => {
-		const TIME = 5 * 1000; // 5 Seconds
+		const TIME = 1.5 * 1000;
 		const start = Date.now();
 		const timer = setInterval(() => {
 			const remaining = Date.now() - start;
+			const percentage = Math.max(0, 100 - (remaining / TIME) * 100);
+			setProgress(percentage);
 			if (remaining >= TIME) {
 				clearInterval(timer);
-				onClose();
 			}
 		}, 100);
 
 		return () => {
 			clearInterval(timer);
 		};
-	}, [onClose]);
+	}, []);
 
 	return (
 		<div
@@ -40,8 +32,12 @@ function PushNotificationItem({
 				flex items-center justify-between overflow-hidden rounded-lg bg-black/30
 				px-4 ring-1 ring-white/10 backdrop-blur-lg"
 		>
+			<div
+				className="bg-main absolute left-0 top-0 h-0.5 w-full transition-all"
+				style={{ width: `${progress}%` }}
+			/>
 			<div className="relative flex select-none items-center gap-5">
-				<div className="h-12 w-12 overflow-hidden rounded-full ring-1 ring-white/30">
+				<div className="flex h-12 w-12 overflow-hidden rounded-full ring-1 ring-white/30">
 					<Image
 						src={image}
 						alt="Profile Icon"
@@ -55,17 +51,9 @@ function PushNotificationItem({
 					<p className="text-sm">{types[type].title}</p>
 				</div>
 			</div>
-			<div className="cursor-pointer rounded-full hover:bg-white/5">
-				<X
-					size={24}
-					className="hover:scale-120 duration-350 fill-white/30
-						transition-all hover:fill-white/70"
-					onClick={onClose}
-				/>
-			</div>
 			{types[type].icon}
 		</div>
 	);
 }
 
-export default PushNotificationItem;
+export default ToasterItem;

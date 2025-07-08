@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { UserCircle } from "@phosphor-icons/react";
 
 interface ProfileProps {
 	setIsNotif: (value: boolean) => void;
@@ -38,13 +39,7 @@ export default function Profile({
 					setIsProfile(!isProfile);
 				}}
 			>
-				<Image
-					src="/icons/profile.svg"
-					alt="Notification Icon"
-					width={30}
-					height={30}
-					className={`${isProfile && "animate-pulse"}`}
-				/>
+				<UserCircle size={32} className={`${isProfile && "animate-pulse"}`} />
 				<div
 					className="absolute bottom-[-3] left-9 flex 
 			h-[20px] w-[20px] items-center justify-center rounded-full bg-white bg-opacity-75"
@@ -69,7 +64,7 @@ export default function Profile({
 							stiffness: 60,
 							duration: 0.1,
 						}}
-						className="top-18 w-50 divide-bbg bg-card border-br-card backdrop-blur-xs absolute right-0 z-10 origin-top-right divide-y rounded-lg border-2"
+						className="top-18 w-50 divide-bbg bg-card border-br-card absolute right-0 z-10 origin-top-right divide-y rounded-lg border-2 backdrop-blur-3xl"
 					>
 						<div
 							onClick={(e) => {
@@ -79,7 +74,12 @@ export default function Profile({
 							}}
 							className="hover:bg-hbbg mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer"
 						>
-							<Image src="/icons/profile-btn.svg" alt="Profile Icon" width={30} height={30} />
+							<Image
+								src="/icons/profile-btn.svg"
+								alt="Profile Icon"
+								width={30}
+								height={30}
+							/>
 							<span className="ml-5">Profile</span>
 						</div>
 						<div
@@ -90,11 +90,21 @@ export default function Profile({
 								router.push("/settings");
 							}}
 						>
-							<Image src="/icons/setting-btn.svg" alt="Settings Icon" width={30} height={30} />
+							<Image
+								src="/icons/setting-btn.svg"
+								alt="Settings Icon"
+								width={30}
+								height={30}
+							/>
 							<span className="ml-5">Settings</span>
 						</div>
 						<div className="hover:bg-hbbg mb-2 flex w-full items-center px-7 py-3 hover:cursor-pointer">
-							<Image src="/icons/logout-btn.svg" alt="Logout Icon" width={30} height={30} />
+							<Image
+								src="/icons/logout-btn.svg"
+								alt="Logout Icon"
+								width={30}
+								height={30}
+							/>
 							<p className="ml-5">Logout</p>
 						</div>
 					</motion.div>

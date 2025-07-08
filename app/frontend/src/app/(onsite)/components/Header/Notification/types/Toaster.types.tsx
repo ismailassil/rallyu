@@ -24,6 +24,12 @@ const types = {
 	chat,
 } as const;
 
+export interface PushNotifProps {
+	image: string;
+	username: string;
+	type: "game" | "friend_request" | "chat";
+}
+
 export type notificationsType =
 	| {
 			id: string;
@@ -44,7 +50,7 @@ export type notificationsType =
 			type: "game";
 	  };
 
-export type notifType = {
+export type ToastType = {
 	id: string;
 	image: string;
 	username: string;

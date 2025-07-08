@@ -9,7 +9,7 @@ interface IFetchQuery {
 	page: number;
 }
 
-interface IFetchResponse {
+interface INotifDetail {
 	id: number;
 	from_user: string;
 	to_user: string;
@@ -21,4 +21,4 @@ interface IFetchResponse {
 	action_url: string;
 }
 
-export { IFetchParams, IFetchQuery, IFetchResponse };
+export { IFetchParams, IFetchQuery, INotifDetail };
