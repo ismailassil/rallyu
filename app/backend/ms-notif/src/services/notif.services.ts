@@ -3,7 +3,7 @@ import NotifRepository from '../repositories/notif.repository.js';
 import INotifyBody from '../shared/types/notifyBody.types.js';
 import fastify from '../app.js';
 import IUpdateBody from '../shared/types/update.types.js';
-import { IFetchResponse } from '../shared/types/fetch.types.js';
+import { INotifDetail } from '../shared/types/fetch.types.js';
 import { UserNotFoundException } from '../shared/exceptions/UserNotFoundException.js';
 
 class NotifSerives {
@@ -36,7 +36,7 @@ class NotifSerives {
 			body,
 		);
 
-		const data = {
+		const data: INotifDetail = {
 			id: fullData.id,
 			from_user: fullData.from_user,
 			to_user: fullData.to_user,
@@ -80,7 +80,7 @@ class NotifSerives {
 			: this.notifRepository.updateNotif(status, user_id, notificationId));
 	}
 
-	unpackMessage(fullData: INotifMessage[]): IFetchResponse[] {
+	unpackMessage(fullData: INotifMessage[]): INotifDetail[] {
 		return fullData.map(
 			({
 				id,

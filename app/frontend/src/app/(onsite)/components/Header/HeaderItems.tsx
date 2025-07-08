@@ -2,14 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import Search from "./Search";
-import Notification from "./Notification";
+import Notification from "./Notification/NotificationCenter";
 import Profile from "./Profile";
-// import NotificationBox from "./Notification/NotificationBox";
 
 export default function HeaderItems() {
 	const [isSearch, setIsSearch] = useState(false);
 	const [isProfile, setIsProfile] = useState(false);
-	const [isNotif, setIsNotif] = useState(true);
+	const [isNotif, setIsNotif] = useState(false);
 	const profileRef = useRef<HTMLDivElement>(null);
 	const notificationRef = useRef<HTMLDivElement>(null);
 
@@ -75,7 +74,6 @@ export default function HeaderItems() {
 				isProfile={isProfile}
 				profileRef={profileRef}
 			/>
-			{/* <NotificationBox /> */}
 		</div>
 	);
 }

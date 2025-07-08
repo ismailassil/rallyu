@@ -5,7 +5,7 @@ import INotifyBody from '../shared/types/notifyBody.types.js';
 import {
 	IFetchParams,
 	IFetchQuery,
-	IFetchResponse,
+	INotifDetail,
 } from '../shared/types/fetch.types.js';
 import IUpdateBody from '../shared/types/update.types.js';
 import INotifMessage from '../shared/types/notifMessage.types.js';
@@ -39,7 +39,7 @@ class NotifControllers {
 			}
 
 			// Parse the Notification
-			const resData = JSON.parse(result);
+			const resData: INotifDetail = JSON.parse(result);
 
 			// Send back to API & SocketIO Gateway through NATS Server
 			const jc = JSONCodec();
@@ -81,7 +81,7 @@ class NotifControllers {
 			const fullData: INotifMessage[] =
 				await this.notifServices.getUserMessages(username, page);
 
-			const data: IFetchResponse[] =
+			const data: INotifDetail[] =
 				this.notifServices.unpackMessage(fullData);
 
 			return res.status(200).send({ status: 'success', message: data });

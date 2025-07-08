@@ -7,7 +7,8 @@ import SideBar from "./components/Sidebar";
 import { TicTacToeProvider } from "./contexts/tictactoeContext";
 import { PingPongProvider } from "./contexts/pingpongContext";
 import { GameProvider } from "./game/contexts/gameContext";
-import NotificationCenter from "./components/PushNotification/NotificationCenter";
+import ToasterCenter from "./components/Header/Notification/Toaster/ToasterCenter";
+import { NotificationProvider } from "./components/Header/Notification/provider/NotifContext";
 
 export default function RootLayout({
 	children,
@@ -26,10 +27,12 @@ export default function RootLayout({
 					style={{ objectFit: "cover" }}
 				/>
 			</div>
-			<Header />
+			<NotificationProvider>
+				<Header />
+				<ToasterCenter />
+			</NotificationProvider>
 			<div>
 				<SideBar />
-				<NotificationCenter />
 				<GameProvider>
 					<TicTacToeProvider>
 						<PingPongProvider>{children}</PingPongProvider>
