@@ -9,7 +9,7 @@ import FriendsPanel from "../../../components/Main/FriendsPanel";
 import Performance from "../components/Performance/Performance";
 import GamesHistory from "../components/GamesHistory/GamesHistory";
 import HeroCard from '../components/Hero/HeroCard';
- 
+
 export default function UserProfilePage({ params } : { params: Promise<{ username: string }> }) {
 	const { api } = useAuth();
 	const { username } = use(params);
@@ -42,11 +42,12 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 							space-y-4 overflow-scroll overflow-x-hidden lg:flex-row lg:space-y-0"
 					>
 						<Performance userPerformance={userProfile.performance} />
-						<GamesHistory userGames={userProfile.games_history} />
+						<GamesHistory userGames={userProfile.games_history} />.
 					</div>
 				</article>
 				<FriendsPanel />
 			</div>
+			{/* <Modal /> */}
 		</motion.main>
 	);
 }

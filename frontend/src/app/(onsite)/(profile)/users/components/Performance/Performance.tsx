@@ -1,9 +1,12 @@
 "use client";
 
-import Chart from "./Chart";
+import Chart from './Chart';
 import { IUserPerformance } from '../../../types';
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import CountUp from "react-countup";
+import { Ellipsis } from "lucide-react";
+import UserStats from "./UserStats";
+import { useState } from "react";
 
 const data = [
 	{ date: "2023-01-01", timeSpent: 5 },
@@ -17,6 +20,7 @@ const data = [
 ];
 
 export default function Performance({ userPerformance } : { userPerformance: IUserPerformance }) {
+	const [showDashboard, setShowDashboard] = useState(false);
 
 	// function getStatsByGameType(gameType: string) {
 	// 	switch (gameType) {
@@ -166,8 +170,17 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 							>
 								<p className="text-xl text-white/60 font-bold">Time Spent on Platform</p>
 								<div className="relative h-full w-full">
-									<Chart data={data} />
+									<Chart data={data} dataKey='timeSpent' unit='Hours'/>
 								</div>
+							</div>
+							<div
+								className="bg-white/4 border border-white/10  hover:scale-101 flex
+										items-center justify-center backdrop-blur-xl
+										gap-3 overflow-hidden rounded-2xl transition-all duration-200 hover:bg-white/6"
+							>
+								{/* <p className="text-xl text-white/60 font-bold">...</p> */}
+								<Ellipsis onClick={() => { setShowDashboard(!showDashboard); } }/>
+								{ showDashboard && <UserStats /> }
 							</div>
 						</div>
 					</div>
