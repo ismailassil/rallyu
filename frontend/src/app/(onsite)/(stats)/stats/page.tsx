@@ -1,9 +1,9 @@
 import React from 'react';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
 import { Calendar, Clock, Target, TrendingUp, TrendingUpDown, Trophy, User2 } from 'lucide-react';
-import Chart from '../users/components/Performance/Chart';
-import ChartPie from '../users/components/Performance/ChartPie';
-import ChartBar from '../users/components/Performance/ChartBar';
+import Chart from '../components/Chart';
+import ChartPie from '../components/ChartPie';
+import ChartBar from '../components/ChartBar';
 
 const data = {
 	gameTypeDistData: [
