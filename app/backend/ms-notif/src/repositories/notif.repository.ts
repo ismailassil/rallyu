@@ -81,7 +81,7 @@ class NotifRepository {
 		const offset = (page - 1) * LIMIT;
 		return new Promise((resolve, reject) => {
 			fastify.database.all<INotifMessage>(
-				"SELECT * FROM messages WHERE to_user_id = ? AND type != 'dismissed' ORDER BY updated_at ASC LIMIT 10 OFFSET ?",
+				"SELECT * FROM messages WHERE to_user_id = ? AND type != 'dismissed' ORDER BY updated_at DESC LIMIT 10 OFFSET ?",
 				[user_id, offset],
 				function (error, rows) {
 					if (error) {

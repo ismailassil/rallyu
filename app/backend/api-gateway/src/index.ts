@@ -22,6 +22,7 @@ await fastify.register(cors, {
 	// origin: [`http://frontend:${FRONT_PORT}`],
 	origin: [`http://localhost:${FRONT_PORT}`],
 	allowedHeaders: ['Content-Type', 'Authorization'],
+	methods: ['GET', 'PUT', 'POST', 'DELETE'],
 });
 
 // ** RATE LIMIT Plugin
@@ -52,7 +53,6 @@ const natsOptions = {
 await fastify.register(natsPlugin, natsOptions);
 
 // ** SocketIO Plugin
-
 const socketioOptions = { FRONT_PORT: FRONT_PORT };
 
 // TODO: Add Authentication to Sockets

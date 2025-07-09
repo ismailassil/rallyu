@@ -4,12 +4,13 @@ export type NotifType = "game" | "chat" | "friend_request";
 export type statusType = "unread" | "read" | "dismissed";
 
 export interface InnerNotifProps extends MotionProps {
+	id: number;
 	name: string;
 	message: string;
 	image: string;
 	type: NotifType;
 	status: statusType;
-	date: number;
+	date: string;
 }
 
 export const getTextDescription = (type: NotifType) => {

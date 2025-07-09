@@ -1,42 +1,14 @@
-import {
-	createContext,
-	Dispatch,
-	SetStateAction,
-	useCallback,
-	useContext,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
-import { NotifType, statusType } from "../types/NotificationCard.types";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { ToastType } from "../types/Toaster.types";
 import { io, Socket } from "socket.io-client";
-
-interface NotifContextTypes {
-	notifications: NotificationType[];
-	setNotifications: Dispatch<SetStateAction<NotificationType[]>>;
-	toastNotifications: ToastType[];
-	setToastNotifications: Dispatch<SetStateAction<ToastType[]>>;
-	handleRemove: (id: string) => void;
-}
-
-interface NotificationType {
-	id: number;
-	from_user: string;
-	to_user: string;
-	message: string;
-	type: NotifType;
-	created_at: string;
-	updated_at: string;
-	status: statusType;
-	action_url: string;
-}
-
-interface HistoryType {
-	status: "success" | "error";
-	message: NotificationType[];
-}
+import { useHeaderContext } from "../../context/HeaderContext";
+import {
+	HistoryType,
+	IUpdateTypes,
+	NotifContextTypes,
+	NotificationType,
+} from "../types/NotifContext.types";
 
 // Create the Context
 export const NotifContext = createContext<NotifContextTypes | undefined>(undefined);
@@ -65,6 +37,10 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 	const [notifications, setNotifications] = useState<NotificationType[]>([]);
 	const [toastNotifications, setToastNotifications] = useState<ToastType[]>([]);
 	const socketRef = useRef<Socket | null>(null);
+	const { isNotif, isBottom } = useHeaderContext();
+	const isNotifRef = useRef<boolean>(isNotif);
+	const pageRef = useRef(0);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const playSound = useCallback(() => {
 		const sound = new Audio("/notification.mp3");
@@ -78,7 +54,42 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 	}, []);
 
 	useEffect(() => {
-		// TODO: Only used for Testing
+		isNotifRef.current = isNotif;
+	}, [isNotif]);
+
+	const handleNotify = useCallback(
+		(data: NotificationType) => {
+			setNotifications((prev) => [data, ...prev]);
+
+			if (!isNotifRef.current) {
+				setToastNotifications((prev) => {
+					const trimmed = prev.length >= 4 ? prev.slice(1) : prev;
+					return [...trimmed, getToastData(data)];
+				});
+
+				playSound();
+
+				setTimeout(() => handleRemove(data.id.toString()), 1500);
+			}
+		},
+		[isNotifRef, handleRemove, playSound]
+	);
+
+	const handleUpdate = useCallback((payload: IUpdateTypes) => {
+		const allOrId = payload.notifType;
+		const notifStatus = payload.notifStatus;
+
+		if (typeof allOrId === "number") {
+			setNotifications((prev) =>
+				prev.map((notif) => (notif.id === allOrId ? { ...notif, status: notifStatus } : notif))
+			);
+			return;
+		}
+		if (notifStatus === "dismissed") setNotifications([]);
+		else setNotifications((prev) => prev.map((notif) => ({ ...notif, status: notifStatus })));
+	}, []);
+
+	useEffect(() => {
 		const vToken = "8)@zNX[3cZ:xfn_";
 		const socket = io("http://localhost:4004", {
 			extraHeaders: {
@@ -90,23 +101,13 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 
 		socket.on("connect", () => {
 			console.log(`Connected to Server with ID: ${socket.id}`);
-
 			socket.emit("identify", { username: "iassil" });
 		});
 
-		socket.on("notify", (data: NotificationType) => {
-			setNotifications((prev) => [...prev, data]);
+		socket.on("notify", handleNotify);
 
-			/// TODO: When the Notification Box is Open, DO NOT toast the notification
-			setToastNotifications((prev) => {
-				const timmed = prev.length >= 4 ? prev.slice(1) : prev;
-				return [...timmed, getToastData(data)];
-			});
+		socket.on("update", handleUpdate);
 
-			playSound();
-
-			setTimeout(() => handleRemove(data.id.toString()), 1.5 * 1000);
-		});
 		return () => {
 			socket.disconnect();
 			console.log("Socket disconnected");
@@ -115,24 +116,35 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 	}, []);
 
 	useEffect(() => {
-		const page: string = "1";
 		const username = "iassil";
+		if (!isBottom && pageRef.current > 0) return;
+
+		console.log("Getting New Notifications: " + pageRef.current);
+		pageRef.current += 1;
+
+		setIsLoading(true);
 		axios
-			.get<HistoryType>(`http://localhost:4004/api/notif/history/${username}?page=${page}`)
+			.get<HistoryType>(
+				`http://localhost:4004/api/notif/history/${username}?page=${pageRef.current}`
+			)
 			.then((response) => {
 				setNotifications((prev) => [...prev, ...response.data.message]);
 				console.log(response.data.message);
-			});
-	}, []);
+			})
+			.catch((err) => console.log(err));
+		setIsLoading(false);
+	}, [isBottom]);
 
 	return (
 		<NotifContext.Provider
 			value={{
+				socketRef,
 				notifications,
 				setNotifications,
 				toastNotifications,
 				setToastNotifications,
 				handleRemove,
+				isLoading,
 			}}
 		>
 			{children}

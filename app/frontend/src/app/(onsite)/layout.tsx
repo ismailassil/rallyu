@@ -8,7 +8,8 @@ import { TicTacToeProvider } from "./contexts/tictactoeContext";
 import { PingPongProvider } from "./contexts/pingpongContext";
 import { GameProvider } from "./game/contexts/gameContext";
 import ToasterCenter from "./components/Header/Notification/Toaster/ToasterCenter";
-import { NotificationProvider } from "./components/Header/Notification/provider/NotifContext";
+import { NotificationProvider } from "./components/Header/Notification/context/NotifContext";
+import { HeaderProvider } from "./components/Header/context/HeaderContext";
 
 export default function RootLayout({
 	children,
@@ -27,10 +28,12 @@ export default function RootLayout({
 					style={{ objectFit: "cover" }}
 				/>
 			</div>
-			<NotificationProvider>
-				<Header />
-				<ToasterCenter />
-			</NotificationProvider>
+			<HeaderProvider>
+				<NotificationProvider>
+					<Header />
+					<ToasterCenter />
+				</NotificationProvider>
+			</HeaderProvider>
 			<div>
 				<SideBar />
 				<GameProvider>

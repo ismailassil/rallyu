@@ -3,23 +3,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { UserCircle } from "@phosphor-icons/react";
+import { useHeaderContext } from "./context/HeaderContext";
 
-interface ProfileProps {
-	setIsNotif: (value: boolean) => void;
-	setIsProfile: (value: boolean) => void;
-	setIsSearch: (value: boolean) => void;
-	isProfile: boolean;
-	profileRef: React.Ref<HTMLDivElement>;
-}
-
-export default function Profile({
-	setIsNotif,
-	setIsProfile,
-	setIsSearch,
-	isProfile,
-	profileRef,
-}: ProfileProps) {
+export default function Profile() {
 	const router = useRouter();
+
+	const { setIsNotif, setIsProfile, setIsSearch, isProfile, profileRef } = useHeaderContext();
 
 	return (
 		<div className="relative" ref={profileRef}>
