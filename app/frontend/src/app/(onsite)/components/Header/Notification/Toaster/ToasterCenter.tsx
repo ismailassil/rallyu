@@ -1,4 +1,4 @@
-import { useNotification } from "../provider/NotifContext";
+import { useNotification } from "../context/NotifContext";
 import ToasterItem from "./ToasterItem";
 import { AnimatePresence, motion } from "framer-motion";
 

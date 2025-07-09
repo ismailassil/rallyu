@@ -21,4 +21,19 @@ interface INotifDetail {
 	action_url: string;
 }
 
-export { IFetchParams, IFetchQuery, INotifDetail };
+interface IUpdateTypes {
+	username: string;
+	type: 'update';
+	data: {
+		notifStatus: statusType;
+		notifType: (boolean | undefined) | number;
+	};
+}
+
+interface INotifyTypes {
+	username: string;
+	type: 'notify';
+	data: INotifDetail;
+}
+
+export { IFetchParams, IFetchQuery, INotifDetail, IUpdateTypes, INotifyTypes };

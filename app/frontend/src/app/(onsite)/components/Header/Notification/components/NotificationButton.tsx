@@ -1,7 +1,24 @@
 import { Bell } from "@phosphor-icons/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNotification } from "../context/NotifContext";
+import { useHeaderContext } from "../../context/HeaderContext";
 
 const NotificationButton = () => {
+	const { notifications } = useNotification();
+	const { setIsProfile, setIsSearch, setIsNotif, isNotif } = useHeaderContext();
+	const [hasUnreadNotif, setHasUnreadNotif] = useState(false);
+
+	const handleNotifButton = () => {
+		setIsProfile(false);
+		setIsSearch(false);
+		setIsNotif(!isNotif);
+	};
+
+	useEffect(() => {
+		const isUnread = notifications.some((notif) => notif.status === "unread");
+		setHasUnreadNotif(isUnread);
+	}, [notifications]);
+
 	const isActive = isNotif
 		? "bg-hbg border-hbbg ring-bbg scale-101 ring-4"
 		: "hover:bg-hbg hover:border-hbbg hover:ring-bbg hover:scale-101 hover:ring-4";
@@ -16,8 +33,8 @@ const NotificationButton = () => {
 			>
 				<Bell size={28} className={`${isNotif && "animate-pulse"}`} />
 			</button>
-			{newNotification && (
-				<div className="absolute right-4 top-4 h-2 w-2 animate-ping rounded-full bg-red-500 ring-1 ring-red-400" />
+			{hasUnreadNotif && (
+				<div className="absolute right-4 top-4 h-2.5 w-2.5 rounded-full bg-yellow-500" />
 			)}
 		</>
 	);
