@@ -24,19 +24,17 @@ const NotificationButton = () => {
 		: "hover:bg-hbg hover:border-hbbg hover:ring-bbg hover:scale-101 hover:ring-4";
 
 	return (
-		<>
-			<button
-				className={`bg-card border-br-card ml-4 flex h-[55px]
-		w-[55px] items-center justify-center rounded-full border-2 hover:cursor-pointer
-		${isActive} transition-transform duration-200`}
-				onClick={handleNotifButton}
-			>
-				<Bell size={28} className={`${isNotif && "animate-pulse"}`} />
-			</button>
+		<button
+			className={`bg-card border-br-card relative ml-4 flex h-[55px]
+				w-[55px] items-center justify-center rounded-full border-2 hover:cursor-pointer
+				${isActive} transition-transform duration-200`}
+			onClick={handleNotifButton}
+		>
+			<Bell size={28} className={`${isNotif && "animate-pulse"}`} />
 			{hasUnreadNotif && (
-				<div className="absolute right-4 top-4 h-2.5 w-2.5 rounded-full bg-yellow-500" />
+				<div className="absolute right-4 top-3 h-2.5 w-2.5 rounded-full bg-yellow-500" />
 			)}
-		</>
+		</button>
 	);
 };
 

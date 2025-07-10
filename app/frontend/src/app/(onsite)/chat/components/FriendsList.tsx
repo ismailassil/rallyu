@@ -1,5 +1,5 @@
 import { useBox } from "../contexts/boxContext";
-import ChatFriend from "./ChatFriend";
+import FriendItem from "./FriendItem";
 import Image from "next/image";
 
 export default function FriendsList() {
@@ -34,7 +34,7 @@ export default function FriendsList() {
 					<input
 						// ref={inputRef}
 						className="bg-bg focus:ring-3 focus:ring-hbbg/50 border-br-card flex h-12
-						w-full items-center rounded-full border-2 pl-12 pr-3 outline-none"
+						w-full items-center rounded-full border-2 pl-13 pr-3 outline-none"
 						type="text"
 						autoComplete="off"
 						placeholder="Start Searching..."
@@ -47,7 +47,7 @@ export default function FriendsList() {
 
 				<div className="custom-scroll flex h-full flex-col gap-1 overflow-auto">
 					{Array.from({ length: 100 }).map((_, i) => (
-						<ChatFriend
+						<FriendItem
 							key={i}
 							onClick={(e) => {
 								e.preventDefault();

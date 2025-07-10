@@ -6,9 +6,8 @@ const NotificationFooter = () => {
 	const { notifications } = useNotification();
 
 	function handleClearAll() {
-		// ? The Socket Will Handle it
+		// ? The Response from the Socket Will Handle it
 		// setNotifications([]);
-		
 		// TODO: Uncomment this
 		// axios
 		// 	.put("http://localhost:4004/api/notif/update", {
@@ -25,11 +24,10 @@ const NotificationFooter = () => {
 	}
 
 	function handleMarkAll() {
-		// ? The Socket Will Handle it
+		// ? The Response from the Socket Will Handle it
 		// setNotifications((prev) =>
 		// 	prev.map((notif) => (notif.status === "unread" ? { ...notif, status: "read" } : notif))
 		// );
-
 		// TODO: Uncomment this
 		// axios
 		// 	.put("http://localhost:4004/api/notif/update", {
@@ -48,7 +46,10 @@ const NotificationFooter = () => {
 	return (
 		<>
 			{notifications.length >= 1 && (
-				<div className="bg-card top-0 z-20 flex w-full justify-between px-4 py-3 text-start">
+				<div
+					className="bg-card *:duration-300 *:transition-all *:hover:text-gray-300 top-0 z-20 flex w-full
+						justify-between px-4 py-3 text-start"
+				>
 					<button
 						className="flex cursor-pointer items-end gap-1.5 text-xs hover:underline"
 						onClick={handleMarkAll}
