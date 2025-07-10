@@ -29,6 +29,11 @@ function NotificationCard({ id, name, image, message, type, status, date, ...pro
 		// 	.catch((err) => {
 		// 		console.log(err);
 		// 	});
+
+		/**
+		 * TODO: After a friend_request is accepted or declined,
+		 * 		send the response to User Management MS and dismissed it in DB (NOTIF_MS)
+		 */
 	}
 
 	return (
@@ -62,14 +67,13 @@ function NotificationCard({ id, name, image, message, type, status, date, ...pro
 				</div>
 			</div>
 
-			
-				{type === "chat" ? (
-					<ChatNotification message={message} />
-				) : type === "friend_request" ? (
-					<FriendRequestNotification />
-				) : (
-					<GameNotification isValid={isValid} />
-				)}
+			{type === "chat" ? (
+				<ChatNotification message={message} />
+			) : type === "friend_request" ? (
+				<FriendRequestNotification />
+			) : (
+				<GameNotification isValid={isValid} />
+			)}
 		</motion.li>
 	);
 }
