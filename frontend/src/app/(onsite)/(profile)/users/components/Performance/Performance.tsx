@@ -1,7 +1,6 @@
 "use client";
 
 import Chart from './Chart';
-import { IUserPerformance } from '../../../types';
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import CountUp from "react-countup";
 import { Ellipsis } from "lucide-react";
@@ -19,46 +18,7 @@ const data = [
 	{ date: "2023-01-07", timeSpent: 3 },
 ];
 
-export default function Performance({ userPerformance } : { userPerformance: IUserPerformance }) {
-	const [showDashboard, setShowDashboard] = useState(false);
-
-	// function getStatsByGameType(gameType: string) {
-	// 	switch (gameType) {
-	// 		case 'ping_pong':
-	// 			return {
-	// 				games: userPerformance.games.ping_pong.games,
-	// 				wins: userPerformance.games.ping_pong.wins,
-	// 				losses: userPerformance.games.ping_pong.losses,
-	// 				draws: userPerformance.games.ping_pong.draws,
-	// 				win_rate: userPerformance.games.ping_pong.win_rate,
-	// 				total_points: 18,
-	// 				average_score: 9.8,
-	// 				playtime: 18
-	// 			};
-	// 		case 'tic_tac_toe':
-	// 			return {
-	// 				games: userPerformance.games.tic_tac_toe.games,
-	// 				wins: userPerformance.games.tic_tac_toe.wins,
-	// 				losses: userPerformance.games.tic_tac_toe.losses,
-	// 				draws: userPerformance.games.tic_tac_toe.draws,
-	// 				win_rate: userPerformance.games.tic_tac_toe.win_rate,
-	// 				total_points: 32,
-	// 				average_score: 12.6,
-	// 				playtime: 8.7
-	// 			};
-	// 		default:
-	// 			return {
-	// 				games: userPerformance.games.games,
-	// 				wins: userPerformance.games.wins,
-	// 				losses: userPerformance.games.losses,
-	// 				draws: userPerformance.games.draws,
-	// 				win_rate: userPerformance.win_rate,
-	// 				total_points: 18 + 32,
-	// 				average_score: 9.8 + 12.6,
-	// 				playtime: 18 + 8.7
-	// 			};
-	// 	}
-	// }
+export default function Performance({ user } : { user: any }) {
 
 	return (
 		<div className="flex-3 min-h-130 max-h-220 flex h-full w-full flex-col gap-4">
@@ -83,7 +43,7 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 							>
 								<p className="text-2xl text-white/60 font-bold">Total XP</p>
 								<p className="text-3xl text-white/80 font-bold">
-									<CountUp end={userPerformance.xp} /> XP
+									<CountUp end={user.stats.user.total_xp} /> XP
 								</p>
 							</div>
 							
@@ -102,7 +62,7 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 										Played
 									</p>
 									<p className="text-3xl text-white/80 font-bold">
-										<CountUp end={userPerformance.games.games} />
+										<CountUp end={user.stats.matches.matches} />
 									</p>
 								</div>
 								<div
@@ -119,7 +79,7 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 										Streak
 									</p>
 									<p className="text-3xl text-white/80 font-bold">
-										<CountUp end={userPerformance.longest_streak} />
+										<CountUp end={user.stats.user.longest_streak} />
 									</p>
 								</div>
 							</div>
@@ -134,7 +94,7 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 								>
 									<p className="text-lg text-white/60 font-bold">Wins</p>
 									<p className="text-3xl text-white/80 font-bold">
-										<CountUp end={userPerformance.games.wins} />
+										<CountUp end={user.stats.matches.wins} />
 									</p>
 								</div>
 								<div
@@ -146,7 +106,7 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 								>
 									<p className="text-lg text-white/60 font-bold">Losses</p>
 									<p className="text-3xl text-white/80 font-bold">
-										<CountUp end={userPerformance.games.losses} />
+										<CountUp end={user.stats.matches.losses} />
 									</p>
 								</div>
 								<div
@@ -158,7 +118,7 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 								>
 									<p className="text-lg text-white/60 font-bold">Draws</p>
 									<p className="text-3xl text-white/80 font-bold">
-										<CountUp end={userPerformance.games.draws} />
+										<CountUp end={user.stats.matches.draws} />
 									</p>
 								</div>
 							</div>
@@ -179,8 +139,7 @@ export default function Performance({ userPerformance } : { userPerformance: IUs
 										gap-3 overflow-hidden rounded-2xl transition-all duration-200 hover:bg-white/6"
 							>
 								{/* <p className="text-xl text-white/60 font-bold">...</p> */}
-								<Ellipsis onClick={() => { setShowDashboard(!showDashboard); } }/>
-								{ showDashboard && <UserStats /> }
+								<Ellipsis />
 							</div>
 						</div>
 					</div>
