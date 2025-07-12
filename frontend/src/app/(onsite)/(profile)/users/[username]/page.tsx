@@ -1,31 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import { use, useState, useEffect } from 'react';
-import { IUserProfile } from '../../types';
-import { useAuth } from '../../../contexts/AuthContext';
 import ProgressBar from '@/app/(auth)/components/ProgressBar';
 import { motion } from "framer-motion";
 import FriendsPanel from "../../../components/Main/FriendsPanel";
 import Performance from "../components/Performance/Performance";
 import GamesHistory from "../components/GamesHistory/GamesHistory";
 import HeroCard from '../components/Hero/HeroCard';
+import useUserProfile from '../context/useUserProfile';
 
 export default function UserProfilePage({ params } : { params: Promise<{ username: string }> }) {
-	const { api } = useAuth();
 	const { username } = use(params);
+	const { isLoading, userProfile: userData } = useUserProfile(username);
 
-	const [userProfile, setUserProfile] = useState<IUserProfile | null>(null);
-
-	useEffect(() => {
-		async function fetchProfile() {
-			const profile = await api.getUserProfile(username);
-			setUserProfile(profile);
-		}
-		fetchProfile();
-	}, []);
-
-	if (!userProfile)
-		return ( <ProgressBar complete={userProfile !== null} /> );
+	if (isLoading || !userData)
+		return ( <ProgressBar complete={userData !== null} /> );
 
 	return (
 		<motion.main
@@ -36,13 +25,13 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 		>
 			<div className="flex h-full w-full gap-6 rounded-lg">
 				<article className="flex-5 flex h-full w-full flex-col gap-4">
-					<HeroCard userInfo={userProfile.profile} userPerformance={userProfile.performance}/>
+					<HeroCard user={userData} />
 					<div
 						className="hide-scrollbar flex flex-1 flex-col space-x-4
 							space-y-4 overflow-scroll overflow-x-hidden lg:flex-row lg:space-y-0"
 					>
-						<Performance userPerformance={userProfile.performance} />
-						<GamesHistory userGames={userProfile.games_history} />.
+						<Performance user={userData} />
+						{/* <GamesHistory user={userData} /> */}
 					</div>
 				</article>
 				<FriendsPanel />

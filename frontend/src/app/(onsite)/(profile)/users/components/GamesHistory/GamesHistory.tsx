@@ -1,10 +1,10 @@
 "use client";
 
 import Game from "./Game";
-import { IGameHistory } from "../../../oldme/page";
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 
-export default function GamesHistory({ userGames } : { userGames: Array<IGameHistory> }) {
+export default function GamesHistory({ user } : { user: any }) {
+	const userGames = user.matches;
 	return (
 		<aside
 			className={`bg-card border-br-card min-h-130 max-h-220 h-full w-full min-w-[30%] flex-[2.5] rounded-2xl border-1 select-none`}

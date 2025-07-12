@@ -159,6 +159,11 @@ export class APIClient {
 		const { data: res } = await this.client.get(`/users/${username}/profile`);
 		return res.data;
 	}
+	
+	async getUser(username: string) : Promise<any> {
+		const { data: res } = await this.client.get(`/users/${username}`);
+		return res.data;
+	}
 
 	async getUserPerformance(username: string) {
 		const { data: res } = await this.client.get(`/users/${username}/performance`);
@@ -210,7 +215,7 @@ export class APIClient {
 	async fetchCurrentUser() {
 		console.log('APIClient::fetchCurrentUser();');
 		console.log('accessToken: ', this.accessToken);
-		const { data } = await this.client.get('/users/me');
+		const { data } = await this.client.get(`/users/me`);
 		console.log('fetchCurrentUser: ', data);
 		return data.data;
 	}
