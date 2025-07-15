@@ -7,6 +7,7 @@ import databasePlugin from './models/notif.model.js';
 import fastifyRedis from '@fastify/redis';
 import fastifySchedule from '@fastify/schedule';
 import { natsPlugin } from './shared/plugins/natsPlugin.js';
+import fastifyPrintRoutes from 'fastify-print-routes';
 
 const PORT = parseInt(process.env.PORT || '9012');
 
@@ -19,6 +20,7 @@ const redisOptions = {
 
 const routesPrefix = { prefix: '/notif' };
 
+await fastify.register(fastifyPrintRoutes);
 await fastify.register(schemasPlugin);
 await fastify.register(fastifyRedis, redisOptions);
 await fastify.register(databasePlugin);

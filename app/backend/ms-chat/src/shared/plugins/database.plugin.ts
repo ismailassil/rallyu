@@ -24,7 +24,6 @@ const databasePlugin = fastifyPlugin(
 				receiver_id INTEGER NOT NULL,
 				message TEXT NOT NULL,
 				sent_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-				delivered_at TIMESTAMP,
 				seen_at TIMESTAMP,
 				status TEXT CHECK( status IN ('read', 'unread')) NOT NULL DEFAULT 'unread',
 

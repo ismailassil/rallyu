@@ -2,6 +2,7 @@ import fastify, { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import { Server as SocketIOServer } from 'socket.io';
 import { IChatPayload, socketioOpts } from './socketio.types';
+import { Codec, JSONCodec } from 'nats';
 
 export const socketioPlugin = fp(async function (
 	fastify: FastifyInstance,
@@ -74,7 +75,13 @@ export const socketioPlugin = fp(async function (
 		});
 
 		socket.on('send_msg', async (data: IChatPayload) => {
-			fastify.js.publish(fastify.chatSubj + 'send_msg', fastify.jsCodec(data));
+			fastify.js.publish(
+				fastify.chatSubj + 'send_msg',
+				fastify.jsCodec.encode(data),
+			);
+
+			// When the User sends a message to a friend and has multiple sessions opened, send it to it!
+			socket.to(socket.data.username).except(socket.id).emit('send_msg', data);
 		});
 
 		socket.on('disconnecting', async () => {

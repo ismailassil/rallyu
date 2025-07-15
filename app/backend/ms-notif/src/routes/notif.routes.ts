@@ -7,7 +7,7 @@ import updateSchema from '../shared/schemas/update.schema.js';
 const NotifRoutes = async (fastify: FastifyInstance) => {
 	const notifControllers = new NotifControllers();
 
-	fastify.get('/health', (_, res: FastifyReply) => {
+	fastify.get('/health', { exposeHeadRoute: false }, (_, res: FastifyReply) => {
 		res.status(200).send({ status: 'up' });
 	});
 
@@ -19,7 +19,7 @@ const NotifRoutes = async (fastify: FastifyInstance) => {
 
 	fastify.get(
 		'/history/:username',
-		{ schema: historySchema },
+		{ schema: historySchema, exposeHeadRoute: false },
 		notifControllers.fetchHistory.bind(notifControllers),
 	);
 

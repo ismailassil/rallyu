@@ -61,4 +61,16 @@ services:
       - backend
     env_file:
       - .env
-    command: --user ${NATS_USER} --pass ${NATS_PASSWORD}
+    command: --user ${NATS_USER} --pass ${NATS_PASSWORD} -js -m 8222 -n internal-server
+  
+  nats_ui:
+    image: mdawar/nats-dashboard
+    container_name: nats_ui
+    ports:
+     - 8000:80
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - ./nats_ui_config/config.json:/srv/config.json
+    

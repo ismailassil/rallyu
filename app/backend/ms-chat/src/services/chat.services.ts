@@ -41,7 +41,6 @@ class ChatServices {
 					receiver: chat.receiver_username,
 					message: chat.message,
 					sent_at: chat.sent_at,
-					delivered_at: chat.delivered_at,
 					seen_at: chat.seen_at,
 					status: chat.status,
 				};
@@ -59,7 +58,6 @@ class ChatServices {
 					receiver: chat.receiver_username,
 					message: chat.message,
 					sent_at: chat.sent_at,
-					delivered_at: chat.delivered_at,
 					seen_at: chat.seen_at,
 					status: chat.status,
 				};
