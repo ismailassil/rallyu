@@ -12,7 +12,6 @@ export interface MessageType {
 	receiver: string;
 	message: string;
 	sent_at: string;
-	delivered_at?: string | null;
 	seen_at?: string | null;
 	status: 'read' | 'unread';
 }
@@ -21,7 +20,6 @@ export interface MessageDBResult {
 	message_id: number;
 	message: string;
 	sent_at: string;
-	delivered_at?: string | null;
 	seen_at?: string | null;
 	status: 'read' | 'unread';
 	sender_id: number;

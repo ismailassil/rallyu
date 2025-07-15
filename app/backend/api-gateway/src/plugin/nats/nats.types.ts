@@ -1,5 +1,6 @@
 import 'fastify';
 import { Codec, JetStreamClient, NatsConnection } from 'nats';
+import { IChatPayload } from '../socketio/socketio.types';
 
 declare module 'fastify' {
 	interface FastifyInstance {

@@ -24,7 +24,6 @@ class ChatRepository {
 					SELECT m.id AS message_id,
 							m.message,
 							m.sent_at,
-							m.delivered_at,
 							m.seen_at,
 							m.status,
 					

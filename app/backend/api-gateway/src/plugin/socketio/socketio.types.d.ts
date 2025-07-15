@@ -37,6 +37,7 @@ interface ClientToServerEvents {
 interface ServerToClientEvents {
 	update: (data: any) => void;
 	notify: (data: any) => void;
+	send_msg: (data: any) => void;
 }
 
 interface socketioOpts {
