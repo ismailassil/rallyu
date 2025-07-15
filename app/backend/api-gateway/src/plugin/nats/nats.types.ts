@@ -1,9 +1,13 @@
 import 'fastify';
-import { NatsConnection } from 'nats';
+import { Codec, JetStreamClient, NatsConnection } from 'nats';
 
 declare module 'fastify' {
 	interface FastifyInstance {
 		nats: NatsConnection;
+		js: JetStreamClient;
+		chatSubj: string;
+		jsCodec: Codec<unknown>;
+		scCodec: Codec<String>;
 	}
 }
 

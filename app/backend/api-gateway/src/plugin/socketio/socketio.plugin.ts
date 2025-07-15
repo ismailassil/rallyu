@@ -1,7 +1,7 @@
 import fastify, { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import { Server as SocketIOServer } from 'socket.io';
-import { socketioOpts } from './socketio.types';
+import { IChatPayload, socketioOpts } from './socketio.types';
 
 export const socketioPlugin = fp(async function (
 	fastify: FastifyInstance,
@@ -19,13 +19,13 @@ export const socketioPlugin = fp(async function (
 			},
 		});
 
-		fastify.log.info('✅ SocketIO Server is Running');
+		fastify.log.info('[SocketIO] SocketIO Server is Running');
 
 		fastify.decorate('io', io);
 
 		fastify.addHook('onClose', async (fastify) => {
 			await fastify.io.close();
-			fastify.log.info('⚾️ SocketIO Closed Successfully');
+			fastify.log.info('[SocketIO] SocketIO Closed Successfully');
 		});
 	} catch (error) {
 		fastify.log.error(error);
@@ -55,7 +55,7 @@ export const socketioPlugin = fp(async function (
 	}
 
 	fastify.io.on('connection', (socket) => {
-		fastify.log.info(`Client Connected with ID: ${socket.id}`);
+		fastify.log.info(`[SocketIO] Client Connected with ID: ${socket.id}`);
 
 		// ! DOCS
 		// The user should sent after connection its identity
@@ -64,17 +64,25 @@ export const socketioPlugin = fp(async function (
 		socket.on('identify', async (data) => {
 			const username = data.username;
 
-			fastify.log.info(`Client sent his identity '${username}:${socket.id}'`);
+			fastify.log.info(
+				`[SocketIO] Client sent his identity '${username}:${socket.id}'`,
+			);
 			socket.data.username = username;
 			addUserSocket(username, socket.id);
 
 			await socket.join(data.username);
 		});
 
+		socket.on('send_msg', async (data: IChatPayload) => {
+			fastify.js.publish(fastify.chatSubj + 'send_msg', fastify.jsCodec(data));
+		});
+
 		socket.on('disconnecting', async () => {
 			const username = socket.data.username;
 
-			fastify.log.info(`👀 '${username}' Disconnected with ID: ${socket.id}`);
+			fastify.log.info(
+				`[SocketIO] '${username}' Disconnected with ID: ${socket.id}`,
+			);
 
 			removeUserSocket(username, socket.id);
 			await socket.leave(username);
