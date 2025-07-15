@@ -1,4 +1,4 @@
-import { MessageTypes } from './database.types';
+import { MessageType, UserType } from './database.types';
 
 export interface ReturnFetchChatsTypes {}
 
@@ -13,11 +13,16 @@ export interface QueryFetchChatsTypes {
 export interface ApiResponseSuccess {
 	status: string;
 	message: string;
-	data: MessageTypes[] | null;
+	data: MessageType[] | null;
 }
 
 export interface ApiResponseError {
 	status: string;
 	message: string;
 	error: object | string;
+}
+
+export interface ConversationType {
+	user: UserType;
+	messages: MessageType[];
 }

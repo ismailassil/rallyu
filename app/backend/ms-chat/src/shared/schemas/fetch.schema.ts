@@ -20,7 +20,7 @@ const fetchSchema = {
 			properties: {
 				status: { type: 'string' },
 				message: { type: 'string' },
-				data: { type: 'object' },
+				data: { type: ['array', 'object'] },
 			},
 			required: ['status', 'message', 'data'],
 		},

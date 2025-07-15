@@ -1,6 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
-import { Codec, connect, JSONCodec, NatsConnection } from 'nats';
+import { Codec, connect, JSONCodec, NatsConnection, StringCodec } from 'nats';
 import { dataType, NatsPluginOpts } from './nats.types';
 
 export const natsPlugin = fp(
@@ -13,13 +13,37 @@ export const natsPlugin = fp(
 				servers: 'nats://localhost:4222',
 				user: NATS_USER,
 				pass: NATS_PASSWORD,
+				name: 'Gateway',
 			});
 
-			fastify.log.info('✅ Nats Server Connection Established');
+			fastify.log.info(
+				`✅ Nats Server Connection Established ${nats.getServer()}`,
+			);
 
-			fastify.decorate('nats', nats);
+			// ** JetStreams
+			const natsManager = await nats.jetstreamManager();
 
-			fastify.nats.subscribe('notification', {
+			const streamName = 'chatStream';
+			const subject = 'chat.*';
+			await natsManager.streams
+				.info(streamName)
+				.then(() => {
+					fastify.log.info(`✅ Stream: ${streamName} already Created`);
+				})
+				.catch(async (error) => {
+					if (error) {
+						fastify.log.error(error);
+						await natsManager.streams.add({
+							name: streamName,
+							subjects: [subject],
+							description:
+								'Stream for chat Micro-service binded with Websockets',
+						});
+					}
+				});
+
+			// ** NATS Core
+			nats.subscribe('notification', {
 				async callback(err, msg) {
 					if (err) {
 						fastify.log.error(err);
@@ -35,7 +59,11 @@ export const natsPlugin = fp(
 				},
 			});
 
+			// ** NATS Decorator
+			fastify.decorate('nats', nats);
+
 			fastify.addHook('onClose', async () => {
+				await natsManager.streams.delete('chatStream');
 				await nats.close();
 				fastify.log.info('⚾️ NATS Closed Successfully');
 			});
@@ -44,7 +72,5 @@ export const natsPlugin = fp(
 			return;
 		}
 	},
-	{
-		name: 'NATS Plugin',
-	},
+	{ name: 'NATS Plugin' },
 );
