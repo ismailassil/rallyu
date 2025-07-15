@@ -4,5 +4,6 @@ import 'fastify';
 export module 'fastify' {
 	interface FastifyInstance {
 		database: Database;
+		nc: NatsConnection;
 	}
 }

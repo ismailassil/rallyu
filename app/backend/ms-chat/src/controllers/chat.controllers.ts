@@ -1,8 +1,13 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { ParamsFetchChatsTypes } from '../shared/types/fetchChats.types';
+import {
+	ConversationType,
+	ParamsFetchChatsTypes,
+	QueryFetchChatsTypes,
+} from '../shared/types/fetchChats.types';
 import ChatServices from '../services/chat.services';
 import UserNotFoundException from '../shared/exceptions/UserNotFoundException';
 import MessagesNotFoundException from '../shared/exceptions/MessagesNotFoundException';
+import { MessageDBResult } from '../shared/types/database.types';
 
 class ChatControllers {
 	private chatServices: ChatServices;
@@ -11,14 +16,25 @@ class ChatControllers {
 		this.chatServices = new ChatServices();
 	}
 
-	fetchChats(req: FastifyRequest, res: FastifyReply) {
+	getUserChats(req: FastifyRequest, res: FastifyReply) {
 		const { username } = req.params as ParamsFetchChatsTypes;
+		const { page } = req.query as QueryFetchChatsTypes;
 
 		try {
-			const chats = this.chatServices.getUserChats(username);
+			const chats: MessageDBResult[] = this.chatServices.retrieveUserChatsData(
+				username,
+				page,
+			);
+
+			const conversations: ConversationType[] = this.chatServices.parseChatsData(
+				username,
+				chats,
+			);
 
 			return res.code(200).send({
 				status: 'success',
+				message: `Messages for ${username} was found`,
+				data: conversations,
 			});
 		} catch (error) {
 			if (error instanceof UserNotFoundException) {
@@ -38,7 +54,7 @@ class ChatControllers {
 			return res.code(500).send({
 				status: 'error',
 				message: 'INTERNAL_ERROR',
-				error: error,
+				error,
 			});
 		}
 	}

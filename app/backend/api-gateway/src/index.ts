@@ -5,11 +5,11 @@ import helmet from '@fastify/helmet';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyMetrics from 'fastify-metrics';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { metricsAuthEndpoint } from './endpoint/metrics.endpoint.js';
+import { metricsAuthEndpoint } from './middleware/metrics.endpoint.js';
 import { natsPlugin } from './plugin/nats/nats.plugin.js';
 import { socketioPlugin } from './plugin/socketio/socketio.plugin.js';
 import fastifyJwt from '@fastify/jwt';
-import endpointsPlugin from './plugin/backendEnpoints/endpoints.plugin.js';
+import endpointsPlugin from './plugin/proxies/proxies.plugin.js';
 
 dotenv.config();
 
