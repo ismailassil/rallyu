@@ -1,5 +1,5 @@
 import 'fastify';
-import { Codec, JetStreamClient, NatsConnection } from 'nats';
+import { Codec, JetStreamClient, MsgHdrs, NatsConnection } from 'nats';
 import { IChatPayload } from '../socketio/socketio.types';
 
 declare module 'fastify' {
@@ -9,6 +9,7 @@ declare module 'fastify' {
 		chatSubj: string;
 		jsCodec: Codec<unknown>;
 		scCodec: Codec<String>;
+		headerReplyTo: MsgHdrs;
 	}
 }
 

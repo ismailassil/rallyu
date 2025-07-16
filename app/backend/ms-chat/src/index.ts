@@ -29,9 +29,9 @@ fastify.register(natsPlugin, {
 (function () {
 	try {
 		fastify.ready().then(
-			() => fastify.log.info('All Plugins Successfully booted!'),
+			() => fastify.log.info('[PLUGINS] Successfully booted!'),
 			(err) => {
-				if (err) fastify.log.error('an error happened ' + err);
+				if (err) fastify.log.error('[PLUGINS] Error Occurred ' + err);
 			},
 		);
 		fastify.listen({ host: '::', port: PORT });
@@ -42,6 +42,9 @@ fastify.register(natsPlugin, {
 
 process.on('SIGINT', async () => {
 	fastify.log.info('[ ~ ] Closing Fastify');
-	await fastify.close();
+	await fastify.close().catch((err) => {
+		fastify.log.error(err);
+	});
 	fastify.log.info('[ + ] Fastify Closed Successfully');
+	process.exit(0);
 });

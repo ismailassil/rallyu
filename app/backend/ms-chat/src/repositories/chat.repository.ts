@@ -1,7 +1,12 @@
 import fastify from '../app';
 import MessagesNotFoundException from '../shared/exceptions/MessagesNotFoundException';
 import UserNotFoundException from '../shared/exceptions/UserNotFoundException';
-import { MessageDBResult, UserType } from '../shared/types/database.types';
+import {
+	FullMessageDBResult,
+	MessageType,
+	UserType,
+} from '../shared/types/database.types';
+import { IChatPayload, IMessagePayload } from '../shared/types/nats.types';
 
 class ChatRepository {
 	getUserByUsername(username: string): UserType {
@@ -14,7 +19,7 @@ class ChatRepository {
 		return user;
 	}
 
-	getMessages(id: number, page: number): MessageDBResult[] {
+	getMessages(id: number, page: number): FullMessageDBResult[] {
 		const LIMIT = 10;
 		const OFFSET = (page - 1) * LIMIT;
 
@@ -49,12 +54,31 @@ class ChatRepository {
 					LIMIT ? OFFSET ?;
 				`,
 			)
-			.all(id, id, LIMIT, OFFSET) as MessageDBResult[];
+			.all(id, id, LIMIT, OFFSET) as FullMessageDBResult[];
 
 		if (!messages || messages.length === 0)
 			throw new MessagesNotFoundException();
 
 		return messages;
+	}
+
+	saveMessage(
+		senderId: number,
+		receiverId: number,
+		payload: IMessagePayload,
+	): MessageType {
+		const messageInfo = fastify.database
+			.prepare(
+				`INSERT INTO messages (sender_id, receiver_id, message, sent_at) VALUES(?, ?) RETURNING *`,
+			)
+			.get(
+				senderId,
+				receiverId,
+				payload.message,
+				payload.sent_at,
+			) as MessageType;
+
+		return messageInfo;
 	}
 }
 
