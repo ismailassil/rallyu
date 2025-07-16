@@ -9,12 +9,15 @@ import { metricsAuthEndpoint } from './middleware/metrics.endpoint.js';
 import { natsPlugin } from './plugin/nats/nats.plugin.js';
 import { socketioPlugin } from './plugin/socketio/socketio.plugin.js';
 import fastifyJwt from '@fastify/jwt';
-import endpointsPlugin from './plugin/proxies/proxies.plugin.js';
+import proxiesPlugin from './plugin/proxies/proxies.plugin.js';
+import fastifyPrintRoutes from 'fastify-print-routes';
 
 dotenv.config();
 
 const PORT = parseInt(process.env.PORT || '4004');
 const FRONT_PORT = process.env.FRONT_PORT ?? '';
+
+await fastify.register(fastifyPrintRoutes);
 
 // ** CORS Plugin
 await fastify.register(cors, {
@@ -44,6 +47,12 @@ await fastify.register(fastifyJwt, {
 	secret: process.env.JWT_KEY ?? '',
 });
 
+// ** SocketIO Plugin
+const socketioOptions = { FRONT_PORT: FRONT_PORT };
+
+// TODO: Add Authentication to Sockets
+await fastify.register(socketioPlugin, socketioOptions);
+
 // ** NATS Plugin
 const natsOptions = {
 	NATS_USER: process.env.NATS_USER ?? '',
@@ -52,14 +61,8 @@ const natsOptions = {
 
 await fastify.register(natsPlugin, natsOptions);
 
-// ** SocketIO Plugin
-const socketioOptions = { FRONT_PORT: FRONT_PORT };
-
-// TODO: Add Authentication to Sockets
-await fastify.register(socketioPlugin, socketioOptions);
-
 // ** PROXY Plugin
-await fastify.register(endpointsPlugin, {
+await fastify.register(proxiesPlugin, {
 	NOTIF_PORT: process.env.NOTIF_PORT ?? '',
 	AUTH_PORT: process.env.AUTH_PORT ?? '',
 });
@@ -70,7 +73,7 @@ fastify.register(fastifyMetrics, { endpoint: '/inter-metrics' });
 // ** Metrics Endpoint Authorization
 fastify.addHook('preHandler', metricsAuthEndpoint);
 
-fastify.get('/health', async (_, res: FastifyReply) => {
+fastify.get('/health', { exposeHeadRoute: false }, async (_, res: FastifyReply) => {
 	return res.status(200).send({ status: 'up' });
 });
 

@@ -1,11 +1,12 @@
 import fastify from '../app';
 import ChatRepository from '../repositories/chat.repository';
 import {
-	MessageDBResult,
+	FullMessageDBResult,
 	MessageType,
 	UserType,
 } from '../shared/types/database.types';
 import { ConversationType } from '../shared/types/fetchChats.types';
+import { IChatPayload } from '../shared/types/nats.types';
 
 class ChatServices {
 	private chatRepository: ChatRepository;
@@ -13,7 +14,7 @@ class ChatServices {
 		this.chatRepository = new ChatRepository();
 	}
 
-	retrieveUserChatsData(username: string, page: number): MessageDBResult[] {
+	retrieveUserChatsData(username: string, page: number): FullMessageDBResult[] {
 		const user = this.chatRepository.getUserByUsername(username);
 
 		const messages = this.chatRepository.getMessages(user.id, page);
@@ -21,7 +22,10 @@ class ChatServices {
 		return messages;
 	}
 
-	parseChatsData(username: string, chats: MessageDBResult[]): ConversationType[] {
+	parseChatsData(
+		username: string,
+		chats: FullMessageDBResult[],
+	): ConversationType[] {
 		const uniqueConversations = new Map();
 
 		chats.forEach((chat) => {
@@ -71,6 +75,18 @@ class ChatServices {
 		});
 
 		return Array.from(uniqueConversations.values());
+	}
+
+	handleMessage(payload: IChatPayload): MessageType {
+		const receiver = this.chatRepository.getUserByUsername(payload.receiver);
+		const sender = this.chatRepository.getUserByUsername(payload.sender);
+		const message: MessageType = this.chatRepository.saveMessage(
+			sender.id,
+			receiver.id,
+			payload.data,
+		);
+
+		return message;
 	}
 }
 

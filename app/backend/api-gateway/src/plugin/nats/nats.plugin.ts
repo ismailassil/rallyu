@@ -1,17 +1,21 @@
-import fastify, { FastifyInstance } from 'fastify';
+import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import {
 	AckPolicy,
 	Codec,
 	connect,
+	createInbox,
 	DeliverPolicy,
+	headers,
 	JSONCodec,
+	MsgHdrs,
 	nanos,
 	NatsConnection,
 	StringCodec,
 } from 'nats';
 import { dataType, NatsPluginOpts } from './nats.types';
 import chalk from 'chalk';
+import { ISocketPayload, MessageType } from '../socketio/socketio.types';
 
 export const natsPlugin = fp(
 	async (fastify: FastifyInstance, opts: NatsPluginOpts) => {
@@ -64,6 +68,7 @@ export const natsPlugin = fp(
 
 			// Consumer for Chat `ChatConsumer`
 			const consumerName = 'chatConsumer';
+			const chatReply = createInbox();
 
 			await natsManager.consumers
 				.info(streamName, consumerName)
@@ -90,6 +95,29 @@ export const natsPlugin = fp(
 					}
 				});
 
+			const header = headers();
+			header.set('reply-to', createInbox());
+
+			nats.subscribe(chatReply, {
+				async callback(err, msg) {
+					if (err) {
+						fastify.log.error(err);
+						return;
+					}
+					// redirect the msg to the clients through sockets
+					// fastify.log.info(msg);
+					const payload: ISocketPayload = JSONCodec().decode(
+						msg.data,
+					) as ISocketPayload;
+
+					// send to both, sender and receiver
+					fastify.io
+						.to(payload.sender)
+						.to(payload.receiver)
+						.emit('send_msg', payload);
+				},
+			});
+
 			// JetStream Client to Communicate with other Clients
 			const js = nats.jetstream();
 
@@ -102,7 +130,9 @@ export const natsPlugin = fp(
 					}
 					fastify.log.info('[NATS] Message Arrived to `notification`');
 
-					const payload: dataType = jc.decode(msg.data);
+					const payload: dataType = JSONCodec().decode(
+						msg.data,
+					) as dataType;
 
 					fastify.log.info(payload);
 
@@ -116,6 +146,7 @@ export const natsPlugin = fp(
 			fastify.decorate('chatSubj', subject);
 			fastify.decorate('jsCodec', JSONCodec());
 			fastify.decorate('scCodec', StringCodec());
+			fastify.decorate('headerReplyTo', header);
 
 			fastify.addHook('onClose', async () => {
 				await natsManager.streams.delete(streamName);

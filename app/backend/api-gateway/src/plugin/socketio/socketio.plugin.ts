@@ -2,7 +2,7 @@ import fastify, { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import { Server as SocketIOServer } from 'socket.io';
 import { IChatPayload, socketioOpts } from './socketio.types';
-import { Codec, JSONCodec } from 'nats';
+import { Codec, headers, JSONCodec } from 'nats';
 
 export const socketioPlugin = fp(async function (
 	fastify: FastifyInstance,
@@ -20,13 +20,13 @@ export const socketioPlugin = fp(async function (
 			},
 		});
 
-		fastify.log.info('[SocketIO] SocketIO Server is Running');
+		fastify.log.info('[SocketIO] Server is Running');
 
 		fastify.decorate('io', io);
 
 		fastify.addHook('onClose', async (fastify) => {
 			await fastify.io.close();
-			fastify.log.info('[SocketIO] SocketIO Closed Successfully');
+			fastify.log.info('[SocketIO] Server Closed Successfully');
 		});
 	} catch (error) {
 		fastify.log.error(error);
@@ -76,12 +76,16 @@ export const socketioPlugin = fp(async function (
 
 		socket.on('send_msg', async (data: IChatPayload) => {
 			fastify.js.publish(
-				fastify.chatSubj + 'send_msg',
+				fastify.chatSubj.replace('*', '') + 'send_msg',
 				fastify.jsCodec.encode(data),
+				{ headers: fastify.headerReplyTo },
 			);
 
-			// When the User sends a message to a friend and has multiple sessions opened, send it to it!
-			socket.to(socket.data.username).except(socket.id).emit('send_msg', data);
+			/***
+			 * When the User sends a message to a friend and has multiple sessions opened, send it to all sessions!
+			 * with new info (id, and other)
+			 * `socket.to(socket.data.username).except(socket.id).emit('send_msg', data);`
+			 */
 		});
 
 		socket.on('disconnecting', async () => {

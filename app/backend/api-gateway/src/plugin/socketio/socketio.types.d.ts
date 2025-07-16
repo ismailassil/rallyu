@@ -22,10 +22,21 @@ export interface MessageType {
 	status: 'read' | 'unread';
 }
 
-interface IChatPayload {
+export interface ISocketPayload {
 	sender: string;
 	receiver: string;
-	message: MessageType;
+	data: MessageType;
+}
+
+export interface IChatPayload {
+	sender: string;
+	receiver: string;
+	data: IMessagePayload;
+}
+
+export interface IMessagePayload {
+	message: 'string';
+	sent_at: 'string';
 }
 
 interface ClientToServerEvents {

@@ -17,6 +17,16 @@ export interface MessageType {
 }
 
 export interface MessageDBResult {
+	id: number;
+	sender: string;
+	receiver: string;
+	message: string;
+	sent_at: string;
+	seen_at?: string | null;
+	status: 'read' | 'unread';
+}
+
+export interface FullMessageDBResult {
 	message_id: number;
 	message: string;
 	sent_at: string;
