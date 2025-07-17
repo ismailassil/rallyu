@@ -14,7 +14,7 @@ import fastifyPrintRoutes from 'fastify-print-routes';
 
 dotenv.config();
 
-const PORT = parseInt(process.env.PORT || '4004');
+const SERVER_PORT = parseInt(process.env.PORT || '4004');
 const FRONT_PORT = process.env.FRONT_PORT ?? '';
 
 await fastify.register(fastifyPrintRoutes);
@@ -65,6 +65,7 @@ await fastify.register(natsPlugin, natsOptions);
 await fastify.register(proxiesPlugin, {
 	NOTIF_PORT: process.env.NOTIF_PORT ?? '',
 	AUTH_PORT: process.env.AUTH_PORT ?? '',
+	CHAT_PORT: process.env.CHAT_PORT ?? '',
 });
 
 // ** METRICS Plugin
@@ -78,7 +79,7 @@ fastify.get('/health', { exposeHeadRoute: false }, async (_, res: FastifyReply) 
 });
 
 (function () {
-	fastify.listen({ host: '::', port: PORT }, (error) => {
+	fastify.listen({ host: '::', port: SERVER_PORT }, (error) => {
 		if (error) {
 			fastify.log.error(error);
 			process.exit(1);

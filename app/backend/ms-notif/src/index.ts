@@ -27,7 +27,11 @@ await fastify.register(databasePlugin);
 await fastify.register(NotifRoutes, routesPrefix);
 await fastify.register(fastifySchedule);
 // await fastify.register(CronJobPlugin); // TODO: Activate this in Production
-await fastify.register(natsPlugin);
+await fastify.register(natsPlugin, {
+	NATS_PORT: process.env.NATS_PORT ?? '',
+	NATS_USER: process.env.NATS_USER ?? '',
+	NATS_PASSWORD: process.env.NATS_PASSWORD ?? '',
+});
 
 (function () {
 	fastify.listen({ host: '::', port: PORT }, (err) => {

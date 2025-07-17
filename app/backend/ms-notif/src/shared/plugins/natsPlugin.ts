@@ -1,34 +1,83 @@
 import fastify, { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
-import { connect, NatsConnection } from 'nats';
+import { connect, JSONCodec, NatsConnection } from 'nats';
+import NotifSerives from '../../services/notif.services.js';
+import { INotifDetail } from '../types/fetch.types';
+import INotifyBody from '../types/notifyBody.types';
+import { NatsOpts } from '../types/nats.types';
 
-const NATS_USER = process.env.NATS_USER;
-const NATS_PASSWORD = process.env.NATS_PASSWORD;
+export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) => {
+	const notifServices = new NotifSerives();
 
-export const natsPlugin = fp(async (fastify: FastifyInstance) => {
-	try {
-		const nats: NatsConnection = await connect({
-			// servers: 'nats://nats:4222',
-			servers: 'nats://localhost:4222', // TODO: Change this to Nats container name
-			user: NATS_USER,
-			pass: NATS_PASSWORD,
-			name: "Notification"
-		});
+	const nats: NatsConnection = await connect({
+		// servers: 'nats://nats:${opts.NATS_PORT}',
+		servers: `nats://localhost:${opts.NATS_PORT}`, // TODO: Change this to Nats container name
+		user: opts.NATS_USER,
+		pass: opts.NATS_PASSWORD,
+		name: 'Notification',
+	});
 
-		fastify.log.info('✅ Nats Server Connection Established');
+	fastify.log.info('✅ Nats Server Connection Established');
 
-		fastify.decorate('nats', nats);
+	const jc = JSONCodec();
 
-		fastify.addHook('onClose', async () => {
-			try {
-				await nats.drain();
-				fastify.log.info('⚾️ NATS Closed Successfully');
-			} catch (error) {
-				fastify.log.error(error);
+	nats.subscribe('notify', {
+		async callback(err, msg) {
+			if (err) {
+				fastify.log.error(err);
+				return;
 			}
-		});
-	} catch (err) {
-		fastify.log.error(err);
-		return;
-	}
+
+			const payload: INotifyBody = jc.decode(msg.data) as INotifyBody;
+
+			// Register the notification in the Database
+			let notifId: number;
+			try {
+				notifId = await notifServices.registerNotification(payload);
+				fastify.log.info('✅ Notification created');
+
+				// Get the Data from Redis
+				const result = await fastify.redis.get(`notif?id=${notifId}`);
+				if (!result) {
+					const message = 'Notification not found';
+					fastify.log.error(message);
+					return;
+				}
+
+				// Parse the Notification
+				const resData: INotifDetail = JSON.parse(result);
+
+				// Send back to SocketIO Gateway through NATS Server
+				fastify.nats.publish(
+					'notification',
+					jc.encode({
+						username: payload.to_user,
+						type: 'notify',
+						data: resData,
+					}),
+				);
+				try {
+					await fastify.nats.flush();
+					fastify.log.info('✅ Notification => `Gateway`');
+				} catch {
+					fastify.log.error('❌ Notification => `Gateway`');
+				}
+
+				fastify.log.info('Notification created');
+			} catch (err) {
+				fastify.log.error(err);
+			}
+		},
+	});
+
+	fastify.decorate('nats', nats);
+
+	fastify.addHook('onClose', async () => {
+		try {
+			await nats.drain();
+			fastify.log.info('⚾️ NATS Closed Successfully');
+		} catch (error) {
+			fastify.log.error(error);
+		}
+	});
 });

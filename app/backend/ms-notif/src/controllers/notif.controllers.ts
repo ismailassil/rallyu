@@ -52,7 +52,7 @@ class NotifControllers {
 				}),
 			);
 			try {
-				fastify.nats.flush();
+				await fastify.nats.flush();
 				fastify.log.info('✅ Notification => `Gateway`');
 			} catch {
 				fastify.log.error('❌ Notification => `Gateway`');

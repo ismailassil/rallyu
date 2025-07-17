@@ -12,7 +12,7 @@ const databasePlugin = fastifyPlugin(
 		db.exec(`
 			CREATE TABLE IF NOT EXISTS users (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				username TEXT NOT NULL,
+				username TEXT UNIQUE NOT NULL,
 				first_name TEXT NOT NULL,
 				last_name TEXT NOT NULL,
 				image BLOB NOT NULL

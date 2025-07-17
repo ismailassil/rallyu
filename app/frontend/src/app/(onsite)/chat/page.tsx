@@ -5,7 +5,7 @@ import FriendsList from "./components/FriendsList";
 import MessageSection from "./components/MessageBox";
 import { BoxProvider } from "./contexts/boxContext";
 
-export default function Dashboard() {
+export default function ChatBoard() {
 	return (
 		<motion.main
 			initial={{ opacity: 0, y: -50 }}

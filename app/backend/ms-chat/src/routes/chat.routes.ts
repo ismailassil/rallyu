@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyReply } from 'fastify';
 import ChatControllers from '../controllers/chat.controllers';
-import fetchSchema from '../shared/schemas/fetch.schema';
-import { ParamsFetchChatsTypes } from '../shared/types/fetchChats.types';
+import { QueryFetchChatsTypes } from '../shared/types/fetchChats.types';
+import fetchHistorySchema from '../shared/schemas/fetchHistory.schema';
 
 function chatRoutes(fastify: FastifyInstance) {
 	const chatControllers = new ChatControllers();
@@ -14,14 +14,13 @@ function chatRoutes(fastify: FastifyInstance) {
 		},
 	);
 
-	// TODO: Add schemas
-	fastify.get<{ Params: ParamsFetchChatsTypes }>(
-		'/:username',
-		{ schema: fetchSchema, exposeHeadRoute: false },
-		chatControllers.getUserChats.bind(chatControllers),
+	fastify.get<{ Querystring: QueryFetchChatsTypes }>(
+		'/history/chat',
+		{ schema: fetchHistorySchema, exposeHeadRoute: false },
+		chatControllers.getUserChatsHistory.bind(chatControllers),
 	);
 
-	// TODO: Add Schams, can pass queries
+	// TODO: Add Schema, (+ Queries)
 	fastify.get(
 		'/search',
 		{ exposeHeadRoute: false },
