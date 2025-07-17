@@ -1,5 +1,6 @@
 import fastify from '../app';
 import ChatRepository from '../repositories/chat.repository';
+import UserNotFoundException from '../shared/exceptions/UserNotFoundException';
 import {
 	FullMessageDBResult,
 	MessageType,
@@ -17,7 +18,10 @@ class ChatServices {
 	retrieveUserChatsData(username: string, page: number): FullMessageDBResult[] {
 		const user = this.chatRepository.getUserByUsername(username);
 
-		const messages = this.chatRepository.getMessages(user.id, page);
+		const messages: FullMessageDBResult[] = this.chatRepository.getMessages(
+			user.id,
+			page,
+		);
 
 		return messages;
 	}
@@ -87,6 +91,57 @@ class ChatServices {
 		);
 
 		return message;
+	}
+
+	registerOrUpdateUser(userData: UserType) {
+		try {
+			const userExists = this.chatRepository.getUserByUsername(
+				userData.username,
+			);
+
+			const updatedUser: UserType = {
+				id: userExists.id,
+				username: userData.username ?? userExists.username,
+				first_name: userData.first_name ?? userExists.first_name,
+				last_name: userData.last_name ?? userExists.last_name,
+				image: userData.image ?? userExists.image,
+			};
+
+			this.chatRepository.updateUser(updatedUser);
+		} catch (err) {
+			if (err instanceof UserNotFoundException) {
+				this.chatRepository.addUser(userData);
+			}
+			fastify.log.error((err as Error).message);
+		}
+	}
+
+	deleteUserData(username: string) {
+		try {
+			const { id: userId } = this.chatRepository.getUserByUsername(username);
+
+			this.chatRepository.removeUser(userId);
+			this.chatRepository.removeUserData(userId);
+		} catch (error) {
+			fastify.log.error((error as Error).message);
+		}
+	}
+
+	retrieveConversations(
+		curUsername: string,
+		username: string,
+		page: number,
+	): FullMessageDBResult[] {
+		const curUser = this.chatRepository.getUserByUsername(curUsername);
+		const user = this.chatRepository.getUserByUsername(username);
+
+		const messages: FullMessageDBResult[] = this.chatRepository.getConversations(
+			curUser.id,
+			user.id,
+			page,
+		);
+
+		return messages;
 	}
 }
 

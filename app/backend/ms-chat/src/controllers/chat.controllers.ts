@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
+import fastify from '../app';
 import {
 	ConversationType,
-	ParamsFetchChatsTypes,
 	QueryFetchChatsTypes,
 } from '../shared/types/fetchChats.types';
 import ChatServices from '../services/chat.services';
@@ -16,13 +16,23 @@ class ChatControllers {
 		this.chatServices = new ChatServices();
 	}
 
-	getUserChats(req: FastifyRequest, res: FastifyReply) {
-		const { username } = req.params as ParamsFetchChatsTypes;
-		const { page } = req.query as QueryFetchChatsTypes;
+	getUserChatsHistory(req: FastifyRequest, res: FastifyReply) {
+		const username: string = req.headers['x-user-username'] as string;
+		// const { username } = req.params as ParamsFetchChatsTypes;
+		const { with: withUsername, page } = req.query as QueryFetchChatsTypes;
 
+		let chats: FullMessageDBResult[];
 		try {
-			const chats: FullMessageDBResult[] =
-				this.chatServices.retrieveUserChatsData(username, page);
+			fastify.log.info(withUsername);
+			if (!withUsername) {
+				chats = this.chatServices.retrieveUserChatsData(username, page);
+			} else {
+				chats = this.chatServices.retrieveConversations(
+					username,
+					withUsername,
+					page,
+				);
+			}
 
 			const conversations: ConversationType[] =
 				this.chatServices.parseChatsData(username, chats);

@@ -1,9 +1,9 @@
 import { FastifyInstance } from 'fastify';
 import fastifyPlugin from 'fastify-plugin';
-import fetchSchema from '../schemas/fetch.schema';
+import fetchHistorySchema from '../schemas/fetchHistory.schema';
 
 const schemasPlugin = fastifyPlugin(async function (fastify: FastifyInstance) {
-	fastify.addSchema(fetchSchema);
+	fastify.addSchema(fetchHistorySchema);
 });
 
 export default schemasPlugin;

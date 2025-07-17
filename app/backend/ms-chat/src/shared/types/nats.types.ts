@@ -22,3 +22,11 @@ export interface IMessagePayload {
 	message: 'string';
 	sent_at: 'string';
 }
+
+export interface INotifyBody {
+	from_user: string;
+	to_user: string;
+	type: 'chat';
+	msg?: string;
+	action_url?: string;
+}

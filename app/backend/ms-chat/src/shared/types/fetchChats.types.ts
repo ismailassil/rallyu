@@ -2,11 +2,8 @@ import { MessageType, UserType } from './database.types';
 
 export interface ReturnFetchChatsTypes {}
 
-export interface ParamsFetchChatsTypes {
-	username: string;
-}
-
 export interface QueryFetchChatsTypes {
+	with?: string;
 	page: number;
 }
 

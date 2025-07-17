@@ -20,7 +20,8 @@ import { ISocketPayload, MessageType } from '../socketio/socketio.types';
 export const natsPlugin = fp(
 	async (fastify: FastifyInstance, opts: NatsPluginOpts) => {
 		const { NATS_USER, NATS_PASSWORD } = opts;
-		const jc: Codec<dataType> = JSONCodec();
+		const jcodec = JSONCodec();
+		const scodec = StringCodec();
 
 		try {
 			const nats: NatsConnection = await connect({
@@ -105,8 +106,8 @@ export const natsPlugin = fp(
 						return;
 					}
 					// redirect the msg to the clients through sockets
-					// fastify.log.info(msg);
-					const payload: ISocketPayload = JSONCodec().decode(
+					fastify.log.info(msg.data);
+					const payload: ISocketPayload = jcodec.decode(
 						msg.data,
 					) as ISocketPayload;
 
@@ -130,11 +131,13 @@ export const natsPlugin = fp(
 					}
 					fastify.log.info('[NATS] Message Arrived to `notification`');
 
-					const payload: dataType = JSONCodec().decode(
-						msg.data,
-					) as dataType;
+					const payload: dataType = jcodec.decode(msg.data) as dataType;
 
 					fastify.log.info(payload);
+					if (!payload.username || !payload.data || !payload.type) {
+						fastify.log.warn('Invalid Payload: Empty');
+						return;
+					}
 
 					fastify.io.in(payload.username).emit(payload.type, payload.data);
 				},
@@ -144,8 +147,8 @@ export const natsPlugin = fp(
 			fastify.decorate('nats', nats);
 			fastify.decorate('js', js);
 			fastify.decorate('chatSubj', subject);
-			fastify.decorate('jsCodec', JSONCodec());
-			fastify.decorate('scCodec', StringCodec());
+			fastify.decorate('jsCodec', jcodec);
+			fastify.decorate('scCodec', scodec);
 			fastify.decorate('headerReplyTo', header);
 
 			fastify.addHook('onClose', async () => {

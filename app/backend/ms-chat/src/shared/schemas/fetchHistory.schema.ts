@@ -1,15 +1,9 @@
-const fetchSchema = {
-	$id: 'fetchSchema',
-	params: {
-		type: 'object',
-		properties: {
-			username: { type: 'string' },
-		},
-		required: ['username'],
-	},
+const fetchHistorySchema = {
+	$id: 'fetchHistorySchema',
 	querystring: {
 		type: 'object',
 		properties: {
+			with: { type: 'string' },
 			page: { type: 'number', minimum: 1 },
 		},
 		required: ['page'],
@@ -36,4 +30,4 @@ const fetchSchema = {
 	},
 };
 
-export default fetchSchema;
+export default fetchHistorySchema;

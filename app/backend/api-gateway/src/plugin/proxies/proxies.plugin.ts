@@ -4,7 +4,7 @@ import fp from 'fastify-plugin';
 import { proxiesOpts } from './proxies.types';
 
 const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) => {
-	const { AUTH_PORT, NOTIF_PORT } = opts;
+	const { AUTH_PORT, NOTIF_PORT, CHAT_PORT } = opts;
 
 	const authProxyOptions = {
 		// upstream: `http://auth:${AUTH_PORT}`,
@@ -24,7 +24,7 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	const chatProxyOptions = {
 		// upstream: `http://chat:${CHAT_PORT}`,
-		// upstream: `http://localhost:${CHAT_PORT}`,
+		upstream: `http://localhost:${CHAT_PORT}`,
 		prefix: '/api/chat',
 		rewritePrefix: '/chat',
 		httpMethods: ['GET', 'PUT'],
