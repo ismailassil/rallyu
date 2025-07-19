@@ -1,7 +1,7 @@
 import { timingSafeEqual } from 'crypto';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
-export const metricsAuthEndpoint = async (req: FastifyRequest, rep: FastifyReply) => {
+export const verifyMetricsToken = async (req: FastifyRequest, rep: FastifyReply) => {
 	if (req.url === '/inter-metrics') {
 		const auth = req.headers['authorization'];
 		const expected =
@@ -14,6 +14,7 @@ export const metricsAuthEndpoint = async (req: FastifyRequest, rep: FastifyReply
 				.status(401)
 				.header('www-authenticate', 'Basic')
 				.send('Unauthorized');
+
 		const authBuffer = Buffer.from(auth);
 		const expectedBuffer = Buffer.from(expected);
 

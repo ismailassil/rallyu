@@ -1,12 +1,5 @@
 const historySchema = {
 	$id: 'historySchema',
-	params: {
-		type: 'object',
-		properties: {
-			username: { type: 'string' },
-		},
-		required: ['username'],
-	},
 	querystring: {
 		type: 'object',
 		properties: {

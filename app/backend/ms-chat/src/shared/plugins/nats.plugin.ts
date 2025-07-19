@@ -112,7 +112,7 @@ const natsPlugin = fastifyPlugin(
 
 		fastify.addHook('onClose', async () => {
 			fastify.log.info('[ ~ ] Closing NATS');
-			await nc.close();
+			await nc.drain();
 			fastify.log.info('[ + ] NATS Closed Successfully');
 		});
 	},

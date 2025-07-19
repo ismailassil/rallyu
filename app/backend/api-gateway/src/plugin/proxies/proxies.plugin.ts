@@ -31,8 +31,8 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 	};
 
 	await fastify.register(proxy, authProxyOptions);
-
 	await fastify.register(proxy, notifProxyOptions);
+	await fastify.register(proxy, chatProxyOptions);
 });
 
 export default endpointsPlugin;

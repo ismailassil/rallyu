@@ -2,11 +2,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import fastify from '../app.js';
 import NotifServices from '../services/notif.services.js';
 import INotifyBody from '../shared/types/notifyBody.types.js';
-import {
-	IFetchParams,
-	IFetchQuery,
-	INotifDetail,
-} from '../shared/types/fetch.types.js';
+import { IFetchQuery, INotifDetail } from '../shared/types/fetch.types.js';
 import IUpdateBody from '../shared/types/update.types.js';
 import INotifMessage from '../shared/types/notifMessage.types.js';
 import { UserNotFoundException } from '../shared/exceptions/UserNotFoundException.js';
@@ -68,21 +64,25 @@ class NotifControllers {
 		}
 	}
 
-	// Limit-Offset Pagination
-	// ?? PATH/:username&page=?
 	async fetchHistory(
-		req: FastifyRequest<{ Params: IFetchParams; Querystring: IFetchQuery }>,
+		req: FastifyRequest<{ Querystring: IFetchQuery }>,
 		res: FastifyReply,
 	) {
-		const { username } = req.params;
+		const username = req.headers['x-user-username'] as string;
 		const { page } = req.query;
+
+		if (!username)
+			return res.status(400).send({
+				status: 'error',
+				message: 'Error Occurred',
+				details: 'x-user-username Empty',
+			});
 
 		try {
 			const fullData: INotifMessage[] =
 				await this.notifServices.getUserMessages(username, page);
 
-			const data: INotifDetail[] =
-				this.notifServices.unpackMessage(fullData);
+			const data: INotifDetail[] = this.notifServices.unpackMessage(fullData);
 
 			return res.status(200).send({ status: 'success', message: data });
 		} catch (err) {
@@ -105,7 +105,15 @@ class NotifControllers {
 		}>,
 		res: FastifyReply,
 	) {
-		const { notificationId, status, username, all } = req.body;
+		const { notificationId, status, all } = req.body;
+		const username = req.headers['x-user-username'] as string;
+
+		if (!username)
+			return res.status(400).send({
+				status: 'error',
+				message: 'Error Occurred',
+				details: 'x-user-username Empty',
+			});
 
 		try {
 			// Update the Notification in DB

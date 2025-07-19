@@ -18,8 +18,14 @@ class ChatControllers {
 
 	getUserChatsHistory(req: FastifyRequest, res: FastifyReply) {
 		const username: string = req.headers['x-user-username'] as string;
-		// const { username } = req.params as ParamsFetchChatsTypes;
 		const { with: withUsername, page } = req.query as QueryFetchChatsTypes;
+
+		if (!username)
+			return res.status(400).send({
+				status: 'error',
+				message: 'Error Occurred',
+				details: 'x-user-username Empty',
+			});
 
 		let chats: FullMessageDBResult[];
 		try {
@@ -65,7 +71,31 @@ class ChatControllers {
 		}
 	}
 
-	searchUsers() {}
+	searchUsers(req: FastifyRequest, res: FastifyReply) {
+		const username: string = req.headers['x-user-username'] as string;
+
+		if (!username)
+			return res.status(400).send({
+				status: 'error',
+				message: 'Error Occurred',
+				details: 'x-user-username Empty',
+			});
+		try {
+		} catch (error) {
+			if (error instanceof UserNotFoundException) {
+				return res.code(500).send({
+					status: 'error',
+					message: `${username} Not Found`,
+					error,
+				});
+			}
+			return res.code(500).send({
+				status: 'error',
+				message: 'INTERNAL_ERROR',
+				error,
+			});
+		}
+	}
 }
 
 export default ChatControllers;

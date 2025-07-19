@@ -1,76 +1,75 @@
 networks:
-  backend:
-    driver: bridge
+    backend:
+        driver: bridge
 
 volumes:
-  ms-auth-data:
-    driver: local
+    ms-auth-data:
+        driver: local
 
 services:
-  api-gateway:
-    build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
-    image: rallyu/api-gateway:v1.0
-    container_name: api-gateway
-    restart: always
-    networks:
-      - backend
-      - web-app
-    env_file:
-      - ./api-gateway/.env
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          'curl -sf http://localhost:4004/health | grep -q ''"status":"up"''',
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 20
+    api-gateway:
+        build:
+            context: ./api-gateway
+            dockerfile: Dockerfile
+        image: rallyu/api-gateway:v1.0
+        container_name: api-gateway
+        restart: always
+        networks:
+            - backend
+            - web-app
+        env_file:
+            - ./api-gateway/.env
+        healthcheck:
+            test:
+                [
+                    'CMD-SHELL',
+                    'curl -sf http://localhost:4004/health | grep -q ''"status":"up"',
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 20
 
-  ms-auth:
-    build:
-      context: ./ms-auth
-      dockerfile: Dockerfile
-    image: rallyu/ms-auth:v1.0
-    container_name: ms-auth
-    restart: always
-    networks:
-      - backend
-    env_file:
-      - ./ms-auth/.env
-    volumes:
-      - ms-auth-data:/app/database
+    ms-auth:
+        build:
+            context: ./ms-auth
+            dockerfile: Dockerfile
+        image: rallyu/ms-auth:v1.0
+        container_name: ms-auth
+        restart: always
+        networks:
+            - backend
+        env_file:
+            - ./ms-auth/.env
+        volumes:
+            - ms-auth-data:/app/database
 
-  redis:
-    image: redis:8.2-m01-alpine3.22
-    container_name: redis
-    restart: always
-    networks:
-      - backend
-    env_file:
-      - .env
-    command: redis-server --requirepass ${REDIS_PASSWORD}
+    redis:
+        image: redis:8.2-m01-alpine3.22
+        container_name: redis
+        restart: always
+        networks:
+            - backend
+        env_file:
+            - .env
+        command: redis-server --requirepass ${REDIS_PASSWORD}
 
-  nats:
-    image: nats:alpine3.22
-    container_name: nats
-    restart: always
-    networks:
-      - backend
-    env_file:
-      - .env
-    command: --user ${NATS_USER} --pass ${NATS_PASSWORD} -js -m 8222 -n internal-server
-  
-  nats_ui:
-    image: mdawar/nats-dashboard
-    container_name: nats_ui
-    ports:
-     - 8000:80
-    restart: always
-    networks:
-      - backend
-    volumes:
-      - ./nats_ui_config/config.json:/srv/config.json
-    
+    nats:
+        image: nats:alpine3.22
+        container_name: nats
+        restart: always
+        networks:
+            - backend
+        env_file:
+            - .env
+        command: --user ${NATS_USER} --pass ${NATS_PASSWORD} -js -m 8222 -n internal-server
+
+    nats_ui:
+        image: mdawar/nats-dashboard
+        container_name: nats_ui
+        ports:
+            - 8000:80
+        restart: always
+        networks:
+            - backend
+        volumes:
+            - ./nats_ui_config/config.json:/srv/config.json
