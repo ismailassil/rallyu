@@ -5,12 +5,13 @@ import helmet from '@fastify/helmet';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyMetrics from 'fastify-metrics';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { metricsAuthEndpoint } from './middleware/metrics.endpoint.js';
+import { verifyMetricsToken } from './middleware/verify-metrics-token.js';
 import { natsPlugin } from './plugin/nats/nats.plugin.js';
 import { socketioPlugin } from './plugin/socketio/socketio.plugin.js';
 import fastifyJwt from '@fastify/jwt';
 import proxiesPlugin from './plugin/proxies/proxies.plugin.js';
 import fastifyPrintRoutes from 'fastify-print-routes';
+import { verifyUserJWT } from './middleware/verify-user-jwt.js';
 
 dotenv.config();
 
@@ -32,7 +33,7 @@ await fastify.register(cors, {
 await fastify.register(fastifyRateLimit, {
 	max: 200,
 	timeWindow: '1 minute',
-	allowList: (req, key) => {
+	allowList: (req) => {
 		return req.hostname === 'backend-exporter';
 	},
 });
@@ -71,11 +72,14 @@ await fastify.register(proxiesPlugin, {
 // ** METRICS Plugin
 fastify.register(fastifyMetrics, { endpoint: '/inter-metrics' });
 
-// ** Metrics Endpoint Authorization
-fastify.addHook('preHandler', metricsAuthEndpoint);
+// ** HOOK ENDPOINTS
+fastify.addHook('preHandler', verifyMetricsToken);
+fastify.addHook('preHandler', verifyUserJWT);
 
-fastify.get('/health', { exposeHeadRoute: false }, async (_, res: FastifyReply) => {
-	return res.status(200).send({ status: 'up' });
+fastify.get('/health', { exposeHeadRoute: false }, function (_, res: FastifyReply) {
+	return res
+		.status(200)
+		.send({ status: 'up', timestamp: new Date().toISOString() });
 });
 
 (function () {

@@ -9,7 +9,7 @@ import { useHeaderContext } from "../../context/HeaderContext";
 import Loading from "./Loading";
 
 const NotificationBox = () => {
-	const { notifications, isLoading } = useNotification();
+	const { notifications, isLoading, notifLength } = useNotification();
 	const boxRef = useRef<HTMLUListElement>(null);
 	const { isNotif, setIsBottom } = useHeaderContext();
 
@@ -34,7 +34,7 @@ const NotificationBox = () => {
 
 	return (
 		<>
-			<NotificationHeader length={notifications.length} />
+			<NotificationHeader length={notifLength} />
 			{isLoading ? (
 				<Loading />
 			) : (

@@ -1,15 +1,11 @@
 import { statusType } from './notifMessage.types';
 import { notifType } from './notifyBody.types';
 
-interface IFetchParams {
-	username: string;
-}
-
-interface IFetchQuery {
+export interface IFetchQuery {
 	page: number;
 }
 
-interface INotifDetail {
+export interface INotifDetail {
 	id: number;
 	from_user: string;
 	to_user: string;
@@ -21,7 +17,7 @@ interface INotifDetail {
 	action_url: string;
 }
 
-interface IUpdateTypes {
+export interface IUpdateTypes {
 	username: string;
 	type: 'update';
 	data: {
@@ -30,10 +26,8 @@ interface IUpdateTypes {
 	};
 }
 
-interface INotifyTypes {
+export interface INotifyTypes {
 	username: string;
 	type: 'notify';
 	data: INotifDetail;
 }
-
-export { IFetchParams, IFetchQuery, INotifDetail, IUpdateTypes, INotifyTypes };

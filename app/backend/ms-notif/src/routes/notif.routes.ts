@@ -8,7 +8,9 @@ const NotifRoutes = async (fastify: FastifyInstance) => {
 	const notifControllers = new NotifControllers();
 
 	fastify.get('/health', { exposeHeadRoute: false }, (_, res: FastifyReply) => {
-		res.status(200).send({ status: 'up' });
+		return res
+			.status(200)
+			.send({ status: 'up', timestamp: new Date().toISOString() });
 	});
 
 	fastify.post(
@@ -18,7 +20,7 @@ const NotifRoutes = async (fastify: FastifyInstance) => {
 	);
 
 	fastify.get(
-		'/history/:username',
+		'/history',
 		{ schema: historySchema, exposeHeadRoute: false },
 		notifControllers.fetchHistory.bind(notifControllers),
 	);

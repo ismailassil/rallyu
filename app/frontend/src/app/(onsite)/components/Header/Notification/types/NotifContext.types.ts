@@ -11,6 +11,7 @@ export interface NotifContextTypes {
 	handleRemove: (id: string) => void;
 	socketRef: RefObject<Socket | null>;
 	isLoading: boolean;
+	notifLength: number;
 }
 
 export interface NotificationType {

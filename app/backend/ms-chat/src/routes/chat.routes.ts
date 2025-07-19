@@ -1,7 +1,8 @@
 import { FastifyInstance, FastifyReply } from 'fastify';
 import ChatControllers from '../controllers/chat.controllers';
 import { QueryFetchChatsTypes } from '../shared/types/fetchChats.types';
-import fetchHistorySchema from '../shared/schemas/fetchHistory.schema';
+import fetchHistorySchema from '../shared/schemas/history.schema';
+import searchSchema from '../shared/schemas/search.schema';
 
 function chatRoutes(fastify: FastifyInstance) {
 	const chatControllers = new ChatControllers();
@@ -10,20 +11,22 @@ function chatRoutes(fastify: FastifyInstance) {
 		'/health',
 		{ exposeHeadRoute: false },
 		function (_, res: FastifyReply) {
-			return res.status(200).send({ status: 'up' });
+			return res
+				.status(200)
+				.send({ status: 'up', timestamp: new Date().toISOString() });
 		},
 	);
 
 	fastify.get<{ Querystring: QueryFetchChatsTypes }>(
-		'/history/chat',
+		'/history',
 		{ schema: fetchHistorySchema, exposeHeadRoute: false },
 		chatControllers.getUserChatsHistory.bind(chatControllers),
 	);
 
 	// TODO: Add Schema, (+ Queries)
 	fastify.get(
-		'/search',
-		{ exposeHeadRoute: false },
+		'/search/:username',
+		{ schema: searchSchema, exposeHeadRoute: false },
 		chatControllers.searchUsers.bind(chatControllers),
 	);
 }

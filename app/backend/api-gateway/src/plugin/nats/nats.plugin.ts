@@ -2,13 +2,11 @@ import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import {
 	AckPolicy,
-	Codec,
 	connect,
 	createInbox,
 	DeliverPolicy,
 	headers,
 	JSONCodec,
-	MsgHdrs,
 	nanos,
 	NatsConnection,
 	StringCodec,
@@ -152,8 +150,18 @@ export const natsPlugin = fp(
 			fastify.decorate('headerReplyTo', header);
 
 			fastify.addHook('onClose', async () => {
-				await natsManager.streams.delete(streamName);
-				await nats.close();
+				if (!nats.isClosed() && !nats.isDraining()) await nats.drain();
+				if (!nats.isClosed()) {
+					try {
+						await natsManager.streams.delete(streamName);
+					} catch (err) {
+						fastify.log.warn(
+							`[NATS] Failed to delete stream "${streamName}":` +
+								(err as Error).message,
+						);
+					}
+					await nats.close();
+				}
 				fastify.log.info('[NATS] Server Closed Successfully');
 			});
 		} catch (err) {

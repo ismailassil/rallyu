@@ -1,5 +1,5 @@
-const fetchHistorySchema = {
-	$id: 'fetchHistorySchema',
+const historySchema = {
+	$id: 'historySchema',
 	querystring: {
 		type: 'object',
 		properties: {
@@ -30,4 +30,4 @@ const fetchHistorySchema = {
 	},
 };
 
-export default fetchHistorySchema;
+export default historySchema;
