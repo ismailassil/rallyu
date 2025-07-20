@@ -1,0 +1,37 @@
+[    {
+        "id": "1",
+        "image": "/profile/image_2.jpg",
+        "name": "Salah Demnati",
+        "message":"OK",
+        "date": "01/01/2000",
+        "isSeen": true,
+        "lastSeen": "22:40"
+    },
+    {
+        "id": "2",
+        "image": "/profile/lordVoldemort.jpeg",
+        "name": "Nabil Azouz",
+        "message":"KK",
+        "date": "01/01/2000",
+        "isSeen": false,
+        "lastSeen": "22:40"
+    },
+    {
+        "id": "3",
+        "image": "/profile/image.png",
+        "name": "Ismail Assil",
+        "message":"WW",
+        "date": "01/01/2000",
+        "isSeen": false,
+        "lastSeen": "22:40"
+    },
+    {
+        "id": "4",
+        "image": "/profile/darthVader.jpg",
+        "name": "M3illa",
+        "message":"FFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkjFFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkjFFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkjFFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkjFFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkj",
+        "date": "01/01/2222jjd",
+        "isSeen": false,
+        "lastSeen": "22:40"
+    }
+]
