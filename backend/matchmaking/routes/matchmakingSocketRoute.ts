@@ -33,12 +33,12 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
             const players = decisionQueue.find((ele) => Object.keys(ele).length == 2);
             if (players) {
                 if (players.player1.status && players.player2.status) {
-                    players.player1.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED" }));
-                    players.player2.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED" }));
                     const room = {
-                            roomId: roomId++,
-                            players: { playerId1: players.player1.sock, playerId2: players.player2.sock } 
-                        };
+                        roomId: crypto.randomUUID(),
+                        players: { playerId1: players.player1.sock, playerId2: players.player2.sock } 
+                    };
+                    players.player1.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED", roomId: room.roomId }));
+                    players.player2.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED", roomId: room.roomId }));
 
                     // Fetch Post request send room over network to game service!!!!!!!!!
                     // await = fetch("http://localhost:3000/api/v1/game/create/room", {

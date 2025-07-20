@@ -60,6 +60,7 @@ export default function Game() {
 				sock.close();
 				setLaunch(false);
 				setMatchFound(false);
+				router.push(`/game/loading-screen?room_id=${data.roomId}`);
 			}
         };
 
@@ -82,7 +83,7 @@ export default function Game() {
 			}
 		};
 
-	}, [launch, router, gameType, connectivity, ws]);
+	}, [launch, router, gameType, connectivity, ws, setMatchFound, setLaunch]);
 
 	return (
 		<AnimatePresence>

@@ -1,21 +1,41 @@
 import { ArrowUUpRight } from "@phosphor-icons/react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 function TournamentCard({
+	id,
 	name,
 	active,
 	isPingPong,
 }: {
+	id: number,
 	name: string;
 	active: number;
 	isPingPong: boolean;
 }) {
+	const router = useRouter();
+
 	if (name && name.length > 25) {
 		name = name.substring(0, 23) + "...";
 	}
+
+	const linkHandler = (e: React.MouseEvent<HTMLDivElement>) => {
+		const target: HTMLElement = e.target as HTMLElement;
+
+		if (target.closest('button')) {
+			// Join Tournament Logic here...
+
+			return ;
+		}
+
+		router.push(`tournament/stage/${id}`);
+	};
+
 	return (
-		<div className="*:flex *:justify-between group relative flex select-none flex-col justify-between gap-2 overflow-hidden">
-			<div className="z-1 relative flex w-full flex-1 flex-col gap-3">
+		<div className="*:flex *:justify-between group relative flex select-none flex-col justify-between gap-2 overflow-hidden
+					min-h-31 py-2 bg-card">
+			<div className="z-1 relative flex w-full flex-1 flex-col gap-3" onClick={linkHandler}>
 				<Image
 					src={!isPingPong ? "/design/tictactoe.svg" : "/design/pingpong.svg"}
 					width={70}
@@ -32,7 +52,8 @@ function TournamentCard({
 						<p>{active}/4</p>
 					</div>
 					<button className="hover:bg-main flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm bg-white/20 py-0.5">
-						<span className="text-sm">Join</span> <ArrowUUpRight size={16} />
+						<span className="text-sm">Join</span>
+						<ArrowUUpRight size={16} />
 					</button>
 				</div>
 			</div>
