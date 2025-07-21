@@ -33,6 +33,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 			<div className="flex h-full w-full gap-6 rounded-lg">
 				<article className="flex-5 flex h-full w-full flex-col gap-4">
 					<ProfileCard 
+						user_id={userProfile.user.id}
 						fullName={userProfile.user.first_name + ' ' + userProfile.user.last_name}
 						username={userProfile.user.username}
 						bio={userProfile.user.bio}
