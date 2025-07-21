@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 
 function Button({ text, icon, onClick } : { text: string, icon: string, onClick: () => void } ) {
 	return (
@@ -24,21 +25,72 @@ function Button({ text, icon, onClick } : { text: string, icon: string, onClick:
 }
 
 
-export default function Relations({ status } : { status: string | null }) {
-	const [friendshipStatus, setFriendshipStatus] = useState<'FRIENDS' | 'INCOMING' | 'OUTGOING' | 'NONE'>('NONE');
+export default function Relations({ user_id, status } : { user_id: number, status: string | null }) {
+	const [friendshipStatus, setFriendshipStatus] = useState<string | null>(status);
+	const { api } = useAuth();
 
 	if (!status)
 		return null;
 
-	const handleAdd = () => setFriendshipStatus('OUTGOING');
-	const handleAccept = () => setFriendshipStatus('FRIENDS');
-	const handleCancel = () => setFriendshipStatus('NONE');
-	const handleDecline = () => setFriendshipStatus('NONE');
-	const handleUnfriend = () => setFriendshipStatus('NONE');
-	const handleBlock = () => {
-		setFriendshipStatus('NONE');
-		alert('Blocked!');
-	};
+	async function handleAdd() {
+		try {
+			await api.sendFriendRequest(user_id);
+			setFriendshipStatus('OUTGOING');
+			alert('Request Sent!');
+		} catch {
+			alert('Something wrong happened!');
+		}
+	}
+
+	async function handleAccept() {
+		try {
+			await api.acceptFriendRequest(user_id);
+			setFriendshipStatus('FRIENDS');
+			alert('Request Accepted!');
+		} catch {
+			alert('Something wrong happened!');
+		}
+	}
+
+	async function handleCancel() {
+		try {
+			await api.cancelFriendRequest(user_id);
+			setFriendshipStatus('NONE');
+			alert('Request Canceled!');
+		} catch {
+			alert('Something wrong happened!');
+		}
+	}
+
+	async function handleReject() {
+		try {
+			await api.rejectFriendRequest(user_id);
+			setFriendshipStatus('NONE');
+			alert('Request Rejected!');
+		} catch {
+			alert('Something wrong happened!');
+		}
+	}
+
+	async function handleUnfriend() {
+		try {
+			await api.unfriend(user_id);
+			setFriendshipStatus('NONE');
+			alert('Unfriended!');
+		} catch {
+			alert('Something wrong happened!');
+		}
+	}
+
+	async function handleBlock() {
+		try {
+			await api.blockUser(user_id);
+			setFriendshipStatus('NONE');
+			alert('Blocked!');
+		} catch {
+			alert('Something wrong happened!');
+		}
+	}
 
 	return (
 		<div className='flex gap-3 select-none'>
@@ -53,7 +105,7 @@ export default function Relations({ status } : { status: string | null }) {
 			{friendshipStatus === 'INCOMING' && (
 				<>
 					<Button text='Accept' icon='/icons/user-plus.svg' onClick={handleAccept} />
-					<Button text='Decline' icon='/icons/user-minus.svg' onClick={handleDecline} />
+					<Button text='Decline' icon='/icons/user-minus.svg' onClick={handleReject} />
 				</>
 			)}
 

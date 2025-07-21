@@ -4,6 +4,7 @@ import Relations from './Relations';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
 
 type ProfileCardProps = {
+	user_id: number,
 	fullName: string,
 	username: string,
 	bio: string,
@@ -14,16 +15,8 @@ type ProfileCardProps = {
 	currentStreak: number
 };
 
-export default function ProfileCard({ fullName, username, bio, friendshipStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
+export default function ProfileCard({ user_id, fullName, username, bio, friendshipStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
 	return (
-		// <header
-		// 	className="bg-card border-br-card flex w-full flex-col items-center gap-12
-		// 				overflow-hidden rounded-2xl border-1 p-10
-		// 				min-h-[300px] max-h-[500px]
-		// 				sm:min-h-[300px]
-		// 				md:min-h-[360px] md:max-h-[400px]
-		// 				lg:flex-row"
-		// >
 		<header
 			className="bg-card border-br-card flex w-full flex-col items-center gap-8 lg:gap-12
 						overflow-hidden rounded-2xl border-1 p-10
@@ -43,7 +36,7 @@ export default function ProfileCard({ fullName, username, bio, friendshipStatus,
 						<p className={`text-sm text-gray-400 lg:text-lg`}>
 							{'Something went wrong, please try again later.' || bio}
 						</p>
-						{friendshipStatus && <Relations status={friendshipStatus}/>}
+						{friendshipStatus && <Relations user_id={user_id} status={friendshipStatus}/>}
 						{!friendshipStatus && 
 							<div className='flex gap-3 select-none'>
 								<div className={`flex flex-row pl-3.5 pr-3.5 pb-2 pt-2 gap-3 items-center ${funnelDisplay.className}

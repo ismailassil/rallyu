@@ -5,6 +5,7 @@ import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 
 export type UserProfileType = {
     user: {
+        id: number,
         first_name: string
         last_name: string
         email: string

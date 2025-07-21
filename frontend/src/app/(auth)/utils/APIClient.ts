@@ -154,7 +154,7 @@ export class APIClient {
 	}
 
 	/*--------------------------------- Users Profiles ---------------------------------*/
-
+	
 	async getUserInfo(username: string) : Promise<IUserProfile> {
 		const { data: res } = await this.client.get(`/users/${username}/profile`);
 		return res.data;
@@ -164,12 +164,12 @@ export class APIClient {
 		const { data: res } = await this.client.get(`/users/${username}`);
 		return res.data;
 	}
-
+	
 	async getUserPerformance(username: string) {
 		const { data: res } = await this.client.get(`/users/${username}/performance`);
 		return res.data;
 	}
-
+	
 	async getUserGamesHistory(username: string) {
 		const { data: res } = await this.client.get(`/users/${username}/games?page=1`); // TODO
 		return res.data;
@@ -179,13 +179,50 @@ export class APIClient {
 		const { data: res } = await this.client.get(`/users/${username}/profile`);
 		return res.data;
 	}
-
+	
 	async uploadUserAvatar() {
-
+		
 	}
-
+	
 	async updateAccountSettings() {
 		
+	}
+
+	/*--------------------------------- Users Relations ---------------------------------*/
+
+	async sendFriendRequest(user_id: number) {
+		const { data: res } = await this.client.post(`/users/${user_id}/friends/requests`);
+		return res.data;
+	}
+
+	async cancelFriendRequest(user_id: number) {
+		const { data: res } = await this.client.delete(`/users/${user_id}/friends/requests`);
+		return res.data;
+	}
+
+	async acceptFriendRequest(user_id: number) {
+		const { data: res } = await this.client.put(`/users/${user_id}/friends/accept`);
+		return res.data;
+	}
+
+	async rejectFriendRequest(user_id: number) {
+		const { data: res } = await this.client.put(`/users/${user_id}/friends/reject`);
+		return res.data;
+	}
+
+	async blockUser(user_id: number) {
+		const { data: res } = await this.client.post(`/users/${user_id}/block`);
+		return res.data;
+	}
+
+	async unblockUser(user_id: number) {
+		const { data: res } = await this.client.delete(`/users/${user_id}/block`);
+		return res.data;
+	}
+
+	async unfriend(user_id: number) {
+		const { data: res } = await this.client.post(`/users/${user_id}/friends`);
+		return res.data;
 	}
 
 	/*--------------------------------- Authentication ---------------------------------*/
