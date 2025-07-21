@@ -16,8 +16,7 @@ function Button({ text, icon, onClick } : { text: string, icon: string, onClick:
 					src={icon}
 					height={20}
 					width={20}
-				>
-				</Image>
+				/>
 				<p className='text-[16px] sm:text-lg text-white/85'>{text}</p>
 			</div>
 		</>
