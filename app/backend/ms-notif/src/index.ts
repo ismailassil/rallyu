@@ -9,7 +9,7 @@ import fastifySchedule from '@fastify/schedule';
 import { natsPlugin } from './shared/plugins/natsPlugin.js';
 import fastifyPrintRoutes from 'fastify-print-routes';
 
-const PORT = parseInt(process.env.PORT || '9012');
+const PORT = parseInt(process.env.PORT || '');
 
 const redisOptions = {
 	host: '127.0.0.1', // TODO: Change host into the redis container name
@@ -20,26 +20,31 @@ const redisOptions = {
 
 const routesPrefix = { prefix: '/notif' };
 
-await fastify.register(fastifyPrintRoutes);
-await fastify.register(schemasPlugin);
-await fastify.register(fastifyRedis, redisOptions);
-await fastify.register(databasePlugin);
-await fastify.register(NotifRoutes, routesPrefix);
-await fastify.register(fastifySchedule);
-// await fastify.register(CronJobPlugin); // TODO: Activate this in Production
-await fastify.register(natsPlugin, {
+fastify.register(fastifyPrintRoutes);
+fastify.register(schemasPlugin);
+fastify.register(databasePlugin);
+fastify.register(fastifyRedis, redisOptions);
+fastify.register(NotifRoutes, routesPrefix);
+fastify.register(fastifySchedule);
+// fastify.register(CronJobPlugin); // TODO: Activate this in Production
+fastify.register(natsPlugin, {
 	NATS_PORT: process.env.NATS_PORT ?? '',
 	NATS_USER: process.env.NATS_USER ?? '',
 	NATS_PASSWORD: process.env.NATS_PASSWORD ?? '',
 });
 
-(function () {
-	fastify.listen({ host: '::', port: PORT }, (err) => {
-		if (err) {
-			console.error(err);
-			process.exit(1);
-		}
-	});
+(async () => {
+	try {
+		await fastify.ready();
+		fastify.listen({ host: '::', port: PORT }, (err) => {
+			if (err) {
+				console.error(err);
+				process.exit(1);
+			}
+		});
+	} catch (error) {
+		fastify.log.error((error as Error).message);
+	}
 })();
 
 process.on('SIGINT', async () => {

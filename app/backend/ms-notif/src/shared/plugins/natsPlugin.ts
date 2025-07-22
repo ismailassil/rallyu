@@ -17,7 +17,7 @@ export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) =>
 		name: 'Notification',
 	});
 
-	fastify.log.info('✅ Nats Server Connection Established');
+	fastify.log.info('[NATS] Server Connection Established');
 
 	const jc = JSONCodec();
 
@@ -31,9 +31,8 @@ export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) =>
 			const payload: INotifyBody = jc.decode(msg.data) as INotifyBody;
 
 			// Register the notification in the Database
-			let notifId: number;
 			try {
-				notifId = await notifServices.registerNotification(payload);
+				const notifId = await notifServices.registerNotification(payload);
 				fastify.log.info('✅ Notification created');
 
 				// Get the Data from Redis
@@ -75,7 +74,7 @@ export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) =>
 	fastify.addHook('onClose', async () => {
 		try {
 			await nats.drain();
-			fastify.log.info('⚾️ NATS Closed Successfully');
+			fastify.log.info('[NATS] Server Closed Successfully');
 		} catch (error) {
 			fastify.log.error(error);
 		}

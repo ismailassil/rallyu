@@ -38,61 +38,53 @@ export const natsPlugin = fp(
 
 			const streamName = 'chatStream';
 			const subject = 'chat.*';
-			await natsManager.streams
-				.info(streamName)
-				.then(() => {
-					fastify.log.info(
-						`[NATS] Stream: <${chalk.yellow(
-							streamName,
-						)}> already Created`,
-					);
-				})
-				.catch(async (error) => {
-					if (error) {
-						fastify.log.error('[NATS] ' + error.message);
-						await natsManager.streams.add({
-							name: streamName,
-							subjects: [subject],
-							max_age: nanos(1.8e6), // 30min
-							description:
-								'[NATS] Stream for chat Micro-service binded with Websockets',
-						});
-						fastify.log.info(
-							`[NATS] Stream <${chalk.yellow(
-								streamName,
-							)}> has been created successfully`,
-						);
-					}
+			try {
+				await natsManager.streams.info(streamName);
+				fastify.log.info(
+					`[NATS] Stream: <${chalk.yellow(streamName)}> already Created`,
+				);
+			} catch (error) {
+				fastify.log.error('[NATS] ' + (error as Error).message);
+				await natsManager.streams.add({
+					name: streamName,
+					subjects: [subject],
+					max_age: nanos(1.8e6), // 30min
+					description: '[NATS] Stream for CHAT MS binded with SocketIO',
 				});
+				fastify.log.info(
+					`[NATS] Stream <${chalk.yellow(
+						streamName,
+					)}> has been created successfully`,
+				);
+			}
 
 			// Consumer for Chat `ChatConsumer`
 			const consumerName = 'chatConsumer';
 			const chatReply = createInbox();
 
-			await natsManager.consumers
-				.info(streamName, consumerName)
-				.then((info) => {
-					fastify.log.info(
-						`[NATS] Consumer <${chalk.yellow(
-							info.name,
-						)}> already exists with name `,
-					);
-				})
-				.catch(async (err) => {
-					if (err) {
-						fastify.log.error(err.message);
-						await natsManager.consumers.add(streamName, {
-							durable_name: 'chatConsumer',
-							ack_policy: AckPolicy.Explicit,
-							deliver_policy: DeliverPolicy.All,
-						});
-						fastify.log.info(
-							`[NATS] Consumer <${chalk.yellow(
-								consumerName,
-							)}> has been created successfully`,
-						);
-					}
+			try {
+				const consInfo = await natsManager.consumers.info(
+					streamName,
+					consumerName,
+				);
+				fastify.log.info(
+					`[NATS] Consumer <${chalk.yellow(
+						consInfo.name,
+					)}> already exists with name `,
+				);
+			} catch (error) {
+				fastify.log.error((error as Error).message);
+				const consInfo = await natsManager.consumers.add(streamName, {
+					durable_name: 'chatConsumer',
+					ack_policy: AckPolicy.Explicit,
+					deliver_policy: DeliverPolicy.All,
 				});
+				fastify.log.info(
+					`[NATS] Consumer <${chalk.yellow(
+						consInfo.name,
+					)}> has been created successfully`,
+				);
+			}
 
 			const header = headers();
 			header.set('reply-to', createInbox());

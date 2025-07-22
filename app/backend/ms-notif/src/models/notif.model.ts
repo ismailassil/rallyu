@@ -12,13 +12,13 @@ const databasePath = path.join(__dirname, '../../database/database.sqlite');
 const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 	const db = new sqlite3.Database(databasePath, (error) => {
 		if (error) {
-			fastify.log.error('Error: ' + error.message);
+			fastify.log.error('[SQL] Error: ' + error.message);
 			return;
 		}
-		fastify.log.info('✅ Database opened successfully');
+		fastify.log.info('[SQL] Opened Successfully');
 	});
 
-	// TODO: add image column
+	// TODO: Add Image Column
 	const createTable = `
 		CREATE TABLE IF NOT EXISTS notification_users (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -53,7 +53,7 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 
 	db.exec(createTable, (err) => {
 		if (err) fastify.log.error(err.message);
-		else fastify.log.info('✅ Tables created');
+		else fastify.log.info('[SQL] Tables Created Successfully');
 	});
 
 	fastify.decorate('database', db);
@@ -62,10 +62,10 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 		if (instance.database) {
 			instance.database.close((err) => {
 				if (err) {
-					instance.log.error('Error closing DB ' + err?.message);
+					instance.log.error('[SQL] Error Closing ' + err?.message);
 					return;
 				}
-				fastify.log.info('⚾️ DB Closed Successfully');
+				fastify.log.info('[SQL] Closed Successfully');
 			});
 		}
 	});

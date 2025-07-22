@@ -1,15 +1,13 @@
-import fastify, { FastifyInstance } from 'fastify';
+import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import { Server as SocketIOServer } from 'socket.io';
 import { IChatPayload, socketioOpts } from './socketio.types';
-import { Codec, headers, JSONCodec } from 'nats';
+import { DecodedPayload } from '../../types/jwt.types';
 
 export const socketioPlugin = fp(async function (
 	fastify: FastifyInstance,
 	opts: socketioOpts,
 ) {
-	fastify.decorate('connectedUsers', new Map<string, Set<string>>());
-
 	try {
 		const io = new SocketIOServer(fastify.server, {
 			cors: {
@@ -32,47 +30,19 @@ export const socketioPlugin = fp(async function (
 		fastify.log.error(error);
 	}
 
-	function addUserSocket(username: string, socketId: string) {
-		if (fastify.connectedUsers.has(username)) {
-			fastify.connectedUsers.get(username)?.add(socketId);
-		} else {
-			fastify.connectedUsers.set(username, new Set([socketId]));
-		}
-	}
+	fastify.io.on('connection', async (socket) => {
+		const username = socket.data.username;
+		fastify.log.info(`[SocketIO] Client Connected: '${username}:${socket.id}'`);
 
-	function removeUserSocket(username: string, socketId: string) {
-		const sockets = fastify.connectedUsers.get(username);
-
-		if (!sockets) return;
-
-		if (
-			sockets.size === 1 &&
-			fastify.connectedUsers.get(username)?.has(socketId)
-		) {
-			fastify.connectedUsers.delete(username);
-			return;
-		}
-		fastify.connectedUsers.get(username)?.delete(socketId);
-	}
-
-	fastify.io.on('connection', (socket) => {
-		fastify.log.info(`[SocketIO] Client Connected with ID: ${socket.id}`);
-
-		// ! DOCS
-		// The user should sent after connection its identity
-		// through `username`
-		// TODO: To be removed, retrieve the username from the JWT when the user successfully authenticate
-		socket.on('identify', async (data) => {
-			const username = data.username;
-
-			fastify.log.info(
-				`[SocketIO] Client sent his identity '${username}:${socket.id}'`,
+		if (!socket.rooms.has(username)) {
+			fastify.nats.publish(
+				'socket.connected',
+				fastify.jsCodec.encode({
+					username: username,
+				}),
 			);
-			socket.data.username = username;
-			addUserSocket(username, socket.id);
-
-			await socket.join(data.username);
-		});
+		}
+		await socket.join(socket.data.username);
 
 		socket.on('send_msg', async (data: IChatPayload) => {
 			fastify.js.publish(
@@ -92,36 +62,36 @@ export const socketioPlugin = fp(async function (
 			const username = socket.data.username;
 
 			fastify.log.info(
-				`[SocketIO] '${username}' Disconnected with ID: ${socket.id}`,
+				`[SocketIO] Client Disconnected: '${username}:${socket.id}'`,
 			);
 
-			removeUserSocket(username, socket.id);
 			await socket.leave(username);
+
+			if (!socket.rooms.has(username)) {
+				fastify.nats.publish(
+					'socket.disconnected',
+					fastify.jsCodec.encode({
+						username: username,
+					}),
+				);
+			}
 		});
 	});
 
 	// ! DOCS
-	// Socket Middleware that verifies the User
+	// Socket Middleware that verifies the User Identity
 	fastify.io.use((socket, next) => {
-		// TODO: Only used for Testing
-		const vToekn = '8)@zNX[3cZ:xfn_';
+		// TODO - Retrieve the TOKEN only from the AUTH
 		const jwtToken =
 			socket.handshake.auth.token ?? socket.handshake.headers.token;
 
 		try {
-			const res = socket.handshake.auth.token
-				? fastify.jwt.verify(jwtToken)
-				: jwtToken === vToekn;
+			const res = fastify.jwt.verify(jwtToken) as DecodedPayload;
+			socket.data.username = res.username;
 
-			// TODO: Save the username in the socket
-			// socket.data.username = res.username;
-			// addUserSocket(username, socket.id);
-			// await socket.join(data.username);
-
-			if (res !== true) throw new Error();
 			next();
 		} catch (error) {
-			fastify.log.error(error);
+			fastify.log.error('[SocketIO] Error: ' + (error as Error).message);
 			socket.disconnect();
 			next(new Error('Unauthorized'));
 		}

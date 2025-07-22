@@ -18,8 +18,6 @@ dotenv.config();
 const SERVER_PORT = parseInt(process.env.PORT || '4004');
 const FRONT_PORT = process.env.FRONT_PORT ?? '';
 
-await fastify.register(fastifyPrintRoutes);
-
 // ** CORS Plugin
 await fastify.register(cors, {
 	// TODO: Should be specified to the frontend
@@ -82,7 +80,8 @@ fastify.get('/health', { exposeHeadRoute: false }, function (_, res: FastifyRepl
 		.send({ status: 'up', timestamp: new Date().toISOString() });
 });
 
-(function () {
+(() => {
+	console.log(fastify.printRoutes());
 	fastify.listen({ host: '::', port: SERVER_PORT }, (error) => {
 		if (error) {
 			fastify.log.error(error);
