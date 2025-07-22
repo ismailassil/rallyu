@@ -4,27 +4,47 @@ import TournamentCard from "./Items/TournamentCard";
 import { Fragment, useEffect, useState } from "react";
 import unicaOne from "@/app/fonts/unicaOne";
 import { motion } from "framer-motion";
-import { ArrowRight } from "@phosphor-icons/react";
+import { ArrowClockwise, ArrowRight } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
+
+interface errorObj {
+	status: boolean;
+	message: string;
+}
 
 function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
+	const router = useRouter();
 	const [tournaments, setTournaments] = useState([]);
+	const [error, setError] = useState<errorObj>({ status: false, message: "" });
 
 	useEffect(() => {
 		const fetchData = async function () {
 			try {
-				const data = await fetch("http://localhost:3008/api/v1/tournaments");
+				const req = await fetch("http://localhost:3008/api/v1/tournaments");
+				console.log("duh");
 
-				const jsonData = await data.json();
+				const data = await data.json();
 
-				console.log(jsonData[0].title);
-				setTournaments(jsonData);
-			} catch (err) {
-				console.error(err);
+				if (!req.ok) throw "Something went wrong!";
+
+				console.log(data[0].title);
+				setTournaments(data);
+			} catch (err: unknown) {
+					if (typeof err === "object")
+						setError({
+					status: true,
+					message: "Something went wrong: Service is currently unavailable.",
+				});
 			}
 		};
 
 		fetchData();
 	}, []);
+
+	const refreshPage = function (e) {
+		e.preventDefault();
+		router.refresh();
+	};
 
 	return (
 		<>
@@ -45,6 +65,18 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 					<StartButton setValue={setValue} />
 				</div>
 			</motion.div>
+			{error.status && (
+				<motion.div
+					initial={{ opacity: 0, x: -100 }}
+					animate={{ opacity: 1, x: 0 }}
+					exit={{ opacity: 0, x: -100 }}
+					transition={{ type: "spring", stiffness: 120 }} 
+					className="flex gap-2 bg-red-600 rounded-full px-8 py-4 text-wrap"
+				>
+					<p className="text-lg">{error.message}</p>
+	
+				</motion.div>
+			)}
 			<motion.div
 				initial={{ opacity: 0, x: -100 }}
 				animate={{ opacity: 1, x: 0 }}
@@ -78,8 +110,6 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 							/>
 						);
 					})}
-				{/* <TournamentCard name={"Summer Party"} active={2} isPingPong={true} /> */}
-				{/* <TournamentCard key={i + 10} name={"Exot Timer"} active={0} isPingPong={true} /> */}
 			</motion.div>
 		</>
 	);

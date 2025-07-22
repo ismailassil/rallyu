@@ -17,7 +17,7 @@ app.register(async function (app: FastifyInstance) {
 
     app.register(async function (app: FastifyInstance) {
 
-        app.register(matchmakingSocketRoutes)
+        app.register(matchmakingSocketRoutes);
         app.register(matchmakingRoutes);
     }, { prefix: "matchmaking" });
 
