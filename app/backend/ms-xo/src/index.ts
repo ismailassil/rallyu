@@ -2,6 +2,7 @@ import fastify from './app';
 import dotenv from '@dotenvx/dotenvx';
 import databasePlugin from './shared/plugins/database.plugin';
 import natsPlugin from './shared/plugins/nats.plugin';
+import socketPlugin from './shared/plugins/socketio.plugin';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ const natsOpts = {
 
 fastify.register(databasePlugin);
 fastify.register(natsPlugin, natsOpts);
+fastify.register(socketPlugin);
 
 (async () => {
 	try {

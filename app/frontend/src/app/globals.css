@@ -158,7 +158,7 @@ input[type="number"]::-webkit-inner-spin-button {
 		);
 	background-size: 1em 1em;
 	box-sizing: border-box;
-	animation: barStripe 0.6s linear infinite;
+	animation: barStripe 5s linear infinite;
 }
 
 @keyframes barStripe {

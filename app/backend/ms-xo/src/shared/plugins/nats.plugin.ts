@@ -16,7 +16,7 @@ const natsPlugin = fastifyPlugin(
 
 			fastify.decorate('nc', nc);
 		} catch (error) {
-			fastify.log.error((error as Error).message);
+			fastify.log.error('[NATS] ' + (error as Error).message);
 		}
 	},
 );
