@@ -19,6 +19,7 @@
 		"fastify-plugin": "^5.0.1",
 		"fastify-print-routes": "^4.1.0",
 		"nats": "^2.29.3",
+		"socket.io": "^4.8.1",
 		"tsc-alias": "^1.8.16"
 	},
 	"devDependencies": {
