@@ -7,19 +7,18 @@ const joinMatch = async function () {
 		const response = await fetch("http://localhost:3002/api/v1/matchmaking/join", {
 			method: "POST",
 			headers: {
-				'Content-Type': 'application/json'
+				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({ id: 1 }), // I need User-id
 		});
-		if (!response.ok)
-			throw "Can't Join Now";
-		
+		if (!response.ok) throw "Can't Join Now";
+
 		const json = await response.json();
-		
+
 		console.log(json);
-		return (true);
+		return true;
 	} catch (err) {
-		return (false);
+		return false;
 	}
 };
 
@@ -38,13 +37,12 @@ function StartButton() {
 
 				// 	Requesting to join a match!
 				const results = await joinMatch();
-				
+
 				if (!results) {
 					console.log("Service not avaible!");
-					return ;
+					return;
 				}
 				setLaunch(true);
-
 
 				// const p1 = !playerOne || playerOne === "" ? "Darth Vador" : playerOne;
 				// const p2 = !playerTwo || playerTwo === "" ? "Lord Voldemort" : playerTwo;

@@ -31,7 +31,7 @@ export default function Game() {
 
 		if (launch === false) {
 			ws.current?.close();
-			return ;
+			return;
 		}
 
 		if (ws.current) return;
@@ -39,30 +39,28 @@ export default function Game() {
 		const sock = new WebSocket("ws://localhost:3002/api/v1/matchmaking/join");
 		ws.current = sock;
 
-        console.log(sock.url);
-        
-        sock.onopen = () => {
-            console.log('Connected to websocket!');
-        };
+		console.log(sock.url);
 
-        sock.onmessage = (message) => {
+		sock.onopen = () => {
+			console.log("Connected to websocket!");
+		};
+
+		sock.onmessage = (message) => {
 			const data = JSON.parse(message.data);
 
-			if (data.type === "MATCH-FOUND")
-				setMatchFound(true);
+			if (data.type === "MATCH-FOUND") setMatchFound(true);
 			if (data.type === "MATCH-CANCEL") {
 				setMatchFound(false);
 				setLaunch(false);
 			}
-			if (data.type === "BACK-TO-QUEUE")
-				setMatchFound(false);
+			if (data.type === "BACK-TO-QUEUE") setMatchFound(false);
 			if (data.type === "MATCH-CONFIRMED") {
 				sock.close();
 				setLaunch(false);
 				setMatchFound(false);
 				router.push(`/game/loading-screen?room_id=${data.roomId}`);
 			}
-        };
+		};
 
 		sock.onerror = (event) => {
 			console.log(event);
@@ -71,10 +69,10 @@ export default function Game() {
 			setLaunch(false);
 		};
 
-        sock.onclose = () => {
-            console.log("Websocket connection closed!");
+		sock.onclose = () => {
+			console.log("Websocket connection closed!");
 			ws.current = null;
-        };
+		};
 
 		return () => {
 			if (ws.current === sock) {
@@ -82,7 +80,6 @@ export default function Game() {
 				ws.current = null;
 			}
 		};
-
 	}, [launch, router, gameType, connectivity, ws, setMatchFound, setLaunch]);
 
 	return (

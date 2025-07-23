@@ -10,11 +10,11 @@ function Access({ access, setAccess, error, setError }) {
 			className="min-h-11 flex flex-col items-center justify-between gap-2 text-sm md:flex-row lg:gap-20 lg:text-base"
 		>
 			<label className="w-full flex-1" htmlFor="picture">
-				Base Connectivity Mode
+				Access Mode
 			</label>
 			<div className="flex-2 w-full">
 				{error && (
-					<p className="mb-1 text-red-500">Choose between the available game modes below.</p>
+					<p className="mb-1 text-red-500">Choose between the available access modes below.</p>
 				)}
 				<div
 					className={`*:flex *:justify-center *:items-center *:px-1
@@ -25,7 +25,7 @@ function Access({ access, setAccess, error, setError }) {
 						onClick={(e) => {
 							e.preventDefault();
 							setAccess(0);
-                            setError(false);
+							setError(false);
 						}}
 						className={`w-full ${
 							access === 0 ? "bg-white text-black" : "hover:bg-white hover:text-black"
@@ -38,7 +38,7 @@ function Access({ access, setAccess, error, setError }) {
 						onClick={(e) => {
 							e.preventDefault();
 							setAccess(1);
-                            setError(false);
+							setError(false);
 						}}
 						className={`w-full ${
 							access === 1 ? "bg-white text-black" : "hover:bg-white hover:text-black"

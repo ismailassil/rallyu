@@ -56,8 +56,8 @@ export default function Search({ setIsNotif, setIsProfile, setIsSearch, isSearch
 		<>
 			{/* <SearchButton /> */}
 			<div
-				className="md:bg-card flex items-center justify-center rounded-full pr-1
-				transition-all duration-200 hover:scale-102 hover:cursor-pointer hover:ring-1
+				className="md:bg-card hover:scale-102 flex items-center justify-center rounded-full
+				pr-1 transition-all duration-200 hover:cursor-pointer hover:ring-1
 				hover:ring-white/30 md:h-[55px] md:w-[100px]
 				"
 				onClick={() => {
@@ -66,7 +66,13 @@ export default function Search({ setIsNotif, setIsProfile, setIsSearch, isSearch
 					setIsSearch(!isSearch);
 				}}
 			>
-				<Image className="mr-2" src="/icons/search.svg" alt="Search Logo" width={20} height={20} />
+				<Image
+					className="mr-2"
+					src="/icons/search.svg"
+					alt="Search Logo"
+					width={20}
+					height={20}
+				/>
 				<div className="hidden md:flex">
 					<Image src="/icons/command.svg" alt="Command Logo" width={15} height={15} />
 					<span className={`text-lg`}>K</span>

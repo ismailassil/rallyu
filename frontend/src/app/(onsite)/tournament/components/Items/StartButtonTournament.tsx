@@ -1,8 +1,8 @@
 import { Plus } from "@phosphor-icons/react";
 
-const StartButtonTournament = function({ label, createTournamentHandler }) {
-    return (
-        <button
+const StartButtonTournament = function ({ label, createTournamentHandler }) {
+	return (
+		<button
 			className={`bg-main min-w-45 min-h-10 "hover:scale-102"
 				group relative flex max-h-10
 				cursor-pointer items-center justify-center
@@ -11,19 +11,19 @@ const StartButtonTournament = function({ label, createTournamentHandler }) {
 				`}
 			onClick={createTournamentHandler}
 		>
-            <Plus
-                size={16}
-                weight="bold"
-                className={`absolute translate-x-[-50%] opacity-0
+			<Plus
+				size={16}
+				weight="bold"
+				className={`absolute translate-x-[-50%] opacity-0
                 transition-all duration-300
                 group-hover:translate-x-0 group-hover:opacity-100
                 `}
-                style={{
-                    left: "50%",
-                    top: "50%",
-                    transform: "translate(-50%, -50%)",
-                }}
-            />
+				style={{
+					left: "50%",
+					top: "50%",
+					transform: "translate(-50%, -50%)",
+				}}
+			/>
 			<p
 				className={`transition-all duration-200
 					group-hover:translate-x-[-50%] group-hover:opacity-0
@@ -32,7 +32,7 @@ const StartButtonTournament = function({ label, createTournamentHandler }) {
 				{label}
 			</p>
 		</button>
-    );
+	);
 };
 
 export default StartButtonTournament;

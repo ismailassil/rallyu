@@ -24,19 +24,19 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 	const createTournamentHandler = async function (e) {
 		try {
 			e.preventDefault();
-			
+
 			const time = new Date().getTime();
 			const dateTime = new Date(date).getTime();
-			
+
 			if (title.trim().length > 13 || title.trim().length < 2) return setErrTitle(true);
 			if (![0, 1].includes(access)) return setErrAccess(true);
 			if (![0, 1].includes(game)) return setErrGame(true);
 			if ((dateTime - time) / (1000 * 60) < 30) return setErrDate(true);
-			
+
 			const res = await fetch("http://localhost:3008/api/v1/tournament/create", {
 				method: "POST",
 				headers: {
-					'Content-Type': 'application/json'
+					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
 					title,
@@ -52,10 +52,8 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 				if (res.status === 400) {
 					setErrDate(true);
 				} else if (res.status === 500) {
-					
 				}
 			}
-
 
 			console.log(data);
 		} catch (err) {

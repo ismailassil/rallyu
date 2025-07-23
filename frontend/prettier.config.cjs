@@ -1,6 +1,4 @@
-import { Config } from "prettier";
-
-const config: Config = {
+module.exports = {
   plugins: ["prettier-plugin-tailwindcss"],
   tabWidth: 4,
   useTabs: true,
@@ -8,5 +6,3 @@ const config: Config = {
   printWidth: 120,
   bracketSpacing: true,
 };
-
-export default config;

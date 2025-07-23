@@ -38,12 +38,11 @@ const Brackets = function (props) {
 				},
 				body: JSON.stringify({
 					id: 1, // I need user ID here to make him join the match
-				})
+				}),
 			});
 
 			const data = await req.json();
-			if (!req.ok)
-				throw "Something went wrong.";
+			if (!req.ok) throw "Something went wrong.";
 
 			console.log(data);
 			setJoined(true);
@@ -61,14 +60,12 @@ const Brackets = function (props) {
 				},
 				body: JSON.stringify({
 					id: 1, // I need user ID here to make him join the match
-				})
+				}),
 			});
 
 			const data = await req.json();
-			if (!req.ok)
-				throw "Something went wrong.";
+			if (!req.ok) throw "Something went wrong.";
 			setJoined(false);
-
 		} catch (err) {
 			console.log(err);
 		}
@@ -85,7 +82,6 @@ const Brackets = function (props) {
 	};
 
 	const isPlayerJoined = (data = null) => {
-
 		if (!data) {
 			for (let i = 0; tournament.matches.length - 1; i++) {
 				// I need user id
@@ -116,31 +112,31 @@ const Brackets = function (props) {
 							<>
 								<div className="mb-20 flex justify-between">
 									<h1 className="text-3xl font-medium">{`${tournament?.tournament.title} - Tournament`}</h1>
-									{
-										!joined ?
-											<button
-												className="bg-main min-w-45 min-h-10 hover:scale-102
+									{!joined ? (
+										<button
+											className="bg-main min-w-45 min-h-10 hover:scale-102
 															group relative flex max-h-10
 															cursor-pointer items-center justify-center
 															gap-3 overflow-hidden rounded-lg text-sm
 															transition-all duration-300
 															"
-												onClick={joinTournamentHandler}
-											>
-												Join
-											</button> :
-											<button
-												className="bg-card border-card border min-w-45 min-h-10 hover:scale-102
-															group relative flex max-h-10
-															cursor-pointer items-center justify-center
-															gap-3 overflow-hidden rounded-lg text-sm
+											onClick={joinTournamentHandler}
+										>
+											Join
+										</button>
+									) : (
+										<button
+											className="bg-card border-card min-w-45 min-h-10 hover:scale-102 group
+															relative flex max-h-10 cursor-pointer
+															items-center justify-center gap-3
+															overflow-hidden rounded-lg border text-sm
 															transition-all duration-300
 															"
-												onClick={leaveTournamentHandler}
-											>
-												Leave
-											</button>
-									}
+											onClick={leaveTournamentHandler}
+										>
+											Leave
+										</button>
+									)}
 								</div>
 								<h2 className="text-xl font-bold text-gray-300">Bracket</h2>
 								<div className="mb-8 flex justify-evenly font-extralight">

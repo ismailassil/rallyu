@@ -18,14 +18,13 @@ const MatchConfirmation = function (props) {
 	};
 
 	useEffect(() => {
-	    timer.current = setTimeout(() => {
-	        ws.current?.send(JSON.stringify({ type: "MATCH-CONFIRMATION", status: 0 }));
-	    }, 10000);
+		timer.current = setTimeout(() => {
+			ws.current?.send(JSON.stringify({ type: "MATCH-CONFIRMATION", status: 0 }));
+		}, 10000);
 
-	    return () => {
-	        clearTimeout(timer.current);
-	    };
-
+		return () => {
+			clearTimeout(timer.current);
+		};
 	}, [ws]);
 
 	return (

@@ -40,7 +40,7 @@ const StartDate = function ({
 	const dateHandler = function (e) {
 		e.preventDefault();
 		setDate(e.target.value);
-        setError(false);
+		setError(false);
 	};
 
 	const openCalendar = function (e) {
@@ -64,7 +64,11 @@ const StartDate = function ({
 				Start Date
 			</label>
 			<div className="flex-2 w-full">
-				{error && <p className="text-red-500 mb-1">Invalid date provided. The minimum allowed date is one hour from now.</p>}
+				{error && (
+					<p className="mb-1 text-red-500">
+						Invalid date provided. The minimum allowed date is one hour from now.
+					</p>
+				)}
 				<div
 					className={`*:flex *:justify-center *:items-center *:px-1
                                 *:py-1 *:rounded-sm *:gap-2 *:hover:scale-101 *:transform *:transition-all *:duration-200 *:cursor-pointer flex gap-2
@@ -79,7 +83,7 @@ const StartDate = function ({
 						min={minDate.toISOString().slice(0, 16)}
 						value={date}
 						onChange={dateHandler}
-                        onBlur={blurDateHandler}
+						onBlur={blurDateHandler}
 						className="w-full outline-0 [&::-webkit-calendar-picker-indicator]:hidden"
 					/>
 				</div>

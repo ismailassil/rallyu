@@ -16,7 +16,7 @@ const app = fastify(serverConfig);
 
 app.register(fastifyCors, {
   	origin: "*",
-	methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+	  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 });
 app.register(connectDatabase);
 
@@ -51,6 +51,10 @@ app.get(
 app.get(
   "/api/v1/tournaments",
   async function (req: FastifyRequest, res: FastifyReply) {
+    const query = req.query;
+
+    if (query)
+
     const tournaments: TournamentSchema[] =
       await req.server.tournamentModel.tournamentGetAll(7);
 
@@ -73,7 +77,7 @@ const tournamentSchema = {
   },
 };
 
-app.patch(
+app.post(
   "/api/v1/tournament/create",
   { schema: tournamentSchema },
   async function (req: FastifyRequest, rep: FastifyReply) {

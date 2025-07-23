@@ -1,40 +1,39 @@
-'use client'
+"use client";
 import { useEffect, useState } from "react";
 
-
 const Page = function () {
-    const [socket, setSocket] = useState<WebSocket>();
-    
-    useEffect(() => {
-        const ws = new WebSocket("ws://localhost:3002/api/v1/matchmaking/join");
-        console.log(ws.url);
-        
-        ws.onopen = () => {
-            console.log('Connected to websocket!');
-            ws.send('Hello, Webscoket!');
-        }
+	const [socket, setSocket] = useState<WebSocket>();
 
-        ws.onmessage = (message) => {
-            console.log(message);
-            console.log(message.data)
-        }
+	useEffect(() => {
+		const ws = new WebSocket("ws://localhost:3002/api/v1/matchmaking/join");
+		console.log(ws.url);
 
-        ws.onclose = () => {
-            console.log("Websocket connection closed!")
-        }
+		ws.onopen = () => {
+			console.log("Connected to websocket!");
+			ws.send("Hello, Webscoket!");
+		};
 
-        setSocket(ws);
+		ws.onmessage = (message) => {
+			console.log(message);
+			console.log(message.data);
+		};
 
-        return () => {
-            ws.close();
-        }
-    }, [])
+		ws.onclose = () => {
+			console.log("Websocket connection closed!");
+		};
 
-    return (
-        <div>
-            <button onClick={() => socket?.send("Hi players")}>Click</button>
-        </div>
-    )
-}
+		setSocket(ws);
+
+		return () => {
+			ws.close();
+		};
+	}, []);
+
+	return (
+		<div>
+			<button onClick={() => socket?.send("Hi players")}>Click</button>
+		</div>
+	);
+};
 
 export default Page;

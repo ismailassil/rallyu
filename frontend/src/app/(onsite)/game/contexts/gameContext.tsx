@@ -7,7 +7,7 @@ type gameTypes = {
 	setLaunch: Dispatch<SetStateAction<boolean>>;
 	ws: RefObject<WebSocket | null>;
 	matchFound: boolean;
-	setMatchFound: Dispatch<SetStateAction<boolean>>
+	setMatchFound: Dispatch<SetStateAction<boolean>>;
 };
 
 const GameContext = createContext<gameTypes | undefined>(undefined);
@@ -37,7 +37,7 @@ export function GameProvider({ children }: Readonly<{ children: React.ReactNode 
 				setLaunch,
 				ws,
 				matchFound,
-				setMatchFound
+				setMatchFound,
 			}}
 		>
 			{children}

@@ -79,7 +79,12 @@ export default function Profile({
 							}}
 							className="hover:bg-hbbg mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer"
 						>
-							<Image src="/icons/profile-btn.svg" alt="Profile Icon" width={30} height={30} />
+							<Image
+								src="/icons/profile-btn.svg"
+								alt="Profile Icon"
+								width={30}
+								height={30}
+							/>
 							<span className="ml-5">Profile</span>
 						</div>
 						<div
@@ -90,11 +95,21 @@ export default function Profile({
 								router.push("/settings");
 							}}
 						>
-							<Image src="/icons/setting-btn.svg" alt="Settings Icon" width={30} height={30} />
+							<Image
+								src="/icons/setting-btn.svg"
+								alt="Settings Icon"
+								width={30}
+								height={30}
+							/>
 							<span className="ml-5">Settings</span>
 						</div>
 						<div className="hover:bg-hbbg mb-2 flex w-full items-center px-7 py-3 hover:cursor-pointer">
-							<Image src="/icons/logout-btn.svg" alt="Logout Icon" width={30} height={30} />
+							<Image
+								src="/icons/logout-btn.svg"
+								alt="Logout Icon"
+								width={30}
+								height={30}
+							/>
 							<p className="ml-5">Logout</p>
 						</div>
 					</motion.div>

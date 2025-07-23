@@ -24,8 +24,7 @@ function TournamentTitle({ value, setValue, error, setError }) {
 					<div
 						className={`min-h-11 *:hover:scale-101 *:transform *:transition-all *:duration-200
 									flex items-center gap-2 rounded-md border-2 px-3 py-1
-									${error ? "border-red-700" : "border-white/10"}`
-								}
+									${error ? "border-red-700" : "border-white/10"}`}
 					>
 						<input
 							id="title"
