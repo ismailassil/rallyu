@@ -8,6 +8,7 @@ interface TournamentSchema {
   host_id: number;
   mode: string;
   contenders_size: number;
+  contenders_joined: number;
   access: string;
   start_date: string;
 }
@@ -26,6 +27,7 @@ class TournamentModel {
             host_id INTEGER NOT NULL,
             mode varchar(255) NOT NULL,
             contenders_size int DEFAULT 4 NOT NULL,
+            contenders_joined int DEFAULT 0 NOT NULL,
             access varchar(255) NOT NULL,
             start_date timestamp NOT NULL
         )`;
@@ -37,104 +39,118 @@ class TournamentModel {
     this.app = app;
   }
 
-  async init() {
-    return new Promise((resolve, reject) => {
-      this.DB.exec(this.sqlQuery, (err) => {
-        if (err) reject(err);
-        else resolve(0);
-      });
-    });
+	async init() {
+		return new Promise((resolve, reject) => {
+			this.DB.exec(this.sqlQuery, (err) => {
+				if (err) reject(err);
+				else resolve(this);
+			});
+		});
+	}
+
+	async prepareStatement() {
+		return new Promise<sqlite3.Statement>((resolve, reject) => {
+				this.DB.prepare(
+				`INSERT INTO ${this.modelName} (title, host_id, mode, contenders_size, access, start_date)
+						VALUES (?, ?, ?, ?, ?, ?)`,
+				function (err) {
+					if (err) reject(err);
+					else resolve(this);
+				}
+			);
+		});
   }
 
-  async prepareStatement() {
-    return new Promise<sqlite3.Statement>((resolve, reject) => {
-      this.DB.prepare(
-        `INSERT INTO ${this.modelName} (title, host_id, mode, contenders_size, access, start_date)
-                VALUES (?, ?, ?, ?, ?, ?)`,
-        function (err) {
-          if (err) reject(err);
-          else resolve(this);
-        }
-      );
-    });
-  }
+	async tournamentAdd({ title, game, access, date }) {
+		const statement: sqlite3.Statement = await this.prepareStatement();
 
-  async tournamentAdd({ title, game, access, date }) {
-    const statement: sqlite3.Statement = await this.prepareStatement();
+		const id: number = await new Promise((resolve, reject) => {
+			statement.run(
+			title,
+			1,
+			!game ? "ping-pong" : "tic-tac-toe",
+			4,
+			!access ? "public" : "private",
+			date,
+			function (err) {
+				if (err) reject(err);
+				else resolve(this.lastID);
+			}
+			);
+		});
 
-    const id: number = await new Promise((resolve, reject) => {
-      statement.run(
-        title,
-        1,
-        !game ? "ping-pong" : "tic-tac-toe",
-        4,
-        !access ? "public" : "private",
-        date,
-        function (err) {
-          if (err) reject(err);
-          else resolve(this.lastID);
-        }
-      );
-    });
+		const data: TournamentSchema = {
+			id,
+			access,
+			title,
+			start_date: date,
+			mode: game,
+			contenders_size: 4,
+			contenders_joined: 0,
+			host_id: 1,
+		};
 
-    const data: TournamentSchema = {
-      id,
-      access,
-      title,
-      start_date: date,
-      mode: game,
-      contenders_size: 4,
-      host_id: 1,
-    };
+		return data;
+	}
 
-    return data;
-  }
+	async tournamentGet(id: number) {
+		const data = await new Promise(
+			(resolve, reject) => {
+				this.DB.get(
+					`SELECT * FROM ${this.modelName} WHERE id=?`,
+					[id],
+					(err, rows) => {
+					if (err) reject(err);
+					else resolve(rows);
+					}
+				);
+			}
+		);
+		return data;
+	}
 
-  async tournamentGet(id: number) {
-    const data = await new Promise(
-      (resolve, reject) => {
-        this.DB.get(
-          `SELECT * FROM ${this.modelName} WHERE id=?`,
-          [id],
-          (err, rows) => {
-            if (err) reject(err);
-            else resolve(rows);
-          }
-        );
-      }
-    );
-    return data;
-  }
+	async tournamentGetAll(limit: number) {
+		const data: TournamentSchema = await new Promise<TournamentSchema>(
+			(resolve, reject) => {
+			this.DB.all(
+				`SELECT * FROM ${this.modelName} LIMIT ?`,
+				[limit],
+				(err, rows: TournamentSchema) => {
+				if (err) reject(err);
+				else resolve(rows);
+				}
+			);
+			}
+		);
 
-  async tournamentGetAll(limit: number) {
-    const data: TournamentSchema = await new Promise<TournamentSchema>(
-      (resolve, reject) => {
-        this.DB.all(
-          `SELECT * FROM ${this.modelName} LIMIT ?`,
-          [limit],
-          (err, rows: TournamentSchema) => {
-            if (err) reject(err);
-            else resolve(rows);
-          }
-        );
-      }
-    );
+		return data;
+	}
 
-    return data;
-  }
+	async tournamentUpdateSize(type: string, id: number) {
+		await new Promise<unknown>((resolve, reject) => {
+			this.DB.run(
+				`UPDATE ${this.sqlQuery} SET contenders_joined=contender_joined${ type === "add" ? "+" : "-" }1 WHERE id=?`,
+				[type, id],
+				(err) => {
+					if (err) reject(err)
+					else resolve(this)
+				}
+			)
+		});
+	}
 }
 
 const initTournamentModel = async function (app: FastifyInstance) {
-  try {
-    const tournamentModel = new TournamentModel(app);
-    await tournamentModel.init();
-    // await tournamentModel.tournamentGet();
-    // await tournamentModel.tournamentAdd();
+	try {
+		const tournamentModel = new TournamentModel(app); 
+		await tournamentModel.init();
+		// await tournamentModel.tournamentGet();
+		// await tournamentModel.tournamentAdd();
 
-    app.tournamentModel = tournamentModel;
-  } catch (err) {
-    console.log(err);
-  }
+		app.tournamentModel = tournamentModel;
+	} catch (err) {
+		console.log(err);
+	}
 };
 
 export { TournamentSchema, initTournamentModel };

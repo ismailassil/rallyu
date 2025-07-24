@@ -3,25 +3,25 @@ import app from "../app";
 import sqlite3 from "sqlite3";
 
 interface TournamentMatchesSchema {
-  id: number;
-  tournament_id: number;
-  player_1: number;
-  player_2: number;
-  winner: number;
-  results: string; // Ex: "5|7"
-  stage: string;
-  stage_number: number;
+	id: number;
+	tournament_id: number;
+	player_1: number;
+	player_2: number;
+	winner: number;
+	results: string; // Ex: "5|7"
+	stage: string;
+	stage_number: number;
 }
 
 declare module "fastify" {
-  interface FastifyInstance {
-    tournamentMatchesModel: TournamentMatchesModel;
-  }
+	interface FastifyInstance {
+		tournamentMatchesModel: TournamentMatchesModel;
+	}
 }
 
 class TournamentMatchesModel {
-  private modelName = "TournamentMatches";
-  private sqlQuery = `CREATE TABLE IF NOT EXISTS ${this.modelName} (
+	private modelName = "TournamentMatches";
+	private sqlQuery = `CREATE TABLE IF NOT EXISTS ${this.modelName} (
             id INTEGER UNIQUE NOT NULL PRIMARY KEY,
             tournament_id INTEGER NOT NULL,
             player_1 INTEGER,
@@ -32,13 +32,13 @@ class TournamentMatchesModel {
             stage_number number NOT NULL,
             FOREIGN KEY (tournament_id) REFERENCES Tournaments(id)
         )`;
-  private DB: sqlite3.Database;
-  private app: FastifyInstance;
+	private DB: sqlite3.Database;
+	private app: FastifyInstance;
 
-  constructor(app: FastifyInstance) {
-    this.DB = app.DB;
-    this.app = app;
-  }
+	constructor(app: FastifyInstance) {
+    	this.DB = app.DB;
+    	this.app = app;
+  	}
 
   async init() {
     return new Promise((resolve, reject) => {
@@ -75,12 +75,12 @@ class TournamentMatchesModel {
   }
 
   async matchesGet(tournament_id: number) {
-    const data = await new Promise(
+    const data = await new Promise<TournamentMatchesSchema[]>(
       (resolve, reject) => {
         this.DB.all(
           `SELECT * FROM ${this.modelName} WHERE tournament_id=?`,
           [tournament_id],
-          (err, rows) => {
+          (err: Error, rows: TournamentMatchesSchema[]) => {
             if (err) reject(err);
             else resolve(rows);
           }

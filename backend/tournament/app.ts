@@ -10,7 +10,7 @@ import {
   initTournamentModel,
   TournamentSchema,
 } from "./models/tournamentModel";
-import { initTournamentMatchesModel } from "./models/tournamentMatchesModel";
+import { initTournamentMatchesModel, TournamentMatchesSchema } from "./models/tournamentMatchesModel";
 
 const app = fastify(serverConfig);
 
@@ -49,19 +49,32 @@ app.get(
 );
 
 app.get(
-  "/api/v1/tournaments",
-  async function (req: FastifyRequest, res: FastifyReply) {
-    const query = req.query;
+	"/api/v1/tournaments",
+	async function (req: FastifyRequest, res: FastifyReply) {
+    	const query = req.query;
+    	let userId: number | undefined;
 
-    if (query)
+    
+		const tournaments: unknown[] = await req.server.tournamentModel.tournamentGetAll(7);
+		
+		if (query?.userId) {
+			userId = Number(query.userId);
 
-    const tournaments: TournamentSchema[] =
-      await req.server.tournamentModel.tournamentGetAll(7);
+			for (const tournament of tournaments) {
+				const matches: TournamentMatchesSchema[] = 
+					await req.server.tournamentMatchesModel.matchesGet(tournament.id);
+				if (matches.find((el) => el.player_1 === userId || el.player_2 === userId))
+					tournament["isUserIn"] = true;
+			}
+		}
 
-    console.log(tournaments);
+		console.log(tournaments);
 
-    return tournaments;
-  }
+		return res.code(200).send({
+			status: true,
+			data: tournaments
+		});
+	}
 );
 
 const tournamentSchema = {
@@ -121,15 +134,17 @@ app.patch(
 	try {
 		const tournamentId = req.params.tournamentId;
 		const playerId = req.body.id;
-		const tournamentMatches: [] = await req.server.tournamentMatchesModel.matchesGet(tournamentId);
+		const tournamentMatches = await req.server.tournamentMatchesModel.matchesGet(tournamentId);
 		
 		for (let i = 0; i < tournamentMatches.length - 1; i++) {
 			if (!tournamentMatches[i].player_1) {
 				await req.server.tournamentMatchesModel.playerJoinMatch(tournamentMatches[i].id, playerId, 1);
+				await req.server.tournamentModel.tournamentUpdateSize("add", tournamentMatches[i].id);
 				break ;
 			}
 			if (!tournamentMatches[i].player_2) {
 				await req.server.tournamentMatchesModel.playerJoinMatch(tournamentMatches[i].id, playerId, 2);
+				await req.server.tournamentModel.tournamentUpdateSize("add", tournamentMatches[i].id);
 				break ;
 			}
 		}
@@ -153,17 +168,18 @@ app.patch(
 	try {
 		const tournamentId = req.params.tournamentId;
 		const playerId = req.body.id;
-		const tournamentMatches: [] = await req.server.tournamentMatchesModel.matchesGet(tournamentId);
+		const tournamentMatches = await req.server.tournamentMatchesModel.matchesGet(tournamentId);
 		
-		
+		// Refactor this please
 		for (let i = 0; i < tournamentMatches.length - 1; i++) {
 			if (tournamentMatches[i].player_1 === playerId) {
-				console.log("BRUH");
 				await req.server.tournamentMatchesModel.playerLeaveMatch(tournamentMatches[i].id, 1);
+				await req.server.tournamentModel.tournamentUpdateSize("remove", tournamentMatches[i].id);
 				break ;
 			}
 			if (tournamentMatches[i].player_2 === playerId) {
 				await req.server.tournamentMatchesModel.playerLeaveMatch(tournamentMatches[i].id, 2);
+				await req.server.tournamentModel.tournamentUpdateSize("remove", tournamentMatches[i].id);
 				break ;
 			}
 		}

@@ -20,15 +20,15 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 	useEffect(() => {
 		const fetchData = async function () {
 			try {
-				const req = await fetch("http://localhost:3008/api/v1/tournaments");
+				const req = await fetch("http://localhost:3008/api/v1/tournaments?userId=1"); // Need user ID
 				console.log("duh");
 
 				const data = await req.json();
 
 				if (!req.ok) throw "Something went wrong!";
 
-				console.log(data[0].title);
-				setTournaments(data);
+				console.log(data.data[0].title);
+				setTournaments(data.data);
 			} catch (err: unknown) {
 				if (typeof err === "object")
 					setError({
@@ -93,8 +93,10 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 								key={el.id}
 								id={el.id}
 								name={el.title}
-								active={0}
+								active={el.contenders_joined}
+								size={el.contenders_size}
 								isPingPong={el.mode === "ping-pong"}
+								isUserIn={el?.isUserIn ? true : false}
 							/>
 						);
 					})
