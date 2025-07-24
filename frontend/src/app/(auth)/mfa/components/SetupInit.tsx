@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowLeft, ChevronRight, Copy, Mail, Smartphone } from 'lucide-react';
+import { style } from 'framer-motion/client';
 
 const methods = [
 	{
@@ -42,7 +43,7 @@ function MockQRCode() {
 	);
 }
 
-export default function SetupInit({ selectedMethod }) {
+export default function SetupInit({ selectedMethod, onSubmit, goBack }) {
 	const method = methods.find(m => m.id === selectedMethod);
 
 	if (!method)
@@ -53,7 +54,9 @@ export default function SetupInit({ selectedMethod }) {
 			<>
 				<div className='flex flex-col gap-2 mb-2'>
 					<div className='flex flex-row gap-4 items-center'>
-						<ArrowLeft className='h-7 w-7 cursor-pointer'/>
+						<button className='cursor-pointer' onClick={goBack}>
+							<ArrowLeft className='h-7 w-7' />
+						</button>
 						{/* <img src='/icons/lock.svg' className='h-full w-[8%]'/> */}
 						<h1 className='font-semibold text-3xl'>{`Setup 2FA via ${method.name}`}</h1>
 					</div>
@@ -71,7 +74,8 @@ export default function SetupInit({ selectedMethod }) {
 					{/* <AnimatePresence>
 						{error && <FormFieldError error={error} />}
 					</AnimatePresence> */}
-					<button className='h-11 w-fit self-end pl-4 pr-2 bg-blue-600 hover:bg-blue-700 rounded-lg mt-2 flex justify-center items-center gap-2' type='submit'>Continue<ChevronRight /></button>
+					<button className='h-11 w-fit self-end pl-4 pr-2 bg-blue-600 hover:bg-blue-700 rounded-lg mt-2 flex justify-center items-center gap-2'
+					onClick={() => onSubmit(`${selectedMethod === 'sms' ? '+212636299821' : 'iassil@student.1337.ma'}`) }>Continue<ChevronRight /></button>
 				</form>
 			</>
 		);
@@ -79,7 +83,9 @@ export default function SetupInit({ selectedMethod }) {
 	return (
 		<>
 			<div className='flex flex-row gap-4 items-center mb-6'>
-				<ArrowLeft className='h-7 w-7 cursor-pointer'/>
+					<button className='cursor-pointer' onClick={goBack}>
+						<ArrowLeft className='h-7 w-7' />
+					</button>
 				{/* <img src='/icons/lock.svg' className='h-full w-[8%]'/> */}
 				<h1 className='font-semibold text-3xl'>{`Setup 2FA via ${method.name}`}</h1>
 			</div>
@@ -99,7 +105,8 @@ export default function SetupInit({ selectedMethod }) {
 				<p className='text-center text-sm text-white/75'>Can&#39;t scan? Enter this code manually in your app</p>
 			</div>
 
-			<button className='h-11 w-fit self-end pl-4 pr-2 bg-blue-600 hover:bg-blue-700 rounded-lg mt-2 flex justify-center items-center gap-2' type='submit'>Continue<ChevronRight /></button>
+			<button className='h-11 w-fit self-end pl-4 pr-2 bg-blue-600 hover:bg-blue-700 rounded-lg mt-2 flex justify-center items-center gap-2'
+					onClick={() => onSubmit() }>Continue<ChevronRight /></button>
 		</>
 	);
 }

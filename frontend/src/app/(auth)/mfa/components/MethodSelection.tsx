@@ -23,9 +23,10 @@ const methods = [
 	}
 ];
 
-function MethodCard({ name, icon, description }) {
+function MethodCard({ name, icon, description, onSelect }) {
 	return (
-		<div className='group bg-white/4 w-full rounded-3xl backdrop-blur-2xl px-5 py-6 border-1 border-white/10 flex gap-4 items-center hover:bg-white/6 cursor-pointer transition-all duration-500'>
+		<div className='group bg-white/4 w-full rounded-3xl backdrop-blur-2xl px-5 py-6 border-1 border-white/10 flex gap-4 items-center hover:bg-white/6 cursor-pointer transition-all duration-500'
+			 onClick={onSelect}>
 			{icon}
 			<div>
 				<h1 className='font-semibold text-2xl mb-1.5 flex items-center gap-4'>{name}{name === 'Authenticator App' && <span className='text-sm px-2 py-0.5 border-1 rounded-full text-blue-400 bg-blue-100/2'>Most Secure</span>}</h1>
@@ -36,10 +37,11 @@ function MethodCard({ name, icon, description }) {
 	);
 }
 
-export default function MethodSelection({ onSelect }) {
-	async function handleSubmit() {
-		alert('submitted!');
-	}
+export default function MethodSelection({ onSubmit }) {
+	// async function handleSelect(method: string) {
+	// 	// alert(`selected ${method}!`);
+	// 	setSelectedMethod(method);
+	// }
 
 	return (
 		<>
@@ -52,8 +54,9 @@ export default function MethodSelection({ onSelect }) {
 					<MethodCard 
 						key={method.id} 
 						name={method.name} 
-						icon={method.icon}
-						description={method.description}
+						icon={method.icon} 
+						description={method.description} 
+						onSelect={() => onSubmit(method.id) }
 					/>
 				))}
 			</div>
