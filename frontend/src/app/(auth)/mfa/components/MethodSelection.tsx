@@ -1,8 +1,8 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { Fingerprint, Smartphone, Mail, ChevronRight } from 'lucide-react';
 
-const methods = [
+const MFA_METHODS: MFA_METHOD[] = [
 	{
 		id: 'auth_app',
 		name: 'Authenticator App',
@@ -23,26 +23,39 @@ const methods = [
 	}
 ];
 
-function MethodCard({ name, icon, description, onSelect }) {
+interface MFA_METHOD {
+	id: string,
+	name: string,
+	icon: React.ReactNode,
+	description: string
+}
+
+interface MethodCardProps {
+	method: MFA_METHOD,
+	onSelect: () => void
+}
+
+interface MethodSelectionProps {
+	onSubmit: (method: string) => void
+}
+
+function MethodCard({ method, onSelect } : MethodCardProps) {
+	const isMostSecure = method.id === 'auth_app';
+
 	return (
 		<div className='group bg-white/4 w-full rounded-3xl backdrop-blur-2xl px-5 py-6 border-1 border-white/10 flex gap-4 items-center hover:bg-white/6 cursor-pointer transition-all duration-500'
 			 onClick={onSelect}>
-			{icon}
+			{method.icon}
 			<div>
-				<h1 className='font-semibold text-2xl mb-1.5 flex items-center gap-4'>{name}{name === 'Authenticator App' && <span className='text-sm px-2 py-0.5 border-1 rounded-full text-blue-400 bg-blue-100/2'>Most Secure</span>}</h1>
-				<p className='font-light text-white/75'>{description}</p>
+				<h1 className='font-semibold text-2xl mb-1.5 flex items-center gap-4'>{method.name}{isMostSecure && <span className='text-sm px-2 py-0.5 border-1 rounded-full text-blue-400 bg-blue-100/2'>Most Secure</span>}</h1>
+				<p className='font-light text-white/75'>{method.description}</p>
 			</div>
 			<ChevronRight size={36} className='ml-auto'/>
 		</div>
 	);
 }
 
-export default function MethodSelection({ onSubmit }) {
-	// async function handleSelect(method: string) {
-	// 	// alert(`selected ${method}!`);
-	// 	setSelectedMethod(method);
-	// }
-
+export default function MethodSelection({ onSubmit } : MethodSelectionProps) {
 	return (
 		<>
 			<div className='flex flex-col gap-2 px-6'>
@@ -50,12 +63,10 @@ export default function MethodSelection({ onSubmit }) {
 				<p className='mb-0 text-white/85 text-center'>Add an extra layer of security to your account by choosing your preferred verification method.</p>
 			</div>
 			<div className='flex flex-col gap-4 justify-center items-center'>
-				{methods.map((method) => (
+				{MFA_METHODS.map((method) => (
 					<MethodCard 
-						key={method.id} 
-						name={method.name} 
-						icon={method.icon} 
-						description={method.description} 
+						key={method.id}
+						method={method}
 						onSelect={() => onSubmit(method.id) }
 					/>
 				))}
