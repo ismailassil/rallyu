@@ -225,6 +225,35 @@ export class APIClient {
 		return res.data;
 	}
 
+	/*-------------------------------------- 2FA --------------------------------------*/
+
+	async mfaAuthAppSetupInit() {
+		const { data: res } = await this.client.post('/auth/mfa/totp/setup/init');
+		return res.data;
+	}
+	async mfaAuthAppSetupVerify(code: string) {
+		const { data: res } = await this.client.post('/auth/mfa/totp/setup/verify', { code });
+		return res.data;
+	}
+	
+	async mfaEmailSetupInit() {
+		const { data: res } = await this.client.post('/auth/mfa/email/setup/init');
+		return res.data;
+	}
+	async mfaEmailSetupVerify(code: string) {
+		const { data: res } = await this.client.post('/auth/mfa/email/setup/verify', { code });
+		return res.data;
+	}
+
+	async mfaPhoneSetupInit(phoneNumber: string) {
+		const { data: res } = await this.client.post('/auth/mfa/sms/setup/init', { phone: phoneNumber });
+		return res.data;
+	}
+	async mfaPhoneSetupVerify(code: string) {
+		const { data: res } = await this.client.post('/auth/mfa/sms/setup/verify', { code });
+		return res.data;
+	}
+
 	/*--------------------------------- Authentication ---------------------------------*/
 
 	async login(payload: { username: string, password: string }) {
