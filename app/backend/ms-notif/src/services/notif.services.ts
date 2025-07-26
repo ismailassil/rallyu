@@ -1,7 +1,6 @@
 import INotifMessage from '../shared/types/notifMessage.types.js';
 import NotifRepository from '../repositories/notif.repository.js';
 import INotifyBody from '../shared/types/notifyBody.types.js';
-import fastify from '../app.js';
 import IUpdateBody from '../shared/types/update.types.js';
 import { INotifDetail } from '../shared/types/fetch.types.js';
 import { UserNotFoundException } from '../shared/exceptions/UserNotFoundException.js';
@@ -13,7 +12,7 @@ class NotifSerives {
 		this.notifRepository = new NotifRepository();
 	}
 
-	async registerNotification(body: INotifyBody): Promise<number> {
+	async registerNotification(body: INotifyBody): Promise<INotifDetail> {
 		const { from_user, to_user } = body;
 
 		// Register the Notification Senders
@@ -48,10 +47,10 @@ class NotifSerives {
 			action_url: fullData.action_url,
 		};
 
-		// Store it in Redis
-		await fastify.redis.set(`notif?id=${data.id}`, JSON.stringify(data));
+		// // Store it in Redis
+		// await fastify.redis.set(`notif?id=${data.id}`, JSON.stringify(data));
 
-		return data.id;
+		return data;
 	}
 
 	async getUserMessages(username: string, page: number): Promise<INotifMessage[]> {

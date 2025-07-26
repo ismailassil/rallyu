@@ -2,9 +2,9 @@ import fastify, { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import { connect, JSONCodec, NatsConnection } from 'nats';
 import NotifSerives from '../../services/notif.services.js';
-import { INotifDetail } from '../types/fetch.types';
-import INotifyBody from '../types/notifyBody.types';
-import { NatsOpts } from '../types/nats.types';
+import { INotifDetail } from '../types/fetch.types.js';
+import INotifyBody from '../types/notifyBody.types.js';
+import { NatsOpts } from '../types/nats.types.js';
 
 export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) => {
 	const notifServices = new NotifSerives();
@@ -32,19 +32,9 @@ export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) =>
 
 			// Register the notification in the Database
 			try {
-				const notifId = await notifServices.registerNotification(payload);
+				const resData: INotifDetail =
+					await notifServices.registerNotification(payload);
 				fastify.log.info('✅ Notification created');
-
-				// Get the Data from Redis
-				const result = await fastify.redis.get(`notif?id=${notifId}`);
-				if (!result) {
-					const message = 'Notification not found';
-					fastify.log.error(message);
-					return;
-				}
-
-				// Parse the Notification
-				const resData: INotifDetail = JSON.parse(result);
 
 				// Send back to SocketIO Gateway through NATS Server
 				fastify.nats.publish(

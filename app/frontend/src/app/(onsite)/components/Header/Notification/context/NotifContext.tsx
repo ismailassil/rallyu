@@ -39,12 +39,14 @@ function getToastData(data: NotificationType): ToastType {
 		image: '/profile/image_2.jpg',
 		username: data.from_user,
 		type: data.type,
+		action_url: data.action_url
 	};
 }
 
 export function NotificationProvider({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
+	const DEFAULT_TIME = 3 * 1000;
 	const [notifications, setNotifications] = useState<NotificationType[]>([]);
 	const [toastNotifications, setToastNotifications] = useState<ToastType[]>([]);
 	const socketRef = useRef<Socket | null>(null);
@@ -74,6 +76,7 @@ export function NotificationProvider({
 			setNotifications((prev) => [data, ...prev]);
 
 			if (!isNotifRef.current) {
+				console.log(data);
 				setToastNotifications((prev) => {
 					const trimmed = prev.length >= 4 ? prev.slice(1) : prev;
 					return [...trimmed, getToastData(data)];
@@ -81,7 +84,7 @@ export function NotificationProvider({
 
 				playSound();
 
-				setTimeout(() => handleRemove(data.id.toString()), 1500);
+				setTimeout(() => handleRemove(data.id.toString()), 3000);
 			}
 		},
 		[isNotifRef, handleRemove, playSound],
@@ -107,7 +110,7 @@ export function NotificationProvider({
 	}, []);
 
 	useEffect(() => {
-		const vToken = '8)@zNX[3cZ:xfn_';
+		const vToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1lc2VyZ2hpIn0.LAsci5IRgXlmmtqr_ibhz2G6F0gCUpoQwQbW_AnrGKo';
 		const socket = io('http://localhost:4004', {
 			extraHeaders: {
 				token: vToken,
@@ -133,7 +136,6 @@ export function NotificationProvider({
 	}, []);
 
 	useEffect(() => {
-		const username = 'iassil';
 		if (!isBottom && pageRef.current > 0) return;
 
 		console.log('Getting New Notifications: ' + pageRef.current);
@@ -142,7 +144,7 @@ export function NotificationProvider({
 		setIsLoading(true);
 		axios
 			.get<HistoryType>(
-				`http://localhost:4004/api/notif/history/${username}?page=${pageRef.current}`,
+				`http://localhost:4004/api/notif/history?page=${pageRef.current}`,
 			)
 			.then((response) => {
 				setNotifications((prev) => [...prev, ...response.data.message]);
@@ -172,6 +174,7 @@ export function NotificationProvider({
 				handleRemove,
 				isLoading,
 				notifLength,
+				DEFAULT_TIME,
 			}}
 		>
 			{children}

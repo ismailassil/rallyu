@@ -3,7 +3,7 @@ import ToasterItem from "./ToasterItem";
 import { AnimatePresence, motion } from "framer-motion";
 
 const ToasterCenter = () => {
-	const { toastNotifications } = useNotification();
+	const { toastNotifications, DEFAULT_TIME } = useNotification();
 
 	return (
 		<ul className="top-30 w-90 z-200 absolute right-6 flex flex-col gap-2">
@@ -31,6 +31,8 @@ const ToasterCenter = () => {
 								type={notif.type}
 								image={notif.image}
 								username={notif.username}
+								time={DEFAULT_TIME}
+								action_url={notif.action_url}
 							/>
 						</motion.li>
 					);

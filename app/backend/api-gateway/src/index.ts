@@ -10,7 +10,6 @@ import { natsPlugin } from './plugin/nats/nats.plugin.js';
 import { socketioPlugin } from './plugin/socketio/socketio.plugin.js';
 import fastifyJwt from '@fastify/jwt';
 import proxiesPlugin from './plugin/proxies/proxies.plugin.js';
-import fastifyPrintRoutes from 'fastify-print-routes';
 import { verifyUserJWT } from './middleware/verify-user-jwt.js';
 
 dotenv.config();
@@ -81,8 +80,7 @@ fastify.get('/health', { exposeHeadRoute: false }, function (_, res: FastifyRepl
 });
 
 (() => {
-	console.log(fastify.printRoutes());
-	fastify.listen({ host: '::', port: SERVER_PORT }, (error) => {
+	fastify.listen({ host: "::", port: SERVER_PORT }, (error) => {
 		if (error) {
 			fastify.log.error(error);
 			process.exit(1);
