@@ -1,13 +1,22 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import SettingsCard from "./SettingsCard";
-import { ChevronRight, Fingerprint, Smartphone, Mail } from "lucide-react";
+import { XIcon, Fingerprint, Smartphone, Mail, Check, Laptop, MapPin, Clock, Trash2, Monitor } from "lucide-react";
+import funnelDisplay from "@/app/fonts/FunnelDisplay";
+import MFASetup from "../../mfa/page";
 
 const mfaData = [
-	{ method: 'totp', name: 'Authenticator App', contact: 'Google Authenticator, Authy, or similar apps', enabled: true },
-	{ method: 'email', name: 'Email Verification', contact: 'your-email@gmail.com', enabled: true },
-	{ method: 'sms', name: 'SMS Verification', contact: '+212636299821', enabled: false }
+	{ method: 'totp', name: 'Authenticator App', icon: <Fingerprint  className='group-hover:text-blue-400 transition-all duration-900 h-14 w-14' />, contact: 'Google Authenticator, Authy, or similar apps', enabled: true },
+	{ method: 'email', name: 'Email Verification', icon: <Smartphone  className='group-hover:text-green-300 transition-all duration-900 h-14 w-14' />, contact: 'your-email@gmail.com', enabled: true },
+	{ method: 'sms', name: 'SMS Verification', icon: <Mail  className='group-hover:text-yellow-300 transition-all duration-900 h-14 w-14' />, contact: '+212636299821', enabled: false }
 ];
+
+// const sessionsData = [
+// 	{ browser: 'brave', device: 'MacBook Pro', os: 'Mac OS X', createdSince: '1 day' },
+// 	{ browser: 'chrome', device: 'Dell Latitude E6400', os: 'Linux', createdSince: '6 days' },
+// 	{ browser: 'safari', device: 'iMac', os: 'Mac OS X', createdSince: '2 hours' },
+// 	{ browser: 'chrome', device: 'iPhone 13', os: 'iOS', createdSince: '14 minutes' }
+// ];
 
 function FormField({ label, placeholder, icon }) {
 	return (
@@ -64,17 +73,23 @@ function ChangePasswordForm() {
 	);
 }
 
-function TwoFactorAuthMethodCard() {
+function TwoFactorAuthMethodCard({ method }) {
 	return (
-		<div className="flex flex-col px-18">
+		<div className="flex flex-col">
 			<div className='group w-full rounded-3xl backdrop-blur-2xl px-5 py-6 border-1 border-white/10 
 				flex gap-4 items-center hover:bg-white/1 cursor-pointer transition-all duration-500'>
-				<Fingerprint className="h-14 w-14"/>
+				{method.icon}
 				<div>
-					<h1 className='font-semibold text-2xl mb-1.5 flex items-center gap-4'>Authenticator App</h1>
-					<p className='font-light text-white/75'>Use Google Authenticator, Authy, or similar apps</p>
+					<h1 className='font-semibold text-2xl mb-1.5 flex items-center gap-4'>{method.name}</h1>
+					<p className='font-light text-white/75'>{`Using ${method.contact}`}</p>
 				</div>
-				<ChevronRight size={36} className='ml-auto'/>
+				{/* <ChevronRight size={36} className='ml-auto'/> */}
+				<div className={`border-1 border-white/10 rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium backdrop-blur-xs h-10 ml-auto`}>
+					<div className="flex items-center gap-2 justify-center">
+						<XIcon size={16}/>
+						<button>Disable</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	);
@@ -82,17 +97,70 @@ function TwoFactorAuthMethodCard() {
 
 function TwoFactorAuth() {
 	return (
-		<div className="flex flex-col px-18">
-			<div className='group w-full rounded-3xl backdrop-blur-2xl px-5 py-6 border-1 border-white/10 
-				flex gap-4 items-center hover:bg-white/1 cursor-pointer transition-all duration-500'>
-				<Fingerprint className="h-14 w-14"/>
-				<div>
-					<h1 className='font-semibold text-2xl mb-1.5 flex items-center gap-4'>Authenticator App</h1>
-					<p className='font-light text-white/75'>Use Google Authenticator, Authy, or similar apps</p>
-				</div>
-				<ChevronRight size={36} className='ml-auto'/>
-			</div>
+		<div className="flex flex-col gap-4 px-18">
+			{mfaData.map((method) => (
+				<TwoFactorAuthMethodCard 
+					key={method.method}
+					method={method}
+				/>
+			))}
 		</div>
+	);
+}
+
+const sessionsData = [
+	{ id: 1, browser: "Brave", device: "MacBook Pro", os: "Mac OS X", createdSince: "1 day", location: "Khouribga, Morocco", type: "laptop" },
+	{ id: 2, browser: "Chrome", device: "Dell Latitude E6400", os: "Linux", createdSince: "6 days", location: "Casablanca, Morocco", type: "laptop" },
+	{ id: 3, browser: "Safari", device: "iMac", os: "Mac OS X", createdSince: "2 hours", location: "Rabat, Morocco", type: "desktop" },
+	{ id: 4, browser: "Chrome", device: "iPhone 13", os: "iOS", createdSince: "14 minutes", location: "Marrakech, Morocco", type: "mobile" }
+];
+
+function DeviceIcon({ type }) {
+	if (type === "mobile") return <Smartphone className="h-12 w-12" />;
+	if (type === "desktop") return <Monitor className="h-12 w-12" />;
+	return <Laptop className="h-12 w-12" />;
+}
+
+function SessionCard({ session }) {
+	return (
+		<li className="bg-white/4 rounded-2xl border border-white/10 px-6 py-3 flex items-center justify-between">
+			<div className="flex gap-3 items-center w-48 mr-24">
+				<DeviceIcon type={session.type} />
+				<div className="w-32">
+					<h2 className="font-bold text-white text-lg truncate">{session.device}</h2>
+					<p className="font-light text-sm text-white/75">{session.browser} - {session.os}</p>
+				</div>
+			</div>
+
+			<div className="flex gap-12 items-center w-48 mr-24">
+				<div className="flex gap-1.5 items-center">
+					<MapPin className="h-4 w-4 text-white/75" />
+					<p className="font-light text-sm text-white/75">{session.location}</p>
+				</div>
+			</div>
+			<div className="flex gap-12 items-center w-48">
+				<div className="flex gap-1.5 items-center">
+					<Clock className="h-3 w-3 text-white/75" />
+					<p className="font-light text-sm text-white/75">{session.createdSince} ago</p>
+				</div>
+			</div>
+
+			<button
+				className="hover:text-red-400 cursor-pointer transition-all duration-500"
+			>
+				<Trash2 className="h-6 w-6" />
+			</button>
+		</li>
+	);
+}
+  
+function Devices() {
+	return (
+		<ul className="flex flex-col gap-4 px-6">
+			{sessionsData.map(session => (
+			<SessionCard key={session.id} session={session} />
+			))}
+		</ul>
 	);
 }
 
@@ -117,6 +185,20 @@ export default function Security() {
 					saveChanges={true}
 				>
 					<TwoFactorAuth />
+				</SettingsCard>
+				<SettingsCard 
+					title="Browsers and devices"
+					subtitle="These browsers and devices are currently signed in to you account. Remove any unauthorized devices"
+					saveChanges={true}
+				>
+					<Devices />
+				</SettingsCard>
+				<SettingsCard 
+					title="Delete Account"
+					subtitle="This will permanently delete your account and all associated data. This action is irreversible"
+					saveChanges={true}
+				>
+					{/* <Devices /> */}
 				</SettingsCard>
 			</div>
 		</motion.div>
