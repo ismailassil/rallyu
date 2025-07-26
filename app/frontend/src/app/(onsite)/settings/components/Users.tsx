@@ -1,5 +1,5 @@
 import React from 'react';
-import SettingsCard from './SettingsCard';
+import SettingsCard from './SettingsCards';
 import { motion } from 'framer-motion';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
 import Image from 'next/image';
@@ -192,21 +192,15 @@ function IncomingFriendRequests() {
 export default function Users() {
 	return (
 		<motion.div
-			initial={{ opacity: 0, x: -50 }}
+			initial={{ opacity: 0, x: 25 }}
 			animate={{ opacity: 1, x: 0 }}
 			transition={{ duration: 0.3, delay: 0 }}
 		>
 			<div className='flex flex-col gap-4'>
 				<SettingsCard 
-					title="Blocked Users"
-					subtitle="View and unblock all the users you have blocked"
-				>
-					<BlockedUsers />
-				</SettingsCard>
-
-				<SettingsCard 
 					title="Friends"
 					subtitle="View and manage relationship with all of your friends"
+					isFoldable={true}
 				>
 					<FriendsList />
 				</SettingsCard>
@@ -214,6 +208,8 @@ export default function Users() {
 				<SettingsCard 
 					title="Outgoing Friend Requests"
 					subtitle="View and cancel all the pending friend requests you've sent"
+					isFoldable={true}
+					defaultExpanded={false}
 				>
 					<OutgoingFriendRequests />
 				</SettingsCard>
@@ -221,8 +217,19 @@ export default function Users() {
 				<SettingsCard 
 					title="Incoming Friend Requests"
 					subtitle="View and decline all the pending friend requests you've received"
+					isFoldable={true}
+					defaultExpanded={false}
 				>
 					<IncomingFriendRequests />
+				</SettingsCard>
+
+				<SettingsCard 
+					title="Blocked Users"
+					subtitle="View and unblock all the users you have blocked"
+					isFoldable={true}
+					defaultExpanded={false}
+				>
+					<BlockedUsers />
 				</SettingsCard>
 
 				{/* <div className="flex flex-col gap-5 px-18 mt-8 mb-4">

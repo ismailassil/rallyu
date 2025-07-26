@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import SettingsCard from './SettingsCard';
+import SettingsCard from './SettingsCards';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
 import { Upload } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -86,7 +86,7 @@ function PersonalInformationsForm() {
 export default function General() {
 	return (
 		<motion.div
-			initial={{ opacity: 0, x: -50 }}
+			initial={{ opacity: 0, x: 25 }}
 			animate={{ opacity: 1, x: 0 }}
 			transition={{ duration: 0.3, delay: 0 }}
 		>
@@ -94,7 +94,7 @@ export default function General() {
 				<SettingsCard 
 					title="Personal Informations"
 					subtitle="Update your account profile information and email address"
-					saveChanges={true}
+					isForm={true}
 				>
 					<PersonalInformationsForm />
 				</SettingsCard>
@@ -103,11 +103,10 @@ export default function General() {
 					title="Preferences"
 					subtitle="Update your preferences and customize your experience"
 				>
-					{/* <PersonalInformationsFormV2 /> */}
-					<div className="flex flex-col gap-5 px-18 mt-8 mb-4">
+					{/* <div className="flex flex-col gap-5 px-18 mt-8 mb-4">
 						<h1>Language</h1>
 						<h1>Notifications</h1>
-					</div>
+					</div> */}
 				</SettingsCard>
 			</div>
 		</motion.div>

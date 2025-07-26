@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
-import SettingsCard from "./SettingsCard";
+import SettingsCard from "./SettingsCards";
 import { XIcon, Fingerprint, Smartphone, Mail, Check, Laptop, MapPin, Clock, Trash2, Monitor } from "lucide-react";
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import MFASetup from "../../mfa/page";
@@ -167,36 +167,36 @@ function Devices() {
 export default function Security() {
 	return (
 		<motion.div
-			initial={{ opacity: 0, x: -50 }}
+			initial={{ opacity: 0, x: 25 }}
 			animate={{ opacity: 1, x: 0 }}
 			transition={{ duration: 0.3, delay: 0 }}
 		>
 			<div className='flex flex-col gap-4'>
 				<SettingsCard 
-					title="Change Password"
-					subtitle="Modify your current password"
-					saveChanges={true}
-				>
-					<ChangePasswordForm />
-				</SettingsCard>
-				<SettingsCard 
 					title="Two-factor Authentication"
 					subtitle="Add an extra layer of security to your account by choosing your preferred verification method"
-					saveChanges={true}
+					isFoldable={true}
+					defaultExpanded={false}
 				>
 					<TwoFactorAuth />
 				</SettingsCard>
 				<SettingsCard 
+					title="Change Password"
+					subtitle="Modify your current password"
+					isForm={true}
+				>
+					<ChangePasswordForm />
+				</SettingsCard>
+				<SettingsCard 
 					title="Browsers and devices"
 					subtitle="These browsers and devices are currently signed in to you account. Remove any unauthorized devices"
-					saveChanges={true}
 				>
 					<Devices />
 				</SettingsCard>
 				<SettingsCard 
 					title="Delete Account"
 					subtitle="This will permanently delete your account and all associated data. This action is irreversible"
-					saveChanges={true}
+					isAction={true}
 				>
 					{/* <Devices /> */}
 				</SettingsCard>
