@@ -206,21 +206,21 @@ export default function Users() {
 
 				<SettingsCard 
 					title="Friends"
-					subtitle="View and unfriend all of your friends"
+					subtitle="View and manage relationship with all of your friends"
 				>
 					<FriendsList />
 				</SettingsCard>
 
 				<SettingsCard 
 					title="Outgoing Friend Requests"
-					subtitle="View and cancel all the pending friend request you've sent"
+					subtitle="View and cancel all the pending friend requests you've sent"
 				>
 					<OutgoingFriendRequests />
 				</SettingsCard>
 
 				<SettingsCard 
 					title="Incoming Friend Requests"
-					subtitle="View and decline all the pending friend request you've received"
+					subtitle="View and decline all the pending friend requests you've received"
 				>
 					<IncomingFriendRequests />
 				</SettingsCard>
