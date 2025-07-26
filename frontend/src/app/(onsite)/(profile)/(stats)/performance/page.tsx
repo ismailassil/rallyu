@@ -1,9 +1,10 @@
 import React from 'react';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
-import { Calendar, Clock, Target, TrendingUp, TrendingUpDown, Trophy, User2 } from 'lucide-react';
-import Chart from '../components/Chart';
-import ChartPie from '../components/ChartPie';
-import ChartBar from '../components/ChartBar';
+import { Clock, Target, TrendingUp, Trophy } from 'lucide-react';
+import Chart from '../components/Charts/Chart';
+import ChartPie from '../components/Charts/ChartPie';
+import ChartBar from '../components/Charts/ChartBar';
+import { ChartCard, StatCard, StatDetailedCard } from '../components/Cards';
 
 const data = {
 	gameTypeDistData: [
@@ -59,48 +60,48 @@ const data = {
 	]
 };
 
-function StatCard({ title, value, subtitle, subtitleColor, icon } : { title: string, value: string, subtitle: string, icon: React.ReactNode, subtitleColor: string }) {
-	return (
-		<div className="bg-white/4 border border-white/10 w-full rounded-2xl backdrop-blur-2xl px-4 py-3 flex flex-col gap-7 flex-1">
-			<div className="flex items-center justify-between">
-				<p className="font-bold text-xl">{title}</p>
-				{icon}
-			</div>
-			<div className="flex items-end justify-between">
-				<p className="font-extrabold text-3xl">{value}</p>
-				<p className={`text-sm ${subtitleColor}`}>{subtitle}</p>
-			</div>
-		</div>
-	);
-}
+// export function StatCard({ title, value, subtitle, subtitleColor, icon } : { title: string, value: string, subtitle: string, icon: React.ReactNode, subtitleColor: string }) {
+// 	return (
+// 		<div className="bg-white/4 border border-white/10 w-full rounded-2xl backdrop-blur-2xl px-4 py-3 flex flex-col gap-7 flex-1">
+// 			<div className="flex items-center justify-between">
+// 				<p className="font-bold text-xl">{title}</p>
+// 				{icon}
+// 			</div>
+// 			<div className="flex items-end justify-between">
+// 				<p className="font-extrabold text-3xl">{value}</p>
+// 				<p className={`text-sm ${subtitleColor}`}>{subtitle}</p>
+// 			</div>
+// 		</div>
+// 	);
+// }
 
-const StatsCardV1: React.FC<StatCardProps> = ({ title, items }) => (
-	<div className="bg-white/4 border border-white/10 w-full rounded-2xl backdrop-blur-2xl px-4 py-3 overflow-hidden flex-2">
-		<h1 className="font-bold text-xl mb-4">{title}</h1>
-		<div className="flex flex-col gap-1">
-			{items.map((item, idx) => (
-			<div key={idx} className="flex justify-between">
-				<p className="font-medium text-lg text-white/70">{item.label}</p>
-				<p className={`font-extrabold text-xl ${item.valueClass ?? "text-white/90"}`}>
-				{item.value}
-				</p>
-			</div>
-			))}
-		</div>
-	</div>
-);
+// const StatDetailedCard: React.FC<StatCardProps> = ({ title, items }) => (
+// 	<div className="bg-white/4 border border-white/10 w-full rounded-2xl backdrop-blur-2xl px-4 py-3 overflow-hidden flex-2">
+// 		<h1 className="font-bold text-xl mb-4">{title}</h1>
+// 		<div className="flex flex-col gap-1">
+// 			{items.map((item, idx) => (
+// 			<div key={idx} className="flex justify-between">
+// 				<p className="font-medium text-lg text-white/70">{item.label}</p>
+// 				<p className={`font-extrabold text-xl ${item.valueClass ?? "text-white/90"}`}>
+// 				{item.value}
+// 				</p>
+// 			</div>
+// 			))}
+// 		</div>
+// 	</div>
+// );
 
-export function ChartCard({ title, subtitle, chart } : { title: string, subtitle: string, chart: React.ReactNode }) {
-	return (
-		<div className="bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md p-4 flex flex-col h-full overflow-hidden">
-			<h2 className="font-bold text-lg">{title}</h2>
-			<p className="text-sm text-violet-400 mb-4">{subtitle}</p>
-			<div className="flex-1 overflow-hidden">{chart}</div>
-		</div>
-	);
-}
+// export function ChartCard({ title, subtitle, chart } : { title: string, subtitle: string, chart: React.ReactNode }) {
+// 	return (
+// 		<div className="bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md p-4 flex flex-col h-full overflow-hidden">
+// 			<h2 className="font-bold text-lg">{title}</h2>
+// 			<p className="text-sm text-violet-400 mb-4">{subtitle}</p>
+// 			<div className="flex-1 overflow-hidden">{chart}</div>
+// 		</div>
+// 	);
+// }
 
-export default function newstats() {
+export default function UserStatsPage() {
 	return (
 		<main className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6">
 			<div className="bg-white/4 border border-white/10  w-full rounded-2xl backdrop-blur-2xl pb-12">
@@ -168,7 +169,7 @@ export default function newstats() {
 
 					{/* LINE3 */}
 					<section className='grid gap-4 grid-cols-4'>
-						<StatsCardV1
+						<StatDetailedCard
 							title="Today Performance"
 							items={[
 								{ label: "Matches", value: 12 },
@@ -177,7 +178,7 @@ export default function newstats() {
 								{ label: "Draws", value: 12 },
 							]}
 						/>
-						<StatsCardV1
+						<StatDetailedCard
 							title="Score Records"
 							items={[
 								{ label: "Highest Score", value: 45 },
@@ -185,7 +186,7 @@ export default function newstats() {
 								{ label: "Average Score", value: 15.6 }
 							]}
 						/>
-						<StatsCardV1
+						<StatDetailedCard
 							title="Average Points by Outcome"
 							items={[
 								{ label: "Per Win", value: "19.8" },
@@ -193,7 +194,7 @@ export default function newstats() {
 								{ label: "Per Draw", value: "15.2" }
 							]}
 						/>
-						<StatsCardV1
+						<StatDetailedCard
 							title="Record Streaks"
 							items={[
 								{ label: "Longest Win", value: 12 },
@@ -300,7 +301,7 @@ export default function newstats() {
 							chart={<ChartBar data={data.gamesPerDay} nameKey='date' dataKey="games" unit="games" />}
 						/>
 						<div className='flex flex-col gap-2'>
-							<StatsCardV1
+							<StatDetailedCard
 								title="Match Duration"
 								items={[
 									{ label: "Longest Match", value: "47m" },
@@ -308,7 +309,7 @@ export default function newstats() {
 									{ label: "Average Match", value: "15m" }
 								]}
 							/>
-							<StatsCardV1
+							<StatDetailedCard
 								title="Match Duration"
 								items={[
 									{ label: "Fastest Win", value: "47m" },
