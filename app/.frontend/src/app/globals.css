@@ -1,0 +1,345 @@
+@import "tailwindcss";
+@tailwind utilities;
+
+:root {
+	--background: black;
+	--foreground: #ffffff;
+}
+
+@theme {
+	--breakpoint-extra: 2000px;
+	--color-main: #5a5de9;
+	--color-main-hover: #494bc2;
+	--color-main-active: #3a3b9d;
+	--color-main-ring-active: #7c7eff;
+	--color-main-ring-hover: #686bff;
+	--color-accent: #ff7f50;
+	--color-fr-image: #edb0b0;
+	--color-notwhite: #d9d9d9;
+	--color-isOnline: #f2a900;
+	--color-br-image: rgba(255, 255, 255, 0.32);
+	--color-graph-bright-cyan: #00faff;
+	--color-graph-vivid-yellow: #ffe600;
+	--color-graph-fill: #78d369;
+	--color-border-gray-thick: rgba(250, 233, 233, 0.28);
+	--color-gray-thick: rgba(45, 45, 45, 0.65);
+	--color-card: rgba(255, 255, 255, 0.04);
+	--color-inner-card: rgba(255, 255, 255, 0.05);
+	--color-chat: rgba(255, 255, 255, 0.03);
+	--color-br-card: rgba(255, 255, 255, 0.06);
+	--color-bbg: rgba(255, 255, 255, 0.06);
+	--color-bg: rgba(255, 255, 255, 0.08);
+	--color-hbbg: rgba(255, 255, 255, 0.1);
+	--color-hbg: rgba(255, 255, 255, 0.07);
+<<<<<<< HEAD:frontend/src/app/globals.css
+	--font-fdisplay: var(--font-funnel-display);
+=======
+	--color-crimson: #dc143c;
+>>>>>>> origin/dev-elk:app/.frontend/src/app/globals.css
+}
+
+@layer utilities {
+	.bg-theme-one {
+		background: radial-gradient(circle, #006400, #36454f);
+	}
+	.bg-theme-two {
+		/* background: radial-gradient(circle, #1616df, #161616); */
+		background: radial-gradient(circle, #2c2c2c, black);
+		/* background: black; */
+	}
+
+	.bg-theme-three {
+		background: radial-gradient(circle, #1b9dc5, #04619e);
+	}
+
+	.bg-theme-four {
+		background: radial-gradient(circle, #c30039, #303b4b);
+	}
+}
+
+@theme inline {
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--font-sans: var(--font-geist-sans);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background: #0a0a0a;
+		--foreground: #ededed;
+	}
+}
+
+body {
+	background: var(--background);
+	color: var(--foreground);
+}
+
+.no-caret {
+	caret-color: transparent;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+/* styles.css or in <style> tag */
+.hide-scrollbar {
+	scrollbar-width: none; /* Firefox */
+	-ms-overflow-style: none; /* IE 10+ */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+	display: none; /* Chrome, Safari, Opera */
+}
+
+.animate-font {
+	transition: font-size 0.3s ease;
+}
+
+.custom-scroll::-webkit-scrollbar {
+	width: 0.5rem;
+}
+.custom-scroll::-webkit-scrollbar-track {
+	border-radius: 9999px;
+	background: none;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+	border-radius: 9999px;
+	background: rgba(209, 213, 219, 0.3);
+}
+
+.custom-range::-webkit-slider-thumb {
+	appearance: none;
+	width: 1rem;
+	height: 1rem;
+	background-color: #3b82f6;
+	border-radius: 9999px;
+}
+
+.custom-range::-moz-range-thumb {
+	appearance: none;
+	width: 1rem;
+	height: 1rem;
+	background-color: #3b82f6;
+	border-radius: 9999px;
+}
+
+.custom-range::-moz-range-track {
+	background-color: #92929283;
+	height: 2px;
+	border-radius: 2px;
+}
+
+.loader {
+	background:
+		linear-gradient(45deg, transparent 49%, #fff 10%, #fff 10%, transparent 51%, transparent),
+		linear-gradient(-45deg, transparent 49%, #fff 10%, #fff 10%, transparent 51%, transparent);
+	background-size: 1em 1em;
+	box-sizing: border-box;
+	animation: barStripe 0.6s linear infinite;
+}
+
+.gameLoader {
+	background:
+		linear-gradient(
+			45deg,
+			transparent 49%,
+			#ffffff0b 10%,
+			#ffffff0b 10%,
+			transparent 51%,
+			transparent
+		),
+		linear-gradient(
+			-45deg,
+			transparent 49%,
+			#ffffff0b 10%,
+			#ffffff0b 10%,
+			transparent 51%,
+			transparent
+		);
+	background-size: 1em 1em;
+	box-sizing: border-box;
+	animation: barStripe 5s linear infinite;
+}
+
+@keyframes barStripe {
+	0% {
+		background-position: 1em 0;
+	}
+	100% {
+		background-position: 0 0;
+	}
+}
+
+.loadingText {
+	span {
+		animation: loading 1.6s infinite alternate;
+		&:nth-child(1) {
+			animation-delay: 0s;
+		}
+		&:nth-child(2) {
+			animation-delay: 0.1s;
+		}
+		&:nth-child(3) {
+			animation-delay: 0.2s;
+		}
+		&:nth-child(4) {
+			animation-delay: 0.3s;
+		}
+		&:nth-child(5) {
+			animation-delay: 0.4s;
+		}
+		&:nth-child(6) {
+			animation-delay: 0.5s;
+		}
+		&:nth-child(7) {
+			animation-delay: 0.6s;
+		}
+		&:nth-child(8) {
+			animation-delay: 0.7s;
+		}
+		&:nth-child(9) {
+			animation-delay: 0.8s;
+		}
+		&:nth-child(10) {
+			animation-delay: 0.9s;
+		}
+		&:nth-child(11) {
+			animation-delay: 1s;
+		}
+		&:nth-child(12) {
+			animation-delay: 1.1s;
+		}
+		&:nth-child(13) {
+			animation-delay: 1.2s;
+		}
+		&:nth-child(14) {
+			animation-delay: 1.3s;
+		}
+		&:nth-child(15) {
+			animation-delay: 1.4s;
+		}
+		&:nth-child(16) {
+			animation-delay: 1.5s;
+		}
+		&:nth-child(17) {
+			animation-delay: 1.6s;
+		}
+	}
+}
+
+@keyframes loading {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+.tournament-bg {
+	background-size: 100% 100%;
+	background-position:
+		0px 0px,
+		0px 0px,
+		0px 0px,
+		0px 0px,
+		0px 0px,
+		0px 0px,
+		0px 0px,
+		0px 0px,
+		0px 0px,
+		0px 0px,
+		0px 0px;
+	background-image:
+		radial-gradient(18% 28% at 24% 50%, #cefaffff 7%, #073aff00 100%),
+		radial-gradient(18% 28% at 18% 71%, #ffffff59 6%, #073aff00 100%),
+		radial-gradient(70% 53% at 36% 76%, #73f2ffff 0%, #073aff00 100%),
+		radial-gradient(42% 53% at 15% 94%, #ffffffff 7%, #073aff00 100%),
+		radial-gradient(42% 53% at 34% 72%, #ffffffff 7%, #073aff00 100%),
+		radial-gradient(18% 28% at 35% 87%, #ffffffff 7%, #073aff00 100%),
+		radial-gradient(31% 43% at 7% 98%, #ffffffff 24%, #073aff00 100%),
+		radial-gradient(21% 37% at 72% 23%, #d3ff6d9c 24%, #073aff00 100%),
+		radial-gradient(35% 56% at 91% 74%, #8a4ffff5 9%, #073aff00 100%),
+		radial-gradient(74% 86% at 67% 38%, #6dffaef5 24%, #073aff00 100%),
+		linear-gradient(125deg, #4eb5ffff 1%, #4c00fcff 100%);
+}
+
+.with-connector:after {
+	content: " ";
+	position: absolute;
+	left: calc(100% + 0.5rem);
+	width: 1.25rem;
+	border: 2px solid rgba(255, 255, 255, 0.272);
+	border-left: none;
+}
+
+.with-connector:nth-child(odd):after {
+	top: 50%;
+	border-bottom: none;
+}
+
+.with-connector:nth-child(even):after {
+	bottom: 50%;
+	border-top: none;
+}
+
+.round:nth-child(1) .with-connector:after {
+	height: 36px;
+}
+
+.round:nth-child(2) .with-connector:after {
+	height: 72px;
+}
+
+.round.round-winner .with-connector:after {
+	width: 0;
+}
+
+.round + .round .with-connector:before {
+	content: " ";
+	position: absolute;
+	left: -1.75rem;
+	top: 50%;
+	width: 1.25rem;
+	border-top: 2px solid rgba(255, 255, 255, 0.272);
+}
+
+.tournament-head {
+	@apply h-13 bg-card relative mr-4 flex items-center gap-3 rounded-full px-1.5 py-1.5 ring-1 ring-white/20;
+}
+
+/* GLOBAL CSS (xezzuz) */
+
+/* --------- OR --------- */
+.or-separator::before,
+.or-separator::after {
+	content: "";
+	display: block;
+	background-color: white;
+	height: 1.5px;
+	flex: 1;
+}
+
+/* out */
+.custom-input {
+	transition-property: box-shadow, backdrop-filter;
+	transition-duration: 0.3s, 0.6s;
+	transition-timing-function: ease-out, ease-out;
+	transition-delay: 0s, 0s;
+}
+
+/* in */
+.custom-input:hover,
+.custom-input:focus-within {
+	transition-property: box-shadow, backdrop-filter;
+	transition-duration: 0.4s, 2s;
+	transition-timing-function: ease-out, ease-out;
+	transition-delay: 0s, 0.1s;
+
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(1000px);
+}

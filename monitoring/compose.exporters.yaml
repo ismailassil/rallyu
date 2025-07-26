@@ -1,0 +1,79 @@
+services:
+  nginx-exporter:
+    depends_on:
+      nginx:
+        condition: service_healthy
+    image: nginx/nginx-prometheus-exporter:1.4
+    container_name: nginx-exporter
+    restart: always
+    networks:
+      - monitoring
+      - web-app
+    command:
+      - --nginx.scrape-uri=http://${NGINX_USER}:${NGINX_PASSWORD}@nginx:9114/metrics
+    environment:
+      - NGINX_USER=${NGINX_USER}
+      - NGINX_PASSWORD=${NGINX_PASSWORD}
+    env_file:
+      - .env
+
+  elasticsearch-exporter:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: quay.io/prometheuscommunity/elasticsearch-exporter:v1.9.0
+    container_name: elasticsearch-exporter
+    restart: always
+    networks:
+      - monitoring
+      - elk
+    command:
+      - --es.uri=${ELASTIC_AUTH_HOST}
+    env_file:
+      - .env
+    environment:
+      - ES_USERNAME=${ELASTIC_USERNAME}
+      - ES_PASSWORD=${ELASTIC_PASSWORD}
+
+  kibana-exporter:
+    depends_on:
+      kibana:
+        condition: service_healthy
+    image: chamilad/kibana-prometheus-exporter:v8.7.x.2
+    container_name: kibana-exporter
+    restart: always
+    networks:
+      - monitoring
+      - elk
+    env_file:
+      - .env
+    command: >
+      -kibana.username ${ELASTIC_USERNAME}
+      -kibana.password ${KIBANA_PASSWORD}
+      -kibana.uri http://kibana:${KIBANA_PORT}
+
+  logstash-exporter:
+    depends_on:
+      logstash:
+        condition: service_healthy
+    image: alxrem/prometheus-logstash-exporter:0.7.0
+    container_name: logstash-exporter
+    command: >
+      -logstash.host logstash
+      -web.listen-address :9198
+    networks:
+      - monitoring
+      - elk
+
+  backend-exporter:
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    build:
+      context: ./backend-exporter
+      dockerfile: Dockerfile
+    image: rallyu/backend-exporter:v1.0
+    container_name: backend-exporter
+    networks:
+      - monitoring
+      - web-app

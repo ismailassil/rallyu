@@ -1,0 +1,44 @@
+volumes:
+  certs:
+    driver: local
+
+networks:
+  web-app:
+    driver: bridge
+
+services:
+  nginx:
+    depends_on: # add depends_on all the servers's container
+      kibana:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+    build:
+      context: ./nginx/
+      dockerfile: Dockerfile
+    image: rallyu/nginx:v1.0
+    volumes:
+      - ./nginx/logs/access.log:/var/log/nginx/access.log
+      - certs:/certs/
+    container_name: nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - web-app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+include:
+  - ./app/compose.app.yaml
+  - ./logging/compose.logging.yaml
+  - ./monitoring/compose.monitoring.yaml

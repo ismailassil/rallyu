@@ -1,0 +1,44 @@
+global:
+    scrape_interval: 5s
+    evaluation_interval: 30s
+
+alerting:
+    alertmanagers:
+        - static_configs:
+              - targets:
+                    - "alertmanager:9093"
+
+rule_files:
+    - "alert.rules.yml"
+
+scrape_configs:
+    - job_name: "prometheus"
+      scrape_interval: 15s
+      static_configs:
+          - targets: ["localhost:9090"]
+
+    - job_name: "nginx-exporter"
+      scrape_interval: 15s
+      metrics_path: "/metrics"
+      static_configs:
+          - targets: ["nginx-exporter:9113"]
+
+    - job_name: "logstash-exporter"
+      metrics_path: "/metrics"
+      static_configs:
+          - targets: ["logstash-exporter:9198"]
+
+    - job_name: "elasticsearch-exporter"
+      metrics_path: "/metrics"
+      static_configs:
+          - targets: ["elasticsearch-exporter:9114"]
+
+    - job_name: "kibana-exporter"
+      metrics_path: "/metrics"
+      static_configs:
+          - targets: ["kibana-exporter:9684"]
+
+    - job_name: "backend-exporter"
+      metrics_path: "/metrics"
+      static_configs:
+          - targets: ["backend-exporter:9434"]
