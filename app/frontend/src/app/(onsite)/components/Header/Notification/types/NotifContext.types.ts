@@ -12,6 +12,7 @@ export interface NotifContextTypes {
 	socketRef: RefObject<Socket | null>;
 	isLoading: boolean;
 	notifLength: number;
+	DEFAULT_TIME: number;
 }
 
 export interface NotificationType {

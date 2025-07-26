@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { BellSimpleSlash } from "@phosphor-icons/react";
+import { BellSimpleSlashIcon } from "@phosphor-icons/react";
 import NotificationHeader from "./NotificationHeader";
 import NotificationFooter from "./NotificationFooter";
 import { AnimatePresence } from "framer-motion";
@@ -62,7 +62,7 @@ const NotificationBox = () => {
 						</AnimatePresence>
 					) : (
 						<div className="flex flex-col items-center gap-3 py-20">
-							<BellSimpleSlash size={52} />
+							<BellSimpleSlashIcon size={52} />
 							<span className="text-sm">No Current Notifications</span>
 						</div>
 					)}

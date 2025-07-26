@@ -21,6 +21,7 @@ type XOContextTypes = {
 	round: number;
 	currentPlayer: string;
 	totalRounds: number;
+	show: boolean;
 	handleNextRound: () => void;
 	handleMove: (index: number) => void;
 	handleStart: () => void;
@@ -62,6 +63,7 @@ export function XOProvider({ children }: Readonly<{ children: React.ReactNode }>
 	const [round, setRound] = useState(1);
 	const socketRef = useRef<Socket | null>(null);
 	const gameIdRef = useRef<string>('');
+	const [show, setShow] = useState<boolean>(true);
 
 	useEffect(() => {
 		const socket = io('http://localhost:3457');
@@ -86,9 +88,11 @@ export function XOProvider({ children }: Readonly<{ children: React.ReactNode }>
 				if (data.winner !== 'draw')
 					setTrigger(true);
 				setStart(false);
+				setShow(true);
 				return;
 			}
 			setShowBanner(true);
+			setShow(true);
 		});
 
 		socket.on('timeLeft', ({ timeLeft }) => {
@@ -123,6 +127,7 @@ export function XOProvider({ children }: Readonly<{ children: React.ReactNode }>
 
 	function handleNextRound() {
 		setShowBanner(false);
+		setShow(false);
 		socketRef.current?.emit(
 			'nextRound',
 			{ gameId: gameIdRef?.current },
@@ -145,6 +150,7 @@ export function XOProvider({ children }: Readonly<{ children: React.ReactNode }>
 	function handleStart() {
 		setCells(Array(9).fill(''));
 		setStart(true);
+		setShow(false);
 		setWinner('');
 		setTrigger(false);
 	}
@@ -153,6 +159,7 @@ export function XOProvider({ children }: Readonly<{ children: React.ReactNode }>
 		<XOContext.Provider
 			value={{
 				start,
+				show,
 				cells,
 				trigger,
 				winner,

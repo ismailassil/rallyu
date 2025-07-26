@@ -21,21 +21,10 @@ class NotifControllers {
 		res: FastifyReply,
 	): Promise<void> {
 		// Register the notification in the Database
-		let notifId: number;
 		try {
-			notifId = await this.notifServices.registerNotification(req.body);
+			const notifData: INotifDetail =
+				await this.notifServices.registerNotification(req.body);
 			fastify.log.info('✅ Notification created');
-
-			// Get the Data from Redis
-			const result = await fastify.redis.get(`notif?id=${notifId}`);
-			if (!result) {
-				return res
-					.status(404)
-					.send({ status: 'error', message: 'Notification not found' });
-			}
-
-			// Parse the Notification
-			const resData: INotifDetail = JSON.parse(result);
 
 			// Send back to API & SocketIO Gateway through NATS Server
 			const jc = JSONCodec();
@@ -44,7 +33,7 @@ class NotifControllers {
 				jc.encode({
 					username: req.body.to_user,
 					type: 'notify',
-					data: resData,
+					data: notifData,
 				}),
 			);
 			try {

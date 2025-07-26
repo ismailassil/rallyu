@@ -5,7 +5,7 @@ import { useXO } from '../contexts/xoContext';
 import NextRound from './NextRound';
 
 const GameArena = () => {
-	const { start, cells, handleMove, showBanner } = useXO();
+	const { start, cells, handleMove, show, showBanner } = useXO();
 
 	return (
 		<div
@@ -18,10 +18,7 @@ const GameArena = () => {
 			{showBanner && <NextRound />}
 			<div
 				className={`w-150 h-150 grid grid-cols-3 grid-rows-3 gap-5 transition-all duration-300 
-					${start ? 'opacity-100' : 'pointer-events-none select-none opacity-10'}
-					${showBanner && start ? 'opacity-100' : 'pointer-events-none select-none opacity-10'}
-					
-					`}
+					${!show ? 'opacity-100' : 'pointer-events-none select-none opacity-10'}`}
 			>
 				{cells.map((cell, i) => (
 					<Cell index={i} key={i} cell={cell} handleMove={handleMove} />
