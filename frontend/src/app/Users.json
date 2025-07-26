@@ -1,37 +1,129 @@
-[    {
-        "id": "1",
-        "image": "/profile/image_2.jpg",
-        "name": "Salah Demnati",
-        "message":"OK",
-        "date": "01/01/2000",
-        "isSeen": true,
-        "lastSeen": "22:40"
+[
+    {
+      "id": 1,
+      "image": "/profile/image_2.jpg",
+      "name": "Salah Demnati",
+      "message": "OK",
+      "date": "01/01/2000",
+      "isSeen": true,
+      "lastSeen": "22:40"
     },
     {
-        "id": "2",
-        "image": "/profile/lordVoldemort.jpeg",
-        "name": "Nabil Azouz",
-        "message":"KK",
-        "date": "01/01/2000",
-        "isSeen": false,
-        "lastSeen": "22:40"
+      "id": 2,
+      "image": "/profile/lordVoldemort.jpeg",
+      "name": "Nabil Azouz",
+      "message": "KK",
+      "date": "01/01/2000",
+      "isSeen": false,
+      "lastSeen": "22:40"
     },
     {
-        "id": "3",
-        "image": "/profile/image.png",
-        "name": "Ismail Assil",
-        "message":"WW",
-        "date": "01/01/2000",
-        "isSeen": false,
-        "lastSeen": "22:40"
+      "id": 3,
+      "image": "/profile/image.png",
+      "name": "Ismail Assil",
+      "message": "WW",
+      "date": "01/01/2000",
+      "isSeen": false,
+      "lastSeen": "22:40"
     },
     {
-        "id": "4",
-        "image": "/profile/darthVader.jpg",
-        "name": "M3illa",
-        "message":"FFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkjFFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkjFFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkjFFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkjFFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkj",
-        "date": "01/01/2222jjd",
-        "isSeen": false,
-        "lastSeen": "22:40"
+      "id": 4,
+      "image": "/profile/darthVader.jpg",
+      "name": "Yassine Derkaoui",
+      "message": "FFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkj...",
+      "date": "01/01/2222jjd",
+      "isSeen": false,
+      "lastSeen": "22:40"
+    },
+    {
+      "id": 5,
+      "image": "/profile/darthVader.jpg",
+      "name": "ahmed",
+      "message": "FFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkj...",
+      "date": "01/01/2222jjd",
+      "isSeen": false,
+      "lastSeen": "22:40"
+    },
+    {
+      "id": 6,
+      "image": "/profile/darthVader.jpg",
+      "name": "Sara Bentaleb",
+      "message": "FFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkj...",
+      "date": "01/01/2222jjd",
+      "isSeen": false,
+      "lastSeen": "22:40"
+    },
+    {
+      "id": 7,
+      "image": "/profile/darthVader.jpg",
+      "name": "Omar El Fassi",
+      "message": "FFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkj...",
+      "date": "01/01/2222jjd",
+      "isSeen": false,
+      "lastSeen": "22:40"
+    },
+    {
+      "id": 8,
+      "image": "/profile/darthVader.jpg",
+      "name": "Nada Zouhair",
+      "message": "FFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkj...",
+      "date": "01/01/2222jjd",
+      "isSeen": false,
+      "lastSeen": "22:40"
+    },
+    {
+      "id": 9,
+      "image": "/profile/darthVader.jpg",
+      "name": "Khalil Tazi",
+      "message": "FFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkj...",
+      "date": "01/01/2222jjd",
+      "isSeen": false,
+      "lastSeen": "22:40"
+    },
+    {
+      "id": 10,
+      "image": "/profile/darthVader.jpg",
+      "name": "Leila Aarab",
+      "message": "FFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkj...",
+      "date": "01/01/2222jjd",
+      "isSeen": false,
+      "lastSeen": "22:40"
+    },
+    {
+      "id": 11,
+      "image": "/profile/darthVader.jpg",
+      "name": "Anas Benali",
+      "message": "FFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkj...",
+      "date": "01/01/2222jjd",
+      "isSeen": false,
+      "lastSeen": "22:40"
+    },
+    {
+      "id": 12,
+      "image": "/profile/darthVader.jpg",
+      "name": "Houda Mernissi",
+      "message": "FFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkj...",
+      "date": "01/01/2222jjd",
+      "isSeen": false,
+      "lastSeen": "22:40"
+    },
+    {
+      "id": 13,
+      "image": "/profile/darthVader.jpg",
+      "name": "Walid Kabbaj",
+      "message": "FFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkj...",
+      "date": "01/01/2222jjd",
+      "isSeen": false,
+      "lastSeen": "22:40"
+    },
+    {
+      "id": 14,
+      "image": "/profile/darthVader.jpg",
+      "name": "Meryem Idrissi",
+      "message": "FFFfsfsffsffssskdjkjjfdsjfdkfjbdkfjdkjdkdfdkbfdkj...",
+      "date": "01/01/2222jjd",
+      "isSeen": false,
+      "lastSeen": "22:40"
     }
-]
+  ]
+  

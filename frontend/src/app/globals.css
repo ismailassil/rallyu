@@ -8,6 +8,11 @@ html, body {
   padding: 0;
 }
 
+@theme {
+  --color-card: rgba(255, 255, 255, 0.04);
+  --color-bg: rgba(255, 255, 255, 0.08);
+}
+
 body {
   background-image: url("/background/main/background.svg");
   background-size: cover;
@@ -20,13 +25,16 @@ body {
   width: 8px;
 }
 
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
 
+/* For Firefox */
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: gray;
   border-radius: 4px;
 }
-
-
 
 @layer base {
   :root {
