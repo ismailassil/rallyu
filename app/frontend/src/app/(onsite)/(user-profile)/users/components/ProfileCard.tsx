@@ -34,7 +34,7 @@ export default function ProfileCard({ user_id, fullName, username, bio, friendsh
 							<p className='text-lg lg:text-2xl xl:text-3xl font-semibold text-white/50'>{`(${username})`}</p>
 						</div>
 						<p className={`text-sm text-gray-400 lg:text-lg`}>
-							{'Something went wrong, please try again later.' || bio}
+							{bio || 'Something went wrong, please try again later.'}
 						</p>
 						{friendshipStatus && <Relations user_id={user_id} status={friendshipStatus}/>}
 						{!friendshipStatus && 
@@ -116,7 +116,7 @@ export default function ProfileCard({ user_id, fullName, username, bio, friendsh
 						<span className="inline md:hidden lg:inline"><br /></span>
 						Rate
 					</span>
-					<span className='text-xl lg:text-3xl font-bold text-white/90 text-center lg:text-start'>{winRate.toFixed(1)}%</span>
+					<span className='text-xl lg:text-3xl font-bold text-white/90 text-center lg:text-start'>{winRate?.toFixed(1)}%</span>
 				</div>
 				<div className='flex-1 bg-white/4 border border-white/10 rounded-2xl pl-4 pr-4 pt-2 pb-2
 								flex flex-col items-center justify-between backdrop-blur-xl

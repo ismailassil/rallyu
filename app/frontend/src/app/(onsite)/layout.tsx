@@ -30,7 +30,7 @@ export default function RootLayout({
 							</PingPongProvider>
 						</TicTacToeProvider>
 					</GameProvider>
-					
+
 				</ProtectedRoute>
 			</div>
 		</div>

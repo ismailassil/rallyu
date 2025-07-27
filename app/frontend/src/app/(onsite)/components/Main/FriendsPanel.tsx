@@ -4,7 +4,7 @@ import Friend from "./Friend";
 
 export default function FriendsPanel() {
 	return (
-		<aside className="bg-card border-br-card flex-2 hidden h-full w-full rounded-lg border-2 2xl:block">
+		<aside className="bg-card border-br-card flex-2 hidden h-full w-full rounded-lg border-2 xl:block">
 			<div className="flex h-full flex-col">
 				<div className="group relative shrink-0 overflow-hidden">
 					<h1 className={`${unicaOne.className} p-13 select-none text-4xl uppercase`}>

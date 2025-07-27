@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @tailwind utilities;
 
 :root {
@@ -32,6 +32,21 @@
 	--color-hbbg: rgba(255, 255, 255, 0.1);
 	--color-hbg: rgba(255, 255, 255, 0.07);
 	--font-fdisplay: var(--font-funnel-display);
+}
+
+.scrolling {
+	animation: marquee 15s linear infinite;
+	display: inline-block;
+	padding-right: 10px;
+}
+
+@keyframes marquee {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-100%);
+	}
 }
 
 @layer utilities {
@@ -75,8 +90,8 @@ body {
 	caret-color: transparent;
 }
 
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
 	-webkit-appearance: none;
 	margin: 0;
 }
@@ -131,8 +146,22 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .loader {
 	background:
-		linear-gradient(45deg, transparent 49%, #fff 10%, #fff 10%, transparent 51%, transparent),
-		linear-gradient(-45deg, transparent 49%, #fff 10%, #fff 10%, transparent 51%, transparent);
+		linear-gradient(
+			45deg,
+			transparent 49%,
+			#fff 10%,
+			#fff 10%,
+			transparent 51%,
+			transparent
+		),
+		linear-gradient(
+			-45deg,
+			transparent 49%,
+			#fff 10%,
+			#fff 10%,
+			transparent 51%,
+			transparent
+		);
 	background-size: 1em 1em;
 	box-sizing: border-box;
 	animation: barStripe 0.6s linear infinite;
@@ -265,7 +294,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .with-connector:after {
-	content: " ";
+	content: ' ';
 	position: absolute;
 	left: calc(100% + 0.5rem);
 	width: 1.25rem;
@@ -296,7 +325,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .round + .round .with-connector:before {
-	content: " ";
+	content: ' ';
 	position: absolute;
 	left: -1.75rem;
 	top: 50%;
@@ -313,7 +342,7 @@ input[type="number"]::-webkit-inner-spin-button {
 /* --------- OR --------- */
 .or-separator::before,
 .or-separator::after {
-	content: "";
+	content: '';
 	display: block;
 	background-color: white;
 	height: 1.5px;
