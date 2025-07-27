@@ -16,8 +16,16 @@ class UserRepository {
 		
 		try {
 			const runResult = await db.run(
-				`INSERT INTO users (username, password, email, first_name, last_name, avatar_url, auth_provider) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+				`INSERT INTO users (username, password, email, first_name, last_name, avatar_url, auth_provider) 
+					VALUES (?, ?, ?, ?, ?, ?, ?)`,
 				[username, password, email, first_name, last_name, avatar_url, auth_provider]
+			);
+
+			// need to be moved somewhere else
+			const statResult = await db.run(
+				`INSERT INTO users_stats (level, total_xp, current_streak, longest_streak, user_id)
+					VALUES (?, ?, ?, ?, ?)`,
+				[0, 0, 0, 0, runResult.lastID]
 			);
 			return runResult.lastID;
 		} catch (err: any) {

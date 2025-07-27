@@ -252,10 +252,10 @@ class MatchesRepository {
 			const matches_stats = await db.get(`
 				SELECT
 					COUNT(*) AS matches,
-					SUM(CASE WHEN (player_home_id = ? AND player_home_score > player_away_score) OR (player_away_id = ? AND player_away_score > player_home_score) THEN 1 ELSE 0 END) AS wins,
-					SUM(CASE WHEN (player_home_id = ? AND player_home_score < player_away_score) OR (player_away_id = ? AND player_away_score < player_home_score) THEN 1 ELSE 0 END) AS losses,
-					SUM(CASE WHEN (player_home_id = ? AND player_home_score = player_away_score) OR (player_away_id = ? AND player_away_score = player_home_score) THEN 1 ELSE 0 END) AS draws,
-					100.00 * SUM(CASE WHEN (player_home_id = ? AND player_home_score > player_away_score) OR (player_away_id = ? AND player_away_score > player_home_score) THEN 1 ELSE 0 END) / COUNT(*) AS win_rate
+					COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score > player_away_score) OR (player_away_id = ? AND player_away_score > player_home_score) THEN 1 ELSE 0 END), 0) AS wins,
+					COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score < player_away_score) OR (player_away_id = ? AND player_away_score < player_home_score) THEN 1 ELSE 0 END), 0) AS losses,
+					COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score = player_away_score) OR (player_away_id = ? AND player_away_score = player_home_score) THEN 1 ELSE 0 END), 0) AS draws,
+					100.00 * COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score > player_away_score) OR (player_away_id = ? AND player_away_score > player_home_score) THEN 1 ELSE 0 END) * 1.0 / NULLIF(COUNT(*), 0), 0) AS win_rate
 				FROM matches
 				WHERE (player_home_id = ? OR player_away_id = ?)
 			`, [user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id]);
@@ -264,7 +264,8 @@ class MatchesRepository {
 				SELECT
 					*
 				FROM users_stats
-			`);
+				WHERE user_id = ?
+			`, [user_id]);
 
 			return { user_stats, matches_stats };
 		} catch (err: any) {
