@@ -1,37 +1,30 @@
-import unicaOne from "@/app/fonts/unicaOne";
-import LeaderboardItem from "./LeaderBoardItem";
-import { useState } from "react";
-import useIsWidth from "../../../hooks/useIsWidth";
+import unicaOne from '@/app/fonts/unicaOne';
+import LeaderboardItem from './LeaderBoardItem';
+import useIsWidth from '../../../hooks/useIsWidth';
 
 export default function LeaderboardPanel() {
 	const isWidth = useIsWidth(1024);
-	const [showbox, setShowbox] = useState(false);
 
 	return (
 		<aside
-			className={`bg-card border-br-card h-full w-full flex-1 rounded-lg border-2 ${
-				isWidth
-					? !showbox
-						? "min-h-[588px] cursor-pointer"
-						: "min-h-37 max-h-37 cursor-pointer"
-					: "max-h-[948px] min-h-[588px]"
+			className={`bg-card border-br-card h-full w-full flex-2 rounded-lg border-2 ${
+				isWidth ? 'min-h-[588px]' : 'max-h-[948px] min-h-[588px]'
 			}`}
 		>
 			<div className="flex h-full flex-col">
-				<div
-					className="group relative shrink-0 overflow-hidden"
-					onClick={() => setShowbox(!showbox)}
-				>
-					<h1 className={`${unicaOne.className} p-13 select-none text-4xl uppercase`}>
+				<div className="group relative shrink-0 overflow-hidden">
+					<h1
+						className={`${unicaOne.className} px-11 py-9 select-none text-4xl uppercase`}
+					>
 						Leaderboard
 					</h1>
 					<div
-						className="w-18 h-18 bg-accent
+						className="w-17 h-17 bg-accent
 					absolute -left-4 top-[calc(50%)] -translate-x-1/2 -translate-y-1/2 rounded-lg
 					transition-all duration-200 group-hover:scale-105"
-					></div>
+					/>
 				</div>
-				<div className={`custom-scroll flex-1 overflow-y-auto ${showbox && "hidden lg:block"}`}>
+				<div className={`custom-scroll flex-1 overflow-y-auto block`}>
 					<div className="flex flex-col gap-y-2 pb-4 pl-4 pr-4">
 						{extendedLeaderboard.map((player, i) => (
 							<LeaderboardItem
@@ -52,22 +45,22 @@ export default function LeaderboardPanel() {
 
 const leaderboardData = [
 	{
-		username: "Rass L7ok",
+		username: 'Rass L7ok',
 		rank: 1,
 		score: 9850,
-		img: "/profile/image_1.jpg",
+		img: '/profile/image_1.jpg',
 	},
 	{
-		username: "Lmouch",
+		username: 'Lmouch',
 		rank: 2,
 		score: 9720,
-		img: "/profile/image_2.jpg",
+		img: '/profile/image_2.jpg',
 	},
 	{
-		username: "Moul Chi",
+		username: 'Moul Chi',
 		rank: 3,
 		score: 9450,
-		img: "/profile/image_1.jpg",
+		img: '/profile/image_1.jpg',
 	},
 ];
 

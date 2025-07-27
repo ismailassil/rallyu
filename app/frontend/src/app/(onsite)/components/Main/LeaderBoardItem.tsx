@@ -1,5 +1,5 @@
-import { CastleTurret, Crown, CrownSimple } from "@phosphor-icons/react";
-import Image from "next/image";
+import { CastleTurret, Crown, CrownSimple } from '@phosphor-icons/react';
+import Image from 'next/image';
 
 interface LeaderboardProps {
 	username: string;
@@ -9,22 +9,34 @@ interface LeaderboardProps {
 	position: number;
 }
 
-export default function LeaderboardItem({ username, rank, score, img, position }: LeaderboardProps) {
+export default function LeaderboardItem({
+	username,
+	rank,
+	score,
+	img,
+	position,
+}: LeaderboardProps) {
 	return (
 		<div
-			className="bg-card border-br-card hover:bg-hbg hover:border-hbbg hover:scale-101 group
+			className="bg-card border-br-card hover:bg-hbg transition-all hover:border-hbbg hover:scale-101 group
 				flex items-center overflow-hidden rounded-xl border-2
-				p-3 transition-transform duration-500 hover:cursor-pointer"
+				p-3 duration-500 hover:cursor-pointer"
 		>
 			{/* Rank Badge */}
 			<div
 				className="flex h-[38px] w-[38px] items-center justify-center
-					rounded-full  text-xl font-bold text-white group-hover:text-2xl
+					rounded-full text-xl font-bold text-white group-hover:text-2xl
 					lg:h-[40px] lg:w-[40px]"
 			>
-				{position === 0 && <Crown color="oklch(82.8% 0.189 84.429)" size={30} />}
-				{position === 1 && <CrownSimple color="oklch(82.8% 0.189 84.429)" size={30} />}
-				{position === 2 && <CastleTurret color="oklch(82.8% 0.189 84.429)" size={30} />}
+				{position === 0 && (
+					<Crown color="oklch(82.8% 0.189 84.429)" size={30} />
+				)}
+				{position === 1 && (
+					<CrownSimple color="oklch(82.8% 0.189 84.429)" size={30} />
+				)}
+				{position === 2 && (
+					<CastleTurret color="oklch(82.8% 0.189 84.429)" size={30} />
+				)}
 				{position > 2 && rank}
 			</div>
 
@@ -41,9 +53,12 @@ export default function LeaderboardItem({ username, rank, score, img, position }
 
 			{/* Middle Content */}
 			<div className="ml-5 flex-grow">
-				<h2 className="text-wrap text-base capitalize lg:text-lg">{username}</h2>
+				<h2 className="text-wrap text-base capitalize lg:text-lg">
+					{username}
+				</h2>
 				<p className="text-sm text-gray-400 lg:text-base">
-					Score: <span className="font-semibold text-yellow-400">{score}</span>
+					Score:{' '}
+					<span className="font-semibold text-yellow-400">{score}</span>
 				</p>
 			</div>
 		</div>
