@@ -6,6 +6,21 @@
 	--foreground: #ffffff;
 }
 
+.custom-scrollbar::-webkit-scrollbar {
+width: 8px;
+}
+
+.custom-scrollbar {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* For Firefox */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+	background-color: gray;
+	border-radius: 4px;
+}
+
 @theme {
 	--breakpoint-extra: 2000px;
 	--color-main: #5a5de9;
