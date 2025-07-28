@@ -10,7 +10,7 @@ export CERT_PATH="/certs/"
 export HTPASSWD_PATH="/etc/nginx/.htpasswd"
 
 if [ -z "${NGINX_METRICS_USER}" ] || [ -z "${NGINX_METRICS_PASSWORD}" ]; then
-	printf "${RED}Error: NGINX_METRICS_USER and NGINX_METRICS_PASSWORD must be set.${RESET}"
+	printf "${RED}Error: NGINX_METRICS_USER and NGINX_METRICS_PASSWORD must be set.${RESET}\n"
 	exit 1
 fi
 
@@ -23,7 +23,7 @@ if [ ! -f "${HTPASSWD_PATH}" ]; then
 fi
 
 if [ ! -f "${CERT_PATH}/private/wildcard.key" ] || [ ! -f "${CERT_PATH}/wildcard.crt" ]; then
-	printf "${CYAN}Generating Wildcard SSL Certificate...${RESET}"
+	printf "${CYAN}Generating Wildcard SSL Certificate...${RESET}\n"
 	openssl req -x509 -nodes -days 365 -newkey rsa:4096 \
 		-keyout ${CERT_PATH}/private/wildcard.key \
 		-out ${CERT_PATH}/wildcard.crt \
@@ -35,10 +35,11 @@ if [ ! -f "${CERT_PATH}/private/wildcard.key" ] || [ ! -f "${CERT_PATH}/wildcard
 
 	chown -R nginx:nginx ${CERT_PATH}
 
-	printf "${GREEN}Wildcard SSL Certificate generated successfully.${RESET}"
+	printf "${GREEN}Wildcard SSL Certificate generated successfully.${RESET}\n"
 else
-	printf "${CYAN}Wildcard SSL Certificate already exists. Skipping generation.${RESET}"
+	printf "${CYAN}Wildcard SSL Certificate already exists. Skipping generation.${RESET}\n"
 fi
 
-printf "${GREEN}Starting Nginx...${RESET}"
-nginx -g "daemon off;"
+printf "${GREEN}Starting Nginx...${RESET}\n"
+
+exec nginx -g "daemon off;"

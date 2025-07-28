@@ -17,13 +17,13 @@ import { ISocketPayload, MessageType } from '../socketio/socketio.types';
 
 export const natsPlugin = fp(
 	async (fastify: FastifyInstance, opts: NatsPluginOpts) => {
-		const { NATS_USER, NATS_PASSWORD } = opts;
+		const { NATS_URL, NATS_USER, NATS_PASSWORD } = opts;
 		const jcodec = JSONCodec();
 		const scodec = StringCodec();
 
 		try {
 			const nats: NatsConnection = await connect({
-				servers: 'nats://localhost:4222',
+				servers: NATS_URL || 'nats://localhost:4222',
 				user: NATS_USER,
 				pass: NATS_PASSWORD,
 				name: 'Gateway',

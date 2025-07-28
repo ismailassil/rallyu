@@ -15,7 +15,6 @@ node_modules/
 # Log files
 *.log
 .dist*
-.env*
 # testing
 coverage
 # next.js
@@ -36,8 +35,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-*.env*
 *.vscode*
 mail.key
-logs/
 secrets/
+
+
+# *.env*
+# logs/
+# .env*

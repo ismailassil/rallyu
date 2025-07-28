@@ -14,7 +14,7 @@ import { verifyUserJWT } from './middleware/verify-user-jwt.js';
 
 dotenv.config();
 
-const SERVER_PORT = parseInt(process.env.PORT || '4004');
+const SERVER_PORT = parseInt(process.env.GATEWAY_PORT || '');
 const FRONT_PORT = process.env.FRONT_PORT ?? '';
 
 // ** CORS Plugin
@@ -53,6 +53,7 @@ await fastify.register(socketioPlugin, socketioOptions);
 
 // ** NATS Plugin
 const natsOptions = {
+	NATS_URL: process.env.NATS_URL ?? undefined,
 	NATS_USER: process.env.NATS_USER ?? '',
 	NATS_PASSWORD: process.env.NATS_PASSWORD ?? '',
 };
@@ -80,9 +81,9 @@ fastify.get('/health', { exposeHeadRoute: false }, function (_, res: FastifyRepl
 });
 
 (() => {
-	fastify.listen({ host: "::", port: SERVER_PORT }, (error) => {
+	fastify.listen({ host: '::', port: SERVER_PORT }, (error) => {
 		if (error) {
-			fastify.log.error(error);
+			fastify.log.error('[SERVER] ' + (error as Error).message);
 			process.exit(1);
 		}
 	});

@@ -19,6 +19,7 @@ export interface dataType {
 }
 
 export interface NatsPluginOpts {
+	NATS_URL: string | undefined;
 	NATS_USER: string;
 	NATS_PASSWORD: string;
 }

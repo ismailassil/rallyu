@@ -11,7 +11,7 @@ export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) =>
 
 	const nats: NatsConnection = await connect({
 		// servers: 'nats://nats:${opts.NATS_PORT}',
-		servers: `nats://localhost:${opts.NATS_PORT}`, // TODO: Change this to Nats container name
+		servers: opts.NATS_URL || 'nats://localhost:4222', // TODO: Change this to Nats container name
 		user: opts.NATS_USER,
 		pass: opts.NATS_PASSWORD,
 		name: 'Notification',
