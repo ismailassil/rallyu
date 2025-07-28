@@ -4,9 +4,11 @@ WORKDIR /app
 
 COPY package*.json ./
 
+RUN apk add curl
+
 RUN npm install
 
-RUN npm install concurrently nodemon
+RUN npm install concurrently nodemon typescript
 
 COPY . .
 

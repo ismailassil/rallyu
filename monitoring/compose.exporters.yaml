@@ -1,14 +1,14 @@
 services:
   nginx-exporter:
-    depends_on:
-      nginx:
-        condition: service_healthy
+    # depends_on:
+    #   nginx:
+    #     condition: service_healthy
     image: nginx/nginx-prometheus-exporter:1.4
     container_name: nginx-exporter
     restart: always
     networks:
       - monitoring
-      - web-app
+      # - web-app
     command:
       - --nginx.scrape-uri=http://${NGINX_USER}:${NGINX_PASSWORD}@nginx:9114/metrics
     environment:
@@ -25,7 +25,7 @@ services:
     container_name: elasticsearch-exporter
     restart: always
     networks:
-      - monitoring
+      # - monitoring
       - elk
     command:
       - --es.uri=${ELASTIC_AUTH_HOST}
@@ -50,7 +50,7 @@ services:
     command: >
       -kibana.username ${ELASTIC_USERNAME}
       -kibana.password ${KIBANA_PASSWORD}
-      -kibana.uri http://kibana:${KIBANA_PORT}
+      -kibana.uri http://kibana:5601
 
   logstash-exporter:
     depends_on:
@@ -65,15 +65,15 @@ services:
       - monitoring
       - elk
 
-  backend-exporter:
-    depends_on:
-      api-gateway:
-        condition: service_healthy
-    build:
-      context: ./backend-exporter
-      dockerfile: Dockerfile
-    image: rallyu/backend-exporter:v1.0
-    container_name: backend-exporter
-    networks:
-      - monitoring
-      - web-app
+  # backend-exporter:
+  #   depends_on:
+  #     api-gateway:
+  #       condition: service_healthy
+  #   build:
+  #     context: ./backend-exporter
+  #     dockerfile: Dockerfile
+  #   image: rallyu/backend-exporter:v1.0
+  #   container_name: backend-exporter
+  #   networks:
+  #     - monitoring
+  #     - web-app

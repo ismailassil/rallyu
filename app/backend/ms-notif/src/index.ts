@@ -17,6 +17,7 @@ fastify.register(NotifRoutes, routesPrefix);
 fastify.register(fastifySchedule);
 // fastify.register(CronJobPlugin); // TODO: Activate this in Production
 fastify.register(natsPlugin, {
+	NATS_URL: process.env.NATS_URL ?? undefined,
 	NATS_PORT: process.env.NATS_PORT ?? '',
 	NATS_USER: process.env.NATS_USER ?? '',
 	NATS_PASSWORD: process.env.NATS_PASSWORD ?? '',
@@ -25,14 +26,14 @@ fastify.register(natsPlugin, {
 (async () => {
 	try {
 		await fastify.ready();
-		fastify.listen({ port: PORT }, (err) => {
+		fastify.listen({ host: "::", port: PORT }, (err) => {
 			if (err) {
 				console.error(err);
 				process.exit(1);
 			}
 		});
 	} catch (error) {
-		fastify.log.error((error as Error).message);
+		fastify.log.error("[SERVER] " + (error as Error).message);
 	}
 })();
 

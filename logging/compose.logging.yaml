@@ -1,161 +1,159 @@
 volumes:
-  elasticsearch-data:
-    driver: local
-  kibana-data:
-    driver: local
-  logstash-data:
-    driver: local
+    elasticsearch-data:
+        driver: local
+    kibana-data:
+        driver: local
+    logstash-data:
+        driver: local
 
 networks:
-  elk:
-    driver: bridge
+    elk:
+        driver: bridge
 
 services:
-  elastic-setup:
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    image: curlimages/curl:8.13.0
-    container_name: elastic-setup
-    user: "0"
-    networks:
-      - elk
-    env_file:
-      - .env
-    # volumes:
-    #     - ${HOME}/.docker/run/docker.sock:/var/run/docker.sock
-    entrypoint: sh
-    command: >
-      -c "
-      echo 'Setting password for ${KIBANA_USERNAME}';
-      until curl -s -X POST -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
-      -H 'Content-Type: application/json' \
-      -d '{\"password\":\"${KIBANA_PASSWORD}\"}' \
-      ${ELASTIC_HOST}/_security/user/${KIBANA_USERNAME}/_password; do
-        echo 'Waiting for Elasticsearch...';
-        sleep 5;
-      done;
-      echo \"\\nPassword set successfully.\";
-      "
+    elastic-setup:
+        depends_on:
+            elasticsearch:
+                condition: service_healthy
+        image: curlimages/curl:8.13.0
+        container_name: elastic-setup
+        user: '0'
+        networks:
+            - elk
+        env_file:
+            - .env
+        entrypoint: sh
+        command: >
+            -c "
+            echo 'Setting password for ${KIBANA_USERNAME}';
+            until curl -s -X POST -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
+            -H 'Content-Type: application/json' \
+            -d '{\"password\":\"${KIBANA_PASSWORD}\"}' \
+            ${ELASTIC_HOST}/_security/user/${KIBANA_USERNAME}/_password; do
+              echo 'Waiting for Elasticsearch...';
+              sleep 5;
+            done;
+            echo \"\\nPassword set successfully.\";
+            "
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
-    container_name: elasticsearch
-    restart: always
-    networks:
-      - elk
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
-    env_file:
-      - .env
-    environment:
-      - node.name=es01
-      - cluster.name=${CLUSTER_NAME}
-      - discovery.type=single-node
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-      - bootstrap.memory_lock=true
-      - xpack.license.self_generated.type=${LICENSE_TYPE}
-      - xpack.security.enabled=true
-      - xpack.security.http.ssl.enabled=false
-      - xpack.security.transport.ssl.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    mem_limit: 2g
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    healthcheck:
-      test: [
-          "CMD-SHELL",
-          "curl -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
-          -X GET 'http://localhost:9200/_cluster/health?pretty' \
-          | grep -q '\"status\" : \"green\"'",
-        ]
-      interval: 10s
-      timeout: 10s
-      retries: 120
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+        container_name: elasticsearch
+        restart: always
+        networks:
+            - elk
+        volumes:
+            - elasticsearch-data:/usr/share/elasticsearch/data
+        env_file:
+            - .env
+        environment:
+            - node.name=es01
+            - cluster.name=${CLUSTER_NAME}
+            - discovery.type=single-node
+            - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+            - bootstrap.memory_lock=true
+            - xpack.license.self_generated.type=${LICENSE_TYPE}
+            - xpack.security.enabled=true
+            - xpack.security.http.ssl.enabled=false
+            - xpack.security.transport.ssl.enabled=false
+            - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+        mem_limit: 1g
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        healthcheck:
+            test: [
+                    'CMD-SHELL',
+                    "curl -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
+                    -X GET 'http://localhost:9200/_cluster/health?pretty' \
+                    | grep -q '\"status\" : \"green\"'",
+                ]
+            interval: 10s
+            timeout: 10s
+            retries: 120
 
-  kibana:
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    build:
-      context: ./kibana
-      dockerfile: Dockerfile
-      args:
-        ELK_VERSION: ${ELK_VERSION}
-    image: rallyu/kibana:v1.2
-    container_name: kibana
-    restart: always
-    networks:
-      - elk
-      - web-app
-    env_file:
-      - .env
-    volumes:
-      - kibana-data:/usr/share/kibana/data
-      - ./kibana/dashboards:/dashboards/:ro
-    environment:
-      - SERVERNAME=kibana
-      - ELASTICSEARCH_HOSTS=${ELASTIC_HOST}
-      - ELASTICSEARCH_USERNAME=${KIBANA_USERNAME}
-      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
-    mem_limit: 1g
-    healthcheck:
-      test: [
-          "CMD-SHELL",
-          "curl -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
-          -I http://localhost:5601/app/home 2>/dev/null \
-          | grep -qE '^HTTP/(1\\.1|2) 200'",
-        ]
-      interval: 10s
-      timeout: 10s
-      retries: 120
+    kibana:
+        depends_on:
+            elasticsearch:
+                condition: service_healthy
+        build:
+            context: ./kibana
+            dockerfile: Dockerfile
+            args:
+                ELK_VERSION: ${ELK_VERSION}
+        image: rallyu/kibana:v1.2
+        container_name: kibana
+        restart: always
+        networks:
+            - elk
+            - web-app
+        env_file:
+            - .env
+        ports:
+            - 5601:5601
+        volumes:
+            - kibana-data:/usr/share/kibana/data
+            - ./kibana/dashboards:/dashboards/:ro
+        environment:
+            - SERVERNAME=kibana
+            - ELASTICSEARCH_HOSTS="http://elasticsearch:9200"
+            - ELASTICSEARCH_USERNAME=${KIBANA_USERNAME}
+            - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+        mem_limit: 1g
+        healthcheck:
+            test: [
+                    'CMD-SHELL',
+                    "curl -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
+                    -I http://localhost:5601/app/home 2>/dev/null \
+                    | grep -qE '^HTTP/(1\\.1|2) 200'",
+                ]
+            interval: 10s
+            timeout: 10s
+            retries: 120
 
-  logstash:
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    image: docker.elastic.co/logstash/logstash:${ELK_VERSION}
-    container_name: logstash
-    restart: always
-    networks:
-      - elk
-    volumes:
-      - logstash-data:/usr/share/logstash/data
-      - ./logstash/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
-      - ../nginx/logs/access.log:/usr/share/logstash/data/access.log:ro
-    env_file:
-      - .env
-    environment:
-      - NODE_NAME=logstash
-      - ELASTIC_USERNAME=${ELASTIC_USERNAME}
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-      - ELASTIC_HOSTS=${ELASTIC_HOST}
-    command: logstash -f /usr/share/logstash/pipeline/logstash.conf
-    mem_limit: 1g
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          'curl -Ss localhost:9600 | grep -o ''"status":"[a-z]*"'' | awk -F'':'' ''{print $2}'' | grep -q green || exit 1',
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 20
+    logstash:
+        depends_on:
+            elasticsearch:
+                condition: service_healthy
+        image: docker.elastic.co/logstash/logstash:${ELK_VERSION}
+        container_name: logstash
+        restart: always
+        networks:
+            - elk
+        volumes:
+            - logstash-data:/usr/share/logstash/data
+            - ./logstash/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+            - ../nginx/logs/access.log:/usr/share/logstash/data/access.log:ro
+        env_file:
+            - .env
+        environment:
+            - NODE_NAME=logstash
+            - ELASTIC_USERNAME=${ELASTIC_USERNAME}
+            - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+            - ELASTIC_HOSTS=${ELASTIC_HOST}
+        command: logstash -f /usr/share/logstash/pipeline/logstash.conf
+        mem_limit: 1g
+        healthcheck:
+            test:
+                [
+                    'CMD-SHELL',
+                    'curl -Ss localhost:9600 | grep -o ''"status":"[a-z]*"'' | awk -F'':'' ''{print $2}'' | grep -q green || exit 1',
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 20
 
-  elastic-policy:
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    build:
-      context: elasticsearch-policy
-      dockerfile: Dockerfile
-    image: rallyu/elastic-policy:v1.1
-    container_name: elastic-policy
-    # volumes:
-    #     - ${HOME}/.docker/run/docker.sock:/var/run/docker.sock
-    networks:
-      - elk
-    env_file:
-      - .env
+    elastic-policy:
+        depends_on:
+            elasticsearch:
+                condition: service_healthy
+        build:
+            context: elasticsearch-policy
+            dockerfile: Dockerfile
+        image: rallyu/elastic-policy:v1.1
+        container_name: elastic-policy
+        networks:
+            - elk
+        env_file:
+            - .env
