@@ -1,0 +1,96 @@
+groups:
+    - name: alerts
+      rules:
+          - alert: Instance_Down
+            expr: up == 0
+            for: 5m
+            labels:
+                severity: critical
+            annotations:
+                summary: "Instance {{$labels.instance}} down"
+                description: "{{$labels.instance}} Job {{$labels.job}} has been down for more than 5 minutes"
+
+          ## Prometheus
+          - alert: Prometheus_Job_Missing
+            expr: absent(up{job="prometheus"})
+            for: 0m
+            labels:
+                severity: warning
+            annotations:
+                summary: "Prometheus Job Missing"
+                description: "A Prometheus Job disappeard. VALUE = {{$value}}"
+
+          ## NGINX Alerts
+          - alert: Sudden_Traffic_Spike
+            expr: increase(nginx_http_requests_total[1m]) > 20
+            for: 1m
+            labels:
+                severity: warning
+            annotations:
+                summary: "NGINX - Traffic Spike Detected"
+                description: "More than 20 requests in the last minute (~ Spike)"
+          - alert: Too_Many_Active_Connections
+            expr: nginx_connections_active > 30
+            for: 2m
+            labels:
+                severity: warning
+            annotations:
+                summary: "NGINX - Too many active connections"
+                description: "More than 30 active connections detected in the last 2 minutes"
+          - alert: High_Nginx_5xx_Error_Rate
+            expr: rate(nginx_http_requests_total{status=~"5.."}[5m]) > 10
+            for: 1m
+            labels:
+                severity: warning
+            annotations:
+                summary: "NGINX - High rate of 5xx Errors"
+                description: "More than 10 server errors in the last 5 minutes"
+
+          ## Elasticsearch Alerts
+          - alert: Elasticsearch_Heap_Usage_Too_High
+            expr: (elasticsearch_jvm_memory_used_bytes{area="heap"} / elasticsearch_jvm_memory_max_bytes{area="heap"}) * 100 > 90
+            for: 2m
+            labels:
+                severity: critical
+            annotations:
+                summary: "Elasticsearch Heap Usage Too High"
+                description: "The heap uage is over 90%. VALUE={{$value}}"
+          - alert: Elasticsearch_Low_DiskSpace
+            expr: elasticsearch_filesystem_data_available_bytes / elasticsearch_filesystem_data_size_bytes * 100 < 20
+            for: 2m
+            labels:
+                severity: warning
+            annotations:
+                summary: "Elasticsearch Low Disk Space"
+                description: "The disk usage is over 80%. VALUE = {{$value}}"
+
+          ## Kibana Alerts
+          - alert: Kibana_Heap_Usage_Too_High
+            expr: (kibana_heap_used_in_bytes / kibana_heap_max_in_bytes) * 100 > 80
+            for: 5m
+            labels:
+                severity: warning
+            annotations:
+                summary: "Kibana Heap Usage Too High"
+                description: "The heap uage is over 80%. VALUE={{$value}}"
+
+          ## Logstash Alerts
+          - alert: Logstash_JSON_Parse_Errors
+            expr: increase(logstash_exporter_json_parse_failures[5m]) > 0
+            for: 5m
+            labels:
+                severity: warning
+            annotations:
+                summary: "Logstash JSON Parse Errors"
+                description: "Parsing issues dectected"
+
+          - alert: Logstash_No_Events
+            expr: rate(logstash_event_in_total[10m]) < 1
+            for: 10m
+            labels:
+                severity: warning
+            annotations:
+                summary: "Logstash not receiving events"
+                description: "No input events for more than 10m - Possible pipeline issue"
+
+          ## Backend Alerts

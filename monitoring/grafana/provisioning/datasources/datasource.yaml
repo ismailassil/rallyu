@@ -1,0 +1,9 @@
+apiVersion: 1
+
+datasources:
+    - name: Prometheus
+      url: ${PROMETHEUS_HOST_URL}
+      type: prometheus
+      access: proxy
+      isDefault: true
+      uid: prometheusdatasource
