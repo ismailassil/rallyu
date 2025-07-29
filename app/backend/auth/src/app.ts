@@ -36,8 +36,8 @@ async function buildApp(): Promise<FastifyInstance> {
 	});
 
 	// REGISTER AUTH PLUGIN
-	await fastify.register(authRouter, { prefix: '/api/auth' });
-	await fastify.register(userRouter, { prefix: '/api/users' });
+	await fastify.register(authRouter, { prefix: '/auth' });
+	await fastify.register(userRouter, { prefix: '/users' });
 
 	return fastify;
 }

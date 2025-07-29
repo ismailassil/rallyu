@@ -1,9 +1,10 @@
-import INotifMessage from '../shared/types/notifMessage.types.js';
+import fastify from '../app.js';
 import NotifRepository from '../repositories/notif.repository.js';
-import INotifyBody from '../shared/types/notifyBody.types.js';
-import IUpdateBody from '../shared/types/update.types.js';
-import { INotifDetail } from '../shared/types/fetch.types.js';
-import { UserNotFoundException } from '../shared/exceptions/UserNotFoundException.js';
+import NotificationPayload, {
+	ClientNotification,
+	NotificationDetail,
+} from '../shared/types/notifications.types.js';
+import { NotificationUpdate } from '../shared/types/request.types.js';
 
 class NotifSerives {
 	private notifRepository: NotifRepository;
@@ -12,97 +13,124 @@ class NotifSerives {
 		this.notifRepository = new NotifRepository();
 	}
 
-	async registerNotification(body: INotifyBody): Promise<INotifDetail> {
-		const { from_user, to_user } = body;
+	async createAndDispatchNotification(
+		payload: NotificationPayload,
+	): Promise<void> {
+		const { recipientId } = payload;
 
-		// Register the Notification Senders
-		let from_id = await this.notifRepository.checkUser(from_user);
-		if (from_id === null) {
-			// TODO: Request the user's image
-			from_id = await this.notifRepository.registerUser(from_user);
-		}
+		const resData = await this.registerNotification(payload);
+		fastify.log.info('✅ Notification created');
 
-		let to_id = await this.notifRepository.checkUser(to_user);
-		if (to_id === null) {
-			// TODO: Request the user's image
-			to_id = await this.notifRepository.registerUser(to_user);
-		}
-
-		// Register the Notification Message
-		const fullData: INotifMessage = await this.notifRepository.registerMessage(
-			from_id,
-			to_id,
-			body,
+		fastify.nats.publish(
+			'notification.notify',
+			fastify.jc.encode({
+				userId: recipientId,
+				data: resData,
+			}),
 		);
 
-		const data: INotifDetail = {
-			id: fullData.id,
-			from_user: fullData.from_user,
-			to_user: fullData.to_user,
-			message: fullData.message,
-			type: fullData.type,
-			created_at: fullData.created_at,
-			updated_at: fullData.updated_at,
-			status: fullData.status,
-			action_url: fullData.action_url,
-		};
-
-		// // Store it in Redis
-		// await fastify.redis.set(`notif?id=${data.id}`, JSON.stringify(data));
-
-		return data;
+		await fastify.nats.flush();
 	}
 
-	async getUserMessages(username: string, page: number): Promise<INotifMessage[]> {
-		let user_id = await this.notifRepository.checkUser(username);
-		if (user_id === null) throw new UserNotFoundException();
-
-		const data: INotifMessage[] = await this.notifRepository.getMessages(
-			user_id,
+	async getUserMessages(
+		userId: string,
+		page: number,
+	): Promise<NotificationDetail[]> {
+		const data: NotificationDetail[] = await this.notifRepository.getMessages(
+			parseInt(userId),
 			page,
 		);
 
 		return data;
 	}
 
-	async updateNotification({
-		username,
-		notificationId,
-		status,
-		all,
-	}: IUpdateBody) {
-		let user_id = await this.notifRepository.checkUser(username);
-		if (user_id === null) throw new UserNotFoundException();
+	async updateAndDispatchNotification(
+		userId: number,
+		payload: NotificationUpdate,
+	): Promise<void> {
+		const { notificationId, scope, status } = payload;
 
-		await (all
-			? this.notifRepository.updateAllNotif(status, user_id)
-			: this.notifRepository.updateNotif(status, user_id, notificationId));
-	}
+		await this.updateNotification(userId, payload);
+		fastify.log.info('✅ Notification updated');
 
-	unpackMessage(fullData: INotifMessage[]): INotifDetail[] {
-		return fullData.map(
-			({
-				id,
-				from_user,
-				to_user,
-				message,
-				type,
-				created_at,
-				updated_at,
+		fastify.nats.publish(
+			'notification.update',
+			fastify.jc.encode({
+				userId,
+				notificationId,
+				scope,
 				status,
-				action_url,
-			}) => ({
-				id,
-				from_user,
-				to_user,
-				message,
-				type,
-				created_at,
-				updated_at,
-				status,
-				action_url,
 			}),
 		);
+
+		await fastify.nats.flush();
+	}
+
+	async updateNotification(userId: number, payload: NotificationUpdate) {
+		const { notificationId, scope, status } = payload;
+
+		if (scope === 'all') {
+			await this.notifRepository.updateAllNotif(status, userId);
+		} else {
+			await this.notifRepository.updateNotif(status, userId, notificationId);
+		}
+	}
+
+	async unpackMessages(
+		fullData: NotificationDetail[],
+	): Promise<ClientNotification[]> {
+		return Promise.all(fullData.map(this.filterMessage));
+	}
+
+	private async filterMessage(
+		data: NotificationDetail,
+	): Promise<ClientNotification> {
+		const res = await fastify.nats.request(
+			'user.image',
+			fastify.jc.encode({ userId: data.senderId }),
+		);
+
+		const avatar = fastify.jc.decode(res.data);
+
+		return {
+			id: data.id,
+			senderUsername: data.senderUsername,
+			recipientUsername: data.recipientUsername,
+			content: data.content,
+			type: data.type,
+			createdAt: data.createdAt,
+			updatedAt: data.updatedAt,
+			status: data.status,
+			actionUrl: data.actionUrl,
+			avatar: avatar,
+		};
+	}
+
+	private async registerNotification(
+		payload: NotificationPayload,
+	): Promise<NotificationDetail> {
+		const { senderId, recipientId } = payload;
+
+		const resOne = await fastify.nats.request(
+			'user.username',
+			fastify.jc.encode({ userId: senderId }),
+		);
+		const resTwo = await fastify.nats.request(
+			'user.username',
+			fastify.jc.encode({ userId: recipientId }),
+		);
+
+		const senderUsername = fastify.jc.decode(resOne.data);
+		const recipientUsername = fastify.jc.decode(resTwo.data);
+
+		// Register the Notification Message
+		const data: NotificationDetail = await this.notifRepository.registerMessage(
+			payload,
+			senderUsername,
+			recipientUsername,
+		);
+
+		return data;
 	}
 }
 

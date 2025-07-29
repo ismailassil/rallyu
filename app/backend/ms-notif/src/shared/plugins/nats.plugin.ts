@@ -1,10 +1,9 @@
-import fastify, { FastifyInstance } from 'fastify';
+import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import { connect, JSONCodec, NatsConnection } from 'nats';
 import NotifSerives from '../../services/notif.services.js';
-import { INotifDetail } from '../types/fetch.types.js';
-import INotifyBody from '../types/notifyBody.types.js';
 import { NatsOpts } from '../types/nats.types.js';
+import NotificationPayload from '../types/notifications.types.js';
 
 export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) => {
 	const notifServices = new NotifSerives();
@@ -21,6 +20,8 @@ export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) =>
 
 	const jc = JSONCodec();
 
+	fastify.decorate('jc', jc);
+
 	nats.subscribe('notify', {
 		async callback(err, msg) {
 			if (err) {
@@ -28,31 +29,10 @@ export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) =>
 				return;
 			}
 
-			const payload: INotifyBody = jc.decode(msg.data) as INotifyBody;
+			const payload = jc.decode(msg.data) as NotificationPayload;
 
-			// Register the notification in the Database
 			try {
-				const resData: INotifDetail =
-					await notifServices.registerNotification(payload);
-				fastify.log.info('✅ Notification created');
-
-				// Send back to SocketIO Gateway through NATS Server
-				fastify.nats.publish(
-					'notification',
-					jc.encode({
-						username: payload.to_user,
-						type: 'notify',
-						data: resData,
-					}),
-				);
-				try {
-					await fastify.nats.flush();
-					fastify.log.info('✅ Notification => `Gateway`');
-				} catch {
-					fastify.log.error('❌ Notification => `Gateway`');
-				}
-
-				fastify.log.info('Notification created');
+				await notifServices.createAndDispatchNotification(payload);
 			} catch (err) {
 				fastify.log.error(err);
 			}

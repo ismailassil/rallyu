@@ -1,4 +1,3 @@
-import notifySchema from '../shared/schemas/notify.schema.js';
 import NotifControllers from '../controllers/notif.controllers.js';
 import { FastifyInstance, FastifyReply } from 'fastify';
 import historySchema from '../shared/schemas/history.schema.js';
@@ -13,16 +12,16 @@ const NotifRoutes = async (fastify: FastifyInstance) => {
 			.send({ status: 'up', timestamp: new Date().toISOString() });
 	});
 
-	fastify.post(
-		'/notify',
-		{ schema: notifySchema },
-		notifControllers.notify.bind(notifControllers),
-	);
+	// fastify.post(
+	// 	'/notify',
+	// 	{ schema: notifySchema },
+	// 	notifControllers.notify.bind(notifControllers),
+	// );
 
 	fastify.get(
 		'/history',
 		{ schema: historySchema, exposeHeadRoute: false },
-		notifControllers.fetchHistory.bind(notifControllers),
+		notifControllers.getNotificationHistory.bind(notifControllers),
 	);
 
 	fastify.put(

@@ -31,7 +31,7 @@ export default function Home() {
 		try {
 			setLoading(true);
 			const response = await axios.post(
-				"http://localhost:4004/api/auth/login",
+				"http://localhost:4025/api/auth/login",
 				JSON.stringify(formData),
 				{ headers: { "Content-Type": "application/json" } }
 			);

@@ -10,7 +10,7 @@ export default function Background() {
 				alt='Background'
 				fill
 				className='object-cover object-center'
-			></Image>
+			/>
 		</div>
 	);
 }

@@ -1,34 +1,32 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import InviteFriend from "./components/InviteFriend";
-import GamePanel from "./components/GamePanel";
-import { useEffect } from "react";
-import Loading from "./components/Loading";
-import { useRouter } from "next/navigation";
-import { useTicTacToe } from "../contexts/tictactoeContext";
-import { useGameContext } from "./contexts/gameContext";
+// import InviteFriend from "./components/InviteFriend";
+// import GamePanel from "./components/GamePanel";
+// import { useEffect } from "react";
+// import Loading from "./components/Loading";
+// import { useRouter } from "next/navigation";
+// import { useGameContext } from "./contexts/gameContext";
 
 export default function Game() {
-	const { connectivity } = useTicTacToe();
-	const { launch, setLaunch, gameType } = useGameContext();
+	// const { launch, setLaunch, gameType } = useGameContext();
 
-	const router = useRouter();
+	// const router = useRouter();
 
-	useEffect(() => {
-		let timeoutId: NodeJS.Timeout;
+	// useEffect(() => {
+	// 	let timeoutId: NodeJS.Timeout;
 
-		if (launch === true && gameType === "tictactoe" && connectivity === "offline") {
-			timeoutId = setTimeout(() => {
-				router.push("/tictactoe/0");
-				setLaunch(false);
-			}, 3000);
-		}
+	// 	if (launch === true && gameType === "tictactoe" && connectivity === "offline") {
+	// 		timeoutId = setTimeout(() => {
+	// 			router.push("/tictactoe/0");
+	// 			setLaunch(false);
+	// 		}, 3000);
+	// 	}
 
-		return () => {
-			clearTimeout(timeoutId);
-		};
-	}, [launch, router, gameType, connectivity, setLaunch]);
+	// 	return () => {
+	// 		clearTimeout(timeoutId);
+	// 	};
+	// }, [launch, router, gameType, setLaunch]);
 
 	return (
 		<AnimatePresence>
@@ -40,9 +38,10 @@ export default function Game() {
 			>
 				<article
 					className="bg-card border-br-card flex h-full w-full justify-center
-							rounded-2xl border-2"
-				>
-					{!launch ? (
+					rounded-2xl border-2"
+					>
+					HELLO
+					{/* {!launch ? (
 						<motion.div
 							initial={{ opacity: 0, y: -50 }}
 							animate={{ opacity: 1, y: 0 }}
@@ -55,7 +54,7 @@ export default function Game() {
 						</motion.div>
 					) : (
 						<Loading setStart={setLaunch} />
-					)}
+					)} */}
 				</article>
 			</motion.main>
 		</AnimatePresence>

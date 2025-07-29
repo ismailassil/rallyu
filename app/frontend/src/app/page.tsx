@@ -8,6 +8,7 @@ import LandingPageHeader from './components/LandingPageHeader';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import LandingPageFooter from './components/LandingPageFooter';
+import unicaOne from './fonts/unicaOne';
 
 const Page = function () {
 	const router = useRouter();
@@ -39,9 +40,8 @@ const Page = function () {
 					<div className="flex flex-col gap-10 items-center">
 						<div className="flex mt-40 gap-15 w-full">
 							<div>
-								<h1 className="text-4xl mb-10 font-black">
-									Step into the arena with
-									<br /> RALLYU!
+								<h1 className={`text-6xl mb-10 uppercase ${unicaOne.className}`}>
+									<span className='font-bold'>Step into the arena with RALLYU!</span>
 								</h1>
 								<div className=" w-full flex flex-col gap-5">
 									<p>

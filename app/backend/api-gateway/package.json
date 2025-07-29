@@ -6,7 +6,7 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.json && tsc-alias",
 		"dev": "npm run build && concurrently \"tsc -w\" \"nodemon ./dist/index.js\"",
-		"start": "npm run build && concurrently \"tsc -w\" \"node ./dist/index.js\""
+		"start": "npm run build && node ./dist/index.js"
 	},
 	"keywords": [],
 	"author": "",

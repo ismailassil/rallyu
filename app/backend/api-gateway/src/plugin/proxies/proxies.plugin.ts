@@ -11,7 +11,15 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 		upstream: `http://localhost:${AUTH_PORT}`,
 		prefix: '/api/auth',
 		rewritePrefix: '/auth',
-		httpMethods: ['GET', 'POST', 'DELETE', 'PUT'],
+		httpMethods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+	};
+
+	const usersProxyOptions = {
+		// upstream: `http://auth:${AUTH_PORT}`,
+		upstream: `http://localhost:${AUTH_PORT}`,
+		prefix: '/api/users',
+		rewritePrefix: '/users',
+		httpMethods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
 	};
 
 	const notifProxyOptions = {
@@ -31,6 +39,7 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 	};
 
 	await fastify.register(proxy, authProxyOptions);
+	await fastify.register(proxy, usersProxyOptions);
 	await fastify.register(proxy, notifProxyOptions);
 	await fastify.register(proxy, chatProxyOptions);
 });
