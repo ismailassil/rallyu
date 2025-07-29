@@ -3,24 +3,19 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAuth } from "../../contexts/AuthContext";
+import { useHeaderContext } from "./context/HeaderContext";
 
-interface ProfileProps {
-	setIsNotif: (value: boolean) => void;
-	setIsProfile: (value: boolean) => void;
-	setIsSearch: (value: boolean) => void;
-	isProfile: boolean;
-	profileRef: React.Ref<HTMLDivElement>;
-}
+export default function Profile() {
+	const { logout, user } = useAuth();
 
-export default function Profile({
-	setIsNotif,
-	setIsProfile,
-	setIsSearch,
-	isProfile,
-	profileRef,
-}: ProfileProps) {
-	const { logout } = useAuth();
+	const { setIsNotif, setIsProfile, setIsSearch, isProfile, profileRef } = useHeaderContext();
+
 	const router = useRouter();
+
+	async function handleLogout() {
+		await logout(); 
+		router.replace("/login");
+	}
 
 	return (
 		<div className="relative" ref={profileRef}>
@@ -77,7 +72,7 @@ export default function Profile({
 							onClick={(e) => {
 								e.preventDefault();
 								setIsProfile(!isProfile);
-								router.push("/me");
+								router.push(`/users/${user?.username}`);
 							}}
 							className="hover:bg-hbbg mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer"
 						>
@@ -96,7 +91,7 @@ export default function Profile({
 							<span className="ml-5">Settings</span>
 						</div>
 						<div className="hover:bg-hbbg mb-2 flex w-full items-center px-7 py-3 hover:cursor-pointer"
-							onClick={logout}
+							onClick={handleLogout}
 						>
 							<Image src="/icons/logout-btn.svg" alt="Logout Icon" width={30} height={30} />
 							<p className="ml-5">Logout</p>

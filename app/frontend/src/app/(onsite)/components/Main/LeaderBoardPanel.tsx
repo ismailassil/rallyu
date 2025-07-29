@@ -7,7 +7,7 @@ export default function LeaderboardPanel() {
 
 	return (
 		<aside
-			className={`bg-card border-br-card h-full w-full flex-2 rounded-lg border-2 ${
+			className={`bg-card border-br-card h-full w-full flex-4 custom-scrollbar rounded-lg border-2 ${
 				isWidth ? 'min-h-[588px]' : 'max-h-[948px] min-h-[588px]'
 			}`}
 		>
@@ -19,7 +19,7 @@ export default function LeaderboardPanel() {
 						Leaderboard
 					</h1>
 					<div
-						className="w-17 h-17 bg-accent
+						className="w-15 h-15 bg-accent
 					absolute -left-4 top-[calc(50%)] -translate-x-1/2 -translate-y-1/2 rounded-lg
 					transition-all duration-200 group-hover:scale-105"
 					/>
@@ -70,7 +70,7 @@ const extendedLeaderboard = [
 	...Array.from({ length: 6 }).map((_, i) => ({
 		username: `Player ${i + 6}`,
 		rank: i + 5,
-		score: 8500 - i * 100,
+		score: 8500 - (i * 100),
 		img: `/profile/image_${(i % 2) + 1}.jpg`,
 	})),
 ];

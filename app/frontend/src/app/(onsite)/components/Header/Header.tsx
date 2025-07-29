@@ -41,7 +41,7 @@ export default function Header() {
 						: "scale-100 cursor-pointer pl-6 transition-transform duration-200"
 				}
 				onClick={() => setLogo(!Logo)}
-			></Image>
+			/>
 			<HeaderItems />
 		</motion.header>
 	);

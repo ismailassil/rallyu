@@ -1,6 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+// /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import { APIClient } from '@/app/(auth)/utils/APIClient';
+import SocketClient from '@/app/(auth)/utils/SocketClient';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 type User = {
@@ -17,10 +18,12 @@ type AuthContextType = {
 	login: (username: string, password: string) => Promise<void>;
 	logout: () => Promise<void>;
 	api: APIClient;
+	socket: SocketClient;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
-const api = new APIClient('http://localhost:4000/api');
+const api = new APIClient('http://localhost:4025/api');
+const socket = new SocketClient();
 
 export function useAuth() : AuthContextType {
 	const ctx = useContext(AuthContext);
@@ -46,10 +49,11 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	async function initializeAuth() {
 		try {
-			await api.refreshToken();
+			const data = await api.refreshToken();
 			const currentUser = await api.fetchCurrentUser();
-			setUser(currentUser);
+			setUser(currentUser.user);
 			setIsAuthenticated(true);
+			socket.connect(data.data.accessToken);
 		} catch {
 			console.log('No valid refresh token found!');
 			setUser(null);
@@ -58,7 +62,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			setIsLoading(false);
 		}
 	}
-
+	
 	async function login(
 		username: string, 
 		password: string
@@ -69,6 +73,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			const data = await api.fetchCurrentUser();
 			setUser(data.user);
 			setIsAuthenticated(true);
+			socket.connect(data.data.accessToken);
 		} catch (err) {
 			console.log('Login Error Catched in AuthContext: ', err);
 			throw err;
@@ -82,6 +87,9 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	async function logout() {
 		try {
 			await api.logout();
+			setUser(null);
+			setIsAuthenticated(false);
+			socket.disconnect();
 		} catch (err) {
 			console.log('Logout Error Catched in AuthContext: ', err);
 			throw err;
@@ -114,7 +122,8 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		register,
 		login,
 		logout,
-		api
+		api,
+		socket
 		// refreshToken,
 		// getCurrentUser,
 		// authFetch

@@ -1,13 +1,12 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import fastify from '../app.js';
 import NotifServices from '../services/notif.services.js';
-import INotifyBody from '../shared/types/notifyBody.types.js';
-import { IFetchQuery, INotifDetail } from '../shared/types/fetch.types.js';
-import IUpdateBody from '../shared/types/update.types.js';
-import INotifMessage from '../shared/types/notifMessage.types.js';
-import { UserNotFoundException } from '../shared/exceptions/UserNotFoundException.js';
+import {
+	ClientNotification,
+	NotificationDetail,
+} from '../shared/types/notifications.types.js';
 import { NotificationNotFoundException } from '../shared/exceptions/NotificationNotFoundException.js';
-import { JSONCodec } from 'nats';
+import { IFetchQuery, NotificationUpdate } from '../shared/types/request.types.js';
 
 class NotifControllers {
 	private notifServices: NotifServices;
@@ -16,6 +15,78 @@ class NotifControllers {
 		this.notifServices = new NotifServices();
 	}
 
+	async getNotificationHistory(
+		req: FastifyRequest<{ Querystring: IFetchQuery }>,
+		res: FastifyReply,
+	) {
+		const userId = req.headers['x-user-id'] as string;
+		const { page } = req.query;
+
+		if (!userId)
+			return res.status(400).send({
+				status: 'error',
+				message: 'Error Occurred',
+				details: 'x-user-username Empty',
+			});
+
+		try {
+			const fullData: NotificationDetail[] =
+				await this.notifServices.getUserMessages(userId, page);
+
+			const data: ClientNotification[] =
+				await this.notifServices.unpackMessages(fullData);
+
+			return res.status(200).send({ status: 'success', message: data });
+		} catch (err) {
+			return res.status(500).send({
+				status: 'error',
+				message: 'Error occurred',
+				details: err,
+			});
+		}
+	}
+
+	async updateNotification(
+		req: FastifyRequest<{
+			Body: NotificationUpdate;
+		}>,
+		res: FastifyReply,
+	) {
+		const userId = req.headers['x-user-id'] as string;
+
+		if (!userId)
+			return res.status(400).send({
+				status: 'error',
+				message: 'Error Occurred',
+				details: 'x-user-id Empty',
+			});
+
+		try {
+			await this.notifServices.updateAndDispatchNotification(
+				parseInt(userId),
+				req.body,
+			);
+
+			return res
+				.status(201)
+				.send({ status: 'success', message: 'Updated Successfully' });
+		} catch (err) {
+			if (err instanceof NotificationNotFoundException) {
+				return res
+					.status(404)
+					.send({ status: 'error', message: err.message });
+			}
+			return res
+				.status(500)
+				.send({ status: 'error', message: 'Error occurred', details: err });
+		}
+	}
+}
+
+export default NotifControllers;
+
+/***
+ * 
 	async notify(
 		req: FastifyRequest<{ Body: INotifyBody }>,
 		res: FastifyReply,
@@ -52,97 +123,4 @@ class NotifControllers {
 				.send({ status: 'error', message: 'Error occurred', details: err });
 		}
 	}
-
-	async fetchHistory(
-		req: FastifyRequest<{ Querystring: IFetchQuery }>,
-		res: FastifyReply,
-	) {
-		const username = req.headers['x-user-username'] as string;
-		const { page } = req.query;
-
-		if (!username)
-			return res.status(400).send({
-				status: 'error',
-				message: 'Error Occurred',
-				details: 'x-user-username Empty',
-			});
-
-		try {
-			const fullData: INotifMessage[] =
-				await this.notifServices.getUserMessages(username, page);
-
-			const data: INotifDetail[] = this.notifServices.unpackMessage(fullData);
-
-			return res.status(200).send({ status: 'success', message: data });
-		} catch (err) {
-			if (err instanceof UserNotFoundException) {
-				return res
-					.status(404)
-					.send({ status: 'error', message: err.message });
-			}
-			return res.status(500).send({
-				status: 'error',
-				message: 'Error occurred',
-				details: err,
-			});
-		}
-	}
-
-	async updateNotification(
-		req: FastifyRequest<{
-			Body: IUpdateBody;
-		}>,
-		res: FastifyReply,
-	) {
-		const { notificationId, status, all } = req.body;
-		const username = req.headers['x-user-username'] as string;
-
-		if (!username)
-			return res.status(400).send({
-				status: 'error',
-				message: 'Error Occurred',
-				details: 'x-user-username Empty',
-			});
-
-		try {
-			// Update the Notification in DB
-			await this.notifServices.updateNotification(req.body);
-			fastify.log.info('✅ Notification updated');
-
-			// Send back to API & SocketIO Gateway through NATS Server
-			const jc = JSONCodec();
-			fastify.nats.publish(
-				'notification',
-				jc.encode({
-					username: username,
-					type: 'update',
-					data: {
-						notifStatus: status,
-						notifType: all || notificationId,
-					},
-				}),
-			);
-			try {
-				fastify.nats.flush();
-				fastify.log.info('✅ Notification => `Gateway`');
-			} catch {
-				fastify.log.error('❌ Notification => `Gateway`');
-			}
-
-			return res
-				.status(201)
-				.send({ status: 'success', message: 'Updated Successfully' });
-		} catch (err) {
-			if (err instanceof NotificationNotFoundException) {
-				return res
-					.status(404)
-					.send({ status: 'error', message: err.message });
-			}
-			return res
-				.status(500)
-				.send({ status: 'error', message: 'Error occurred', details: err });
-		}
-	}
-}
-
-export default NotifControllers;
+ */

@@ -3,11 +3,11 @@
 import "@/app/globals.css";
 import Header from "./components/Header/Header";
 import SideBar from "./components/Sidebar";
-import { TicTacToeProvider } from "./contexts/tictactoeContext";
-import { PingPongProvider } from "./contexts/pingpongContext";
-import { GameProvider } from "./game/contexts/gameContext";
 import Background from "./components/Background";
 import ProtectedRoute from "../(auth)/components/ProtectedRoute";
+import { HeaderProvider } from "./components/Header/context/HeaderContext";
+import ToasterCenter from "./components/Header/Notification/Toaster/ToasterCenter";
+import { NotificationProvider } from "./components/Header/Notification/context/NotifContext";
 
 export default function RootLayout({
 	children,
@@ -17,22 +17,19 @@ export default function RootLayout({
 	return (
 		<div>
 			<Background />
-			<h1 className="fixed top-0 left-60">MainLayout</h1>
-			<Header />
-			<div>
-				<ProtectedRoute>
-
+			<ProtectedRoute>
+				<h1 className="fixed top-0 left-60">MainLayout</h1>
+				<HeaderProvider>
+					<NotificationProvider>
+						<Header />
+						<ToasterCenter/>
+					</NotificationProvider>
+				</HeaderProvider>
+				<div>
 					<SideBar />
-					<GameProvider>
-						<TicTacToeProvider>
-							<PingPongProvider>
-								{children}
-							</PingPongProvider>
-						</TicTacToeProvider>
-					</GameProvider>
-
-				</ProtectedRoute>
-			</div>
+					{children}
+				</div>
+			</ProtectedRoute>
 		</div>
 	);
 }

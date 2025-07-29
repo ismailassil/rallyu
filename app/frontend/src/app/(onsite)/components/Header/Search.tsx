@@ -2,18 +2,14 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useHeaderContext } from "./context/HeaderContext";
 
-interface SearchProps {
-	setIsNotif: (value: boolean) => void;
-	setIsProfile: (value: boolean) => void;
-	setIsSearch: (value: boolean) => void;
-	isSearch: boolean;
-}
-
-export default function Search({ setIsNotif, setIsProfile, setIsSearch, isSearch }: SearchProps) {
+export default function Search() {
 	const [search, setSearch] = useState<string>("");
 	const div1Ref = useRef<HTMLDivElement>(null);
 	const div2Ref = useRef<HTMLDivElement>(null);
+
+	const { setIsNotif, setIsProfile, isSearch, setIsSearch } = useHeaderContext();
 
 	const inputRef = useRef<HTMLInputElement>(null);
 

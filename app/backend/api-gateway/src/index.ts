@@ -24,11 +24,12 @@ await fastify.register(cors, {
 	origin: [`http://localhost:${FRONT_PORT}`],
 	allowedHeaders: ['Content-Type', 'Authorization'],
 	methods: ['GET', 'PUT', 'POST', 'DELETE'],
+	credentials: true,
 });
 
 // ** RATE LIMIT Plugin
 await fastify.register(fastifyRateLimit, {
-	max: 200,
+	max: 400,
 	timeWindow: '1 minute',
 	allowList: (req) => {
 		return req.hostname === 'backend-exporter';
@@ -89,10 +90,10 @@ fastify.get('/health', { exposeHeadRoute: false }, function (_, res: FastifyRepl
 	});
 })();
 
-process.on('SIGINT', async () => {
-	fastify.log.info('[ ~ ] CLOSING FASTIFY');
-	await fastify.close();
-	fastify.log.info('[ + ] FASTIFY Closed Successfully');
+// process.on('SIGINT', async () => {
+// 	fastify.log.info('[ ~ ] CLOSING FASTIFY');
+// 	await fastify.close();
+// 	fastify.log.info('[ + ] FASTIFY Closed Successfully');
 
-	process.exit(1);
-});
+// 	process.exit(1);
+// });
