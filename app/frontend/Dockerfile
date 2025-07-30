@@ -8,8 +8,8 @@ RUN apk add curl
 
 RUN npm install
 
-RUN npm install concurrently nodemon typescript
+RUN npm install
 
 COPY . .
 
-ENTRYPOINT [ "npm", "run", "start" ]
+ENTRYPOINT [ "npm", "run", 'dev' ]

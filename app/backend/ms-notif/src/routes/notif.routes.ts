@@ -12,12 +12,6 @@ const NotifRoutes = async (fastify: FastifyInstance) => {
 			.send({ status: 'up', timestamp: new Date().toISOString() });
 	});
 
-	// fastify.post(
-	// 	'/notify',
-	// 	{ schema: notifySchema },
-	// 	notifControllers.notify.bind(notifControllers),
-	// );
-
 	fastify.get(
 		'/history',
 		{ schema: historySchema, exposeHeadRoute: false },
@@ -32,3 +26,12 @@ const NotifRoutes = async (fastify: FastifyInstance) => {
 };
 
 export default NotifRoutes;
+
+/***
+ * 
+	fastify.post(
+		'/notify',
+		{ schema: notifySchema },
+		notifControllers.notify.bind(notifControllers),
+	);
+ */

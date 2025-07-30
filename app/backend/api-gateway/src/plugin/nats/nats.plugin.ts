@@ -58,7 +58,6 @@ export const natsPlugin = fp(
 				);
 			}
 
-			// Consumer for Chat `ChatConsumer`
 			const consumerName = 'chatConsumer';
 			const chatReply = createInbox();
 
