@@ -19,25 +19,30 @@ export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) =>
 	fastify.log.info('[NATS] Server Connection Established');
 
 	const jc = JSONCodec();
+	const js = nats.jetstream();
 
 	fastify.decorate('jc', jc);
 
-	nats.subscribe('notify', {
-		async callback(err, msg) {
-			if (err) {
-				fastify.log.error(err);
-				return;
-			}
+	const consumer = await js.consumers.get(
+		'notificationStream',
+		'notificationConsumer',
+	);
 
-			const payload = jc.decode(msg.data) as NotificationPayload;
+	(async () => {
+		const iter = await consumer.consume();
+
+		for await (const m of iter) {
+			const payload = jc.decode(m.data) as NotificationPayload;
 
 			try {
 				await notifServices.createAndDispatchNotification(payload);
 			} catch (err) {
-				fastify.log.error(err);
+				fastify.log.error((err as Error).message);
 			}
-		},
-	});
+
+			m.ack();
+		}
+	})();
 
 	fastify.decorate('nats', nats);
 

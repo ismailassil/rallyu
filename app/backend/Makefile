@@ -4,7 +4,7 @@ all:
 	@echo "'make clean' to clean everything"
 
 up:
-	docker-compose -f './compose.backend.yaml' up --build
+	docker-compose -f './compose.backend.yaml' up -d --build
 
 down:
 	docker-compose -f './compose.backend.yaml' down
