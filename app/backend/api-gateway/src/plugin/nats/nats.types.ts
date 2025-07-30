@@ -3,19 +3,12 @@ import { Codec, JetStreamClient, MsgHdrs, NatsConnection } from 'nats';
 
 declare module 'fastify' {
 	interface FastifyInstance {
-		nats: NatsConnection;
+		nc: NatsConnection;
 		js: JetStreamClient;
-		chatSubj: string;
+		chatSubject: string;
 		jsCodec: Codec<unknown>;
 		scCodec: Codec<String>;
-		headerReplyTo: MsgHdrs;
 	}
-}
-
-export interface dataType {
-	username: string;
-	type: 'notify' | 'update';
-	data: any;
 }
 
 export interface NatsPluginOpts {

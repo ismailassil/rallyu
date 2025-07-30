@@ -1,7 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import { Server as SocketIOServer } from 'socket.io';
-import { IChatPayload, socketioOpts } from './socketio.types';
+import { MessageType } from '../../types/chat.types';
+import { socketioOpts } from './socketio.types';
 import { JWT_ACCESS_PAYLOAD } from '../../types/jwt.types';
 
 export const socketioPlugin = fp(async function (
@@ -31,37 +32,28 @@ export const socketioPlugin = fp(async function (
 	}
 
 	fastify.io.on('connection', async (socket) => {
-		const userId = socket.data.userId;
+		const userId: string = socket.data.userId.toString();
 		fastify.log.info(`[SocketIO] Client Connected: '${userId}:${socket.id}'`);
 
 		if (!socket.rooms.has(userId)) {
-			fastify.nats.publish(
+			fastify.nc.publish(
 				'socket.connected',
 				fastify.jsCodec.encode({
 					userId: userId,
 				}),
 			);
 		}
-		await socket.join(socket.data.username);
+		await socket.join(socket.data.userId);
 
 		// Chat Events
-		socket.on('send_msg', async (data: IChatPayload) => {
-			fastify.js.publish(
-				fastify.chatSubj.replace('*', '') + 'send_msg',
-				fastify.jsCodec.encode(data),
-				{ headers: fastify.headerReplyTo },
-			);
+		socket.on('chat_send_msg', async (data: MessageType) => {
+			fastify.log.info('[CLIENT] received msg = ' + data);
 
-			/***
-			 * When the User sends a message to a friend and has multiple sessions opened, 
-			 * send it to all sessions!
-			 * with new info (id, and other)
-			 * `socket.to(socket.data.username).except(socket.id).emit('send_msg', data);`
-			 */
+			fastify.js.publish('chat.send_msg', fastify.jsCodec.encode(data));
 		});
 
 		socket.on('disconnecting', async () => {
-			const userId = socket.data.userId;
+			const userId: string = socket.data.userId.toString();
 
 			fastify.log.info(
 				`[SocketIO] Client Disconnected: '${userId}:${socket.id}'`,
@@ -70,7 +62,7 @@ export const socketioPlugin = fp(async function (
 			await socket.leave(userId);
 
 			if (!socket.rooms.has(userId)) {
-				fastify.nats.publish(
+				fastify.nc.publish(
 					'socket.disconnected',
 					fastify.jsCodec.encode({
 						userId: userId,
@@ -88,7 +80,7 @@ export const socketioPlugin = fp(async function (
 		try {
 			const res = fastify.jwt.verify(jwtToken) as JWT_ACCESS_PAYLOAD;
 
-			socket.data.userId = res.sub;
+			socket.data.userId = res.sub.toString();
 
 			next();
 		} catch (error) {

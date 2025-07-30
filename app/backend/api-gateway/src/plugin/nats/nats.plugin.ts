@@ -1,162 +1,21 @@
 import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
-import {
-	AckPolicy,
-	connect,
-	createInbox,
-	DeliverPolicy,
-	headers,
-	JSONCodec,
-	nanos,
-	NatsConnection,
-	StringCodec,
-} from 'nats';
-import { dataType, NatsPluginOpts } from './nats.types';
-import chalk from 'chalk';
-import { ISocketPayload, MessageType } from '../socketio/socketio.types';
+import { NatsPluginOpts } from './nats.types';
+import NatsService from '../../services/NatsService.js';
 
 export const natsPlugin = fp(
 	async (fastify: FastifyInstance, opts: NatsPluginOpts) => {
-		const { NATS_URL, NATS_USER, NATS_PASSWORD } = opts;
-		const jcodec = JSONCodec();
-		const scodec = StringCodec();
-
 		try {
-			const nats: NatsConnection = await connect({
-				servers: NATS_URL || 'nats://localhost:4222',
-				user: NATS_USER,
-				pass: NATS_PASSWORD,
-				name: 'Gateway',
-			});
+			const ncService = new NatsService(fastify, opts);
+			await ncService.connect();
 
-			fastify.log.info(
-				`[NATS] Server Connection Established ${nats.getServer()}`,
-			);
-
-			// ** JetStreams
-			const natsManager = await nats.jetstreamManager();
-
-			const streamName = 'chatStream';
-			const subject = 'chat.*';
-			try {
-				await natsManager.streams.info(streamName);
-				fastify.log.info(
-					`[NATS] Stream: <${chalk.yellow(streamName)}> already Created`,
-				);
-			} catch (error) {
-				fastify.log.error('[NATS] ' + (error as Error).message);
-				await natsManager.streams.add({
-					name: streamName,
-					subjects: [subject],
-					max_age: nanos(1.8e6), // 30min
-					description: '[NATS] Stream for CHAT MS binded with SocketIO',
-				});
-				fastify.log.info(
-					`[NATS] Stream <${chalk.yellow(
-						streamName,
-					)}> has been created successfully`,
-				);
-			}
-
-			const consumerName = 'chatConsumer';
-			const chatReply = createInbox();
-
-			try {
-				const consInfo = await natsManager.consumers.info(
-					streamName,
-					consumerName,
-				);
-				fastify.log.info(
-					`[NATS] Consumer <${chalk.yellow(
-						consInfo.name,
-					)}> already exists with name `,
-				);
-			} catch (error) {
-				fastify.log.error((error as Error).message);
-				const consInfo = await natsManager.consumers.add(streamName, {
-					durable_name: 'chatConsumer',
-					ack_policy: AckPolicy.Explicit,
-					deliver_policy: DeliverPolicy.All,
-				});
-				fastify.log.info(
-					`[NATS] Consumer <${chalk.yellow(
-						consInfo.name,
-					)}> has been created successfully`,
-				);
-			}
-
-			const header = headers();
-			header.set('reply-to', createInbox());
-
-			nats.subscribe(chatReply, {
-				async callback(err, msg) {
-					if (err) {
-						fastify.log.error(err);
-						return;
-					}
-					// redirect the msg to the clients through sockets
-					fastify.log.info(msg.data);
-					const payload: ISocketPayload = jcodec.decode(
-						msg.data,
-					) as ISocketPayload;
-
-					// send to both, sender and receiver
-					fastify.io
-						.to(payload.sender)
-						.to(payload.receiver)
-						.emit('send_msg', payload);
-				},
-			});
-
-			// JetStream Client to Communicate with other Clients
-			const js = nats.jetstream();
-
-			// ** NATS Core
-			nats.subscribe('notification', {
-				async callback(err, msg) {
-					if (err) {
-						fastify.log.error(err);
-						return;
-					}
-					fastify.log.info('[NATS] Message Arrived to `notification`');
-
-					const payload: dataType = jcodec.decode(msg.data) as dataType;
-
-					fastify.log.info(payload);
-					if (!payload.username || !payload.data || !payload.type) {
-						fastify.log.warn('Invalid Payload: Empty');
-						return;
-					}
-
-					fastify.io.in(payload.username).emit(payload.type, payload.data);
-				},
-			});
-
-			// ** NATS Decorator
-			fastify.decorate('nats', nats);
-			fastify.decorate('js', js);
-			fastify.decorate('chatSubj', subject);
-			fastify.decorate('jsCodec', jcodec);
-			fastify.decorate('scCodec', scodec);
-			fastify.decorate('headerReplyTo', header);
+			ncService.setupDecorators();
 
 			fastify.addHook('onClose', async () => {
-				if (!nats.isClosed() && !nats.isDraining()) await nats.drain();
-				if (!nats.isClosed()) {
-					try {
-						await natsManager.streams.delete(streamName);
-					} catch (err) {
-						fastify.log.warn(
-							`[NATS] Failed to delete stream "${streamName}":` +
-								(err as Error).message,
-						);
-					}
-					await nats.close();
-				}
-				fastify.log.info('[NATS] Server Closed Successfully');
+				await ncService.close();
 			});
 		} catch (err) {
-			fastify.log.error(err);
+			fastify.log.error((err as Error).message);
 			return;
 		}
 	},
