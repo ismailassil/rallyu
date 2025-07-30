@@ -3,32 +3,12 @@
 import { AnimatePresence, motion } from "framer-motion";
 import InviteFriend from "./components/InviteFriend";
 import GamePanel from "./components/GamePanel";
-import { useEffect } from "react";
+import { useState } from "react";
 import Loading from "./components/Loading";
-import { useRouter } from "next/navigation";
-import { useTicTacToe } from "../contexts/tictactoeContext";
-import { useGameContext } from "./contexts/gameContext";
+
 
 export default function Game() {
-	const { connectivity } = useTicTacToe();
-	const { launch, setLaunch, gameType } = useGameContext();
-
-	const router = useRouter();
-
-	useEffect(() => {
-		let timeoutId: NodeJS.Timeout;
-
-		if (launch === true && gameType === "tictactoe" && connectivity === "offline") {
-			timeoutId = setTimeout(() => {
-				router.push("/tictactoe/0");
-				setLaunch(false);
-			}, 3000);
-		}
-
-		return () => {
-			clearTimeout(timeoutId);
-		};
-	}, [launch, router, gameType, connectivity, setLaunch]);
+	const [launch, setLaunch] = useState<boolean>(false);
 
 	return (
 		<AnimatePresence>
