@@ -17,31 +17,23 @@ services:
         image: rallyu/api-gateway:v1.0
         container_name: api-gateway
         restart: always
+        ports:
+          - 4025:4025
         networks:
             - backend
-            - web-app
+            # - web-app
         env_file:
-            - ./api-gateway/.env
+            # - ./api-gateway/.env
             - .env
         healthcheck:
             test:
                 [
                     'CMD-SHELL',
-                    'curl -sf http://localhost:4004/health | grep -q "\"status\":\"up\""',
+                    'curl -sf http://localhost:4025/health | grep -q "\"status\":\"up\""',
                 ]
-            interval: 30s
+            interval: 10s
             timeout: 10s
             retries: 20
-
-    # redis:
-    #     image: redis:8.2-m01-alpine3.22
-    #     container_name: redis
-    #     restart: always
-    #     networks:
-    #         - backend
-    #     env_file:
-    #         - .env
-    #     command: redis-server --requirepass ${REDIS_PASSWORD}
 
     nats:
         image: nats:alpine3.22
@@ -55,7 +47,7 @@ services:
         healthcheck:
             test: wget http://localhost:8222/healthz -q -S -O -
             start_period: 2s
-            interval: 30s
+            interval: 10s
             timeout: 10s
             retries: 3
 
@@ -67,6 +59,6 @@ services:
         restart: always
         networks:
             - backend
-            - web-app
+            # - web-app
         volumes:
             - ./nats_ui_config/config.json:/srv/config.json
