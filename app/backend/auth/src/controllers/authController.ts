@@ -186,6 +186,20 @@ class AuthController {
 			reply.code(status).send(body);
 		}
 	}
+
+	async fetchMeEndpoint(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user = await this.authService.fetchMe(request.user!.sub);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user });
+
+			reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			reply.code(status).send(body);
+		}
+	}
 }
 
 export default AuthController;

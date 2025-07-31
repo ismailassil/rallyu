@@ -19,6 +19,11 @@ async function authRouter(fastify: FastifyInstance) {
 	fastify.register(cookie);
 
 	/*-------------------------------- Local Authentication --------------------------------*/
+	fastify.post('/me', {
+		preHandler: fastify.authenticate,
+		handler: authController.fetchMeEndpoint.bind(authController)
+	});
+
 	fastify.post('/register', {
 		schema: authRegisterSchema,
 		handler: authController.RegisterEndpoint.bind(authController)

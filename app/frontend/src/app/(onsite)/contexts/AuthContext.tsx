@@ -4,6 +4,7 @@ import { APIClient } from '@/app/(auth)/utils/APIClient';
 import SocketClient from '@/app/(auth)/utils/SocketClient';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
+// we need to remove this and make everything on demand
 type User = {
 	id: string;
 	username: string;
@@ -49,11 +50,11 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	async function initializeAuth() {
 		try {
-			const data = await api.refreshToken();
-			const currentUser = await api.fetchCurrentUser();
-			setUser(currentUser.user);
+			const { accessToken } = await api.refreshToken();
+			const { user } = await api.fetchMe();
+			setUser(user);
 			setIsAuthenticated(true);
-			socket.connect(data.data.accessToken);
+			socket.connect(accessToken);
 		} catch {
 			console.log('No valid refresh token found!');
 			setUser(null);
@@ -69,11 +70,11 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	) {
 		try {
 			// setIsLoading(true);
-			await api.login({ username, password });
-			const data = await api.fetchCurrentUser();
-			setUser(data.user);
+			const { user, accessToken } = await api.login({ username, password });
+			// const data = await api.fetchCurrentUser();
+			setUser(user);
 			setIsAuthenticated(true);
-			socket.connect(data.data.accessToken);
+			socket.connect(accessToken);
 		} catch (err) {
 			console.log('Login Error Catched in AuthContext: ', err);
 			throw err;

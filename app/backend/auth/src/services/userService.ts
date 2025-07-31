@@ -19,22 +19,23 @@ class UserService {
 		if (!existingUser)
 			throw new UserNotFoundError();
 
+		return this.extractPublicUserInfo(existingUser);
 		// const relation = await this.relationsRepository.findTwoWaysByUsers(user_id, existingUser.id);
 		// const friendship_status = this.extractPublicRelation(user_id, relation);
 
-		const statsSummary = await this.statsService.getUserStatsSummary(existingUser.id);
+		// const statsSummary = await this.statsService.getUserStatsSummary(existingUser.id);
 
-		const recentMatches = await this.statsService.getUserRecentMatches(existingUser.id);
+		// const recentMatches = await this.statsService.getUserRecentMatches(existingUser.id);
 
-		return {
-			user: this.extractPublicUserInfo(existingUser),
-			friendship_status: null,
-			stats: {
-				user: statsSummary.user_stats,
-				matches: statsSummary.matches_stats
-			},
-			matches: recentMatches
-		}
+		// return {
+		// 	user: this.extractPublicUserInfo(existingUser),
+		// 	friendship_status: null,
+		// 	stats: {
+		// 		user: statsSummary.user_stats,
+		// 		matches: statsSummary.matches_stats
+		// 	},
+		// 	matches: recentMatches
+		// }
 	}
 
 	async getUser(user_id: number, username: string) {
