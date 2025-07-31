@@ -4,6 +4,7 @@ import { app as fastify } from '../app.js';
 
 export const verifyUserJWT = async (req: FastifyRequest, rep: FastifyReply) => {
 	fastify.log.info(req.url)
+	if (req.url === '/health') return;
 	if (req.url === '/api/auth/refresh' || req.url === '/api/auth/login' || req.url === '/api/auth/register') return;
 
 	// TODO: Verify the JWT Here
