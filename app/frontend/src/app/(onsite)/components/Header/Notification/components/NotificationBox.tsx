@@ -13,24 +13,27 @@ const NotificationBox = () => {
 	const boxRef = useRef<HTMLUListElement>(null);
 	const { isNotif, setIsBottom } = useHeaderContext();
 
+	
 	useEffect(() => {
 		if (!isNotif || !boxRef.current) return;
 
 		const container = boxRef.current;
 		container.scrollTop = 0;
-
+		
 		function handleScroll() {
 			const isNearBottom =
-				container.clientHeight + container.scrollTop >= container.scrollHeight - 10;
-
+			container.clientHeight + container.scrollTop >= container.scrollHeight - 10;
+			
 			setIsBottom(isNearBottom);
 		}
 		container.addEventListener("scroll", handleScroll);
-
+		
 		return () => {
 			container.removeEventListener("scroll", handleScroll);
 		};
 	}, [isNotif, setIsBottom]);
+	
+	if (isLoading) return;
 
 	return (
 		<>

@@ -69,7 +69,7 @@ const extendedLeaderboard = [
 	...leaderboardData,
 	...Array.from({ length: 6 }).map((_, i) => ({
 		username: `Player ${i + 6}`,
-		rank: i + 5,
+		rank: i + 4,
 		score: 8500 - (i * 100),
 		img: `/profile/image_${(i % 2) + 1}.jpg`,
 	})),
