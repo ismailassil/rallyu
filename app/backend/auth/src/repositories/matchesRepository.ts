@@ -249,6 +249,10 @@ class MatchesRepository {
 
 	async getUserSummaryStats(user_id: number) : Promise<any | null> {
 		try {
+			const TMPTABLESQL = this.getTMPTABLESQL('all', 'all', 1);
+
+			await db.run('DROP TABLE IF EXISTS tmp_user_matches;');
+
 			const matches_stats = await db.get(`
 				SELECT
 					COUNT(*) AS matches,
