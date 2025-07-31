@@ -258,10 +258,10 @@ export class APIClient {
 
 	async login(payload: { username: string, password: string }) {
 		console.log('APIClient::login();');
-		const { data } = await this.client.post('/auth/login', payload);
-		console.log('login: ', data);
-		this.setAccessToken(data.data.accessToken);
-		return data;
+		const { data: res } = await this.client.post('/auth/login', payload);
+		console.log('login: ', res);
+		this.setAccessToken(res.data.accessToken);
+		return res.data;
 	}
 
 	async logout() {
@@ -272,18 +272,18 @@ export class APIClient {
 
 	async refreshToken() {
 		console.log('APIClient::refreshToken();');
-		const { data } = await this.client.get('/auth/refresh');
-		console.log('refreshToken: ', data);
-		this.setAccessToken(data.data.accessToken);
-		return data;
+		const { data: res } = await this.client.get('/auth/refresh');
+		console.log('refreshToken: ', res);
+		this.setAccessToken(res.data.accessToken);
+		return res.data;
 	}
 	
-	async fetchCurrentUser() {
-		console.log('APIClient::fetchCurrentUser();');
+	async fetchMe() {
+		console.log('APIClient::fetchMe();');
 		console.log('accessToken: ', this.accessToken);
-		const { data } = await this.client.get(`/users/me`);
-		console.log('fetchCurrentUser: ', data);
-		return data.data;
+		const { data: res } = await this.client.get(`/auth/me`);
+		console.log('fetchCurrentUser: ', res);
+		return res.data;
 	}
 	
 	async register(payload: { 

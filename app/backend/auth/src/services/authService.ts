@@ -248,6 +248,14 @@ class AuthService {
 		}
 	}
 
+	async fetchMe(user_id: number) {
+		const existingUser = await this.userRepository.findById(user_id);
+		if (!existingUser)
+			throw new UserNotFoundError();
+
+		return this.extractPublicUserInfo(existingUser);
+	}
+
 	private validateRegisterForm(username: string, password: string, email: string, first_name: string, last_name: string) {
 		const registerSchema = z.object({
 			first_name: z.string()
@@ -371,6 +379,21 @@ class AuthService {
 			avatar_url: data.image.link || 'https://pbs.twimg.com/profile_images/1300555471468851202/xtUnFLEm_200x200.jpg',
 			auth_provider: '42'
 		}
+	}
+
+	private extractPublicUserInfo(privateUserInfo: any) {
+		const publicUserInfo = {
+			id: privateUserInfo.id,
+			first_name: privateUserInfo.first_name,
+			last_name: privateUserInfo.last_name,
+			email: privateUserInfo.email,
+			username: privateUserInfo.username,
+			bio: privateUserInfo.bio,
+			avatar_url: privateUserInfo.avatar_url,
+			role: privateUserInfo.role
+		}
+
+		return publicUserInfo;
 	}
 }
 
