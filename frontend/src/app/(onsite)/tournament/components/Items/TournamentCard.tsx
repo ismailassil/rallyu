@@ -34,6 +34,8 @@ function TournamentCard({
 
 		if (target.closest("button")) {
 			console.log("BRUH");
+			console.log(id);
+			
 			try {
 				const req = await fetch(`http://localhost:3008/api/v1/tournament-matches/join/${id}`, {
 					method: "PATCH",
@@ -41,16 +43,17 @@ function TournamentCard({
 						"Content-type": "application/json",
 					},
 					body: JSON.stringify({
-						id: 2, // I need user ID
+						id: 1, // I need user ID
 					}),
 				});
 
-				await req.json();
+				const data = await req.json();
 
 				if (!req.ok) throw "Error";
-
+				
 				setJoined(true);
 			} catch (err) {
+				console.log(data);
 				console.error(err);
 			}
 			return;

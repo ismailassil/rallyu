@@ -137,13 +137,10 @@ app.patch(
 		const tournamentMatches = await req.server.tournamentMatchesModel.matchesGet(tournamentId);
 		
 		for (let i = 0; i < tournamentMatches.length - 1; i++) {
-			if (!tournamentMatches[i].player_1) {
-				await req.server.tournamentMatchesModel.playerJoinMatch(tournamentMatches[i].id, playerId, 1);
-				await req.server.tournamentModel.tournamentUpdateSize("add", tournamentMatches[i].id);
-				break ;
-			}
-			if (!tournamentMatches[i].player_2) {
-				await req.server.tournamentMatchesModel.playerJoinMatch(tournamentMatches[i].id, playerId, 2);
+			if (!tournamentMatches[i].player_1 || !tournamentMatches[i].player_2) {
+				const player: number = !tournamentMatches[i].player_1 ? 1 : 2;
+
+				await req.server.tournamentMatchesModel.playerJoinMatch(tournamentMatches[i].id, playerId, player);
 				await req.server.tournamentModel.tournamentUpdateSize("add", tournamentMatches[i].id);
 				break ;
 			}
@@ -154,6 +151,7 @@ app.patch(
 			message: "Player joined the tournament."
 		});
 	} catch (err) {
+		console.log(err);
 		return rep.code(500).send({
 			status: false,
 			message: "Something went wrong."

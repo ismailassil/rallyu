@@ -129,8 +129,8 @@ class TournamentModel {
 	async tournamentUpdateSize(type: string, id: number) {
 		await new Promise<unknown>((resolve, reject) => {
 			this.DB.run(
-				`UPDATE ${this.sqlQuery} SET contenders_joined=contender_joined${ type === "add" ? "+" : "-" }1 WHERE id=?`,
-				[type, id],
+				`UPDATE ${this.modelName} SET contenders_joined=contenders_joined${ type === "add" ? "+" : "-" }1 WHERE id=?`,
+				[id],
 				(err) => {
 					if (err) reject(err)
 					else resolve(this)

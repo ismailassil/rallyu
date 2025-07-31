@@ -13,7 +13,6 @@ interface errorObj {
 }
 
 function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
-	const router = useRouter();
 	const [tournaments, setTournaments] = useState([]);
 	const [error, setError] = useState<errorObj>({ status: false, message: "" });
 
@@ -27,7 +26,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 
 				if (!req.ok) throw "Something went wrong!";
 
-				console.log(data.data[0].title);
+				console.log(data);
 				setTournaments(data.data);
 			} catch (err: unknown) {
 				if (typeof err === "object")
@@ -40,11 +39,6 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 
 		fetchData();
 	}, []);
-
-	const refreshPage = function (e) {
-		e.preventDefault();
-		router.refresh();
-	};
 
 	return (
 		<>
@@ -71,37 +65,54 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 					animate={{ opacity: 1, x: 0 }}
 					exit={{ opacity: 0, x: -100 }}
 					transition={{ type: "spring", stiffness: 120 }}
-					className="text-wrap flex gap-2 rounded-full bg-red-700 px-8 py-4"
+					className="text-wrap rounded-full bg-red-700 px-8 py-4"
 				>
 					<p className="text-lg">{error.message}</p>
 				</motion.div>
 			)}
-			<motion.div
-				initial={{ opacity: 0, x: -100 }}
-				animate={{ opacity: 1, x: 0 }}
-				exit={{ opacity: 0, x: -100 }}
-				transition={{ type: "spring", stiffness: 120 }}
-				className="*:border-1 *:border-white/10 *:rounded-sm *:px-2
-					*:cursor-pointer *:hover:scale-101 *:duration-400
-					*:transition-all
-					grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 "
-			>
-				{
-					tournaments.map((el) => {
-						return (
-							<TournamentCard
-								key={el.id}
-								id={el.id}
-								name={el.title}
-								active={el.contenders_joined}
-								size={el.contenders_size}
-								isPingPong={el.mode === "ping-pong"}
-								isUserIn={el?.isUserIn ? true : false}
-							/>
-						);
-					})
-				}
-			</motion.div>
+			{
+				!tournaments.length && (
+					<motion.div
+						initial={{ opacity: 0, x: -100 }}
+						animate={{ opacity: 1, x: 0 }}
+						exit={{ opacity: 0, x: -100 }}
+						transition={{ type: "spring", stiffness: 120 }}
+						className="text-wrap flex gap-2 rounded-full bg-card outline-white/20 outline-1 px-8 py-4"
+					>
+						<p className="text-lg">No available tournaments currently.</p>
+					</motion.div>
+				)
+			}
+			{
+				tournaments.length > 0 && (
+					<motion.div
+						initial={{ opacity: 0, x: -100 }}
+						animate={{ opacity: 1, x: 0 }}
+						exit={{ opacity: 0, x: -100 }}
+						transition={{ type: "spring", stiffness: 120 }}
+						className="*:border-1 *:border-white/10 *:rounded-sm *:px-2
+							*:cursor-pointer *:hover:scale-101 *:duration-400
+							*:transition-all
+							grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 "
+					>
+						{
+							tournaments.map((el) => {
+								return (
+									<TournamentCard
+										key={el.id}
+										id={el.id}
+										name={el.title}
+										active={el.contenders_joined}
+										size={el.contenders_size}
+										isPingPong={el.mode === "ping-pong"}
+										isUserIn={el?.isUserIn ? true : false}
+									/>
+								);
+							})
+						}
+					</motion.div>
+				)
+			}
 		</>
 	);
 }

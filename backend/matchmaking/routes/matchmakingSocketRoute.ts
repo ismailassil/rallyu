@@ -17,8 +17,10 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
         setInterval(() => {
             if (matchQueue.length >= 2) {
                 waitingQueue.push({ player1: matchQueue[0], player2: matchQueue[1]});
+                
                 matchQueue[0].send(JSON.stringify({ type: "MATCH-FOUND" }));
                 matchQueue[1].send(JSON.stringify({ type: "MATCH-FOUND" }));
+                
                 matchQueue.shift();
                 matchQueue.shift();
             }
@@ -37,18 +39,18 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
                         roomId: crypto.randomUUID(),
                         players: { playerId1: players.player1.sock, playerId2: players.player2.sock } 
                     };
-                    players.player1.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED", roomId: room.roomId }));
-                    players.player2.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED", roomId: room.roomId }));
-
+                    
                     // Fetch Post request send room over network to game service!!!!!!!!!
                     // await = fetch("http://localhost:3000/api/v1/game/create/room", {
                     //         method: "POST",
                     //         headers: {
-                    //             'Content-Type': 'application/json'
-                    //         },
-                    //         body: JSON.stringify(room);
-                    //     });
-                    
+                        //             'Content-Type': 'application/json'
+                        //         },
+                        //         body: JSON.stringify(room);
+                        //     });
+                    players.player2.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED", roomId: room.roomId }));
+                    players.player1.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED", roomId: room.roomId }));
+                            
                 } else if (players.player1.status || players.player2.status) {
                     if (players.player1.status == 1) {
                         matchQueue.push(players.player1.sock);
