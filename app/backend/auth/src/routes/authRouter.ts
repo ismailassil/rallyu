@@ -19,7 +19,7 @@ async function authRouter(fastify: FastifyInstance) {
 	fastify.register(cookie);
 
 	/*-------------------------------- Local Authentication --------------------------------*/
-	fastify.post('/me', {
+	fastify.get('/me', {
 		preHandler: fastify.authenticate,
 		handler: authController.fetchMeEndpoint.bind(authController)
 	});
