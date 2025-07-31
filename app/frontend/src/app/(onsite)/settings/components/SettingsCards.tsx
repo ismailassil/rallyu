@@ -6,15 +6,17 @@ export default function SettingsCard({
 	children, 
 	title, 
 	subtitle, 
+	onSubmit,
 	isForm = false, 
 	isRadio = false, 
 	isAction = false, 
-	isFoldable = false,
+	isFoldable = false, 
 	defaultExpanded = true 
   }: { 
 	children?: ReactNode, 
 	title: string, 
 	subtitle: string, 
+	onSubmit: (data: any) => void,
 	isForm?: boolean,
 	isRadio?: boolean,
 	isAction?: boolean,
@@ -50,7 +52,7 @@ export default function SettingsCard({
 											hover:bg-white hover:text-black transition-all duration-500 cursor-pointer`}>
 								<div className="flex items-center gap-2 justify-center cursor-pointer">
 									<Check size={16}/>
-									<button className='cursor-pointer'>Save Changes</button>
+									<button className='cursor-pointer' onClick={onSubmit}>Save Changes</button>
 								</div>
 							</div>
 						)}
