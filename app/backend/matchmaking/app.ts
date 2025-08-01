@@ -1,10 +1,15 @@
 import fastify, { FastifyInstance} from "fastify"
 import fastifyWebsocket from "@fastify/websocket";
+import fastifyCors from "@fastify/cors";
 import serverObject from "./config/serverObject.js";
 import matchmakingRoutes from "./routes/macthmakingRoutes.js";
 import matchmakingSocketRoutes from "./routes/matchmakingSocketRoute.js";
 
 const app = fastify(serverObject);
+
+app.register(fastifyCors, {
+    origin: "*"
+})
 
 app.register(fastifyWebsocket);
 
@@ -12,7 +17,7 @@ app.register(async function (app: FastifyInstance) {
 
     app.register(async function (app: FastifyInstance) {
 
-        app.register(matchmakingSocketRoutes)
+        app.register(matchmakingSocketRoutes);
         app.register(matchmakingRoutes);
     }, { prefix: "matchmaking" });
 

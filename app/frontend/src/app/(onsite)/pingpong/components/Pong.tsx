@@ -46,9 +46,10 @@ const Pong = () => {
 	}, []);
 
 	return (
-		// <div className="game-container w-full md:max-w-2xl lg:max-w-4xl h-auto mx-auto">
-			<canvas className='gameCanvas max-w-full h-auto' ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} />
-		// </div>
+		<>
+			<canvas className='gameCanvas max-w-full rounded-lg border border-neutral-700 bg-neutral-900' ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} />
+			{/* <canvas className='gameCanvas max-w-full max-h-full max-sm:h-full max-sm:w-full rounded-lg border border-neutral-700 bg-neutral-900' ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} /> */}
+		</>
 	)
 }
 

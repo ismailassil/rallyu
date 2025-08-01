@@ -1,9 +1,17 @@
+@import url('https://fonts.cdnfonts.com/css/serious');
 @import "tailwindcss";
 @tailwind utilities;
 
 :root {
 	--background: black;
 	--foreground: #ffffff;
+}
+
+@font-face {
+	font-family: 'AtariPongScore';
+	src: url('./fonts/atari_pong.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
 }
 
 @theme {
