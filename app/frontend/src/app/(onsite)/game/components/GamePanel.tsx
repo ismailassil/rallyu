@@ -16,7 +16,7 @@ function GamePanel() {
 
 	return (
 		<AnimatePresence>
-			<div className="hide-scrollbar flex h-full flex-1 flex-col">
+			<div className="flex h-full flex-1 flex-col custom-scrollbar">
 				<h1 className={`p-4 text-4xl ${unicaOne.className} font-semibold uppercase`}>
 					<span className="font-semibold">Custom Your World!</span>
 				</h1>

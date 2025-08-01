@@ -1,14 +1,12 @@
-"use client"
-import SideBar from './components/SideBare/SideBare';
-import Chat from './components/Chat/Chat';
-import { SocketProvider } from './components/Chat/SocketContext';
+import Chat from './components/Chat';
+import { ChatProvider } from './context/ChatContext';
 
 const Page = () => {
-  return (
-    <SocketProvider>
-        <Chat />
-    </SocketProvider>
-  );
+	return (
+		<ChatProvider>
+			<Chat />
+		</ChatProvider>
+	);
 };
 
 export default Page;
