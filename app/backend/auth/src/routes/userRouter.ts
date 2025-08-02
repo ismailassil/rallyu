@@ -123,11 +123,10 @@ async function userRouter(fastify: FastifyInstance) {
 		handler: relationsController.unblockUser.bind(relationsController)
 	});
 
-	// fastify.get('/me/friends', {
-	// 	preHandler: fastify.authenticate,
-	// 	schema: relationsRequestSchema,
-	// 	handler: relationsController.unblockUser.bind(relationsController)
-	// });
+	fastify.get('/friends', {
+		preHandler: fastify.authenticate,
+		handler: relationsController.getAllFriends.bind(relationsController)
+	});
 
 	// fastify.get('/me/blocked', {
 	// 	preHandler: fastify.authenticate,

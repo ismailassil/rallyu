@@ -238,10 +238,17 @@ class RelationsRepository {
 	async findAllFriends(user_id: number) {
 		try {
 			const allFriends = await db.all(`
-				SELECT users.*, relations.relation_status
+				SELECT 
+					users.id, 
+					users.username, 
+					users.first_name,
+					users.last_name,
+					users.avatar_path,
+					relations.relation_status
 				FROM relations
 				JOIN users ON (
 					(relations.requester_user_id = users.id AND relations.receiver_user_id = ?)
+					OR
 					(relations.requester_user_id = ? AND relations.receiver_user_id = users.id)
 				)
 				WHERE relations.relation_status = 'ACCEPTED'
