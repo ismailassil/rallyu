@@ -123,6 +123,28 @@ class UserController {
 	async deleteUser(request: FastifyRequest, reply: FastifyReply) {
 
 	}
+
+	async uploadAvatar(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+			const fileData = await request.file();
+
+			if (!fileData)
+				reply.status(400);
+
+			// if (!['image/jpeg', 'image/png'].includes(fileData!.mimetype))
+			// 	reply.status(404);
+			// should check for max file size
+
+			const avatarUrl = await this.userService.updateAvatar(user_id!, fileData!);
+
+			reply.status(201).send({ success: true, data: avatarUrl });
+		} catch (err: any) {
+			console.log(err);
+			const { statusCode, errorCode } = err;
+			reply.status(statusCode || 400).send({ success: false, error: errorCode });
+		}
+	}
 }
 
 export default UserController;

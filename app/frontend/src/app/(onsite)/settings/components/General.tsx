@@ -65,23 +65,28 @@ function PersonalInformationsForm({ values, onChange }) {
 					/>
 				</div>
 				<div>
-					<h1 className={`font-bold text-xl text-white/90`}>
-						{mockUser.first_name} {mockUser.last_name}
+					<h1 className={`font-bold text-xl text-white/90 capitalize`}>
+						{values.first_name || mockUser.first_name} { values.last_name || mockUser.last_name}
 					</h1>
 					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
-						@{mockUser.username}
+						@{values.username || mockUser.username}
 					</p>
-					<div className={`border-1 border-white/10 rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium backdrop-blur-xs h-10 mt-4`}>
+					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
+						{values.email || mockUser.email}
+					</p>
+					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
+						{values.bio || mockUser.bio}
+					</p>
+					{/* <div className={`border-1 border-white/10 rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium backdrop-blur-xs h-10 mt-4`}>
 						<div className="flex items-center gap-2 justify-center">
 							<Upload size={16} />
 							<button>Change Picture</button>
 						</div>
-					</div>
+					</div> */}
 				</div>
 			</div>
 
 			<div className='flex flex-col gap-4'>
-				{/* <form action="" onSubmit={handleSubmit}> */}
 					<FormField
 						label='First Name'
 						field='first_name'
@@ -122,7 +127,6 @@ function PersonalInformationsForm({ values, onChange }) {
 						value={values.bio}
 						onChange={onChange}
 					/>
-				{/* </form> */}
 			</div>
 		</div>
 	);
