@@ -25,6 +25,7 @@
     "fastify": "^5.3.3",
     "fastify-plugin": "^5.0.1",
     "jsonwebtoken": "^9.0.2",
+    "nats": "^2.29.3",
     "pino-pretty": "^13.0.0",
     "qrcode": "^1.5.4",
     "speakeasy": "^2.0.0",
