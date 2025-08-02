@@ -303,8 +303,8 @@ class MatchesRepository {
 		try {
 			const TMPTABLESQL = this.getTMPTABLESQL(timeFilter, gameTypeFilter, pageFilter);
 
-			await db.run('DROP TABLE IF EXISTS tmp_user_matches;');
 			console.log('TMP TABLE SQL: ', TMPTABLESQL);
+			await db.run('DROP TABLE IF EXISTS tmp_user_matches;');
 			await db.run(TMPTABLESQL, [user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id]);
 
 			const result = await db.all(`SELECT * FROM tmp_user_matches`);

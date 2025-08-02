@@ -2,8 +2,9 @@ import React, { useState, ChangeEvent } from 'react';
 import Image from 'next/image';
 import SettingsCard from './SettingsCards';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
-import { Upload } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface FormFieldProps {
 	field: keyof FormDataState;
@@ -40,6 +41,7 @@ interface FormDataState {
 	username: string;
 	email: string;
 	bio: string;
+	avatar_path: string;
 }
 
 const mockUser: FormDataState = {
@@ -47,21 +49,32 @@ const mockUser: FormDataState = {
 	last_name: 'Azouz',
 	username: 'xezzuz',
 	email: 'nabil.azouz@gmail.com',
-	bio: 'Something went wrong, please try again later'
+	bio: 'Something went wrong, please try again later',
+	avatar_path: '/avatars/xezzuz.png'
 };
 
-function PersonalInformationsForm({ values, onChange }) {
+function ProfilePreview({ values, file, preview, onAdd, onRemove }) {
+
 	return (
-		<div className='flex flex-col gap-8 px-18'>
-			<div className='flex gap-8 items-center bg-gradient-to-br from-white/0 to-white/8 border-1 border-white/10 w-full rounded-2xl py-6 px-6'>
-				<div className="rounded-full h-27 w-27 ring-4 ring-white/10">
+		<div className='flex items-center bg-gradient-to-br from-white/0 to-white/8 border-1 border-white/10 w-full rounded-3xl py-6 px-8 justify-between'>
+			<div className='flex gap-8'>
+				<div className="rounded-full h-27 w-27 ring-4 ring-white/10 relative">
 					<Image
-						src='/profile/image.png'
+						src={preview || `http://localhost:4000/users${mockUser.avatar_path}` || '/profile/image.png'}
 						alt="Profile Image"
-						width={96}
-						height={96}
+						fill
+						// width={96}
+						// height={96}
 						className="h-full w-full object-cover rounded-full"
 						quality={100}
+						unoptimized
+					/>
+					<input
+						id="profile-upload"
+						type="file"
+						accept="image/*"
+						className="hidden"
+						onChange={onAdd}
 					/>
 				</div>
 				<div>
@@ -77,62 +90,89 @@ function PersonalInformationsForm({ values, onChange }) {
 					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
 						{values.bio || mockUser.bio}
 					</p>
-					{/* <div className={`border-1 border-white/10 rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium backdrop-blur-xs h-10 mt-4`}>
-						<div className="flex items-center gap-2 justify-center">
-							<Upload size={16} />
-							<button>Change Picture</button>
-						</div>
-					</div> */}
 				</div>
 			</div>
-
-			<div className='flex flex-col gap-4'>
-					<FormField
-						label='First Name'
-						field='first_name'
-						iconSrc='/icons/firstname.svg'
-						placeholder={mockUser.first_name}
-						value={values.first_name}
-						onChange={onChange}
-					/>
-					<FormField
-						label='Last Name'
-						field='last_name'
-						iconSrc='/icons/lastname.svg'
-						placeholder={mockUser.last_name}
-						value={values.last_name}
-						onChange={onChange}
-					/>
-					<FormField
-						label='Email'
-						field='email'
-						iconSrc='/icons/mail.svg'
-						placeholder={mockUser.email}
-						value={values.email}
-						onChange={onChange}
-					/>
-					<FormField
-						label='Username'
-						field='username'
-						iconSrc='/icons/at.svg'
-						placeholder={mockUser.username}
-						value={values.username}
-						onChange={onChange}
-					/>
-					<FormField
-						label='Bio'
-						field='bio'
-						iconSrc='/icons/firstname.svg'
-						placeholder={mockUser.bio}
-						value={values.bio}
-						onChange={onChange}
-					/>
+			<div className={`border-1 border-white/10 rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium backdrop-blur-xs h-10`}>
+				<div className="flex items-center gap-2 justify-center">
+				{file ? (
+					<>
+						<X size={16} />
+						<button
+							onClick={onRemove}
+							className="cursor-pointer text-white/80"
+						>
+							Remove Picture
+						</button>
+					</>
+					) : (
+					<>
+						<Upload size={16} />
+						<label
+							htmlFor="profile-upload"
+							className="cursor-pointer text-white/80"
+						>
+							Change Picture
+						</label>
+					</>
+				)}
+				</div>
 			</div>
 		</div>
 	);
 }
 
+function PersonalInformationsForm({ values, onChange }) {
+	return (
+		<div className='flex flex-col gap-4'>
+				<FormField
+					label='First Name'
+					field='first_name'
+					iconSrc='/icons/firstname.svg'
+					placeholder={mockUser.first_name}
+					value={values.first_name}
+					onChange={onChange}
+				/>
+				<FormField
+					label='Last Name'
+					field='last_name'
+					iconSrc='/icons/lastname.svg'
+					placeholder={mockUser.last_name}
+					value={values.last_name}
+					onChange={onChange}
+				/>
+				<FormField
+					label='Email'
+					field='email'
+					iconSrc='/icons/mail.svg'
+					placeholder={mockUser.email}
+					value={values.email}
+					onChange={onChange}
+				/>
+				<FormField
+					label='Username'
+					field='username'
+					iconSrc='/icons/at.svg'
+					placeholder={mockUser.username}
+					value={values.username}
+					onChange={onChange}
+				/>
+				<FormField
+					label='Bio'
+					field='bio'
+					iconSrc='/icons/firstname.svg'
+					placeholder={mockUser.bio}
+					value={values.bio}
+					onChange={onChange}
+				/>
+		</div>
+	);
+}
+
 export default function General() {
+	const { api } = useAuth();
+
+	const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
+	const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
 	const [formData, setFormData] = useState({
 		first_name: '',
 		last_name: '',
@@ -141,12 +181,44 @@ export default function General() {
 		bio: ''
 	});
 
-	function handleChange(e: ChangeEvent<HTMLInputElement>) {
+	function handleProfilePictureFileChange(e: ChangeEvent<HTMLInputElement>) {
+		console.log('pic change');
+		const selectedFile = e.target.files?.[0];
+		if (!selectedFile)
+			return ;
+		setProfilePicturePreview(URL.createObjectURL(selectedFile));
+		setProfilePictureFile(selectedFile);
+	}
+	
+	function handleProfilePictureRemove() {
+		console.log('pic remove');
+		const fileInput = document.getElementById('profile-upload') as HTMLInputElement;
+		if (fileInput) {
+			fileInput.value = '';
+		}
+		setProfilePictureFile(null);
+		setProfilePicturePreview(null);
+	}
+	
+	function handleFormChange(e: ChangeEvent<HTMLInputElement>) {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	}
+	
+	async function handleProfilePictureSubmit() {
+		console.log('pic submit');
+		if (!profilePictureFile)
+			return ;
+	
+		const formData = new FormData();
+		formData.append('file', profilePictureFile);
 
-	function handleSubmit() {
+		await api.uploadUserAvatar(formData);
+	
+		setProfilePictureFile(null); // clear file after upload
+	}
+
+	async function handleFormSubmit() {
 		console.log('submitting personal info form');
 		console.log('state values: ', formData);
 
@@ -158,6 +230,11 @@ export default function General() {
 		});
 
 		console.log('payload to be submitted: ', payload);
+	}
+
+	async function handleSubmit() {
+		await handleFormSubmit();
+		await handleProfilePictureSubmit();
 	}
 
 	return (
@@ -173,10 +250,19 @@ export default function General() {
 					onSubmit={handleSubmit}
 					isForm={true}
 				>
-					<PersonalInformationsForm 
-						values={formData}
-						onChange={handleChange}
-					/>
+					<div className='flex flex-col gap-8 px-18'>
+						<ProfilePreview 
+							values={formData}
+							file={profilePictureFile}
+							preview={profilePicturePreview}
+							onAdd={handleProfilePictureFileChange}
+							onRemove={handleProfilePictureRemove}
+						/>
+						<PersonalInformationsForm 
+							values={formData}
+							onChange={handleFormChange}
+						/>
+					</div>
 				</SettingsCard>
 
 				{/* <SettingsCard

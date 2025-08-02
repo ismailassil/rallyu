@@ -21,7 +21,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 	const { isLoading, userProfile } = useUserProfile(username);
 	
 	if (isLoading || !userProfile)
-		return null;
+		return <h1>still loading</h1>;
 
 	return (
 		<motion.main
@@ -36,6 +36,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 						user_id={userProfile.user.id}
 						fullName={userProfile.user.first_name + ' ' + userProfile.user.last_name}
 						username={userProfile.user.username}
+						avatar={`http://localhost:4000/users${userProfile.user.avatar_path}`}
 						bio={userProfile.user.bio}
 						friendshipStatus={userProfile.friendship_status}
 						level={userProfile.stats.user.level}
