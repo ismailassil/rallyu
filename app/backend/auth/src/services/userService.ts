@@ -1,7 +1,10 @@
+import { MultipartFile } from "@fastify/multipart";
 import RelationsRepository from "../repositories/relationsRepository";
 import UserRepository from "../repositories/userRepository";
 import { UserNotFoundError } from "../types/auth.types";
 import StatsService from "./statsService";
+import fs, { createWriteStream } from 'fs';
+import { pipeline } from "stream/promises";
 
 class UserService {
 	private userRepository: UserRepository;
@@ -90,6 +93,45 @@ class UserService {
 		if (!newUser)
 			throw new UserNotFoundError()
 		return newUser;
+	}
+
+	async updateAvatar(user_id: number, fileData: MultipartFile) {
+		const existingUser = await this.userRepository.findById(user_id);
+		if (!existingUser)
+			throw new UserNotFoundError();
+
+		const allowedMimeTypes = ['images/jpg', 'image/jpeg', 'image/png'];
+		if (!allowedMimeTypes.includes(fileData.mimetype))
+			throw new Error('File type not allowed'); // need to change it to custom error class
+
+		const fileExtension = fileData.mimetype.split('/')[1];
+		const fileName = `${existingUser.username}.${fileExtension}`;
+		const uploadDir = `./uploads/avatars`;
+		
+		if (!fs.existsSync(uploadDir))
+			fs.mkdirSync(uploadDir, { recursive: true });
+
+		const filepath = uploadDir + '/' + fileName;
+
+		await pipeline(fileData.file, createWriteStream(filepath));
+
+		await this.userRepository.updateAvatar(user_id, `/avatars/${fileName}`);
+
+		return `/avatars/${fileName}`;
+
+		// try {
+		// 	await pipeline(fileData.file, createWriteStream(filepath));
+
+		// 	await this.userRepository.updateAvatar(user_id, fileName);
+
+		// 	return `/avatars/${fileName}`;
+		// } catch (err: any) {
+		// 	try {
+		// 		await fs.unlink(filepath, (err) => { if (err) throw err } ); // need to check this
+		// 	} catch {}
+
+		// 	throw err;
+		// }
 	}
 
 	private extractPublicUserInfo(privateUserInfo: any) {

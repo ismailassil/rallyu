@@ -125,6 +125,19 @@ class UserRepository {
 		}
 	}
 
+	async updateAvatar(id: number, avatar_path: string) {
+		try {
+			const runResult = await db.run(
+				`UPDATE users SET avatar_path = ? WHERE id = ?`
+			, [avatar_path, id]);
+
+			return runResult.changes > 0;
+		} catch (err: any) {
+			console.error('SQLite Error: ', err);
+			throw new InternalServerError();
+		}
+	}
+
 	// async exists(username: string, email: string) : Promise<boolean> {
 	// 	const usernameResult = await this.findByUsername(username);
 	// 	const emailResult = await this.findByEmail(email);
