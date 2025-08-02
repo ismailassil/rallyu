@@ -6,6 +6,7 @@ import RelationsRepository from "../repositories/relationsRepository";
 import { matchesRequestSchema, relationsRequestSchema, statsRequestSchema, userMatchesSchema, userProfileSchema, userUpdateSchema } from "../schemas/users.schema";
 import Authenticate from "../middleware/Authenticate";
 import MatchesRepository from "../repositories/matchesRepository";
+import multipart from '@fastify/multipart';
 
 async function userRouter(fastify: FastifyInstance) {
 	const userController: UserController = new UserController();
@@ -13,6 +14,14 @@ async function userRouter(fastify: FastifyInstance) {
 	const relationsController: RelationsController = new RelationsController();
 	const relRepo: RelationsRepository = new RelationsRepository();
 	const statsRepo: MatchesRepository = new MatchesRepository();
+
+	await fastify.register(multipart, {
+		limits: {
+			files: 1,
+			fileSize: 2 * 1024 * 1024,
+			fields: 0
+		}
+	});
 
 	fastify.decorate('authenticate', Authenticate); // auth middleware for protected routes
 	fastify.decorate('requireAuth', { preHandler: fastify.authenticate }); // preHandler hook
@@ -55,6 +64,11 @@ async function userRouter(fastify: FastifyInstance) {
 		schema: userMatchesSchema,
 		preHandler: fastify.authenticate,
 		handler: userController.getUserMatches.bind(userController)
+	});
+
+	fastify.post('/:username/avatar', {
+		preHandler: fastify.authenticate,
+		handler: userController.uploadAvatar.bind(userController)
 	});
 
 
