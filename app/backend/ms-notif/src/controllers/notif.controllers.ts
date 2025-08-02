@@ -1,18 +1,17 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import fastify from '../app.js';
 import NotifServices from '../services/notif.services.js';
-import {
-	ClientNotification,
-	NotificationDetail,
-} from '../shared/types/notifications.types.js';
 import { NotificationNotFoundException } from '../shared/exceptions/NotificationNotFoundException.js';
-import { IFetchQuery, NotificationUpdate } from '../shared/types/request.types.js';
+import { IFetchQuery, UPDATE_NOTIFICATION } from '../shared/types/request.types.js';
+import { RAW_NOTIFICATION, USER_NOTIFICATION } from '../shared/types/notifications.types.js';
 
 class NotifControllers {
 	private notifServices: NotifServices;
 
 	constructor() {
 		this.notifServices = new NotifServices();
+
+		fastify.decorate("notifService", this.notifServices);
 	}
 
 	async getNotificationHistory(
@@ -26,14 +25,14 @@ class NotifControllers {
 			return res.status(400).send({
 				status: 'error',
 				message: 'Error Occurred',
-				details: 'x-user-username Empty',
+				details: 'x-user-id Empty',
 			});
 
 		try {
-			const fullData: NotificationDetail[] =
+			const fullData: RAW_NOTIFICATION[] =
 				await this.notifServices.getUserMessages(userId, page);
 
-			const data: ClientNotification[] =
+			const data: USER_NOTIFICATION[] =
 				await this.notifServices.unpackMessages(fullData);
 
 			return res.status(200).send({ status: 'success', message: data });
@@ -48,7 +47,7 @@ class NotifControllers {
 
 	async updateNotification(
 		req: FastifyRequest<{
-			Body: NotificationUpdate;
+			Body: UPDATE_NOTIFICATION;
 		}>,
 		res: FastifyReply,
 	) {
@@ -84,43 +83,3 @@ class NotifControllers {
 }
 
 export default NotifControllers;
-
-/***
- * 
-	async notify(
-		req: FastifyRequest<{ Body: INotifyBody }>,
-		res: FastifyReply,
-	): Promise<void> {
-		// Register the notification in the Database
-		try {
-			const notifData: INotifDetail =
-				await this.notifServices.registerNotification(req.body);
-			fastify.log.info('✅ Notification created');
-
-			// Send back to API & SocketIO Gateway through NATS Server
-			const jc = JSONCodec();
-			fastify.nats.publish(
-				'notification',
-				jc.encode({
-					username: req.body.to_user,
-					type: 'notify',
-					data: notifData,
-				}),
-			);
-			try {
-				await fastify.nats.flush();
-				fastify.log.info('✅ Notification => `Gateway`');
-			} catch {
-				fastify.log.error('❌ Notification => `Gateway`');
-			}
-
-			return res
-				.status(201)
-				.send({ status: 'success', message: 'Notification created' });
-		} catch (err) {
-			return res
-				.status(500)
-				.send({ status: 'error', message: 'Error occurred', details: err });
-		}
-	}
- */

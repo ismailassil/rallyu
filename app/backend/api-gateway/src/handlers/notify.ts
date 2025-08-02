@@ -9,7 +9,9 @@ export async function handleNotify(m: JsMsg) {
 
 	fastify.log.info(payload);
 
-	const room = payload.recipientId.toString();
+	const receiverRoom = payload.recipientId.toString();
 
-	fastify.io.in(room).emit('notification_notify', payload);
+	fastify.log.info(receiverRoom);
+
+	fastify.io.in(receiverRoom).emit('notification_notify', payload);
 }

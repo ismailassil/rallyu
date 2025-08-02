@@ -1,11 +1,11 @@
-import { StatusType } from './notifications.types';
+import { NOTIFICATION_STATUS, NOTIFICATION_TYPE } from "./notifications.types";
 
-type NotificationUpdateScope = 'all' | 'single';
+type NOTIFICATION_SCOPE = 'all' | 'single';
 
-export interface NotificationUpdate {
+export interface UPDATE_NOTIFICATION {
 	notificationId: number;
-	scope: NotificationUpdateScope;
-	status: StatusType;
+	scope: NOTIFICATION_SCOPE;
+	status: NOTIFICATION_STATUS;
 }
 
 export interface IFetchQuery {

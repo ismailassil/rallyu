@@ -44,7 +44,7 @@ class NatsService {
 			serviceName: 'gateway',
 			streamName: 'gatewayStream',
 			consumerName: 'gatewayConsumer',
-			subject: 'gateway.*',
+			subject: 'gateway.>',
 		},
 	] as const;
 
@@ -64,7 +64,7 @@ class NatsService {
 		});
 
 		this.fastify.log.info(
-			`[NATS] Server Connection Established ${this.nc.getServer()}`,
+			`[NATS] Server Connection Established ['${this.nc.getServer()}']`,
 		);
 
 		await this.setupJetStream();
@@ -141,13 +141,12 @@ class NatsService {
 		this.fastify.decorate('js', this.jetstream);
 		this.fastify.decorate('jsCodec', this.jsCodec);
 		this.fastify.decorate('scCodec', this.sCodec);
-		// this.fastify.decorate('headerReplyTo', header);
 	}
 
 	private async handleNotifications(m: JsMsg) {
-		if (m.subject.includes('notification.notify')) {
+		if (m.subject.includes('notify')) {
 			await handleNotify(m);
-		} else if (m.subject.includes('notification.update')) {
+		} else if (m.subject.includes('update')) {
 			await handleUpdateNotif(m);
 		}
 	}
@@ -163,9 +162,9 @@ class NatsService {
 		for await (const m of iter) {
 			this.fastify.log.info('SOMEONE SENT A MSG TO GATEWAY');
 			this.fastify.log.info(m.subject);
-			if (m.subject.endsWith('#chat')) {
+			if (m.subject.includes('chat')) {
 				handleChatMsg(m);
-			} else if (m.subject.endsWith('#notif')) {
+			} else if (m.subject.includes('notification')) {
 				this.handleNotifications(m);
 			}
 			m.ack();

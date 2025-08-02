@@ -1,4 +1,4 @@
-import sqlite3 from 'sqlite3';
+import sqlite3, { verbose } from 'sqlite3';
 import fastifyPlugin from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import path from 'path';
@@ -10,7 +10,8 @@ const __dirname = dirname(__filename);
 const databasePath = path.join(__dirname, '../../../database/database.sqlite');
 
 const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
-	const db = new sqlite3.Database(databasePath, (error) => {
+	const sqlite = sqlite3.verbose();
+	const db = new sqlite.Database(databasePath, (error) => {
 		if (error) {
 			fastify.log.error('[SQL] Error: ' + error.message);
 			return;
@@ -23,8 +24,7 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			sender_id INTEGER NOT NULL,
 			sender_username TEXT NOT NULL,
-			recipient_id INTEGER NOT NULL,
-			recipient_username TEXT NOT NULL,
+			receiver_id INTEGER NOT NULL,
 			content TEXT NOT NULL,
 			type TEXT CHECK(type IN ('game', 'chat', 'friend_request')),
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
