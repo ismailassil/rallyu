@@ -9,8 +9,10 @@ export async function handleUpdateNotif(m: JsMsg) {
 
 	fastify.log.info(payload);
 
-	const room = payload.userId.toString();
+	const senderRoom = payload.userId.toString();
 
-	fastify.io.in(room).emit('notification_update', payload);
+	fastify.log.info(senderRoom);
+
+	fastify.io.in(senderRoom).emit('notification_update', payload);
 
 }

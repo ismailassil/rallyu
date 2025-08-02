@@ -1,10 +1,11 @@
 import fastify from '../app.js';
 import NotifRepository from '../repositories/notif.repository.js';
-import NotificationPayload, {
-	ClientNotification,
-	NotificationDetail,
+import {
+	NOTIFY_USER_PAYLOAD,
+	RAW_NOTIFICATION,
+	USER_NOTIFICATION,
 } from '../shared/types/notifications.types.js';
-import { NotificationUpdate } from '../shared/types/request.types.js';
+import { UPDATE_NOTIFICATION } from '../shared/types/request.types.js';
 
 class NotifSerives {
 	private notifRepository: NotifRepository;
@@ -13,30 +14,11 @@ class NotifSerives {
 		this.notifRepository = new NotifRepository();
 	}
 
-	async createAndDispatchNotification(
-		payload: NotificationPayload,
-	): Promise<void> {
-		const { recipientId } = payload;
-
-		const resData = await this.registerNotification(payload);
-		fastify.log.info('✅ Notification created');
-
-		fastify.nats.publish(
-			'notification.notify',
-			fastify.jc.encode({
-				userId: recipientId,
-				data: resData,
-			}),
-		);
-
-		await fastify.nats.flush();
-	}
-
 	async getUserMessages(
 		userId: string,
 		page: number,
-	): Promise<NotificationDetail[]> {
-		const data: NotificationDetail[] = await this.notifRepository.getMessages(
+	): Promise<RAW_NOTIFICATION[]> {
+		const data: RAW_NOTIFICATION[] = await this.notifRepository.getMessages(
 			parseInt(userId),
 			page,
 		);
@@ -44,29 +26,41 @@ class NotifSerives {
 		return data;
 	}
 
+	async createAndDispatchNotification(
+		payload: NOTIFY_USER_PAYLOAD,
+	): Promise<void> {
+		const { receiverId } = payload;
+
+		const resData = await this.registerNotification(payload);
+		fastify.log.info('✅ Notification created');
+
+		const data = this.filterMessage(resData);
+
+		const res = fastify.jc.encode({ userId: receiverId, data });
+
+		fastify.nats.publish('gateway.notification.notify', res);
+	}
+
 	async updateAndDispatchNotification(
 		userId: number,
-		payload: NotificationUpdate,
+		payload: UPDATE_NOTIFICATION,
 	): Promise<void> {
 		const { notificationId, scope, status } = payload;
 
 		await this.updateNotification(userId, payload);
 		fastify.log.info('✅ Notification updated');
 
-		fastify.nats.publish(
-			'notification.update',
-			fastify.jc.encode({
-				userId,
-				notificationId,
-				scope,
-				status,
-			}),
-		);
+		const res = fastify.jc.encode({
+			userId,
+			notificationId,
+			scope,
+			status,
+		});
 
-		await fastify.nats.flush();
+		fastify.nats.publish('gateway.notification.update', res);
 	}
 
-	async updateNotification(userId: number, payload: NotificationUpdate) {
+	async updateNotification(userId: number, payload: UPDATE_NOTIFICATION) {
 		const { notificationId, scope, status } = payload;
 
 		if (scope === 'all') {
@@ -77,57 +71,49 @@ class NotifSerives {
 	}
 
 	async unpackMessages(
-		fullData: NotificationDetail[],
-	): Promise<ClientNotification[]> {
+		fullData: RAW_NOTIFICATION[],
+	): Promise<USER_NOTIFICATION[]> {
 		return Promise.all(fullData.map(this.filterMessage));
 	}
 
-	private async filterMessage(
-		data: NotificationDetail,
-	): Promise<ClientNotification> {
+	private async filterMessage(data: RAW_NOTIFICATION): Promise<USER_NOTIFICATION> {
 		const res = await fastify.nats.request(
 			'user.image',
-			fastify.jc.encode({ userId: data.senderId }),
+			fastify.jc.encode({ userId: data.sender_id }),
 		);
 
 		const avatar = fastify.jc.decode(res.data);
 
 		return {
 			id: data.id,
-			senderUsername: data.senderUsername,
-			recipientUsername: data.recipientUsername,
+			senderId: data.sender_id,
+			senderUsername: data.sender_username,
+			receiverId: data.receiver_id,
 			content: data.content,
 			type: data.type,
-			createdAt: data.createdAt,
-			updatedAt: data.updatedAt,
+			createdAt: data.created_at,
+			updatedAt: data.updated_at,
 			status: data.status,
-			actionUrl: data.actionUrl,
+			actionUrl: data.action_url,
 			avatar: avatar,
 		};
 	}
 
 	private async registerNotification(
-		payload: NotificationPayload,
-	): Promise<NotificationDetail> {
-		const { senderId, recipientId } = payload;
+		payload: NOTIFY_USER_PAYLOAD,
+	): Promise<RAW_NOTIFICATION> {
+		const { senderId } = payload;
 
-		const resOne = await fastify.nats.request(
+		const senderUser = await fastify.nats.request(
 			'user.username',
 			fastify.jc.encode({ userId: senderId }),
 		);
-		const resTwo = await fastify.nats.request(
-			'user.username',
-			fastify.jc.encode({ userId: recipientId }),
-		);
 
-		const senderUsername = fastify.jc.decode(resOne.data);
-		const recipientUsername = fastify.jc.decode(resTwo.data);
+		const senderUsername = fastify.jc.decode(senderUser.data);
 
-		// Register the Notification Message
-		const data: NotificationDetail = await this.notifRepository.registerMessage(
+		const data: RAW_NOTIFICATION = await this.notifRepository.registerMessage(
 			payload,
 			senderUsername,
-			recipientUsername,
 		);
 
 		return data;

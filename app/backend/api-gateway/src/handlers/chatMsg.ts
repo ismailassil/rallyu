@@ -7,15 +7,20 @@ function handleChatMsg(m: JsMsg) {
 	const { data } = m;
 	const payload = fastify.jsCodec.decode(data) as ChatPayload;
 
+	fastify.log.info(payload);
+
 	const senderRoom = payload?.senderId?.toString();
-	const receivedRoom = payload?.receiverId?.toString();
+	const receiverRoom = payload?.receiverId?.toString();
+
+	fastify.log.info(senderRoom);
+	fastify.log.info(receiverRoom);
 
 	if (m.subject.includes('send_msg')) {
 		fastify.log.info('====== send_msg');
 		fastify.io.to(senderRoom).emit('chat_update_msg', payload);
 	} else if (m.subject.includes('update_msg')) {
 		fastify.log.info('====== update_msg');
-		fastify.io.to(receivedRoom).emit('chat_receive_msg', payload);
+		fastify.io.to(receiverRoom).emit('chat_receive_msg', payload);
 	}
 
 	/***
