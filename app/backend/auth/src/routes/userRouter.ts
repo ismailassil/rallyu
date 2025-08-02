@@ -6,7 +6,9 @@ import RelationsRepository from "../repositories/relationsRepository";
 import { matchesRequestSchema, relationsRequestSchema, statsRequestSchema, userMatchesSchema, userProfileSchema, userUpdateSchema } from "../schemas/users.schema";
 import Authenticate from "../middleware/Authenticate";
 import MatchesRepository from "../repositories/matchesRepository";
-import multipart from '@fastify/multipart';
+import fastifyMutipart from '@fastify/multipart';
+import fastifyStatic from '@fastify/static';
+import path from "path";
 
 async function userRouter(fastify: FastifyInstance) {
 	const userController: UserController = new UserController();
@@ -15,12 +17,17 @@ async function userRouter(fastify: FastifyInstance) {
 	const relRepo: RelationsRepository = new RelationsRepository();
 	const statsRepo: MatchesRepository = new MatchesRepository();
 
-	await fastify.register(multipart, {
+	await fastify.register(fastifyMutipart, {
 		limits: {
 			files: 1,
 			fileSize: 2 * 1024 * 1024,
 			fields: 0
 		}
+	});
+
+	await fastify.register(fastifyStatic, {
+		root: path.join(__dirname, '../../','uploads', 'avatars'),
+		prefix: '/avatars/'
 	});
 
 	fastify.decorate('authenticate', Authenticate); // auth middleware for protected routes
