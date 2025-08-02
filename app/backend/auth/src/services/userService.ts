@@ -119,6 +119,22 @@ class UserService {
 
 		return friendship_status;
 	}
+
+	async getUsername(user_id: number) {
+		const existingUser = await this.userRepository.findById(user_id);
+		if (!existingUser)
+			throw new UserNotFoundError();
+
+		return existingUser.username;
+	}
+
+	async getAvatar(user_id: number) {
+		const existingUser = await this.userRepository.findById(user_id);
+		if (!existingUser)
+			throw new UserNotFoundError();
+
+		return existingUser.avatar_url;
+	}
 }
 
 export default UserService;
