@@ -2,14 +2,14 @@ import geistSans from "@/app/fonts/geistSans";
 import { useGameContext } from "../../contexts/gameContext";
 import { useTicTacToe } from "@/app/(onsite)/contexts/tictactoeContext";
 
-function StartButton() {
+function QueueButton() {
 	const { setLaunch } = useGameContext();
 	const { playerOne, setPlayerOne, playerTwo, setPlayerTwo, setPlayers } = useTicTacToe();
 
 	return (
 		<button
 			className={`${geistSans.className} min-h-11 lg:h-13 lg:min-h-13 bg-main hover:scale-101 hover:text-main hover:ring-3 h-11
-						w-full flex-1 cursor-pointer rounded-md text-base
+						w-full flex-1 cursor-pointer rounded-lg text-base
 						font-semibold uppercase ring-white/20 transition-all duration-300 hover:bg-white lg:text-lg
 					`}
 			onClick={(e) => {
@@ -32,9 +32,9 @@ function StartButton() {
 				setLaunch(true);
 			}}
 		>
-			Start The Game
+			Queue
 		</button>
 	);
 }
 
-export default StartButton;
+export default QueueButton;

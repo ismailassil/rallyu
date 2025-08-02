@@ -1,10 +1,15 @@
 import type { GameState, MessageCallBack } from "../types/GameTypes"
 
+const MAX_RETRIES = 3;
+
 class SocketProxy {
 	private static instance: SocketProxy;
 	private socket: WebSocket | null = null;
 	private subscribers: MessageCallBack[] = [];
 	private url: string | null = null;
+	private retryAttemts: number = 0;
+	private destroyed: boolean = false;
+
 
 	private constructor() {};
 
@@ -45,10 +50,17 @@ class SocketProxy {
 
 		this.socket.onclose = (event: CloseEvent): void => {
 			console.log("Disconnected from Pong Websocket");
-			if (event.code === 42) // normal disconnection
+			if (event.code === 1000) // normal disconnection
 				return;
+
+			if (this.retryAttemts >= MAX_RETRIES) {
+				console.warn("Max retry attemts reached.");
+				return;
+			}
+
 			console.log("Reconnecting...");
 			setTimeout(() => this.reconnect(), 5000); // reconnect after 5 seconds
+			this.retryAttemts++;
 		}
 
 		this.socket.onerror = (error: Event): void => {
@@ -58,12 +70,13 @@ class SocketProxy {
 	}
 
 	private reconnect(): void {
-		if (this.url)
+		if (this.url && !this.destroyed)
 			this.connect(this.url);
 	}
 
 	public disconnect(): void {
-		this.socket?.close(42, "Normal");
+		this.destroyed = true;
+		this.socket?.close(1000, "Normal");
 	}
 
 	public send(message: any): void {
