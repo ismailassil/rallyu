@@ -9,13 +9,12 @@ import {
 } from 'react';
 import { ToastType } from '../types/Toaster.types';
 import { useHeaderContext } from '../../context/HeaderContext';
-import {
-	HistoryType,
-	IUpdateTypes,
-	NotifContextTypes,
-	NotificationType,
-} from '../types/NotifContext.types';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
+import { NotificationPayload, 
+	UpdateNotificationPayload, 
+	NotifContextTypes, 
+	HistoryPayload
+} from '../types/NotifContext.types';
 
 // Create the Context
 export const NotifContext = createContext<NotifContextTypes | undefined>(undefined);
@@ -33,13 +32,13 @@ export function useNotification() {
 	return context;
 }
 
-function getToastData(data: NotificationType): ToastType {
+function getToastData(data: NotificationPayload): ToastType {
 	return {
 		id: data.id.toString(),
 		image: '/profile/image_2.jpg',
-		username: data.from_user,
+		username: data.senderUsername,
 		type: data.type,
-		action_url: data.action_url
+		action_url: data.actionUrl ?? '',
 	};
 }
 
@@ -48,7 +47,7 @@ export function NotificationProvider({
 }: Readonly<{ children: React.ReactNode }>) {
 	const DEFAULT_TIME = 3 * 1000;
 
-	const [notifications, setNotifications] = useState<NotificationType[]>([]);
+	const [notifications, setNotifications] = useState<NotificationPayload[]>([]);
 	const [toastNotifications, setToastNotifications] = useState<ToastType[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [notifLength, setNotifLength] = useState<number>(0);
@@ -76,7 +75,7 @@ export function NotificationProvider({
 
 
 	const handleNotify = useCallback(
-		(data: NotificationType) => {
+		(data: NotificationPayload) => {
 			setNotifications((prev) => [data, ...prev]);
 
 			if (!isNotifRef.current) {
@@ -93,29 +92,28 @@ export function NotificationProvider({
 		[handleRemove, playSound],
 	);
 
-	const handleUpdate = useCallback((payload: IUpdateTypes) => {
-		const { notifType, notifStatus} = payload;
+	const handleUpdate = useCallback((payload: UpdateNotificationPayload) => {
+		const { scope, status, notificationId } = payload;
 
 		setNotifications((prev) => {
-			if (typeof notifType === 'number') {
-				return prev.map((notif) => 
-					notif.id === notifType ? { ...notif, status: notifStatus } : notif
-				);
+			if (scope === 'single') {
+				return prev.map((notif) => (
+					notif.id === notificationId ? {...notif, status}: notif
+				));
 			}
-			if (notifStatus === 'dismissed') return [];
-
-			return prev.map((notif) => ({ ...notif, status: notifStatus }));
+			if (status === 'dismissed') return [];
+			return prev.map((notif) => ({...notif, status: status}));
 		});
 	}, []);
 
 	useEffect(() => {
 
-		socket.on('notify', handleNotify);
-		socket.on('update', handleUpdate);
+		socket.on('notification_notify', handleNotify);
+		socket.on('notification_update', handleUpdate);
 		
 		return () => {
-			socket.off('notify', handleNotify);
-			socket.off('update', handleUpdate);
+			socket.off('notification_notify', handleNotify);
+			socket.off('notification_update', handleUpdate);
 		};
 		
 	}, [handleNotify, handleUpdate, socket]);
@@ -128,7 +126,7 @@ export function NotificationProvider({
 		setIsLoading(true);
 
 		api.instance
-			.get<HistoryType>(
+			.get<HistoryPayload>(
 				`/notif/history?page=${pageRef.current}`,
 			)
 			.then((response) => {

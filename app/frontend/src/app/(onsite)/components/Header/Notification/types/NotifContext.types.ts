@@ -1,10 +1,9 @@
 import { Dispatch, SetStateAction } from "react";
-import { NotifType, statusType } from "./NotificationCard.types";
 import { ToastType } from "./Toaster.types";
 
 export interface NotifContextTypes {
-	notifications: NotificationType[];
-	setNotifications: Dispatch<SetStateAction<NotificationType[]>>;
+	notifications: NotificationPayload[];
+	setNotifications: Dispatch<SetStateAction<NotificationPayload[]>>;
 	toastNotifications: ToastType[];
 	setToastNotifications: Dispatch<SetStateAction<ToastType[]>>;
 	handleRemove: (id: string) => void;
@@ -13,24 +12,40 @@ export interface NotifContextTypes {
 	DEFAULT_TIME: number;
 }
 
-export interface NotificationType {
+/************************************************************** */
+/************************* UPDATE EVENT *************************/
+/************************************************************** */
+
+type NotificationUpdateScope = 'all' | 'single';
+
+type StatusType = 'read' | 'unread' | 'dismissed';
+
+export interface UpdateNotificationPayload {
+	userId: number;
+	notificationId: number;
+	scope: NotificationUpdateScope;
+	status: StatusType;
+}
+
+/************************************************************** */
+/************************* NOTIFY EVENT *************************/
+/************************************************************** */
+
+type NotificationType = 'chat' | 'game' | 'friend_request';
+
+export interface NotificationPayload {
 	id: number;
-	from_user: string;
-	to_user: string;
-	message: string;
-	type: NotifType;
-	created_at: string;
-	updated_at: string;
-	status: statusType;
-	action_url: string;
+	senderUsername: string;
+	content: string;
+	type: NotificationType;
+	createdAt: string;
+	updatedAt: string;
+	status: StatusType;
+	actionUrl: string | null;
+	avatar: Buffer;
 }
 
-export interface IUpdateTypes {
-	notifStatus: statusType;
-	notifType: (boolean | undefined) | number;
-}
-
-export interface HistoryType {
-	status: "success" | "error";
-	message: NotificationType[];
+export interface HistoryPayload {
+	status: 'success' | 'error';
+	message: NotificationPayload[];
 }
