@@ -11,7 +11,7 @@ export type UserProfileType = {
         email: string
         username: string
         bio: string
-        avatar_url: string
+        avatar_path: string
         role: string
     }
     friendship_status: null | string
@@ -62,7 +62,12 @@ export default function useUserProfile(username: string) : { isLoading: boolean,
 	async function initializeUserProfile(username: string) {
 		try {
 			const userProfile = await api.getUser(username);
+            // const userAvatar = await api.getUserAvatar(userProfile.user.avatar_path);
+            // const avatarBlob = await userAvatar.blob();
+            // const avatarURL = URL.createObjectURL(avatarBlob);
+            // console.log(avatarURL);
 			setUserProfile(userProfile);
+			// setUserProfile(userProfile);
 		} catch {
 			setUserProfile(null);
 		} finally {
