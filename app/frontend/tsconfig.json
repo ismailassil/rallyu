@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,14 +23,22 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
   "include": [
-    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "../../../../../goinfre/next-cache/.next/types/**/*.ts",
     ".next/types/**/*.ts",
+    "/Users/nazouz/goinfre/next-cache/.next/types/**/*.ts",
+    "next-env.d.ts",
+    "~/goinfre/next-cache/.next/types/**/*.ts",
+    "../../../../../../../../../../../goinfre/nazouz/next-cache/.next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
