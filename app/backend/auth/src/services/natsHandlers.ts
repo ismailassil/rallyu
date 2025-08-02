@@ -15,8 +15,8 @@ export async function handleUserRequests(msg: any) {
 			break ;
 		}
 		case 'user.avatar': {
-			const avatar_url = await userService.getAvatar(data.user_id);
-			msg.respond(jsonC.encode({ avatar_url }));
+			const avatar_path = await userService.getAvatar(data.user_id);
+			msg.respond(jsonC.encode({ avatar_path }));
 			break ;
 		}
 		default:

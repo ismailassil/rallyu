@@ -175,7 +175,7 @@ class UserService {
 		if (!existingUser)
 			throw new UserNotFoundError();
 
-		return existingUser.avatar_url;
+		return existingUser.avatar_path;
 	}
 }
 
