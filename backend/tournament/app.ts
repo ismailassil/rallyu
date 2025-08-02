@@ -20,9 +20,10 @@ app.register(fastifyCors, {
 });
 app.register(connectDatabase);
 
-app.after(() => {
-  initTournamentModel(app);
-  initTournamentMatchesModel(app);
+app.after(async () => {
+ 	await initTournamentModel(app);
+	await initTournamentMatchesModel(app);
+	await app.tournamentModel.startUpdatingTournaments();
 });
 
 app.get(
@@ -33,11 +34,11 @@ app.get(
     const tournament = await req.server.tournamentModel.tournamentGet(tournamentId);
     const tournamentMatches = await req.server.tournamentMatchesModel.matchesGet(tournamentId);
 
-    console.log(tournament);
-    console.log(tournamentMatches);
     
     if (!tournament) return rep.code(404).send({});
-
+    console.log(tournament);
+    console.log(tournamentMatches);
+	
     return rep.code(200).send({
     	status: true,
 		data: {

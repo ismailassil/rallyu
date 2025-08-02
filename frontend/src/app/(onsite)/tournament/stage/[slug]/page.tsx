@@ -20,7 +20,6 @@ const Brackets = function (props) {
 
 				console.log(data);
 				setTournament((prev) => data.data);
-				isPlayerJoined(data.data);
 			} catch (err) {
 				console.error(err);
 			}

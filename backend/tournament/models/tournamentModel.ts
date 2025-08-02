@@ -9,6 +9,7 @@ interface TournamentSchema {
   mode: string;
   contenders_size: number;
   contenders_joined: number;
+  state?: string;
   access: string;
   start_date: string;
 }
@@ -28,6 +29,7 @@ class TournamentModel {
             mode varchar(255) NOT NULL,
             contenders_size int DEFAULT 4 NOT NULL,
             contenders_joined int DEFAULT 0 NOT NULL,
+			state varchar(255) DEFAULT pending NOT NULL,
             access varchar(255) NOT NULL,
             start_date timestamp NOT NULL
         )`;
@@ -137,6 +139,17 @@ class TournamentModel {
 				}
 			)
 		});
+	}
+
+	async startUpdatingTournaments() {
+		setInterval(() => {
+			const now = Date();
+
+			console.log(now);
+
+			
+
+		}, 1000 * 10);
 	}
 }
 
