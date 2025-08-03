@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import Stats from "../../components/Items/Stats";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Image from "next/image";
+import ReadyButton from "./components/ReadyButton";
 
 const Brackets = function (props) {
 	const { slug } = useParams();
@@ -20,6 +22,7 @@ const Brackets = function (props) {
 
 				console.log(data);
 				setTournament((prev) => data.data);
+				isPlayerJoined(data.data);
 			} catch (err) {
 				console.error(err);
 			}
@@ -52,6 +55,8 @@ const Brackets = function (props) {
 
 	const leaveTournamentHandler = async (e) => {
 		try {
+			e.preventDefault();
+
 			const req = await fetch(`http://localhost:3008/api/v1/tournament-matches/leave/${slug}`, {
 				method: "PATCH",
 				headers: {
@@ -80,20 +85,20 @@ const Brackets = function (props) {
 		return style.concat(" opacity-50");
 	};
 
-	const isPlayerJoined = (data = null) => {
-		if (!data) {
-			for (let i = 0; tournament.matches.length - 1; i++) {
-				// I need user id
-				if (tournament.matches[0].player_1 === 1 || tournament.matches[0].player_2 === 1)
-					return setJoined(true);
-			}
-		} else {
-			for (let i = 0; data.matches.length - 1; i++) {
-				// I need user id
-				if (data.matches[0].player_1 === 1 || data.matches[0].player_2 === 1)
-					return setJoined(true);
-			}
+	const isPlayerJoined = (data) => {
+		// if (!data) {
+		// 	for (let i = 0; tournament.matches.length - 1; i++) {
+		// 		// I need user id
+		// 		if (tournament.matches[0].player_1 === 1 || tournament.matches[0].player_2 === 1)
+		// 			return setJoined(true);
+		// 	}
+		// } else {
+		for (let i = 0; data.matches.length - 1; i++) {
+			// I need user id
+			if (data.matches[0].player_1 === 1 || data.matches[0].player_2 === 1)
+				return setJoined(true);
 		}
+		// }
 		return setJoined(false);
 	};
 
@@ -106,7 +111,7 @@ const Brackets = function (props) {
 				className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
 			>
 				<article className="bg-card border-br-card flex h-full w-full justify-center rounded-2xl border-2">
-					<div className="max-w-300 h-full w-full gap-10 p-4">
+					<div className="max-w-300 h-full w-full gap-10 p-4 flex flex-col">
 						{tournament && (
 							<>
 								<div className="mb-20 flex justify-between">
@@ -296,6 +301,10 @@ const Brackets = function (props) {
 										</div>
 									</div>
 								</div>
+								{
+									tournament.tournament.state == "pending" &&
+										<ReadyButton slug={slug}/>
+								}
 							</>
 						)}
 					</div>
@@ -304,5 +313,4 @@ const Brackets = function (props) {
 		</AnimatePresence>
 	);
 };
-
 export default Brackets;

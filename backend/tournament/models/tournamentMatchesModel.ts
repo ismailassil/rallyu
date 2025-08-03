@@ -7,6 +7,8 @@ interface TournamentMatchesSchema {
 	tournament_id: number;
 	player_1: number;
 	player_2: number;
+	player_1_ready: number;
+	player_2_ready: number;
 	winner: number;
 	results: string; // Ex: "5|7"
 	stage: string;
@@ -26,6 +28,8 @@ class TournamentMatchesModel {
             tournament_id INTEGER NOT NULL,
             player_1 INTEGER,
             player_2 INTEGER,
+            player_1_ready INTEGER DEFAULT 0 NOT NULL,
+            player_2_ready INTEGER DEFAULT 0 NOT NULL,
             winner INTEGER,
             results varchar(255),
             stage varchar(255) NOT NULL,
@@ -113,17 +117,55 @@ class TournamentMatchesModel {
                 })
         });
     }
+
+    async playerReadyMatch(id: number, player_place: number) {
+        await new Promise((resolve, reject) => {
+            this.DB.run(`UPDATE ${this.modelName}
+                SET player_${player_place}_ready=1 WHERE id=?`,
+                [id],
+                (err) => {
+                    if (err) reject(err)
+                        else resolve(null)
+                })
+        });
+    }
+
+	async monitorReadyMatches() {
+		setInterval(async () => {
+			try {
+				console.log("Interval for ready");
+				const data: TournamentMatchesSchema[] = await new Promise<TournamentMatchesSchema []>((resolve, reject) => {
+						this.DB.all(`SELECT * FROM ${this.modelName} WHERE player_1_ready=1 AND player_2_ready=1 AND results IS NULL`,
+						[],
+						(err, rows: TournamentMatchesSchema []) => err ? resolve(rows) : reject(err)
+					);
+				});
+			
+				// Notify everysingle user here that their match is ready to play!
+				if (data)
+					data.forEach(async (match: TournamentMatchesSchema) => {
+						// Notify every single user;
+					});
+			} catch (err) {
+				console.log(err);
+			}
+		}, 1000 * 10);
+    }
+
+    // async finishTournament() {
+    //     this.DB.run(`UPDATE ${this.modelName} SET results='5|7' WHERE stage='final'`);
+    // }
 }
 
 const initTournamentMatchesModel = async function (app: FastifyInstance) {
-  try {
-    const tournamentMatchesModel = new TournamentMatchesModel(app);
-    await tournamentMatchesModel.init();
+	try {
+		const tournamentMatchesModel = new TournamentMatchesModel(app);
+		await tournamentMatchesModel.init();
 
-    app.tournamentMatchesModel = tournamentMatchesModel;
-  } catch (err) {
-    console.log(err);
-  }
+		app.tournamentMatchesModel = tournamentMatchesModel;
+	} catch (err) {
+		console.log(err);
+	}
 };
 
 export { TournamentMatchesSchema, initTournamentMatchesModel };

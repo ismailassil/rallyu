@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import app from "../app";
 import sqlite3 from "sqlite3";
+import { chownSync } from "fs";
 
 interface TournamentSchema {
   id: number;
@@ -22,17 +23,25 @@ declare module "fastify" {
 
 class TournamentModel {
   private modelName = "Tournaments";
-  private sqlQuery = `CREATE TABLE IF NOT EXISTS ${this.modelName} (
+  private sqlQuery = `
+  		CREATE TABLE IF NOT EXISTS ${this.modelName} (
             id INTEGER UNIQUE NOT NULL PRIMARY KEY,
             title varchar(255) NOT NULL,
             host_id INTEGER NOT NULL,
             mode varchar(255) NOT NULL,
-            contenders_size int DEFAULT 4 NOT NULL,
-            contenders_joined int DEFAULT 0 NOT NULL,
+            contenders_size INTEGER DEFAULT 4 NOT NULL,
+            contenders_joined INTEGER DEFAULT 0 NOT NULL,
 			state varchar(255) DEFAULT pending NOT NULL,
             access varchar(255) NOT NULL,
             start_date timestamp NOT NULL
-        )`;
+        );
+		CREATE TRIGGER IF NOT EXISTS tournament_finish AFTER UPDATE ON TournamentMatches
+			FOR EACH ROW
+			WHEN (OLD.stage='final' AND OLD.results IS NULL AND NEW.results IS NOT NULL)
+		BEGIN
+			UPDATE ${this.modelName} SET state='finished' WHERE id=NEW.tournament_id;
+		END;
+		`;
   private DB: sqlite3.Database;
   private app: FastifyInstance;
 
@@ -115,7 +124,7 @@ class TournamentModel {
 		const data: TournamentSchema = await new Promise<TournamentSchema>(
 			(resolve, reject) => {
 			this.DB.all(
-				`SELECT * FROM ${this.modelName} LIMIT ?`,
+				`SELECT * FROM ${this.modelName} WHERE state='pending' LIMIT ?`,
 				[limit],
 				(err, rows: TournamentSchema) => {
 				if (err) reject(err);
@@ -141,14 +150,22 @@ class TournamentModel {
 		});
 	}
 
-	async startUpdatingTournaments() {
+	startTournaments() {
 		setInterval(() => {
-			const now = Date();
+			const now = (new Date()).toISOString();
+			// const data = await new Promise((resolve, reject) => {
+			// 	this.DB.run(`UPDATE ${this.modelName} SET state='ongoing' WHERE start_date<='${now}' AND state='pending'`, 
+			// 		(err) => err ? reject(err) : resolve(null));
+			// });
+			// this.DB.run("UPDATE Tournaments SET start_date=?", [now])
+			this.DB.run(`UPDATE ${this.modelName} SET state='ongoing' WHERE start_date<='${now}' AND state='pending'`,
+				(err) => {
+					console.log(err);
+				}
+			);
+			console.log("Interval for tournament state");
 
-			console.log(now);
-
-			
-
+			// NOTIFY USERS THAT THE TOURNAMENT HAS STARTED
 		}, 1000 * 10);
 	}
 }

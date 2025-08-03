@@ -21,32 +21,41 @@ app.register(fastifyCors, {
 app.register(connectDatabase);
 
 app.after(async () => {
- 	await initTournamentModel(app);
 	await initTournamentMatchesModel(app);
-	await app.tournamentModel.startUpdatingTournaments();
+	await initTournamentModel(app);
+	app.tournamentModel.startTournaments();
+	app.tournamentMatchesModel.monitorReadyMatches();
 });
 
 app.get(
-  "/api/v1/tournament/:tournamentId",
-  async function (req: FastifyRequest, rep: FastifyReply) {
-    const tournamentId = req.params.tournamentId;
+	"/api/v1/tournament/:tournamentId",
+	async function (req: FastifyRequest, rep: FastifyReply) {
+		try {
 
-    const tournament = await req.server.tournamentModel.tournamentGet(tournamentId);
-    const tournamentMatches = await req.server.tournamentMatchesModel.matchesGet(tournamentId);
-
-    
-    if (!tournament) return rep.code(404).send({});
-    console.log(tournament);
-    console.log(tournamentMatches);
-	
-    return rep.code(200).send({
-    	status: true,
-		data: {
-			tournament,
-			matches: tournamentMatches,
+			const tournamentId = req.params.tournamentId;
+			
+			const tournament = await req.server.tournamentModel.tournamentGet(tournamentId);
+			const tournamentMatches = await req.server.tournamentMatchesModel.matchesGet(tournamentId);
+			
+			
+			if (!tournament) return rep.code(404).send({});
+			console.log(tournament);
+			console.log(tournamentMatches);
+			
+			return rep.code(200).send({
+				status: true,
+				data: {
+					tournament,
+					matches: tournamentMatches,
+				}
+			});
+		} catch(err) {
+			return rep.code(404).send({
+				status: false,
+				message: "Tournament was not found!"
+			})
 		}
-    });
-  }
+  	}
 );
 
 app.get(
@@ -195,5 +204,44 @@ app.patch(
 	}
   }
 );
+
+app.patch("/api/v1/tournament-matches/ready/:tournamentId", async function (req: FastifyRequest, rep: FastifyReply) {
+	try {
+		const playerId = req.body.id;
+		const tournamentId = req.params.tournamentId;
+
+		const tournamentMatches: TournamentMatchesSchema[] = await req.server.tournamentMatchesModel.matchesGet(tournamentId);
+		
+		if (!playerId || !tournamentId)
+			throw Error("Bad request!");
+
+		for (let i = 0; i < tournamentMatches.length; i++) {
+			if (tournamentMatches[i].player_1 === playerId) {
+				if (!tournamentMatches[i].player_1_ready) {
+					await req.server.tournamentMatchesModel.playerReadyMatch(tournamentMatches[i].id, 1);
+					break ;
+				}
+			}
+			if (tournamentMatches[i].player_2 === playerId) {
+				if (!tournamentMatches[i].player_2_ready) {
+					await req.server.tournamentMatchesModel.playerReadyMatch(tournamentMatches[i].id, 2);
+					break ;
+				}
+			}
+		}
+
+		return rep.code(201).send({
+			status: true,
+			message: "Ready for match!"
+		})
+	} catch (err: unknown) {
+
+		if (err instanceof Error)
+			return rep.code(400).send({
+				status: false,
+				message: err.message
+			});
+	}
+});
 
 export default app;
