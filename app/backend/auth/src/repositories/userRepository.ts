@@ -2,6 +2,7 @@ import { db } from "../database";
 import { CreateUserRequest, ISQLCreateUser, User } from "../types";
 import { InternalServerError } from "../types/auth.types";
 
+// avatar_url => avatar_path
 class UserRepository {
 
 	async create(
@@ -9,16 +10,16 @@ class UserRepository {
 		email: string,
 		first_name: string,
 		last_name: string,
-		avatar_url: string,
+		avatar_path: string,
 		auth_provider: string,
 		password?: string
 	) : Promise<number> {
 		
 		try {
 			const runResult = await db.run(
-				`INSERT INTO users (username, password, email, first_name, last_name, avatar_url, auth_provider) 
+				`INSERT INTO users (username, password, email, first_name, last_name, avatar_path, auth_provider) 
 					VALUES (?, ?, ?, ?, ?, ?, ?)`,
-				[username, password, email, first_name, last_name, avatar_url, auth_provider]
+				[username, password, email, first_name, last_name, "/avatars/default.png", auth_provider]
 			);
 
 			// need to be moved somewhere else
