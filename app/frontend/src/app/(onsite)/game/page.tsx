@@ -1,12 +1,9 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import Loading from "./components/Loading";
 import GamePanel from "./components/GamePanel";
 
 export default function Game() {
-	const [launch, setLaunch] = useState<boolean>(false);
 
 	return (
 		<AnimatePresence>
@@ -25,7 +22,7 @@ export default function Game() {
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 1, delay: 0.2 }}
 						className="max-w-300 hide-scrollbar flex h-full w-full
-							flex-col gap-3 overflow-y-scroll p-4 pl-3 md:gap-5 lg:flex-row"
+						 gap-3 overflow-y-scroll p-4 pl-3 md:gap-5 lg:flex-row"
 					>
 						<GamePanel />
 					</motion.div>

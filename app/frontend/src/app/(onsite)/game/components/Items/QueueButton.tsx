@@ -1,40 +1,53 @@
-import geistSans from "@/app/fonts/geistSans";
-import { useGameContext } from "../../contexts/gameContext";
-import { useTicTacToe } from "@/app/(onsite)/contexts/tictactoeContext";
+import { useState } from "react"
 
-function QueueButton() {
-	const { setLaunch } = useGameContext();
-	const { playerOne, setPlayerOne, playerTwo, setPlayerTwo, setPlayers } = useTicTacToe();
+interface Toggle {
+	onToggle: ((clicked: boolean) => void) | null;
+}
+
+function QueueButton({ onToggle }: Toggle) {
+	const [ clicked, setClicked ] = useState(false);
+
+	const onClick = () => {
+		setClicked(!clicked);
+		if (onToggle) {
+			onToggle(!clicked);
+		}
+	}
 
 	return (
 		<button
-			className={`${geistSans.className} min-h-11 lg:h-13 lg:min-h-13 bg-main hover:scale-101 hover:text-main hover:ring-3 h-11
-						w-full flex-1 cursor-pointer rounded-lg text-base
-						font-semibold uppercase ring-white/20 transition-all duration-300 hover:bg-white lg:text-lg
-					`}
-			onClick={(e) => {
-				e.preventDefault();
-				const p1 = !playerOne || playerOne === "" ? "Darth Vador" : playerOne;
-				const p2 = !playerTwo || playerTwo === "" ? "Lord Voldemort" : playerTwo;
-				const updatedPlayers = {
-					playerOne: {
-						name: p1,
-						img: "/profile/darthVader.jpeg",
-					},
-					playerTwo: {
-						name: p2,
-						img: "/profile/lordVoldemort.jpeg",
-					},
-				};
-				setPlayers(updatedPlayers);
-				setPlayerOne("");
-				setPlayerTwo("");
-				setLaunch(true);
-			}}
+			onClick={onClick}
+		  className="shadow-inner rounded-full py-[1.2rem] px-[3rem]
+			bg-black text-white uppercase font-black cursor-pointer self-center overflow-hidden
+			relative group box-border"
 		>
+		  <div className={`grid content-center inset-0 absolute text-black bg-white  
+			${clicked ? 'translate-y-full': ''}
+			transform transition-transform duration-150`
+			}>
 			Queue
+		  </div>
+		  <div className="inline-flex">
+			{"In Queue".split('').map((char, i) => (
+			  <span
+			  key={i}
+			  className={`
+				inline-block
+				transition-all duration-150
+				${clicked
+					? 'translate-y-0 opacity-100 [transition-delay:var(--hover-delay)]'
+					: `${i % 2 === 0 ? '-translate-y-[15px]' : 'translate-y-[15px]'} opacity-0`}
+			  `}
+			  style={{
+				'--hover-delay': `${i * 30}ms`
+			  } as React.CSSProperties}
+			>
+			  {char === ' ' ? "\u00A0" : char}
+			</span>
+			))}
+		  </div>
 		</button>
-	);
+	  )
 }
 
-export default QueueButton;
+export default QueueButton
