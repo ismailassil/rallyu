@@ -132,10 +132,6 @@ class UserController {
 			if (!fileData)
 				reply.status(400);
 
-			// if (!['image/jpeg', 'image/png'].includes(fileData!.mimetype))
-			// 	reply.status(404);
-			// should check for max file size
-
 			const avatarUrl = await this.userService.updateAvatar(user_id!, fileData!);
 
 			reply.status(201).send({ success: true, data: avatarUrl });

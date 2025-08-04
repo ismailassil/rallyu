@@ -8,6 +8,7 @@ type ProfileCardProps = {
 	fullName: string,
 	username: string,
 	bio: string,
+	avatar: string,
 	friendshipStatus: string | null,
 	level: number,
 	globalRank: number,
@@ -15,7 +16,7 @@ type ProfileCardProps = {
 	currentStreak: number
 };
 
-export default function ProfileCard({ user_id, fullName, username, bio, friendshipStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
+export default function ProfileCard({ user_id, fullName, username, bio, avatar, friendshipStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
 	return (
 		<header
 			className="bg-card border-br-card flex w-full flex-col items-center gap-8 lg:gap-12
@@ -56,24 +57,24 @@ export default function ProfileCard({ user_id, fullName, username, bio, friendsh
 							</div>}
 						
 					</div>
-					{/* <div className=""> */}
-						<div
-							className="ring-4 hover:ring-3 aspect-square h-[60%] sm:h-[80%] self-start sm:self-center
-								overflow-hidden rounded-full
-								ring-white/10 transition-all duration-500 hover:scale-105 hover:ring-white/30
-								"
-						>
-							<Image
-								className={`h-full w-full object-cover`}
-								src={"/profile/image.png"}
-								// src={userInfo.avatar_url}
-								width={100}
-								height={100}
-								quality={100}
-								alt="Profile Image"
-							/>
-						</div>
-					{/* </div> */}
+					<div
+						className="ring-4 hover:ring-3 aspect-square h-[60%] sm:h-[80%] self-start sm:self-center
+							overflow-hidden rounded-full relative
+							ring-white/10 transition-all duration-500 hover:scale-105 hover:ring-white/30
+							"
+					>
+						<Image
+							className={`h-full w-full object-cover`}
+							src={avatar || '/profile/image.png'}
+							// src={userInfo.avatar_url}
+							// width={100}
+							// height={100}
+							// quality={100}
+							fill
+							alt="Profile Image"
+							unoptimized
+						/>
+					</div>
 				</div>
 				<div className="flex h-[16%] w-full flex-col justify-end">
 					<div>
