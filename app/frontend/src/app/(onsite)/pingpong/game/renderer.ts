@@ -1,8 +1,7 @@
 import { GameState } from "../types/GameTypes"
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "../components/Pong"
 
-const halfPaddle = 30
-const halfBall = 5
+export const HALF_PADDLE = 30
 
 export const render = (ctx: CanvasRenderingContext2D, gameState: GameState) => {
 	ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT) // clears the canvas
@@ -18,7 +17,7 @@ export const render = (ctx: CanvasRenderingContext2D, gameState: GameState) => {
 	// player 1 paddle
 	ctx.fillRect(
 		gameState.players[0].rect.x - 5,
-		gameState.players[0].rect.y - halfPaddle,
+		gameState.players[0].rect.y - HALF_PADDLE,
 		gameState.players[0].rect.width,
 		gameState.players[0].rect.height
 	)
@@ -26,7 +25,7 @@ export const render = (ctx: CanvasRenderingContext2D, gameState: GameState) => {
 	// player 2 paddle
 	ctx.fillRect(
 		gameState.players[1].rect.x - 5, // pos x
-		gameState.players[1].rect.y - halfPaddle, // pos y
+		gameState.players[1].rect.y - HALF_PADDLE, // pos y
 		gameState.players[1].rect.width, // width
 		gameState.players[1].rect.height // height
 	)
