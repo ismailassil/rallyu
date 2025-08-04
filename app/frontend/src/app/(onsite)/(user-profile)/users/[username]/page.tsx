@@ -36,7 +36,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 						user_id={userProfile.user.id}
 						fullName={userProfile.user.first_name + ' ' + userProfile.user.last_name}
 						username={userProfile.user.username}
-						avatar={`http://localhost:4000/users${userProfile.user.avatar_path}`}
+						avatar={`http://localhost:4025/api/users${userProfile.user.avatar_path}`}
 						bio={userProfile.user.bio}
 						friendshipStatus={userProfile.friendship_status}
 						level={userProfile.stats.user.level}

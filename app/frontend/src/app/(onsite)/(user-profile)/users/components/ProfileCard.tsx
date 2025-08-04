@@ -72,7 +72,7 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatar, 
 							// quality={100}
 							fill
 							alt="Profile Image"
-							unoptimized
+							// unoptimized
 						/>
 					</div>
 				</div>
