@@ -89,11 +89,3 @@ fastify.get('/health', { exposeHeadRoute: false }, function (_, res: FastifyRepl
 		}
 	});
 })();
-
-// process.on('SIGINT', async () => {
-// 	fastify.log.info('[ ~ ] CLOSING FASTIFY');
-// 	await fastify.close();
-// 	fastify.log.info('[ + ] FASTIFY Closed Successfully');
-
-// 	process.exit(1);
-// });

@@ -2,8 +2,8 @@ import 'fastify';
 import { Server } from 'socket.io';
 import { ChatPayload, MessageType } from '../../types/chat.types.js';
 import {
-	NotificationPayload,
-	UpdateNotificationPayload,
+	UPDATE_NOTIFICATION,
+	USER_NOTIFICATION,
 } from '../../types/notification.types.js';
 
 declare module 'fastify' {
@@ -18,8 +18,8 @@ interface ClientToServerEvents {
 }
 
 interface ServerToClientEvents {
-	notification_update: (data: UpdateNotificationPayload) => void;
-	notification_notify: (data: NotificationPayload) => void;
+	notification_update: (data: UPDATE_NOTIFICATION) => void;
+	notification_notify: (data: USER_NOTIFICATION) => void;
 	chat_receive_msg: (data: ChatPayload) => void;
 	chat_update_msg: (data: ChatPayload) => void;
 }

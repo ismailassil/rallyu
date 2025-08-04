@@ -1,40 +1,38 @@
-export type StatusType = 'read' | 'unread' | 'dismissed';
+export interface RAW_NOTIFICATION {
+	id: number;
+	sender_id: number;
+	sender_username: string;
+	receiver_id: number;
+	content: string;
+	type: NOTIFICATION_TYPE;
+	created_at: string;
+	updated_at: string;
+	status: NOTIFICATION_STATUS;
+	action_url: string | null;
+}
 
-export interface NotificationDetail {
+export interface USER_NOTIFICATION {
 	id: number;
 	senderId: number;
 	senderUsername: string;
-	recipientId: number;
-	recipientUsername: string;
+	receiverId: number;
 	content: string;
-	type: NotificationType;
+	type: NOTIFICATION_TYPE;
 	createdAt: string;
 	updatedAt: string;
-	status: StatusType;
+	status: NOTIFICATION_STATUS;
 	actionUrl: string | null;
+	avatar: string;
 }
 
-export interface ClientNotification {
-	id: number;
-	senderUsername: string;
-	recipientUsername: string;
-	content: string;
-	type: NotificationType;
-	createdAt: string;
-	updatedAt: string;
-	status: StatusType;
-	actionUrl: string | null;
-	avatar: Buffer;
-}
-
-export type NotificationType = 'chat' | 'game' | 'friend_request';
-
-interface NotificationPayload {
+export interface NOTIFY_USER_PAYLOAD {
 	senderId: number;
-	recipientId: number;
-	type: NotificationType;
+	receiverId: number;
+	type: NOTIFICATION_TYPE;
 	message?: string;
 	actionUrl?: string;
 }
 
-export default NotificationPayload;
+export type NOTIFICATION_STATUS = 'read' | 'unread' | 'dismissed';
+
+export type NOTIFICATION_TYPE = 'chat' | 'game' | 'friend_request' | 'tournament';

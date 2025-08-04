@@ -1,12 +1,11 @@
 import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
-import { connect, JSONCodec, NatsConnection } from 'nats';
-import NotifSerives from '../../services/notif.services.js';
+import { connect, JSONCodec, NatsConnection, ErrorCode } from 'nats';
 import { NatsOpts } from '../types/nats.types.js';
-import NotificationPayload from '../types/notifications.types.js';
+import { NOTIFY_USER_PAYLOAD } from '../types/notifications.types.js';
 
 export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) => {
-	const notifServices = new NotifSerives();
+	const notifServices = fastify.notifService;
 
 	const nats: NatsConnection = await connect({
 		// servers: 'nats://nats:${opts.NATS_PORT}',
@@ -22,6 +21,7 @@ export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) =>
 	const js = nats.jetstream();
 
 	fastify.decorate('jc', jc);
+	fastify.decorate('nats', nats);
 
 	const consumer = await js.consumers.get(
 		'notificationStream',
@@ -32,19 +32,21 @@ export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) =>
 		const iter = await consumer.consume();
 
 		for await (const m of iter) {
-			const payload = jc.decode(m.data) as NotificationPayload;
+			const payload = jc.decode(m.data) as NOTIFY_USER_PAYLOAD;
 
 			try {
-				await notifServices.createAndDispatchNotification(payload);
+				if (m.subject.includes('dispatch')) {
+					await notifServices.createAndDispatchNotification(payload);
+				}
 			} catch (err) {
-				fastify.log.error((err as Error).message);
+				if (err instanceof Error) {
+					fastify.log.error('[NATS] NO RESPONDERS ' + err);
+				}
 			}
 
 			m.ack();
 		}
 	})();
-
-	fastify.decorate('nats', nats);
 
 	fastify.addHook('onClose', async () => {
 		try {
