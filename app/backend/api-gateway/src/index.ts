@@ -23,7 +23,7 @@ await fastify.register(cors, {
 	// origin: [`http://frontend:${FRONT_PORT}`],
 	origin: [`http://localhost:${FRONT_PORT}`],
 	allowedHeaders: ['Content-Type', 'Authorization'],
-	methods: ['GET', 'PUT', 'POST', 'DELETE'],
+	methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
 	credentials: true,
 });
 
