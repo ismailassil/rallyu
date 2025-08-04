@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import RelationsService from "../services/relationsService";
 import { IRelationsRequest } from "../types";
+import fastify from '../server';
 
 class RelationsController {
 	private relationsService: RelationsService;

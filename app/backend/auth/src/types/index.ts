@@ -128,7 +128,10 @@ export interface AuthenticatedRequest {
 declare module 'fastify' {
 	interface FastifyInstance {
 		requireAuth: any,
-		authenticate: any
+		authenticate: any,
+		js: any,
+		jsonC: any,
+		nc: any
 	}
 	interface FastifyRequest {
 		user: JWT_ACCESS_PAYLOAD | null,
