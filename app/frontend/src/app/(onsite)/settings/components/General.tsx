@@ -60,14 +60,14 @@ function ProfilePreview({ values, file, preview, onAdd, onRemove }) {
 			<div className='flex gap-8'>
 				<div className="rounded-full h-27 w-27 ring-4 ring-white/10 relative">
 					<Image
-						src={preview || `http://localhost:4000/users${mockUser.avatar_path}` || '/profile/image.png'}
+						src={preview || `http://localhost:4025/api/users${mockUser.avatar_path}` || '/profile/image.png'}
 						alt="Profile Image"
 						fill
 						// width={96}
 						// height={96}
 						className="h-full w-full object-cover rounded-full"
 						quality={100}
-						unoptimized
+						// unoptimized
 					/>
 					<input
 						id="profile-upload"
