@@ -11,6 +11,7 @@ const Brackets = function (props) {
 	const { slug } = useParams();
 	const [tournament, setTournament] = useState();
 	const [joined, setJoined] = useState();
+	const [ready, setReady] = useState<boolean>(false);
 
 	useEffect(() => {
 		const loadData = async function () {
@@ -93,10 +94,21 @@ const Brackets = function (props) {
 		// 			return setJoined(true);
 		// 	}
 		// } else {
+
 		for (let i = 0; data.matches.length - 1; i++) {
-			// I need user id
-			if (data.matches[0].player_1 === 1 || data.matches[0].player_2 === 1)
-				return setJoined(true);
+			// I need user id 1
+			if (data.matches[i].player_1 === 1) {
+				if (data.matches[i].player_1_ready)
+					setReady(true);
+				setJoined(true);
+				return ;
+			}
+			if (data.matches[i].player_2 === 1) {
+				if (data.matches[i].player_2_ready)
+					setReady(true);
+				setJoined(true);
+				return ;
+			}
 		}
 		// }
 		return setJoined(false);
@@ -303,7 +315,7 @@ const Brackets = function (props) {
 								</div>
 								{
 									tournament.tournament.state == "pending" &&
-										<ReadyButton slug={slug}/>
+										<ReadyButton slug={slug} readyProp={ready} />
 								}
 							</>
 						)}

@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 
-const ReadyButton = function ({ slug } : { slug: number }) {
-    const [ready, setReady] = useState<boolean>(false);
+const ReadyButton = function ({ slug, readyProp } : { slug: number, readyProp: boolean }) {
+    const [ready, setReady] = useState<boolean>(readyProp);
 
 
     const playerReadyHandler = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -24,23 +24,33 @@ const ReadyButton = function ({ slug } : { slug: number }) {
 				throw data;
 
 			console.log(data);
-            setReady(true);
+            setReady(!ready);
 		} catch (err: unknown) {
 			console.error(err);
 		}
 	};
 
 	return  (
-		<div className="w-full flex justify-center mt-auto mb-20">
+		<div className="w-full flex flex-col items-center gap-3 justify-center mt-auto mb-auto">
 			{
-				!ready &&
+				!ready ?
 				<button 
-					className="hover:cursor-pointer bg-yellow-600 text-xl px-10 py-3 rounded-xl"
+					className="cursor-pointer bg-yellow-600 text-xl px-10 py-3 rounded-xl"
 					onClick={playerReadyHandler}
 				>
 					I am Ready!
+				</button> :
+				<button 
+					className="bg-card px-20 py-3 outline-white/20 outline-1 rounded-sm cursor-pointer"
+					onClick={playerReadyHandler}
+				>
+					Cancel
 				</button>
+
 			}
+			<p className="text-zinc-500 font-medium outline px-4">
+				Press ready to join the match before the timer runs out!
+			</p>
 		</div>
 	);
 };

@@ -120,13 +120,16 @@ class TournamentMatchesModel {
 
     async playerReadyMatch(id: number, player_place: number) {
         await new Promise((resolve, reject) => {
-            this.DB.run(`UPDATE ${this.modelName}
-                SET player_${player_place}_ready=1 WHERE id=?`,
-                [id],
-                (err) => {
-                    if (err) reject(err)
-                        else resolve(null)
-                })
+			this.DB.run(`UPDATE ${this.modelName}
+				SET player_${player_place}_ready = CASE
+					WHEN player_${player_place}_ready=1 THEN 0
+					ELSE 1 END
+				WHERE id = ?`,
+				[id],
+				(err) => {
+					if (err) reject(err)
+						else resolve(null)
+				})
         });
     }
 
