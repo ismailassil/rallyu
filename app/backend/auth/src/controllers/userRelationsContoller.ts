@@ -9,6 +9,20 @@ class RelationsController {
 		this.relationsService = new RelationsService();
 	}
 
+	async getAllFriends(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+
+			const allFriends = await this.relationsService.getAllFriends(user_id!);
+
+			reply.status(201).send({ success: true, data: allFriends });
+		} catch (err: any) {
+			console.error(err);
+			const { statusCode, errorCode } = err;
+			reply.status(statusCode).send({ success: false, error: errorCode });
+		}
+	}
+
 	async sendFriendRequest(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { user_id: target_id } = request.params as IRelationsRequest;

@@ -11,6 +11,12 @@ class RelationsService {
 		this.userRepository = new UserRepository();
 	}
 
+	async getAllFriends(user_id: number) {
+		const allFriends = await this.relationsRepository.findAllFriends(user_id);
+
+		return allFriends;
+	}
+
 	async sendFriendRequest(sender_id: number, receiver_id: number) {
 		const targetExists = await this.userRepository.findById(receiver_id);
 		if (!targetExists)

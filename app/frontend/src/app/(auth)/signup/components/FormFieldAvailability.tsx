@@ -26,7 +26,7 @@ function getFieldStatusDisplay(label: string, fieldStatus: FieldStatus) {
 
 async function checkFormFieldAvailability(name: string, value: string) {
 	try {
-		const response = await fetch(`http://localhost:4000/api/users/available?${name}=${value}`, {
+		const response = await fetch(`http://localhost:4000/users/available?${name}=${value}`, {
 			method: 'GET'
 		});
 		
