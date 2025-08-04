@@ -1,4 +1,4 @@
-import { GameState, Rect } from "../types/GameTypes"
+import { GameState } from "../types/GameTypes"
 import SocketProxy from "./client";
 import { setupInputHandlers } from "./input"
 import render from "./renderer"
