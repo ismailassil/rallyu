@@ -17,6 +17,7 @@ export default function Custom404() {
 					style={{ width: "auto", height: "auto" }}
 					className="mb-10 rounded-lg"
 					priority={false}
+					unoptimized
 				/>
 				<div className={`${unicaOne.className} text-center`}>
 					<h1 className="text-9xl">404!</h1>
@@ -28,7 +29,11 @@ export default function Custom404() {
 						duration-300 hover:cursor-pointer hover:border-white/40"
 					onClick={(e) => {
 						e.preventDefault();
-						router.back();
+						if (window.history.state && window.history.state.idx > 0){
+							router.back();
+						} else {
+							router.push("/");
+						}
 					}}
 				>
 					Go back
