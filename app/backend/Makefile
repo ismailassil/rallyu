@@ -9,6 +9,8 @@ up:
 down:
 	docker-compose -f './compose.backend.yaml' down
 
+re: down up
+
 clean:
 	docker rm `docker ps -aq` -f
 	docker image rm `docker images -q` -f
