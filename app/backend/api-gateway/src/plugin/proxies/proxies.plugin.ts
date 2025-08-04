@@ -8,7 +8,7 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	const authProxyOptions = {
 		// upstream: `http://auth:${AUTH_PORT}`,
-		upstream: `http://host.docker.internal:${AUTH_PORT}`,
+		upstream: `http://ms-auth:${AUTH_PORT}`,
 		prefix: '/api/auth',
 		rewritePrefix: '/auth',
 		httpMethods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
@@ -16,7 +16,7 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	const usersProxyOptions = {
 		// upstream: `http://auth:${AUTH_PORT}`,
-		upstream: `http://host.docker.internal:${AUTH_PORT}`,
+		upstream: `http://ms-auth:${AUTH_PORT}`,
 		prefix: '/api/users',
 		rewritePrefix: '/users',
 		httpMethods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
@@ -24,7 +24,7 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	const notifProxyOptions = {
 		// upstream: `http://notif:${NOTIF_PORT}`,
-		upstream: `http://host.docker.internal:${NOTIF_PORT}`,
+		upstream: `http://ms-notif:${NOTIF_PORT}`,
 		prefix: '/api/notif',
 		rewritePrefix: '/notif',
 		httpMethods: ['GET', 'PUT'],
@@ -32,7 +32,7 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	const chatProxyOptions = {
 		// upstream: `http://chat:${CHAT_PORT}`,
-		upstream: `http://host.docker.internal:${CHAT_PORT}`,
+		upstream: `http://ms-chat:${CHAT_PORT}`,
 		prefix: '/api/chat',
 		rewritePrefix: '/chat',
 		httpMethods: ['GET', 'PUT'],
