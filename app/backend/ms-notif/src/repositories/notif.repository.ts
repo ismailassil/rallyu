@@ -1,52 +1,25 @@
 import fastify from '../app.js';
 import { NotificationNotFoundException } from '../shared/exceptions/NotificationNotFoundException.js';
-import NotificationPayload, {
-	NotificationDetail,
-	StatusType,
+import {
+	NOTIFICATION_STATUS,
+	NOTIFICATION_TYPE,
+	NOTIFY_USER_PAYLOAD,
+	RAW_NOTIFICATION,
 } from '../shared/types/notifications.types.js';
 
 class NotifRepository {
-	registerUser(username: string): Promise<number> {
-		return new Promise((resolve, reject) => {
-			fastify.database.run(
-				`INSERT INTO notification_users(username) VALUES(?)`,
-				username,
-				function (error) {
-					if (error) {
-						fastify.log.error('2- DB Error: ' + error);
-						reject(error);
-						return;
-					}
-					fastify.log.info(
-						`✅ ${username} inserted with ID: ${this.lastID}`,
-					);
-					resolve(this.lastID);
-				},
-			);
-		});
-	}
-
 	async registerMessage(
-		payload: NotificationPayload,
+		payload: NOTIFY_USER_PAYLOAD,
 		senderUsername: string,
-		recipientUsername: string,
-	): Promise<NotificationDetail> {
-		const { senderId, recipientId, type, message, actionUrl } = payload;
+	): Promise<RAW_NOTIFICATION> {
+		const { senderId, receiverId, type, message, actionUrl } = payload;
 
 		return new Promise((resolve, reject) => {
-			fastify.database.get<NotificationDetail>(
+			fastify.database.get<RAW_NOTIFICATION>(
 				`INSERT INTO messages
-					(sender_id, sender_username, recipient_id, recipient_username, type, content, action_url) 
+					(sender_id, sender_username, receiver_id, type, content, action_url) 
 					VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING *`,
-				[
-					senderId,
-					senderUsername,
-					recipientId,
-					recipientUsername,
-					type,
-					message,
-					actionUrl,
-				],
+				[senderId, senderUsername, receiverId, type, message, actionUrl],
 				async function (error, row) {
 					if (error) {
 						fastify.log.error('3- DB Error: ' + error);
@@ -60,19 +33,19 @@ class NotifRepository {
 		});
 	}
 
-	getMessages(user_id: number, page: number): Promise<NotificationDetail[]> {
-		fastify.log.info(`user_id: ${user_id} + page: ${page}`);
+	getMessages(receiver_id: number, page: number): Promise<RAW_NOTIFICATION[]> {
+		fastify.log.info(`receiver_id: ${receiver_id} + page: ${page}`);
 
 		const LIMIT = 10;
 
 		const offset = (page - 1) * LIMIT;
 		return new Promise((resolve, reject) => {
-			fastify.database.all<NotificationDetail>(
+			fastify.database.all<RAW_NOTIFICATION>(
 				`SELECT * FROM messages 
-					WHERE recipient_id = ? AND type != 'dismissed' 
+					WHERE receiver_id = ? AND type != 'dismissed' 
 					ORDER BY updated_at 
 					DESC LIMIT ? OFFSET ?`,
-				[user_id, LIMIT, offset],
+				[receiver_id, LIMIT, offset],
 				function (error, rows) {
 					if (error) {
 						fastify.log.error('4- DB Error: ' + error);
@@ -91,14 +64,14 @@ class NotifRepository {
 	}
 
 	updateNotif(
-		status: StatusType,
-		to_user_id: number,
+		status: NOTIFICATION_STATUS,
+		receiver_id: number,
 		notificationId: number,
 	): Promise<boolean> {
 		return new Promise((resolve, reject) => {
 			fastify.database.run(
-				'UPDATE messages SET status = ? WHERE id = ? AND to_user_id = ?',
-				[status, notificationId, to_user_id],
+				'UPDATE messages SET status = ? WHERE id = ? AND receiver_id = ?',
+				[status, notificationId, receiver_id],
 				function (error) {
 					if (error) {
 						fastify.log.error('5- DB Error: ' + error);
@@ -115,11 +88,11 @@ class NotifRepository {
 		});
 	}
 
-	updateAllNotif(status: StatusType, user_id: number): Promise<void> {
+	updateAllNotif(status: NOTIFICATION_STATUS, receiver_id: number): Promise<void> {
 		return new Promise((_, reject) => {
 			fastify.database.run(
-				'UPDATE messages SET status = ? WHERE to_user_id = ?',
-				[status, user_id],
+				'UPDATE messages SET status = ? WHERE receiver_id = ?',
+				[status, receiver_id],
 				(error) => {
 					if (error) {
 						fastify.log.error('6- DB Error: ' + error);

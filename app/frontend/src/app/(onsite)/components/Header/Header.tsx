@@ -26,8 +26,7 @@ export default function Header() {
 			initial={{ opacity: 0, y: -50 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.5, delay: 1 }}
-			className={`z-200 h-25 fixed left-0 top-0 flex w-full items-center justify-between p-6
-				${setScrolled && "backdrop-blur-2xl"}`}
+			className={`fixed top-0 left-0 z-200 flex h-25 w-full items-center justify-between p-6 ${setScrolled && "backdrop-blur-2xl"}`}
 		>
 			<Image
 				src={!Logo ? "/logo/rallyu-logo.svg" : "/logo/rallyu-jp.svg"}

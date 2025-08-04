@@ -49,10 +49,15 @@ async function natsPlugin(fastify, options) {
 				fastify.log.info(m.subject);
 
 				const data = jsCodec.decode(m.data);
-				fastify.log.info(jsCodec.decode(m.data));
+				fastify.log.info(data);
 
-				// const stmt = fastify.db.prepare('INSERT INTO message (senderId, receiverId, text, date) VALUES (?, ?, ?, ?) RETURNING *');
-				// const result = stmt.run(data.senderId, data.receiverId, data.text);
+				const stmt = fastify.db.prepare(
+					'INSERT INTO message (senderId, receiverId, text) VALUES (?, ?, ?) RETURNING *',
+				);
+				const result = stmt.get(data.senderId, data.receiverId, data.text);
+
+				fastify.log.info("RESULT=============")
+				fastify.log.info(result)
 
 				const res = jsCodec.encode(result);
 
@@ -67,8 +72,8 @@ async function natsPlugin(fastify, options) {
 				js.publish('notification.dispatch', jsCodec.encode(notifData));
 
 				/// ** TO REPLY (SEND TO BOTH USERS)
-				js.publish('gateway.update_msg#chat', res);
-				js.publish('gateway.receive_msg#chat', res);
+				js.publish('gateway.chat.update_msg', res);
+				js.publish('gateway.chat.receive_msg', res);
 
 				/// ! This is NECESSARY to confirm that the message has arrived
 				m.ack();

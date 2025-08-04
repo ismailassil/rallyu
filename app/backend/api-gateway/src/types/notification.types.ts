@@ -1,20 +1,43 @@
-type NotificationUpdateScope = 'all' | 'single';
+/************************************************************** */
+/************************* UPDATE EVENT *************************/
+/************************************************************** */
 
-type StatusType = 'read' | 'unread' | 'dismissed';
+type NOTIFICATION_SCOPE = 'all' | 'single';
 
-export interface UpdateNotificationPayload {
+export interface UPDATE_NOTIFICATION_PAYLOAD {
 	userId: number;
+	data: UPDATE_NOTIFICATION;
+}
+
+export interface UPDATE_NOTIFICATION {
 	notificationId: number;
-	scope: NotificationUpdateScope;
-	status: StatusType;
+	scope: NOTIFICATION_SCOPE;
+	status: NOTIFICATION_STATUS;
 }
 
-type NotificationType = 'chat' | 'game' | 'friend_request';
+/************************************************************** */
+/************************* NOTIFY EVENT *************************/
+/************************************************************** */
 
-export interface NotificationPayload {
+export interface USER_NOTIFICATION_PAYLOAD {
+	userId: number;
+	data: USER_NOTIFICATION;
+}
+
+export interface USER_NOTIFICATION {
+	id: number;
 	senderId: number;
-	recipientId: number;
-	type: NotificationType;
-	message?: string;
-	actionUrl?: string;
+	senderUsername: string;
+	receiverId: number;
+	content: string;
+	type: NOTIFICATION_TYPE;
+	createdAt: string;
+	updatedAt: string;
+	status: NOTIFICATION_STATUS;
+	actionUrl: string | null;
+	avatar: string;
 }
+
+export type NOTIFICATION_STATUS = 'read' | 'unread' | 'dismissed';
+
+export type NOTIFICATION_TYPE = 'chat' | 'game' | 'friend_request' | 'tournament';

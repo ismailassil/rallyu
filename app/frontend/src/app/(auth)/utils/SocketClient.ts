@@ -6,7 +6,7 @@ class SocketClient {
 
 	constructor() {
 		this.socket = io(this.BaseURL, {
-			autoConnect: true,
+			autoConnect: false,
 			reconnection: false,
 			withCredentials: true,
 		});

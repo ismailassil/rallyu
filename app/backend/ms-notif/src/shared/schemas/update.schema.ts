@@ -3,16 +3,11 @@ const updateSchema = {
 	body: {
 		type: 'object',
 		properties: {
-			username: { type: 'string' },
 			notificationId: { type: 'number' },
 			status: { type: 'string', enum: ['unread', 'read', 'dismissed'] },
-			all: { type: 'boolean' },
+			scope: { type: 'string', enum: ['all', 'single'] },
 		},
-		required: ['username', 'status'],
-		oneOf: [
-			{ required: ['notificationId'], not: { required: ['all'] } },
-			{ required: ['all'], not: { required: ['notificationId'] } },
-		],
+		required: ['scope', 'status'],
 	},
 	response: {
 		201: { $ref: 'responseSchema#/properties/created' },
