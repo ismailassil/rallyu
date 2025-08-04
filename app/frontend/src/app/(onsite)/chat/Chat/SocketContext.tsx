@@ -12,25 +12,25 @@ const SocketContext = createContext<SocketContextType | null>(null);
 
 // Provider component
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
+//   const [socket, setSocket] = useState<Socket | null>(null);
+//   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const socketInstance = io('http://localhost:4000');
+    // // const socketInstance = io('http://localhost:4000');
     
-    socketInstance.on('connect', () => {
-      setIsConnected(true);
-    });
+    // socketInstance.on('connect', () => {
+    //   setIsConnected(true);
+    // });
     
-    socketInstance.on('disconnect', () => {
-      setIsConnected(false);
-    });
+    // socketInstance.on('disconnect', () => {
+    //   setIsConnected(false);
+    // });
 
-    setSocket(socketInstance);
+    // setSocket(socketInstance);
 
-    return () => {
-      socketInstance.disconnect();
-    };
+    // return () => {
+    //   socketInstance.disconnect();
+    // };
   }, []);
 
   return (

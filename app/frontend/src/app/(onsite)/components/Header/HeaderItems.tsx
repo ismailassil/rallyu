@@ -1,7 +1,7 @@
 "use client";
 
 import Search from "./Search";
-import Notification from "./Notification/NotificationCenter";
+import Notification from "./notification/notification-center/NotificationCenter";
 import Profile from "./Profile";
 
 export default function HeaderItems() {

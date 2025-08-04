@@ -1,9 +1,9 @@
-import { Bell } from "@phosphor-icons/react";
+import { BellIcon } from "@phosphor-icons/react";
 import React, { useEffect, useState } from "react";
-import { useNotification } from "../context/NotifContext";
+import { useNotification } from "../context/NotificationContext";
 import { useHeaderContext } from "../../context/HeaderContext";
 
-const NotificationButton = () => {
+const ToggleButton = () => {
 	const { notifications } = useNotification();
 	const { setIsProfile, setIsSearch, setIsNotif, isNotif } = useHeaderContext();
 	const [hasUnreadNotif, setHasUnreadNotif] = useState(false);
@@ -25,17 +25,15 @@ const NotificationButton = () => {
 
 	return (
 		<button
-			className={`bg-card border-br-card relative ml-4 flex h-[55px]
-				w-[55px] items-center justify-center rounded-full border-2 hover:cursor-pointer
-				${isActive} transition-transform duration-200`}
+			className={`bg-card border-br-card relative ml-4 flex h-[55px] w-[55px] items-center justify-center rounded-full border-2 hover:cursor-pointer ${isActive} transition-transform duration-200`}
 			onClick={handleNotifButton}
 		>
-			<Bell size={28} className={`${isNotif && "animate-pulse"}`} />
+			<BellIcon size={28} className={`${isNotif && "animate-pulse"}`} />
 			{hasUnreadNotif && (
-				<div className="absolute right-4 top-3 h-2.5 w-2.5 rounded-full bg-yellow-500" />
+				<div className="absolute top-3 right-4 h-2.5 w-2.5 rounded-full bg-yellow-500" />
 			)}
 		</button>
 	);
 };
 
-export default NotificationButton;
+export default ToggleButton;
