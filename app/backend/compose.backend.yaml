@@ -1,67 +1,112 @@
 networks:
-    backend:
-        driver: bridge
+  backend:
+    driver: bridge
 
 volumes:
-    ms-auth-data:
-        driver: local
+  ms-auth-data:
+    driver: local
 
 services:
-    api-gateway:
-        build:
-            context: ./api-gateway
-            dockerfile: Dockerfile
-        depends_on:
-            nats:
-                condition: service_healthy
-        image: rallyu/api-gateway:v1.0
-        container_name: api-gateway
-        restart: always
-        ports:
-          - 4025:4025
-        networks:
-            - backend
-            # - web-app
-        env_file:
-            # - ./api-gateway/.env
-            - .env
-        healthcheck:
-            test:
-                [
-                    'CMD-SHELL',
-                    'curl -sf http://localhost:4025/health | grep -q "\"status\":\"up\""',
-                ]
-            start_period: 5s
-            interval: 30s
-            timeout: 10s
-            retries: 10
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    depends_on:
+      nats:
+        condition: service_healthy
+    image: rallyu/api-gateway:v1.0
+    container_name: api-gateway
+    restart: always
+    ports:
+      - 4025:4025
+    networks:
+      - backend
+      # - web-app
+    env_file:
+      - ./api-gateway/.env
+      - .env
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'curl -sf http://localhost:4025/health | grep -q "\"status\":\"up\""',
+        ]
+      start_period: 5s
+      interval: 20s
+      timeout: 10s
+      retries: 10
 
-    nats:
-        image: nats:alpine3.22
-        container_name: nats
-        restart: always
-        networks:
-            - backend
-        env_file:
-            - .env
-        ports:
-          - 4222:4222
-        command: --user ${NATS_USER} --pass ${NATS_PASSWORD} -js -m 8222 -n internal-server
-        healthcheck:
-            test: wget http://localhost:8222/healthz -q -S -O -
-            start_period: 2s
-            interval: 5s
-            timeout: 10s
-            retries: 10
+  ms-auth:
+    build:
+      context: ./ms-auth
+      dockerfile: Dockerfile
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    image: rallyu/ms-auth:v1.0
+    container_name: ms-auth
+    restart: always
+    networks:
+      - backend
+    env_file:
+      - .env
 
-    nats_ui:
-        image: mdawar/nats-dashboard
-        container_name: nats_ui
-        ports: # TODO: To be removed
-            - 8571:80
-        restart: always
-        networks:
-            - backend
-            # - web-app
-        volumes:
-            - ./nats_ui_config/config.json:/srv/config.json
+  ms-notif:
+    build:
+      context: ./ms-notif
+      dockerfile: Dockerfile
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    image: rallyu/ms-notif:v1.0
+    container_name: ms-notif
+    restart: always
+    networks:
+      - backend
+    env_file:
+      - .env
+  
+  ms-chat:
+    build:
+      context: ./ms-chat
+      dockerfile: Dockerfile
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    image: rallyu/ms-chat:v1.0
+    container_name: ms-chat
+    restart: always
+    networks:
+      - backend
+    env_file:
+      - .env
+
+  nats:
+    image: nats:alpine3.22
+    container_name: nats
+    restart: always
+    networks:
+      - backend
+    env_file:
+      - .env
+    ports:
+      - 4222:4222
+    command: --user ${NATS_USER} --pass ${NATS_PASSWORD} -js -m 8222 -n internal-server
+    healthcheck:
+      test: wget http://localhost:8222/healthz -q -S -O -
+      start_period: 2s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  nats_ui:
+    image: mdawar/nats-dashboard
+    container_name: nats_ui
+    ports: # TODO: To be removed
+      - 8571:80
+    restart: always
+    networks:
+      - backend
+      # - web-app
+    volumes:
+      - ./nats_ui_config/config.json:/srv/config.json

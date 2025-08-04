@@ -12,7 +12,8 @@ async function natsPlugin(fastify: FastifyInstance, opts: NatsOpts) {
 	const { NATS_URL, NATS_USER, NATS_PASSWORD } = opts;
 
 	const nc = await connect({
-		servers: NATS_URL || 'nats://localhost:4222', // TODO: to be changed to container name `nats`
+		servers: NATS_URL,
+		// servers: 'nats://localhost:4222', // TODO: to be changed to container name `nats`
 		user: NATS_USER,
 		pass: NATS_PASSWORD,
 		name: 'User Management',

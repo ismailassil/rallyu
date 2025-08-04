@@ -23,7 +23,7 @@ await fastify.register(natsPlugin, {
 	NATS_PASSWORD: process.env.NATS_PASSWORD,
 });
 
-fastify.listen({ port: 4657, host: '::' }, (err) => {
+fastify.listen({ port: 5011, host: '::' }, (err) => {
 	if (err) {
 		fastify.log.error(err);
 		process.exit(1);
