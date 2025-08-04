@@ -3,7 +3,10 @@ import fastify from '../app.js';
 import NotifServices from '../services/notif.services.js';
 import { NotificationNotFoundException } from '../shared/exceptions/NotificationNotFoundException.js';
 import { IFetchQuery, UPDATE_NOTIFICATION } from '../shared/types/request.types.js';
-import { RAW_NOTIFICATION, USER_NOTIFICATION } from '../shared/types/notifications.types.js';
+import {
+	RAW_NOTIFICATION,
+	USER_NOTIFICATION,
+} from '../shared/types/notifications.types.js';
 
 class NotifControllers {
 	private notifServices: NotifServices;
@@ -11,7 +14,7 @@ class NotifControllers {
 	constructor() {
 		this.notifServices = new NotifServices();
 
-		fastify.decorate("notifService", this.notifServices);
+		fastify.decorate('notifService', this.notifServices);
 	}
 
 	async getNotificationHistory(

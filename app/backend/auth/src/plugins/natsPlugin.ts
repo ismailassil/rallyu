@@ -17,7 +17,7 @@ async function natsPlugin(fastify: FastifyInstance, opts: NatsOpts) {
 		pass: NATS_PASSWORD,
 		name: 'User Management',
 	});
-	fastify.log.info('[NATS] Server is up');
+	fastify.log.info('[NATS] Server is up on ' + nc.getServer());
 
 	// This is a JetStream Client
 	// const js = nc.jetstream();

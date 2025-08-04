@@ -22,7 +22,7 @@ export interface USER_NOTIFICATION {
 	updatedAt: string;
 	status: NOTIFICATION_STATUS;
 	actionUrl: string | null;
-	avatar: Buffer;
+	avatar: string;
 }
 
 export interface NOTIFY_USER_PAYLOAD {
@@ -35,4 +35,4 @@ export interface NOTIFY_USER_PAYLOAD {
 
 export type NOTIFICATION_STATUS = 'read' | 'unread' | 'dismissed';
 
-export type NOTIFICATION_TYPE = 'chat' | 'game' | 'friend_request';
+export type NOTIFICATION_TYPE = 'chat' | 'game' | 'friend_request' | 'tournament';
