@@ -1,6 +1,9 @@
 import React from "react";
+import { useNotification } from "../context/NotificationContext";
 
-const NotificationHeader = ({ length }: { length: number }) => {
+const Header = () => {
+	const { notifLength: length } = useNotification();
+
 	const title =
 		length >= 1
 			? `You have ${length} unread notification${length > 1 ? "s" : ""}`
@@ -14,4 +17,4 @@ const NotificationHeader = ({ length }: { length: number }) => {
 	);
 };
 
-export default NotificationHeader;
+export default Header;

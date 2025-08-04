@@ -1,12 +1,25 @@
-import { useNotification } from "../context/NotifContext";
-import ToasterItem from "./ToasterItem";
+import { useNotification } from "../notification/context/NotificationContext";
 import { AnimatePresence, motion } from "framer-motion";
+import ToasterItem from "./ToasterItem";
 
 const ToasterCenter = () => {
 	const { toastNotifications, DEFAULT_TIME } = useNotification();
 
+	const exitVar = (i: number) => {
+		return {
+			y: -5,
+			opacity: 0,
+			scale: 0.9,
+			transition: {
+				duration: 0.25,
+				delay: i * 0.05,
+				ease: "easeInOut" as const,
+			},
+		};
+	};
+
 	return (
-		<ul className="top-30 w-90 z-200 absolute right-6 flex flex-col gap-2">
+		<ul className="absolute top-30 right-6 z-200 flex w-90 flex-col gap-2">
 			<AnimatePresence mode="popLayout">
 				{toastNotifications.map((notif, i) => {
 					return (
@@ -15,24 +28,12 @@ const ToasterCenter = () => {
 							layout
 							initial={{ y: 10, scale: 0.6 }}
 							animate={{ y: 0, scale: 1, transition: { duration: 0.2 } }}
-							exit={{
-								y: -5,
-								opacity: 0,
-								scale: 0.9,
-								transition: {
-									duration: 0.25,
-									delay: i * 0.05,
-									ease: "easeInOut",
-								},
-							}}
+							exit={exitVar(i)}
 							transition={{ type: "spring", stiffness: 300, damping: 20 }}
 						>
 							<ToasterItem
-								type={notif.type}
-								image={notif.image}
-								username={notif.username}
+								data={notif}
 								time={DEFAULT_TIME}
-								action_url={notif.action_url}
 							/>
 						</motion.li>
 					);

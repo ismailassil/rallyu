@@ -1,6 +1,6 @@
 import React from "react";
 
-const Loading = () => {
+const LoadingIndicator = () => {
 	return (
 		<svg
 			aria-hidden="true"
@@ -21,4 +21,4 @@ const Loading = () => {
 	);
 };
 
-export default Loading;
+export default LoadingIndicator;

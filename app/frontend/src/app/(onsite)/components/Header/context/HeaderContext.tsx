@@ -1,4 +1,12 @@
-import { Dispatch, RefObject, SetStateAction, useContext, useEffect, useRef, useState } from "react";
+import {
+	Dispatch,
+	RefObject,
+	SetStateAction,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { createContext } from "react";
 
 interface HeaderContextTypes {
@@ -29,7 +37,7 @@ export function useHeaderContext() {
 export function HeaderProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	const [isSearch, setIsSearch] = useState(false);
 	const [isProfile, setIsProfile] = useState(false);
-	const [isNotif, setIsNotif] = useState(false);
+	const [isNotif, setIsNotif] = useState(true);
 	const profileRef = useRef<HTMLDivElement>(null);
 	const notificationRef = useRef<HTMLDivElement>(null);
 	const [isBottom, setIsBottom] = useState(false);
