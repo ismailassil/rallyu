@@ -3,9 +3,10 @@ import { JWT_ACCESS_PAYLOAD } from '../types/jwt.types';
 import { app as fastify } from '../app.js';
 
 export const verifyUserJWT = async (req: FastifyRequest, rep: FastifyReply) => {
-	fastify.log.info(req.url)
-	if (req.url === '/health') return;
-	if (req.url === '/api/auth/refresh' || req.url === '/api/auth/login' || req.url === '/api/auth/register') return;
+	fastify.log.info('URL: ' + req.url);
+	if (shouldIgnorePath(req.url)) return;
+
+	fastify.log.info('PASSED URL: ' + req.url);
 
 	// TODO: Verify the JWT Here
 	const authHeader = req.headers.authorization as string;
@@ -34,3 +35,16 @@ export const verifyUserJWT = async (req: FastifyRequest, rep: FastifyReply) => {
 		return rep.code(401).send({ success: false, error: msg });
 	}
 };
+
+function shouldIgnorePath(path: string): boolean {
+	const allRoutes = [
+		'/health',
+		'/api/auth/refresh',
+		'/api/auth/login',
+		'/api/auth/register',
+	];
+
+	const avatarPath = '/api/users/avatars';
+
+	return allRoutes.includes(path) || path.startsWith(avatarPath);
+}

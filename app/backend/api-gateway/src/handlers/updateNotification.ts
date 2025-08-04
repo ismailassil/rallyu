@@ -1,11 +1,11 @@
 import { JsMsg, Msg, NatsError } from 'nats';
 import { app as fastify } from '../app.js';
-import { UpdateNotificationPayload } from '../types/notification.types.js';
+import { UPDATE_NOTIFICATION_PAYLOAD } from '../types/notification.types.js';
 
 export async function handleUpdateNotif(m: JsMsg) {
 	fastify.log.info('[NATS] Message Arrived to `notification.update`');
 
-	const payload = fastify.jsCodec.decode(m.data) as UpdateNotificationPayload;
+	const payload = fastify.jsCodec.decode(m.data) as UPDATE_NOTIFICATION_PAYLOAD;
 
 	fastify.log.info(payload);
 
@@ -13,6 +13,5 @@ export async function handleUpdateNotif(m: JsMsg) {
 
 	fastify.log.info(senderRoom);
 
-	fastify.io.in(senderRoom).emit('notification_update', payload);
-
+	fastify.io.in(senderRoom).emit('notification_update', payload.data);
 }

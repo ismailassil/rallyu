@@ -26,7 +26,7 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 			sender_username TEXT NOT NULL,
 			receiver_id INTEGER NOT NULL,
 			content TEXT NOT NULL,
-			type TEXT CHECK(type IN ('game', 'chat', 'friend_request')),
+			type TEXT CHECK(type IN ('game', 'chat', 'friend_request', 'tournament')),
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			status TEXT CHECK(status IN ('read', 'unread', 'dismissed')) DEFAULT 'unread',
@@ -40,9 +40,8 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 			UPDATE messages SET updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
 		END;
 
-		CREATE INDEX IF NOT EXISTS idx_messages_recipient_status ON messages(recipient_id, status);
+		CREATE INDEX IF NOT EXISTS idx_messages_receiver_status ON messages(receiver_id, status);
 	`;
-
 
 	db.exec(createTable, (err) => {
 		if (err) fastify.log.error(err.message);

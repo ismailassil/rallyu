@@ -6,7 +6,7 @@ COPY package*.json ./
 
 RUN npm install
 
-RUN npm install concurrently nodemon
+# RUN npm install concurrently nodemon
 
 COPY . .
 

@@ -7,12 +7,15 @@ import cors from '@fastify/cors';
 import userRouter from './routes/userRouter';
 import pinoPretty from 'pino-pretty';
 import natsPlugin from './plugins/natsPlugin';
+import dotenv from 'dotenv';
 
 // declare module 'fastify' {
 // 	interface FastifyInstance {
 // 		db: Database;
 // 	}
 // }
+
+dotenv.config();
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
@@ -39,7 +42,10 @@ async function buildApp(): Promise<FastifyInstance> {
 	// REGISTER AUTH PLUGIN
 	await fastify.register(authRouter, { prefix: '/auth' });
 	await fastify.register(userRouter, { prefix: '/users' });
-	// await fastify.register(natsPlugin, { NATS_URL: '', NATS_USER: '', NATS_PASSWORD: '' });
+	await fastify.register(natsPlugin, {
+		NATS_URL: process.env["NATS_URL"] || "", 
+		NATS_USER: process.env["NATS_USER"] || "",
+		NATS_PASSWORD: process.env["NATS_PASSWORD"] || "" });
 
 	return fastify;
 }

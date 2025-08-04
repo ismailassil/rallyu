@@ -31,9 +31,10 @@ services:
                     'CMD-SHELL',
                     'curl -sf http://localhost:4025/health | grep -q "\"status\":\"up\""',
                 ]
-            interval: 10s
+            start_period: 5s
+            interval: 30s
             timeout: 10s
-            retries: 20
+            retries: 10
 
     nats:
         image: nats:alpine3.22
@@ -49,9 +50,9 @@ services:
         healthcheck:
             test: wget http://localhost:8222/healthz -q -S -O -
             start_period: 2s
-            interval: 10s
+            interval: 5s
             timeout: 10s
-            retries: 3
+            retries: 10
 
     nats_ui:
         image: mdawar/nats-dashboard
