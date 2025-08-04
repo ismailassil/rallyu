@@ -7,7 +7,8 @@ interface Toggle {
 function QueueButton({ onToggle }: Toggle) {
 	const [ clicked, setClicked ] = useState(false);
 
-	const onClick = () => {
+	const onClick = (e: React.MouseEvent<HTMLButtonElement>): void => {
+		e.preventDefault();
 		setClicked(!clicked);
 		if (onToggle) {
 			onToggle(!clicked);
@@ -17,8 +18,8 @@ function QueueButton({ onToggle }: Toggle) {
 	return (
 		<button
 			onClick={onClick}
-		  className="shadow-inner rounded-full py-[1.2rem] px-[3rem]
-			bg-black text-white uppercase font-black cursor-pointer self-center overflow-hidden
+		  className="mt-auto rounded-full py-[1.2rem] px-[3rem]
+			bg-black text-white uppercase font-black cursor-pointer overflow-hidden
 			relative group box-border"
 		>
 		  <div className={`grid content-center inset-0 absolute text-black bg-white  

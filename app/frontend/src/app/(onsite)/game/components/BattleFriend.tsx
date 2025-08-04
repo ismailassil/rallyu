@@ -1,4 +1,5 @@
 import { Sword } from "@phosphor-icons/react";
+import { Swords } from "lucide-react";
 import Image from "next/image";
 
 interface friendProps {
@@ -16,7 +17,7 @@ export default function BattleFriend({ fullname, isOnline = false, img }: friend
 				justify-between overflow-hidden rounded-lg bg-black/10 p-2 px-3 transition-transform duration-200"
 		>
 			{/* Profile Image */}
-			<div className="ml-1 flex h-[40px] w-[40px] justify-center rounded-full">
+			<div className="ml-1 flex size-8 justify-center rounded-full">
 				<Image
 					className="ring-fr-image h-full w-full rounded-full object-cover ring-2"
 					src={img}
@@ -28,8 +29,8 @@ export default function BattleFriend({ fullname, isOnline = false, img }: friend
 
 			{/* Middle Content */}
 			<div className="ml-5 flex-grow">
-				<h2 className="text-base capitalize">{fullname}</h2>
-				<p className={`${isOnline ? "text-isOnline" : "text-gray-500"} text-sm`}>
+				<h2 className="text-sm capitalize line-clamp-1">{fullname}</h2>
+				<p className={`${isOnline ? "text-isOnline" : "text-gray-500"} text-xs`}>
 					{isOnline ? "Online" : "Offline"}
 				</p>
 			</div>
@@ -39,7 +40,7 @@ export default function BattleFriend({ fullname, isOnline = false, img }: friend
 				className="hover:bg-card flex h-10 w-10 cursor-pointer items-center justify-center
 					rounded-full ring-1 ring-white/40 transition-all duration-300 hover:scale-105 hover:ring-2"
 			>
-				<Sword size={24} />
+				<Swords size={24} />
 				{/* <Image
 					className="hover:ring-2 hover:ring-br-card hover:rounded-full hover:cursor-pointer"
 					src="/icons/chat-btn.svg"
