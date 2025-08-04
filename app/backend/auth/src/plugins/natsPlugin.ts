@@ -17,10 +17,10 @@ async function natsPlugin(fastify: FastifyInstance, opts: NatsOpts) {
 		pass: NATS_PASSWORD,
 		name: 'User Management',
 	});
-	fastify.log.info('[NATS] Server is up');
+	fastify.log.info('[NATS] Server is up on ' + nc.getServer());
 
 	// This is a JetStream Client
-	// const js = nc.jetstream();
+	const js = nc.jetstream();
 
 	// TODO - use this to encode and decode data
 	// const stringC = StringCodec(); // for strings
@@ -28,6 +28,7 @@ async function natsPlugin(fastify: FastifyInstance, opts: NatsOpts) {
 	const jsonC = JSONCodec(); // for objects
 
 	fastify.decorate('nc', nc);
+	fastify.decorate('js', js);
 	fastify.decorate('jsonC', jsonC);
 
 	// TODO - use this in the friend request endpoint

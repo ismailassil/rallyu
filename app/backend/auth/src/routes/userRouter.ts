@@ -9,6 +9,7 @@ import MatchesRepository from "../repositories/matchesRepository";
 import fastifyMutipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import path from "path";
+import { IRelationsRequest } from "../types";
 
 async function userRouter(fastify: FastifyInstance) {
 	const userController: UserController = new UserController();
@@ -84,7 +85,16 @@ async function userRouter(fastify: FastifyInstance) {
 	fastify.post('/:user_id/friends/requests', {
 		preHandler: fastify.authenticate,
 		schema: relationsRequestSchema,
-		handler: relationsController.sendFriendRequest.bind(relationsController)
+		handler: relationsController.sendFriendRequest.bind(relationsController),
+		onResponse: async (request: FastifyRequest, reply: FastifyReply) => {
+			const { user_id: target_id } = request.params as IRelationsRequest;
+			const user_id = request.user?.sub;
+			fastify.js.publish("notification.dispatch", fastify.jsonC({
+				senderId: user_id,
+				receiverId: target_id,
+				type: 'friend_request'
+			}));
+		}
 	});
 
 	fastify.delete('/:user_id/friends/requests', {

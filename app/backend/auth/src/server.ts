@@ -1,5 +1,5 @@
 import initializeApp from "./app";
-import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import fastify, { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 const UAParser = require('ua-parser-js');
 
 async function main() {
@@ -17,3 +17,5 @@ async function main() {
 }
 
 main();
+
+export default fastify;
