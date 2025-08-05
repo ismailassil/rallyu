@@ -14,9 +14,7 @@ function GameField() {
 		// 			<Pong />
 		// 		</div>
 		// </div>
-		<div className="flex items-center justify-center h-full w-full max-sm:px-4 max-sm:py-6 px-6 py-12 overflow-hidden">
-			<Pong />
-		</div>
+		<Pong />
 	);
 }
 
