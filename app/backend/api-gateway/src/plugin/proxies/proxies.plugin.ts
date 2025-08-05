@@ -8,7 +8,8 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	const authProxyOptions = {
 		// upstream: `http://auth:${AUTH_PORT}`,
-		upstream: `http://ms-auth:${AUTH_PORT}`,
+		// upstream: `http://ms-auth:${AUTH_PORT}`,
+		upstream: `http://host.docker.internal:${AUTH_PORT}`,
 		prefix: '/api/auth',
 		rewritePrefix: '/auth',
 		httpMethods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
@@ -16,7 +17,8 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	const usersProxyOptions = {
 		// upstream: `http://auth:${AUTH_PORT}`,
-		upstream: `http://ms-auth:${AUTH_PORT}`,
+		// upstream: `http://ms-auth:${AUTH_PORT}`,
+		upstream: `http://host.docker.internal:${AUTH_PORT}`,
 		prefix: '/api/users',
 		rewritePrefix: '/users',
 		httpMethods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],

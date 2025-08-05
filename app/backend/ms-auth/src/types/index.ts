@@ -1,3 +1,4 @@
+import { JetStreamClient } from "nats"
 import { JWT_ACCESS_PAYLOAD } from "../utils/auth/Auth"
 
 export interface User {
@@ -129,8 +130,8 @@ declare module 'fastify' {
 	interface FastifyInstance {
 		requireAuth: any,
 		authenticate: any,
-		js: any,
-		jsonC: any,
+		js: JetStreamClient,
+		// jsonC: jsoncode,
 		nc: any
 	}
 	interface FastifyRequest {
