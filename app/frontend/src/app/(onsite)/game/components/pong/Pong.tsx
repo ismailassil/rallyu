@@ -1,8 +1,9 @@
 import { useRef, useEffect } from "react"
-import SocketProxy from "../game/client"
-import { initGame } from "../game/gameloop";
-import type { GameState } from "../types/GameTypes"
-import { setupCommunications } from "../game/client";
+import SocketProxy from "./game/client"
+import { initGame } from "./game/gameloop";
+import type { GameState } from "./types/GameTypes"
+import { setupCommunications } from "./game/client";
+import { useGame } from "../../contexts/gameContext";
 
 export const CANVAS_WIDTH = 800;
 export const CANVAS_HEIGHT = 600;
@@ -22,34 +23,46 @@ const initGameState = (): GameState => {
 				score: 0
 			}
 		],
-		gameStatus: 'connecting', // 'waiting', 'ready', 'playing', 'scored', 'gameover'
+		gameStatus: 'idle', // 'connecting', 'waiting', 'ready', 'playing', 'scored', 'gameover'
 		lastUpdateTime: 0,
 		index: undefined
 	})
 }
 
 const Pong = () => {
+	const { url, toggleConnection } = useGame();
 	const socketProxy = useRef<SocketProxy>(SocketProxy.getInstance());
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const gameStateRef = useRef<GameState>(initGameState());
 
 	useEffect(() => {
+		try {
+			if (!url) {
+				socketProxy.current.disconnect();
+				return ;
+			}
+			gameStateRef.current.gameStatus = 'connecting';
+			const disconnect = socketProxy.current.connect(url); // move this line to a button click (Queue)
+			toggleConnection();
+			return disconnect;
+		}
+		catch (_) {
+			console.error('Unable to connect to game server');
+		}
+	}, [url])
+
+	useEffect(() => {
 		const stopGame = initGame(gameStateRef, canvasRef.current!, socketProxy.current);
-		const disconnect = socketProxy.current.connect("ws://localhost:3001/game/queue"); // move this line to a button click (Queue)
 		const unsubscribe = setupCommunications(gameStateRef, socketProxy.current);
 
 		return () => {
 			unsubscribe();
-			disconnect();
 			if (stopGame) stopGame();
 		}
 	}, []);
 
 	return (
-		<div className="flex items-center justify-center h-full w-full max-sm:px-4 max-sm:py-6 px-6 py-12 overflow-hidden">
-			<canvas className='gameCanvas max-w-full rounded-lg border border-neutral-700 bg-neutral-900' ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} />
-			{/* <canvas className='gameCanvas max-w-full max-h-full max-sm:h-full max-sm:w-full rounded-lg border border-neutral-700 bg-neutral-900' ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} /> */}
-		</div>
+		<canvas className='max-w-full rounded-lg border border-neutral-700 bg-neutral-900/50' ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} />
 	)
 }
 

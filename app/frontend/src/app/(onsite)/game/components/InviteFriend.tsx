@@ -1,5 +1,5 @@
 import unicaOne from "@/app/fonts/unicaOne";
-import BattleFriend from "./BattleFriend";
+import BattleFriend from "./Items/BattleFriend";
 import { useState } from "react";
 import useIsWidth from "../../../hooks/useIsWidth";
 // import Image from "next/image";
