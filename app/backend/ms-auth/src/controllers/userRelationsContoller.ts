@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import RelationsService from "../services/relationsService";
 import { IRelationsRequest } from "../types";
 import fastify from '../server';
+import { JSONCodec } from "nats";
 
 class RelationsController {
 	private relationsService: RelationsService;
@@ -30,6 +31,18 @@ class RelationsController {
 			const user_id = request.user?.sub;
 
 			const newRelation = await this.relationsService.sendFriendRequest(user_id!, parseInt(target_id));
+
+			const subject = 'notification.dispatch';
+			const jsonC = JSONCodec();
+			const payload = jsonC.encode({
+				senderId: user_id,
+				receiverId: target_id,
+				type: 'friend_request'
+			});
+			await request.server.js.publish(subject, payload);
+
+			// console.log(request.server);
+			// console.log('jetStream: ', request.server.js);
 
 			reply.status(201).send({ success: true, data: newRelation });
 		} catch (err: any) {
