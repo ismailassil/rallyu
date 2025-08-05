@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { connect, JSONCodec } from 'nats';
 import { handleUserRequests } from '../services/natsHandlers';
+import fastifyPlugin from 'fastify-plugin';
 
 interface NatsOpts {
 	NATS_URL: string;
@@ -70,4 +71,4 @@ async function natsPlugin(fastify: FastifyInstance, opts: NatsOpts) {
 	});
 }
 
-export default natsPlugin;
+export default fastifyPlugin(natsPlugin);
