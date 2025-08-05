@@ -8,6 +8,7 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	const authProxyOptions = {
 		// upstream: `http://auth:${AUTH_PORT}`,
+		// upstream: `http://host.docker.internal:${AUTH_PORT}`,
 		upstream: `http://ms-auth:${AUTH_PORT}`,
 		prefix: '/api/auth',
 		rewritePrefix: '/auth',

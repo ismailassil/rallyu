@@ -6,10 +6,10 @@ type NOTIFICATION_SCOPE = 'all' | 'single';
 
 export interface UPDATE_NOTIFICATION_PAYLOAD {
 	userId: number;
-	data: UPDATE_NOTIFICATION;
+	data: UPDATE_NOTIFICATION_DATA;
 }
 
-export interface UPDATE_NOTIFICATION {
+export interface UPDATE_NOTIFICATION_DATA {
 	notificationId: number;
 	scope: NOTIFICATION_SCOPE;
 	status: NOTIFICATION_STATUS;

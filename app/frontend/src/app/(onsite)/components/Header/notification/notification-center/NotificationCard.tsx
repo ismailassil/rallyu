@@ -1,62 +1,22 @@
 import Image from "next/image";
 import moment from "moment";
 import { motion } from "framer-motion";
-import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { NOTIFICATION_TYPE, USER_NOTIFICATION } from "../types/notifications.types";
 import Chat from "../items/Chat";
 import FriendRequest from "../items/FriendRequest";
 import GameOrTournament from "../items/GameOrTournament";
 import { XIcon } from "@phosphor-icons/react";
 
-function NotificationCard({ data }: { data: USER_NOTIFICATION }) {
+function NotificationCard({ data, handler }: { data: USER_NOTIFICATION, handler: (id: number, status: "read" | "dismissed") => void }) {
 	const { id, senderUsername, content, type, updatedAt, status, actionUrl, avatar } = data;
 	const textDescriptionRef = getTextDescription(type);
 	const dateRef = moment.utc(updatedAt).local().fromNow();
 	const isValid = moment().diff(moment.utc(updatedAt).local(), "minutes") >= 3;
-	const { api } = useAuth();
-
-	function handleOnHover() {
-		if (status !== "unread") return;
-
-		console.log("Notif ID: " + id);
-		api.instance
-			.put("/notif/update", {
-				notificationId: id,
-				status: "read",
-				scope: "single",
-			})
-			.then((value) => {
-				console.log(value);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-
-		/**
-		 * TODO: After a friend_request is accepted or declined,
-		 * 		send the response to User Management MS and dismissed it in DB (NOTIF_MS)
-		 */
-	}
-
-	function handleDismiss() {
-		api.instance
-			.put("/notif/update", {
-				notificationId: id,
-				status: "dismissed",
-				scope: "single",
-			})
-			.then((value) => {
-				console.log("Update Notification: " + value);
-			})
-			.catch((err) => {
-				console.error("Update Notification: " + err);
-			});
-	}
 
 	return (
 		<motion.li
 			className="relative flex min-h-16 w-full flex-col gap-3 overflow-hidden px-2 py-4 text-start duration-300 hover:bg-black/10"
-			onHoverStart={handleOnHover}
+			onHoverStart={() => status === 'unread' && handler(id, 'read')}
 		>
 			{status === "unread" && (
 				<div className="absolute top-5 left-9 size-2 -translate-1/2 rounded-full bg-yellow-400" />
@@ -85,7 +45,7 @@ function NotificationCard({ data }: { data: USER_NOTIFICATION }) {
 				<XIcon
 					size={22}
 					className="relative cursor-pointer rounded-full p-0.5"
-					onClick={handleDismiss}
+					onClick={() => handler(id, "dismissed")}
 				/>
 			</div>
 

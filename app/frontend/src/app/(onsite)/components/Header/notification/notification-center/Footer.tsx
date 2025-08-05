@@ -4,44 +4,28 @@ import { useNotification } from "../context/NotificationContext";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 
 const Footer = () => {
-	const { notifications, setNotifications } = useNotification();
-	const { api } = useAuth();
+	const { notifications } = useNotification();
+	const { socket } = useAuth();
 
 	const handleClearAll = useCallback(() => {
-		api.instance
-			.put("/notif/update", {
-				notificationId: -1,
-				scope: "all",
-				status: "dismissed",
-			})
-			.then((value) => {
-				setNotifications([]);
-				console.log(value.data);
-			})
-			.catch((err) => {
-				console.error(err);
-			});
-	}, [api.instance, setNotifications]);
+		const data = {
+			notificationId: -1,
+			scope: "all",
+			status: "dismissed",
+		};
+
+		socket.emit("notification_update", data);
+	}, [socket]);
 
 	const handleMarkAll = useCallback(() => {
-		api.instance
-			.put("/notif/update", {
+		const data = {
 				notificationId: -1,
 				scope: "all",
 				status: "read",
-			})
-			.then((value) => {
-				setNotifications((prev) =>
-					prev.map((notif) =>
-						notif.status === "unread" ? { ...notif, status: "read" } : notif
-					)
-				);
-				console.log(value.data);
-			})
-			.catch((err) => {
-				console.error(err);
-			});
-	}, [api.instance, setNotifications]);
+		};
+
+		socket.emit("notification_update", data);
+	}, [socket]);
 
 	return (
 		<>
