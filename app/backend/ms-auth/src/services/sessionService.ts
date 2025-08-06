@@ -84,18 +84,18 @@ class SessionManager {
 			throw new SessionNotFoundError();
 
 		if (isFound.version !== version) 				// RE-USE
-			throw new SessionRevokedError();
+			throw new SessionRevokedError('Session revoked for re-use');
 		if (isFound.is_revoked)							// EXPIRED
-			throw new SessionRevokedError();
+			throw new SessionRevokedError('Session revoked for already revoked');
 		if ((Date.now() / 1000) > isFound.expires_at)	// EXPIRED
-			throw new SessionExpiredError();
+			throw new SessionExpiredError('Session revoked for expiration');
 
 		if (!this.sessionConfig.allowIpChange && isFound.ip_address !== ip_address)					// IP CHANGE
-			throw new SessionRevokedError();
+			throw new SessionRevokedError('Session revoked for ip change');
 		if (!this.sessionConfig.allowDeviceChange && isFound.device_name !== device_name)			// DEVICE CHANGE
-			throw new SessionRevokedError();
+			throw new SessionRevokedError('Session revoked for device change');
 		if (!this.sessionConfig.allowBrowserChange && isFound.browser_version !== browser_version)	// BROWSER CHANGE
-			throw new SessionRevokedError();
+			throw new SessionRevokedError('Session revoked for browser change');
 	}
 
 	public async revokeSession(refreshToken: string, reason: string) {

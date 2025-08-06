@@ -74,6 +74,19 @@ class UserRepository {
 		}
 	}
 
+	async searchByUsername(username: string) {
+		try {
+			const allResult = await db.all(
+				`SELECT username, avatar_path FROM users WHERE username LIKE '%' || ? || '%'`,
+				[username]
+			);
+			return allResult ?? null;
+		} catch (err: any) {
+			console.error('SQLite Error: ', err);
+			throw new InternalServerError();
+		}
+	}
+
 	async update(id: number, updates: Partial<Pick<User, 'username' | 'password' | 'first_name' | 'last_name'>>) : Promise<boolean> {
 		const keys = [];
 		const values = [];

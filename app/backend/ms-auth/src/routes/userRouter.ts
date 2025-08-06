@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import fastify, { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import UserController from "../controllers/userController";
 import StatsController from "../controllers/statsController";
 import RelationsController from "../controllers/userRelationsContoller";
@@ -11,11 +11,13 @@ import fastifyStatic from '@fastify/static';
 import path from "path";
 import { IRelationsRequest } from "../types";
 import MatchesController from "../controllers/matchesController";
+import UserRepository from "../repositories/userRepository";
 
 async function userRouter(fastify: FastifyInstance) {
 	const userController: UserController = new UserController();
 	const statsController: StatsController = new StatsController();
 	const relationsController: RelationsController = new RelationsController();
+	const usersRepo: UserRepository = new UserRepository();
 	const relRepo: RelationsRepository = new RelationsRepository();
 	const statsRepo: MatchesRepository = new MatchesRepository();
 	const matchesController: MatchesController = new MatchesController();
@@ -40,6 +42,23 @@ async function userRouter(fastify: FastifyInstance) {
 	fastify.get('/available', userController.UsernameEmailAvailable.bind(userController));
 
 	/*-------------------------------------------- USER MANAGEMENT --------------------------------------------*/
+	fastify.get('/search', {
+		// preHandler: fastify.authenticate,
+		handler: async (request: FastifyRequest, reply: FastifyReply) => {
+			try {
+				const { username } = request.query as { username: string };
+
+				const results = await usersRepo.searchByUsername(username);
+
+				console.log('Search result: ', results);
+
+				reply.status(200).send(results);
+			} catch (err: any) {
+				reply.status(500);
+			}
+		}
+	});
+
 	fastify.get('/me', {
 		// schema: userProfileSchema,
 		preHandler: fastify.authenticate,
