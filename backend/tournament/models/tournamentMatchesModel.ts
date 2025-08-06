@@ -155,7 +155,10 @@ class TournamentMatchesModel {
 		}, 1000 * 10);
     }
 
-    // async finishTournament() {
+	async progressMatchTournament() {
+		
+	}
+	// async finishTournament() {
     //     this.DB.run(`UPDATE ${this.modelName} SET results='5|7' WHERE stage='final'`);
     // }
 }

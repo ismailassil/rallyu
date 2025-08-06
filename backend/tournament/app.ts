@@ -281,4 +281,13 @@ app.patch(
   }
 );
 
+app.patch("/api/v1/tournament-matches/progress", async function (req: FastifyRequest, rep: FastifyReply) {
+	// *? Need
+	// *? match_id - stage - stage_number - winner - results;
+
+	const data = {};
+	await req.server.tournamentMatchesModel.progressMatchTournament(data);
+
+});
+
 export default app;
