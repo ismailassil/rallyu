@@ -155,8 +155,14 @@ class TournamentMatchesModel {
 		}, 1000 * 10);
     }
 
-	async progressMatchTournament() {
-		
+	async progressMatchTournament(data) {
+		const res = await new Promise((resolve, reject) => {
+			this.DB.run(`UPDATE ${this.modelName} SET winner=?, results=? WHERE id=?`,
+				[data.winner, data.id, data.results],
+				(err) => err ? reject(err) : resolve(this.DB)
+			);
+		});
+		return (res);
 	}
 	// async finishTournament() {
     //     this.DB.run(`UPDATE ${this.modelName} SET results='5|7' WHERE stage='final'`);

@@ -283,11 +283,15 @@ app.patch(
 
 app.patch("/api/v1/tournament-matches/progress", async function (req: FastifyRequest, rep: FastifyReply) {
 	// *? Need
-	// *? match_id - stage - stage_number - winner - results;
+	// *? match_id - winner - results;
+	try {
+		const data = {};
+		await req.server.tournamentMatchesModel.progressMatchTournament(data);
 
-	const data = {};
-	await req.server.tournamentMatchesModel.progressMatchTournament(data);
 
+	} catch(err) {
+		return rep.code()
+	}
 });
 
 export default app;
