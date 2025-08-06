@@ -1,4 +1,5 @@
-@import 'tailwindcss';
+@import url('https://fonts.cdnfonts.com/css/serious');
+@import "tailwindcss";
 @tailwind utilities;
 
 :root {
@@ -31,6 +32,13 @@
 .custom-scroll::-webkit-scrollbar-thumb {
 	border-radius: 9999px;
 	background: rgba(209, 213, 219, 0.3);
+}
+
+@font-face {
+	font-family: 'AtariPongScore';
+	src: url('./fonts/atari_pong.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
 }
 
 @theme {
