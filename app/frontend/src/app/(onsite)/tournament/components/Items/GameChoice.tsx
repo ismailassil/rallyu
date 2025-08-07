@@ -1,7 +1,7 @@
 import { Hash, PingPong } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 
-function GameChoice({ game, setGame }: { game: number; setGame: (value: number) => void }) {
+function GameChoice({ game, setGame, error, setError }) {
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: -100 }}
@@ -13,15 +13,19 @@ function GameChoice({ game, setGame }: { game: number; setGame: (value: number) 
 				Pick Your Game
 			</label>
 			<div className="flex-2 w-full">
+				{error && (
+					<p className="mb-1 text-red-500">Choose between the available game modes below.</p>
+				)}
 				<div
-					className="*:flex *:justify-center *:items-center *:px-1
+					className={`*:flex *:justify-center *:items-center *:px-1
 							*:py-1 *:rounded-sm *:gap-2 *:hover:scale-101 *:transform *:transition-all *:duration-200 *:cursor-pointer flex gap-2
-							rounded-md border-2 border-white/10 px-1 py-1"
+							rounded-md border-2 ${error ? "border-red-700" : "border-white/10"} px-1 py-1`}
 				>
 					<div
 						onClick={(e) => {
 							e.preventDefault();
 							setGame(0);
+							setError(false);
 						}}
 						className={`w-full ${game === 0 ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
 					>
@@ -32,6 +36,7 @@ function GameChoice({ game, setGame }: { game: number; setGame: (value: number) 
 						onClick={(e) => {
 							e.preventDefault();
 							setGame(1);
+							setError(false);
 						}}
 						className={`w-full ${game === 1 ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
 					>
