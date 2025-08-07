@@ -1,0 +1,5 @@
+{
+	"scripts": {
+		"start": "concurrently \"npm run start --prefix ./api-gateway\" \"npm run start --prefix ./ms-auth\""
+	}
+}
