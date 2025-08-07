@@ -45,31 +45,8 @@ function getToastData(data: USER_NOTIFICATION): TOAST_PAYLOAD {
 export function NotificationProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	const DEFAULT_TIME = 3 * 1000;
 
-	const [notifications, setNotifications] = useState<USER_NOTIFICATION[]>([
-		{
-			id: 101,
-			senderId: 12,
-			senderUsername: "alex_dev",
-			receiverId: 34,
-			content: "Alex sent you a game invite!",
-			type: "chat",
-			createdAt: "2025-08-03T16:31:00Z",
-			updatedAt: "2025-08-03T16:31:00Z",
-			status: "unread",
-			actionUrl: "/games/invite/101",
-			avatar: "xezzuz.png",
-		},
-	]);
-	const [toastNotifications, setToastNotifications] = useState<TOAST_PAYLOAD[]>([
-		// {
-		// 	id: "5",
-		// 	image: "http://localhost:4025/api/users/avatars/xezzuz.png",
-		// 	senderUsername: "johndoe",
-		// 	senderId: 1,
-		// 	type: "tournament",
-		// 	action_url: "/profile/johndoe",
-		// },
-	]);
+	const [notifications, setNotifications] = useState<USER_NOTIFICATION[]>([]);
+	const [toastNotifications, setToastNotifications] = useState<TOAST_PAYLOAD[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [notifLength, setNotifLength] = useState<number>(0);
 
@@ -116,7 +93,10 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		const { scope, status, notificationId } = payload;
 
 		setNotifications((prev) => {
-			if (scope === "single") {
+			if (scope === 'single') {
+				if (status === 'dismissed') {
+					return prev.filter((notif) => notificationId !== notif.id);
+				}
 				return prev.map((notif) =>
 					notif.id === notificationId ? { ...notif, status } : notif
 				);

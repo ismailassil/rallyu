@@ -18,7 +18,7 @@ class NotifRepository {
 			fastify.database.get<RAW_NOTIFICATION>(
 				`INSERT INTO messages
 					(sender_id, sender_username, receiver_id, type, content, action_url) 
-					VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING *`,
+					VALUES(?, ?, ?, ?, ?, ?) RETURNING *`,
 				[senderId, senderUsername, receiverId, type, message, actionUrl],
 				async function (error, row) {
 					if (error) {
@@ -100,6 +100,104 @@ class NotifRepository {
 						return;
 					}
 					return;
+				},
+			);
+		});
+	}
+
+	getNotifId(
+		senderId: number,
+		receiverId: number,
+		type: NOTIFICATION_TYPE,
+	): Promise<{ id: number }> {
+		return new Promise((resolve, reject) => {
+			fastify.database.get<{ id: number }>(
+				`
+				SELECT id FROM messages
+				WHERE sender_id = ? AND receiver_id = ?	AND type = ?
+				`,
+				[senderId, receiverId, type],
+				(err, row) => {
+					if (err) {
+						fastify.log.error('DB ERROR: ' + err);
+						reject(err);
+						return;
+					}
+					if (!row) {
+						reject(new Error('No message found'));
+						return;
+					}
+					resolve(row);
+				},
+			);
+		});
+	}
+
+	async getNotifIdByActionURL(actionUrl: string): Promise<{ id: number }> {
+		return new Promise((resolve, reject) => {
+			fastify.database.get<{ id: number }>(
+				`
+				SELECT id FROM messages
+				WHERE action_url = ?
+				`,
+				[actionUrl],
+				(err, row) => {
+					if (err) {
+						fastify.log.error('DB ERROR: ' + err);
+						reject(err);
+						return;
+					}
+					if (!row) {
+						reject(new Error('No Message found'));
+						return;
+					}
+
+					resolve(row);
+				},
+			);
+		});
+	}
+
+	removeNotif(notificationId: number): Promise<void> {
+		return new Promise((resolve, reject) => {
+			fastify.database.run(
+				`DELETE FROM messages WHERE id = ?`,
+				[notificationId],
+				function (err) {
+					if (err) {
+						fastify.log.error('DB ERROR: ' + err);
+						reject(err);
+						return;
+					}
+					if (this.changes) {
+						resolve();
+						return;
+					}
+					reject(new Error(`DB - ${notificationId} NOT DELETED`));
+				},
+			);
+		});
+	}
+
+	async updateNotifStatus(notifId: number, state: string): Promise<void> {
+		return new Promise((resolve, reject) => {
+			fastify.database.run(
+				`
+				UPDATE messages SET state = ?
+				WHERE id = ?
+				`,
+				[state, notifId],
+				function (err) {
+					if (err) {
+						fastify.log.error(err);
+						reject(err);
+						return;
+					}
+					if (this.changes) {
+						resolve();
+						return;
+					}
+					reject(new Error(`DB - ${notifId} NOT UPDATED`));
 				},
 			);
 		});

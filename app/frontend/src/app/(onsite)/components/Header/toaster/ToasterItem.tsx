@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TOAST_PAYLOAD, ToastTypesDetails } from "./Toast.types";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { useNotification } from "../notification/context/NotificationContext";
 
 interface Props {
 	data: TOAST_PAYLOAD;
@@ -14,6 +15,7 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 	const [progress, setProgress] = useState(100);
 	const router = useRouter();
 	const { api } = useAuth();
+	const { handleRemove } = useNotification();
 
 	useEffect(() => {
 		const TIME = DEFAULT_TIME;
@@ -34,21 +36,24 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 	}, []);
 
 	function handleAccept() {
+		handleRemove(data.id);
 		if (type === "friend_request") {
 			api.acceptFriendRequest(senderId);
 			return;
 		}
 		router.push(action_url);
 	}
-
+	
 	function handleDecline() {
+		handleRemove(data.id);
 		if (type === "friend_request") {
 			api.rejectFriendRequest(senderId);
 			return;
 		}
 	}
-
+	
 	function handleChat() {
+		handleRemove(data.id);
 		router.push("/users/" + senderUsername);
 	}
 

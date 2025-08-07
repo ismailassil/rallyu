@@ -231,7 +231,7 @@ export class APIClient {
 	}
 
 	async unfriend(user_id: number) {
-		const { data: res } = await this.client.post(`/users/${user_id}/friends`);
+		const { data: res } = await this.client.delete(`/users/${user_id}/friends`);
 		return res.data;
 	}
 

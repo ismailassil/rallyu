@@ -33,33 +33,15 @@ function Page() {
 				className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
 			>
 				<article
-					className="bg-card border-br-card hide-scrollbar flex h-full w-full
+					className="flex-col bg-card border-br-card hide-scrollbar flex h-full w-full
 					justify-center overflow-hidden overflow-y-scroll rounded-2xl border-2"
 				>
-					{/* <TicTacToe /> */}
-					{!gameEnd ? (
+					<XOProvider>
 						<section className="max-w-300 flex h-full w-full flex-col gap-3 p-5">
-							<XOProvider>
-								<GameInfo gameInfo={gameInfo} />
-								<GameField
-									gameInfo={gameInfo}
-									setGameInfo={setGameInfo}
-									setGameEnd={setGameEnd}
-								/>
-							</XOProvider>
+							<GameInfo />
+							<GameArena />
 						</section>
-					) : (
-						<section
-							className="max-w-300 flex h-full w-full flex-col
-								items-center justify-center gap-3 p-5"
-						>
-							<Congrats
-								gameInfo={gameInfo}
-								setGameInfo={setGameInfo}
-								setGameEnd={setGameEnd}
-							/>
-						</section>
-					)}
+					</XOProvider>
 				</article>
 			</motion.main>
 		</AnimatePresence>

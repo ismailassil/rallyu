@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { socketioOpts } from '../plugin/socketio/socketio.types';
 import { JWT_ACCESS_PAYLOAD } from '../types/jwt.types';
 import { MessageType } from '../types/chat.types';
+import { UPDATE_NOTIFICATION_DATA } from '../types/notification.types';
 
 class SocketIOService {
 	private readonly io: Server;
@@ -39,6 +40,13 @@ class SocketIOService {
 				this.handleChat(socket, data);
 			});
 
+			socket.on(
+				'notification_update',
+				async (data: UPDATE_NOTIFICATION_DATA) => {
+					this.handleNotificationUpdate(socket, data);
+				},
+			);
+
 			socket.on('disconnecting', async () => {
 				await this.handleDisconnection(socket);
 			});
@@ -46,9 +54,26 @@ class SocketIOService {
 	}
 
 	private handleChat(socket: Socket, data: MessageType) {
-		this.fastify.log.info('[CLIENT] received msg = ' + data);
+		this.fastify.log.info('[CLIENT][CHAT] received msg = ' + data);
 
 		this.fastify.js.publish('chat.send_msg', this.fastify.jsCodec.encode(data));
+	}
+
+	private handleNotificationUpdate(
+		socket: Socket,
+		data: UPDATE_NOTIFICATION_DATA,
+	) {
+		this.fastify.log.info('[CLIENT][NOTIF] received msg = ' + data);
+
+		const payload = {
+			userId: socket.data.userId,
+			data: data,
+		};
+
+		this.fastify.js.publish(
+			'notification.update',
+			this.fastify.jsCodec.encode(payload),
+		);
 	}
 
 	private async handleConnection(socket: Socket) {

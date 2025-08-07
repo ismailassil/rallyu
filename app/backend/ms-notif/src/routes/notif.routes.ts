@@ -17,12 +17,6 @@ const NotifRoutes = async (fastify: FastifyInstance) => {
 		{ schema: historySchema, exposeHeadRoute: false },
 		notifControllers.getNotificationHistory.bind(notifControllers),
 	);
-
-	fastify.put(
-		'/update',
-		{ schema: updateSchema },
-		notifControllers.updateNotification.bind(notifControllers),
-	);
 };
 
 export default NotifRoutes;

@@ -1,8 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import fastify from '../app.js';
 import NotifServices from '../services/notif.services.js';
-import { NotificationNotFoundException } from '../shared/exceptions/NotificationNotFoundException.js';
-import { IFetchQuery, UPDATE_NOTIFICATION } from '../shared/types/request.types.js';
+import { IFetchQuery } from '../shared/types/request.types.js';
 import {
 	RAW_NOTIFICATION,
 	USER_NOTIFICATION,
@@ -45,42 +44,6 @@ class NotifControllers {
 				message: 'Error occurred',
 				details: err,
 			});
-		}
-	}
-
-	async updateNotification(
-		req: FastifyRequest<{
-			Body: UPDATE_NOTIFICATION;
-		}>,
-		res: FastifyReply,
-	) {
-		const userId = req.headers['x-user-id'] as string;
-
-		if (!userId)
-			return res.status(400).send({
-				status: 'error',
-				message: 'Error Occurred',
-				details: 'x-user-id Empty',
-			});
-
-		try {
-			await this.notifServices.updateAndDispatchNotification(
-				parseInt(userId),
-				req.body,
-			);
-
-			return res
-				.status(201)
-				.send({ status: 'success', message: 'Updated Successfully' });
-		} catch (err) {
-			if (err instanceof NotificationNotFoundException) {
-				return res
-					.status(404)
-					.send({ status: 'error', message: err.message });
-			}
-			return res
-				.status(500)
-				.send({ status: 'error', message: 'Error occurred', details: err });
 		}
 	}
 }
