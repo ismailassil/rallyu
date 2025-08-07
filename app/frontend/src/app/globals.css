@@ -34,6 +34,10 @@
 	background: rgba(209, 213, 219, 0.3);
 }
 
+.atari-score {
+	font-family: 'AtariPongScore', sans-serif;
+}
+
 @font-face {
 	font-family: 'AtariPongScore';
 	src: url('./fonts/atari_pong.woff2') format('woff2');

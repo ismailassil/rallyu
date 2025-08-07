@@ -12,7 +12,7 @@ export const render = (ctx: CanvasRenderingContext2D, gameState: GameState) => {
 	ctx.textAlign = 'center';
 	ctx.textBaseline = 'middle';
 	ctx.fillText(`${gameState.players[0].score}`, CANVAS_WIDTH * 0.3, 80)
-	ctx.fillText(`${gameState.players[1].score}`, CANVAS_WIDTH * 0.7, 80)
+	ctx.fillText(`${gameState.players[1].score}`, CANVAS_WIDTH * 0.71, 80)
 
 	// player 1 paddle
 	ctx.fillRect(

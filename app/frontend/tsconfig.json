@@ -37,7 +37,7 @@
     "next-env.d.ts",
     "~/goinfre/next-cache/.next/types/**/*.ts",
     "../../../../../../../../../../../goinfre/nazouz/next-cache/.next/types/**/*.ts"
-  ],
+, "src/app/tailwind.config.js"  ],
   "exclude": [
     "node_modules"
   ]

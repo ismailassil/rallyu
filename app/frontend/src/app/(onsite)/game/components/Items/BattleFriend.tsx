@@ -12,9 +12,9 @@ export default function BattleFriend({ fullname, isOnline = false, img }: friend
 	if (fullname && fullname.trim().length > 12) fullname = fullname.trim().substring(0, 12) + "...";
 	return (
 		<div
-			className="border-1 border-br-card hover:bg-hbg hover:border-hbbg hover:scale-101 min-h-16
+			className="border border-br-card hover:bg-white/3 hover:border-white/8 hover:scale-101 min-h-16
 				flex max-h-16 w-full cursor-pointer items-center
-				justify-between overflow-hidden rounded-lg bg-black/10 p-2 px-3 transition-transform duration-200"
+				justify-between overflow-hidden rounded-lg bg-black/15 p-2 px-3 transition-transform duration-200"
 		>
 			{/* Profile Image */}
 			<div className="ml-1 flex size-8 justify-center rounded-full">

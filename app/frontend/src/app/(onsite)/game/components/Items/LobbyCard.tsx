@@ -17,20 +17,21 @@ const LobbyCard = () => {
                 className={`custom-scroll flex h-full flex-col gap-5 overflow-y-scroll p-4`}
             >
                 <PickGame />
-                <div className="relative overflow-auto">
-                    <div className="max-h-[15vh] lg:h-full lg:max-h-full overflow-y-auto overflow-x-hidden custom-scroll">
-                        <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
-                        <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
-                        <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
-                        <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
-                        <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
-                        <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
-                        <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
-                        <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
-                        <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
-                        <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
-                        <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
-                    </div>
+                <div className="
+                    max-h-[15vh] lg:max-h-full h-full rounded-xl overflow-y-auto overflow-x-hidden custom-scroll
+                ">
+                    <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
+                    <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
+                    <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
+                    <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
+                    <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
+                    <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
+                    <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
+                    <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
+                    <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
+                    <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
+                    <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
+                    <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
                 </div>
                 <QueueButton />
             </motion.div>
