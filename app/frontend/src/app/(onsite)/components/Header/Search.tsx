@@ -58,7 +58,7 @@ export default function Search() {
 			return ;
 		}
 
-		fetch(`http://localhost:4000/users/search?username=${search}`)
+		fetch(`http://localhost:4025/api/users/search?username=${search}`)
 		.then(res => res.json())
 		.then(data => { setResults(data); console.log(data); })
 		.catch(() => setResults([]));

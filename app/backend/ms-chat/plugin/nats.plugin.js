@@ -54,7 +54,7 @@ async function natsPlugin(fastify, options) {
 				const stmt = fastify.db.prepare(
 					'INSERT INTO message (senderId, receiverId, text) VALUES (?, ?, ?) RETURNING *',
 				);
-				const result = stmt.get(data.senderId, data.receiverId, data.text);
+				const result = stmt.all(data.senderId, data.receiverId, data.text);
 
 				fastify.log.info("RESULT=============")
 				fastify.log.info(result)
