@@ -1,33 +1,27 @@
-import fastify, {
-  FastifyInstance,
-  FastifyReply,
-  FastifyRequest,
-} from "fastify";
+import fastify, { FastifyInstance, FastifyReply, FastifyRequest} from "fastify";
 import serverConfig from "./config/serverConfig";
 import connectDatabase from "./database/database";
 import fastifyCors from "@fastify/cors";
-import {
-  initTournamentModel,
-  TournamentSchema,
-} from "./models/tournamentModel";
-import {
-  initTournamentMatchesModel,
-  TournamentMatchesSchema,
-} from "./models/tournamentMatchesModel";
+import dotenv from "dotenv";
+import { initTournamentModel } from "./models/tournamentModel";
+import { initTournamentMatchesModel, TournamentMatchesSchema} from "./models/tournamentMatchesModel";
 
 const app = fastify(serverConfig);
 
-app.register(fastifyCors, {
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-});
+dotenv.config({ path: '../../api-gateway/.env' });
+
+// app.register(fastifyCors, {
+// 	// origin: "*",
+// 	methods: ["GET", "POST", "PATCH"],
+// });
+
 app.register(connectDatabase);
 
-app.after(async () => {
-  await initTournamentMatchesModel(app);
-  await initTournamentModel(app);
-  app.tournamentModel.startTournaments();
-  app.tournamentMatchesModel.monitorReadyMatches();
+app.ready(async () => {
+	await initTournamentMatchesModel(app);
+	await initTournamentModel(app);
+	app.tournamentModel.startTournaments();
+	app.tournamentMatchesModel.monitorReadyMatches();
 });
 
 app.get(
@@ -63,135 +57,144 @@ app.get(
 );
 
 app.get(
-  "/api/v1/tournaments",
-  async function (req: FastifyRequest, res: FastifyReply) {
-    const query = req.query;
-    let userId: number | undefined;
+	"/api/v1/tournament/tournaments",
+	async function (req: FastifyRequest, res: FastifyReply) {
+		const query = req.query;
+		let userId: number | undefined = 1;
 
-    const tournaments: unknown[] =
-      await req.server.tournamentModel.tournamentGetAll(7);
+		const tournaments: unknown[] =
+			await req.server.tournamentModel.tournamentGetAll(7);
 
-    if (query?.userId) {
-      userId = Number(query.userId);
+		// if (query?.userId) {
+		// 	userId = Number(query.userId);
 
-      for (const tournament of tournaments) {
-        const matches: TournamentMatchesSchema[] =
-          await req.server.tournamentMatchesModel.matchesGet(tournament.id);
-        if (
-          matches.find((el) => el.player_1 === userId || el.player_2 === userId)
-        )
-          tournament["isUserIn"] = true;
-      }
-    }
+		// 	for (const tournament of tournaments) {
+		// 	const matches: TournamentMatchesSchema[] =
+		// 		await req.server.tournamentMatchesModel.matchesGet(tournament.id);
+		// 	if (
+		// 		matches.find((el) => el.player_1 === userId || el.player_2 === userId)
+		// 	)
+		// 		tournament["isUserIn"] = true;
+		// 	}
+		// }
+		// userId = Number(query.userId);
 
-    console.log(tournaments);
+		for (const tournament of tournaments) {
+		const matches: TournamentMatchesSchema[] =
+			await req.server.tournamentMatchesModel.matchesGet(tournament.id);
+		if (
+			matches.find((el) => el.player_1 === userId || el.player_2 === userId)
+		)
+			tournament["isUserIn"] = true;
+		}
 
-    return res.code(200).send({
-      status: true,
-      data: tournaments,
-    });
-  }
+		console.log(tournaments);
+
+		return res.code(200).send({
+			status: true,
+			data: tournaments,
+		});
+	}
 );
 
 const tournamentSchema = {
-  body: {
-    type: "object",
-    required: ["title", "access", "game", "date"],
-    properties: {
-      title: { type: "string", minLength: 2, maxLength: 15 },
-      access: { type: "integer", enum: [0, 1] },
-      game: { type: "integer", enum: [0, 1] },
-      date: { type: "string" },
-    },
-  },
+	body: {
+		type: "object",
+		required: ["title", "access", "game", "date"],
+		properties: {
+			title: { type: "string", minLength: 2, maxLength: 15 },
+			access: { type: "integer", enum: [0, 1] },
+			game: { type: "integer", enum: [0, 1] },
+			date: { type: "string" },
+			host_id: { type: "integer" },
+		},
+	},
 };
 
 app.post(
-  "/api/v1/tournament/create",
-  { schema: tournamentSchema },
-  async function (req: FastifyRequest, rep: FastifyReply) {
-    try {
-      const { title, game, access, date } = req.body;
+	"/api/v1/tournament/create",
+	{ schema: tournamentSchema },
+	async function (req: FastifyRequest, rep: FastifyReply) {
+		try {
+			const { title, game, access, date, host_id } = req.body;
+			const now = new Date().getTime();
+			const dateTime = new Date(date).getTime();
 
-      const now = new Date().getTime();
-      const dateTime = new Date(date).getTime();
+			if ((dateTime - now) / (1000 * 60) < 30) {
+				return rep.code(400).send({
+					status: false,
+					message: "Tournament must be scheduled at least 30 min ahead.",
+				});
+			}
 
-      if ((dateTime - now) / (1000 * 60) < 30) {
-        return rep.code(400).send({
-          status: false,
-          message: "Tournament must be scheduled at least 30 min ahead.",
-        });
-      }
+      		// Database logic
+			const newTournament = await req.server.tournamentModel.tournamentAdd({
+				title,
+				game,
+				access,
+				date,
+				host_id
+			});
+			req.server.tournamentMatchesModel.createTournamentMatches(newTournament.id);
 
-      // Database logic
-      const newTournament = await req.server.tournamentModel.tournamentAdd({
-        title,
-        game,
-        access,
-        date,
-      });
-      req.server.tournamentMatchesModel.createTournamentMatches(
-        newTournament.id
-      );
+			return rep.code(201).send({
+				status: true,
+				message: "Tournament created successfully",
+				data: newTournament,
+			});
+		} catch (err) {
+			app.log.error(err);
 
-      return rep.code(201).send({
-        status: true,
-        message: "Tournament created successfully",
-        data: newTournament,
-      });
-    } catch (err) {
-      app.log.error(err);
-
-      return rep.code(500).send({
-        status: false,
-        message: "Internal server error",
-      });
-    }
-  }
+			return rep.code(500).send({
+				status: false,
+				message: "Internal server error",
+			});
+		}
+	}
 );
 
 app.patch(
-  "/api/v1/tournament-matches/join/:tournamentId",
-  async function (req: FastifyRequest, rep: FastifyReply) {
-    try {
-      const tournamentId = req.params.tournamentId;
-      const playerId = req.body.id;
-      const tournamentMatches =
-        await req.server.tournamentMatchesModel.matchesGet(tournamentId);
+	"/api/v1/tournament/match/join/:tournamentId",
+	async function (req: FastifyRequest, rep: FastifyReply) {
+		try {
+			const tournamentId = req.params.tournamentId;
+			const playerId = req.body.id;
+			const tournamentMatches =
+				await req.server.tournamentMatchesModel.matchesGet(tournamentId);
 
-      for (let i = 0; i < tournamentMatches.length - 1; i++) {
-        if (!tournamentMatches[i].player_1 || !tournamentMatches[i].player_2) {
-          const player: number = !tournamentMatches[i].player_1 ? 1 : 2;
+			for (let i = 0; i < tournamentMatches.length - 1; i++) {
+				if (!tournamentMatches[i].player_1 || !tournamentMatches[i].player_2) {
+					const player: number = !tournamentMatches[i].player_1 ? 1 : 2;
 
-          await req.server.tournamentMatchesModel.playerJoinMatch(
-            tournamentMatches[i].id,
-            playerId,
-            player
-          );
-          await req.server.tournamentModel.tournamentUpdateSize(
-            "add",
-            tournamentMatches[i].id
-          );
-          break;
-        }
-      }
+					await req.server.tournamentMatchesModel.playerJoinMatch(
+						tournamentMatches[i].id,
+						playerId,
+						player
+					);
+					await req.server.tournamentModel.tournamentUpdateSize(
+						"add",
+						tournamentMatches[i].id
+					);
+					break;
+				}
+			}
 
-      return rep.code(201).send({
-        status: true,
-        message: "Player joined the tournament.",
-      });
-    } catch (err) {
-      console.log(err);
-      return rep.code(500).send({
-        status: false,
-        message: "Something went wrong.",
-      });
-    }
-  }
+			return rep.code(201).send({
+				status: true,
+				message: "Player joined the tournament.",
+			});
+    	} catch (err) {
+      		console.log(err);
+			return rep.code(500).send({
+				status: false,
+				message: "Something went wrong.",
+			});
+		}
+	}
 );
 
 app.patch(
-  "/api/v1/tournament-matches/leave/:tournamentId",
+  "/api/v1/tournament/match/leave/:tournamentId",
   async function (req: FastifyRequest, rep: FastifyReply) {
     try {
       const tournamentId = req.params.tournamentId;
@@ -239,7 +242,7 @@ app.patch(
 );
 
 app.patch(
-	"/api/v1/tournament-matches/ready/:tournamentId",
+	"/api/v1/tournament/match/ready/:tournamentId",
 	async function (req: FastifyRequest, rep: FastifyReply) {
 	try {
 		const playerId = req.body.id;
@@ -281,7 +284,7 @@ app.patch(
   }
 );
 
-app.patch("/api/v1/tournament-matches/progress", async function (req: FastifyRequest, rep: FastifyReply) {
+app.patch("/api/v1/tournament/match/progress", async function (req: FastifyRequest, rep: FastifyReply) {
 	// *? Need
 	// *? match_id - winner - results;
 	try {

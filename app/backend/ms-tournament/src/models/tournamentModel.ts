@@ -72,21 +72,21 @@ class TournamentModel {
 		});
   }
 
-	async tournamentAdd({ title, game, access, date }) {
+	async tournamentAdd({ title, game, access, date, host_id }) {
 		const statement: sqlite3.Statement = await this.prepareStatement();
 
 		const id: number = await new Promise((resolve, reject) => {
 			statement.run(
-			title,
-			1,
-			!game ? "ping-pong" : "tic-tac-toe",
-			4,
-			!access ? "public" : "private",
-			date,
-			function (err) {
-				if (err) reject(err);
-				else resolve(this.lastID);
-			}
+				title,
+				host_id,
+				!game ? "ping-pong" : "tic-tac-toe",
+				4,
+				!access ? "public" : "private",
+				date,
+				function (err: unknown) {
+					if (err) reject(err);
+					else resolve(this.DB);
+				}
 			);
 		});
 
@@ -98,7 +98,7 @@ class TournamentModel {
 			mode: game,
 			contenders_size: 4,
 			contenders_joined: 0,
-			host_id: 1,
+			host_id,
 		};
 
 		return data;

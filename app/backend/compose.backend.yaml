@@ -82,15 +82,15 @@ services:
       - .env
     
   ## Tournament Serivce
-  ms-tournament:
-    build:
-      context: ms-tournament/
-      dockerfile: Dockerfile
-    image: rally/ms-tournament:v1.0
-    container_name: ms-tournament
-    restart: always
-    networks:
-      - backend
+  # ms-tournament:
+  #   build:
+  #     context: ms-tournament/
+  #     dockerfile: Dockerfile
+  #   image: rally/ms-tournament:v1.0
+  #   container_name: ms-tournament
+  #   restart: always
+  #   networks:
+  #     - backend
 
   nats:
     image: nats:alpine3.22

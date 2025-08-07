@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import ReadyButton from "./components/ReadyButton";
+import useUserProfile, { UserProfileType } from "@/app/(onsite)/(user-profile)/users/context/useUserProfile";
 
 const Brackets = function (props) {
 	const { slug } = useParams();
