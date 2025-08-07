@@ -6,7 +6,7 @@ import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 function Button({ text, icon, onClick } : { text: string, icon: string, onClick: () => void } ) {
 	return (
 		<>
-			<div className={`flex flex-row cursor-pointer pl-3.5 pr-3.5 pb-2 pt-2 gap-3 items-center ${funnelDisplay.className}
+			<div className={`flex flex-row pl-3.5 pr-3.5 pb-2 pt-2 gap-3 items-center ${funnelDisplay.className}
 							h-11 bg-white/4 rounded-xl border border-white/10 backdrop-blur-2xl transition-all duration-200
 							hover:bg-white/6 hover:scale-102`}
 				 onClick={onClick}

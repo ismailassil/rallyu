@@ -1,38 +1,47 @@
-import { createContext, Dispatch, SetStateAction, useContext, useState } from "react";
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-type gameTypes = {
-	gameType: "pingpong" | "tictactoe";
-	setGameType: Dispatch<SetStateAction<"pingpong" | "tictactoe">>;
-	launch: boolean;
-	setLaunch: Dispatch<SetStateAction<boolean>>;
+type GameType = 'pingpong' | 'tictactoe';
+
+interface GameContextType {
+  gameType: GameType;
+  setGameType:  React.Dispatch<React.SetStateAction<GameType>>;
+
+  connection: boolean;
+  toggleConnection: () => void;
+
+  url: string | null;
+  setUrl: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+const GameContext = createContext<GameContextType | undefined>(undefined);
+
+export const useGame = () => {
+  const context = useContext(GameContext);
+  if (!context) throw new Error('useGame must be used inside GameProvider');
+  return context;
 };
 
-const GameContext = createContext<gameTypes | undefined>(undefined);
+export const GameProvider = ({ children }: { children: ReactNode }) => {
+  const [gameType, setGameType] = useState<GameType>('pingpong');
+  const [connection, setConnection] = useState(false);
+  const [url, setUrl] = useState<string | null>(null);
 
-export function useGameContext() {
-	const context = useContext(GameContext);
+  const toggleConnection = () => {
+    setConnection(prev => !prev);
+  };
 
-	if (context === undefined) {
-		throw new Error("useGame must be used within GameProvider");
-	}
-
-	return context;
-}
-
-export function GameProvider({ children }: Readonly<{ children: React.ReactNode }>) {
-	const [gameType, setGameType] = useState<"pingpong" | "tictactoe">("pingpong");
-	const [launch, setLaunch] = useState(false);
-
-	return (
-		<GameContext.Provider
-			value={{
-				gameType,
-				setGameType,
-				launch,
-				setLaunch,
-			}}
-		>
-			{children}
-		</GameContext.Provider>
-	);
-}
+  return (
+    <GameContext.Provider
+      value={{
+        gameType,
+        setGameType,
+        connection,
+        toggleConnection,
+        url,
+        setUrl
+      }}
+    >
+      {children}
+    </GameContext.Provider>
+  );
+};

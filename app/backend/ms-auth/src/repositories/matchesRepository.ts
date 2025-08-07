@@ -57,11 +57,24 @@ class MatchesRepository {
 		try {
 			const runResult = await db.run(
 				`INSERT INTO matches 
-				(player_home_score, player_away_score, game_type, started, finished, player_home_id, player_away_id) 
+				(player_home_score, player_away_score, game_type, started_at, finished_at, player_home_id, player_away_id) 
 				VALUES (?, ?, ?, ?, ?, ?, ?)`,
 				[player_home_score, player_away_score, game_type, startedVal, finishedVal, player_home_id, player_away_id]
 			);
 			return runResult.lastID;
+		} catch (err: any) {
+			console.error('SQLite Error: ', err);
+			throw new InternalServerError();
+		}
+	}
+
+	async findById(match_id: number) {
+		try {
+			const result = await db.get(
+				`SELECT * FROM matches WHERE id = ?`,
+				[match_id]
+			);
+			return result ?? null;
 		} catch (err: any) {
 			console.error('SQLite Error: ', err);
 			throw new InternalServerError();

@@ -206,7 +206,6 @@ class NotifSerives {
 		payload: NOTIFY_USER_PAYLOAD,
 	): Promise<RAW_NOTIFICATION> {
 		const { senderId } = payload;
-
 		const senderUser = await fastify.nats.request(
 			'user.username',
 			fastify.jc.encode({ user_id: senderId }),

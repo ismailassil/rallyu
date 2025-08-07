@@ -3,11 +3,15 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useHeaderContext } from "./context/HeaderContext";
+import { useRouter } from "next/navigation";
 
 export default function Search() {
+	const router = useRouter();
 	const [search, setSearch] = useState<string>("");
 	const div1Ref = useRef<HTMLDivElement>(null);
 	const div2Ref = useRef<HTMLDivElement>(null);
+
+	const [results, setResults] = useState([]);
 
 	const { setIsNotif, setIsProfile, isSearch, setIsSearch } = useHeaderContext();
 
@@ -47,6 +51,18 @@ export default function Search() {
 			document.removeEventListener("keydown", handleClick);
 		};
 	}, [isSearch, setIsSearch]);
+
+	useEffect(() => {
+		if (search === '') {
+			setResults([]);
+			return ;
+		}
+
+		fetch(`http://localhost:4000/users/search?username=${search}`)
+		.then(res => res.json())
+		.then(data => { setResults(data); console.log(data); })
+		.catch(() => setResults([]));
+	}, [search]);
 
 	return (
 		<>
@@ -124,10 +140,29 @@ export default function Search() {
 									Person
 									</div>
 							))} */}
-								<div className="flex h-full w-full flex-col items-center justify-center gap-3">
-									<Image src="/meme/sad.png" height={12} width={120} alt="Sad Image" />
-									<p className="text-gray-400">Help yourself...</p>
-								</div>
+								<ul>
+									{results.map((elem) => {
+										// return <li key={elem.username}>{elem.username}</li>;
+										return (
+												<div
+													onClick={() => {setIsSearch(false); router.push(`/users/${elem.username}`); }}
+													key={elem.username}
+													className="w-full h-17 flex items-center gap-4 border-b-1
+														border-b-br-card pl-10 hover:bg-hbg/30 hover:cursor-pointer
+														"
+												>
+													<Image src={`http://localhost:4025/api/users${elem.avatar_path}`} alt="Command Logo" width={42} height={42} className="rounded-full border-2 border-white/20"/>
+													<p>{elem.username}</p>
+												</div>
+										);
+									})}
+								</ul>
+								{!results.length && (
+									<div className="flex h-full w-full flex-col items-center justify-center gap-3">
+										<Image src="/meme/sad.png" height={12} width={120} alt="Sad Image" />
+										<p className="text-gray-400">Help yourself...</p>
+									</div>
+								)}
 							</div>
 						</div>
 					</motion.div>
