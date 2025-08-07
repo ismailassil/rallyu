@@ -23,19 +23,33 @@ declare module "fastify" {
 
 class TournamentMatchesModel {
 	private modelName = "TournamentMatches";
-	private sqlQuery = `CREATE TABLE IF NOT EXISTS ${this.modelName} (
-            id INTEGER UNIQUE NOT NULL PRIMARY KEY,
-            tournament_id INTEGER NOT NULL,
-            player_1 INTEGER,
-            player_2 INTEGER,
-            player_1_ready INTEGER DEFAULT 0 NOT NULL,
-            player_2_ready INTEGER DEFAULT 0 NOT NULL,
-            winner INTEGER,
-            results varchar(255),
-            stage varchar(255) NOT NULL,
-            stage_number number NOT NULL,
-            FOREIGN KEY (tournament_id) REFERENCES Tournaments(id)
-        )`;
+	private sqlQuery = `
+			CREATE TABLE IF NOT EXISTS ${this.modelName} (
+				id INTEGER UNIQUE NOT NULL PRIMARY KEY,
+				tournament_id INTEGER NOT NULL,
+				player_1 INTEGER,
+				player_2 INTEGER,
+				player_1_ready INTEGER DEFAULT 0 NOT NULL,
+				player_2_ready INTEGER DEFAULT 0 NOT NULL,
+				winner INTEGER,
+				results varchar(255),
+				stage varchar(255) NOT NULL,
+				stage_number number NOT NULL,
+				FOREIGN KEY (tournament_id) REFERENCES Tournaments(id)
+        	);
+			CREATE TRIGGER IF NOT EXISTS tournament_progress AFTER UPDATE ON TournamentMatches
+				FOR EACH ROW
+				WHEN (OLD.stage='semifinal' AND OLD.results IS NULL AND NEW.results IS NOT NULL)
+			BEGIN
+				UPDATE ${this.modelName} SET player_1=NEW.winner WHERE stage='final' AND tournament_id=NEW.tournament_id AND stage_number=1
+			END;
+			CREATE TRIGGER IF NOT EXISTS tournament_progress AFTER UPDATE ON TournamentMatches
+				FOR EACH ROW
+				WHEN (OLD.stage='semifinal' AND OLD.results IS NULL AND NEW.results IS NOT NULL)
+			BEGIN
+				UPDATE ${this.modelName} SET player_2=NEW.winner WHERE stage='final' AND tournament_id=NEW.tournament_id AND stage_number=2
+			END;
+        `;
 	private DB: sqlite3.Database;
 	private app: FastifyInstance;
 

@@ -289,8 +289,16 @@ app.patch("/api/v1/tournament-matches/progress", async function (req: FastifyReq
 		await req.server.tournamentMatchesModel.progressMatchTournament(data);
 
 
+		return rep.code(201).send({
+			status: true,
+			message: "Tournament updated!"
+		});
+
 	} catch(err) {
-		return rep.code()
+		return rep.code(500).send({
+			status: false,
+			message: "Something went wrong."
+		})
 	}
 });
 
