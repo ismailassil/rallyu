@@ -4,7 +4,7 @@ import Image from "next/image"
 import { useEffect, useState } from "react"
 import Conversation from "./Conversation";
 import DM from "./DM";
-import users from "../Users.json"
+// import users from "../Users.json"
 import { AnimatePresence, motion } from "framer-motion";
 
 type User = {

@@ -3,6 +3,7 @@ import "./globals.css";
 // import Image from "next/image";
 import dmSans from "./fonts/dmSans";
 import AuthProvider from "./(onsite)/contexts/AuthContext";
+import Script from "next/script";
 
 export const metadata: Metadata = {
 	title: "Rallyu",
@@ -16,6 +17,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
+			<Script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"/>
 			<body className={`${dmSans.className} relative antialiased`}>
 			<h1 className="fixed top-0">RootLayout</h1>
 				{/* <div className="-z-1 fixed inset-0">

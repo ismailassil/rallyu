@@ -8,7 +8,7 @@ import GameOrTournament from "../items/GameOrTournament";
 import { XIcon } from "@phosphor-icons/react";
 
 function NotificationCard({ data, handler }: { data: USER_NOTIFICATION, handler: (id: number, status: "read" | "dismissed") => void }) {
-	const { id, senderUsername, content, type, updatedAt, status, actionUrl, avatar } = data;
+	const { id, senderUsername, content, type, updatedAt, status, avatar } = data;
 	const textDescriptionRef = getTextDescription(type);
 	const dateRef = moment.utc(updatedAt).local().fromNow();
 	const isValid = moment().diff(moment.utc(updatedAt).local(), "minutes") >= 3;
@@ -27,7 +27,7 @@ function NotificationCard({ data, handler }: { data: USER_NOTIFICATION, handler:
 						className={`flex aspect-square max-h-8 min-h-8 max-w-8 min-w-8 overflow-hidden rounded-full ring-yellow-400 ${status === "unread" && "ring-1"}`}
 					>
 						<Image
-							src={"http://localhost:4025/api/users/avatars/" + avatar}
+							src={"http://localhost:4025/api/users" + avatar}
 							alt="Profile Image"
 							width={40}
 							height={40}
@@ -52,7 +52,7 @@ function NotificationCard({ data, handler }: { data: USER_NOTIFICATION, handler:
 			{type === "chat" ? (
 				<Chat message={content} username={senderUsername} />
 			) : type === "friend_request" ? (
-				<FriendRequest actionUrl={actionUrl || ""} />
+				<FriendRequest id={id} />
 			) : (
 				<GameOrTournament isValid={isValid} type={type} />
 			)}
