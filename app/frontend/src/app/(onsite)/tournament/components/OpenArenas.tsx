@@ -6,6 +6,7 @@ import unicaOne from "@/app/fonts/unicaOne";
 import { motion } from "framer-motion";
 import { ArrowClockwise, ArrowRight } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface errorObj {
 	status: boolean;
@@ -15,25 +16,29 @@ interface errorObj {
 function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 	const [tournaments, setTournaments] = useState([]);
 	const [error, setError] = useState<errorObj>({ status: false, message: "" });
+	const { api } = useAuth();
 
 	useEffect(() => {
 		const fetchData = async function () {
 			try {
-				const req = await fetch("http://localhost:3008/api/v1/tournaments?userId=1"); // Need user ID
+				
+				const req = await api.instance.get("/v1/tournament/tournaments");
+				// const req = await fetch("http://localhost:3008/api/v1/tournaments?userId=1"); // Need user ID
 				console.log("duh");
 
-				const data = await req.json();
+				// const data = await req.json();
 
-				if (!req.ok) throw "Something went wrong!";
+				// if (!req.ok) throw "Something went wrong!";
 
-				console.log(data);
-				setTournaments(data.data);
+				console.log(req);
+				// setTournaments(data.data);
 			} catch (err: unknown) {
-				if (typeof err === "object")
-					setError({
-						status: true,
-						message: "Something went wrong: Service is currently unavailable.",
-					});
+				// if (typeof err === "object")
+				// 	setError({
+				// 		status: true,
+				// 		message: "Something went wrong: Service is currently unavailable.",
+				// 	});
+				console.error(err);
 			}
 		};
 

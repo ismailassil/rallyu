@@ -3,4 +3,5 @@ export interface proxiesOpts {
 	NOTIF_PORT: string;
 	CHAT_PORT: string;
 	XO_PORT: string;
+	TOURNAMENT_PORT: string;
 }

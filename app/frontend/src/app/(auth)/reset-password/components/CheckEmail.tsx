@@ -4,7 +4,7 @@ import FormFieldError from "../../signup/components/FormFieldError";
 import { AnimatePresence } from "framer-motion";
 
 async function verifyOTP(email: string, code: string) : Promise<void> {
-	const response = await fetch(`http://localhost:4000/api/auth/reset/verify`, {
+	const response = await fetch(`http://localhost:4025/api/auth/reset/verify`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': `application/json`

@@ -1,9 +1,11 @@
 import app from "./app";
 
+const port = Number(process.env.TOURNAMENT_PORT) || 3008;
+
 (async () => {
     try {
-        await app.listen({ port: 3008 });
-        app.log.info(`Server listening on PORT: ${3008}`);
+        await app.listen({ port });
+        app.log.info(`Server listening on PORT: ${port}`);
     } catch (err) {
         app.log.error("Server launch faild!" );
     }

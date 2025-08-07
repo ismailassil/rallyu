@@ -67,6 +67,7 @@ await fastify.register(proxiesPlugin, {
 	AUTH_PORT: process.env.AUTH_PORT ?? '',
 	CHAT_PORT: process.env.CHAT_PORT ?? '',
 	XO_PORT: process.env.XO_PORT ?? '',
+	TOURNAMENT_PORT: process.env.TOURNAMENT_PORT ?? '',
 });
 
 // ** METRICS Plugin
