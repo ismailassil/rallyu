@@ -25,7 +25,6 @@ class SocketIOService {
 		fastify.log.info('[SocketIO] Server is Running');
 
 		this.setupMiddleware();
-		this.setupConnection();
 	}
 
 	public setupDecorators(): void {
@@ -37,6 +36,7 @@ class SocketIOService {
 			await this.handleConnection(socket);
 
 			socket.on('chat_send_msg', async (data: MessageType) => {
+				this.fastify.log.info("------------ CHAT_SEND_MSG ------------")
 				this.handleChat(socket, data);
 			});
 
@@ -54,7 +54,8 @@ class SocketIOService {
 	}
 
 	private handleChat(socket: Socket, data: MessageType) {
-		this.fastify.log.info('[CLIENT][CHAT] received msg = ' + data);
+		this.fastify.log.info('[CLIENT][CHAT] received msg = ');
+		this.fastify.log.info(data);
 
 		this.fastify.js.publish('chat.send_msg', this.fastify.jsCodec.encode(data));
 	}

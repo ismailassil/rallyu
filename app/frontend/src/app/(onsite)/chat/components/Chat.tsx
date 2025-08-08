@@ -45,11 +45,11 @@ const Chat = ({ username }: { username?: string }) => {
 
 		api.instance.get('/chat/history')
 			.then((response: any) => {
-				console.log(`+++++>${JSON.stringify(response.data)}++++++\n`)
+				// console.log(`+++++>${JSON.stringify(response.data)}++++++\n`)
 				setMessages(response?.data)
 			})
 			.catch((error: any) => {
-				// console.error("Error fetching chat history:", error);
+				console.error("Error fetching chat history:", error);
 			});
 	}, [BOSS?.id, selectedUser?.id, api.instance, setMessages]);
 

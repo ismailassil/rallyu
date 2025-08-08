@@ -3,6 +3,8 @@ import { useContext, createContext, useState, ReactNode, useEffect } from "react
 import React from 'react';
 import { useAuth } from "../../contexts/AuthContext";
 import { LoggedUser, MessageType } from "../types/Types";
+import moment from "moment";
+import { tree } from "next/dist/build/templates/app-page";
 
 
 
@@ -20,6 +22,7 @@ type ChatContextType = {
 	setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
 	// lastMessage: string;
 	// setLastMessage: React.Dispatch<React.SetStateAction<string>>;
+	// setDate: any
 }
 
 const ChatContext = createContext<ChatContextType | null>(null)
@@ -63,6 +66,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
 
 
+
+
   return (
     <ChatContext.Provider value={{
       showConversation,
@@ -77,6 +82,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			setMessages,
 			// lastMessage,
 			// setLastMessage,
+			// setDate,
     }}>
       {children}
     </ChatContext.Provider>

@@ -44,7 +44,7 @@ fastify.get('/chat/history', async (req, res) => {
 
 		const result = statement.all(userId, userId);
 
-		fastify.log.info(chalk.yellow(`--->${JSON.stringify(result, null, 2)}`));
+		// fastify.log.info(chalk.yellow(`--->${JSON.stringify(result, null, 2)}`));
 
 		res.send(result);
 	} catch (error) {
@@ -52,6 +52,8 @@ fastify.get('/chat/history', async (req, res) => {
 		res.status(500).send({ error: 'Failed to retrieve messages' });
 	}
 });
+
+
 
 
 

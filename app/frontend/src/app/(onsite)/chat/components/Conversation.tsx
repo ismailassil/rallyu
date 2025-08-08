@@ -24,42 +24,58 @@ const ConversationBody = ({ selectedUser }: { selectedUser: LoggedUser }) => {
 	const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === "Enter") {
 			e.preventDefault()
-			sendData()
+			sendData();
 		}
 	}
 
-	
-	
 	const sendData = () => {
 		const data = message.trim();
-		
+
 		if (data !== "" && BOSS) {
 			const newMessage = {
 				id: Date.now(),
 				senderId: BOSS.id,
 				receiverId: selectedUser.id,
 				text: data,
-				date: moment().calendar()
+				// created_at: moment().calendar()
+				created_at: "15:15"
 			};
-			
-			
-			// setMessages((prev) => [...prev, newMessage]);
+			setMessages((prev) => [...prev, newMessage]);
+			socket.emit('chat_send_msg', newMessage)
 			setMessage("");
 		}
 	};
+
+
+	const setDate = (msg : MessageType): string => {
+		const date = moment.parseZone(msg.created_at); // preserve original timezone
+		const now = moment();
 	
-	
+		if (date.isSame(now, 'day')) {
+			return date.format('HH:mm'); // Today → time only
+		}
+		if (date.isSame(now.clone().subtract(1, 'day'), 'day')) {
+			return 'Yesterday';
+		}
+		if (date.isSame(now, 'year')) {
+			return date.format('DD-MM');
+		}
+		return date.format('DD/MM/YYYY');
+	};
+
+
 	useEffect(() => {
 		if (!BOSS || !selectedUser) return;
-	
+
 		const filtered = messages.filter((msg) =>
 			(msg.senderId === BOSS.id && msg.receiverId === selectedUser.id) ||
 			(msg.senderId === selectedUser.id && msg.receiverId === BOSS.id)
 		);
-	
+
 		setFiltredMessages(filtered);
 	}, [messages, selectedUser?.id, BOSS?.id]);
-	
+
+
 	return (
 		<div className={` size-full border border-white/30 rounded-lg flex flex-col md:bg-white/4 `}>
 
@@ -108,14 +124,19 @@ const ConversationBody = ({ selectedUser }: { selectedUser: LoggedUser }) => {
 
 			{/* ----------------------------------------------------message body ---------------------------------------------------- */}
 
-			<div className='overflow-y-scroll custom-scrollbar p-4 flex-1'>
+			<div className='overflow-y-scroll custom-scrollbar p-4 flex-1 overflow-x-hidden'>
 				{filtredMessages.map((msg, index) => (
-					<div key={index} ref={messageRef}
-						className={`flex justify-end max-w-max w-9/12 border-white/30 border p-3 rounded-lg mb-10 relative break-all ${msg.senderId === BOSS?.id ? 'ml-auto' : 'mr-auto'}`}>
-						<span className=''>{msg.text}</span>
-						<span className={`-bottom-6 ${msg.senderId === selectedUser.id ? 'right-0' : '-left-6'} absolute text-white/30 w-32 text-end`}>{ }</span>
-						{/* <span className={`-bottom-6 ${msg.senderId === selectedUser.id ? 'right-0' : '-left-6'} absolute text-white/30 w-32 text-end`}>{msg.date}</span> */}
-					</div>
+					// <div>
+						<div key={index} ref={messageRef}
+							className={`flex justify-end max-w-max w-9/12 border-white/30 border p-3 rounded-lg mb-10 relative break-all ${msg.senderId === BOSS?.id ? 'ml-auto' : 'mr-auto'}`}>
+							<span className=''>{msg.text}</span>
+							<span className={` text-xs -bottom-6 ${msg.senderId === selectedUser.id ? '-right-10' : '-left-38'} absolute text-white/30 w-32 text-end`}>{setDate(msg)}</span>
+						</div>
+						// {<div className=' bg-accent mx-auto'>
+						// 	<p>{moment.parseZone(msg?.created_at).format("h:mm")}</p>
+						// </div>}
+					// </div>
+
 				))}
 			</div>
 			{/* <div className=' flex items-center justify-center'>

@@ -36,7 +36,8 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	const chatProxyOptions = {
 		// upstream: `http://chat:${CHAT_PORT}`,
-		upstream: `http://ms-chat:${CHAT_PORT}`,
+		// upstream: `http://ms-chat:${CHAT_PORT}`,
+		upstream: `http://host.docker.internal:${CHAT_PORT}`,
 		prefix: '/api/chat',
 		rewritePrefix: '/chat',
 		httpMethods: ['GET', 'PUT'],
