@@ -13,10 +13,10 @@ const Footer = () => {
 			scope: "all",
 			status: "dismissed",
 		};
-
+		
 		socket.emit("notification_update", data);
 	}, [socket]);
-
+	
 	const handleMarkAll = useCallback(() => {
 		const data = {
 				notificationId: -1,

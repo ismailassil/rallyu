@@ -8,13 +8,14 @@ volumes:
 
 services:
   api-gateway:
-    build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./api-gateway
+    #   dockerfile: Dockerfile
     depends_on:
       nats:
         condition: service_healthy
-    image: rallyu/api-gateway:v1.0
+    image: node:lts-alpine3.22
+    # image: rallyu/api-gateway:v1.0
     container_name: api-gateway
     restart: always
     ports:
@@ -22,9 +23,12 @@ services:
     networks:
       - backend
       # - web-app
+    volumes:
+      - ./api-gateway:/app/
     env_file:
       - ./api-gateway/.env
       - .env
+    command: sh -c "apk install curl && cd /app/ && rm -rf node_modules/ && npm i && npm run dev"
     healthcheck:
       test:
         [
@@ -37,49 +41,60 @@ services:
       retries: 10
 
   ms-auth:
-    build:
-      context: ./ms-auth
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./ms-auth
+    #   dockerfile: Dockerfile
     depends_on:
       api-gateway:
         condition: service_healthy
-    image: rallyu/ms-auth:v1.0
+    # image: rallyu/ms-auth:v1.0
+    image: node:lts-alpine3.22
     container_name: ms-auth
     restart: always
+    volumes:
+      - ./ms-auth:/app/
     networks:
       - backend
     env_file:
       - .env
+    command: sh -c "cd /app && rm -rf node_modules/ && npm i && npm run dev"
 
   ms-notif:
-    build:
-      context: ./ms-notif
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./ms-notif
+    #   dockerfile: Dockerfile
     depends_on:
       api-gateway:
         condition: service_healthy
-    image: rallyu/ms-notif:v1.0
+    # image: rallyu/ms-notif:v1.0
+    image: node:lts-alpine3.22
     container_name: ms-notif
     restart: always
+    volumes:
+      - ./ms-notif:/app/
     networks:
       - backend
     env_file:
       - .env
+    command: sh -c "cd /app && rm -rf node_modules/ && npm i && npm run dev"
   
   ms-chat:
-    build:
-      context: ./ms-chat
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./ms-chat
+    #   dockerfile: Dockerfile
     depends_on:
       api-gateway:
         condition: service_healthy
-    image: rallyu/ms-chat:v1.0
+    image: node:lts-alpine3.22
     container_name: ms-chat
     restart: always
+    volumes:
+      - ./ms-chat:/app/
     networks:
       - backend
     env_file:
       - .env
+    command: sh -c "cd /app && rm -rf node_modules/ && npm i && npm run dev"
   
   # ms-xo:
   #   build:
@@ -106,7 +121,8 @@ services:
       - .env
     ports:
       - 4222:4222
-    command: --user ${NATS_USER} --pass ${NATS_PASSWORD} -js -m 8222 -n internal-server
+      - 8222:8222
+    command: --user ${NATS_USER} --pass ${NATS_PASSWORD} -js --http_port 8222
     healthcheck:
       test: wget http://localhost:8222/healthz -q -S -O -
       start_period: 2s
@@ -120,6 +136,8 @@ services:
     ports: # TODO: To be removed
       - 8571:80
     restart: always
+    environment:
+      REVERSE_PROXY_UPSTREAM: 'http://nats:8222'
     networks:
       - backend
       # - web-app

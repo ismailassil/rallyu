@@ -6,7 +6,9 @@ export interface NOTIFICATION_CONTEXT {
 	setNotifications: Dispatch<SetStateAction<USER_NOTIFICATION[]>>;
 	toastNotifications: TOAST_PAYLOAD[];
 	setToastNotifications: Dispatch<SetStateAction<TOAST_PAYLOAD[]>>;
-	handleRemove: (id: string) => void;
+	handleRemove: (id: number) => void;
+	handleAccept: (type: NOTIFICATION_TYPE, senderId: number, isToast: boolean, notifId: number) => Promise<void>;
+	handleDecline: (type: NOTIFICATION_TYPE, senderId: number, isToast: boolean, notifId: number) => Promise<void>;
 	isLoading: boolean;
 	notifLength: number;
 	DEFAULT_TIME: number;
@@ -22,6 +24,7 @@ export interface UPDATE_NOTIFICATION {
 	notificationId: number;
 	scope: NOTIFICATION_SCOPE;
 	status: NOTIFICATION_STATUS;
+	state: NOTIFICATION_STATE;
 }
 
 /************************************************************** */
@@ -40,11 +43,14 @@ export interface USER_NOTIFICATION {
 	status: NOTIFICATION_STATUS;
 	actionUrl: string | null;
 	avatar: string;
+	state: NOTIFICATION_STATE;
 }
 
 export type NOTIFICATION_STATUS = "read" | "unread" | "dismissed";
 
-export type NOTIFICATION_TYPE = "chat" | "game" | "friend_request" | "tournament";
+export type NOTIFICATION_TYPE = "chat" | "game" | "friend_request" | "tournament" | 'status';
+
+export type NOTIFICATION_STATE = "pending" | 'finished';
 
 /************************************************************** */
 /********************** GET HISTORY REQUEST *********************/

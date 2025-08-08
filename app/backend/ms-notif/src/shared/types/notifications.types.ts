@@ -12,6 +12,7 @@ export interface RAW_NOTIFICATION {
 	updated_at: string;
 	status: NOTIFICATION_STATUS;
 	action_url: string | null;
+	state: NOTIFICATION_STATE;
 }
 
 /**
@@ -29,6 +30,7 @@ export interface USER_NOTIFICATION {
 	status: NOTIFICATION_STATUS;
 	actionUrl: string | null;
 	avatar: string;
+	state: NOTIFICATION_STATE;
 }
 
 /**

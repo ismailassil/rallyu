@@ -7,16 +7,16 @@ export default function FriendsPanel() {
 		<aside className="bg-card border-br-card flex-2 hidden h-full w-full rounded-lg border-2 xl:block">
 			<div className="flex h-full flex-col">
 				<div className="group relative shrink-0 overflow-hidden">
-					<h1 className={`${unicaOne.className} p-13 select-none text-4xl uppercase`}>
+					<h1 className={`${unicaOne.className} p-10 select-none text-4xl uppercase`}>
 						Friends
 					</h1>
 					<div
-						className="w-18 h-18 bg-accent
+						className="w-15 h-15 bg-accent
 					absolute -left-4 top-[calc(50%)] -translate-x-1/2 -translate-y-1/2 rounded-lg
 					transition-all duration-200 group-hover:scale-105"
 					></div>
 				</div>
-				<div className="custom-scroll max-h-[calc(100vh-19rem)] flex-1 overflow-y-auto">
+				<div className="custom-scrollbar max-h-[calc(100vh-19rem)] flex-1 overflow-y-auto">
 					{/* <div className="flex flex-col mt-20 justify-center items-center">
 						<Image
 							src="/meme/sad.png"

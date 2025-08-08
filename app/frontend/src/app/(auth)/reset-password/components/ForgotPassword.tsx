@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
 async function resetPassword(email: string) : Promise<void> {
-		const response = await fetch(`http://localhost:4000/api/auth/reset/setup`, {
+		const response = await fetch(`http://localhost:4025/api/auth/reset/setup`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': `application/json`

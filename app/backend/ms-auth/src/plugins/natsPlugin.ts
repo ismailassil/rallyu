@@ -57,6 +57,7 @@ async function natsPlugin(fastify: FastifyInstance, opts: NatsOpts) {
 	// subscribe to all user.* subjects
 	const sub = nc.subscribe('user.*');
 
+	// TODO: handle exceptions
 	async function consumeMessages() {
 		for await (const msg of sub) {
 			await handleUserRequests(msg);

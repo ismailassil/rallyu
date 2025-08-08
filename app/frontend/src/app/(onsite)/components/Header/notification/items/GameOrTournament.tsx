@@ -1,20 +1,17 @@
-import React, { useCallback } from "react";
+import React from "react";
 import OutlineButton from "./ui/OutlineButton";
 import FilledButton from "./ui/FilledButton";
 import { XIcon } from "@phosphor-icons/react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { NOTIFICATION_TYPE } from "../types/notifications.types";
 
 interface Props {
 	isValid: boolean;
-	type: string;
-	actionUrl?: string;
+	type: NOTIFICATION_TYPE;
+	handleAccept:(type: NOTIFICATION_TYPE) => void
+	handleDecline:(type: NOTIFICATION_TYPE) => void
 }
 
-const GameOrTournament = ({ isValid, type, actionUrl }: Props) => {
-	const { api } = useAuth();
-	const router = useRouter();
-
+const GameOrTournament = ({handleAccept, handleDecline, isValid, type }: Props) => {
 	function getText(type: string) {
 		switch (type) {
 			case "game":
@@ -24,42 +21,12 @@ const GameOrTournament = ({ isValid, type, actionUrl }: Props) => {
 		}
 	}
 
-	const handleAccept = useCallback(async () => {
-		if (!actionUrl || actionUrl.length === 0) return;
-		if (type === "game") {
-			return router.push(actionUrl);
-		}
-		await api.instance
-			.post(actionUrl + "?status=accept")
-			.then(() => {
-				console.log("ACCEPTED DONE");
-			})
-			.catch((err) => {
-				console.error(err);
-			});
-	}, [actionUrl, api.instance, router, type]);
-
-	const handleDecline = useCallback(async () => {
-		if (!actionUrl || actionUrl.length === 0) return;
-		if (type === "game") {
-			return router.push(actionUrl);
-		}
-		await api.instance
-			.post(actionUrl + "?status=decline")
-			.then(() => {
-				console.log("DECLINE DONE");
-			})
-			.catch((err) => {
-				console.error(err);
-			});
-	}, [actionUrl, api.instance, router, type]);
-
 	return (
 		<>
 			{!isValid && (
 				<div className="ml-10 flex gap-2">
-					<FilledButton onClick={handleAccept}>Join {getText(type)}</FilledButton>
-					<OutlineButton onClick={handleDecline}>
+					<FilledButton onClick={() => handleAccept(type)}>Join {getText(type)}</FilledButton>
+					<OutlineButton onClick={() => handleDecline(type)}>
 						<XIcon size={16} />
 					</OutlineButton>
 				</div>
