@@ -46,12 +46,14 @@ function shouldIgnorePath(path: string): boolean {
 
 	const avatarPath = '/api/users/avatars';
 	const availablePath = '/api/users/available';
+	const resetPath = 'api/auth/reset';
 	const searchTEMP = '/api/users/search';
 
 	return (
 		allRoutes.includes(path) ||
 		path.startsWith(avatarPath) ||
 		path.startsWith(availablePath) ||
+		path.startsWith(resetPath) ||
 		path.startsWith(searchTEMP)
 	);
 }

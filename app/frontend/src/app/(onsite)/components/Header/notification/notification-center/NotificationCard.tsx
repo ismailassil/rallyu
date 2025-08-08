@@ -6,17 +6,25 @@ import Chat from "../items/Chat";
 import FriendRequest from "../items/FriendRequest";
 import GameOrTournament from "../items/GameOrTournament";
 import { XIcon } from "@phosphor-icons/react";
+import { useNotification } from "../context/NotificationContext";
 
-function NotificationCard({ data, handler }: { data: USER_NOTIFICATION, handler: (id: number, status: "read" | "dismissed") => void }) {
-	const { id, senderUsername, content, type, updatedAt, status, avatar } = data;
-	const textDescriptionRef = getTextDescription(type);
+function NotificationCard({
+	data,
+	handler,
+}: {
+	data: USER_NOTIFICATION;
+	handler: (id: number, status: "read" | "dismissed") => void;
+}) {
+	const { id, senderUsername, senderId, content, type, updatedAt, status, avatar, state } = data;
+	const textDescriptionRef = getTextDescription(type, content);
 	const dateRef = moment.utc(updatedAt).local().fromNow();
 	const isValid = moment().diff(moment.utc(updatedAt).local(), "minutes") >= 3;
+	const { handleAccept, handleDecline } = useNotification();
 
 	return (
 		<motion.li
 			className="relative flex min-h-16 w-full flex-col gap-3 overflow-hidden px-2 py-4 text-start duration-300 hover:bg-black/10"
-			onHoverStart={() => status === 'unread' && handler(id, 'read')}
+			onHoverStart={() => status === "unread" && handler(id, "read")}
 		>
 			{status === "unread" && (
 				<div className="absolute top-5 left-9 size-2 -translate-1/2 rounded-full bg-yellow-400" />
@@ -48,13 +56,24 @@ function NotificationCard({ data, handler }: { data: USER_NOTIFICATION, handler:
 					onClick={() => handler(id, "dismissed")}
 				/>
 			</div>
-
-			{type === "chat" ? (
+			{type === "status" ? null : type === "chat" ? (
 				<Chat message={content} username={senderUsername} />
 			) : type === "friend_request" ? (
-				<FriendRequest id={id} />
+				state === "pending" && (
+					<FriendRequest
+						handleAccept={() => handleAccept(type, senderId, false, id)}
+						handleDecline={() => handleDecline(type, senderId, false, id)}
+					/>
+				)
 			) : (
-				<GameOrTournament isValid={isValid} type={type} />
+				state === "pending" && (
+					<GameOrTournament
+						isValid={isValid}
+						type={type}
+						handleAccept={() => handleAccept(type, senderId, false, id)}
+						handleDecline={() => handleDecline(type, senderId, false, id)}
+					/>
+				)
 			)}
 		</motion.li>
 	);
@@ -62,7 +81,7 @@ function NotificationCard({ data, handler }: { data: USER_NOTIFICATION, handler:
 
 export default NotificationCard;
 
-export const getTextDescription = (type: NOTIFICATION_TYPE) => {
+export function getTextDescription(type: NOTIFICATION_TYPE, content: string = ""): string {
 	switch (type) {
 		case "game":
 			return "challenged you to a game!";
@@ -72,5 +91,9 @@ export const getTextDescription = (type: NOTIFICATION_TYPE) => {
 			return "sent you a message.";
 		case "tournament":
 			return "invited you to start a tournament!";
+		case "status":
+			return content;
+		default:
+			return "somthing";
 	}
-};
+}

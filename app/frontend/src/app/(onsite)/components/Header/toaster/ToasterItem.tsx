@@ -2,7 +2,6 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TOAST_PAYLOAD, ToastTypesDetails } from "./Toast.types";
-import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { useNotification } from "../notification/context/NotificationContext";
 
 interface Props {
@@ -11,11 +10,10 @@ interface Props {
 }
 
 function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
-	const { image, senderUsername, type, senderId, action_url } = data;
+	const { image, senderUsername, type, senderId, id } = data;
 	const [progress, setProgress] = useState(100);
 	const router = useRouter();
-	const { api } = useAuth();
-	const { handleRemove } = useNotification();
+	const { handleRemove, handleAccept, handleDecline } = useNotification();
 
 	useEffect(() => {
 		const TIME = DEFAULT_TIME;
@@ -35,23 +33,6 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	function handleAccept() {
-		handleRemove(data.id);
-		if (type === "friend_request") {
-			api.acceptFriendRequest(senderId);
-			return;
-		}
-		router.push(action_url);
-	}
-	
-	function handleDecline() {
-		handleRemove(data.id);
-		if (type === "friend_request") {
-			api.rejectFriendRequest(senderId);
-			return;
-		}
-	}
-	
 	function handleChat() {
 		handleRemove(data.id);
 		router.push("/users/" + senderUsername);
@@ -81,12 +62,18 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 				</div>
 				{ToastTypesDetails[type].icon}
 			</div>
-			{type !== "chat" ? (
+			{type === "status" ? null : type !== "chat" ? (
 				<div className="*:transition-color flex h-8 justify-between divide-x divide-white/20 border-t-1 border-t-white/20 text-sm *:cursor-pointer *:duration-400">
-					<button className="hover:bg-main w-full" onClick={handleAccept}>
+					<button
+						className="hover:bg-main w-full"
+						onClick={() => handleAccept(type, senderId, true, id)}
+					>
 						Accept
 					</button>
-					<button className="w-full hover:bg-red-600" onClick={handleDecline}>
+					<button
+						className="w-full hover:bg-red-600"
+						onClick={() => handleDecline(type, senderId, true, id)}
+					>
 						Decline
 					</button>
 				</div>

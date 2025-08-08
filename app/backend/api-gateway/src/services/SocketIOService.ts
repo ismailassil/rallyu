@@ -43,6 +43,7 @@ class SocketIOService {
 			socket.on(
 				'notification_update',
 				async (data: UPDATE_NOTIFICATION_DATA) => {
+					this.fastify.log.info(data);
 					this.handleNotificationUpdate(socket, data);
 				},
 			);
@@ -56,15 +57,15 @@ class SocketIOService {
 	private handleChat(socket: Socket, data: MessageType) {
 		this.fastify.log.info('[CLIENT][CHAT] received msg = ');
 		this.fastify.log.info(data);
-
 		this.fastify.js.publish('chat.send_msg', this.fastify.jsCodec.encode(data));
 	}
-
+	
 	private handleNotificationUpdate(
 		socket: Socket,
 		data: UPDATE_NOTIFICATION_DATA,
 	) {
-		this.fastify.log.info('[CLIENT][NOTIF] received msg = ' + data);
+		this.fastify.log.info('[CLIENT][NOTIF] received msg = ');
+		this.fastify.log.info(data);
 
 		const payload = {
 			userId: socket.data.userId,

@@ -1,6 +1,7 @@
 import fastify from '../app.js';
 import { NotificationNotFoundException } from '../shared/exceptions/NotificationNotFoundException.js';
 import {
+	NOTIFICATION_STATE,
 	NOTIFICATION_STATUS,
 	NOTIFICATION_TYPE,
 	NOTIFY_USER_PAYLOAD,
@@ -54,10 +55,10 @@ class NotifRepository {
 					}
 					if (!rows || rows.length === 0) {
 						resolve([]);
+						return ;
 					}
 					fastify.log.info('✅ Msgs found');
 					resolve(rows);
-					return;
 				},
 			);
 		});
@@ -65,13 +66,14 @@ class NotifRepository {
 
 	updateNotif(
 		status: NOTIFICATION_STATUS,
+		state: NOTIFICATION_STATE,
 		receiver_id: number,
 		notificationId: number,
 	): Promise<boolean> {
 		return new Promise((resolve, reject) => {
 			fastify.database.run(
-				'UPDATE messages SET status = ? WHERE id = ? AND receiver_id = ?',
-				[status, notificationId, receiver_id],
+				'UPDATE messages SET status = ?, state = ? WHERE id = ? AND receiver_id = ?',
+				[status, state, notificationId, receiver_id],
 				function (error) {
 					if (error) {
 						fastify.log.error('5- DB Error: ' + error);
@@ -80,16 +82,17 @@ class NotifRepository {
 					}
 					if (this.changes === 1) {
 						resolve(true);
-					} else {
-						reject(new NotificationNotFoundException());
+						return ;
 					}
+					reject(new NotificationNotFoundException());
+					return ;
 				},
 			);
 		});
 	}
 
 	updateAllNotif(status: NOTIFICATION_STATUS, receiver_id: number): Promise<void> {
-		return new Promise((_, reject) => {
+		return new Promise((resolve, reject) => {
 			fastify.database.run(
 				'UPDATE messages SET status = ? WHERE receiver_id = ?',
 				[status, receiver_id],
@@ -99,12 +102,12 @@ class NotifRepository {
 						reject(error);
 						return;
 					}
-					return;
+					resolve();
 				},
 			);
 		});
 	}
-
+	
 	getNotifId(
 		senderId: number,
 		receiverId: number,
@@ -115,6 +118,8 @@ class NotifRepository {
 				`
 				SELECT id FROM messages
 				WHERE sender_id = ? AND receiver_id = ?	AND type = ?
+				ORDER BY updated_at DESC
+				LIMIT 1;
 				`,
 				[senderId, receiverId, type],
 				(err, row) => {
@@ -151,7 +156,6 @@ class NotifRepository {
 						reject(new Error('No Message found'));
 						return;
 					}
-
 					resolve(row);
 				},
 			);

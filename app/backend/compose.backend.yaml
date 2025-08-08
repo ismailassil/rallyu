@@ -53,20 +53,20 @@ services:
     env_file:
       - .env
 
-  ms-notif:
-    build:
-      context: ./ms-notif
-      dockerfile: Dockerfile
-    depends_on:
-      api-gateway:
-        condition: service_healthy
-    image: rallyu/ms-notif:v1.0
-    container_name: ms-notif
-    restart: always
-    networks:
-      - backend
-    env_file:
-      - .env
+  # ms-notif:
+  #   build:
+  #     context: ./ms-notif
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     api-gateway:
+  #       condition: service_healthy
+  #   image: rallyu/ms-notif:v1.0
+  #   container_name: ms-notif
+  #   restart: always
+  #   networks:
+  #     - backend
+  #   env_file:
+  #     - .env
   
   # ms-chat:
   #   # build:

@@ -124,7 +124,7 @@ async function userRouter(fastify: FastifyInstance) {
 	fastify.put('/:user_id/friends/reject', {
 		preHandler: fastify.authenticate,
 		schema: relationsRequestSchema,
-		handler: relationsController.acceptFriendRequest.bind(relationsController)
+		handler: relationsController.rejectFriendRequest.bind(relationsController)
 	});
 	
 	fastify.delete('/:user_id/friends', {

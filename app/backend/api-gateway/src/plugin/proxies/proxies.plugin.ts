@@ -28,7 +28,8 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	const notifProxyOptions = {
 		// upstream: `http://notif:${NOTIF_PORT}`,
-		upstream: `http://ms-notif:${NOTIF_PORT}`,
+		// upstream: `http://ms-notif:${NOTIF_PORT}`,
+		upstream: `http://host.docker.internal:${NOTIF_PORT}`,
 		prefix: '/api/notif',
 		rewritePrefix: '/notif',
 		httpMethods: ['GET', 'PUT'],

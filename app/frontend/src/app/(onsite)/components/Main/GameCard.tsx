@@ -30,7 +30,7 @@ export default function GameCard({
 	return (
 		<div
 			className="bg-card border-br-card group relative flex h-full md:max-h-[300px]
-					md:min-h-[180px] transform cursor-pointer items-center w-full
+					md:min-h-[290px] transform cursor-pointer items-center w-full
 					overflow-hidden rounded-lg border-2 transition-transform
 					duration-500 md:items-start md:justify-center"
 		>

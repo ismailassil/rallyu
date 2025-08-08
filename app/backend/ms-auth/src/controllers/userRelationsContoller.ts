@@ -1,7 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import RelationsService from "../services/relationsService";
 import { IRelationsRequest } from "../types";
-import fastify from '../server';
 import { JSONCodec } from "nats";
 
 class RelationsController {
@@ -59,6 +58,16 @@ class RelationsController {
 
 			await this.relationsService.cancelFriendRequest(user_id!, parseInt(target_id));
 
+			// UPDATE THE NOTIFICATION
+			const jsCodec = JSONCodec();
+			const data = jsCodec.encode({
+				senderId: parseInt(target_id),
+				receiverId: user_id,
+				status: 'dismissed',
+				type: 'friend_request',
+				state: 'finished'
+			});
+			request.server.nc.publish("notification.update_status", data);
 			reply.status(204).send({ success: true, data: {} });
 		} catch (err: any) {
 			console.error(err);
@@ -74,6 +83,25 @@ class RelationsController {
 
 			const newRelation = await this.relationsService.acceptFriendRequest(parseInt(target_id), user_id!);
 
+			// UPDATE THE NOTIFICATION
+			const jsCodec = JSONCodec();
+			const data = jsCodec.encode({
+				senderId: parseInt(target_id),
+				receiverId: user_id,
+				status:'read',
+				type:'friend_request',
+				state: 'finished'
+			});
+			request.server.nc.publish("notification.update_status", data);
+			
+			// NOTIFY THE OTHER USER ABOUT IT
+			const payload = jsCodec.encode({
+				senderId: user_id,
+				receiverId: parseInt(target_id),
+				type: 'status',
+				message: "has accepted your invitation",
+			});
+			request.server.nc.publish("notification.dispatch", payload);
 			reply.status(200).send({ success: true, data: newRelation });
 		} catch (err: any) {
 			console.error(err);
@@ -81,14 +109,25 @@ class RelationsController {
 			reply.status(statusCode).send({ success: false, error: errorCode });
 		}
 	}
-
+	
 	async rejectFriendRequest(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { user_id: target_id } = request.params as IRelationsRequest;
 			const user_id = request.user?.sub;
-
+			
 			// await this.relationsService.rejectFriendRequest(user_id!, parseInt(target_id));
 			await this.relationsService.rejectFriendRequest(parseInt(target_id), user_id!);
+			
+			// UPDATE THE NOTIFICATION
+			const jsCodec = JSONCodec();
+			const data = jsCodec.encode({
+				senderId: parseInt(target_id),
+				receiverId: user_id,
+				status:'read',
+				type:'friend_request',
+				state: 'finished'
+			});
+			request.server.nc.publish("notification.update_status", data);
 
 			reply.status(204).send({ success: true, data: {} });
 		} catch (err: any) {

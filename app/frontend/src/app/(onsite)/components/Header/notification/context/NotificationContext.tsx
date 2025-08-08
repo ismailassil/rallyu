@@ -14,6 +14,7 @@ import {
 	UPDATE_NOTIFICATION,
 	NOTIFICATION_CONTEXT,
 	HistoryPayload,
+	NOTIFICATION_TYPE,
 } from "../types/notifications.types";
 import { TOAST_PAYLOAD } from "../../toaster/Toast.types";
 
@@ -33,12 +34,13 @@ export function useNotification() {
 
 function getToastData(data: USER_NOTIFICATION): TOAST_PAYLOAD {
 	return {
-		id: data.id.toString(),
+		id: data.id,
 		image: "/profile/image_2.jpg",
 		senderUsername: data.senderUsername,
 		senderId: data.senderId,
 		type: data.type,
 		action_url: data.actionUrl ?? "",
+		state: data.state,
 	};
 }
 
@@ -67,12 +69,13 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		});
 	}, []);
 
-	const handleRemove = useCallback((id: string) => {
+	const handleRemove = useCallback((id: number) => {
 		setToastNotifications((prev) => prev.filter((notif) => notif.id !== id));
 	}, []);
 
 	const handleNotify = useCallback(
 		(data: USER_NOTIFICATION) => {
+			console.log(data);
 			setNotifications((prev) => [data, ...prev]);
 
 			if (!isNotifRef.current) {
@@ -83,22 +86,24 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 
 				playSound();
 
-				setTimeout(() => handleRemove(data.id.toString()), 3000);
+				setTimeout(() => handleRemove(data.id), 3000);
 			}
 		},
 		[handleRemove, playSound]
 	);
 
 	const handleUpdate = useCallback((payload: UPDATE_NOTIFICATION) => {
-		const { scope, status, notificationId } = payload;
+		const { scope, status, state, notificationId } = payload;
+		console.log("HANDLE UPDATE");
+		console.log(payload);
 
 		setNotifications((prev) => {
-			if (scope === 'single') {
-				if (status === 'dismissed') {
+			if (scope === "single") {
+				if (status === "dismissed") {
 					return prev.filter((notif) => notificationId !== notif.id);
 				}
 				return prev.map((notif) =>
-					notif.id === notificationId ? { ...notif, status } : notif
+					notif.id === notificationId ? { ...notif, status, state } : notif
 				);
 			}
 			if (status === "dismissed") return [];
@@ -119,7 +124,6 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 	useEffect(() => {
 		if (!isBottom && pageRef.current > 0) return;
 
-		console.log("Getting New Notifications: " + pageRef.current);
 		pageRef.current += 1;
 		setIsLoading(true);
 
@@ -142,6 +146,42 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		setNotifLength(length);
 	}, [notifications]);
 
+	const handleAccept = useCallback(
+		async (type: NOTIFICATION_TYPE, senderId: number, isToast: boolean, notifId: number) => {
+			if (isToast) {
+				handleRemove(notifId);
+			}
+			try {
+				if (type === "friend_request") {
+					await api.acceptFriendRequest(senderId);
+				} else if (type === "game") {
+				} else if (type === "tournament") {
+				}
+			} catch (err) {
+				console.error((err as Error).message);
+			}
+		},
+		[api, handleRemove]
+	);
+
+	const handleDecline = useCallback(
+		async (type: NOTIFICATION_TYPE, senderId: number, isToast: boolean, notifId: number) => {
+			if (isToast) {
+				handleRemove(notifId);
+			}
+			try {
+				if (type === "friend_request") {
+					await api.rejectFriendRequest(senderId);
+				} else if (type === "game") {
+				} else if (type === "tournament") {
+				}
+			} catch (err) {
+				console.error((err as Error).message);
+			}
+		},
+		[api, handleRemove]
+	);
+
 	const values = useMemo<NOTIFICATION_CONTEXT>(
 		() => ({
 			notifications,
@@ -149,11 +189,22 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 			toastNotifications,
 			setToastNotifications,
 			handleRemove,
+			handleAccept,
+			handleDecline,
 			isLoading,
 			notifLength,
 			DEFAULT_TIME,
 		}),
-		[DEFAULT_TIME, handleRemove, isLoading, notifLength, notifications, toastNotifications]
+		[
+			DEFAULT_TIME,
+			handleAccept,
+			handleDecline,
+			handleRemove,
+			isLoading,
+			notifLength,
+			notifications,
+			toastNotifications,
+		]
 	);
 
 	return <NotifContext.Provider value={values}>{children}</NotifContext.Provider>;

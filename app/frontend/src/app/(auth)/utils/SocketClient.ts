@@ -13,6 +13,7 @@ class SocketClient {
 	}
 	
 	connect(accessToken: string) {
+		if (this.socket.connected) return ;
 		this.socket.auth = { token: accessToken };
 
 		this.socket.connect();

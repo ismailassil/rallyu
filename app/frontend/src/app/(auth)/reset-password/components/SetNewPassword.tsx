@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 async function changePassword(email: string, code: string, password: string) : Promise<void> {
-	const response = await fetch(`http://localhost:4000/api/auth/reset/update`, {
+	const response = await fetch(`http://localhost:4025/api/auth/reset/update`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': `application/json`

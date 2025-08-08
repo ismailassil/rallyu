@@ -3,26 +3,10 @@
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
 import GameInfo from "./components/GameInfo";
-import GameField from "./components/GameField";
 import { XOProvider } from "./contexts/xoContext";
-import { useState } from "react";
-import Congrats from "./components/Congrats";
-
-type gameInfoType = {
-	pl1: number;
-	pl2: number;
-	round: number;
-	turn: "pl1" | "pl2";
-};
+import GameArena from "./components/GameArena";
 
 function Page() {
-	const [gameInfo, setGameInfo] = useState<gameInfoType>({
-		pl1: 0,
-		pl2: 0,
-		round: 1,
-		turn: "pl1",
-	});
-	const [gameEnd, setGameEnd] = useState(false);
 
 	return (
 		<AnimatePresence>
