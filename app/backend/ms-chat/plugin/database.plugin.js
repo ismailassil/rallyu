@@ -5,9 +5,9 @@ async function dbConnector(fastify, options) {
 	const dbFile = './database.sqlite';
 	const db = new Database(dbFile, { verbose: console.log });
 
+	// id INTEGER PRIMARY KEY AUTOINCREMENT,
 	db.exec(`
-		CREATE TABLE IF NOT EXISTS message (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
+	CREATE TABLE IF NOT EXISTS message (
 			senderId INTEGER NOT NULL,
 			receiverId INTEGER NOT NULL,
 			text TEXT NOT NULL,

@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const databasePath = path.join(__dirname, '../../../database/database.sqlite');
 
-const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
+const databasePlugin = fastifyPlugin( async (fastify: FastifyInstance) => {
 	const sqlite = sqlite3.verbose();
 	const db = new sqlite.Database(databasePath, (error) => {
 		if (error) {

@@ -3,13 +3,25 @@
 import { APIClient } from '@/app/(auth)/utils/APIClient';
 import SocketClient from '@/app/(auth)/utils/SocketClient';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { MessageType } from '../chat/types/Types';
 
 // we need to remove this and make everything on demand
+// type User = {
+// 	id: string;
+// 	username: string;
+// 	email: string;
+// }
+
 type User = {
-	id: string;
-	username: string;
-	email: string;
+	avatar_path: string,
+	first_name: string,
+	last_name: string,
+	id: number,
+	relation_status: string,
+	username: string,
+	last_message : MessageType
 }
+
 
 type AuthContextType = {
 	user: User | null;

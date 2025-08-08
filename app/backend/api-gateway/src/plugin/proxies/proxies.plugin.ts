@@ -4,7 +4,7 @@ import fp from 'fastify-plugin';
 import { proxiesOpts } from './proxies.types';
 
 const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) => {
-	const { AUTH_PORT, NOTIF_PORT, CHAT_PORT, XO_PORT } = opts;
+	const { AUTH_PORT, NOTIF_PORT, CHAT_PORT, XO_PORT, TOURNAMENT_PORT } = opts;
 
 	//// AUTH & USERS //////////////////////////////////
 	const authProxyOptions = {
@@ -49,12 +49,23 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 		rewritePrefix: '/xo',
 		httpMethods: ['GET', 'PUT'],
 	};
+	
+	fastify.log.info(TOURNAMENT_PORT);
+
+	const tournamentProxyOptions = {
+		// upstream: `http://ms-tournament:${TOURNAMENT_PORT}`,
+		upstream: `http://host.docker.internal:${TOURNAMENT_PORT}`,
+		prefix: `/api/v1/tournament`,
+		rewritePrefix: `/api/v1/tournament`,
+		httpMethods: ['GET', 'POST', 'PATCH'],
+	}
 
 	await fastify.register(proxy, authProxyOptions);
 	await fastify.register(proxy, usersProxyOptions);
 	await fastify.register(proxy, notifProxyOptions);
 	await fastify.register(proxy, chatProxyOptions);
 	await fastify.register(proxy, xoGameProxyOptions);
+	await fastify.register(proxy, tournamentProxyOptions);
 });
 
 export default endpointsPlugin;

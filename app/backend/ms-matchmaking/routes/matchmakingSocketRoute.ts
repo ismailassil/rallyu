@@ -1,24 +1,9 @@
 import { WebSocket } from "@fastify/websocket";
 import { FastifyInstance, FastifyRequest } from "fastify";
 
-interface waitingQueueType {
-    player1: WebSocket,
-    player2: WebSocket,
-}
-
-interface dataObjType {
-    type: String,
-    status: Number;
-}
-
-interface decisionQueueType {
-    player1: { sock: WebSocket, status: dataObjType },
-}
-
-
 const matchQueue: WebSocket[] = [];
-const waitingQueue: waitingQueueType[] = [];
-const decisionQueue: decisionQueueType[] = [];
+const waitingQueue = [];
+const decisionQueue = [];
 
 const socketPlayers = new Map<number, WebSocket>();
 // const rooms = new Map<id, Players>();
@@ -32,8 +17,10 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
         setInterval(() => {
             if (matchQueue.length >= 2) {
                 waitingQueue.push({ player1: matchQueue[0], player2: matchQueue[1]});
+                
                 matchQueue[0].send(JSON.stringify({ type: "MATCH-FOUND" }));
                 matchQueue[1].send(JSON.stringify({ type: "MATCH-FOUND" }));
+                
                 matchQueue.shift();
                 matchQueue.shift();
             }
@@ -52,18 +39,18 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
                         roomId: crypto.randomUUID(),
                         players: { playerId1: players.player1.sock, playerId2: players.player2.sock } 
                     };
-                    players.player1.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED", roomId: room.roomId }));
-                    players.player2.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED", roomId: room.roomId }));
-
+                    
                     // Fetch Post request send room over network to game service!!!!!!!!!
                     // await = fetch("http://localhost:3000/api/v1/game/create/room", {
                     //         method: "POST",
                     //         headers: {
-                    //             'Content-Type': 'application/json'
-                    //         },
-                    //         body: JSON.stringify(room);
-                    //     });
-                    
+                        //             'Content-Type': 'application/json'
+                        //         },
+                        //         body: JSON.stringify(room);
+                        //     });
+                    players.player2.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED", roomId: room.roomId }));
+                    players.player1.sock.send(JSON.stringify({ type: "MATCH-CONFIRMED", roomId: room.roomId }));
+                            
                 } else if (players.player1.status || players.player2.status) {
                     if (players.player1.status == 1) {
                         matchQueue.push(players.player1.sock);
@@ -91,12 +78,12 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
 
         connection.on('message', (message) => {
             const data = message.toString('utf-8');
-            const dataObj: dataObjType = JSON.parse(data);
+            const dataObj = JSON.parse(data);
             console.log(`Received ${dataObj.type}`);
 
             if (dataObj.type == "MATCH-CONFIRMATION") {
-                let player: WebSocket;
-                let opponent: WebSocket;
+                let player;
+                let opponent;
                 let done = 0;
                 let playersIndex = -1;
 

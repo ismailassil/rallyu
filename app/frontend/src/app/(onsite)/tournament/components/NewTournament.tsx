@@ -1,19 +1,62 @@
 import unicaOne from "@/app/fonts/unicaOne";
 import { ArrowLeft } from "@phosphor-icons/react";
+import { AnimatePresence, motion } from "framer-motion";
 import StartButton from "./Items/StartButton";
 import { useState } from "react";
 import GameChoice from "./Items/GameChoice";
+import TournamentUI from "./Items/TournamentUI";
+import Player from "../../game/components/Items/Player";
 import TournamentTitle from "./Items/TournamentTitle";
+import StartDate from "./Items/StartDate";
+import StartButtonTournament from "./Items/StartButtonTournament";
+import Access from "./Items/AccessChoice";
+import { useAuth } from "../../contexts/AuthContext";
+import { AxiosResponse } from "axios";
 
-function NewTournament({
-	setValue,
-	setEnter,
-}: {
-	setValue: (value: boolean) => void;
-	setEnter: (value: boolean) => void;
-}) {
-	const [game, setGame] = useState(0);
-	const [title, setTitle] = useState("");
+function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
+	const { user, api } = useAuth();
+	const [game, setGame] = useState<number>(0);
+	const [access, setAccess] = useState<number>(0);
+	const [date, setDate] = useState<string>("");
+	const [title, setTitle] = useState<string>("");
+	const [errTitle, setErrTitle] = useState(false);
+	const [errGame, setErrGame] = useState(false);
+	const [errAcess, setErrAccess] = useState(false);
+	const [errDate, setErrDate] = useState(false);
+
+	const createTournamentHandler = async function (e) {
+		try {
+			e.preventDefault();
+
+			const time = new Date().getTime();
+			const dateTime = new Date(date).getTime();
+
+			if (title.trim().length > 13 || title.trim().length < 2) return setErrTitle(true);
+			if (![0, 1].includes(access)) return setErrAccess(true);
+			if (![0, 1].includes(game)) return setErrGame(true);
+			if (!date || (dateTime - time) / (1000 * 60) < 30) return setErrDate(true);
+
+			const res: AxiosResponse = await api.instance.post('/v1/tournament', {
+				title,
+				game,
+				access,
+				date,
+				host_id: user?.id,
+			});
+
+			// if (!res) {
+			// 	if (res.status === 400) {
+			// 		setErrDate(true);
+			// 	} else if (res.status === 500) {
+			// 	}
+			// }
+
+			console.log(res);
+		} catch (err) {
+			console.log("HHHHHHELLLLOOOO");
+			console.log(err);
+		}
+	};
 
 	return (
 		<>
@@ -39,11 +82,18 @@ function NewTournament({
 						<span className="font-semibold">Set the Stage</span>
 					</h2>
 				</div>
-				<StartButton label="Enter the Arena" setValue={setEnter} />
+				<StartButtonTournament
+					label="Create Tournament"
+					createTournamentHandler={createTournamentHandler}
+				/>
 			</motion.div>
-			<TournamentTitle value={title} setValue={setTitle} />
-			<GameChoice game={game} setGame={setGame} />
-			{/* <TournamentUI/> */}
+			<TournamentTitle value={title} setValue={setTitle} error={errTitle} setError={setErrTitle} />
+			<GameChoice game={game} setGame={setGame} error={errGame} setError={setErrGame} />
+			<Access access={access} setAccess={setAccess} error={errAcess} setError={setErrAccess} />
+			<StartDate date={date} setDate={setDate} error={errDate} setError={setErrDate} />
+			{/* <AnimatePresence>
+				
+			</AnimatePresence> */}
 		</>
 	);
 }

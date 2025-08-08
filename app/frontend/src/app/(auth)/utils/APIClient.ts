@@ -155,6 +155,12 @@ export class APIClient {
 
 	/*--------------------------------- Users Profiles ---------------------------------*/
 	
+	
+	async getAllFriends(){
+		const { data: res } = await this.client.get(`/users/friends`);
+		return res.data;
+	}
+
 	async getUserInfo(username: string) : Promise<IUserProfile> {
 		const { data: res } = await this.client.get(`/users/${username}/profile`);
 		return res.data;

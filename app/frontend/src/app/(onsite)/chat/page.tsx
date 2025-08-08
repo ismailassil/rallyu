@@ -1,9 +1,13 @@
-"use client";
-
-import Chat from "./Chat/Chat";
+import Chat from './components/Chat';
+import { ChatProvider } from './context/ChatContext';
 
 const Page = () => {
-	return <Chat />;
+
+	return (
+		<ChatProvider>
+			<Chat />
+		</ChatProvider>
+	);
 };
 
 export default Page;
