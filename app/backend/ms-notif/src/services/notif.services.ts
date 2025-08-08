@@ -141,11 +141,8 @@ class NotifSerives {
 	 *
 	 */
 	async updateAndDispatchStatus(payload: UPDATE_STATUS_PAYLOAD): Promise<void> {
-		fastify.log.info("HERE = 0")
 		const { senderId, receiverId, status, type } = payload;
 		
-		fastify.log.info("HERE = 1")
-		fastify.log.info(type);
 		if (type === 'friend_request') {
 			const { id } = await this.notifRepository.getNotifId(
 				senderId,
@@ -154,7 +151,8 @@ class NotifSerives {
 			);
 			fastify.log.info(id);
 			
-			// await this.notifRepository.removeNotif(id);
+			if (status === 'dismissed')
+				await this.notifRepository.removeNotif(id);
 			
 			// ********************************* */
 			// ** PAYLOAD TO SEND THROUGH `NATS`

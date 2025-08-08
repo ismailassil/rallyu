@@ -58,6 +58,16 @@ class RelationsController {
 
 			await this.relationsService.cancelFriendRequest(user_id!, parseInt(target_id));
 
+			// UPDATE THE NOTIFICATION
+			const jsCodec = JSONCodec();
+			const data = jsCodec.encode({
+				senderId: parseInt(target_id),
+				receiverId: user_id,
+				status: 'dismissed',
+				type: 'friend_request',
+				state: 'finished'
+			});
+			request.server.nc.publish("notification.update_status", data);
 			reply.status(204).send({ success: true, data: {} });
 		} catch (err: any) {
 			console.error(err);

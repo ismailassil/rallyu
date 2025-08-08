@@ -25,7 +25,6 @@ class SocketIOService {
 		fastify.log.info('[SocketIO] Server is Running');
 
 		this.setupMiddleware();
-		this.setupConnection();
 	}
 
 	public setupDecorators(): void {
