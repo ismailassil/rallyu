@@ -36,7 +36,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 			if (![0, 1].includes(game)) return setErrGame(true);
 			if (!date || (dateTime - time) / (1000 * 60) < 30) return setErrDate(true);
 
-			const res: AxiosResponse = await api.instance.post('/v1/tournament', {
+			const res: AxiosResponse = await api.instance.post('/v1/tournament/create', {
 				title,
 				game,
 				access,
@@ -44,17 +44,9 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 				host_id: user?.id,
 			});
 
-			// if (!res) {
-			// 	if (res.status === 400) {
-			// 		setErrDate(true);
-			// 	} else if (res.status === 500) {
-			// 	}
-			// }
-
-			console.log(res);
+			// Show confirmation message!
 		} catch (err) {
-			console.log("HHHHHHELLLLOOOO");
-			console.log(err);
+			setErrDate(true);
 		}
 	};
 
@@ -91,9 +83,6 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 			<GameChoice game={game} setGame={setGame} error={errGame} setError={setErrGame} />
 			<Access access={access} setAccess={setAccess} error={errAcess} setError={setErrAccess} />
 			<StartDate date={date} setDate={setDate} error={errDate} setError={setErrDate} />
-			{/* <AnimatePresence>
-				
-			</AnimatePresence> */}
 		</>
 	);
 }

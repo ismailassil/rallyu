@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { button } from "framer-motion/client";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { AxiosResponse } from "axios";
 
 function TournamentCard({
 	id,
@@ -22,6 +24,7 @@ function TournamentCard({
 	isPingPong: boolean;
 	isUserIn: boolean;
 }) {
+	const { user, api } = useAuth();
 	const router = useRouter();
 	const [joined, setJoined] = useState(isUserIn);
 
@@ -33,27 +36,11 @@ function TournamentCard({
 		const target: HTMLElement = e.target as HTMLElement;
 
 		if (target.closest("button")) {
-			console.log("BRUH");
-			console.log(id);
-			
 			try {
-				const req = await fetch(`http://localhost:3008/api/v1/tournament-matches/join/${id}`, {
-					method: "PATCH",
-					headers: {
-						"Content-type": "application/json",
-					},
-					body: JSON.stringify({
-						id: 1, // I need user ID
-					}),
-				});
-
-				const data = await req.json();
-
-				if (!req.ok) throw "Error";
-				
+				const res: AxiosResponse = await api.instance.patch(`/v1/tournament/match/join/${id}`, { id: user?.id });
+				console.log(res);
 				setJoined(true);
-			} catch (err) {
-				console.log(data);
+			} catch (err: unknown) {
 				console.error(err);
 			}
 			return;
@@ -85,7 +72,7 @@ function TournamentCard({
 						<p>{active}/{size}</p>
 					</div>
 					{
-						active === size ?
+						(active === size && !joined) ?
 						(
 							<div
 								id="full-id" 

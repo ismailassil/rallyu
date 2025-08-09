@@ -36,7 +36,7 @@ const LobbyCard = () => {
             </motion.div>
         </>
 
-    )
-}
+    );
+};
 
-export default LobbyCard
+export default LobbyCard;

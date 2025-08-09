@@ -4,4 +4,5 @@ export interface proxiesOpts {
 	CHAT_PORT: string;
 	XO_PORT: string;
 	TOURNAMENT_PORT: string;
+	MATCHMAKING_PORT: string;
 }

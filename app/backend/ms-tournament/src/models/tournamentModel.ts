@@ -85,7 +85,7 @@ class TournamentModel {
 				date,
 				function (err: unknown) {
 					if (err) reject(err);
-					else resolve(this.DB);
+					else resolve(this.lastID);
 				}
 			);
 		});

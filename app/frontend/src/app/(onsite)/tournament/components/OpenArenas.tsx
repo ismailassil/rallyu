@@ -16,29 +16,23 @@ interface errorObj {
 function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 	const [tournaments, setTournaments] = useState([]);
 	const [error, setError] = useState<errorObj>({ status: false, message: "" });
-	const { api } = useAuth();
+	const { api, user } = useAuth();
 
 	useEffect(() => {
 		const fetchData = async function () {
 			try {
-				
-				const req = await api.instance.get("/v1/tournament/tournaments");
+				const req = await api.instance.get(`/v1/tournament/tournaments?userId=${user?.id}`);
 				// const req = await fetch("http://localhost:3008/api/v1/tournaments?userId=1"); // Need user ID
-				console.log("duh");
 
-				// const data = await req.json();
+				const data = req.data;
 
-				// if (!req.ok) throw "Something went wrong!";
-
-				console.log(req);
-				// setTournaments(data.data);
+				setTournaments(data.data);
 			} catch (err: unknown) {
-				// if (typeof err === "object")
-				// 	setError({
-				// 		status: true,
-				// 		message: "Something went wrong: Service is currently unavailable.",
-				// 	});
-				console.error(err);
+				if (typeof err === "object")
+					setError({
+						status: true,
+						message: "Something went wrong: Service is currently unavailable.",
+					});
 			}
 		};
 
@@ -71,12 +65,12 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 					exit={{ opacity: 0, x: -100 }}
 					transition={{ type: "spring", stiffness: 120 }}
 					className="text-wrap rounded-full bg-red-700 px-8 py-4"
-				>
+				>  
 					<p className="text-lg">{error.message}</p>
 				</motion.div>
 			)}
 			{
-				!tournaments.length && (
+				(!tournaments.length && !error.status) && (
 					<motion.div
 						initial={{ opacity: 0, x: -100 }}
 						animate={{ opacity: 1, x: 0 }}
