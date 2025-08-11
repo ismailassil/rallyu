@@ -27,7 +27,7 @@
 		"tsc-alias": "^1.8.16"
 	},
 	"devDependencies": {
-		"@types/node": "^22.15.17",
+		"@types/node": "^22.17.1",
 		"@types/socket.io": "^3.0.1",
 		"chalk": "^5.4.1",
 		"fastify-print-routes": "^4.1.0",

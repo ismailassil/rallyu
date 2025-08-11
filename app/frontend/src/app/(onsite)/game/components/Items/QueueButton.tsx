@@ -1,14 +1,26 @@
 import { useState } from "react"
 import AnimatedLetters from "./AnimatedLetters";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 
 function QueueButton() {
+	const { user, api } = useAuth();
 	const [ clicked, setClicked ] = useState(false);
 
-	const onClick = (e: React.MouseEvent<HTMLButtonElement>): void => {
+	const onClick = async (e: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
 		e.preventDefault();
-		setClicked(!clicked);
-		// connect to match maker
-	}
+		try {
+			// connect to match maker
+			if (!clicked) {
+				const res = await api.instance.post("/v1/matchmaking/join", { id: user?.id });
+				console.log(res);
+
+				
+			}
+			setClicked(!clicked);
+		} catch (err: unknown) {
+			console.error(err);
+		}
+	};
 
 	return (
 		<button

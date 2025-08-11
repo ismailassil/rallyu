@@ -1,29 +1,20 @@
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { AxiosResponse } from "axios";
 import { useState } from "react";
 
 
 const ReadyButton = function ({ slug, readyProp } : { slug: number, readyProp: boolean }) {
     const [ready, setReady] = useState<boolean>(readyProp);
+	const { api } = useAuth();
 
 
     const playerReadyHandler = async (event: React.MouseEvent<HTMLButtonElement>) => {
 		try {
 			event.preventDefault();
+			const res: AxiosResponse = await api.instance.patch(`/v1/tournament/match/ready/${slug}`);
 
-			const req: Response = await fetch(`http://localhost:3008/api/v1/tournament-matches/ready/${slug}`, {
-				method: "PATCH",
-				headers: {
-					"Content-type": "application/json",
-				},
-				body: JSON.stringify({
-					id: 1, // I need user ID here to make him join the match
-				}),
-			});
+			console.log(res);
 
-			const data = await req.json();
-			if (!req.ok)
-				throw data;
-
-			console.log(data);
             setReady(!ready);
 		} catch (err: unknown) {
 			console.error(err);

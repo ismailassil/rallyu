@@ -65,28 +65,28 @@ app.get(
 		const tournaments: unknown[] =
 			await req.server.tournamentModel.tournamentGetAll(7);
 
-		// if (query?.userId) {
-		// 	userId = Number(query.userId);
+		if (query?.userId) {
+			userId = Number(query.userId);
 
-		// 	for (const tournament of tournaments) {
-		// 	const matches: TournamentMatchesSchema[] =
-		// 		await req.server.tournamentMatchesModel.matchesGet(tournament.id);
-		// 	if (
-		// 		matches.find((el) => el.player_1 === userId || el.player_2 === userId)
-		// 	)
-		// 		tournament["isUserIn"] = true;
-		// 	}
-		// }
-		// userId = Number(query.userId);
-
-		for (const tournament of tournaments) {
-		const matches: TournamentMatchesSchema[] =
-			await req.server.tournamentMatchesModel.matchesGet(tournament.id);
-		if (
-			matches.find((el) => el.player_1 === userId || el.player_2 === userId)
-		)
-			tournament["isUserIn"] = true;
+			for (const tournament of tournaments) {
+				const matches: TournamentMatchesSchema[] =
+					await req.server.tournamentMatchesModel.matchesGet(tournament.id);
+				if (
+					matches.find((el) => el.player_1 === userId || el.player_2 === userId)
+				)
+					tournament["isUserIn"] = true;
+			}
 		}
+		userId = Number(query.userId);
+
+		// for (const tournament of tournaments) {
+		// const matches: TournamentMatchesSchema[] =
+		// 	await req.server.tournamentMatchesModel.matchesGet(tournament.id);
+		// if (
+		// 	matches.find((el) => el.player_1 === userId || el.player_2 === userId)
+		// )
+		// 	tournament["isUserIn"] = true;
+		// }
 
 		console.log(tournaments);
 
@@ -173,7 +173,7 @@ app.patch(
 					);
 					await req.server.tournamentModel.tournamentUpdateSize(
 						"add",
-						tournamentMatches[i].id
+						tournamentId
 					);
 					break;
 				}
@@ -211,7 +211,7 @@ app.patch(
           );
           await req.server.tournamentModel.tournamentUpdateSize(
             "remove",
-            tournamentMatches[i].id
+            tournamentId
           );
           break;
         }
@@ -222,7 +222,7 @@ app.patch(
           );
           await req.server.tournamentModel.tournamentUpdateSize(
             "remove",
-            tournamentMatches[i].id
+            tournamentId
           );
           break;
         }

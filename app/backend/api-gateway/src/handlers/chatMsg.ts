@@ -15,11 +15,11 @@ function handleChatMsg(m: JsMsg) {
 	fastify.log.info(senderRoom);
 	fastify.log.info(receiverRoom);
 
-	if (m.subject.includes('send_msg')) {
-		fastify.log.info('====== send_msg');
-		fastify.io.to(senderRoom).emit('chat_update_msg', payload);
-	} else if (m.subject.includes('update_msg')) {
+	if (m.subject.includes('update_msg')) {
 		fastify.log.info('====== update_msg');
+		fastify.io.to(senderRoom).emit('chat_update_msg', payload);
+	} else if (m.subject.includes('receive_msg')) {
+		fastify.log.info('====== receive_msg');
 		fastify.io.to(receiverRoom).emit('chat_receive_msg', payload);
 	}
 

@@ -7,23 +7,25 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import ReadyButton from "./components/ReadyButton";
 import useUserProfile, { UserProfileType } from "@/app/(onsite)/(user-profile)/users/context/useUserProfile";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import FinishedUI from "./components/FinishedUI";
 
 const Brackets = function (props) {
+	const { user, api } = useAuth();
 	const { slug } = useParams();
 	const [tournament, setTournament] = useState();
-	const [joined, setJoined] = useState();
+	const [joined, setJoined] = useState<boolean>();
 	const [ready, setReady] = useState<boolean>(false);
 
 	useEffect(() => {
 		const loadData = async function () {
 			try {
-				const req = await fetch(`http://localhost:3008/api/v1/tournament/${slug}`);
+				// Need name of users
+				const res = await api.instance.get(`/v1/tournament/${slug}`);
 
-				const data = await req.json();
-				if (!req.ok) throw "Something went wrong";
+				const data = res.data;
 
-				console.log(data);
-				setTournament((prev) => data.data);
+				setTournament(data.data);
 				isPlayerJoined(data.data);
 			} catch (err) {
 				console.error(err);
@@ -35,44 +37,24 @@ const Brackets = function (props) {
 
 	const joinTournamentHandler = async (e) => {
 		try {
-			const req = await fetch(`http://localhost:3008/api/v1/tournament-matches/join/${slug}`, {
-				method: "PATCH",
-				headers: {
-					"Content-type": "application/json",
-				},
-				body: JSON.stringify({
-					id: 1, // I need user ID here to make him join the match
-				}),
-			});
-
-			const data = await req.json();
-			if (!req.ok) throw "Something went wrong.";
-
-			console.log(data);
+			const res = await api.instance.patch(`/v1/tournament/match/join/${slug}`, { id: user?.id });
+			
+			console.log(res.data);
 			setJoined(true);
-		} catch (err) {
-			console.log(err);
+		} catch (err: unknown) {
+			console.error(err);
 		}
 	};
 
 	const leaveTournamentHandler = async (e) => {
 		try {
 			e.preventDefault();
+			const res = await api.instance.patch(`/v1/tournament/match/leave/${slug}`, { id: user?.id });
 
-			const req = await fetch(`http://localhost:3008/api/v1/tournament-matches/leave/${slug}`, {
-				method: "PATCH",
-				headers: {
-					"Content-type": "application/json",
-				},
-				body: JSON.stringify({
-					id: 1, // I need user ID here to make him join the match
-				}),
-			});
+			console.log(res);
 
-			const data = await req.json();
-			if (!req.ok) throw "Something went wrong.";
 			setJoined(false);
-		} catch (err) {
+		} catch (err: unknown) {
 			console.log(err);
 		}
 	};
@@ -88,23 +70,15 @@ const Brackets = function (props) {
 	};
 
 	const isPlayerJoined = (data) => {
-		// if (!data) {
-		// 	for (let i = 0; tournament.matches.length - 1; i++) {
-		// 		// I need user id
-		// 		if (tournament.matches[0].player_1 === 1 || tournament.matches[0].player_2 === 1)
-		// 			return setJoined(true);
-		// 	}
-		// } else {
-
 		for (let i = 0; data.matches.length - 1; i++) {
 			// I need user id 1
-			if (data.matches[i].player_1 === 1) {
+			if (data.matches[i].player_1 === user?.id) {
 				if (data.matches[i].player_1_ready)
 					setReady(true);
 				setJoined(true);
 				return ;
 			}
-			if (data.matches[i].player_2 === 1) {
+			if (data.matches[i].player_2 === user?.id) {
 				if (data.matches[i].player_2_ready)
 					setReady(true);
 				setJoined(true);
@@ -315,8 +289,12 @@ const Brackets = function (props) {
 									</div>
 								</div>
 								{
-									tournament.tournament.state == "pending" &&
+									tournament.tournament.state == "ongoing" && joined &&
 										<ReadyButton slug={slug} readyProp={ready} />
+								}
+								{
+									tournament.tournament.state == "finished" &&
+										<FinishedUI />   
 								}
 							</>
 						)}

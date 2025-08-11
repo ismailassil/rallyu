@@ -3,6 +3,8 @@ import { useContext, createContext, useState, ReactNode, useEffect } from "react
 import React from 'react';
 import { useAuth } from "../../contexts/AuthContext";
 import { LoggedUser, MessageType } from "../types/Types";
+import moment from "moment";
+import { tree } from "next/dist/build/templates/app-page";
 
 
 
@@ -18,8 +20,8 @@ type ChatContextType = {
   api: any;
 	messages: MessageType[];
 	setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
-	// lastMessage: string;
-	// setLastMessage: React.Dispatch<React.SetStateAction<string>>;
+	selectedUser: LoggedUser | null;
+	setSelectedUser : React.Dispatch<React.SetStateAction<LoggedUser | null>>;
 }
 
 const ChatContext = createContext<ChatContextType | null>(null)
@@ -41,6 +43,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const [friends, setFriends] = useState<LoggedUser[] | null>(null)
   const [isLoadingFriends, setIsLoadingFriends] = useState(true)
 	const [messages, setMessages] = useState<MessageType[]>([])
+	const [selectedUser, setSelectedUser] = useState<LoggedUser | null>(null)
+
 	// const [lastMessage, setLastMessage] = useState('');
 
 
@@ -62,6 +66,29 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	}, []);
 
 
+		
+	useEffect(() => {
+		function handleMessage(data: MessageType) {
+				console.log("=-------------------- CCHAT =--------------------");
+				console.log(data);
+				setMessages((prev) => [...prev, data]);
+		}
+		
+		function handleUpdateMessage(data: MessageType) {
+				console.log("=-------------------- CCHAT =--------------------");
+				console.log(data);
+				setMessages((prev) => [...prev, data]);
+		}
+
+		socket.on('chat_receive_msg', handleMessage)
+		socket.on('chat_update_msg', handleUpdateMessage)
+		return () => {
+			socket.off("chat_receive_msg", handleMessage);
+			socket.off("chat_update_msg", handleUpdateMessage);
+		}
+	}, [])
+
+
 
   return (
     <ChatContext.Provider value={{
@@ -75,8 +102,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			BOSS,
 			messages,
 			setMessages,
-			// lastMessage,
-			// setLastMessage,
+			selectedUser,
+			setSelectedUser,
     }}>
       {children}
     </ChatContext.Provider>
