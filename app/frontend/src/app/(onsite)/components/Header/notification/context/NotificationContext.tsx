@@ -47,20 +47,7 @@ function getToastData(data: USER_NOTIFICATION): TOAST_PAYLOAD {
 export function NotificationProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	const DEFAULT_TIME = 3 * 1000;
 
-	const [notifications, setNotifications] = useState<USER_NOTIFICATION[]>([{
-		id: 1,
-		senderId: 101,
-		senderUsername: "PixelWarrior",
-		receiverId: 201,
-		content: "PixelWarrior sent you a friend request. asdjlqweriwqu aklsdjiowqru qwueryiquwryqwur",
-		type: "chat",
-		createdAt: "2025-08-10T10:15:00Z",
-		updatedAt: "2025-08-10T10:15:00Z",
-		status: "unread",
-		actionUrl: "/friends/requests/1",
-		avatar: "/avatars/default.png",
-		state: "pending",
-	}]);
+	const [notifications, setNotifications] = useState<USER_NOTIFICATION[]>([]);
 	const [toastNotifications, setToastNotifications] = useState<TOAST_PAYLOAD[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [notifLength, setNotifLength] = useState<number>(0);

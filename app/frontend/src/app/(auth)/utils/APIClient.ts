@@ -315,6 +315,13 @@ export class APIClient {
 		return data;
 	}
 
+	connectWebSocket(path: string) {
+		const url = `ws://localhost:4025/api${path}`; // TODO Change to dynamic
+		const ws = new WebSocket(url + `?token=${this.accessToken}`);
+
+		return (ws);
+	}
+
 	private classifyError(err: any) {
 		if (!err.response) {
 			return { type: 'network', message: 'Something went wrong. Please try again.' };

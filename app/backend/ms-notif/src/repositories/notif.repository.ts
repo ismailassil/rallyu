@@ -43,7 +43,7 @@ class NotifRepository {
 		return new Promise((resolve, reject) => {
 			fastify.database.all<RAW_NOTIFICATION>(
 				`SELECT * FROM messages 
-					WHERE receiver_id = ? AND type != 'dismissed' 
+					WHERE receiver_id = ? AND status != 'dismissed' 
 					ORDER BY updated_at 
 					DESC LIMIT ? OFFSET ?`,
 				[receiver_id, LIMIT, offset],

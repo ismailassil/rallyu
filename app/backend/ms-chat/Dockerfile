@@ -2,13 +2,13 @@ FROM node:alpine
 
 WORKDIR /app
 
-# COPY package*.json ./
+COPY package*.json ./
 
-# RUN rm -rf node_modules/
+RUN rm -rf node_modules/
 
 RUN npm install
 
-# RUN npm install concurrently nodemon
+RUN npm install concurrently nodemon
 
 COPY . .
 

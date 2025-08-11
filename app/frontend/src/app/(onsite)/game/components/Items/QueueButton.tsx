@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from "react";
 import AnimatedLetters from "./AnimatedLetters";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 
@@ -14,7 +14,12 @@ function QueueButton() {
 				const res = await api.instance.post("/v1/matchmaking/join", { id: user?.id });
 				console.log(res);
 
-				
+				const ws = api.connectWebSocket("/v1/matchmaking/join");
+
+				ws.onopen = () => {
+					console.log('WebSocket connected');
+				};
+			
 			}
 			setClicked(!clicked);
 		} catch (err: unknown) {
@@ -41,7 +46,7 @@ function QueueButton() {
 			<AnimatedLetters text="In Queue" trigger={clicked} />
 		  </div>
 		</button>
-	  )
+	  );
 }
 
-export default QueueButton
+export default QueueButton;
