@@ -47,7 +47,20 @@ function getToastData(data: USER_NOTIFICATION): TOAST_PAYLOAD {
 export function NotificationProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	const DEFAULT_TIME = 3 * 1000;
 
-	const [notifications, setNotifications] = useState<USER_NOTIFICATION[]>([]);
+	const [notifications, setNotifications] = useState<USER_NOTIFICATION[]>([{
+		id: 1,
+		senderId: 101,
+		senderUsername: "PixelWarrior",
+		receiverId: 201,
+		content: "PixelWarrior sent you a friend request. asdjlqweriwqu aklsdjiowqru qwueryiquwryqwur",
+		type: "chat",
+		createdAt: "2025-08-10T10:15:00Z",
+		updatedAt: "2025-08-10T10:15:00Z",
+		status: "unread",
+		actionUrl: "/friends/requests/1",
+		avatar: "/avatars/default.png",
+		state: "pending",
+	}]);
 	const [toastNotifications, setToastNotifications] = useState<TOAST_PAYLOAD[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [notifLength, setNotifLength] = useState<number>(0);
@@ -76,6 +89,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 	const handleNotify = useCallback(
 		(data: USER_NOTIFICATION) => {
 			console.log(data);
+			if (data.type === "chat" && window.location.pathname.startsWith("/chat")) return;
 			setNotifications((prev) => [data, ...prev]);
 
 			if (!isNotifRef.current) {
@@ -145,6 +159,12 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 
 		setNotifLength(length);
 	}, [notifications]);
+
+	useEffect(() => {
+		if (isNotif) {
+			setToastNotifications([]);
+		}
+	}, [isNotif]);
 
 	const handleAccept = useCallback(
 		async (type: NOTIFICATION_TYPE, senderId: number, isToast: boolean, notifId: number) => {

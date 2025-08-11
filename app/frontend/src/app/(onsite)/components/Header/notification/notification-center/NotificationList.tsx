@@ -43,6 +43,17 @@ const NotificationList = () => {
 		
 		socket.emit("notification_update", data);
 	}
+	
+	function handleChatUpdate(id: number) {
+		const data = {
+			notificationId: id,
+			status: 'read',
+			scope: "single",
+			state: 'finished'
+		};
+		
+		socket.emit("notification_update", data);
+	}
 
 	console.log("isLoading: " + isLoading);
 
@@ -57,7 +68,7 @@ const NotificationList = () => {
 				>
 					<AnimatePresence>
 						{notifications.map((notif) => {
-							return <NotificationCard key={notif.id} data={notif} handler={handleSingleUpdate} />;
+							return <NotificationCard key={notif.id} data={notif} handler={handleSingleUpdate} handleChatUpdate={handleChatUpdate} />;
 						})}
 					</AnimatePresence>
 				</ul>

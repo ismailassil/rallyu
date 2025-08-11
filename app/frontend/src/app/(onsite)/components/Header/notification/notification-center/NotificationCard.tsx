@@ -8,13 +8,13 @@ import GameOrTournament from "../items/GameOrTournament";
 import { XIcon } from "@phosphor-icons/react";
 import { useNotification } from "../context/NotificationContext";
 
-function NotificationCard({
-	data,
-	handler,
-}: {
+interface Props {
 	data: USER_NOTIFICATION;
 	handler: (id: number, status: "read" | "dismissed") => void;
-}) {
+	handleChatUpdate: (id: number) => void;
+}
+
+function NotificationCard({ data, handler, handleChatUpdate }: Props) {
 	const { id, senderUsername, senderId, content, type, updatedAt, status, avatar, state } = data;
 	const textDescriptionRef = getTextDescription(type, content);
 	const dateRef = moment.utc(updatedAt).local().fromNow();
@@ -57,7 +57,13 @@ function NotificationCard({
 				/>
 			</div>
 			{type === "status" ? null : type === "chat" ? (
-				<Chat message={content} username={senderUsername} />
+				<Chat
+					message={content}
+					username={senderUsername}
+					receiverId={senderId}
+					state={state === "finished" ? true : false}
+					handler={() => handleChatUpdate(id)}
+				/>
 			) : type === "friend_request" ? (
 				state === "pending" && (
 					<FriendRequest

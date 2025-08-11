@@ -35,7 +35,7 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 
 	function handleChat() {
 		handleRemove(data.id);
-		router.push("/users/" + senderUsername);
+		router.push("/chat/" + senderUsername);
 	}
 
 	return (
