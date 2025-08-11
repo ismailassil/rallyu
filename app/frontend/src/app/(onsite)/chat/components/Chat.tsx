@@ -7,17 +7,18 @@ import Conversation from "./Conversation";
 import FriendsList from "./FriendsList";
 import { AnimatePresence, motion } from "framer-motion";
 import { useChat } from "../context/ChatContext";
-import { LoggedUser } from '../types/Types';
+import { LoggedUser, MessageType } from '../types/Types';
 import chalk from 'chalk';
+import { Link } from "lucide-react";
 
 
 
 const Chat = ({ username }: { username?: string }) => {
 	const [conversation, setConversation] = useState(false)
-	const [selectedUser, setSelectedUser] = useState<LoggedUser | null>(null)
+	// const [selectedUser, setSelectedUser] = useState<LoggedUser | null>(null)
 	const [prefix, setPrefix] = useState('');
 	const [filteredSuggestions, setFilteredSuggestions] = useState<LoggedUser[]>([]);
-	const { BOSS, api, socket, showConversation, setShowConversation, isLoadingFriends, friends, messages, setMessages } = useChat();
+	const { BOSS, api, showConversation, setShowConversation, isLoadingFriends, friends, setMessages, setSelectedUser, selectedUser } = useChat();
 	const route = useRouter();
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,7 +39,7 @@ const Chat = ({ username }: { username?: string }) => {
 		} else
 			route.replace('/chat/');
 
-}, [friends, username, route, setShowConversation]);
+	}, [friends, username, route, setShowConversation]);
 
 	useEffect(() => {
 		if (!BOSS?.id) return;
@@ -51,20 +52,17 @@ const Chat = ({ username }: { username?: string }) => {
 			.catch((error: any) => {
 				console.error("Error fetching chat history:", error);
 			});
-	}, [BOSS?.id, selectedUser?.id, api.instance, setMessages]);
+	}, []);
 
 
 
 
 
-	
-	
-	
 
-	
-	
-		if (isLoadingFriends)
-			return (<h1 className=" absolute top-20">Still Loading</h1>);
+
+
+	if (isLoadingFriends)
+		return (<h1 className=" absolute top-20">Still Loading</h1>);
 	return (
 		<AnimatePresence>
 			<motion.main
@@ -81,7 +79,11 @@ const Chat = ({ username }: { username?: string }) => {
 					<div className={`${showConversation ? 'hidden md:flex' : 'flex'} flex-col size-full md:w-[35%]`}>
 						<div className=" flex flex-col size-full">
 							<div className="">
-								<h2 className="text-4xl my-5 md:my-9">Chat</h2>
+
+								<h2 className="text-4xl my-5 md:my-9 cursor-pointer">Chat</h2>
+
+
+
 								<div className="relative w-full">
 									<div className="w-full flex gap-2 border-white/30 rounded-full focus-within:bg-white/12
 										duration-200 transition-all bg-white/8 p-2 mb-6 focus-within:ring-2 focus-within:ring-white/18">

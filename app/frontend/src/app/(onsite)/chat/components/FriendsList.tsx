@@ -9,8 +9,9 @@ const FriendsList = ({ user, selectedUser }: { user: LoggedUser | null, selected
 	
 	const { BOSS, messages } = useChat();
 	const [lastMessage, setLastMessage] = useState<MessageType | null>(null);
-	
-	// const [lastMessage, setLastMessage] = useState('No messages yet');
+
+	// console.log(`--\n\n${user?.last_message.created_at}---\n\n`)
+
 	useEffect(() => {
 		if (!user?.id || !BOSS?.id) return;
 
@@ -51,7 +52,7 @@ const FriendsList = ({ user, selectedUser }: { user: LoggedUser | null, selected
 			<div className='flex flex-col w-full justify-between p-0.5 min-w-0'>
 				<div className='flex w-full justify-between items-center'>
 					<div className='line-clamp-1 flex-1 min-w-0'>{user?.first_name + " " + user?.last_name}</div>
-					<div className='text-gray-400 flex-shrink-0 ml-2 text-xs min-w-0 truncate'>{setDate()}</div>
+					{lastMessage && <div className='text-gray-400 flex-shrink-0 ml-2 text-xs min-w-0 truncate'>{setDate()}</div>}
 				</div>
 				<div className='flex w-full justify-between items-center'>
 					<div className='text-gray-400 text-xs md:text-sm truncate flex-1 min-w-0 max-w-[160px] md:max-w-[200px]'>

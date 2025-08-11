@@ -5,21 +5,23 @@ import { ArrowCircleLeftIcon, DotsThreeVerticalIcon } from '@phosphor-icons/reac
 import { useChat } from '../context/ChatContext';
 import moment from 'moment';
 import { LoggedUser, MessageType } from '../types/Types';
+import { AlertCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
 
 
 
 const ConversationBody = ({ selectedUser }: { selectedUser: LoggedUser }) => {
-	const [message, setMessage] = useState("")
-	const [option, setOption] = useState(false)
+	const [message, setMessage] = useState("");
+	const [option, setOption] = useState(false);
+	const { socket, BOSS, messages, setShowConversation, setSelectedUser } = useChat();
+	const [filteredMessages, setfilteredMessages] = useState<MessageType[]>([]);
 	const messageRef = useRef<HTMLDivElement | null>(null);
-	const { setShowConversation } = useChat();
-	const { socket, BOSS, messages, setMessages } = useChat();
-	const [filtredMessages, setFiltredMessages] = useState<MessageType[]>([])
-
+	const route = useRouter();
 
 	useEffect(() => {
-		messageRef.current?.scrollIntoView({ behavior: 'auto' });
-	}, [messages]);
+		messageRef.current?.scrollIntoView({ behavior: 'smooth' });
+	}, [filteredMessages]);
 
 	const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === "Enter") {
@@ -27,6 +29,8 @@ const ConversationBody = ({ selectedUser }: { selectedUser: LoggedUser }) => {
 			sendData();
 		}
 	}
+	// fix wehn click on chat icon should reset selected user
+
 
 	const sendData = () => {
 		const data = message.trim();
@@ -37,31 +41,31 @@ const ConversationBody = ({ selectedUser }: { selectedUser: LoggedUser }) => {
 				senderId: BOSS.id,
 				receiverId: selectedUser.id,
 				text: data,
-				// created_at: moment().calendar()
-				created_at: "15:15"
 			};
-			setMessages((prev) => [...prev, newMessage]);
-			socket.emit('chat_send_msg', newMessage)
+			socket.emit('chat_send_msg', newMessage);
 			setMessage("");
 		}
 	};
 
+	// const setDate = (msg: MessageType): string => {
+	// 	const date = moment.parseZone(msg.created_at);
+	// 	const now = moment();
 
-	const setDate = (msg : MessageType): string => {
-		const date = moment.parseZone(msg.created_at); // preserve original timezone
-		const now = moment();
-	
-		if (date.isSame(now, 'day')) {
-			return date.format('HH:mm'); // Today → time only
-		}
-		if (date.isSame(now.clone().subtract(1, 'day'), 'day')) {
-			return 'Yesterday';
-		}
-		if (date.isSame(now, 'year')) {
-			return date.format('DD-MM');
-		}
-		return date.format('DD/MM/YYYY');
-	};
+	// 	if (date.isSame(now, 'day')) {
+	// 		return date.format('HH:mm');
+	// 	}
+	// 	if (date.isSame(now.clone().subtract(1, 'day'), 'day')) {
+	// 		return 'Yesterday';
+	// 	}
+	// 	if (date.isSame(now, 'year')) {
+	// 		return date.format('DD-MM');
+	// 	}
+	// 	return date.format('DD/MM/YYYY');
+	// };
+
+
+
+
 
 
 	useEffect(() => {
@@ -71,8 +75,7 @@ const ConversationBody = ({ selectedUser }: { selectedUser: LoggedUser }) => {
 			(msg.senderId === BOSS.id && msg.receiverId === selectedUser.id) ||
 			(msg.senderId === selectedUser.id && msg.receiverId === BOSS.id)
 		);
-
-		setFiltredMessages(filtered);
+		setfilteredMessages(filtered);
 	}, [messages, selectedUser?.id, BOSS?.id]);
 
 
@@ -85,7 +88,7 @@ const ConversationBody = ({ selectedUser }: { selectedUser: LoggedUser }) => {
 				<div className='flex items-center md:hidden cursor-pointer'>
 					<ArrowCircleLeftIcon
 						size={28}
-						onClick={() => setShowConversation(false)}
+						onClick={() => {setShowConversation(false); route.replace('/chat'); setSelectedUser(null) }}
 					/>
 				</div>
 				<div className='relative w-12 h-12 flex-shrink-0 overflow-hidden rounded-full border border-white/30'>
@@ -124,36 +127,38 @@ const ConversationBody = ({ selectedUser }: { selectedUser: LoggedUser }) => {
 
 			{/* ----------------------------------------------------message body ---------------------------------------------------- */}
 
-			<div className='overflow-y-scroll custom-scrollbar p-4 flex-1 overflow-x-hidden'>
-				{filtredMessages.map((msg, index) => (
-					// <div>
-						<div key={index} ref={messageRef}
-							className={`flex justify-end max-w-max w-9/12 border-white/30 border p-3 rounded-lg mb-10 relative break-all ${msg.senderId === BOSS?.id ? 'ml-auto' : 'mr-auto'}`}>
-							<span className=''>{msg.text}</span>
-							<span className={` text-xs -bottom-6 ${msg.senderId === selectedUser.id ? '-right-10' : '-left-38'} absolute text-white/30 w-32 text-end`}>{setDate(msg)}</span>
+			<div className='overflow-y-auto custom-scrollbar p-4 flex-1 overflow-x-hidden flex flex-col justify-end'>
+				<div className='flex flex-col gap-4 min-h-0'>
+					{filteredMessages.map((msg, index) => (
+						<div key={index}
+							className={`flex ${msg.senderId === BOSS?.id ? 'justify-end' : 'justify-start'}`}>
+							<div className={`max-w-[75%] border-white/30 border p-3 rounded-lg relative break-words ${msg.senderId === BOSS?.id ? 'bg-blue-600/20 rounded-br-sm' : 'bg-white/10 rounded-bl-sm'}`}>
+								<span className='block'>{msg.text}</span>
+								<span className='text-xs text-white/50 mt-1 block text-right'>{moment.utc(msg.created_at).local().format('HH:mm')}</span>
+							</div>
 						</div>
-						// {<div className=' bg-accent mx-auto'>
-						// 	<p>{moment.parseZone(msg?.created_at).format("h:mm")}</p>
-						// </div>}
-					// </div>
-
-				))}
+					))}
+					<div ref={messageRef} />
+				</div>
 			</div>
-			{/* <div className=' flex items-center justify-center'>
-					<Image width={300} height={300} alt='start talking gif' src={"/meme/start-talking-lucifer.gif"} className=' rounded-lg' />
-				</div> */}
-
 			{/* ----------------------------------------------------typing message and send ---------------------------------------------------- */}
 
-			<div className='border-t border-t-white/30 p-4 mt-auto'>
-				<div className='flex focus-within:bg-white/12 duration-200 transition-all bg-white/8 p-3 rounded-lg justify-between focus-within:ring-2 focus-within:ring-white/18'>
+			<div className=' flex flex-col border-t border-t-white/30 p-4 mt-auto'>
+				<div className='flex focus-within:bg-white/12 duration-200 transition-all bg-white/8 p-3 rounded-lg justify-between gap-3 focus-within:ring-2 focus-within:ring-white/18'>
 					<input
+						id='input-text'
 						type='text'
 						placeholder="Enter your message"
 						value={message}
+						maxLength={300}
 						onChange={(e) => setMessage(e.target.value)}
 						onKeyDown={(e) => handleEnterPress(e)}
 						className='focus:outline-none bg-transparent flex justify-around placeholder:text-white/50 w-full' />
+					{message.length >= 300 &&
+						<div className=' text-red-500 text-xs flex items-center whitespace-nowrap gap-1'>
+							<AlertCircle size={12} />
+							<p>Max 300</p>
+						</div>}
 					<Image
 						width={20}
 						height={20}
@@ -166,5 +171,6 @@ const ConversationBody = ({ selectedUser }: { selectedUser: LoggedUser }) => {
 		</div>
 	)
 }
+
 
 export default ConversationBody

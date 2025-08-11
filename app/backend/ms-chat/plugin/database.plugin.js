@@ -2,14 +2,14 @@ import fp from 'fastify-plugin';
 import Database from 'better-sqlite3';
 
 async function dbConnector(fastify, options) {
-	const dbFile = './database.sqlite';
+	const dbFile = './database/database.sqlite';
 	const db = new Database(dbFile, { verbose: console.log });
 
 	db.exec(`
 	CREATE TABLE IF NOT EXISTS message (
 			senderId INTEGER NOT NULL,
 			receiverId INTEGER NOT NULL,
-			text TEXT NOT NULL,
+			text VAR(300) NOT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`);
