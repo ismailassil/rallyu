@@ -21,6 +21,7 @@
     "dotenv": "^17.2.1",
     "fastify": "^5.4.0",
     "fastify-plugin": "^5.0.1",
+    "nats": "^2.29.3",
     "sqlite3": "^5.1.7"
   }
 }

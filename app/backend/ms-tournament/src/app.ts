@@ -1,19 +1,34 @@
 import fastify, { FastifyInstance, FastifyReply, FastifyRequest} from "fastify";
+import fp from "fastify-plugin";
 import serverConfig from "./config/serverConfig";
 import connectDatabase from "./database/database";
 import fastifyCors from "@fastify/cors";
 import dotenv from "dotenv";
 import { initTournamentModel } from "./models/tournamentModel";
 import { initTournamentMatchesModel, TournamentMatchesSchema} from "./models/tournamentMatchesModel";
+import {Codec, connect, NatsConnection, StringCodec} from "nats"
 
 const app = fastify(serverConfig);
 
 dotenv.config({ path: '../../api-gateway/.env' });
 
-// app.register(fastifyCors, {
-// 	// origin: "*",
-// 	methods: ["GET", "POST", "PATCH"],
-// });
+app.register(async function (app: FastifyInstance, options) {
+    try {
+        const nc: NatsConnection = await connect({
+			servers: "nats://localhost:4222",
+			user: "rallyu",
+			pass: "Blh9jF59ZJ6wMj1PYNkX34Y1T"
+		});
+        const sc: Codec<string> = StringCodec();
+
+		nc.publish("lol", sc.encode("Anyway; u look good tho!"));
+        
+        console.log("NATS Server: ", nc.getServer());
+
+    } catch(err: unknown) {
+        app.log.fatal(err);
+    }
+})
 
 app.register(connectDatabase);
 
