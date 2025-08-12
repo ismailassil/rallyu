@@ -37,7 +37,7 @@ export function useHeaderContext() {
 export function HeaderProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	const [isSearch, setIsSearch] = useState(false);
 	const [isProfile, setIsProfile] = useState(false);
-	const [isNotif, setIsNotif] = useState(true);
+	const [isNotif, setIsNotif] = useState(false);
 	const profileRef = useRef<HTMLDivElement>(null);
 	const notificationRef = useRef<HTMLDivElement>(null);
 	const [isBottom, setIsBottom] = useState(false);
