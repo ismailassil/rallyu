@@ -40,7 +40,7 @@ const ConversationBody = ({ selectedUser }: { selectedUser: LoggedUser }) => {
 				id: Date.now(),
 				senderId: BOSS.id,
 				receiverId: selectedUser.id,
-				text: data,
+				text: data.toString(),
 			};
 			socket.emit('chat_send_msg', newMessage);
 			setMessage("");

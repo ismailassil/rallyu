@@ -67,7 +67,7 @@ services:
   #     - backend
   #   env_file:
   #     - .env
-  
+
   ms-chat:
     build:
       context: ./ms-chat
@@ -76,16 +76,13 @@ services:
       api-gateway:
         condition: service_healthy
     image: rallyu/ms-chat:v1.0
-    volumes:
-      - ./ms-chat:/app
     container_name: ms-chat
     restart: always
     networks:
       - backend
     env_file:
       - .env
-    # command: rm -rf /app/node_modules/ && npm i nodemoon pino-pretty -g && npm install --prefix /app && npm run dev --prefix /app
-    
+
   ## Tournament Serivce
   # ms-tournament:
   #   build:

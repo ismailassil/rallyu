@@ -15,196 +15,227 @@ class NotifRepository {
 	): Promise<RAW_NOTIFICATION> {
 		const { senderId, receiverId, type, message, actionUrl } = payload;
 
-		return new Promise((resolve, reject) => {
-			fastify.database.get<RAW_NOTIFICATION>(
-				`INSERT INTO messages
-					(sender_id, sender_username, receiver_id, type, content, action_url) 
-					VALUES(?, ?, ?, ?, ?, ?) RETURNING *`,
-				[senderId, senderUsername, receiverId, type, message, actionUrl],
-				async function (error, row) {
-					if (error) {
-						fastify.log.error('3- DB Error: ' + error);
-						reject(error);
-						return;
-					}
-					fastify.log.info(`✅ msg registration done`);
-					resolve(row);
-				},
+		try {
+			const stmt = fastify.database.prepare(`
+				INSERT INTO messages (sender_id, sender_username, receiver_id, type, content, action_url)
+				VALUES (?, ?, ?, ?, ?, ?)
+			`);
+
+			const info = stmt.run(
+				senderId,
+				senderUsername,
+				receiverId,
+				type,
+				message,
+				actionUrl,
 			);
-		});
+
+			const row = fastify.database
+				.prepare(`SELECT * FROM messages WHERE id = ?`)
+				.get(info.lastInsertRowid);
+
+			fastify.log.info(`✅ msg registration done`);
+			return row;
+		} catch (error) {
+			fastify.log.error('3- DB Error: ' + error);
+			throw error;
+		}
 	}
 
-	getMessages(receiver_id: number, page: number): Promise<RAW_NOTIFICATION[]> {
+	async getMessages(
+		receiver_id: number,
+		page: number,
+	): Promise<RAW_NOTIFICATION[]> {
 		fastify.log.info(`receiver_id: ${receiver_id} + page: ${page}`);
 
 		const LIMIT = 10;
-
 		const offset = (page - 1) * LIMIT;
-		return new Promise((resolve, reject) => {
-			fastify.database.all<RAW_NOTIFICATION>(
-				`SELECT * FROM messages 
-					WHERE receiver_id = ? AND status != 'dismissed' 
-					ORDER BY updated_at 
-					DESC LIMIT ? OFFSET ?`,
-				[receiver_id, LIMIT, offset],
-				function (error, rows) {
-					if (error) {
-						fastify.log.error('4- DB Error: ' + error);
-						reject(error);
-						return;
-					}
-					if (!rows || rows.length === 0) {
-						resolve([]);
-						return ;
-					}
-					fastify.log.info('✅ Msgs found');
-					resolve(rows);
-				},
-			);
-		});
+
+		try {
+			const stmt = fastify.database.prepare(`
+				SELECT * FROM messages 
+				WHERE receiver_id = ? AND status != 'dismissed' 
+				ORDER BY created_at DESC 
+				LIMIT ? OFFSET ?
+			`);
+
+			const rows = stmt.all(receiver_id, LIMIT, offset);
+
+			if (!rows || rows.length === 0) {
+				return [];
+			}
+
+			fastify.log.info('✅ Msgs found');
+			return rows;
+		} catch (error) {
+			fastify.log.error('4- DB Error: ' + error);
+			throw error;
+		}
 	}
 
-	updateNotif(
+	async updateNotif(
+		notificationId: number,
+		receiver_id: number,
 		status: NOTIFICATION_STATUS,
 		state: NOTIFICATION_STATE,
-		receiver_id: number,
-		notificationId: number,
-	): Promise<boolean> {
-		return new Promise((resolve, reject) => {
-			fastify.database.run(
-				'UPDATE messages SET status = ?, state = ? WHERE id = ? AND receiver_id = ?',
-				[status, state, notificationId, receiver_id],
-				function (error) {
-					if (error) {
-						fastify.log.error('5- DB Error: ' + error);
-						reject(error);
-						return;
-					}
-					if (this.changes === 1) {
-						resolve(true);
-						return ;
-					}
-					reject(new NotificationNotFoundException());
-					return ;
-				},
-			);
-		});
+	): Promise<RAW_NOTIFICATION> {
+		try {
+			const stmt = fastify.database.prepare(`
+				UPDATE messages SET status = ?,
+					state = CASE
+						WHEN state = 'pending' THEN ?
+						ELSE state
+					END
+				WHERE id = ? AND receiver_id = ?
+			`);
+
+			const info = stmt.run(status, state, notificationId, receiver_id);
+
+			if (info.changes === 0) {
+				throw new NotificationNotFoundException();
+			}
+
+			// Return the updated row
+			const row = fastify.database
+				.prepare(`SELECT * FROM messages WHERE id = ?`)
+				.get(notificationId);
+
+			return row;
+		} catch (error) {
+			fastify.log.error('5- DB Error: ' + error);
+			throw error;
+		}
 	}
 
-	updateAllNotif(status: NOTIFICATION_STATUS, receiver_id: number): Promise<void> {
-		return new Promise((resolve, reject) => {
-			fastify.database.run(
-				'UPDATE messages SET status = ? WHERE receiver_id = ?',
-				[status, receiver_id],
-				(error) => {
-					if (error) {
-						fastify.log.error('6- DB Error: ' + error);
-						reject(error);
-						return;
-					}
-					resolve();
-				},
-			);
-		});
+	async updateAllNotif(
+		receiver_id: number,
+		status: NOTIFICATION_STATUS,
+		state?: NOTIFICATION_STATE,
+	): Promise<void> {
+		if (state === undefined) {
+			try {
+				const stmt = fastify.database.prepare(`
+					UPDATE messages SET status = ?
+					WHERE receiver_id = ? AND NOT (status = 'dismissed' AND ? = 'unread')
+					`);
+				stmt.run(status, receiver_id, status);
+			} catch (error) {
+				fastify.log.error('6- DB Error: ' + error);
+				throw error;
+			}
+		} else {
+			try {
+				const stmt = fastify.database.prepare(`
+					UPDATE messages SET status = ?, state = ?
+					WHERE receiver_id = ?
+					`);
+				stmt.run(status, state, receiver_id);
+			} catch (error) {
+				fastify.log.error('6- DB Error: ' + error);
+				throw error;
+			}
+		}
 	}
-	
-	getNotifId(
+
+	async updateAllStates(
+		receiver_id: number,
+		state: NOTIFICATION_STATE,
+		status: NOTIFICATION_STATUS,
+	) {
+		try {
+			const stmt = fastify.database.prepare(`
+				UPDATE messages SET state = ?, status = ?
+				WHERE receiver_id = ?
+			`);
+			stmt.run(receiver_id, state, status);
+		} catch (error) {
+			fastify.log.error('6- DB Error: ' + error);
+			throw error;
+		}
+	}
+
+	async getNotifId(
 		senderId: number,
 		receiverId: number,
 		type: NOTIFICATION_TYPE,
 	): Promise<{ id: number }> {
-		return new Promise((resolve, reject) => {
-			fastify.database.get<{ id: number }>(
-				`
+		try {
+			const stmt = fastify.database.prepare(`
 				SELECT id FROM messages
-				WHERE sender_id = ? AND receiver_id = ?	AND type = ?
-				ORDER BY updated_at DESC
-				LIMIT 1;
-				`,
-				[senderId, receiverId, type],
-				(err, row) => {
-					if (err) {
-						fastify.log.error('DB ERROR: ' + err);
-						reject(err);
-						return;
-					}
-					if (!row) {
-						reject(new Error('No message found'));
-						return;
-					}
-					resolve(row);
-				},
-			);
-		});
+				WHERE sender_id = ? AND receiver_id = ? AND type = ?
+				ORDER BY created_at DESC
+				LIMIT 1
+			`);
+
+			const row = stmt.get(senderId, receiverId, type);
+
+			if (!row) {
+				throw new Error('No message found');
+			}
+
+			return row;
+		} catch (error) {
+			fastify.log.error('DB ERROR: ' + error);
+			throw error;
+		}
 	}
 
 	async getNotifIdByActionURL(actionUrl: string): Promise<{ id: number }> {
-		return new Promise((resolve, reject) => {
-			fastify.database.get<{ id: number }>(
-				`
-				SELECT id FROM messages
-				WHERE action_url = ?
-				`,
-				[actionUrl],
-				(err, row) => {
-					if (err) {
-						fastify.log.error('DB ERROR: ' + err);
-						reject(err);
-						return;
-					}
-					if (!row) {
-						reject(new Error('No Message found'));
-						return;
-					}
-					resolve(row);
-				},
-			);
-		});
+		try {
+			const stmt = fastify.database.prepare(`
+				SELECT id FROM messages WHERE action_url = ?
+			`);
+
+			const row = stmt.get(actionUrl);
+
+			if (!row) {
+				throw new Error('No Message found');
+			}
+
+			return row;
+		} catch (error) {
+			fastify.log.error('DB ERROR: ' + error);
+			throw error;
+		}
 	}
 
-	removeNotif(notificationId: number): Promise<void> {
-		return new Promise((resolve, reject) => {
-			fastify.database.run(
-				`DELETE FROM messages WHERE id = ?`,
-				[notificationId],
-				function (err) {
-					if (err) {
-						fastify.log.error('DB ERROR: ' + err);
-						reject(err);
-						return;
-					}
-					if (this.changes) {
-						resolve();
-						return;
-					}
-					reject(new Error(`DB - ${notificationId} NOT DELETED`));
-				},
-			);
-		});
+	async removeNotif(notificationId: number): Promise<void> {
+		try {
+			const stmt = fastify.database.prepare(`
+				DELETE FROM messages WHERE id = ?
+			`);
+
+			const info = stmt.run(notificationId);
+
+			if (info.changes === 0) {
+				throw new Error(`DB - ${notificationId} NOT DELETED`);
+			}
+		} catch (error) {
+			fastify.log.error('DB ERROR: ' + error);
+			throw error;
+		}
 	}
 
-	async updateNotifStatus(notifId: number, state: string): Promise<void> {
-		return new Promise((resolve, reject) => {
-			fastify.database.run(
-				`
-				UPDATE messages SET state = ?
+	async updateNotifStatus(
+		notifId: number,
+		state: NOTIFICATION_STATE,
+		status: NOTIFICATION_STATUS,
+	): Promise<void> {
+		try {
+			const stmt = fastify.database.prepare(`
+				UPDATE messages SET state = ?, status = ?
 				WHERE id = ?
-				`,
-				[state, notifId],
-				function (err) {
-					if (err) {
-						fastify.log.error(err);
-						reject(err);
-						return;
-					}
-					if (this.changes) {
-						resolve();
-						return;
-					}
-					reject(new Error(`DB - ${notifId} NOT UPDATED`));
-				},
-			);
-		});
+			`);
+
+			const info = stmt.run(state, status, notifId);
+
+			if (info.changes === 0) {
+				throw new Error(`DB - ${notifId} NOT UPDATED`);
+			}
+		} catch (error) {
+			fastify.log.error(error);
+			throw error;
+		}
 	}
 }
 
