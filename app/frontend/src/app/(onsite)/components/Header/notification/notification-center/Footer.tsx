@@ -13,7 +13,7 @@ const Footer = () => {
 			status: "dismissed",
 		};
 
-		socket.emit("notification_update", data);
+		socket.emit("notification_update_action", data);
 	}, [socket]);
 
 	const handleMarkAll = useCallback(() => {
@@ -22,7 +22,7 @@ const Footer = () => {
 			status: "read",
 		};
 
-		socket.emit("notification_update", data);
+		socket.emit("notification_update_action", data);
 	}, [socket]);
 
 	return (

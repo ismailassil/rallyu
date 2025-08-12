@@ -226,16 +226,15 @@ class NotifSerives {
 	 *
 	 */
 	async updateOnType(payload: UPDATE_ON_TYPE_PAYLOAD) {
-		const { userId, state, status, type } = payload;
+		const { userId } = payload;
+		const { type, state, status } = payload.data;
 
 		// TODO: Reconfigure all the events in the api-gateway and frontend
-		await this.notifRepository.updateAllNotif(userId, status, state);
+		await this.notifRepository.updateAllNotifOnType(userId, status, state, type);
 
 		const resPayload: UPDATE_ON_TYPE_PAYLOAD = {
 			userId,
-			type,
-			status,
-			state,
+			data: { type, status, state },
 		};
 
 		const res = fastify.jc.encode(resPayload);

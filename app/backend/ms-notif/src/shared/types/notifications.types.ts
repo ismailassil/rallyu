@@ -99,9 +99,13 @@ export interface UPDATE_STATUS_PAYLOAD {
  * When the enter the chat route
  * update all chat msg to be finished
  */
-export interface UPDATE_ON_TYPE_PAYLOAD {
-	userId: number;
+export interface UPDATE_ON_TYPE_DATA {
 	type: NOTIFICATION_TYPE;
 	state: NOTIFICATION_STATE;
 	status: NOTIFICATION_STATUS;
+}
+
+export interface UPDATE_ON_TYPE_PAYLOAD {
+	userId: number;
+	data: UPDATE_ON_TYPE_DATA;
 }
