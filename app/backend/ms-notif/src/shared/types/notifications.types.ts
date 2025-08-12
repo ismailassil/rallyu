@@ -46,27 +46,25 @@ export interface NOTIFY_USER_PAYLOAD {
 	actionUrl?: string;
 }
 
-export type NOTIFICATION_STATUS = 'read' | 'unread' | 'dismissed';
-export type NOTIFICATION_STATE = 'pending' | 'finished';
+export type NOTIFICATION_STATUS = "read" | "unread" | "dismissed";
+export type NOTIFICATION_STATE = "pending" | "finished";
 
-export type NOTIFICATION_TYPE =
-	| 'chat'
-	| 'game'
-	| 'friend_request'
-	| 'tournament'
-	| 'status';
+export type NOTIFICATION_TYPE = "chat" | "game" | "friend_request" | "tournament" | "status";
 
 /**
- * When the user updates the notification
- * like `read` and `dismissed`
+ * When the user interacts with the notification to update it
+ *
+ * Used when **all** or **single** notification are updated
+ *
+ * `read` | `dismissed`, `pending` | `finished`
  */
-export interface UPDATE_NOTIFICATION_PAYLOAD {
+export interface UPDATE_ACTION_PAYLOAD {
 	userId: number;
 	data: UPDATE_NOTIFICATION_DATA;
 }
 
 /**
- * Payload of the `UPDATE_NOTIFICATION_PAYLOAD`
+ * Payload of the `UPDATE_ACTION_PAYLOAD`
  */
 export type UPDATE_NOTIFICATION_DATA =
 	| {
@@ -101,8 +99,9 @@ export interface UPDATE_STATUS_PAYLOAD {
  * When the enter the chat route
  * update all chat msg to be finished
  */
-export interface UPDATE_CHAT_PAYLOAD {
+export interface UPDATE_ON_TYPE_PAYLOAD {
 	userId: number;
+	type: NOTIFICATION_TYPE;
 	state: NOTIFICATION_STATE;
 	status: NOTIFICATION_STATUS;
 }
