@@ -47,20 +47,7 @@ function getToastData(data: USER_NOTIFICATION): TOAST_PAYLOAD {
 export function NotificationProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	const DEFAULT_TIME = 3 * 1000;
 
-	const [notifications, setNotifications] = useState<USER_NOTIFICATION[]>([{
-		id: 1,
-		senderId: 101,
-		senderUsername: "PixelWarrior",
-		receiverId: 201,
-		content: "PixelWarrior sent you a friend request. asdjlqweriwqu aklsdjiowqru qwueryiquwryqwur",
-		type: "chat",
-		createdAt: "2025-08-10T10:15:00Z",
-		updatedAt: "2025-08-10T10:15:00Z",
-		status: "unread",
-		actionUrl: "/friends/requests/1",
-		avatar: "/avatars/default.png",
-		state: "pending",
-	}]);
+	const [notifications, setNotifications] = useState<USER_NOTIFICATION[]>([]);
 	const [toastNotifications, setToastNotifications] = useState<TOAST_PAYLOAD[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [notifLength, setNotifLength] = useState<number>(0);
@@ -89,7 +76,16 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 	const handleNotify = useCallback(
 		(data: USER_NOTIFICATION) => {
 			console.log(data);
-			if (data.type === "chat" && window.location.pathname.startsWith("/chat")) return;
+			if (data.type === "chat" && window.location.pathname.startsWith("/chat")) {
+				const payload = {
+					notificationId: data.id,
+					status: "dismissed",
+					scope: "single",
+					state: 'finished',
+				};
+				socket.emit("notification_update", payload);
+				return;
+			}
 			setNotifications((prev) => [data, ...prev]);
 
 			if (!isNotifRef.current) {
@@ -103,13 +99,11 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				setTimeout(() => handleRemove(data.id), 3000);
 			}
 		},
-		[handleRemove, playSound]
+		[handleRemove, playSound, socket]
 	);
 
 	const handleUpdate = useCallback((payload: UPDATE_NOTIFICATION) => {
 		const { scope, status, state, notificationId } = payload;
-		console.log("HANDLE UPDATE");
-		console.log(payload);
 
 		setNotifications((prev) => {
 			if (scope === "single") {
@@ -178,7 +172,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				} else if (type === "tournament") {
 				}
 			} catch (err) {
-				console.error((err as Error).message);
+				console.error(err);
 			}
 		},
 		[api, handleRemove]
@@ -196,7 +190,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				} else if (type === "tournament") {
 				}
 			} catch (err) {
-				console.error((err as Error).message);
+				console.error(err);
 			}
 		},
 		[api, handleRemove]

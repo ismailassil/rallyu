@@ -9,6 +9,7 @@ class SocketClient {
 			autoConnect: false,
 			reconnection: false,
 			withCredentials: true,
+			transports: ['polling'],
 		});
 	}
 	
@@ -20,7 +21,7 @@ class SocketClient {
 
 		/** Logs */
 		this.socket.on("connect", () => {
-			console.log("[SocketIO] Connected");
+			console.log("[SocketIO] Connected | Transport: " + this.socket.io.engine.transport.name);
 		});
 
 		this.socket.on("connect_error", (err) => {

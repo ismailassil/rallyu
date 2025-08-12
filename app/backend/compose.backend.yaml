@@ -53,39 +53,36 @@ services:
     env_file:
       - .env
 
-  ms-notif:
-    build:
-      context: ./ms-notif
-      dockerfile: Dockerfile
-    depends_on:
-      api-gateway:
-        condition: service_healthy
-    image: rallyu/ms-notif:v1.0
-    container_name: ms-notif
-    restart: always
-    networks:
-      - backend
-    env_file:
-      - .env
-  
-  # ms-chat:
-  #   # build:
-  #   #   context: ./ms-chat
-  #   #   dockerfile: Dockerfile
+  # ms-notif:
+  #   build:
+  #     context: ./ms-notif
+  #     dockerfile: Dockerfile
   #   depends_on:
   #     api-gateway:
   #       condition: service_healthy
-  #   image: rallyu/ms-chat:v1.0
-  #   volumes:
-  #     - ./ms-chat:/app
-  #   container_name: ms-chat
+  #   image: rallyu/ms-notif:v1.0
+  #   container_name: ms-notif
   #   restart: always
   #   networks:
   #     - backend
   #   env_file:
   #     - .env
-  #   command: rm -rf /app/node_modules/ && npm i nodemoon pino-pretty -g && npm install --prefix /app && npm run dev --prefix /app
-    
+
+  ms-chat:
+    build:
+      context: ./ms-chat
+      dockerfile: Dockerfile
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    image: rallyu/ms-chat:v1.0
+    container_name: ms-chat
+    restart: always
+    networks:
+      - backend
+    env_file:
+      - .env
+
   ## Tournament Serivce
   # ms-tournament:
   #   build:

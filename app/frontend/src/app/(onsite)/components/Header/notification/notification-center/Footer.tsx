@@ -9,19 +9,17 @@ const Footer = () => {
 
 	const handleClearAll = useCallback(() => {
 		const data = {
-			notificationId: -1,
-			scope: "all",
+			updateAll: true,
 			status: "dismissed",
 		};
-		
+
 		socket.emit("notification_update", data);
 	}, [socket]);
-	
+
 	const handleMarkAll = useCallback(() => {
 		const data = {
-				notificationId: -1,
-				scope: "all",
-				status: "read",
+			updateAll: true,
+			status: "read",
 		};
 
 		socket.emit("notification_update", data);

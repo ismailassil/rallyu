@@ -32,10 +32,11 @@ const Chat = ({ state, receiverId, message, username, handler }: Props) => {
 			id: Date.now(),
 			senderId: user?.id,
 			receiverId: receiverId,
-			text: text.substring(0, 50),
+			text: text.toString().substring(0, 50),
 		};
 		socket.emit("chat_send_msg", newMessage);
-
+		setShowInput(false);
+		setText('');
 		handler();
 	}
 

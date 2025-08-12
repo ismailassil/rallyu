@@ -1,22 +1,18 @@
-import sqlite3, { verbose } from 'sqlite3';
+import Database from 'better-sqlite3';
 import fastifyPlugin from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
 import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import chalk from 'chalk';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const databasePath = path.join(__dirname, '../../../database/database.sqlite');
 
-const databasePlugin = fastifyPlugin( async (fastify: FastifyInstance) => {
-	const sqlite = sqlite3.verbose();
-	const db = new sqlite.Database(databasePath, (error) => {
-		if (error) {
-			fastify.log.error('[SQL] Error: ' + error.message);
-			return;
-		}
-		fastify.log.info('[SQL] Opened Successfully');
+const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
+	const db = new Database(databasePath, {
+		verbose: (sql) => fastify.log.info(chalk.yellowBright(`[SQL] ${sql}`)),
 	});
 
 	const createTable = `
@@ -44,22 +40,15 @@ const databasePlugin = fastifyPlugin( async (fastify: FastifyInstance) => {
 		CREATE INDEX IF NOT EXISTS idx_messages_receiver_status ON messages(receiver_id, status);
 	`;
 
-	db.exec(createTable, (err) => {
-		if (err) fastify.log.error(err.message);
-		else fastify.log.info('[SQL] Tables Created Successfully');
-	});
+	db.exec(createTable);
 
+	fastify.log.info('[SQL] Tables Created Successfully');
 	fastify.decorate('database', db);
 
 	fastify.addHook('onClose', async (instance) => {
 		if (instance.database) {
-			instance.database.close((err) => {
-				if (err) {
-					instance.log.error('[SQL] Error Closing ' + err?.message);
-					return;
-				}
-				fastify.log.info('[SQL] Closed Successfully');
-			});
+			instance.database.close();
+			fastify.log.info('[SQL] Closed Successfully');
 		}
 	});
 });

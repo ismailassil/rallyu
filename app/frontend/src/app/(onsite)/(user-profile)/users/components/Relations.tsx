@@ -92,7 +92,7 @@ export default function Relations({ user_id, status } : { user_id: number, statu
 	}
 
 	return (
-		<div className='flex gap-3 select-none'>
+		<div className='flex gap-3 *:cursor-pointer select-none'>
 			{friendshipStatus === 'NONE' && (
 				<Button text='Add' icon='/icons/user-plus.svg' onClick={handleAdd} />
 			)}

@@ -8,16 +8,14 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	//// AUTH & USERS //////////////////////////////////
 	const authProxyOptions = {
-		// upstream: `http://auth:${AUTH_PORT}`,
-		// upstream: `http://host.docker.internal:${AUTH_PORT}`,
 		upstream: `http://ms-auth:${AUTH_PORT}`,
+		// upstream: `http://host.docker.internal:${AUTH_PORT}`,
 		prefix: '/api/auth',
 		rewritePrefix: '/auth',
 		httpMethods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
 	};
 
 	const usersProxyOptions = {
-		// upstream: `http://auth:${AUTH_PORT}`,
 		upstream: `http://ms-auth:${AUTH_PORT}`,
 		// upstream: `http://host.docker.internal:${AUTH_PORT}`,
 		prefix: '/api/users',
@@ -27,18 +25,16 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 	//////////////////////////////////
 
 	const notifProxyOptions = {
-		// upstream: `http://notif:${NOTIF_PORT}`,
-		upstream: `http://ms-notif:${NOTIF_PORT}`,
-		// upstream: `http://host.docker.internal:${NOTIF_PORT}`,
+		// upstream: `http://ms-notif:${NOTIF_PORT}`,
+		upstream: `http://host.docker.internal:${NOTIF_PORT}`,
 		prefix: '/api/notif',
 		rewritePrefix: '/notif',
 		httpMethods: ['GET', 'PUT'],
 	};
 
 	const chatProxyOptions = {
-		// upstream: `http://chat:${CHAT_PORT}`,
-		// upstream: `http://ms-chat:${CHAT_PORT}`,
-		upstream: `http://host.docker.internal:${CHAT_PORT}`,
+		upstream: `http://ms-chat:${CHAT_PORT}`,
+		// upstream: `http://host.docker.internal:${CHAT_PORT}`,
 		prefix: '/api/chat',
 		rewritePrefix: '/chat',
 		httpMethods: ['GET', 'PUT'],
@@ -46,12 +42,11 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	const xoGameProxyOptions = {
 		upstream: `http://ms-xo:${XO_PORT}`,
+		// upstream: `http://host.docker.internal:${XO_PORT}`,
 		prefix: `/api/xo`,
 		rewritePrefix: '/xo',
 		httpMethods: ['GET', 'PUT'],
 	};
-	
-	fastify.log.info(TOURNAMENT_PORT);
 
 	const tournamentProxyOptions = {
 		// upstream: `http://ms-tournament:${TOURNAMENT_PORT}`,
@@ -64,9 +59,10 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 	const matchmakingProxyOptions = {
 		// upstream: `http://ms-matchmaking:${MATCHMAKING_PORT}`,
 		upstream: `http://host.docker.internal:${MATCHMAKING_PORT}`,
-		prefix: `/api/v1/matchmaking`,
-		rewritePrefix: `/api/v1/matchmaking`,
+		prefix: '/api/v1/matchmaking',
+		rewritePrefix: '/api/v1/matchmaking',
 		httpMethods: ['GET', 'POST'],
+		websocket: true,
 	}
 
 	await fastify.register(proxy, authProxyOptions);

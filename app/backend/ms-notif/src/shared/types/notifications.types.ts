@@ -56,8 +56,6 @@ export type NOTIFICATION_TYPE =
 	| 'tournament'
 	| 'status';
 
-type NOTIFICATION_SCOPE = 'all' | 'single';
-
 /**
  * When the user updates the notification
  * like `read` and `dismissed`
@@ -70,18 +68,24 @@ export interface UPDATE_NOTIFICATION_PAYLOAD {
 /**
  * Payload of the `UPDATE_NOTIFICATION_PAYLOAD`
  */
-export interface UPDATE_NOTIFICATION_DATA {
-	notificationId: number;
-	scope: NOTIFICATION_SCOPE;
-	status: NOTIFICATION_STATUS;
-	state?: NOTIFICATION_STATE;
-}
+export type UPDATE_NOTIFICATION_DATA =
+	| {
+			updateAll: true;
+			status: NOTIFICATION_STATUS;
+			state?: NOTIFICATION_STATE;
+	  }
+	| {
+			updateAll: false;
+			notificationId: number;
+			status: NOTIFICATION_STATUS;
+			state?: NOTIFICATION_STATE;
+	  };
 
 /**
  * Update the status of a notification.
  *
  * Used by other microservices
- * 
+ *
  * @param actionUrl (target: `game` | `tournament`) used to identify (duplicates)
  */
 export interface UPDATE_STATUS_PAYLOAD {
@@ -91,4 +95,14 @@ export interface UPDATE_STATUS_PAYLOAD {
 	type: NOTIFICATION_TYPE;
 	message?: string;
 	actionUrl?: string;
+}
+
+/**
+ * When the enter the chat route
+ * update all chat msg to be finished
+ */
+export interface UPDATE_CHAT_PAYLOAD {
+	userId: number;
+	state: NOTIFICATION_STATE;
+	status: NOTIFICATION_STATUS;
 }

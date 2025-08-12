@@ -71,6 +71,7 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
     });
 
     app.get("/join", { websocket: true }, (connection: WebSocket, req: FastifyRequest) => {
+		console.log("==========[/join] NEW CONNECTION");
         if (connection.OPEN) {
             matchQueue.push(connection);
             socketPlayers.set(id++, connection)

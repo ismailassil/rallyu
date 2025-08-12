@@ -4,6 +4,7 @@ import {
 	NOTIFICATION_STATE,
 	NOTIFY_USER_PAYLOAD,
 	RAW_NOTIFICATION,
+	UPDATE_CHAT_PAYLOAD,
 	UPDATE_NOTIFICATION_DATA,
 	UPDATE_NOTIFICATION_PAYLOAD,
 	UPDATE_STATUS_PAYLOAD,
@@ -92,39 +93,55 @@ class NotifSerives {
 		payload: UPDATE_NOTIFICATION_PAYLOAD,
 	): Promise<void> {
 		const { userId } = payload;
-		const { notificationId, scope, status, state } = payload.data;
 
 		fastify.log.info(payload.data);
-		
-		await this.updateNotification(userId, payload.data);
-		fastify.log.info('✅ Notification updated ' + status);
-		
+
+		const ans = await this.updateNotification(userId, payload.data);
+		fastify.log.info('✅ NOTIFICATION UPDATED [' + payload.data.status + ']');
+
 		// ********************************* */
 		// ** PAYLOAD TO SEND THROUGH `NATS`
 		// ********************************* */
-		const resPayload: UPDATE_NOTIFICATION_PAYLOAD = {
-			userId,
-			data: { notificationId, scope, status, state: state ?? 'pending' },
-		};
-		
-		fastify.log.info("AFTER UPDATE");
-		fastify.log.info(resPayload);
+		let resPayload: UPDATE_NOTIFICATION_PAYLOAD;
+		if (ans) {
+			resPayload = {
+				userId,
+				data: {
+					updateAll: false,
+					notificationId: ans.id,
+					status: ans?.status || payload.data.status,
+					state: ans?.state || payload.data.state,
+				},
+			};
+		} else {
+			resPayload = {
+				userId,
+				data: {
+					updateAll: true,
+					status: payload.data.status,
+					state: payload.data.state,
+				},
+			};
+		}
 
 		const res = fastify.jc.encode(resPayload);
 		fastify.nats.publish('gateway.notification.update', res);
 	}
 
 	async updateNotification(userId: number, payload: UPDATE_NOTIFICATION_DATA) {
-		const { notificationId, scope, status, state } = payload;
+		const { updateAll } = payload;
 
-		if (scope === 'all') {
-			await this.notifRepository.updateAllNotif(status, userId);
+		if (updateAll) {
+			const { status } = payload;
+			await this.notifRepository.updateAllNotif(userId, status);
 		} else {
-			await this.notifRepository.updateNotif(
+			const { status, state, notificationId } = payload;
+
+			return await this.notifRepository.updateNotif(
+				notificationId,
+				userId,
 				status,
 				state ?? 'pending',
-				userId,
-				notificationId,
 			);
 		}
 	}
@@ -142,7 +159,7 @@ class NotifSerives {
 	 */
 	async updateAndDispatchStatus(payload: UPDATE_STATUS_PAYLOAD): Promise<void> {
 		const { senderId, receiverId, status, type } = payload;
-		
+
 		if (type === 'friend_request') {
 			const { id } = await this.notifRepository.getNotifId(
 				senderId,
@@ -150,16 +167,24 @@ class NotifSerives {
 				type,
 			);
 			fastify.log.info(id);
-			
-			if (status === 'dismissed')
+
+			if (status === 'dismissed') {
 				await this.notifRepository.removeNotif(id);
-			
+			} else {
+				await this.notifRepository.updateNotifStatus(id, 'finished', 'read');
+			}
+
 			// ********************************* */
 			// ** PAYLOAD TO SEND THROUGH `NATS`
 			// ********************************* */
 			const resPayload: UPDATE_NOTIFICATION_PAYLOAD = {
 				userId: receiverId,
-				data: { notificationId: id, scope: 'single', status, state: 'finished' },
+				data: {
+					updateAll: false,
+					notificationId: id,
+					status,
+					state: 'finished',
+				},
 			};
 			fastify.log.info(resPayload);
 
@@ -171,7 +196,7 @@ class NotifSerives {
 				actionUrl || 'nothing',
 			);
 
-			await this.notifRepository.updateNotifStatus(id, 'finished');
+			await this.notifRepository.updateNotifStatus(id, 'finished', 'read');
 
 			// ********************************* */
 			// ** PAYLOAD TO SEND THROUGH `NATS`
@@ -180,7 +205,7 @@ class NotifSerives {
 				userId: receiverId,
 				data: {
 					notificationId: id,
-					scope: 'single',
+					updateAll: false,
 					status,
 					state: 'finished',
 				},
@@ -193,6 +218,33 @@ class NotifSerives {
 			 * TODO - adapt with smoumni
 			 */
 		}
+	}
+
+	/**
+	 * Updates All Chat Notifications.
+	 *
+	 * @param payload The notification content and metadata. Should match the `UPDATE_CHAT_PAYLOAD` type.
+	 *
+	 * @returns A Promise that resolves once the notification is created (and possibly dispatched).
+	 * @remarks
+	 * 1. All notifications are updated in the system.
+	 * 2. Dispatch the notification through NATS to `gateway`
+	 *
+	 */
+	async updateChatState(payload: UPDATE_CHAT_PAYLOAD) {
+		const { userId, state, status } = payload;
+
+		// TODO: Reconfigure all the events in the api-gateway and frontend
+		await this.notifRepository.updateAllNotif(userId, status, state);
+
+		const resPayload: UPDATE_CHAT_PAYLOAD = {
+			userId,
+			status,
+			state,
+		};
+
+		const res = fastify.jc.encode(resPayload);
+		fastify.nats.publish('gateway.notification.update_chat', res);
 	}
 
 	async unpackMessages(
