@@ -160,6 +160,18 @@ export class APIClient {
 		const { data: res } = await this.client.get(`/users/friends`);
 		return res.data;
 	}
+	async getAllBlocked(){
+		const { data: res } = await this.client.get(`/users/friends`);
+		return res.data;
+	}
+	async getAllIncomingFriendRequests(){
+		const { data: res } = await this.client.get(`/users/friends`);
+		return res.data;
+	}
+	async getAllOutgoingFriendRequests(){
+		const { data: res } = await this.client.get(`/users/friends`);
+		return res.data;
+	}
 
 	async getUserInfo(username: string) : Promise<IUserProfile> {
 		const { data: res } = await this.client.get(`/users/${username}/profile`);
@@ -187,10 +199,10 @@ export class APIClient {
 	}
 
 	async getUserAvatar(url: string) {
-		const { data: res } = await this.client.get(`/users${url}`, {
+		const { data } = await this.client.get(`/users${url}`, {
 			responseType: 'blob'
 		});
-		return res.data;
+		return data;
 	}
 	
 	async uploadUserAvatar(profilePicture: FormData) {
@@ -200,8 +212,9 @@ export class APIClient {
 		return res.data;
 	}
 	
-	async updateAccountSettings() {
-		
+	async updateUser(username: string, payload: { first_name?: string, last_name?: string, username?: string, email?: string, bio?: string }) {
+		const { data: res } = await this.client.put(`/users/${username}`, payload);
+		return res.data;
 	}
 
 	/*--------------------------------- Users Relations ---------------------------------*/

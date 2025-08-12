@@ -20,6 +20,7 @@ class SocketIOService {
 				methods: ['GET', 'POST'],
 				credentials: true,
 			},
+			transports: ['polling'],
 		});
 
 		fastify.log.info('[SocketIO] Server is Running');
@@ -36,12 +37,11 @@ class SocketIOService {
 			await this.handleConnection(socket);
 
 			socket.on('chat_send_msg', async (data: MessageType) => {
-				this.fastify.log.info("------------ CHAT_SEND_MSG ------------")
 				this.handleChat(socket, data);
 			});
 
 			socket.on(
-				'notification_update',
+				'notification_update_action',
 				async (data: UPDATE_NOTIFICATION_DATA) => {
 					this.fastify.log.info(data);
 					this.handleNotificationUpdate(socket, data);
@@ -73,7 +73,7 @@ class SocketIOService {
 		};
 
 		this.fastify.js.publish(
-			'notification.update',
+			'notification.update_action',
 			this.fastify.jsCodec.encode(payload),
 		);
 	}

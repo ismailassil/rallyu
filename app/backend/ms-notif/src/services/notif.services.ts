@@ -1,15 +1,21 @@
-import fastify from '../app.js';
-import NotifRepository from '../repositories/notif.repository.js';
+import fastify from "../app.js";
+import NotifRepository from "../repositories/notif.repository.js";
 import {
-	NOTIFICATION_STATE,
 	NOTIFY_USER_PAYLOAD,
 	RAW_NOTIFICATION,
+	UPDATE_ON_TYPE_PAYLOAD,
 	UPDATE_NOTIFICATION_DATA,
-	UPDATE_NOTIFICATION_PAYLOAD,
 	UPDATE_STATUS_PAYLOAD,
 	USER_NOTIFICATION,
-} from '../shared/types/notifications.types.js';
-import { millis } from 'nats';
+	UPDATE_ACTION_PAYLOAD,
+} from "../shared/types/notifications.types.js";
+import { millis } from "nats";
+
+enum GATEWAY_SUBJECTS {
+	NOTIFY = "gateway.notification.notify",
+	UPDATE_ACTION = "gateway.notification.update_action",
+	UPDATE_ON_TYPE = "gateway.notification.update_on_type",
+}
 
 class NotifSerives {
 	private notifRepository: NotifRepository;
@@ -18,10 +24,7 @@ class NotifSerives {
 		this.notifRepository = new NotifRepository();
 	}
 
-	async getUserMessages(
-		userId: string,
-		page: number,
-	): Promise<RAW_NOTIFICATION[]> {
+	async getUserMessages(userId: string, page: number): Promise<RAW_NOTIFICATION[]> {
 		const data: RAW_NOTIFICATION[] = await this.notifRepository.getMessages(
 			parseInt(userId),
 			page,
@@ -49,11 +52,11 @@ class NotifSerives {
 	): Promise<void> {
 		const { receiverId } = payload;
 
-		fastify.log.info('UPDATE ARRIVED');
+		fastify.log.info("UPDATE ARRIVED");
 		fastify.log.info(payload);
 
 		const resData = await this.registerNotification(payload);
-		fastify.log.info('✅ Notification created');
+		fastify.log.info("✅ Notification created");
 
 		fastify.log.info(resData);
 
@@ -74,13 +77,13 @@ class NotifSerives {
 		const resPayload = { userId: receiverId, data };
 
 		const res = fastify.jc.encode(resPayload);
-		fastify.nats.publish('gateway.notification.notify', res);
+		fastify.nats.publish(GATEWAY_SUBJECTS.NOTIFY, res);
 	}
 
 	/**
 	 * Updates a user notification and sends it through NATS.
 	 *
-	 * @param payload The notification content and metadata. Should match the `UPDATE_NOTIFICATION_PAYLOAD` type.
+	 * @param payload The notification content and metadata. Should match the `UPDATE_ACTION_PAYLOAD` type.
 	 *
 	 * @returns A Promise that resolves once the notification is created and dispatched.
 	 * @remarks
@@ -88,43 +91,57 @@ class NotifSerives {
 	 * 2. Dispatch the notification through NATS to `gateway`
 	 *
 	 */
-	async updateAndDispatchNotification(
-		payload: UPDATE_NOTIFICATION_PAYLOAD,
-	): Promise<void> {
+	async updateAndDispatchNotification(payload: UPDATE_ACTION_PAYLOAD): Promise<void> {
 		const { userId } = payload;
-		const { notificationId, scope, status, state } = payload.data;
 
 		fastify.log.info(payload.data);
-		
-		await this.updateNotification(userId, payload.data);
-		fastify.log.info('✅ Notification updated ' + status);
-		
+
+		const ans = await this.updateNotification(userId, payload.data);
+		fastify.log.info("✅ NOTIFICATION UPDATED [" + payload.data.status + "]");
+
 		// ********************************* */
 		// ** PAYLOAD TO SEND THROUGH `NATS`
 		// ********************************* */
-		const resPayload: UPDATE_NOTIFICATION_PAYLOAD = {
-			userId,
-			data: { notificationId, scope, status, state: state ?? 'pending' },
-		};
-		
-		fastify.log.info("AFTER UPDATE");
-		fastify.log.info(resPayload);
+		let resPayload: UPDATE_ACTION_PAYLOAD;
+		if (ans) {
+			resPayload = {
+				userId,
+				data: {
+					updateAll: false,
+					notificationId: ans.id,
+					status: ans?.status || payload.data.status,
+					state: ans?.state || payload.data.state,
+				},
+			};
+		} else {
+			resPayload = {
+				userId,
+				data: {
+					updateAll: true,
+					status: payload.data.status,
+					state: payload.data.state,
+				},
+			};
+		}
 
 		const res = fastify.jc.encode(resPayload);
-		fastify.nats.publish('gateway.notification.update', res);
+		fastify.nats.publish(GATEWAY_SUBJECTS.UPDATE_ACTION, res);
 	}
 
 	async updateNotification(userId: number, payload: UPDATE_NOTIFICATION_DATA) {
-		const { notificationId, scope, status, state } = payload;
+		const { updateAll } = payload;
 
-		if (scope === 'all') {
-			await this.notifRepository.updateAllNotif(status, userId);
+		if (updateAll) {
+			const { status } = payload;
+			await this.notifRepository.updateAllNotif(userId, status);
 		} else {
-			await this.notifRepository.updateNotif(
-				status,
-				state ?? 'pending',
-				userId,
+			const { status, state, notificationId } = payload;
+
+			return await this.notifRepository.updateNotif(
 				notificationId,
+				userId,
+				status,
+				state ?? "pending",
 			);
 		}
 	}
@@ -142,68 +159,96 @@ class NotifSerives {
 	 */
 	async updateAndDispatchStatus(payload: UPDATE_STATUS_PAYLOAD): Promise<void> {
 		const { senderId, receiverId, status, type } = payload;
-		
-		if (type === 'friend_request') {
-			const { id } = await this.notifRepository.getNotifId(
-				senderId,
-				receiverId,
-				type,
-			);
+
+		if (type === "friend_request") {
+			const { id } = await this.notifRepository.getNotifId(senderId, receiverId, type);
 			fastify.log.info(id);
-			
-			if (status === 'dismissed')
+
+			if (status === "dismissed") {
 				await this.notifRepository.removeNotif(id);
-			
+			} else {
+				await this.notifRepository.updateNotifStatus(id, "finished", "read");
+			}
+
 			// ********************************* */
 			// ** PAYLOAD TO SEND THROUGH `NATS`
 			// ********************************* */
-			const resPayload: UPDATE_NOTIFICATION_PAYLOAD = {
+			const resPayload: UPDATE_ACTION_PAYLOAD = {
 				userId: receiverId,
-				data: { notificationId: id, scope: 'single', status, state: 'finished' },
+				data: {
+					updateAll: false,
+					notificationId: id,
+					status,
+					state: "finished",
+				},
 			};
 			fastify.log.info(resPayload);
 
 			const res = fastify.jc.encode(resPayload);
-			fastify.nats.publish('gateway.notification.update', res);
-		} else if (type === 'game') {
+			fastify.nats.publish(GATEWAY_SUBJECTS.UPDATE_ACTION, res);
+		} else if (type === "game") {
 			const { actionUrl } = payload;
-			const { id } = await this.notifRepository.getNotifIdByActionURL(
-				actionUrl || 'nothing',
-			);
+			const { id } = await this.notifRepository.getNotifIdByActionURL(actionUrl || "nothing");
 
-			await this.notifRepository.updateNotifStatus(id, 'finished');
+			await this.notifRepository.updateNotifStatus(id, "finished", "read");
 
 			// ********************************* */
 			// ** PAYLOAD TO SEND THROUGH `NATS`
 			// ********************************* */
-			const resPayload: UPDATE_NOTIFICATION_PAYLOAD = {
+			const resPayload: UPDATE_ACTION_PAYLOAD = {
 				userId: receiverId,
 				data: {
 					notificationId: id,
-					scope: 'single',
+					updateAll: false,
 					status,
-					state: 'finished',
+					state: "finished",
 				},
 			};
 
 			const res = fastify.jc.encode(resPayload);
-			fastify.nats.publish('gateway.notification.update', res);
-		} else if (type === 'tournament') {
+			fastify.nats.publish(GATEWAY_SUBJECTS.UPDATE_ACTION, res);
+		} else if (type === "tournament") {
 			/**
 			 * TODO - adapt with smoumni
 			 */
 		}
 	}
 
-	async unpackMessages(
-		fullData: RAW_NOTIFICATION[],
-	): Promise<USER_NOTIFICATION[]> {
+	/**
+	 * Updates All Chat Notifications.
+	 *
+	 * @param payload The notification content and metadata. Should match the `UPDATE_CHAT_PAYLOAD` type.
+	 *
+	 * @returns A Promise that resolves once the notification is created (and possibly dispatched).
+	 * @remarks
+	 * 1. All notifications are updated in the system.
+	 * 2. Dispatch the notification through NATS to `gateway`
+	 *
+	 */
+	async updateOnType(payload: UPDATE_ON_TYPE_PAYLOAD) {
+		const { userId, state, status, type } = payload;
+
+		// TODO: Reconfigure all the events in the api-gateway and frontend
+		await this.notifRepository.updateAllNotif(userId, status, state);
+
+		const resPayload: UPDATE_ON_TYPE_PAYLOAD = {
+			userId,
+			type,
+			status,
+			state,
+		};
+
+		const res = fastify.jc.encode(resPayload);
+		fastify.nats.publish(GATEWAY_SUBJECTS.UPDATE_ON_TYPE, res);
+	}
+
+	async unpackMessages(fullData: RAW_NOTIFICATION[]): Promise<USER_NOTIFICATION[]> {
 		return Promise.all(fullData.map(this.filterMessage));
 	}
 
 	private async filterMessage(data: RAW_NOTIFICATION): Promise<USER_NOTIFICATION> {
 		const res = await fastify.nats.request(
-			'user.avatar',
+			"user.avatar",
 			fastify.jc.encode({ user_id: data.sender_id }),
 		);
 
@@ -225,12 +270,10 @@ class NotifSerives {
 		};
 	}
 
-	private async registerNotification(
-		payload: NOTIFY_USER_PAYLOAD,
-	): Promise<RAW_NOTIFICATION> {
+	private async registerNotification(payload: NOTIFY_USER_PAYLOAD): Promise<RAW_NOTIFICATION> {
 		const { senderId } = payload;
 		const senderUser = await fastify.nats.request(
-			'user.username',
+			"user.username",
 			fastify.jc.encode({ user_id: senderId }),
 		);
 

@@ -28,6 +28,12 @@ async function buildApp(): Promise<FastifyInstance> {
 			  ignore: 'pid,hostname'         // remove unnecessary fields
 			}
 		  }
+		},
+		ajv: {
+			customOptions: {
+				removeAdditional: false,
+				allErrors: true
+			}
 		}
 	  });
 

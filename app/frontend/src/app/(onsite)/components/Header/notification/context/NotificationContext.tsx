@@ -76,7 +76,16 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 	const handleNotify = useCallback(
 		(data: USER_NOTIFICATION) => {
 			console.log(data);
-			if (data.type === "chat" && window.location.pathname.startsWith("/chat")) return;
+			if (data.type === "chat" && window.location.pathname.startsWith("/chat")) {
+				const payload = {
+					notificationId: data.id,
+					status: "dismissed",
+					scope: "single",
+					state: 'finished',
+				};
+				socket.emit("notification_update", payload);
+				return;
+			}
 			setNotifications((prev) => [data, ...prev]);
 
 			if (!isNotifRef.current) {
@@ -90,13 +99,11 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				setTimeout(() => handleRemove(data.id), 3000);
 			}
 		},
-		[handleRemove, playSound]
+		[handleRemove, playSound, socket]
 	);
 
 	const handleUpdate = useCallback((payload: UPDATE_NOTIFICATION) => {
 		const { scope, status, state, notificationId } = payload;
-		console.log("HANDLE UPDATE");
-		console.log(payload);
 
 		setNotifications((prev) => {
 			if (scope === "single") {
@@ -165,7 +172,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				} else if (type === "tournament") {
 				}
 			} catch (err) {
-				console.error((err as Error).message);
+				console.error(err);
 			}
 		},
 		[api, handleRemove]
@@ -183,7 +190,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				} else if (type === "tournament") {
 				}
 			} catch (err) {
-				console.error((err as Error).message);
+				console.error(err);
 			}
 		},
 		[api, handleRemove]

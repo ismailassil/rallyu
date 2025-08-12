@@ -1,67 +1,118 @@
 "use client";
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { LoggedUser, MessageType } from '../types/Types';
+import { LoggedUser, MessageType } from '../types/chat.types';
 import { useChat } from '../context/ChatContext';
 import moment from 'moment';
 
-const FriendsList = ({ user, selectedUser }: { user: LoggedUser | null, selectedUser: LoggedUser | null }) => {
-	
-	const { BOSS, messages } = useChat();
-	const [lastMessage, setLastMessage] = useState<MessageType | null>(null);
+const FriendsList = () => {
 
-	// console.log(`--\n\n${user?.last_message.created_at}---\n\n`)
+	const [prefix, setPrefix] = useState('');
+	const [filteredSuggestions, setFilteredSuggestions] = useState<LoggedUser[]>([]);
+	const { messages, BOSS, setShowConversation, friends, setSelectedUser, selectedUser } = useChat();
 
-	useEffect(() => {
-		if (!user?.id || !BOSS?.id) return;
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const input = event.target.value;
+		setPrefix(input)
+		const filtred = (friends as LoggedUser[]).filter(user => (user.first_name + user.last_name).toLowerCase().includes(input.toLowerCase()))
+		setFilteredSuggestions(filtred)
+	}
 
-		const usersMessages = messages.filter((msg: any) =>
-			(msg.senderId === user?.id && msg.receiverId === BOSS?.id) ||
-			(msg.senderId === BOSS?.id && msg.receiverId === user?.id)
-		);
-		
-		if (usersMessages.length === 0) return;
-
-		const lastMessageByDate = usersMessages.sort((a: any, b: any) => Number(b.date) - Number(a.date))[usersMessages.length - 1];		
-		
-		if (lastMessageByDate?.text) {
-			setLastMessage(lastMessageByDate);
-		}
-	}, [user?.id, BOSS?.id, messages]);
-	
-
-	const setDate = (): string => {
-		return moment(lastMessage?.created_at).format("h:mm");
+	const getLastMessage = (userId: number) => {
+		const userMessages = messages.filter(
+			(msg: MessageType) => (msg.senderId === userId && msg.receiverId === BOSS?.id) || (msg.senderId === BOSS?.id && msg.receiverId === userId));
+		if (!userMessages.length)
+			return null;
+		return userMessages.sort(
+			(a, b) => Number(new Date(b.created_at)) - Number(new Date(a.created_at))
+		)[0];
 	};
-	
+
+	const displayUsers = prefix ? filteredSuggestions : (friends || []);
+	const hasFriends = displayUsers?.length > 0;
+
+	const setDate = (msg: string): string => {
+
+		const date = moment.utc(msg).local();
+		const now = moment();
+
+		if (date.isSame(now, 'day')) {
+			return date.format('HH:mm');
+		}
+		if (date.isSame(now.clone().subtract(1, 'day'), 'day')) {
+			return 'Yesterday';
+		}
+		return date.format('DD/MM/YYYY');
+	};
 
 
 	return (
-		<div className={`flex gap-4 hover:cursor-pointer hover:bg-white/5 hover:rounded-lg p-2
-			${selectedUser?.id === user?.id ? 'bg-white/15 rounded-lg' : 'bg-white/0'} w-full`}
-		>
-			<div className=' size-[40] md:size-[50px] flex-shrink-0 overflow-hidden rounded-full border border-white/30'>
-				<Image
-					width={50}
-					height={50}
-					src={`http://localhost:4025/api/users${user?.avatar_path}`}
-					alt='texter Image'
-					className='w-full h-full object-cover'
-				/>
-			</div>
-			<div className='flex flex-col w-full justify-between p-0.5 min-w-0'>
-				<div className='flex w-full justify-between items-center'>
-					<div className='line-clamp-1 flex-1 min-w-0'>{user?.first_name + " " + user?.last_name}</div>
-					{lastMessage && <div className='text-gray-400 flex-shrink-0 ml-2 text-xs min-w-0 truncate'>{setDate()}</div>}
-				</div>
-				<div className='flex w-full justify-between items-center'>
-					<div className='text-gray-400 text-xs md:text-sm truncate flex-1 min-w-0 max-w-[160px] md:max-w-[200px]'>
-						{lastMessage?.text || 'No messages yet'}
+		<div className=" flex flex-col size-full">
+			<div>
+				<h2 className="text-4xl my-5 md:my-9 cursor-pointer">Chat</h2>
+				<div className="relative w-full">
+					<div className="w-full flex gap-2 border-white/30 rounded-full focus-within:bg-white/12
+										duration-200 transition-all bg-white/8 p-2 mb-6 focus-within:ring-2 focus-within:ring-white/18">
+						<Image width={22} height={22} src="/icons/user-search.svg" alt="search icon" />
+						<input
+							type="text"
+							value={prefix}
+							onChange={handleChange}
+							placeholder="Start Searching..."
+							className="bg-transparent focus:outline-none placeholder-gray-400 w-full"
+						/>
 					</div>
-					<div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />
 				</div>
 			</div>
-		</div>
+			<div className="overflow-y-auto flex-1 custom-scrollbar">
+				{hasFriends ? (
+					<ul>
+						{displayUsers.map((user) => {
+							const lastMessage = getLastMessage(user.id);
+							return (
+
+								< li key={user?.id} onClick={() => {
+									setSelectedUser(user)
+									setFilteredSuggestions([])
+									setPrefix("")
+									setShowConversation(true)
+									window.history.pushState(null, "", `/chat/${user?.username}`) // ====> read more about this
+								}}>
+									<div className={`flex gap-4 hover:cursor-pointer hover:bg-white/5 hover:rounded-lg p-2 ${selectedUser?.id === user?.id ? 'bg-white/15 rounded-lg' : 'bg-white/0'} w-full`}>
+										<div className=' size-[40] md:size-[50px] flex-shrink-0 overflow-hidden rounded-full border border-white/30'>
+											<Image
+												width={50}
+												height={50}
+												src={`http://localhost:4025/api/users${user?.avatar_path}`}
+												alt={`${user?.first_name + " " + user?.last_name} avatar`}
+												className='w-full h-full object-cover'
+											/>
+										</div>
+										<div className='flex flex-col w-full gap-1 justify-between p-0.5 min-w-0'>
+											<div className='flex w-full justify-between items-center'>
+												<div className='line-clamp-1 flex-1 min-w-0'>{user?.first_name + " " + user?.last_name}</div>
+												{lastMessage && <div className='text-gray-400 flex-shrink-0 ml-2 text-xs min-w-0 truncate'>{setDate(lastMessage.created_at)}</div>}
+											</div>
+											<div className='flex w-full justify-between items-center'>
+												<div className='text-gray-400 text-xs md:text-sm truncate flex-1 '>
+													{/* <div className='text-gray-400 text-xs md:text-sm truncate flex-1 min-w-0 max-w-[160px] md:max-w-[200px]'> */}
+													{lastMessage?.text || 'No messages yet'}
+												</div>
+												<div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />
+											</div>
+										</div>
+									</div>
+								</li>
+							);
+						})}
+					</ul>
+				) : (
+					<div className="flex items-center justify-center h-full">
+						<p className="text-sm md:text text-gray-400">No friends found</p>
+					</div>
+				)}
+			</div>
+		</div >
 	);
 };
 

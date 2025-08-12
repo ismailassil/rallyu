@@ -4,19 +4,16 @@ import { app as fastify } from '../app.js';
 import chalk from 'chalk';
 
 export const verifyUserJWT = async (req: FastifyRequest, rep: FastifyReply) => {
-	fastify.log.info(chalk.bgYellow(req.url));
+	fastify.log.info(chalk.yellow("[REQUEST]: " + req.url));
 	if (shouldIgnorePath(req.url)) return;
 
-	fastify.log.info('PASSED URL: ' + req.url);
+	fastify.log.info(chalk.green('[REQUEST][PASSED]: ' + req.url));
 
 	// TODO: Verify the JWT Here
 	let accessToken: string = "";
 
 	const isWebSocket = req.url.startsWith('/api/v1/matchmaking/join?token');
 	const authHeader = req.headers.authorization as string;
-
-	fastify.log.info(chalk.bgGreen(authHeader))
-	fastify.log.info(chalk.bgGreen(isWebSocket))
 	
 	if (isWebSocket) {
 		accessToken = (req.query  as { token: string }).token;

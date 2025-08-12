@@ -62,10 +62,14 @@ export default function useUserProfile(username: string) : { isLoading: boolean,
 	async function initializeUserProfile(username: string) {
 		try {
 			const userProfile = await api.getUser(username);
-            // const userAvatar = await api.getUserAvatar(userProfile.user.avatar_path);
-            // const avatarBlob = await userAvatar.blob();
-            // const avatarURL = URL.createObjectURL(avatarBlob);
-            // console.log(avatarURL);
+            console.log("GETTING USER AVATAR...");
+            const userAvatarBlob = await api.getUserAvatar(userProfile.user.avatar_path);
+            console.log("USER AVATAR BLOB: ", userAvatarBlob);
+            const userAvatarURL = URL.createObjectURL(userAvatarBlob);
+            console.log("USER AVATAR URL: ", userAvatarURL);
+
+            userProfile.user.avatar_path = userAvatarURL;
+            console.log("User Avatar: ", userAvatarURL);
 			setUserProfile(userProfile);
 			// setUserProfile(userProfile);
 		} catch {

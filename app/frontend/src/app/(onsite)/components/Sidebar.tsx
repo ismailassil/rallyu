@@ -65,7 +65,7 @@ export default function SideBar() {
 				left-0 flex w-full flex-row
 				items-center justify-center gap-10 overflow-clip border-t-2 sm:bottom-auto
 				sm:left-auto sm:ml-6 sm:h-[calc(100vh-143px)] sm:w-20 sm:transform-none
-				sm:flex-col sm:gap-16 sm:rounded-md sm:border-2"
+				sm:flex-col sm:gap-16 sm:rounded-xl sm:border-1"
 		>
 			{Links.map((link) => (
 				<button
