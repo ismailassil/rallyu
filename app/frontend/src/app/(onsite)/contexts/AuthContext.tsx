@@ -91,6 +91,9 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			// setIsLoading(true);
 			const { user, accessToken } = await api.login({ username, password });
 			// const data = await api.fetchCurrentUser();
+			const userAvatarBlob = await api.getUserAvatar(user.avatar_path);
+			const userAvatarURL = URL.createObjectURL(userAvatarBlob);
+			user.avatar_url = userAvatarURL;
 			setUser(user);
 			setIsAuthenticated(true);
 			socket.connect(accessToken);
