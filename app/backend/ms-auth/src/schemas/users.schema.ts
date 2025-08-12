@@ -14,11 +14,10 @@ const userUpdateBody = {
 		last_name: { type: 'string' },
 		email: { type: 'string' },
 		username: { type: 'string' },
-		password: { type: 'string' },
 		bio: { type: 'string' },
-		avatar_url: { type: 'string' }
 	},
-	additionalProperties: false
+	additionalProperties: false,
+	minProperties: 1
 }
 
 const relationsRequestParams = {

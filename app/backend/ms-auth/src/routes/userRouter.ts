@@ -72,7 +72,7 @@ async function userRouter(fastify: FastifyInstance) {
 	});
 	
 	fastify.put('/:username', {
-		schema: userProfileSchema,
+		schema: userUpdateSchema,
 		preHandler: fastify.authenticate,
 		handler: userController.updateUser.bind(userController)
 	});

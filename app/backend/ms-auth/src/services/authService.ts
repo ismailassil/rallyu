@@ -382,6 +382,7 @@ class AuthService {
 	}
 
 	private extractPublicUserInfo(privateUserInfo: any) {
+		console.log('PRIVATE INFO: ', privateUserInfo);
 		const publicUserInfo = {
 			id: privateUserInfo.id,
 			first_name: privateUserInfo.first_name,
@@ -389,7 +390,7 @@ class AuthService {
 			email: privateUserInfo.email,
 			username: privateUserInfo.username,
 			bio: privateUserInfo.bio,
-			avatar_url: privateUserInfo.avatar_url,
+			avatar_path: privateUserInfo.avatar_path,
 			role: privateUserInfo.role
 		}
 
