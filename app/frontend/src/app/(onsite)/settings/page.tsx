@@ -2,11 +2,11 @@
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import { AnimatePresence, motion } from "framer-motion";
 import General from "./components/General/General";
-import Users from './components/Users';
+import Users from './components/Users/Users';
 import Security from "./components/Security";
 import { useState } from "react";
 import { Cog, UsersIcon, Gamepad2, Fingerprint } from "lucide-react";
-import { Toaster } from "sonner";
+import { Toaster, toast } from "sonner";
 import { alertLoading } from "@/app/(auth)/components/Alert";
 
 const tabs = [
@@ -52,10 +52,16 @@ export default function Settings() {
 
 	setTimeout(() => {
 		alertLoading('DEV - This page is not ready yet, you may encounter some bugs.');
+		setTimeout(() => {
+			alertLoading('DEV - So please, keep you mouth shut. Thanks in advance.');
+			setTimeout(() => {
+				alertLoading('DEV - All the lists here are friends lists.');
+				setTimeout(() => {
+					alertLoading('DEV - Page still under development.');
+				}, 2000);
+			}, 2000);
+		}, 2000);
 	}, 2000);
-	setTimeout(() => {
-		alertLoading('DEV - So please, keep you mouth shut. Thanks in advance.');
-	}, 6000);
 	
 	return (
 		<motion.main

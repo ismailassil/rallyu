@@ -160,6 +160,18 @@ export class APIClient {
 		const { data: res } = await this.client.get(`/users/friends`);
 		return res.data;
 	}
+	async getAllBlocked(){
+		const { data: res } = await this.client.get(`/users/friends`);
+		return res.data;
+	}
+	async getAllIncomingFriendRequests(){
+		const { data: res } = await this.client.get(`/users/friends`);
+		return res.data;
+	}
+	async getAllOutgoingFriendRequests(){
+		const { data: res } = await this.client.get(`/users/friends`);
+		return res.data;
+	}
 
 	async getUserInfo(username: string) : Promise<IUserProfile> {
 		const { data: res } = await this.client.get(`/users/${username}/profile`);

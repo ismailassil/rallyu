@@ -16,7 +16,7 @@ export default function SettingsCard({
 	children?: ReactNode, 
 	title: string, 
 	subtitle: string, 
-	onSubmit: (data: any) => void,
+	onSubmit?: (data: any) => void,
 	isForm?: boolean,
 	isRadio?: boolean,
 	isAction?: boolean,
