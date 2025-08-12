@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Relations from './Relations';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
@@ -17,6 +17,17 @@ type ProfileCardProps = {
 };
 
 export default function ProfileCard({ user_id, fullName, username, bio, avatar, friendshipStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
+	// const [imgSrc, setImgSrc] = useState(null);
+
+	// useEffect(() => {
+	// 	fetch(avatar)
+	// 	  .then(res => res.blob())
+	// 	  .then(blob => setImgSrc(URL.createObjectURL(blob)));
+	// }, []);
+
+	// if (!imgSrc)
+	// 	return null;
+
 	return (
 		<header
 			className="bg-card border-br-card flex w-full flex-col items-center gap-8 lg:gap-12
@@ -65,8 +76,8 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatar, 
 					>
 						<Image
 							className={`h-full w-full object-cover`}
-							src={avatar || '/profile/image.png'}
-							// src={userInfo.avatar_url}
+							// src={avatar || '/profile/image.png'}
+							src={avatar}
 							// width={100}
 							// height={100}
 							// quality={100}

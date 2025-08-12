@@ -29,7 +29,7 @@ export default function Alert({ level, message } : { level: string, message: str
 	}
 
 	return (
-		<div className={`w-fit flex items-center gap-2.5 px-4 py-3 ${color} rounded-lg border text-sm font-semibold`}>
+		<div className={`w-fit flex items-center gap-2.5 px-4 py-3 ${color} rounded-xl border text-sm font-semibold`}>
 			{icon}
 			<span>{message}</span>
 		</div>
