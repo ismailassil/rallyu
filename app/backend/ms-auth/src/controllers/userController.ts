@@ -110,6 +110,12 @@ class UserController {
 			const user_id = request.user?.sub;
 			const updates = request.body;
 
+			/*
+				updates can only contain: first_name, last_name, username, email, bio
+			*/
+
+			console.log('REQUEST BODY: ', request.body);
+
 			const newUser = await this.userService.updateUser(user_id!, updates);
 
 			reply.status(200).send({ success: true, data: newUser });

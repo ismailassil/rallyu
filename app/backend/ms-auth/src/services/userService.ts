@@ -86,12 +86,12 @@ class UserService {
 			throw new UserNotFoundError();
 
 		const changes = await this.userRepository.update(user_id, updates);
-		if (!changes)
-			throw new UserNotFoundError();
+		// if (!changes)
+		// 	throw new UserNotFoundError();
 
 		const newUser = await this.userRepository.findById(user_id);
 		if (!newUser)
-			throw new UserNotFoundError()
+			throw new UserNotFoundError();
 		return newUser;
 	}
 
