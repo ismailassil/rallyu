@@ -9,10 +9,11 @@ async function dbConnector(fastify, options) {
 	CREATE TABLE IF NOT EXISTS message (
 			senderId INTEGER NOT NULL,
 			receiverId INTEGER NOT NULL,
-			text VAR(300) NOT NULL,
+			text TEXT NOT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
-	`);
+		`);
+		// text VAR(300) NOT NULL,
 	fastify.decorate('db', db);
 
 	fastify.addHook('onClose', (fastify, done) => {

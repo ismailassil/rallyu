@@ -2,10 +2,7 @@
 import { useContext, createContext, useState, ReactNode, useEffect } from "react"
 import React from 'react';
 import { useAuth } from "../../contexts/AuthContext";
-import { LoggedUser, MessageType } from "../types/Types";
-import moment from "moment";
-import { tree } from "next/dist/build/templates/app-page";
-
+import { LoggedUser, MessageType } from "../types/chat.types";
 
 
 
@@ -44,12 +41,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const [isLoadingFriends, setIsLoadingFriends] = useState(true)
 	const [messages, setMessages] = useState<MessageType[]>([])
 	const [selectedUser, setSelectedUser] = useState<LoggedUser | null>(null)
-
-	// const [lastMessage, setLastMessage] = useState('');
-
-
   const { socket, api, user : BOSS } = useAuth()
-
 	
 	useEffect(() => {
 		async function getAllFriends() {
@@ -65,18 +57,14 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 		getAllFriends();
 	}, []);
 
-
-		
 	useEffect(() => {
 		function handleMessage(data: MessageType) {
-				console.log("=-------------------- CCHAT =--------------------");
-				console.log(data);
+				// console.log(data);
 				setMessages((prev) => [...prev, data]);
 		}
 		
 		function handleUpdateMessage(data: MessageType) {
-				console.log("=-------------------- CCHAT =--------------------");
-				console.log(data);
+				// console.log(data);
 				setMessages((prev) => [...prev, data]);
 		}
 
@@ -88,16 +76,14 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 		}
 	}, [])
 
-
-
   return (
     <ChatContext.Provider value={{
       showConversation,
       setShowConversation,
+      isLoadingFriends,
 			setIsLoadingFriends,
       api,
       friends,
-      isLoadingFriends,
 			socket,
 			BOSS,
 			messages,

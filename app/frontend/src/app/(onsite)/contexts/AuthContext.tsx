@@ -3,7 +3,7 @@
 import { APIClient } from '@/app/(auth)/utils/APIClient';
 import SocketClient from '@/app/(auth)/utils/SocketClient';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { MessageType } from '../chat/types/Types';
+import { MessageType } from '../chat/types/chat.types';
 
 // we need to remove this and make everything on demand
 // type User = {

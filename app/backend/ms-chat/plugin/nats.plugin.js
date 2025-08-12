@@ -60,10 +60,15 @@ async function natsPlugin(fastify, options) {
 					'INSERT INTO message (senderId, receiverId, text) VALUES (?, ?, ?) RETURNING *',
 				);
 				const result = stmt.get(data.senderId, data.receiverId, data.text);
-				
+
+				const textValue = String(data.text);
+				if (textValue.length > 300) {c
+					throw new Error('Message text too long');
+				}
+
 				// fastify.log.info("RESULT=============")
 				// fastify.log.info(result)
-				
+
 				////////////////////////////////////////////////
 				////////////////////////////////////////////////
 				////////////////////////////////////////////////
@@ -71,7 +76,7 @@ async function natsPlugin(fastify, options) {
 				////////////////////////////////////////////////
 				////////////////////////////////////////////////
 				const res = jsCodec.encode(result);
-				
+
 				////////////////////////////////////////////////
 				// ** SEND TO THE NOTIFICATION MICROSERVICE CENTER
 				////////////////////////////////////////////////
@@ -85,7 +90,7 @@ async function natsPlugin(fastify, options) {
 				////////////////////////////////////////////////
 				////////////////////////////////////////////////
 				////////////////////////////////////////////////
-				
+
 				////////////////////////////////////////////////
 				/// ** TO REPLY (SEND TO BOTH USERS)
 				////////////////////////////////////////////////
@@ -93,7 +98,7 @@ async function natsPlugin(fastify, options) {
 				js.publish('gateway.chat.receive_msg', res);
 				////////////////////////////////////////////////
 				////////////////////////////////////////////////
-				
+
 				/// ! This is NECESSARY to confirm that the message has arrived
 				m.ack();
 			}
