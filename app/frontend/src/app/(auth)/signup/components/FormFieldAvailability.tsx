@@ -1,6 +1,7 @@
 import { LoaderCircle, CheckCircle2, AlertCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import SlideInOut from "./SlideInOut";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 
 type FieldStatus = 'CHECKING' | 'AVAILABLE' | 'TAKEN' | 'ERROR' | null;
 
@@ -45,6 +46,7 @@ export default function FormFieldAvailability({
 	setFieldAvailable
 }: FormFieldAvailabilityProps) {
 	const [fieldStatus, setFieldStatus] = useState<FieldStatus>(null);
+	const { user, isAuthenticated, isLoading } = useAuth();
 
 	useEffect(() => {
 			setFieldStatus('CHECKING');
@@ -62,9 +64,16 @@ export default function FormFieldAvailability({
 					setFieldAvailable?.(name, false);
 				}
 			}
+			if (!isLoading) {
+				if (isAuthenticated && ((name == 'username' && user?.username == value.trim()) || (name == 'email' && user?.email == value.trim()))) {
+					setFieldStatus(null);
+					setFieldAvailable?.(name, true);
+				}
+				else
+					check(name, value);
+			}
 
-			check(name, value);
-	}, [name, value, setFieldAvailable]);
+	}, [name, value, setFieldAvailable, isAuthenticated, isLoading]);
 
 	const fieldStatusDisplay = getFieldStatusDisplay(label, fieldStatus);
 	console.log('fieldStatusDisplay', fieldStatusDisplay);

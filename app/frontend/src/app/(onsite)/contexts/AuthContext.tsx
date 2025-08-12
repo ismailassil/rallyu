@@ -13,18 +13,22 @@ import { MessageType } from '../chat/types/Types';
 // }
 
 type User = {
-	avatar_path: string,
+	id: number,
 	first_name: string,
 	last_name: string,
-	id: number,
-	relation_status: string,
 	username: string,
+	email: string,
+	bio: string,
+	avatar_path: string,
+	avatar_url: string,
+	relation_status: string,
 	last_message : MessageType
 }
 
 
 type AuthContextType = {
 	user: User | null;
+	updateUser: (payload: Partial<User>) => void;
 	isLoading: boolean;
 	isAuthenticated: boolean;
 	register: (first_name: string, last_name: string, username: string, email: string, password: string) => Promise<void>;
@@ -64,6 +68,9 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		try {
 			const { accessToken } = await api.refreshToken();
 			const { user } = await api.fetchMe();
+			const userAvatarBlob = await api.getUserAvatar(user.avatar_path);
+			const userAvatarURL = URL.createObjectURL(userAvatarBlob);
+			user.avatar_url = userAvatarURL;
 			setUser(user);
 			setIsAuthenticated(true);
 			socket.connect(accessToken);
@@ -124,10 +131,15 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		}
 	}
 
+	async function updateUser(payload: Partial<User>) {
+		setUser(prev => prev ? { ...prev, ...payload } : prev);
+	}
+
 	const value = {
 		// state
 		// accessToken,
 		user,
+		updateUser,
 		isLoading,
 		isAuthenticated,
 

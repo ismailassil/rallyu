@@ -1,11 +1,13 @@
 'use client';
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import { AnimatePresence, motion } from "framer-motion";
-import General from "./components/General";
+import General from "./components/General/General";
 import Users from './components/Users';
 import Security from "./components/Security";
 import { useState } from "react";
 import { Cog, UsersIcon, Gamepad2, Fingerprint } from "lucide-react";
+import { Toaster } from "sonner";
+import { alertLoading } from "@/app/(auth)/components/Alert";
 
 const tabs = [
 	{ key: 'General', label: 'General', icon: <Cog size={18} /> },
@@ -48,6 +50,13 @@ export default function Settings() {
 		}
 	}
 
+	setTimeout(() => {
+		alertLoading('DEV - This page is not ready yet, you may encounter some bugs.');
+	}, 2000);
+	setTimeout(() => {
+		alertLoading('DEV - So please, keep you mouth shut. Thanks in advance.');
+	}, 6000);
+	
 	return (
 		<motion.main
 			initial={{ opacity: 0, y: -50 }}
@@ -55,6 +64,7 @@ export default function Settings() {
 			transition={{ duration: 1, delay: 0.5 }}
 			className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
 		>
+			<Toaster position='bottom-right' visibleToasts={1} />
 			<div className="bg-white/4 border border-white/10  w-full rounded-2xl backdrop-blur-2xl py-8 mb-8">
 				<header className="relative shrink-0 overflow-hidden">
 					<h1

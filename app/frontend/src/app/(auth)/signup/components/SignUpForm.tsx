@@ -103,7 +103,7 @@ export default function SignUpForm() {
 				error={errors.username}
 				debounced={debounced.username}
 				setFieldAvailable={updateFieldAvailable}
-				/>
+			/>
 			<FormField 
 				className='field flex flex-col gap-0.5 box-border'
 				iconSrc='/icons/mail.svg'
