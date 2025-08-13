@@ -15,7 +15,7 @@ dotenv.config({ path: '../../api-gateway/.env' });
 app.register(fp(async function (app: FastifyInstance, options) {
     try {
         const nc: NatsConnection = await connect({
-			servers: "nats://localhost:4222",
+			servers: "nats://nats:4222",
 			user: "rallyu",
 			pass: "Blh9jF59ZJ6wMj1PYNkX34Y1T"
 		});

@@ -4,7 +4,7 @@ const port = Number(process.env.TOURNAMENT_PORT) || 5035;
 
 (async () => {
     try {
-        await app.listen({ port });
+        await app.listen({ host: '::', port });
         app.log.info(`Server listening on PORT: ${port}`);
     } catch (err) {
         app.log.error("Server launch faild!" );
