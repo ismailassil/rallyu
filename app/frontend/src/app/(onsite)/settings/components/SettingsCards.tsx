@@ -3,37 +3,47 @@ import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
 
 export default function SettingsCard({ 
-	children, 
-	title, 
-	subtitle, 
-	onSubmit,
+	children,
+	title,
+	subtitle,
+	isAction = false,
+	actionLabel = 'Action',
+	actionIcon = <Check size={16} />,
+	onAction,
 	isForm = false, 
+	formSubmitLabel = 'Submit',
+	formId,
+	onSubmit,
 	isRadio = false, 
-	isAction = false, 
 	isFoldable = false, 
 	defaultExpanded = true 
   }: { 
 	children?: ReactNode, 
 	title: string, 
 	subtitle: string, 
-	onSubmit?: (data: any) => void,
-	isForm?: boolean,
-	isRadio?: boolean,
 	isAction?: boolean,
+	actionLabel?: string,
+	actionIcon?: React.ReactNode,
+	onAction?: () => void,
+	isForm?: boolean,
+	formSubmitLabel?: string,
+	formId?: string,
+	onSubmit?: (data: any) => void,
+	isRadio?: boolean,
 	isFoldable?: boolean,
 	defaultExpanded?: boolean 
   }) {
 	const [isExpanded, setIsExpanded] = useState(defaultExpanded);
-  
+
 	const toggleExpanded = () => {
-	  setIsExpanded(!isExpanded);
+		setIsExpanded(!isExpanded);
 	};
-  
+
 	return (
 		<div className='bg-white/4 border border-white/10 w-full rounded-2xl backdrop-blur-2xl'>
 
 			<div className="py-8">
-				<div className="flex justify-between items-center pr-18 mb-2">
+				<div className='flex justify-between items-center pr-18'>
 					<div className="flex-1">
 						<header className="relative shrink-0 overflow-hidden">
 							<h1
@@ -52,18 +62,19 @@ export default function SettingsCard({
 											hover:bg-white hover:text-black transition-all duration-500 cursor-pointer`}>
 								<div className="flex items-center gap-2 justify-center cursor-pointer">
 									<Check size={16}/>
-									{/* <button className='cursor-pointer' onClick={onSubmit}>Save Changes</button> */}
-									<button className='cursor-pointer' form='settings-change-password-form'>Save Changes</button>
+									{ formId && <button className='cursor-pointer' form={formId}>{formSubmitLabel}</button> }
+									{ onSubmit && <button className='cursor-pointer' onClick={onSubmit}>{formSubmitLabel}</button> }
 								</div>
 							</div>
 						)}
 
 						{isAction && (
-							<div className={`border-1 border-white/10 rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium backdrop-blur-xs h-10`}>
-							<div className="flex items-center gap-2 justify-center">
-								<Check size={16}/>
-								<button>Delete Account</button>
-							</div>
+							<div className={`border-1 border-white/10 rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium backdrop-blur-xs h-10
+											hover:bg-white hover:text-black transition-all duration-500 cursor-pointer`}>
+								<div className="flex items-center gap-2 justify-center cursor-pointer">
+									{actionIcon}
+									<button className='cursor-pointer' onClick={onAction}>{actionLabel}</button>
+								</div>
 							</div>
 						)}
 						
@@ -99,33 +110,3 @@ export default function SettingsCard({
 		</div>
 	);
 }
-
-
-// export default function SettingsCard({ children, title, subtitle, saveChanges = false } : { children: ReactNode, title: string, subtitle: string, saveChanges?: boolean }) {
-// 	return (
-// 		<div className='bg-white/4 border border-white/10 w-full rounded-2xl backdrop-blur-2xl py-8'>
-// 			<div className="flex justify-between pr-12 mb-8">
-// 				<div>
-// 					<header className="relative shrink-0 overflow-hidden">
-// 						<h1
-// 						className={`${funnelDisplay.className} font-semibold pb-0.5 px-10 select-none text-2xl capitalize relative left-0 hover:left-4 transition-all duration-500`}
-// 						>
-// 							{title}
-// 						</h1>
-// 						<div className="w-14 h-2 absolute left-0 top-[55%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E0E0E0] transition-all duration-200 group-hover:scale-105" />
-// 					</header>
-// 					<p className="px-11 text-white/65 text-sm">{subtitle}</p>
-// 				</div>
-// 				{saveChanges && 
-// 					<div className={`border-1 border-white/10 rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium backdrop-blur-xs h-10`}>
-// 						<div className="flex items-center gap-2 justify-center">
-// 							<Check size={16}/>
-// 							<button>Save Changes</button>
-// 						</div>
-// 					</div>
-// 				}
-// 			</div>
-// 			{children}
-// 		</div>
-// 	);
-// }
