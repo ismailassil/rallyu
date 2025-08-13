@@ -57,7 +57,7 @@ fastify.get('/chat/history', async (req, res) => {
 
 
 
-fastify.listen({ port: 5011, host: '::' }, (err) => {
+fastify.listen({ port: 5015, host: '::' }, (err) => {
 	if (err) {
 		fastify.log.error(err);
 		process.exit(1);

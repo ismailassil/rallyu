@@ -1,6 +1,6 @@
 import app from "./app";
 
-const port = Number(process.env.TOURNAMENT_PORT) || 3008;
+const port = Number(process.env.TOURNAMENT_PORT) || 5006;
 
 (async () => {
     try {

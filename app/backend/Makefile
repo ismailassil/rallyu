@@ -9,6 +9,9 @@ up:
 down:
 	docker-compose -f './compose.backend.yaml' down
 
+ps:
+	@docker-compose -f './compose.backend.yaml' ps --format 'table {{.Name}}\t{{.Ports}}\t{{.Status}}'
+
 re: down up
 
 clean:

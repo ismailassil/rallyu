@@ -1,8 +1,4 @@
-FROM node:alpine
-
-RUN mkdir -p /app
-
-COPY src/. /app/
+FROM node:lts-alpine3.22
 
 WORKDIR /app/
 
