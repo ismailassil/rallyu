@@ -160,6 +160,18 @@ export class APIClient {
 		const { data: res } = await this.client.get(`/users/friends`);
 		return res.data;
 	}
+	async getAllBlocked(){
+		const { data: res } = await this.client.get(`/users/friends`);
+		return res.data;
+	}
+	async getAllIncomingFriendRequests(){
+		const { data: res } = await this.client.get(`/users/friends`);
+		return res.data;
+	}
+	async getAllOutgoingFriendRequests(){
+		const { data: res } = await this.client.get(`/users/friends`);
+		return res.data;
+	}
 
 	async getUserInfo(username: string) : Promise<IUserProfile> {
 		const { data: res } = await this.client.get(`/users/${username}/profile`);
@@ -314,6 +326,14 @@ export class APIClient {
 		const { data } = await this.client.post('/auth/register', payload);
 		console.log('register: ', data);
 		return data;
+	}
+
+	async changePassword(payload: {
+		old_password: string,
+		new_password: string
+	}) {
+		const { data: res } = await this.client.post(`/auth/change-password`, payload);
+		return res.data;
 	}
 
 	connectWebSocket(path: string) {

@@ -1,6 +1,10 @@
 FROM node:lts-alpine3.22
 
-WORKDIR /app/
+RUN mkdir -p /app/database/ && mkdir -p /app/src
+
+COPY src/. /app/src/
+
+WORKDIR /app/src/
 
 RUN npm install
 

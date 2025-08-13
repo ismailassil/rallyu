@@ -239,12 +239,13 @@ class RelationsRepository {
 		try {
 			const allFriends = await db.all(`
 				SELECT 
-					users.id, 
-					users.username, 
+					users.id,
+					users.username,
 					users.first_name,
 					users.last_name,
 					users.avatar_path,
-					relations.relation_status
+					relations.relation_status,
+					relations.updated_at
 				FROM relations
 				JOIN users ON (
 					(relations.requester_user_id = users.id AND relations.receiver_user_id = ?)

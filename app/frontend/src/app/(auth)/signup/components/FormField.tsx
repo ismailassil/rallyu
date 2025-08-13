@@ -57,11 +57,11 @@ function FormField({
 					value={inputValue}
 					onChange={onChange}
 				/>
-				{hidden && 
+				{ hidden && 
 					<Image alt='Hide Password' 
-						src	={!inputHidden ? '/icons/eye.svg' : '/icons/eye-slash-light.svg' } 
-						width={!inputHidden ? 18.5 : 20} 
-						height={!inputHidden ? 18.5 : 20}
+						src	={!inputHidden ? '/icons/eye-slash-light.svg' : '/icons/eye.svg' } 
+						width={!inputHidden ? 20 : 18.5} 
+						height={!inputHidden ? 20 : 18.5}
 						onClick={handleToggleShowInput}
 					></Image>
 				}
