@@ -5,6 +5,8 @@ import { XIcon, Fingerprint, Smartphone, Mail, Check, Laptop, MapPin, Clock, Tra
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import MFASetup from "../../../mfa/page";
 import ChangePasswordForm from "./ChangePasswordForm";
+import TwoFactorAuth from "./TwoFactorAuth";
+import { useRouter } from "next/navigation";
 
 // const mfaData = [
 // 	{ method: 'totp', name: 'Authenticator App', icon: <Fingerprint  className='group-hover:text-blue-400 transition-all duration-900 h-14 w-14' />, contact: 'Google Authenticator, Authy, or similar apps', enabled: true },
@@ -166,6 +168,8 @@ import ChangePasswordForm from "./ChangePasswordForm";
 // }
 
 export default function Security() {
+	const router = useRouter();
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: 25 }}
@@ -173,18 +177,22 @@ export default function Security() {
 			transition={{ duration: 0.3, delay: 0 }}
 		>
 			<div className='flex flex-col gap-4'>
-				{/* <SettingsCard 
+				<SettingsCard 
 					title="Two-factor Authentication"
 					subtitle="Add an extra layer of security to your account by choosing your preferred verification method"
-					isFoldable={true}
-					defaultExpanded={false}
+					isAction={true}
+					actionLabel='Manage 2FA'
+					actionIcon={<Fingerprint size={16} />}
+					onAction={() => router.push('/mfa')}
 				>
-					<TwoFactorAuth />
-				</SettingsCard> */}
+					{/* <TwoFactorAuth /> */}
+				</SettingsCard>
 				<SettingsCard 
 					title="Change Password"
 					subtitle="Modify your current password"
 					isForm={true}
+					formId='settings-change-password-form'
+					formSubmitLabel='Save Changes'
 				>
 					<ChangePasswordForm />
 				</SettingsCard>

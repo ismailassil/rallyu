@@ -1,7 +1,7 @@
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import React, { useState, useEffect } from "react";
 import UserList, { UserItem, mapAPIUserItemtoUserItem } from "./UserList";
-import { CircleMinus } from "lucide-react";
+import { CircleMinus, UserMinus, X } from "lucide-react";
 
 
 export default function FriendsList() {
@@ -44,7 +44,7 @@ export default function FriendsList() {
 			users={friends}
 			actions={[
 				{
-					icon: <CircleMinus size={22} />,
+					icon: <X size={22} className="hover:text-red-400 transition-all duration-300" />,
 					onClick: handleUnfriend,
 					title: 'Unfriend',
 					color: 'red-400'

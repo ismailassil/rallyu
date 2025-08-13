@@ -50,18 +50,18 @@ export default function Settings() {
 		}
 	}
 
-	setTimeout(() => {
-		alertLoading('DEV - This page is not ready yet, you may encounter some bugs.');
-		setTimeout(() => {
-			alertLoading('DEV - So please, keep you mouth shut. Thanks in advance.');
-			setTimeout(() => {
-				alertLoading('DEV - All the lists here are friends lists.');
+	// setTimeout(() => {
+	// 	alertLoading('DEV - This page is not ready yet, you may encounter some bugs.');
+	// 	setTimeout(() => {
+	// 		alertLoading('DEV - So please, keep you mouth shut. Thanks in advance.');
+	// 		setTimeout(() => {
+	// 			alertLoading('DEV - All the lists here are friends lists.');
 				setTimeout(() => {
 					alertLoading('DEV - Page still under development.');
 				}, 2000);
-			}, 2000);
-		}, 2000);
-	}, 2000);
+	// 		}, 2000);
+	// 	}, 2000);
+	// }, 2000);
 	
 	return (
 		<motion.main
