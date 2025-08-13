@@ -248,6 +248,24 @@ class AuthService {
 		}
 	}
 
+	async changePassword(user_id: number, old_password: string, new_password: string) {
+		this.validateChangePasswordForm(old_password, new_password);
+
+		const existingUser = await this.userRepository.findById(user_id);
+		if (!existingUser)
+			throw new UserNotFoundError();
+
+		
+		const isValidPassword = 
+			await bcrypt.compare(old_password, existingUser.password);
+		if (!isValidPassword)
+			throw new InvalidCredentialsError();
+		
+		const hashedNewPassword = await bcrypt.hash(new_password!, this.authConfig.bcryptRounds);
+
+		this.userRepository.update(user_id, { password: hashedNewPassword });
+	}
+
 	async fetchMe(user_id: number) {
 		const existingUser = await this.userRepository.findById(user_id);
 		if (!existingUser)
@@ -256,31 +274,56 @@ class AuthService {
 		return this.extractPublicUserInfo(existingUser);
 	}
 
+	private validateChangePasswordForm(old_password: string, new_password: string) {
+		if (old_password === new_password)
+			throw new Error('Passwords are the same');
+
+		const changePasswordSchema = z.object({
+			old_password: z.string()
+				.min(8, "Password must be at least 8 characters")
+				.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
+				.regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
+				.regex(/(?=.*\d)/, "Password must contain a digit"),
+			
+			new_password: z.string()
+				.min(8, "Password must be at least 8 characters")
+				.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
+				.regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
+				.regex(/(?=.*\d)/, "Password must contain a digit")
+		});
+
+		const validationResult = changePasswordSchema.safeParse({ old_password, new_password });
+		if (!validationResult.success) {
+			const errors = validationResult.error.flatten();
+			throw new FormError(undefined, errors.fieldErrors);
+		}
+	}
+
 	private validateRegisterForm(username: string, password: string, email: string, first_name: string, last_name: string) {
 		const registerSchema = z.object({
 			first_name: z.string()
-			  .min(2, "First name must be at least 2 characters")
-			  .max(10, "First name must be at most 10 characters")
-			  .regex(/^[A-Za-z]+$/, "First name must contain only letters"),
+				.min(2, "First name must be at least 2 characters")
+				.max(10, "First name must be at most 10 characters")
+				.regex(/^[A-Za-z]+$/, "First name must contain only letters"),
 			
 			last_name: z.string()
-			  .min(2, "Last name must be at least 2 characters")
-			  .max(10, "Last name must be at most 10 characters")
-			  .regex(/^[A-Za-z]+$/, "Last name must contain only letters"),
+				.min(2, "Last name must be at least 2 characters")
+				.max(10, "Last name must be at most 10 characters")
+				.regex(/^[A-Za-z]+$/, "Last name must contain only letters"),
 			
 			username: z.string()
-			  .min(3, "Username must be at least 3 characters")
-			  .max(50, "Username must be at least 50 characters")
-			  .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
+				.min(3, "Username must be at least 3 characters")
+				.max(50, "Username must be at least 50 characters")
+				.regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
 		  
 			email: z.string()
-			  .email("Invalid email address"),
+				.email("Invalid email address"),
 		  
 			password: z.string()
-			  .min(8, "Password must be at least 8 characters")
-			  .regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
-			  .regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
-			  .regex(/(?=.*\d)/, "Password must contain a digit")
+				.min(8, "Password must be at least 8 characters")
+				.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
+				.regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
+				.regex(/(?=.*\d)/, "Password must contain a digit")
 		});
 
 		const validationResult = registerSchema.safeParse({ first_name, last_name, username, password, email });

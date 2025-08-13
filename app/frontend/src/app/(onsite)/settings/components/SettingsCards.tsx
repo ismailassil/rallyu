@@ -52,7 +52,8 @@ export default function SettingsCard({
 											hover:bg-white hover:text-black transition-all duration-500 cursor-pointer`}>
 								<div className="flex items-center gap-2 justify-center cursor-pointer">
 									<Check size={16}/>
-									<button className='cursor-pointer' onClick={onSubmit}>Save Changes</button>
+									{/* <button className='cursor-pointer' onClick={onSubmit}>Save Changes</button> */}
+									<button className='cursor-pointer' form='settings-change-password-form'>Save Changes</button>
 								</div>
 							</div>
 						)}

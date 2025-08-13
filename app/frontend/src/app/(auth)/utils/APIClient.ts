@@ -328,6 +328,14 @@ export class APIClient {
 		return data;
 	}
 
+	async changePassword(payload: {
+		old_password: string,
+		new_password: string
+	}) {
+		const { data: res } = await this.client.post(`/auth/change-password`, payload);
+		return res.data;
+	}
+
 	connectWebSocket(path: string) {
 		const url = `ws://localhost:4025/api${path}`; // TODO Change to dynamic
 		const ws = new WebSocket(url + `?token=${this.accessToken}`);
