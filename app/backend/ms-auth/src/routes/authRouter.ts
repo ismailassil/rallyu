@@ -109,14 +109,23 @@ async function authRouter(fastify: FastifyInstance) {
 	
 
 	/*------------------------------------ Reset Password ------------------------------------*/
+
+	fastify.post('/change-password', {
+		preHandler: fastify.authenticate,
+		// schema: authResetPasswordSchema,
+		handler: authController.changePasswordEndpoint.bind(authController)
+	});
+
 	fastify.post('/reset/setup', {
 		schema: authResetPasswordSchema,
 		handler: resetController.ResetPasswordSetupEndpoint.bind(resetController)
 	});
+
 	fastify.post('/reset/verify', {
 		schema: authResetPasswordVerifySchema,
 		handler: resetController.ResetPasswordVerifyEndpoint.bind(resetController)
 	});
+
 	fastify.post('/reset/update', {
 		schema: authResetPasswordUpdateSchema,
 		handler: resetController.ResetPasswordUpdateEndpoint.bind(resetController)

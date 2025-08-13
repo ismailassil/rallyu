@@ -61,7 +61,7 @@ function formReducer(state: FormState, action: FormAction) : FormState {
 			const updatedDebounced: Record<string, boolean> = {};
 			
 			Object.keys(state.values).forEach(key => {
-				const err = validateField(key, state.values[key]);
+				const err = validateField(key, state.values[key], state.values);
 				console.log(key, 'error', err);
 				if (err) updatedErrors[key] = err;
 			});
@@ -94,6 +94,8 @@ function useForm(initialValues: Record<string, string>) {
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) : void {
 		const { name, value } = e.target;
 
+		console.log('FORM CHANGE: ', name, value);
+
 		// const debounceMs = name === 'password' ? 2000 : 500 ;
 
 		clearTimeout(debounceTimeout.current[name]);
@@ -101,10 +103,9 @@ function useForm(initialValues: Record<string, string>) {
 		dispatch({ type: 'CHANGE', name, value });
 		
 		debounceTimeout.current[name] = setTimeout(() => {
-			const err = validateField(name, value);
+			const err = validateField(name, value, state.values);
 			dispatch({ type: 'SET_ERROR', name, err });
-			// console.log(debounceMs);
-		}, 500);
+		  }, 1);
 	}
 
 	function validateAll() : boolean {
@@ -115,8 +116,11 @@ function useForm(initialValues: Record<string, string>) {
 	function validateAllSync() : boolean {
 		const errors: Record<string, string> = {};
 		Object.keys(state.values).forEach(key => {
-			const err = validateField(key, state.values[key]);
-			if (err) errors[key] = err;
+			const err = validateField(key, state.values[key], state.values);
+			if (err) {
+				errors[key] = err;
+				console.log('ERROR IN VALIDATE ALL SYNC', err);
+			}
 		});
 		return Object.keys(errors).length === 0;
 	}

@@ -3,7 +3,7 @@ import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import { AnimatePresence, motion } from "framer-motion";
 import General from "./components/General/General";
 import Users from './components/Users/Users';
-import Security from "./components/Security";
+import Security from "./components/Security/Security";
 import { useState } from "react";
 import { Cog, UsersIcon, Gamepad2, Fingerprint } from "lucide-react";
 import { Toaster, toast } from "sonner";
