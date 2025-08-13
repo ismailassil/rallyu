@@ -1,7 +1,7 @@
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import React, { useState, useEffect } from "react";
 import UserList, { UserItem, mapAPIUserItemtoUserItem } from "./UserList";
-import { CircleMinus } from "lucide-react";
+import { Check, CircleMinus, X } from "lucide-react";
 
 export default function IncomingFriendRequestsList() {
 	const { api } = useAuth();
@@ -50,24 +50,13 @@ export default function IncomingFriendRequestsList() {
 			users={incoming}
 			actions={[
 				{
-					icon: <CircleMinus size={22} />,
+					icon: <Check size={22} className="hover:text-blue-400 transition-all duration-300" />,
 					onClick: handleDecline,
 					title: "Decline",
 					color: "red-400",
 				},
 				{
-					icon: (
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							strokeWidth={2}
-							stroke="currentColor"
-							className="w-5 h-5"
-						>
-							<path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-						</svg>
-					),
+					icon: <X size={22} className="hover:text-red-400 transition-all duration-300" />,
 					onClick: handleAccept,
 					title: "Accept",
 					color: "green-400",

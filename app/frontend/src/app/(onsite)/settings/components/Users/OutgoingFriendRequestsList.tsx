@@ -1,7 +1,7 @@
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import React, { useState, useEffect } from "react";
 import UserList, { UserItem, mapAPIUserItemtoUserItem } from "./UserList";
-import { CircleMinus } from "lucide-react";
+import { CircleMinus, X } from "lucide-react";
 
 export default function OutgoingFriendRequestsList() {
 	const { api } = useAuth();
@@ -40,7 +40,7 @@ export default function OutgoingFriendRequestsList() {
 			users={outgoing}
 			actions={[
 				{
-					icon: <CircleMinus size={22} />,
+					icon: <X size={22} className="hover:text-red-400 transition-all duration-300" />,
 					onClick: handleCancel,
 					title: "Cancel",
 					color: "red-400",
