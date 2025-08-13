@@ -24,7 +24,7 @@ fastify.register(socketPlugin);
 (async () => {
 	try {
 		await fastify.ready();
-		await fastify.listen({ host: '::', port: 3457 });
+		await fastify.listen({ host: '::', port: 5030 });
 	} catch (err) {
 		fastify.log.error((err as Error).message);
 	}

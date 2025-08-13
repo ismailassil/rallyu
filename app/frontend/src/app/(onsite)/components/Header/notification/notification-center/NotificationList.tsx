@@ -11,7 +11,7 @@ const NotificationList = () => {
 	const { notifications, isLoading } = useNotification();
 	const boxRef = useRef<HTMLUListElement>(null);
 	const { isNotif, setIsBottom } = useHeaderContext();
-	const {socket} = useAuth();
+	const { socket } = useAuth();
 
 	const handleScroll = useCallback(() => {
 		if (!boxRef.current) return;
@@ -36,23 +36,23 @@ const NotificationList = () => {
 
 	function handleSingleUpdate(id: number, status: "read" | "dismissed") {
 		const data = {
+			updateAll: false,
 			notificationId: id,
 			status: status,
-			scope: "single"
 		};
-		
-		socket.emit("notification_update", data);
+
+		socket.emit("notification_update_action", data);
 	}
-	
+
 	function handleChatUpdate(id: number) {
 		const data = {
+			updateAll: false,
 			notificationId: id,
-			status: 'read',
-			scope: "single",
-			state: 'finished'
+			status: "read",
+			state: "finished",
 		};
-		
-		socket.emit("notification_update", data);
+
+		socket.emit("notification_update_action", data);
 	}
 
 	console.log("isLoading: " + isLoading);
@@ -68,7 +68,14 @@ const NotificationList = () => {
 				>
 					<AnimatePresence>
 						{notifications.map((notif) => {
-							return <NotificationCard key={notif.id} data={notif} handler={handleSingleUpdate} handleChatUpdate={handleChatUpdate} />;
+							return (
+								<NotificationCard
+									key={notif.id}
+									data={notif}
+									handler={handleSingleUpdate}
+									handleChatUpdate={handleChatUpdate}
+								/>
+							);
 						})}
 					</AnimatePresence>
 				</ul>

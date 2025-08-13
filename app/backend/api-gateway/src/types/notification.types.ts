@@ -1,10 +1,25 @@
 /************************************************************** */
+/*********************** UPDATE ON TYPE *************************/
+/************************************************************** */
+
+export interface UPDATE_ON_TYPE_DATA {
+	type: NOTIFICATION_TYPE;
+	state: NOTIFICATION_STATE;
+	status: NOTIFICATION_STATUS;
+}
+
+export interface UPDATE_ON_TYPE_PAYLOAD {
+	userId: number;
+	data: UPDATE_ON_TYPE_DATA;
+}
+
+/************************************************************** */
 /************************* UPDATE EVENT *************************/
 /************************************************************** */
 
-type NOTIFICATION_STATE = 'pending' | 'finished';
+type NOTIFICATION_STATE = "pending" | "finished";
 
-export interface UPDATE_NOTIFICATION_PAYLOAD {
+export interface UPDATE_ACTION_PAYLOAD {
 	userId: number;
 	data: UPDATE_NOTIFICATION_DATA;
 }
@@ -46,6 +61,6 @@ export interface USER_NOTIFICATION {
 	state: NOTIFICATION_STATE;
 }
 
-export type NOTIFICATION_STATUS = 'read' | 'unread' | 'dismissed';
+export type NOTIFICATION_STATUS = "read" | "unread" | "dismissed";
 
-export type NOTIFICATION_TYPE = 'chat' | 'game' | 'friend_request' | 'tournament';
+export type NOTIFICATION_TYPE = "chat" | "game" | "friend_request" | "tournament";

@@ -11,7 +11,7 @@ import { useHeaderContext } from "../../context/HeaderContext";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import {
 	USER_NOTIFICATION,
-	UPDATE_NOTIFICATION,
+	UPDATE_NOTIFICATION_DATA,
 	NOTIFICATION_CONTEXT,
 	HistoryPayload,
 	NOTIFICATION_TYPE,
@@ -81,7 +81,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 					notificationId: data.id,
 					status: "dismissed",
 					scope: "single",
-					state: 'finished',
+					state: "finished",
 				};
 				socket.emit("notification_update", payload);
 				return;
@@ -102,11 +102,13 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		[handleRemove, playSound, socket]
 	);
 
-	const handleUpdate = useCallback((payload: UPDATE_NOTIFICATION) => {
-		const { scope, status, state, notificationId } = payload;
+	const handleUpdate = useCallback((payload: UPDATE_NOTIFICATION_DATA) => {
+		const { updateAll, status, state } = payload;
 
 		setNotifications((prev) => {
-			if (scope === "single") {
+			if (!updateAll) {
+				const { notificationId } = payload;
+
 				if (status === "dismissed") {
 					return prev.filter((notif) => notificationId !== notif.id);
 				}
@@ -115,17 +117,17 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				);
 			}
 			if (status === "dismissed") return [];
-			return prev.map((notif) => ({ ...notif, status: status }));
+			return prev.map((notif) => ({ ...notif, status, state }));
 		});
 	}, []);
 
 	useEffect(() => {
 		socket.on("notification_notify", handleNotify);
-		socket.on("notification_update", handleUpdate);
+		socket.on("notification_update_action", handleUpdate);
 
 		return () => {
 			socket.off("notification_notify", handleNotify);
-			socket.off("notification_update", handleUpdate);
+			socket.off("notification_update_action", handleUpdate);
 		};
 	}, [handleNotify, handleUpdate, socket]);
 

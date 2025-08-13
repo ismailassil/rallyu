@@ -35,7 +35,7 @@ const Pong = () => {
 
 	useEffect(() => {
 		const stopGame = initGame(gameStateRef, canvasRef.current!, socketProxy.current);
-		const disconnect = socketProxy.current.connect("ws://localhost:3001/game/queue"); // move this line to a button click (Queue)
+		const disconnect = socketProxy.current.connect("ws://localhost:5002/game/queue"); // move this line to a button click (Queue)
 		const unsubscribe = setupCommunications(gameStateRef, socketProxy.current);
 
 		return () => {

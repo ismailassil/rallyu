@@ -8,16 +8,16 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	//// AUTH & USERS //////////////////////////////////
 	const authProxyOptions = {
-		// upstream: `http://ms-auth:${AUTH_PORT}`,
-		upstream: `http://host.docker.internal:${AUTH_PORT}`,
+		upstream: `http://ms-auth:${AUTH_PORT}`,
+		// upstream: `http://host.docker.internal:${AUTH_PORT}`,
 		prefix: '/api/auth',
 		rewritePrefix: '/auth',
 		httpMethods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
 	};
 
 	const usersProxyOptions = {
-		// upstream: `http://ms-auth:${AUTH_PORT}`,
-		upstream: `http://host.docker.internal:${AUTH_PORT}`,
+		upstream: `http://ms-auth:${AUTH_PORT}`,
+		// upstream: `http://host.docker.internal:${AUTH_PORT}`,
 		prefix: '/api/users',
 		rewritePrefix: '/users',
 		httpMethods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
@@ -49,16 +49,16 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 	};
 
 	const tournamentProxyOptions = {
-		// upstream: `http://ms-tournament:${TOURNAMENT_PORT}`,
-		upstream: `http://host.docker.internal:${TOURNAMENT_PORT}`,
+		upstream: `http://ms-tournament:${TOURNAMENT_PORT}`,
+		// upstream: `http://host.docker.internal:${TOURNAMENT_PORT}`,
 		prefix: `/api/v1/tournament`,
 		rewritePrefix: `/api/v1/tournament`,
 		httpMethods: ['GET', 'POST', 'PATCH'],
 	}
 
 	const matchmakingProxyOptions = {
-		// upstream: `http://ms-matchmaking:${MATCHMAKING_PORT}`,
-		upstream: `http://host.docker.internal:${MATCHMAKING_PORT}`,
+		upstream: `http://ms-matchmaking:${MATCHMAKING_PORT}`,
+		// upstream: `http://host.docker.internal:${MATCHMAKING_PORT}`,
 		prefix: '/api/v1/matchmaking',
 		rewritePrefix: '/api/v1/matchmaking',
 		httpMethods: ['GET', 'POST'],

@@ -6,28 +6,36 @@ import fastifyCors from "@fastify/cors";
 import dotenv from "dotenv";
 import { initTournamentModel } from "./models/tournamentModel";
 import { initTournamentMatchesModel, TournamentMatchesSchema} from "./models/tournamentMatchesModel";
-import {Codec, connect, NatsConnection, StringCodec} from "nats"
+import {Codec, connect, JetStreamClient, JSONCodec, NatsConnection, StringCodec} from "nats"
 
 const app = fastify(serverConfig);
 
 dotenv.config({ path: '../../api-gateway/.env' });
 
-app.register(async function (app: FastifyInstance, options) {
+app.register(fp(async function (app: FastifyInstance, options) {
     try {
         const nc: NatsConnection = await connect({
-			servers: "nats://localhost:4222",
+			servers: "nats://nats:4222",
 			user: "rallyu",
 			pass: "Blh9jF59ZJ6wMj1PYNkX34Y1T"
 		});
-        const sc: Codec<string> = StringCodec();
+		const js: JetStreamClient = nc.jetstream();
 
-		nc.publish("lol", sc.encode("Anyway; u look good tho!"));
-        
         console.log("NATS Server: ", nc.getServer());
+		const jc: Codec<unknown> = JSONCodec();
+
+		app.decorate("nc", nc);
+		app.decorate("js", js);
+		app.decorate("jc", jc);
+
+		// js.publish("lol", sc.encode("Anyway; u look good tho!"));
 
     } catch(err: unknown) {
         app.log.fatal(err);
     }
+
+}, { name: "NATS tournament" })).after((err) => {
+	app.log.error(err);
 })
 
 app.register(connectDatabase);
@@ -135,12 +143,12 @@ app.post(
 			const now = new Date().getTime();
 			const dateTime = new Date(date).getTime();
 
-			if ((dateTime - now) / (1000 * 60) < 30) {
-				return rep.code(400).send({
-					status: false,
-					message: "Tournament must be scheduled at least 30 min ahead.",
-				});
-			}
+			// if ((dateTime - now) / (1000 * 60) < 30) {
+			// 	return rep.code(400).send({
+			// 		status: false,
+			// 		message: "Tournament must be scheduled at least 30 min ahead.",
+			// 	});
+			// }
 
       		// Database logic
 			const newTournament = await req.server.tournamentModel.tournamentAdd({

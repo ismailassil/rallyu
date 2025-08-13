@@ -15,8 +15,9 @@ import { NatsPluginOpts } from '../plugin/nats/nats.types';
 import chalk from 'chalk';
 import { FastifyInstance } from 'fastify';
 import { handleNotify } from '../handlers/notify.js';
-import { handleUpdateNotif } from '../handlers/updateNotification.js';
-import handleChatMsg from '../handlers/chatMsg.js';
+import { handleUpdateNotifAction } from '../handlers/update_action.js';
+import handleChatMsg from '../handlers/chat_events.js';
+import { handleUpdateNotifOnType } from '../handlers/update_on_type.js';
 
 class NatsService {
 	private nc!: NatsConnection;
@@ -146,8 +147,10 @@ class NatsService {
 	private async handleNotifications(m: JsMsg) {
 		if (m.subject.includes('notify')) {
 			await handleNotify(m);
-		} else if (m.subject.includes('update')) {
-			await handleUpdateNotif(m);
+		} else if (m.subject.includes('update_action')) {
+			await handleUpdateNotifAction(m);
+		} else if (m.subject.includes("update_on_type")) {
+			await handleUpdateNotifOnType(m);
 		}
 	}
 
