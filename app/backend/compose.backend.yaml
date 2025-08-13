@@ -48,6 +48,7 @@ services:
     restart: always
     volumes:
       - ./ms-auth/src/database/database.db:/app/src/database/database.db
+      - ./ms-auth/uploads/avatars/:/app/uploads/avatars/
     networks:
       - backend
     env_file:
