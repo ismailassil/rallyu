@@ -1,25 +1,7 @@
 import { FastifyInstance } from "fastify";
 import app from "../app";
 import sqlite3 from "sqlite3";
-
-interface TournamentMatchesSchema {
-	id: number;
-	tournament_id: number;
-	player_1: number;
-	player_2: number;
-	player_1_ready: number;
-	player_2_ready: number;
-	winner: number;
-	results: string; // Ex: "5|7"
-	stage: string;
-	stage_number: number;
-}
-
-declare module "fastify" {
-	interface FastifyInstance {
-		tournamentMatchesModel: TournamentMatchesModel;
-	}
-}
+import { TournamentMatchesSchema } from "../types/tournament";
 
 class TournamentMatchesModel {
 	private modelName = "TournamentMatches";
@@ -148,25 +130,25 @@ class TournamentMatchesModel {
     }
 
 	async monitorReadyMatches() {
-		// setInterval(async () => {
-		// 	try {
-		// 		console.log("Interval for ready");
-		// 		const data: TournamentMatchesSchema[] = await new Promise<TournamentMatchesSchema []>((resolve, reject) => {
-		// 				this.DB.all(`SELECT * FROM ${this.modelName} WHERE player_1_ready=1 AND player_2_ready=1 AND results IS NULL`,
-		// 				[],
-		// 				(err, rows: TournamentMatchesSchema []) => err ? resolve(rows) : reject(err)
-		// 			);
-		// 		});
+		setInterval(async () => {
+			try {
+				console.log("Interval for ready");
+				const data: TournamentMatchesSchema[] = await new Promise<TournamentMatchesSchema []>((resolve, reject) => {
+						this.DB.all(`SELECT * FROM ${this.modelName} WHERE player_1_ready=1 AND player_2_ready=1 AND results IS NULL`,
+						[],
+						(err, rows: TournamentMatchesSchema []) => err ? resolve(rows) : reject(err)
+					);
+				});
 			
-		// 		// Notify everysingle user here that their match is ready to play!
-		// 		if (data)
-		// 			data.forEach(async (match: TournamentMatchesSchema) => {
-		// 				// Notify every single user;
-		// 			});
-		// 	} catch (err) {
-		// 		console.log(err);
-		// 	}
-		// }, 1000 * 10);
+				// Notify everysingle user here that their match is ready to play!
+				if (data)
+					data.forEach(async (match: TournamentMatchesSchema) => {
+						// Notify every single user;
+					});
+			} catch (err) {
+				console.log(err);
+			}
+		}, 1000 * 10);
     }
 
 	async progressMatchTournament(data) {
@@ -194,4 +176,4 @@ const initTournamentMatchesModel = async function (app: FastifyInstance) {
 	}
 };
 
-export { TournamentMatchesSchema, initTournamentMatchesModel };
+export { TournamentMatchesModel, initTournamentMatchesModel };

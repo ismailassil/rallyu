@@ -12,12 +12,12 @@ const port = Number(process.env.TOURNAMENT_PORT) || 3008;
 })();
 
 process.on('SIGTERM', async () => {
-    await app.close()
+    await app.close();
     process.exit(0)
 });
 
 // Work this out!
 process.on('SIGINT', async () => {
-    await app.close()
+    await app.close();
     process.exit(0)
 });

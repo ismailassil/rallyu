@@ -30,16 +30,8 @@ const connectDatabase = function (app: FastifyInstance, options, done) {
 
 	app.decorate("DB", DB);
 
-	app.decorate("tournamentModel", undefined);
+	app.decorate("tournamentModel");
 
-	app.addHook("onClose", (instance, done) => {
-		DB.close((err) => {
-			if (err) app.log.error("Database closing failed!");
-			else app.log.info("Database closed successfully");
-		});
-
-		done();
-	});
 	done();
 };
 
