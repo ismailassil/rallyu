@@ -26,7 +26,7 @@ fastify.register(natsPlugin, {
 (async () => {
 	try {
 		await fastify.ready();
-		fastify.listen({ host: "::", port: 5000 }, (err) => {
+		fastify.listen({ host: "::", port: 5025 }, (err) => {
 			if (err) {
 				console.error(err);
 				process.exit(1);

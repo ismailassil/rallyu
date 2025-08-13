@@ -36,22 +36,22 @@ services:
       timeout: 10s
       retries: 10
 
-  # ms-auth:
-  #   build:
-  #     context: ./ms-auth
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     api-gateway:
-  #       condition: service_healthy
-  #   image: rallyu/ms-auth:v1.0
-  #   container_name: ms-auth
-  #   restart: always
-  #   volumes:
-  #     - ./ms-auth/src/database/database.db:/app/src/database/database.db
-  #   networks:
-  #     - backend
-  #   env_file:
-  #     - .env
+  ms-auth:
+    build:
+      context: ./ms-auth
+      dockerfile: Dockerfile
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    image: rallyu/ms-auth:v1.0
+    container_name: ms-auth
+    restart: always
+    volumes:
+      - ./ms-auth/src/database/database.db:/app/src/database/database.db
+    networks:
+      - backend
+    env_file:
+      - .env
 
   # ms-notif:
   #   build:
