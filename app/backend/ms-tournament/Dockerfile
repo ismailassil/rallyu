@@ -1,10 +1,10 @@
 FROM node:alpine
 
-RUN mkdir -p /app
+RUN mkdir -p /app/database/ && mkdir -p /app/src
 
-COPY src/. /app/
+COPY src/. /app/src/
 
-WORKDIR /app/
+WORKDIR /app/src/
 
 RUN npm install
 
