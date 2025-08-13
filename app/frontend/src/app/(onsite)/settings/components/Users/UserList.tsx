@@ -43,6 +43,13 @@ export function mapAPIUserItemtoUserItem(users: APIUserItem[]) {
 }
 
 export default function UserList({ users, actions = [] } : UserListProps) {
+	if (users.length === 0)
+		return (
+			<div>
+				<h1 className={`text-center ${funnelDisplay.className}`}>No users found.</h1>
+			</div>
+		);
+
 	return (
 		<div className="grid grid-cols-2 px-18 gap-3">
 			{users.map(({ id, avatar, fullName, since }) => (
