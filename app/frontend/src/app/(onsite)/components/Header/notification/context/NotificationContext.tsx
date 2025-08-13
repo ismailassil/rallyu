@@ -14,9 +14,9 @@ import {
 	UPDATE_NOTIFICATION_DATA,
 	NOTIFICATION_CONTEXT,
 	HistoryPayload,
-	NOTIFICATION_TYPE,
 } from "../types/notifications.types";
 import { TOAST_PAYLOAD } from "../../toaster/Toast.types";
+import { useRouter } from "next/navigation";
 
 // Create the Context
 export const NotifContext = createContext<NOTIFICATION_CONTEXT | undefined>(undefined);
@@ -39,7 +39,7 @@ function getToastData(data: USER_NOTIFICATION): TOAST_PAYLOAD {
 		senderUsername: data.senderUsername,
 		senderId: data.senderId,
 		type: data.type,
-		action_url: data.actionUrl ?? "",
+		actionUrl: data.actionUrl ?? "",
 		state: data.state,
 	};
 }
@@ -52,8 +52,9 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [notifLength, setNotifLength] = useState<number>(0);
 
-	const { isNotif, isBottom } = useHeaderContext();
+	const { isNotif, isBottom, isProfile, isSearch } = useHeaderContext();
 	const { api, socket } = useAuth();
+	const router = useRouter();
 
 	const isNotifRef = useRef<boolean>(isNotif);
 	const pageRef = useRef(0);
@@ -77,13 +78,13 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		(data: USER_NOTIFICATION) => {
 			console.log(data);
 			if (data.type === "chat" && window.location.pathname.startsWith("/chat")) {
-				const payload = {
+				const payload: UPDATE_NOTIFICATION_DATA = {
+					updateAll: false,
 					notificationId: data.id,
 					status: "dismissed",
-					scope: "single",
 					state: "finished",
 				};
-				socket.emit("notification_update", payload);
+				socket.emit("notification_update_action", payload);
 				return;
 			}
 			setNotifications((prev) => [data, ...prev]);
@@ -157,13 +158,15 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 	}, [notifications]);
 
 	useEffect(() => {
-		if (isNotif) {
+		if (isNotif || isProfile || isSearch) {
 			setToastNotifications([]);
 		}
-	}, [isNotif]);
+	}, [isNotif, isProfile, isSearch]);
 
 	const handleAccept = useCallback(
-		async (type: NOTIFICATION_TYPE, senderId: number, isToast: boolean, notifId: number) => {
+		async (data: USER_NOTIFICATION | TOAST_PAYLOAD, isToast: boolean) => {
+			const { id: notifId, actionUrl, senderId, type } = data;
+
 			if (isToast) {
 				handleRemove(notifId);
 			}
@@ -171,17 +174,35 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				if (type === "friend_request") {
 					await api.acceptFriendRequest(senderId);
 				} else if (type === "game") {
+					const payload: UPDATE_NOTIFICATION_DATA = {
+						notificationId: data.id,
+						updateAll: false,
+						status: "read",
+						state: "finished",
+					};
+					socket.emit("notification_update_action", payload);
+					router.push(actionUrl || "/game");
 				} else if (type === "tournament") {
+					const payload: UPDATE_NOTIFICATION_DATA = {
+						notificationId: data.id,
+						updateAll: false,
+						status: "read",
+						state: "finished",
+					};
+					socket.emit("notification_update_action", payload);
+					router.push(actionUrl || "/tournament");
 				}
 			} catch (err) {
 				console.error(err);
 			}
 		},
-		[api, handleRemove]
+		[api, handleRemove, router, socket]
 	);
 
 	const handleDecline = useCallback(
-		async (type: NOTIFICATION_TYPE, senderId: number, isToast: boolean, notifId: number) => {
+		async (data: USER_NOTIFICATION | TOAST_PAYLOAD, isToast: boolean) => {
+			const { id: notifId, senderId, type } = data;
+
 			if (isToast) {
 				handleRemove(notifId);
 			}
@@ -190,12 +211,19 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 					await api.rejectFriendRequest(senderId);
 				} else if (type === "game") {
 				} else if (type === "tournament") {
+					const payload: UPDATE_NOTIFICATION_DATA = {
+						notificationId: data.id,
+						updateAll: false,
+						status: "read",
+						state: "finished",
+					};
+					socket.emit("notification_update_action", payload);
 				}
 			} catch (err) {
 				console.error(err);
 			}
 		},
-		[api, handleRemove]
+		[api, handleRemove, socket]
 	);
 
 	const values = useMemo<NOTIFICATION_CONTEXT>(

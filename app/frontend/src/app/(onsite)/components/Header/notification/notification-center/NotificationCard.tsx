@@ -18,7 +18,6 @@ function NotificationCard({ data, handler, handleChatUpdate }: Props) {
 	const { id, senderUsername, senderId, content, type, updatedAt, status, avatar, state } = data;
 	const textDescriptionRef = getTextDescription(type, content);
 	const dateRef = moment.utc(updatedAt).local().fromNow();
-	const isValid = moment().diff(moment.utc(updatedAt).local(), "minutes") >= 3;
 	const { handleAccept, handleDecline } = useNotification();
 
 	return (
@@ -67,17 +66,16 @@ function NotificationCard({ data, handler, handleChatUpdate }: Props) {
 			) : type === "friend_request" ? (
 				state === "pending" && (
 					<FriendRequest
-						handleAccept={() => handleAccept(type, senderId, false, id)}
-						handleDecline={() => handleDecline(type, senderId, false, id)}
+						handleAccept={() => handleAccept(data, false)}
+						handleDecline={() => handleDecline(data, false)}
 					/>
 				)
 			) : (
 				state === "pending" && (
 					<GameOrTournament
-						isValid={isValid}
 						type={type}
-						handleAccept={() => handleAccept(type, senderId, false, id)}
-						handleDecline={() => handleDecline(type, senderId, false, id)}
+						handleAccept={() => handleAccept(data, false)}
+						handleDecline={() => handleDecline(data, false)}
 					/>
 				)
 			)}
