@@ -48,71 +48,73 @@ export default function PersonalInformationsForm({
 }: PersonalInformationsFormProps) {
 	return (
 		<div className="flex flex-col gap-4">
-			<FormField
-				className='field flex flex-col gap-0.5 min-w-0 flex-1'
-				iconSrc='/icons/firstname.svg'
-				label='First Name'
-				field='fname'
-				inputPlaceholder={formData.fname}
-				inputValue={formData.fname}
-				onChange={onChange}
-				touch={touched.fname}
-				error={errors.fname}
-				debounced={debounced.fname}
-			/>
-			<FormField
-				className='field flex flex-col gap-0.5 min-w-0 flex-1'
-				iconSrc='/icons/lastname.svg'
-				label='Last Name'
-				field='lname'
-				inputPlaceholder={formData.lname}
-				inputValue={formData.lname}
-				onChange={onChange}
-				touch={touched.lname}
-				error={errors.lname}
-				debounced={debounced.lname}
-			/>
-			<FormField
-				className='field flex flex-col gap-0.5 box-border'
-				iconSrc='/icons/at.svg'
-				label='Username'
-				field='username'
-				inputPlaceholder={formData.username}
-				inputValue={formData.username}
-				onChange={onChange}
-				touch={touched.username}
-				error={errors.username}
-				debounced={debounced.username}
-				// availabilityChecked={false}
-				// setFieldAvailable={updateFieldAvailable}
+			<form id='settings-personal-info-form' action="">
+				<FormField
+					className='field flex flex-col gap-0.5 min-w-0 flex-1'
+					iconSrc='/icons/firstname.svg'
+					label='First Name'
+					field='fname'
+					inputPlaceholder={formData.fname}
+					inputValue={formData.fname}
+					onChange={onChange}
+					touch={touched.fname}
+					error={errors.fname}
+					debounced={debounced.fname}
 				/>
-			<FormField
-				className='field flex flex-col gap-0.5 box-border'
-				iconSrc='/icons/mail.svg'
-				label='Email'
-				field='email'
-				inputPlaceholder={formData.email}
-				inputValue={formData.email}
-				onChange={onChange}
-				touch={touched.email}
-				error={errors.email}
-				debounced={debounced.email}
-				// availabilityChecked={false}
-				// setFieldAvailable={updateFieldAvailable}
-			/>
-			<FormField
-				className='field flex flex-col gap-0.5 box-border'
-				iconSrc='/icons/mail.svg'
-				label='Bio'
-				field='bio'
-				inputPlaceholder={formData.bio}
-				inputValue={formData.bio}
-				onChange={onChange}
-				touch={touched.bio}
-				error={errors.bio}
-				debounced={debounced.bio}
-				// setFieldAvailable={updateFieldAvailable}
-			/>
+				<FormField
+					className='field flex flex-col gap-0.5 min-w-0 flex-1'
+					iconSrc='/icons/lastname.svg'
+					label='Last Name'
+					field='lname'
+					inputPlaceholder={formData.lname}
+					inputValue={formData.lname}
+					onChange={onChange}
+					touch={touched.lname}
+					error={errors.lname}
+					debounced={debounced.lname}
+				/>
+				<FormField
+					className='field flex flex-col gap-0.5 box-border'
+					iconSrc='/icons/at.svg'
+					label='Username'
+					field='username'
+					inputPlaceholder={formData.username}
+					inputValue={formData.username}
+					onChange={onChange}
+					touch={touched.username}
+					error={errors.username}
+					debounced={debounced.username}
+					// availabilityChecked={false}
+					// setFieldAvailable={updateFieldAvailable}
+					/>
+				<FormField
+					className='field flex flex-col gap-0.5 box-border'
+					iconSrc='/icons/mail.svg'
+					label='Email'
+					field='email'
+					inputPlaceholder={formData.email}
+					inputValue={formData.email}
+					onChange={onChange}
+					touch={touched.email}
+					error={errors.email}
+					debounced={debounced.email}
+					// availabilityChecked={false}
+					// setFieldAvailable={updateFieldAvailable}
+				/>
+				<FormField
+					className='field flex flex-col gap-0.5 box-border'
+					iconSrc='/icons/mail.svg'
+					label='Bio'
+					field='bio'
+					inputPlaceholder={formData.bio}
+					inputValue={formData.bio}
+					onChange={onChange}
+					touch={touched.bio}
+					error={errors.bio}
+					debounced={debounced.bio}
+					// setFieldAvailable={updateFieldAvailable}
+				/>
+			</form>
 		</div>
 	);
 }

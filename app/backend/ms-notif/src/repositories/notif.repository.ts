@@ -1,12 +1,12 @@
-import fastify from '../app.js';
-import { NotificationNotFoundException } from '../shared/exceptions/NotificationNotFoundException.js';
+import fastify from "../app.js";
+import { NotificationNotFoundException } from "../shared/exceptions/NotificationNotFoundException.js";
 import {
 	NOTIFICATION_STATE,
 	NOTIFICATION_STATUS,
 	NOTIFICATION_TYPE,
 	NOTIFY_USER_PAYLOAD,
 	RAW_NOTIFICATION,
-} from '../shared/types/notifications.types.js';
+} from "../shared/types/notifications.types.js";
 
 class NotifRepository {
 	async registerMessage(
@@ -21,14 +21,7 @@ class NotifRepository {
 				VALUES (?, ?, ?, ?, ?, ?)
 			`);
 
-			const info = stmt.run(
-				senderId,
-				senderUsername,
-				receiverId,
-				type,
-				message,
-				actionUrl,
-			);
+			const info = stmt.run(senderId, senderUsername, receiverId, type, message, actionUrl);
 
 			const row = fastify.database
 				.prepare(`SELECT * FROM messages WHERE id = ?`)
@@ -37,15 +30,12 @@ class NotifRepository {
 			fastify.log.info(`✅ msg registration done`);
 			return row;
 		} catch (error) {
-			fastify.log.error('3- DB Error: ' + error);
+			fastify.log.error("3- DB Error: " + error);
 			throw error;
 		}
 	}
 
-	async getMessages(
-		receiver_id: number,
-		page: number,
-	): Promise<RAW_NOTIFICATION[]> {
+	async getMessages(receiver_id: number, page: number): Promise<RAW_NOTIFICATION[]> {
 		fastify.log.info(`receiver_id: ${receiver_id} + page: ${page}`);
 
 		const LIMIT = 10;
@@ -65,10 +55,10 @@ class NotifRepository {
 				return [];
 			}
 
-			fastify.log.info('✅ Msgs found');
+			fastify.log.info("✅ Msgs found");
 			return rows;
 		} catch (error) {
-			fastify.log.error('4- DB Error: ' + error);
+			fastify.log.error("4- DB Error: " + error);
 			throw error;
 		}
 	}
@@ -102,38 +92,42 @@ class NotifRepository {
 
 			return row;
 		} catch (error) {
-			fastify.log.error('5- DB Error: ' + error);
+			fastify.log.error("5- DB Error: " + error);
 			throw error;
 		}
 	}
 
-	async updateAllNotif(
+	async updateAllNotif(receiver_id: number, status: NOTIFICATION_STATUS): Promise<void> {
+		try {
+			const stmt = fastify.database.prepare(`
+				UPDATE messages SET status = ?
+				WHERE receiver_id = ? AND NOT (status = 'dismissed' AND ? = 'unread')
+			`);
+			stmt.run(status, receiver_id, status);
+		} catch (error) {
+			fastify.log.error("6- DB Error: " + error);
+			throw error;
+		}
+	}
+
+	async updateAllNotifOnType(
 		receiver_id: number,
 		status: NOTIFICATION_STATUS,
-		state?: NOTIFICATION_STATE,
-	): Promise<void> {
-		if (state === undefined) {
-			try {
-				const stmt = fastify.database.prepare(`
-					UPDATE messages SET status = ?
-					WHERE receiver_id = ? AND NOT (status = 'dismissed' AND ? = 'unread')
-					`);
-				stmt.run(status, receiver_id, status);
-			} catch (error) {
-				fastify.log.error('6- DB Error: ' + error);
-				throw error;
-			}
-		} else {
-			try {
-				const stmt = fastify.database.prepare(`
-					UPDATE messages SET status = ?, state = ?
-					WHERE receiver_id = ?
-					`);
-				stmt.run(status, state, receiver_id);
-			} catch (error) {
-				fastify.log.error('6- DB Error: ' + error);
-				throw error;
-			}
+		state: NOTIFICATION_STATE,
+		type: NOTIFICATION_TYPE,
+	) {
+		try {
+			const stmt = fastify.database.prepare(`
+				UPDATE messages SET status = ?, state = CASE
+						WHEN state = 'pending' THEN ?
+						ELSE state
+					END
+				WHERE receiver_id = ? AND type = ?
+			`);
+			stmt.run(status, state, receiver_id, type);
+		} catch (error) {
+			fastify.log.error("6- DB Error: " + error);
+			throw error;
 		}
 	}
 
@@ -149,7 +143,7 @@ class NotifRepository {
 			`);
 			stmt.run(receiver_id, state, status);
 		} catch (error) {
-			fastify.log.error('6- DB Error: ' + error);
+			fastify.log.error("6- DB Error: " + error);
 			throw error;
 		}
 	}
@@ -170,12 +164,12 @@ class NotifRepository {
 			const row = stmt.get(senderId, receiverId, type);
 
 			if (!row) {
-				throw new Error('No message found');
+				throw new Error("No message found");
 			}
 
 			return row;
 		} catch (error) {
-			fastify.log.error('DB ERROR: ' + error);
+			fastify.log.error("DB ERROR: " + error);
 			throw error;
 		}
 	}
@@ -189,12 +183,12 @@ class NotifRepository {
 			const row = stmt.get(actionUrl);
 
 			if (!row) {
-				throw new Error('No Message found');
+				throw new Error("No Message found");
 			}
 
 			return row;
 		} catch (error) {
-			fastify.log.error('DB ERROR: ' + error);
+			fastify.log.error("DB ERROR: " + error);
 			throw error;
 		}
 	}
@@ -211,7 +205,7 @@ class NotifRepository {
 				throw new Error(`DB - ${notificationId} NOT DELETED`);
 			}
 		} catch (error) {
-			fastify.log.error('DB ERROR: ' + error);
+			fastify.log.error("DB ERROR: " + error);
 			throw error;
 		}
 	}

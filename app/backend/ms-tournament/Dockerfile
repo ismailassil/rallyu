@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:lts-alpine3.22
 
 RUN mkdir -p /app/database/ && mkdir -p /app/src
 

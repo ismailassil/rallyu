@@ -1,9 +1,13 @@
-import { FastifyInstance } from 'fastify';
-import { Server, Socket } from 'socket.io';
-import { socketioOpts } from '../plugin/socketio/socketio.types';
-import { JWT_ACCESS_PAYLOAD } from '../types/jwt.types';
-import { MessageType } from '../types/chat.types';
-import { UPDATE_NOTIFICATION_DATA } from '../types/notification.types';
+import { FastifyInstance } from "fastify";
+import { Server, Socket } from "socket.io";
+import { socketioOpts } from "../plugin/socketio/socketio.types";
+import { JWT_ACCESS_PAYLOAD } from "../types/jwt.types";
+import { MessageType } from "../types/chat.types";
+import {
+	UPDATE_NOTIFICATION_DATA,
+	UPDATE_ON_TYPE_DATA,
+	UPDATE_ON_TYPE_PAYLOAD,
+} from "../types/notification.types";
 
 class SocketIOService {
 	private readonly io: Server;
@@ -17,54 +21,51 @@ class SocketIOService {
 		this.io = new Server(fastify.server, {
 			cors: {
 				origin: `http://localhost:${this.options.FRONT_PORT}`,
-				methods: ['GET', 'POST'],
+				methods: ["GET", "POST"],
 				credentials: true,
 			},
-			transports: ['polling'],
+			transports: ["polling"],
 		});
 
-		fastify.log.info('[SocketIO] Server is Running');
+		fastify.log.info("[SocketIO] Server is Running");
 
 		this.setupMiddleware();
 	}
 
 	public setupDecorators(): void {
-		this.fastify.decorate('io', this.io);
+		this.fastify.decorate("io", this.io);
 	}
 
 	public setupConnection(): void {
-		this.io.on('connection', async (socket: Socket) => {
+		this.io.on("connection", async (socket: Socket) => {
 			await this.handleConnection(socket);
 
-			socket.on('chat_send_msg', async (data: MessageType) => {
+			socket.on("chat_send_msg", async (data: MessageType) => {
 				this.handleChat(socket, data);
 			});
 
-			socket.on(
-				'notification_update_action',
-				async (data: UPDATE_NOTIFICATION_DATA) => {
-					this.fastify.log.info(data);
-					this.handleNotificationUpdate(socket, data);
-				},
-			);
+			socket.on("notification_update_action", async (data: UPDATE_NOTIFICATION_DATA) => {
+				this.handleNotificationUpdateAction(socket, data);
+			});
 
-			socket.on('disconnecting', async () => {
+			socket.on("notification_update_on_type", async (data: UPDATE_ON_TYPE_DATA) => {
+				this.handleNotificationUpdateOnType(socket, data);
+			});
+
+			socket.on("disconnecting", async () => {
 				await this.handleDisconnection(socket);
 			});
 		});
 	}
 
 	private handleChat(socket: Socket, data: MessageType) {
-		this.fastify.log.info('[CLIENT][CHAT] received msg = ');
+		this.fastify.log.info("[CLIENT][CHAT] RECEIVED MSG");
 		this.fastify.log.info(data);
-		this.fastify.js.publish('chat.send_msg', this.fastify.jsCodec.encode(data));
+		this.fastify.js.publish("chat.send_msg", this.fastify.jsCodec.encode(data));
 	}
-	
-	private handleNotificationUpdate(
-		socket: Socket,
-		data: UPDATE_NOTIFICATION_DATA,
-	) {
-		this.fastify.log.info('[CLIENT][NOTIF] received msg = ');
+
+	private handleNotificationUpdateAction(socket: Socket, data: UPDATE_NOTIFICATION_DATA) {
+		this.fastify.log.info("[CLIENT][NOTIF] RECEIVED MSG");
 		this.fastify.log.info(data);
 
 		const payload = {
@@ -72,17 +73,28 @@ class SocketIOService {
 			data: data,
 		};
 
-		this.fastify.js.publish(
-			'notification.update_action',
-			this.fastify.jsCodec.encode(payload),
-		);
+		this.fastify.js.publish("notification.update_action", this.fastify.jsCodec.encode(payload));
+	}
+
+	private handleNotificationUpdateOnType(socket: Socket, data: UPDATE_ON_TYPE_DATA) {
+		this.fastify.log.info("[CLIENT][NOTIF] RECEIVED MSG");
+		this.fastify.log.info(data);
+
+		const payload: UPDATE_ON_TYPE_PAYLOAD = {
+			userId: socket.data.userId,
+			data: {
+				type: data.type,
+				state: data.state,
+				status: data.status,
+			},
+		};
+
+		this.fastify.js.publish("notification.update_on_type", this.fastify.jsCodec.encode(payload));
 	}
 
 	private async handleConnection(socket: Socket) {
 		const userId: string = socket.data.userId;
-		this.fastify.log.info(
-			`[SocketIO] Client Connected: '${userId}:${socket.id}'`,
-		);
+		this.fastify.log.info(`[SocketIO] Client Connected: '${userId}:${socket.id}'`);
 
 		await socket.join(userId);
 	}
@@ -106,11 +118,9 @@ class SocketIOService {
 
 				next();
 			} catch (error) {
-				this.fastify.log.error(
-					'[SocketIO] Error: ' + (error as Error).message,
-				);
+				this.fastify.log.error("[SocketIO] Error: " + (error as Error).message);
 				socket.disconnect();
-				next(new Error('Unauthorized'));
+				next(new Error("Unauthorized"));
 			}
 		});
 	}

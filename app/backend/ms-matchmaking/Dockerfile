@@ -6,8 +6,8 @@ COPY package*.json ./
 
 RUN npm install
 
-# RUN npm install concurrently nodemon -g
+# RUN npm install concurrently nodemon
 
 COPY . .
 
-ENTRYPOINT [ "npm", "start" ]
+ENTRYPOINT [ "npm", "run", "start" ]

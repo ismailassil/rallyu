@@ -17,6 +17,24 @@ class RelationsService {
 		return allFriends;
 	}
 
+	async getAllBlocked(user_id: number) {
+		const allBlocked = await this.relationsRepository.findOutgoingBlocks(user_id);
+
+		return allBlocked;
+	}
+
+	async getAllIncomingFriendRequests(user_id: number) {
+		const allIncoming = await this.relationsRepository.findIncomingFriendRequests(user_id);
+
+		return allIncoming;
+	}
+
+	async getAllOutgoingFriendRequests(user_id: number) {
+		const allOutgoing = await this.relationsRepository.findOutgoingFriendRequests(user_id);
+
+		return allOutgoing;
+	}
+
 	async sendFriendRequest(sender_id: number, receiver_id: number) {
 		const targetExists = await this.userRepository.findById(receiver_id);
 		if (!targetExists)

@@ -144,8 +144,9 @@ export default function General() {
 				<SettingsCard
 					title="Personal Informations"
 					subtitle="Update your account profile information and email address"
-					onSubmit={handleSubmit}
 					isForm={true}
+					formSubmitLabel='Save Changes'
+					onSubmit={handleSubmit}
 				>
 					<div className="flex flex-col gap-8 px-18">
 						<ProfilePreview

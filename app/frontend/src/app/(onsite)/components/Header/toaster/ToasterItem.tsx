@@ -10,7 +10,7 @@ interface Props {
 }
 
 function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
-	const { image, senderUsername, type, senderId, id } = data;
+	const { image, senderUsername, type } = data;
 	const [progress, setProgress] = useState(100);
 	const router = useRouter();
 	const { handleRemove, handleAccept, handleDecline } = useNotification();
@@ -66,13 +66,13 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 				<div className="*:transition-color flex h-8 justify-between divide-x divide-white/20 border-t-1 border-t-white/20 text-sm *:cursor-pointer *:duration-400">
 					<button
 						className="hover:bg-main w-full"
-						onClick={() => handleAccept(type, senderId, true, id)}
+						onClick={() => handleAccept(data, true)}
 					>
 						Accept
 					</button>
 					<button
 						className="w-full hover:bg-red-600"
-						onClick={() => handleDecline(type, senderId, true, id)}
+						onClick={() => handleDecline(data, true)}
 					>
 						Decline
 					</button>

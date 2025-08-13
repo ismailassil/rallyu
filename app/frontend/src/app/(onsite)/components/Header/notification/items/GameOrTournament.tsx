@@ -5,13 +5,12 @@ import { XIcon } from "@phosphor-icons/react";
 import { NOTIFICATION_TYPE } from "../types/notifications.types";
 
 interface Props {
-	isValid: boolean;
 	type: NOTIFICATION_TYPE;
-	handleAccept:(type: NOTIFICATION_TYPE) => void
-	handleDecline:(type: NOTIFICATION_TYPE) => void
+	handleAccept: () => void;
+	handleDecline: () => void;
 }
 
-const GameOrTournament = ({handleAccept, handleDecline, isValid, type }: Props) => {
+const GameOrTournament = ({ handleAccept, handleDecline, type }: Props) => {
 	function getText(type: string) {
 		switch (type) {
 			case "game":
@@ -22,16 +21,12 @@ const GameOrTournament = ({handleAccept, handleDecline, isValid, type }: Props) 
 	}
 
 	return (
-		<>
-			{!isValid && (
-				<div className="ml-10 flex gap-2">
-					<FilledButton onClick={() => handleAccept(type)}>Join {getText(type)}</FilledButton>
-					<OutlineButton onClick={() => handleDecline(type)}>
-						<XIcon size={16} />
-					</OutlineButton>
-				</div>
-			)}
-		</>
+		<div className="ml-10 flex gap-2">
+			<FilledButton onClick={handleAccept}>Join {getText(type)}</FilledButton>
+			<OutlineButton onClick={handleDecline}>
+				<XIcon size={16} />
+			</OutlineButton>
+		</div>
 	);
 };
 

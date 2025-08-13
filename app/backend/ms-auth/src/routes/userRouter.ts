@@ -149,32 +149,19 @@ async function userRouter(fastify: FastifyInstance) {
 		preHandler: fastify.authenticate,
 		handler: relationsController.getAllFriends.bind(relationsController)
 	});
-	
-	// fastify.get('/me/blocked', {
-		// 	preHandler: fastify.authenticate,
-		// 	schema: relationsRequestSchema,
-		// 	handler: relationsController.unblockUser.bind(relationsController)
-		// });
-		
-		// fastify.get('/me/friends/requests/incoming', {
-			// 	preHandler: fastify.authenticate,
-			// 	schema: relationsRequestSchema,
-			// 	handler: relationsController.unblockUser.bind(relationsController)
-			// });
-			
-			// fastify.get('/me/friends/requests/outgoing', {
-				// 	preHandler: fastify.authenticate,
-				// 	schema: relationsRequestSchema,
-				// 	handler: relationsController.unblockUser.bind(relationsController)
-				// });
-				
-				
-				
-				
-				// fastify.delete('/relations', async () => {
-					// 	await relRepo.clean();
-					// });
-					
+	fastify.get('/blocked', {
+		preHandler: fastify.authenticate,
+		handler: relationsController.getAllBlocked.bind(relationsController)
+	});
+	fastify.get('/friends/requests/incoming', {
+		preHandler: fastify.authenticate,
+		handler: relationsController.getAllIncomingFriendRequests.bind(relationsController)
+	});
+	fastify.get('/friends/requests/outgoing', {
+		preHandler: fastify.authenticate,
+		handler: relationsController.getAllOutgoingFriendRequests.bind(relationsController)
+	});
+
 	// USER MANAGEMENT (admin or self-service)
 	// GET /users — List users (admin only)
 	// POST /users — Create user (admin creating users directly)

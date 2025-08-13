@@ -7,8 +7,8 @@ export interface NOTIFICATION_CONTEXT {
 	toastNotifications: TOAST_PAYLOAD[];
 	setToastNotifications: Dispatch<SetStateAction<TOAST_PAYLOAD[]>>;
 	handleRemove: (id: number) => void;
-	handleAccept: (type: NOTIFICATION_TYPE, senderId: number, isToast: boolean, notifId: number) => Promise<void>;
-	handleDecline: (type: NOTIFICATION_TYPE, senderId: number, isToast: boolean, notifId: number) => Promise<void>;
+	handleAccept: (data: USER_NOTIFICATION | TOAST_PAYLOAD , isToast: boolean) => Promise<void>;
+	handleDecline: (data: USER_NOTIFICATION | TOAST_PAYLOAD , isToast: boolean) => Promise<void>;
 	isLoading: boolean;
 	notifLength: number;
 	DEFAULT_TIME: number;
@@ -18,14 +18,18 @@ export interface NOTIFICATION_CONTEXT {
 /************************* UPDATE EVENT *************************/
 /************************************************************** */
 
-type NOTIFICATION_SCOPE = "all" | "single";
-
-export interface UPDATE_NOTIFICATION {
-	notificationId: number;
-	scope: NOTIFICATION_SCOPE;
-	status: NOTIFICATION_STATUS;
-	state: NOTIFICATION_STATE;
-}
+export type UPDATE_NOTIFICATION_DATA =
+	| {
+			updateAll: true;
+			status: NOTIFICATION_STATUS;
+			state: NOTIFICATION_STATE;
+	  }
+	| {
+			updateAll: false;
+			notificationId: number;
+			status: NOTIFICATION_STATUS;
+			state: NOTIFICATION_STATE;
+	  };
 
 /************************************************************** */
 /************************* NOTIFY EVENT *************************/

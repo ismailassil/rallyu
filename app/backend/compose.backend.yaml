@@ -48,6 +48,7 @@ services:
     restart: always
     volumes:
       - ./ms-auth/src/database/database.db:/app/src/database/database.db
+      - ./ms-auth/uploads/avatars/:/app/uploads/avatars/
     networks:
       - backend
     env_file:
@@ -83,16 +84,44 @@ services:
     env_file:
       - .env
 
-  ## Tournament Serivce
-  # ms-tournament:
-  #   build:
-  #     context: ms-tournament/
-  #     dockerfile: Dockerfile
-  #   image: rally/ms-tournament:v1.0
-  #   container_name: ms-tournament
-  #   restart: always
-  #   networks:
-  #     - backend
+  ms-tournament:
+    build:
+      context: ms-tournament/
+      dockerfile: Dockerfile
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    image: rallyu/ms-tournament:v1.0
+    container_name: ms-tournament
+    restart: always
+    networks:
+      - backend
+
+  ms-matchmaking:
+    build:
+      context: ms-matchmaking/
+      dockerfile: Dockerfile
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    image: rallyu/ms-matchmaking
+    container_name: ms-matchmaking
+    restart: always
+    networks:
+      - backend
+
+  ms-game:
+    build:
+      context: ms-game/
+      dockerfile: Dockerfile
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    image: rallyu/ms-game
+    container_name: ms-game
+    restart: always
+    networks:
+      - backend
 
   nats:
     image: nats:alpine3.22

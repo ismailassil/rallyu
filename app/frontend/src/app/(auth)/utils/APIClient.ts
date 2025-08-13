@@ -161,15 +161,15 @@ export class APIClient {
 		return res.data;
 	}
 	async getAllBlocked(){
-		const { data: res } = await this.client.get(`/users/friends`);
+		const { data: res } = await this.client.get(`/users/blocked`);
 		return res.data;
 	}
 	async getAllIncomingFriendRequests(){
-		const { data: res } = await this.client.get(`/users/friends`);
+		const { data: res } = await this.client.get(`/users/friends/requests/incoming`);
 		return res.data;
 	}
 	async getAllOutgoingFriendRequests(){
-		const { data: res } = await this.client.get(`/users/friends`);
+		const { data: res } = await this.client.get(`/users/friends/requests/outgoing`);
 		return res.data;
 	}
 

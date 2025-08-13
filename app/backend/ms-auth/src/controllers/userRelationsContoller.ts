@@ -24,6 +24,47 @@ class RelationsController {
 		}
 	}
 
+	async getAllBlocked(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+
+			const allBlocked = await this.relationsService.getAllBlocked(user_id!);
+
+			reply.status(201).send({ success: true, data: allBlocked });
+		} catch (err: any) {
+			console.error(err);
+			const { statusCode, errorCode } = err;
+			reply.status(statusCode).send({ success: false, error: errorCode });
+		}
+	}
+
+	async getAllIncomingFriendRequests(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+
+			const allIncoming = await this.relationsService.getAllIncomingFriendRequests(user_id!);
+
+			reply.status(201).send({ success: true, data: allIncoming });
+		} catch (err: any) {
+			console.error(err);
+			const { statusCode, errorCode } = err;
+			reply.status(statusCode).send({ success: false, error: errorCode });
+		}
+	}
+	async getAllOutgoingFriendRequests(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+
+			const allOutgoing = await this.relationsService.getAllOutgoingFriendRequests(user_id!);
+
+			reply.status(201).send({ success: true, data: allOutgoing });
+		} catch (err: any) {
+			console.error(err);
+			const { statusCode, errorCode } = err;
+			reply.status(statusCode).send({ success: false, error: errorCode });
+		}
+	}
+
 	async sendFriendRequest(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { user_id: target_id } = request.params as IRelationsRequest;

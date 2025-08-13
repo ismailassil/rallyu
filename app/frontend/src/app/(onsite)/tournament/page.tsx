@@ -1,12 +1,26 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Loading from "../game/components/Loading";
 import TournamentPanel from "./components/TournamentPanel";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Dashboard() {
 	const [start, setStart] = useState(false);
+	const { socket } = useAuth();
+
+	useEffect(() => {
+		// ** This is used to mark all the notification from tournament to dismissed
+		const payload = {
+			type: "tournament",
+			state: "finished",
+			status: "read",
+		};
+
+		socket.emit('notification_update_on_type', payload);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	return (
 		<AnimatePresence>

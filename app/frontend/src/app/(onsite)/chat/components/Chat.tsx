@@ -7,6 +7,7 @@ import Conversation from "./Conversation";
 import FriendsList from "./FriendsList";
 import { AnimatePresence, motion } from "framer-motion";
 import { useChat } from "../context/ChatContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 
 const Chat = ({ username }: { username?: string }) => {
@@ -14,6 +15,7 @@ const Chat = ({ username }: { username?: string }) => {
 	const { BOSS, api, showConversation, setShowConversation, isLoadingFriends, friends,
 		setMessages, setSelectedUser, selectedUser } = useChat();
 
+	const { socket } = useAuth();
 	const route = useRouter();
 
 
@@ -31,6 +33,15 @@ const Chat = ({ username }: { username?: string }) => {
 
 	useEffect(() => {
 		if (!BOSS?.id) return;
+
+		// ** This is used to mark all the notification from chat to dismissed
+		const payload = {
+			type: "chat",
+			state: "finished",
+			status: "dismissed",
+		};
+
+		socket.emit('notification_update_on_type', payload);
 
 		api.instance.get('/chat/history')
 			.then((response: any) => {

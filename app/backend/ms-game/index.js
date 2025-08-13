@@ -22,7 +22,7 @@ fastify.register(require('@fastify/jwt'), {
 });
 fastify.register(game, { prefix: '/game'})
 
-fastify.listen({ port: 3001, host: '0.0.0.0' }, (err) => {
+fastify.listen({ port: 5010, host: '0.0.0.0' }, (err) => {
 	if (err) {
 		console.log(err)
 		process.exit(1)
