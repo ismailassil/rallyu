@@ -89,7 +89,7 @@ class SocketIOService {
 			},
 		};
 
-		this.fastify.js.publish("notification.update_action", this.fastify.jsCodec.encode(payload));
+		this.fastify.js.publish("notification.update_on_type", this.fastify.jsCodec.encode(payload));
 	}
 
 	private async handleConnection(socket: Socket) {

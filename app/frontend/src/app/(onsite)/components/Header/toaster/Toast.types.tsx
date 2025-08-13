@@ -50,6 +50,6 @@ export type TOAST_PAYLOAD = {
 	senderUsername: string;
 	senderId: number;
 	type: NOTIFICATION_TYPE;
-	action_url: string;
+	actionUrl: string;
 	state: NOTIFICATION_STATE;
 };

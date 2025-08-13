@@ -148,6 +148,8 @@ class NotifSerives {
 
 	/**
 	 * Updates a user notification status.
+	 * 
+	 * Used by microservices
 	 *
 	 * @param payload The notification content and metadata. Should match the `UPDATE_STATUS_PAYLOAD` type.
 	 *

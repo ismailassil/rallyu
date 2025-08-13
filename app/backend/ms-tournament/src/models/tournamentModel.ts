@@ -1,29 +1,6 @@
 import { FastifyInstance } from "fastify";
-import app from "../app";
 import sqlite3 from "sqlite3";
-import { chownSync } from "fs";
-import { Codec, JetStreamClient, NatsConnection } from "nats";
-
-interface TournamentSchema {
-  id: number;
-  title: string;
-  host_id: number;
-  mode: string;
-  contenders_size: number;
-  contenders_joined: number;
-  state?: string;
-  access: string;
-  start_date: string;
-}
-
-declare module "fastify" {
-  interface FastifyInstance {
-    tournamentModel: TournamentModel;
-	js: JetStreamClient,
-	nc: NatsConnection,
-	jc: Codec<unknown>
-  }
-}
+import { notifcationTournamentStart, NOTIFY_USER_PAYLOAD, TournamentSchema } from "../types/tournament";
 
 class TournamentModel {
   private modelName = "Tournaments";
@@ -104,20 +81,21 @@ class TournamentModel {
 			contenders_size: 4,
 			contenders_joined: 0,
 			host_id,
+			notified: 0,
 		};
 
 		return data;
 	}
 
-	async tournamentGet(id: number) {
-		const data = await new Promise(
+	async tournamentGet(id: number): Promise<TournamentSchema> {
+		const data: TournamentSchema = await new Promise<TournamentSchema>(
 			(resolve, reject) => {
 				this.DB.get(
 					`SELECT * FROM ${this.modelName} WHERE id=?`,
 					[id],
-					(err, rows) => {
-					if (err) reject(err);
-					else resolve(rows);
+					(err: unknown, row: TournamentSchema) => {
+						if (err) reject(err);
+						else resolve(row);
 					}
 				);
 			}
@@ -126,12 +104,12 @@ class TournamentModel {
 	}
 
 	async tournamentGetAll(limit: number) {
-		const data: TournamentSchema = await new Promise<TournamentSchema>(
+		const data: TournamentSchema[] = await new Promise<TournamentSchema[]>(
 			(resolve, reject) => {
 			this.DB.all(
 				`SELECT * FROM ${this.modelName} WHERE state='pending' LIMIT ?`,
 				[limit],
-				(err, rows: TournamentSchema) => {
+				(err, rows: TournamentSchema[]) => {
 					if (err) reject(err);
 					else resolve(rows);
 				}
@@ -157,69 +135,47 @@ class TournamentModel {
 
 	startTournaments() {
 		setInterval(async () => {
-			console.log("============");
 			const now = (new Date()).toString();
-			// const data = await new Promise((resolve, reject) => {
-			// 	this.DB.run(`UPDATE ${this.modelName} SET state='ongoing' WHERE start_date<='${now}' AND state='pending'`, 
-			// 		(err) => err ? reject(err) : resolve(null));
-			// });
-			// this.DB.run("UPDATE Tournaments SET start_date=?", [now])
+
+			// Change state of tournaments to ongoing
 			this.DB.run(`UPDATE ${this.modelName} SET state='ongoing' WHERE start_date<='${now}' AND state='pending'`,
 				(err) => {
 					console.log(err);
 				}
 			);
-			// console.log("Interval for tournament state");
 			
 			// NOTIFY USERS THAT THE TOURNAMENT HAS STARTED
-			console.log(now);
-			const tours: TournamentSchema[] = await new Promise((resolve, reject) => {
-				this.DB.all(`SELECT * FROM ${this.modelName} WHERE state='ongoing' AND notified=0`, (err, rows: TournamentSchema[]) => {
-					if (err) reject(err);
-					else resolve(rows);
+			const tournaments: notifcationTournamentStart[] =
+				await new Promise<notifcationTournamentStart[]>((resolve, reject) => {
+					this.DB.all(`SELECT t.id, t.host_id, m.player_1, m.player_2 
+						FROM TournamentMatches AS m INNER JOIN ${this.modelName} AS t
+						ON m.tournament_id=t.id
+						WHERE t.state='ongoing' AND t.notified=0 AND m.stage='semifinal'`,
+						(err, rows: notifcationTournamentStart[]) => {
+							if (err) reject(err);
+							else resolve(rows);
+						}
+					);
 				});
-			});
 
-			// console.log(tours);
+			for (const tournament of tournaments) {
+				this.app.js.publish("notification.dispatch", this.app.jsonCodec.encode({
+					senderId: tournament.host_id,
+					receiverId: tournament.player_1,
+					type: "tournament",
+					actionUrl: `/tournament/stage/${tournament.id}`
+				} as NOTIFY_USER_PAYLOAD));
 
-			for (const tour of tours) {
-				const matches = await new Promise((resolve, reject) => {
-					this.DB.all(`SELECT * FROM TournamentMatches WHERE tournament_id=?`,
-						[tour.id],
-						(err, rows) => {
-						if (err) reject(err);
-						else resolve(rows);
-					});
-				});
-				for (let i = 0; i < matches.length - 1; i++) {
+				this.app.js.publish("notification.dispatch", this.app.jsonCodec.encode({
+					senderId: tournament.host_id,
+					receiverId: tournament.player_2,
+					type: "tournament",
+					actionUrl: `/tournament/stage/${tournament.id}`
+				} as NOTIFY_USER_PAYLOAD));
 
-					// ! Subject notification.dispatch
-
-					/* *** export interface NOTIFY_USER_PAYLOAD {
-					/  senderId: number;
-					/ 	receiverId: number;
-					/ 	type: NOTIFICATION_TYPE;
-					/ 	message?: string;
-					/ 	actionUrl?: string;
-					/ }*/
-					console.log(matches[i]);
-					this.app.js.publish("notification.dispatch", this.app.jc.encode({
-						senderId: tour.host_id,
-						receiverId: matches[i].player_1,
-						type: "tournament",
-						actionUrl: `/tournament/stage/${tour.id}`
-					}));
-					this.app.js.publish("notification.dispatch", this.app.jc.encode({
-						senderId: tour.host_id,
-						receiverId: matches[i].player_2,
-						type: "tournament",
-						actionUrl: `/tournament/stage/${tour.id}`
-					}));
-				}
-				this.DB.run(`UPDATE ${this.modelName} SET notified=1 WHERE id=?`, [tour.id]);
+				this.DB.run(`UPDATE ${this.modelName} SET notified=1 WHERE id=?`, [tournament.id]);
 			}
-			console.log("============");
-		}, 1000 * 5);
+		}, 1000 * 10);
 	}
 }
 
@@ -227,8 +183,6 @@ const initTournamentModel = async function (app: FastifyInstance) {
 	try {
 		const tournamentModel = new TournamentModel(app); 
 		await tournamentModel.init();
-		// await tournamentModel.tournamentGet();
-		// await tournamentModel.tournamentAdd();
 
 		app.tournamentModel = tournamentModel;
 	} catch (err) {
@@ -236,4 +190,4 @@ const initTournamentModel = async function (app: FastifyInstance) {
 	}
 };
 
-export { TournamentSchema, initTournamentModel };
+export { TournamentModel, initTournamentModel };
