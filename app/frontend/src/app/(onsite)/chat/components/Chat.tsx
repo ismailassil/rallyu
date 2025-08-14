@@ -74,7 +74,7 @@ const Chat = ({ username }: { username?: string }) => {
 
 					{/* ---------------------------------------thinking image--------------------------------------- */}
 
-					<div className={!showConversation ? `hidden md:flex md:w-[65%] border-2 h-full border-white/30 rounded-lg bg-white/4` : ` hidden`}>
+					<div className={!showConversation ? `hidden md:flex md:w-[63%] border-2 h-full border-white/30 rounded-lg bg-white/4` : ` hidden`}>
 						<div className="flex size-full flex-col items-center justify-center">
 							<Image
 								width={300}

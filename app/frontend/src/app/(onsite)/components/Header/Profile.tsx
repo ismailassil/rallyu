@@ -13,22 +13,18 @@ export default function Profile() {
 	const router = useRouter();
 
 	async function handleLogout() {
-		await logout(); 
+		await logout();
 		router.replace("/login");
 	}
 
 	return (
 		<div className="relative" ref={profileRef}>
 			<button
-				className={`bg-card border-br-card relative ml-4 flex h-[55px]
-			w-[55px] items-center justify-center rounded-full border-2 hover:cursor-pointer
-			${
-				isProfile
-					? "bg-hbg border-hbbg ring-bbg 			scale-101 ring-4"
-					: "hover:bg-hbg hover:border-hbbg hover:ring-bbg 			hover:scale-101 hover:ring-4"
-			} transition-transform duration-200
-			
-			`}
+				className={`bg-card border-br-card relative ml-4 flex h-[55px] w-[55px] items-center justify-center rounded-full border-2 hover:cursor-pointer ${
+					isProfile
+						? "bg-hbg border-hbbg ring-bbg scale-101 ring-4"
+						: "hover:bg-hbg hover:border-hbbg hover:ring-bbg hover:scale-101 hover:ring-4"
+				} transition-transform duration-200`}
 				onClick={() => {
 					setIsNotif(false);
 					setIsSearch(false);
@@ -42,10 +38,7 @@ export default function Profile() {
 					height={30}
 					className={`${isProfile && "animate-pulse"}`}
 				/>
-				<div
-					className="absolute bottom-[-3] left-9 flex 
-			h-[20px] w-[20px] items-center justify-center rounded-full bg-white bg-opacity-75"
-				>
+				<div className="bg-opacity-75 absolute bottom-[-3] left-9 flex h-[20px] w-[20px] items-center justify-center rounded-full bg-white">
 					<Image
 						src="/icons/down-arrow.svg"
 						alt="Arrow down Icon"
@@ -66,7 +59,7 @@ export default function Profile() {
 							stiffness: 60,
 							duration: 0.1,
 						}}
-						className="top-18 w-50 divide-bbg bg-card border-br-card backdrop-blur-xs absolute right-0 z-10 origin-top-right divide-y rounded-lg border-2"
+						className="divide-bbg bg-card border-br-card absolute top-18 right-0 z-10 w-50 origin-top-right divide-y rounded-lg border-2 backdrop-blur-3xl"
 					>
 						<div
 							onClick={(e) => {
@@ -76,7 +69,12 @@ export default function Profile() {
 							}}
 							className="hover:bg-hbbg mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer"
 						>
-							<Image src="/icons/profile-btn.svg" alt="Profile Icon" width={30} height={30} />
+							<Image
+								src="/icons/profile-btn.svg"
+								alt="Profile Icon"
+								width={30}
+								height={30}
+							/>
 							<span className="ml-5">Profile</span>
 						</div>
 						<div
@@ -87,13 +85,24 @@ export default function Profile() {
 								router.push("/settings");
 							}}
 						>
-							<Image src="/icons/setting-btn.svg" alt="Settings Icon" width={30} height={30} />
+							<Image
+								src="/icons/setting-btn.svg"
+								alt="Settings Icon"
+								width={30}
+								height={30}
+							/>
 							<span className="ml-5">Settings</span>
 						</div>
-						<div className="hover:bg-hbbg mb-2 flex w-full items-center px-7 py-3 hover:cursor-pointer"
+						<div
+							className="hover:bg-hbbg mb-2 flex w-full items-center px-7 py-3 hover:cursor-pointer"
 							onClick={handleLogout}
 						>
-							<Image src="/icons/logout-btn.svg" alt="Logout Icon" width={30} height={30} />
+							<Image
+								src="/icons/logout-btn.svg"
+								alt="Logout Icon"
+								width={30}
+								height={30}
+							/>
 							<p className="ml-5">Logout</p>
 						</div>
 					</motion.div>
