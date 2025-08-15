@@ -37,7 +37,11 @@ function AuthAppSetup({ onSubmit, onGoBack} : { onSubmit: () => void, onGoBack: 
 		secret_qrcode_url: null
 	});
 
+	const didFetchRef = React.useRef(false);
+
 	useEffect(() => {
+		// if (didFetchRef.current) return;
+		// didFetchRef.current = true;
 		sideEffect();
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
@@ -215,7 +219,7 @@ function PhoneSetup({ onSubmit, onGoBack } : { onSubmit: (contact: string) => vo
 
 export default function SetupInit({ selectedMethod, onSubmit, onGoBack } : SetupInitProps) {
 	switch (selectedMethod) {
-		case 'auth_app':
+		case 'totp':
 			return <AuthAppSetup onSubmit={onSubmit as () => void} onGoBack={onGoBack} />;
 		case 'email':
 			return <EmailSetup onSubmit={onSubmit as (contact: string) => void} onGoBack={onGoBack} />;

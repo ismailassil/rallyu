@@ -16,7 +16,7 @@ const MAX_CONCURRENT_SESSIONS = 4;
 const MAX_SESSION_FINGERPRINT_CHANGE = 1;
 const BCRYPT_TIMING_HASH = bcrypt.hashSync('xuotjds;glsgf34%(#1fjkfdsfdsklnkcldsaf', 12);
 
-const authenticationConfig: AuthConfig = {
+export const authenticationConfig: AuthConfig = {
 	bcryptRounds: DEFAULT_BCRYPT_ROUNDS,
 	bcryptDummyHash: BCRYPT_TIMING_HASH,
 	accessTokenExpiry: ACCESS_TOKEN_EXPIRY,
@@ -63,8 +63,28 @@ class AuthController {
 			const { username, password } = request.body as ILoginRequest;
 			const userAgent = request.headers["user-agent"] || '';
 			
-			const { user, refreshToken, accessToken } 
+			const { user, refreshToken, accessToken, enabled_methods, session_id } 
 				= await this.authService.LogIn(username, password, userAgent, request.ip);
+			
+			const _2FARequired = enabled_methods && enabled_methods.length > 0;
+
+			if (_2FARequired) {
+				const { status, body } = AuthResponseFactory.getSuccessResponse(206, { session_id, enabled_methods });
+				reply.code(status).send(body);
+			}
+			
+			// const enabledMethods = await this.twoFactorService.getEnabledMethods()
+			
+			// const _2faEnabled = true;
+			// const enabledMethods = ['totp', 'sms'];
+
+			// if (_2faEnabled) {
+			// 	const { status, body } = AuthResponseFactory.getSuccessResponse(200, {
+			// 		session_token: '123456789xyz',
+			// 		enabled_methods: enabledMethods,
+			// 	});
+			// 	return reply.code(status).send(body);
+			// }
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
 

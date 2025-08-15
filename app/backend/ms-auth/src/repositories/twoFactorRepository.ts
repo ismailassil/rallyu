@@ -112,6 +112,7 @@ class TwoFactorRepository {
 				`INSERT INTO pending_2fa(method, totp_temp_secret, expires_at, user_id) VALUES (?, ?, ?, ?)`,
 				[method, totp_temp_code, expires_at, user_id]
 			);
+			console.log('WE JUST CREATED A NEW PENDING TOTP METHOD: ', newPending2FAMethod);
 			return newPending2FAMethod.lastID;
 		} catch (err) {
 			console.error('SQLite Error: ', err);
@@ -224,8 +225,9 @@ class TwoFactorRepository {
 
 	async deleteEnabled2FAByType(type: string, user_id: number) {
 		try {
+			console.log(`SELECT * FROM _2fa_methods WHERE user_id = ${user_id} AND method = ${type}`);
 			const runResult = await db.run(
-				`DELETE FROM _2fa_methods WHERE user_id = ? method = ?`,
+				`DELETE FROM _2fa_methods WHERE user_id = ? AND method = ?`,
 				[user_id, type]
 			);
 			return runResult.changes > 0;
