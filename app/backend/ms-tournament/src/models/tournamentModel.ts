@@ -135,14 +135,25 @@ class TournamentModel {
 
 	startTournaments() {
 		setInterval(async () => {
-			const now = (new Date()).toString();
+			const now = (new Date());
+
+			const strDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+							.toString()
+							.padStart(2, "0")}-${now.getDate()
+							.toString()
+							.padStart(2, "0")}T${now.getHours()
+							.toString()
+							.padStart(2, "0")}:${now.getMinutes()
+							.toString()
+							.padStart(2, "0")}`;
 
 			// Change state of tournaments to ongoing
-			this.DB.run(`UPDATE ${this.modelName} SET state='ongoing' WHERE start_date<='${now}' AND state='pending'`,
+			this.DB.run(`UPDATE ${this.modelName} SET state='ongoing' WHERE start_date<='${strDate}' AND state='pending'`,
 				(err) => {
 					console.log(err);
 				}
 			);
+			
 			
 			// NOTIFY USERS THAT THE TOURNAMENT HAS STARTED
 			const tournaments: notifcationTournamentStart[] =
