@@ -58,6 +58,17 @@ async function authRouter(fastify: FastifyInstance) {
 
 
 	/*----------------------------- Multi-Factor Authentication -----------------------------*/
+	fastify.get('/mfa/enabled', {
+		// schema: auth2FASetupSchema,
+		preHandler: fastify.authenticate,
+		handler: mfaController.getEnabledMethodsEndpoint.bind(mfaController)
+	});
+	fastify.delete('/mfa/enabled/:method', {
+		// schema: auth2FASetupSchema,
+		preHandler: fastify.authenticate,
+		handler: mfaController.disableMethodEndpoint.bind(mfaController)
+	});
+
 	fastify.post('/mfa/totp/setup/init', {
 		// schema: auth2FASetupSchema,
 		preHandler: fastify.authenticate,

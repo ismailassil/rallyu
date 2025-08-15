@@ -18,7 +18,7 @@ const MIGRATIONS = [
 				username TEXT UNIQUE NOT NULL,
 				password TEXT,
 				bio TEXT DEFAULT 'DFK',
-				avatar_url TEXT DEFAULT 'https://pbs.twimg.com/profile_images/1300555471468851202/xtUnFLEm_200x200.jpg',
+				avatar_path TEXT DEFAULT '/avatars/default.png',
 
 				-- EXTRA
 				auth_provider TEXT DEFAULT 'local',

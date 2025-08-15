@@ -137,6 +137,16 @@ class TwoFactorService {
 		return true;
 	}
 
+	public async getEnabledMethods(user_id: number) {
+		const enabledMethods = await this.twoFactorRepository.findEnabled2FAMethods(user_id);
+
+		return enabledMethods;
+	}
+
+	public async disableEnabledMethod(user_id: number, method: string) {
+		await this.twoFactorRepository.deleteEnabled2FAByType(method, user_id);
+	}
+
 	private generateTOTPSecret() : { base32: string, otpauth_url: string } {
 		const temp_secret = speakeasy.generateSecret();
 

@@ -9,11 +9,45 @@ class MFAController {
 	constructor() {
 		this.twoFactorService = new TwoFactorService();
 	}
+	
+	async getEnabledMethodsEndpoint(request: FastifyRequest, reply: FastifyReply) {
+		const user_id = request.user?.sub;
+		
+		try {
+			const enabledMethods = await this.twoFactorService.getEnabledMethods(user_id!);
+			
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, enabledMethods);
+			
+			reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+			
+			reply.code(status).send(body);
+		}
+	}
+
+	async disableMethodEndpoint(request: FastifyRequest, reply: FastifyReply) {
+		const user_id = request.user?.sub;
+		const { method } = request.params as { method: string };
+		
+		try {
+			await this.twoFactorService.disableEnabledMethod(user_id!, method);
+			
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+			
+			reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+			
+			reply.code(status).send(body);
+		}
+	}
 
 	/*---------------------------------------- TOTP (AUTH APP) ----------------------------------------*/
 	
 	async TOTPSetupInitEndpoint(request: FastifyRequest, reply: FastifyReply) {
 		const user_id = request.user?.sub;
+		console.log('CALLING TOTPSetupInitEndpoint CONTROLLER');
 		
 		try {
 			const secrets = await this.twoFactorService.setupTOTP(user_id!);
