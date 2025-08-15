@@ -184,7 +184,24 @@ const MIGRATIONS = [
 				FOREIGN KEY (player_away_id) REFERENCES users(id)   -- ON DELETE CASCADE?
 			)
 		`
-	}
+	},
+	{
+		id: 10,
+		name: 'create-pending-2fa-login-table',
+		sql: `
+			CREATE TABLE IF NOT EXISTS pending_2fa_login (
+				id INTEGER PRIMARY KEY AUTOINCREMENT, -- 2FA ID
+				
+				method TEXT, -- email, sms, totp,
+				code TEXT,
+
+				expires_at DATETIME,
+
+				user_id INTEGER NOT NULL,
+				FOREIGN KEY (user_id) REFERENCES users(id)
+			)
+		`
+	},
 ];
 
 // {

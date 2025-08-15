@@ -9,6 +9,48 @@ class MFAController {
 	constructor() {
 		this.twoFactorService = new TwoFactorService();
 	}
+
+	async Send2FALoginCode(request: FastifyRequest, reply: FastifyReply) {
+		const { session_id, method } = request.body as { session_id: number, method: string };
+
+		try {
+			await this.twoFactorService.send2FALoginCode(method, session_id);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+			
+			reply.code(status).send(body);
+		}
+	}
+
+	async Verify2FALogin(request: FastifyRequest, reply: FastifyReply) {
+		// const user_id = request.user?.sub;
+		const { session_id, method, code } = request.body as { session_id: number, method: string, code: string };
+		
+		try {
+			const { user, refreshToken, accessToken } = 
+				await this.twoFactorService.verify2FALoginCode(method, session_id, code);
+			
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
+
+			reply.code(status).setCookie(
+				'refreshToken', refreshToken, {
+					path: '/',
+					httpOnly: true,
+					secure: false,
+					sameSite: 'lax'
+				}
+			).send(body);
+			
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+			
+			reply.code(status).send(body);
+		}
+	}
 	
 	async getEnabledMethodsEndpoint(request: FastifyRequest, reply: FastifyReply) {
 		const user_id = request.user?.sub;

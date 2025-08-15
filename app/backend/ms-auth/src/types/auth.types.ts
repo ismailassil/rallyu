@@ -118,6 +118,13 @@ export class InternalServerError extends AuthError {
 	// RBAC
 
 // 2FA
+// export class _2FARequired extends AuthError {
+// 	constructor(method: string, message: string = '2FA is required', details: any = {}) {
+// 		message = `2FA via ${method} not found`;
+// 		super(message, 404, `AUTH_2FA_${method.toUpperCase()}_NOT_FOUND`, details);
+// 	}
+// }
+
 export class _2FANotFound extends AuthError {
 	constructor(method: string, message: string = '2FA not found', details: any = {}) {
 		message = `2FA via ${method} not found`;
