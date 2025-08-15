@@ -10,7 +10,7 @@ async function dbConnector(fastify, options) {
 			senderId INTEGER NOT NULL,
 			receiverId INTEGER NOT NULL,
 			text TEXT NOT NULL,
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+			created_at DATETIME DEFAULT (datetime('now', 'subsec'))
 		)
 		`);
 		// text VAR(300) NOT NULL,

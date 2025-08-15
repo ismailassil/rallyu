@@ -390,3 +390,15 @@ input[type='number']::-webkit-inner-spin-button {
 	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 	backdrop-filter: blur(1000px);
 }
+
+@keyframes peek {
+  50% {
+    transform: translateY(-22px) rotate(3deg) scale(1.1);
+    color: #6a45ed;
+  }
+}
+
+.loading-chat span {
+  animation: peek 1s both infinite;
+  animation-delay: var(--d);
+}

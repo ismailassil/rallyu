@@ -1,15 +1,19 @@
 "use client";
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { LoggedUser, MessageType } from '../types/chat.types';
+import { LoggedUser } from '../types/chat.types';
 import { useChat } from '../context/ChatContext';
 import moment from 'moment';
+
 
 const FriendsList = () => {
 
 	const [prefix, setPrefix] = useState('');
 	const [filteredSuggestions, setFilteredSuggestions] = useState<LoggedUser[]>([]);
 	const { messages, BOSS, setShowConversation, friends, setSelectedUser, selectedUser } = useChat();
+
+	const [displayUsers, setDisplayUsers] = useState<LoggedUser[] | null>(null);
+	const hasFriends = displayUsers?.length! > 0;
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const input = event.target.value;
@@ -18,18 +22,35 @@ const FriendsList = () => {
 		setFilteredSuggestions(filtred)
 	}
 
+
 	const getLastMessage = (userId: number) => {
-		const userMessages = messages.filter(
-			(msg: MessageType) => (msg.senderId === userId && msg.receiverId === BOSS?.id) || (msg.senderId === BOSS?.id && msg.receiverId === userId));
-		if (!userMessages.length)
-			return null;
-		return userMessages.sort(
-			(a, b) => Number(new Date(b.created_at)) - Number(new Date(a.created_at))
-		)[0];
+		const userMessages = messages.filter(msg =>
+			(msg.senderId === userId && msg.receiverId === BOSS?.id) ||
+			(msg.senderId === BOSS?.id && msg.receiverId === userId)
+		);
+
+		if (!userMessages.length) return null;
+		return userMessages.reduce((latest, current) =>
+			current.created_at > latest.created_at ? current : latest
+		);
 	};
 
-	const displayUsers = prefix ? filteredSuggestions : (friends || []);
-	const hasFriends = displayUsers?.length > 0;
+	useEffect(() => {
+		const baseUsers = prefix ? filteredSuggestions : (friends || []);
+
+		const sorted = [...baseUsers].sort((a, b) => {
+			const lastA = getLastMessage(a.id);
+			const lastB = getLastMessage(b.id);
+
+			if (!lastA) return 1;
+			if (!lastB) return -1;
+
+			return lastB.created_at.localeCompare(lastA.created_at);
+		});
+
+		setDisplayUsers(sorted);
+	}, [prefix, filteredSuggestions, friends, messages]);
+
 
 	const setDate = (msg: string): string => {
 
@@ -67,15 +88,15 @@ const FriendsList = () => {
 			<div className="overflow-y-auto flex-1 custom-scrollbar">
 				{hasFriends ? (
 					<ul>
-						{displayUsers.map((user) => {
+						{displayUsers?.map((user) => {
 							const lastMessage = getLastMessage(user.id);
 							return (
-
 								< li key={user?.id} onClick={() => {
 									setSelectedUser(user)
 									setFilteredSuggestions([])
 									setPrefix("")
 									setShowConversation(true)
+									// setIsSeen(true)
 									window.history.pushState(null, "", `/chat/${user?.username}`) // ====> read more about this
 								}}>
 									<div className={`flex gap-4 hover:cursor-pointer hover:bg-white/5 hover:rounded-lg p-2 ${selectedUser?.id === user?.id ? 'bg-white/15 rounded-lg' : 'bg-white/0'} w-full`}>
@@ -99,6 +120,7 @@ const FriendsList = () => {
 													{lastMessage?.text || 'No messages yet'}
 												</div>
 												<div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />
+												{/* {isSeen && <div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />} */}
 											</div>
 										</div>
 									</div>
