@@ -15,7 +15,7 @@ export default function MFASetup() {
 			case 1:
 				return (
 					<MethodSelection 
-						onSubmit={actions.handleMethodSelect} 
+						onSelect={actions.handleMethodSelect} 
 					/>
 				);
 			case 2:

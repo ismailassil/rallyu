@@ -58,6 +58,28 @@ async function authRouter(fastify: FastifyInstance) {
 
 
 	/*----------------------------- Multi-Factor Authentication -----------------------------*/
+	fastify.post('/mfa/send-code', {
+		// schema: auth2FASetupSchema,
+		// preHandler: fastify.authenticate,
+		handler: mfaController.Send2FALoginCode.bind(mfaController)
+	});
+	fastify.post('/mfa/login', {
+		// schema: auth2FASetupSchema,
+		// preHandler: fastify.authenticate,
+		handler: mfaController.Verify2FALogin.bind(mfaController)
+	});
+
+	fastify.get('/mfa/enabled', {
+		// schema: auth2FASetupSchema,
+		preHandler: fastify.authenticate,
+		handler: mfaController.getEnabledMethodsEndpoint.bind(mfaController)
+	});
+	fastify.delete('/mfa/enabled/:method', {
+		// schema: auth2FASetupSchema,
+		preHandler: fastify.authenticate,
+		handler: mfaController.disableMethodEndpoint.bind(mfaController)
+	});
+
 	fastify.post('/mfa/totp/setup/init', {
 		// schema: auth2FASetupSchema,
 		preHandler: fastify.authenticate,
@@ -146,27 +168,27 @@ async function authRouter(fastify: FastifyInstance) {
 	// EMAIL VERIFICATION (optional)
 	// POST /auth/verify-email — Trigger email verification
 	// GET /auth/verify-email/:token — Confirm email with token
-	fastify.get('/db', async () => {
-		const getResult = await db.get(`SELECT * FROM users WHERE username = ?`, ['xezzuz']);
-		const getResult_2 = await db.get(`SELECT * FROM users WHERE username = ?`, ['doesntexist']);
+	// fastify.get('/db', async () => {
+	// 	const getResult = await db.get(`SELECT * FROM users WHERE username = ?`, ['xezzuz']);
+	// 	const getResult_2 = await db.get(`SELECT * FROM users WHERE username = ?`, ['doesntexist']);
 
-		const all_1 = await db.all(`SELECT * FROM users WHERE username = ?`, ['xezzuz']);
-		const all_2 = await db.all(`SELECT * FROM users WHERE username = ?`, ['doesntexist']);
-		const all_3 = await db.all(`SELECT * FROM users`);
+	// 	const all_1 = await db.all(`SELECT * FROM users WHERE username = ?`, ['xezzuz']);
+	// 	const all_2 = await db.all(`SELECT * FROM users WHERE username = ?`, ['doesntexist']);
+	// 	const all_3 = await db.all(`SELECT * FROM users`);
 
-		console.log('getting something that exists: ', getResult);
-		console.log('getting something that doesnt exists: ', getResult_2);
+	// 	console.log('getting something that exists: ', getResult);
+	// 	console.log('getting something that doesnt exists: ', getResult_2);
 
-		console.log('getting all that exists (one match): ', all_1);
-		console.log('getting all that doesnt exists (no match): ', all_2);
-		console.log('getting all that exists (multiple matches): ', all_3);
-	});
+	// 	console.log('getting all that exists (one match): ', all_1);
+	// 	console.log('getting all that doesnt exists (no match): ', all_2);
+	// 	console.log('getting all that exists (multiple matches): ', all_3);
+	// });
 
-	fastify.get('/run-sql', async () => {
-		// await db.run(`DROP TABLE matches`);
-		const result = await db.run(`DELETE FROM pending_2fa`);
-		console.log(result);
-	});
+	// fastify.get('/run-sql', async () => {
+	// 	// await db.run(`DROP TABLE matches`);
+	// 	const result = await db.run(`DELETE FROM pending_2fa`);
+	// 	console.log(result);
+	// });
 }
 
 export default authRouter;

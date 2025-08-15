@@ -256,6 +256,16 @@ export class APIClient {
 
 	/*-------------------------------------- 2FA --------------------------------------*/
 
+	async mfaEnabledMethods() {
+		const { data: res } = await this.client.get('/auth/mfa/enabled');
+		return res.data;
+	}
+	
+	async mfaDisableMethod(method: string) {
+		const { data: res } = await this.client.delete(`/auth/mfa/enabled/${method}`);
+		return res.data;
+	}
+
 	async mfaAuthAppSetupInit() {
 		const { data: res } = await this.client.post('/auth/mfa/totp/setup/init');
 		return res.data;

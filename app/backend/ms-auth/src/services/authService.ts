@@ -10,6 +10,7 @@ import { UAParser } from 'ua-parser-js';
 import axios from "axios";
 import 'dotenv/config';
 import { z } from 'zod';
+import TwoFactorService from "./twoFactorService";
 
 // TODO
 	// VERIFY THE EXISTENCE OF ALL THOSE ENV VARS
@@ -45,12 +46,14 @@ class AuthService {
 	private authUtils: AuthUtils;
 	private authConfig: AuthConfig;
 	private sessionManager: SessionManager;
-
+	private twoFactorService: TwoFactorService;
+	
 	constructor(config: AuthConfig) {
 		this.authConfig = config;
 		this.userRepository = new UserRepository();
 		this.sessionManager = new SessionManager(config);
 		this.authUtils = new AuthUtils();
+		this.twoFactorService = new TwoFactorService();
 	}
 
 	async SignUp(first_name: string, last_name: string, username: string, email: string, password: string) : Promise<void> {
@@ -74,7 +77,8 @@ class AuthService {
 		);
 	}
 
-	async LogIn(username: string, password: string, userAgent: string, ip: string) : Promise<{ user: Omit<User, 'password'>, accessToken: JWT_TOKEN, refreshToken: JWT_TOKEN }> {
+	// async LogIn(username: string, password: string, userAgent: string, ip: string) : Promise<{ user: Omit<User, 'password'>, accessToken: JWT_TOKEN, refreshToken: JWT_TOKEN }> {
+	async LogIn(username: string, password: string, userAgent: string, ip: string) : Promise<any> {
 		const currentSessionFingerprint = this.getFingerprint(userAgent, ip);
 
 		const existingUser = await this.userRepository.findByUsername(username);
@@ -82,6 +86,11 @@ class AuthService {
 			await bcrypt.compare(password, existingUser ? existingUser.password : this.authConfig.bcryptDummyHash);
 		if (!existingUser || !isValidPassword)
 			throw new InvalidCredentialsError();
+
+		const enabled2FAMethods = await this.twoFactorService.getEnabledMethods(existingUser.id);
+		const mfaEnabled = enabled2FAMethods.length > 0;
+		if (mfaEnabled)
+			return this.twoFactorService.setup2FALoginSession(existingUser.id);
 
 		// clean up expired refresh tokens
 		// force max concurrent sessions

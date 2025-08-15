@@ -9,6 +9,7 @@ import ReadyButton from "./components/ReadyButton";
 import useUserProfile, { UserProfileType } from "@/app/(onsite)/(user-profile)/users/context/useUserProfile";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import FinishedUI from "./components/FinishedUI";
+import unicaOne from "@/app/fonts/unicaOne";
 
 const Brackets = function (props) {
 	const { user, api } = useAuth();
@@ -97,37 +98,54 @@ const Brackets = function (props) {
 				transition={{ duration: 1, delay: 0.5 }}
 				className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
 			>
-				<article className="bg-card border-br-card flex h-full w-full justify-center rounded-2xl border-2">
-					<div className="max-w-300 h-full w-full gap-10 p-4 flex flex-col">
+				<article className="bg-card border-br-card flex w-full h-full overflow-y-auto custom-scroll justify-center rounded-2xl border-2">
+					<div className=" max-w-300 w-full gap-10 p-4 flex flex-col min-h-fit">
 						{tournament && (
 							<>
-								<div className="mb-20 flex justify-between">
+								<div className="mb-20 flex justify-between items-center">
 									<h1 className="text-3xl font-medium">{`${tournament?.tournament.title} - Tournament`}</h1>
-									{!joined ? (
-										<button
-											className="bg-main min-w-45 min-h-10 hover:scale-102
-															group relative flex max-h-10
-															cursor-pointer items-center justify-center
-															gap-3 overflow-hidden rounded-lg text-sm
-															transition-all duration-300
-															"
-											onClick={joinTournamentHandler}
-										>
-											Join
-										</button>
-									) : (
-										<button
-											className="bg-card border-card min-w-45 min-h-10 hover:scale-102 group
-															relative flex max-h-10 cursor-pointer
-															items-center justify-center gap-3
-															overflow-hidden rounded-lg border text-sm
-															transition-all duration-300
-															"
-											onClick={leaveTournamentHandler}
-										>
-											Leave
-										</button>
-									)}
+									{
+										tournament.tournament.state == "finished" && 
+											<div className={`overflow-hidden bg-card  relative text-lg
+															${unicaOne.className} text-blue-400
+															rounded-lg min-h-13 flex items-center px-6
+															border-1 border-white/10 hover:scale-102 duration-400 transition-all
+											`}>
+												<p>Tournament is finished</p>
+												<div
+													className="tournament-bg hover:scale-101 duration-900 absolute left-0 top-0
+														h-full w-full opacity-0 transition-all hover:opacity-20"
+												/>
+											</div>
+									}
+									{
+										tournament.tournament.state == "pending" &&
+										!joined ? (
+											<button
+												className="bg-main min-w-45 min-h-10 hover:scale-102
+																group relative flex max-h-10
+																cursor-pointer items-center justify-center
+																gap-3 overflow-hidden rounded-lg text-sm
+																transition-all duration-300
+																"
+												onClick={joinTournamentHandler}
+											>
+												Join
+											</button>
+										) : (
+											<button
+												className="bg-card border-card min-w-45 min-h-10 hover:scale-102 group
+																relative flex max-h-10 cursor-pointer
+																items-center justify-center gap-3
+																overflow-hidden rounded-lg border text-sm
+																transition-all duration-300
+																"
+												onClick={leaveTournamentHandler}
+											>
+												Leave
+											</button>
+										)
+									}
 								</div>
 								<h2 className="text-xl font-bold text-gray-300">Bracket</h2>
 								<div className="mb-8 flex justify-evenly font-extralight">
@@ -294,7 +312,7 @@ const Brackets = function (props) {
 								}
 								{
 									tournament.tournament.state == "finished" &&
-										<FinishedUI />   
+										<FinishedUI />
 								}
 							</>
 						)}
