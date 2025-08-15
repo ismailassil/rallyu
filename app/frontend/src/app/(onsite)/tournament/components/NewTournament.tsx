@@ -1,17 +1,18 @@
 import unicaOne from "@/app/fonts/unicaOne";
 import { ArrowLeft } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "framer-motion";
-import StartButton from "./Items/StartButton";
 import { useState } from "react";
 import GameChoice from "./Items/GameChoice";
-import TournamentUI from "./Items/TournamentUI";
-import Player from "../../game/components/Items/Player";
 import TournamentTitle from "./Items/TournamentTitle";
 import StartDate from "./Items/StartDate";
 import StartButtonTournament from "./Items/StartButtonTournament";
 import Access from "./Items/AccessChoice";
 import { useAuth } from "../../contexts/AuthContext";
 import { AxiosResponse } from "axios";
+import { toast } from "sonner";
+import { Toaster } from "sonner";
+import { alertSuccess } from "@/app/(auth)/components/Alert";
+import { useRouter } from "next/navigation";
 
 function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 	const { user, api } = useAuth();
@@ -44,7 +45,16 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 				host_id: user?.id,
 			});
 
-			// Show confirmation message!
+			alertSuccess(res.data.message);
+
+			setDate("");
+			setAccess(0);
+			setGame(0);
+			setTitle("");
+
+			setTimeout(() => {
+				setValue(false);
+			}, 2000);
 		} catch (err) {
 			setErrDate(true);
 		}
@@ -83,6 +93,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 			<GameChoice game={game} setGame={setGame} error={errGame} setError={setErrGame} />
 			<Access access={access} setAccess={setAccess} error={errAcess} setError={setErrAccess} />
 			<StartDate date={date} setDate={setDate} error={errDate} setError={setErrDate} />
+			<Toaster position='bottom-right' visibleToasts={1} />
 		</>
 	);
 }
