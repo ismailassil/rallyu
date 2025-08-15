@@ -98,6 +98,6 @@ export function getTextDescription(type: NOTIFICATION_TYPE, content: string = ""
 		case "status":
 			return content;
 		default:
-			return "somthing";
+			return "something";
 	}
 }

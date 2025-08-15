@@ -1,4 +1,4 @@
-import { CaretDown, Check } from "@phosphor-icons/react";
+import { CaretDown, CaretDownIcon, Check } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import InlineInput from "./InlineInput";
 import NameInput from "./NameInput";
@@ -140,7 +140,7 @@ function General() {
 						setDrop((drop) => !drop);
 					}}
 				>
-					<CaretDown
+					<CaretDownIcon
 						size={24}
 						className={`absolute bottom-1/2 right-2 translate-y-1/2 transition duration-300 ${
 							drop ? "rotate-180" : "rotate-0"

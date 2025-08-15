@@ -1,0 +1,37 @@
+{
+  "dashboard": {
+    "titles": {
+      "greetings": "Welcome back,",
+      "leaderboard": "Leaderboard",
+      "snapshots": "Snapshots",
+      "friends": "Friends"
+    },
+    "game": {
+      "tournament": {
+        "text": "Conquer the",
+        "subtext": "Tournament"
+      },
+      "one_vs_one": {
+        "text": "1v1",
+        "subtext": "Fight for Glory"
+      },
+      "training": {
+        "text": "Start",
+        "subtext": "Training"
+      }
+    }
+  },
+  "headers": {
+    "profile": {
+      "titles": {
+        "profile": "Profile",
+        "settings": "Settings",
+        "Logout": "Logout"
+      }
+    },
+    "notification": {
+      "title": "Notification",
+      "subtitle": "You have {count, plural, =0 {no new notifications} =1 {# notification} other {# notifications}}"
+    }
+  }
+}
