@@ -26,14 +26,14 @@ function Button({ text, icon, onClick } : { text: string, icon: string, onClick:
 
 export default function Relations({ user_id, status } : { user_id: number, status: string | null }) {
 	const [friendshipStatus, setFriendshipStatus] = useState<string | null>(status);
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 
 	if (!status)
 		return null;
 
 	async function handleAdd() {
 		try {
-			await api.sendFriendRequest(user_id);
+			await apiClient.sendFriendRequest(user_id);
 			setFriendshipStatus('OUTGOING');
 			alert('Request Sent!');
 		} catch {
@@ -43,7 +43,7 @@ export default function Relations({ user_id, status } : { user_id: number, statu
 
 	async function handleAccept() {
 		try {
-			await api.acceptFriendRequest(user_id);
+			await apiClient.acceptFriendRequest(user_id);
 			setFriendshipStatus('FRIENDS');
 			alert('Request Accepted!');
 		} catch {
@@ -53,7 +53,7 @@ export default function Relations({ user_id, status } : { user_id: number, statu
 
 	async function handleCancel() {
 		try {
-			await api.cancelFriendRequest(user_id);
+			await apiClient.cancelFriendRequest(user_id);
 			setFriendshipStatus('NONE');
 			alert('Request Canceled!');
 		} catch {
@@ -63,7 +63,7 @@ export default function Relations({ user_id, status } : { user_id: number, statu
 
 	async function handleReject() {
 		try {
-			await api.rejectFriendRequest(user_id);
+			await apiClient.rejectFriendRequest(user_id);
 			setFriendshipStatus('NONE');
 			alert('Request Rejected!');
 		} catch {
@@ -73,7 +73,7 @@ export default function Relations({ user_id, status } : { user_id: number, statu
 
 	async function handleUnfriend() {
 		try {
-			await api.unfriend(user_id);
+			await apiClient.unfriend(user_id);
 			setFriendshipStatus('NONE');
 			alert('Unfriended!');
 		} catch {
@@ -83,7 +83,7 @@ export default function Relations({ user_id, status } : { user_id: number, statu
 
 	async function handleBlock() {
 		try {
-			await api.blockUser(user_id);
+			await apiClient.blockUser(user_id);
 			setFriendshipStatus('NONE');
 			alert('Blocked!');
 		} catch {

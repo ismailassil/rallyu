@@ -85,7 +85,7 @@ import IncomingFriendRequestsList from './IncomingFriendRequestsList';
 // }
 
 // function FriendsList() {
-// 	const { api } = useAuth();
+// 	const { apiClient } = useAuth();
 // 	const [friends, setFriends] = useState([]);
 // 	const [isLoading, setIsLoading] = useState(true);
 
@@ -94,7 +94,7 @@ import IncomingFriendRequestsList from './IncomingFriendRequestsList';
 // 		async function fetchFriends() {
 // 		  try {
 // 			setIsLoading(true);
-// 			const data = await api.getAllFriends();
+// 			const data = await apiClient.getAllFriends();
 // 			setFriends(data);
 // 		  } catch (err) {
 // 			alert('Error fetching friends');
@@ -108,7 +108,7 @@ import IncomingFriendRequestsList from './IncomingFriendRequestsList';
 
 // 	async function handleUnfriend(user_id: number) {
 // 		try {
-// 			await api.unfriend(user_id);
+// 			await apiClient.unfriend(user_id);
 // 			setFriends(prev => prev.filter(friend => friend.id !== user_id));
 // 		} catch (err) {
 // 			alert('Error unfriending');

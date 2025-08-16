@@ -12,11 +12,23 @@ import path from "path";
 import { IRelationsRequest } from "../types";
 import MatchesController from "../controllers/matchesController";
 import UserRepository from "../repositories/userRepository";
+import UserService from "../services/userService";
+import RelationsService from "../services/relationsService";
+import StatsService from "../services/statsService";
 
 async function userRouter(fastify: FastifyInstance) {
-	const userController: UserController = new UserController();
+	const userRepository = new UserRepository();
+	const relationsRepository = new RelationsRepository();
+
+	const relationsService = new RelationsService(relationsRepository);
+	const statsService = new StatsService();
+	const userService: UserService = new UserService(userRepository, relationsService, statsService);
+	relationsService.setUserService(userService);
+	
+	const userController: UserController = new UserController(userService);
+	const relationsController: RelationsController = new RelationsController(relationsService);
+
 	const statsController: StatsController = new StatsController();
-	const relationsController: RelationsController = new RelationsController();
 	const usersRepo: UserRepository = new UserRepository();
 	const relRepo: RelationsRepository = new RelationsRepository();
 	const statsRepo: MatchesRepository = new MatchesRepository();
@@ -39,70 +51,87 @@ async function userRouter(fastify: FastifyInstance) {
 	fastify.decorate('requireAuth', { preHandler: fastify.authenticate }); // preHandler hook
 	fastify.decorateRequest('user', null);
 
-	fastify.get('/available', userController.UsernameEmailAvailable.bind(userController));
-
-	/*-------------------------------------------- USER MANAGEMENT --------------------------------------------*/
-	fastify.get('/search', {
+	
+	/*-------------------------------------------- AVAILABILITY --------------------------------------------*/
+	
+	// CHECK IF USERNAME AVAILABLE
+	fastify.get('/username-available', {
 		// preHandler: fastify.authenticate,
-		handler: async (request: FastifyRequest, reply: FastifyReply) => {
-			try {
-				const { username } = request.query as { username: string };
-
-				const results = await usersRepo.searchByUsername(username);
-
-				console.log('Search result: ', results);
-
-				reply.status(200).send(results);
-			} catch (err: any) {
-				reply.status(500);
-			}
-		}
+		handler: userController.usernameAvailable.bind(userController)
+	});
+	// CHECK IF EMAIL AVAILABLE
+	fastify.get('/email-available', {
+		// preHandler: fastify.authenticate,
+		handler: userController.emailAvailable.bind(userController)
 	});
 
-	fastify.get('/me', {
-		// schema: userProfileSchema,
-		preHandler: fastify.authenticate,
-		handler: userController.fetchMe.bind(userController)
-	});
 
+	/*------------------------------------------------ USERS ------------------------------------------------*/
+	// GET USER
 	fastify.get('/:username', {
 		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
-		handler: userController.getUser.bind(userController)
+		handler: userController.fetchUser.bind(userController)
 	});
 	
+	// UPDATE USER (SELF-SERVICE)
 	fastify.put('/:username', {
 		schema: userUpdateSchema,
 		preHandler: fastify.authenticate,
 		handler: userController.updateUser.bind(userController)
 	});
 	
+	// DELETE USER (SELF-SERVICE)
 	fastify.delete('/:username', {
 		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
 		handler: userController.deleteUser.bind(userController)
 	});
 	
+	// GET USER STATS
 	fastify.get('/:username/stats', {
 		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
-		handler: userController.getUserStats.bind(userController)
+		handler: userController.fetchUserStats.bind(userController)
 	});
 	
+	// GET USER MATCHES
 	fastify.get('/:username/matches', {
 		schema: userMatchesSchema,
 		preHandler: fastify.authenticate,
-		handler: userController.getUserMatches.bind(userController)
+		handler: userController.fetchUserMatches.bind(userController)
 	});
 
+	// UPDATE USER AVATAR
 	fastify.post('/:username/avatar', {
 		preHandler: fastify.authenticate,
 		handler: userController.uploadAvatar.bind(userController)
 	});
 
+	fastify.get('/search-by-username', {
+		preHandler: fastify.authenticate,
+		handler: userController.searchUser.bind(userController)
+	});
+
 
 	/*-------------------------------------------- USER RELATIONS --------------------------------------------*/
-	
+	fastify.get('/friends', {
+		preHandler: fastify.authenticate,
+		handler: relationsController.fetchFriends.bind(relationsController)
+	});
+	fastify.get('/blocked', {
+		preHandler: fastify.authenticate,
+		handler: relationsController.fetchBlocked.bind(relationsController)
+	});
+	fastify.get('/friends/requests/incoming', {
+		preHandler: fastify.authenticate,
+		handler: relationsController.fetchIncomingFriendRequests.bind(relationsController)
+	});
+	fastify.get('/friends/requests/outgoing', {
+		preHandler: fastify.authenticate,
+		handler: relationsController.fetchOutgoingFriendRequests.bind(relationsController)
+	});
+
 	fastify.post('/:user_id/friends/requests', {
 		preHandler: fastify.authenticate,
 		schema: relationsRequestSchema,
@@ -144,23 +173,6 @@ async function userRouter(fastify: FastifyInstance) {
 		schema: relationsRequestSchema,
 		handler: relationsController.unblockUser.bind(relationsController)
 	});
-	
-	fastify.get('/friends', {
-		preHandler: fastify.authenticate,
-		handler: relationsController.getAllFriends.bind(relationsController)
-	});
-	fastify.get('/blocked', {
-		preHandler: fastify.authenticate,
-		handler: relationsController.getAllBlocked.bind(relationsController)
-	});
-	fastify.get('/friends/requests/incoming', {
-		preHandler: fastify.authenticate,
-		handler: relationsController.getAllIncomingFriendRequests.bind(relationsController)
-	});
-	fastify.get('/friends/requests/outgoing', {
-		preHandler: fastify.authenticate,
-		handler: relationsController.getAllOutgoingFriendRequests.bind(relationsController)
-	});
 
 	// USER MANAGEMENT (admin or self-service)
 	// GET /users — List users (admin only)
@@ -180,15 +192,15 @@ async function userRouter(fastify: FastifyInstance) {
 	// DELETE /account — Delete own account (optional)
 
 	/*-------------------------------------------- MATCHES --------------------------------------------*/
-	fastify.get('/match/:id', {
-		// preHandler: fastify.authenticate,
-		handler: matchesController.getMatch.bind(matchesController)
-	});
+	// fastify.get('/match/:id', {
+	// 	// preHandler: fastify.authenticate,
+	// 	handler: matchesController.getMatch.bind(matchesController)
+	// });
 
-	fastify.post('/match', {
-		// preHandler: fastify.authenticate,
-		handler: matchesController.newMatch.bind(matchesController)
-	});
+	// fastify.post('/match', {
+	// 	// preHandler: fastify.authenticate,
+	// 	handler: matchesController.newMatch.bind(matchesController)
+	// });
 }
 
 export default userRouter;

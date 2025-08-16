@@ -50,7 +50,7 @@ export type UserProfileType = {
 }
 
 export default function useUserProfile(username: string) : { isLoading: boolean, userProfile: UserProfileType | null } {
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 	const [isLoading, setIsLoading] = useState(true);
 	const [userProfile, setUserProfile] = useState(null);
 
@@ -61,9 +61,9 @@ export default function useUserProfile(username: string) : { isLoading: boolean,
 
 	async function initializeUserProfile(username: string) {
 		try {
-			const userProfile = await api.getUser(username);
+			const userProfile = await apiClient.getUser(username);
             console.log("GETTING USER AVATAR...");
-            const userAvatarBlob = await api.getUserAvatar(userProfile.user.avatar_path);
+            const userAvatarBlob = await apiClient.getUserAvatar(userProfile.user.avatar_path);
             console.log("USER AVATAR BLOB: ", userAvatarBlob);
             const userAvatarURL = URL.createObjectURL(userAvatarBlob);
             console.log("USER AVATAR URL: ", userAvatarURL);

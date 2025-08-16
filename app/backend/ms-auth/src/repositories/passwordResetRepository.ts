@@ -1,7 +1,7 @@
 import { db } from "../database";
 import { InternalServerError } from "../types/auth.types";
 
-class ResetPasswordRepository {
+class PasswordResetRepository {
 
 	async create(user_id: number, code: string, expires_at: number) {
 		try {
@@ -43,4 +43,4 @@ class ResetPasswordRepository {
 	}
 }
 
-export default ResetPasswordRepository;
+export default PasswordResetRepository;

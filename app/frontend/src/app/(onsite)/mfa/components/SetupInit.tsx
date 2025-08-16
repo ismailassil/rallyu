@@ -31,7 +31,7 @@ interface SetupInitProps {
 }
 
 function AuthAppSetup({ onSubmit, onGoBack} : { onSubmit: () => void, onGoBack: () => void }) {
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 	const [secrets, setSecrets] = useState({
 		secret_base32: null,
 		secret_qrcode_url: null
@@ -48,7 +48,7 @@ function AuthAppSetup({ onSubmit, onGoBack} : { onSubmit: () => void, onGoBack: 
 
 	async function sideEffect() {
 		try {
-			const res = await api.mfaAuthAppSetupInit();
+			const res = await apiClient.mfaAuthAppSetupInit();
 			console.log(res);
 			setSecrets(res);
 		} catch (err) {
@@ -90,7 +90,7 @@ function AuthAppSetup({ onSubmit, onGoBack} : { onSubmit: () => void, onGoBack: 
 }
 
 function EmailSetup({ onSubmit, onGoBack } : { onSubmit: (contact: string) => void, onGoBack: () => void }) {
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 	const email = 'your-email@gmail.com';
 
 	async function handleSubmit(e: React.FormEvent) {
@@ -103,7 +103,7 @@ function EmailSetup({ onSubmit, onGoBack } : { onSubmit: (contact: string) => vo
 		}
 
 		try {
-			const res = await api.mfaEmailSetupInit();
+			const res = await apiClient.mfaEmailSetupInit();
 			console.log(res);
 			onSubmit(email);
 		} catch (err) {
@@ -149,7 +149,7 @@ function EmailSetup({ onSubmit, onGoBack } : { onSubmit: (contact: string) => vo
 }
 
 function PhoneSetup({ onSubmit, onGoBack } : { onSubmit: (contact: string) => void, onGoBack: () => void }) {
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 	const [phoneNumber, setPhoneNumber] = useState('');
 	// const [error, setError] = useState('');
 
@@ -168,7 +168,7 @@ function PhoneSetup({ onSubmit, onGoBack } : { onSubmit: (contact: string) => vo
 		}
 
 		try {
-			const res = await api.mfaPhoneSetupInit(phoneNumber);
+			const res = await apiClient.mfaPhoneSetupInit(phoneNumber);
 			console.log(res);
 			onSubmit(phoneNumber);
 		} catch (err) {

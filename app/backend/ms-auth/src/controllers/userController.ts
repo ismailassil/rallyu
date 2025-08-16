@@ -6,31 +6,16 @@ import { AuthError, UserNotFoundError } from "../types/auth.types";
 import AuthResponseFactory from "./authResponseFactory";
 
 class UserController {
-	private userService: UserService;
-	private userRepository: UserRepository;
+	constructor(
+		private userService: UserService
+	) {}
 
-	constructor() {
-		this.userService = new UserService();
-		this.userRepository = new UserRepository();
-	}
-
-	async UsernameEmailAvailable(request: FastifyRequest, reply: FastifyReply) {
+	async usernameAvailable(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { username, email } = request.query as { username?: string, email?: string };
+			// TODO: ADD SCHEMA
+			const { username } = request.query as { username: string };
 
-			if (!username && !email) {
-				reply.status(400).send({ success: false, data: {} });
-				return ;
-			}
-
-			let isTaken;
-
-			if (username && !email)
-				isTaken = await this.userRepository.findByUsername(username);
-			else if (email && !username)
-				isTaken = await this.userRepository.findByEmail(email);
-			// else
-			// 	isTaken = await this.userRepository.exists(username!, email!);
+			const isTaken = await this.userService.isUsernameTaken(username);
 
 			reply.status(isTaken ? 404 : 200).send({ success: true, available: !isTaken });
 
@@ -39,15 +24,32 @@ class UserController {
 		}
 	}
 
-	async fetchMe(request: FastifyRequest, reply: FastifyReply) {
+	async emailAvailable(request: FastifyRequest, reply: FastifyReply) {
 		try {
+			// TODO: ADD SCHEMA
+			const { email } = request.query as { email: string };
+
+			const isTaken = await this.userService.isEmailTaken(email);
+
+			reply.status(isTaken ? 404 : 200).send({ success: true, available: !isTaken });
+
+		} catch (err: any) {
+			reply.status(500).send({ success: false, data: {} })
+		}
+	}
+
+	async searchUser(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			// TODO: ADD SCHEMA
 			const user_id = request.user?.sub;
+			const { username } = request.query as { username: string };
 
-			const userProfile = await this.userService.fetchMe(user_id!);
+			const matchingUsers = await this.userService.searchUsersByUsername(user_id!, username);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userProfile);
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, matchingUsers);
 
-			reply.code(status).send(body);
+			reply.status(status).send(body);
+
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
@@ -55,14 +57,32 @@ class UserController {
 		}
 	}
 
-	async getUser(request: FastifyRequest, reply: FastifyReply) {
+	// GET FULL USER PROFILE (USER INFO + STATS SUMMARY + RECENT MATCHES + RELATIONSHIP)
+	// async fetchMe(request: FastifyRequest, reply: FastifyReply) {
+	// 	try {
+	// 		const user_id = request.user?.sub;
+
+	// 		const userProfile = await this.userService.fetchMe(user_id!);
+
+	// 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, userProfile);
+
+	// 		reply.code(status).send(body);
+	// 	} catch (err: any) {
+	// 		const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+	// 		reply.code(status).send(body);
+	// 	}
+	// }
+
+	// GET BASIC USER PROFILE (USER INFO)
+	async fetchUser(request: FastifyRequest, reply: FastifyReply) {
 		try {
+			const user_id = request.user?.sub;
 			const { username } = request.params as IProfileRequest;
-			const user_id = request.user?.sub;
 
-			const userProfile = await this.userService.getUser(user_id!, username);
+			const user = await this.userService.getUser(user_id!, username);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userProfile);
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, user);
 
 			reply.code(status).send(body);
 		} catch (err: any) {
@@ -72,11 +92,12 @@ class UserController {
 		}
 	}
 
-	async getUserStats(request: FastifyRequest, reply: FastifyReply) {
+	async fetchUserStats(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
+			const { username } = request.params as IProfileRequest;
 
-			const userStats = await this.userService.getUserStats(user_id!);
+			const userStats = await this.userService.getUserStats(user_id!, username);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userStats);
 
@@ -88,12 +109,13 @@ class UserController {
 		}
 	}
 
-	async getUserMatches(request: FastifyRequest, reply: FastifyReply) {
+	async fetchUserMatches(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { page } = request.query as { page: number };
 			const user_id = request.user?.sub;
+			const { page } = request.query as { page: number };
+			const { username } = request.params as IProfileRequest;
 
-			const userStats = await this.userService.getUserMatches(user_id!, page);
+			const userStats = await this.userService.getUserMatches(user_id!, username, page);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userStats);
 
@@ -147,6 +169,25 @@ class UserController {
 			reply.status(statusCode || 400).send({ success: false, error: errorCode });
 		}
 	}
+
+
+	// GET FULL USER PROFILE (USER INFO + STATS SUMMARY + RECENT MATCHES + RELATIONSHIP)
+	// async fetchFullUserProfile(request: FastifyRequest, reply: FastifyReply) {
+	// 	try {
+	// 		const user_id = request.user?.sub;
+	// 		const { username } = request.params as IProfileRequest;
+
+	// 		const userFullInfo = await this.userService.getUserFullInfo(user_id!, username);
+
+	// 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, userFullInfo);
+
+	// 		reply.code(status).send(body);
+	// 	} catch (err: any) {
+	// 		const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+	// 		reply.code(status).send(body);
+	// 	}
+	// }
 }
 
 export default UserController;

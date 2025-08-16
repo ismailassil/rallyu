@@ -22,7 +22,7 @@ const Chat = ({ state, receiverId, message, username, handler }: Props) => {
 	const [showInput, setShowInput] = useState(false);
 	const [text, setText] = useState("");
 	const router = useRouter();
-	const { socket, user } = useAuth();
+	const { socket, loggedInUser } = useAuth();
 
 	function sendMessage() {
 		if (state) return;
@@ -30,7 +30,7 @@ const Chat = ({ state, receiverId, message, username, handler }: Props) => {
 
 		const newMessage = {
 			id: Date.now(),
-			senderId: user?.id,
+			senderId: loggedInUser?.id,
 			receiverId: receiverId,
 			text: text.toString().substring(0, 50),
 		};

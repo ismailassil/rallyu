@@ -74,11 +74,17 @@ class UserRepository {
 		}
 	}
 
-	async searchByUsername(username: string) {
+	async searchByUsername(user_id: number, username: string) {
 		try {
 			const allResult = await db.all(
-				`SELECT username, avatar_path FROM users WHERE username LIKE '%' || ? || '%'`,
-				[username]
+				`SELECT u.id, u.username, u.avatar_path
+					FROM users u 
+				LEFT JOIN relations r 
+					ON ((r.requester_user_id = u.id AND r.receiver_user_id = ?)
+						OR (r.requester_user_id = ? AND r.receiver_user_id = u.id))
+				WHERE (u.username LIKE '%' || ? || '%')
+					AND (r.relation_status != 'BLOCKED' OR r.relation_status IS NULL)`,
+				[user_id, user_id, username]
 			);
 			return allResult ?? null;
 		} catch (err: any) {

@@ -10,7 +10,7 @@ interface VerifySetupProps {
 }
 
 export default function VerifySetup({ selectedMethod, contactMethod, onSubmit, onGoBack } : VerifySetupProps) {
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 	const [code, setCode] = useState('');
 
 	const methodName = selectedMethod === 'totp' ? 'Auth App' : selectedMethod === 'sms' ? 'SMS' : selectedMethod === 'email' ? 'Email' : '';
@@ -35,13 +35,13 @@ export default function VerifySetup({ selectedMethod, contactMethod, onSubmit, o
 
 			switch (selectedMethod) {
 				case 'totp':
-					res = await api.mfaAuthAppSetupVerify(code);
+					res = await apiClient.mfaAuthAppSetupVerify(code);
 					break;
 				case 'email':
-					res = await api.mfaEmailSetupVerify(code);
+					res = await apiClient.mfaEmailSetupVerify(code);
 					break;
 				case 'sms':
-					res = await api.mfaPhoneSetupVerify(code);
+					res = await apiClient.mfaPhoneSetupVerify(code);
 					break;
 			}
 			console.log(res);

@@ -9,7 +9,7 @@ export default function ChangePasswordForm() {
 	// const [newPassword, setNewPassword] = useState('');
 	// const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm({
 		'current-password': '',
 		'new-password': '',
@@ -25,7 +25,7 @@ export default function ChangePasswordForm() {
 
 		try {
 			alertLoading('Changing password...');
-			const res = await api.changePassword({ old_password: formData['current-password'], new_password: formData['new-password']});
+			const res = await apiClient.changePassword({ old_password: formData['current-password'], new_password: formData['new-password']});
 			console.log('Update password response: ', res);
 			alertSuccess('Password changed successfully');
 		} catch (err) {

@@ -27,17 +27,17 @@ export interface FormData {
 }
 
 export default function General() {
-	const { api, user, updateUser } = useAuth();
+	const { apiClient, loggedInUser, updateLoggedInUserState } = useAuth();
 	// const { isLoading, userProfile } = useUserProfile(user!.username);
 
 	const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
 	const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
 	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm({
-		fname: user!.first_name,
-		lname: user!.last_name,
-		username: user!.username,
-		email: user!.email,
-		bio: user!.bio
+		fname: loggedInUser!.first_name,
+		lname: loggedInUser!.last_name,
+		username: loggedInUser!.username,
+		email: loggedInUser!.email,
+		bio: loggedInUser!.bio
 	});
 
 	// if (isLoading || !userProfile)
@@ -70,9 +70,9 @@ export default function General() {
 
 		try {
 			// alertLoading('Uploading Profile Picture...');
-			await api.uploadUserAvatar(form);
+			await apiClient.uploadUserAvatar(form);
 			if (profilePicturePreview)
-				updateUser({ avatar_url: profilePicturePreview });
+				updateLoggedInUserState({ avatar_url: profilePicturePreview });
 			// alertSuccess('Profile Picture changed successfully');
 			setProfilePictureFile(null);
 		} catch {
@@ -113,7 +113,7 @@ export default function General() {
 
 		try {
 			// alertLoading('Submitting form...');
-			const res = await api.updateUser(user!.username, payload);
+			const res = await apiClient.updateUser(user!.username, payload);
 			console.log('Update user response: ', res);
 			// alertSuccess('Form changes saved successfully');
 			updateUser(payload); // AuthContext

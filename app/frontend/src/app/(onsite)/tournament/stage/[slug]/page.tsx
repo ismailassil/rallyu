@@ -11,7 +11,7 @@ import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import FinishedUI from "./components/FinishedUI";
 
 const Brackets = function (props) {
-	const { user, api } = useAuth();
+	const { loggedInUser, apiClient } = useAuth();
 	const { slug } = useParams();
 	const [tournament, setTournament] = useState();
 	const [joined, setJoined] = useState<boolean>();
@@ -21,7 +21,7 @@ const Brackets = function (props) {
 		const loadData = async function () {
 			try {
 				// Need name of users
-				const res = await api.instance.get(`/v1/tournament/${slug}`);
+				const res = await apiClient.instance.get(`/v1/tournament/${slug}`);
 
 				const data = res.data;
 
@@ -37,7 +37,7 @@ const Brackets = function (props) {
 
 	const joinTournamentHandler = async (e) => {
 		try {
-			const res = await api.instance.patch(`/v1/tournament/match/join/${slug}`, { id: user?.id });
+			const res = await apiClient.instance.patch(`/v1/tournament/match/join/${slug}`, { id: loggedInUser?.id });
 			
 			console.log(res.data);
 			setJoined(true);
@@ -49,7 +49,7 @@ const Brackets = function (props) {
 	const leaveTournamentHandler = async (e) => {
 		try {
 			e.preventDefault();
-			const res = await api.instance.patch(`/v1/tournament/match/leave/${slug}`, { id: user?.id });
+			const res = await apiClient.instance.patch(`/v1/tournament/match/leave/${slug}`, { id: loggedInUser?.id });
 
 			console.log(res);
 
@@ -72,13 +72,13 @@ const Brackets = function (props) {
 	const isPlayerJoined = (data) => {
 		for (let i = 0; data.matches.length - 1; i++) {
 			// I need user id 1
-			if (data.matches[i].player_1 === user?.id) {
+			if (data.matches[i].player_1 === loggedInUser?.id) {
 				if (data.matches[i].player_1_ready)
 					setReady(true);
 				setJoined(true);
 				return ;
 			}
-			if (data.matches[i].player_2 === user?.id) {
+			if (data.matches[i].player_2 === loggedInUser?.id) {
 				if (data.matches[i].player_2_ready)
 					setReady(true);
 				setJoined(true);

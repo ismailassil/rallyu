@@ -5,13 +5,13 @@ import { useState } from "react";
 
 const ReadyButton = function ({ slug, readyProp } : { slug: number, readyProp: boolean }) {
     const [ready, setReady] = useState<boolean>(readyProp);
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 
 
     const playerReadyHandler = async (event: React.MouseEvent<HTMLButtonElement>) => {
 		try {
 			event.preventDefault();
-			const res: AxiosResponse = await api.instance.patch(`/v1/tournament/match/ready/${slug}`);
+			const res: AxiosResponse = await apiClient.instance.patch(`/v1/tournament/match/ready/${slug}`);
 
 			console.log(res);
 

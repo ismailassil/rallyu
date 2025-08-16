@@ -96,7 +96,7 @@ function MethodCard({ method, onSelect, onDisable } : MethodCardProps) {
 }
 
 export default function MethodSelection({ onSelect } : MethodSelectionProps) {
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 	const [enabledMethods, setEnabledMethods] = useState<APIMethodItem[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
@@ -104,7 +104,7 @@ export default function MethodSelection({ onSelect } : MethodSelectionProps) {
 		async function fetchEnabledMethods() {
 			try {
 				setIsLoading(true);
-				const data = await api.mfaEnabledMethods();
+				const data = await apiClient.mfaEnabledMethods();
 				// const mappedBlocked = mapAPIUserItemtoUserItem(data);
 				setEnabledMethods(data);
 			} catch (err) {
@@ -127,7 +127,7 @@ export default function MethodSelection({ onSelect } : MethodSelectionProps) {
 
 	async function handleMethodDisable(method: string) {
 		try {
-			await api.mfaDisableMethod(method);
+			await apiClient.mfaDisableMethod(method);
 			alert('Disabled ' + method);
 			setEnabledMethods( prev => prev.filter((item) => (item.method !== method)) );
 		} catch (err) {

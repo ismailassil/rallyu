@@ -16,12 +16,12 @@ interface errorObj {
 function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 	const [tournaments, setTournaments] = useState([]);
 	const [error, setError] = useState<errorObj>({ status: false, message: "" });
-	const { api, user } = useAuth();
+	const { apiClient, loggedInUser } = useAuth();
 
 	useEffect(() => {
 		const fetchData = async function () {
 			try {
-				const req = await api.instance.get(`/v1/tournament/tournaments?userId=${user?.id}`);
+				const req = await apiClient.instance.get(`/v1/tournament/tournaments?userId=${loggedInUser?.id}`);
 				// const req = await fetch("http://localhost:3008/api/v1/tournaments?userId=1"); // Need user ID
 
 				const data = req.data;

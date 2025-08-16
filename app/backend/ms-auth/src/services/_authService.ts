@@ -4,14 +4,13 @@ import { CreateUserRequest, ILoginRequest, IRegisterRequest, ISQLCreateUser, Use
 import bcrypt from 'bcrypt';
 import AuthUtils, { JWT_TOKEN, JWT_REFRESH_PAYLOAD } from '../utils/auth/Auth'
 import { FormError, FormFieldMissing, InvalidCredentialsError, PasswordLengthError, SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenExpiredError, TokenInvalidError, TokenRequiredError, UserAlreadyExistsError, UserNotFoundError, UsernameLengthError, WeakPasswordError } from "../types/auth.types";
+import SessionManager, { SessionConfig } from "./sessionService";
 import { ISessionFingerprint } from "../types";
 import { UAParser } from 'ua-parser-js';
 import axios from "axios";
 import 'dotenv/config';
 import { z } from 'zod';
 import TwoFactorService from "./twoFactorService";
-import UserService from "./userService";
-import SessionService from "./sessionService";
 
 // TODO
 	// VERIFY THE EXISTENCE OF ALL THOSE ENV VARS
@@ -29,7 +28,7 @@ const INTRA_OAUTH_FRONTEND_REDIRECT_URI = process.env['INTRA_OAUTH_FRONTEND_REDI
 const INTRA_OAUTH_AUTH_URI = process.env['INTRA_OAUTH_AUTH_URI'];
 const INTRA_OAUTH_EXCHANGE_URL = process.env['INTRA_OAUTH_EXCHANGE_URL'];
 
-export interface AuthServiceConfig {
+export interface AuthConfig {
 	bcryptRounds: number,
 	bcryptDummyHash: string,
 	accessTokenExpiry: string,
@@ -43,209 +42,258 @@ export interface AuthServiceConfig {
 }
 
 class AuthService {
-	// TODO: IMPLEMENT A PASSWORD MANAGER
-	constructor(
-		private config: AuthServiceConfig,
-		private authUtils: AuthUtils,
-		private userService: UserService,
-		private sessionService: SessionService,
-		private twoFactorService: TwoFactorService
-	) {}
+	private userRepository: UserRepository;
+	private authUtils: AuthUtils;
+	private authConfig: AuthConfig;
+	private sessionManager: SessionManager;
+	private twoFactorService: TwoFactorService;
+	
+	constructor(config: AuthConfig) {
+		this.authConfig = config;
+		this.userRepository = new UserRepository();
+		this.sessionManager = new SessionManager(config);
+		this.authUtils = new AuthUtils();
+		this.twoFactorService = new TwoFactorService();
+	}
 
 	async SignUp(first_name: string, last_name: string, username: string, email: string, password: string) : Promise<void> {
 		this.validateRegisterForm(username, password, email, first_name, last_name);
 
-		if (await this.userService.isUsernameTaken(username))
+		if (await this.userRepository.findByUsername(username) != null)
 			throw new UserAlreadyExistsError('Username');
-		if (await this.userService.isEmailTaken(username))
+		if (await this.userRepository.findByEmail(email) != null)
 			throw new UserAlreadyExistsError('Email');
 
-		// SHOULD WE HASH HERE? OR KEEP IT INSIDE USERS CREATION
+		const hashedPassword = await bcrypt.hash(password!, this.authConfig.bcryptRounds);
 
-		const createdUserID = await this.userService.createUser(first_name, last_name, username, email, password);
+		const createdUserID = await this.userRepository.create(
+			username,
+			email,
+			first_name,
+			last_name,
+			'https://pbs.twimg.com/profile_images/1300555471468851202/xtUnFLEm_200x200.jpg',
+			'local',
+			hashedPassword
+		);
 	}
 
-	async LogIn(username: string, password: string, userAgent: string, ip: string) {
-		const currentSessionFingerprint = this.getFingerprint(userAgent, ip); // TODO: REMOVE THIS
+	// async LogIn(username: string, password: string, userAgent: string, ip: string) : Promise<{ user: Omit<User, 'password'>, accessToken: JWT_TOKEN, refreshToken: JWT_TOKEN }> {
+	async LogIn(username: string, password: string, userAgent: string, ip: string) : Promise<any> {
+		const currentSessionFingerprint = this.getFingerprint(userAgent, ip);
 
-		const existingUser = await this.userService.getUserByUsername(username);
+		const existingUser = await this.userRepository.findByUsername(username);
 		const isValidPassword = 
-			await bcrypt.compare(password, existingUser ? existingUser.password : this.config.bcryptDummyHash); // TODO: PASSWORD HASHER
+			await bcrypt.compare(password, existingUser ? existingUser.password : this.authConfig.bcryptDummyHash);
 		if (!existingUser || !isValidPassword)
 			throw new InvalidCredentialsError();
 
-		// TODO: IMPLEMENT LOGIN CHALLENGE
 		// const enabled2FAMethods = await this.twoFactorService.getEnabledMethods(existingUser.id);
-		// const _2FARequired = enabled2FAMethods.length > 0;
-		// if (_2FARequired)
-		// 	return { _2FARequired: true, enabled2FAMethods: enabled2FAMethods };
+		// const mfaEnabled = enabled2FAMethods.length > 0;
+		// if (mfaEnabled)
+		// 	return this.twoFactorService.setup2FALoginSession(existingUser.id);
 
 		// clean up expired refresh tokens
 		// force max concurrent sessions
 
-		const sessionTokens = await this.sessionService.createSession(existingUser.id, currentSessionFingerprint);
+		const { accessToken, refreshToken } = await this.authUtils.generateTokenPair(
+			existingUser.id,
+			this.authConfig.accessTokenExpiry,
+			this.authConfig.refreshTokenExpiry
+		);
 
-		const { password: _, ...userWithoutPassword } = existingUser;
+		await this.sessionManager.createSession(
+			refreshToken,
+			currentSessionFingerprint
+		);
 
-		return { user: userWithoutPassword, accessToken: sessionTokens.accessToken, refreshToken: sessionTokens.refreshToken };
+		const { password: _, ...userWithoutPassword} = existingUser;
+
+		return { user: userWithoutPassword, accessToken, refreshToken };
 	}
 
 	async LogOut(refreshToken: string, userAgent: string, ip: string) : Promise<void> {
 		const currentSessionFingerprint = this.getFingerprint(userAgent, ip);
 
-		await this.sessionService.revokeSession(refreshToken, 'logout', currentSessionFingerprint);
+		let payload: JWT_REFRESH_PAYLOAD;
+	
+		try {
+			payload = await this.authUtils.verifyRefreshToken(refreshToken);
+		} catch (err) {
+			await this.sessionManager.revokeSession(refreshToken, 'inactivity');
+			throw err; // (TokenInvalid/Expired) // delete related session
+		}
+
+		await this.sessionManager.validateSession(
+			refreshToken,
+			currentSessionFingerprint
+		);
+
+		await this.sessionManager.revokeSession(
+			refreshToken,
+			'logout'
+		);
 	}
 
-	async Refresh(refreshToken: string, userAgent: string, ip: string) {
+	async Refresh(refreshToken: string, userAgent: string, ip: string) : Promise<{ newAccessToken: JWT_TOKEN, newRefreshToken: JWT_TOKEN }> {
 		const currentSessionFingerprint = this.getFingerprint(userAgent, ip);
-
-		const refreshTokenPayload: JWT_REFRESH_PAYLOAD = this.authUtils.decodeJWT(refreshToken);
-		const existingUser = await this.userService.getUserById(refreshTokenPayload.sub);
-		if (!existingUser)
-			throw new UserNotFoundError();
 		
-		const { newAccessToken, newRefreshToken } 
-			= await this.sessionService.refreshSession(refreshToken, currentSessionFingerprint);
+		let payload: JWT_REFRESH_PAYLOAD;
 
-		const { password: _, ...userWithoutPassword } = existingUser;
+		try {
+			payload = await this.authUtils.verifyRefreshToken(refreshToken);
+		} catch (err) {
+			await this.sessionManager.revokeSession(refreshToken, 'inactivity');
+			throw err; // (TokenInvalid/Expired) // delete related session
+		}
+		
+		await this.sessionManager.validateSession(
+			refreshToken,
+			currentSessionFingerprint
+		);
+		
+		const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await this.authUtils.generateTokenPair(
+			payload.sub,
+			this.authConfig.accessTokenExpiry,
+			this.authConfig.refreshTokenExpiry,
+			payload.session_id,
+			payload.version + 1
+		);
+		
+		await this.sessionManager.refreshSession(
+			newRefreshToken,
+			currentSessionFingerprint
+		);
 
-		return { user: userWithoutPassword, newAccessToken, newRefreshToken };
+		return { newAccessToken, newRefreshToken };
 	}
 
 	// TO CHECK
-	// async GoogleLogIn(code: string, userAgent: string, ip: string) : Promise<{ accessToken: JWT_TOKEN, refreshToken: JWT_TOKEN }> {
-	// 	try {
-	// 		const { id_token } = await this.getGoogleOAuthTokens(code);
-	// 		// TODO: VERIFY TOKEN SIGNATURE?
-	// 		const decodedJWT = jwt.decode(id_token);
+	async GoogleLogIn(code: string, userAgent: string, ip: string) : Promise<{ accessToken: JWT_TOKEN, refreshToken: JWT_TOKEN }> {
+		try {
+			const { id_token } = await this.getGoogleOAuthTokens(code);
+			// verify token signature?
+			const decodedJWT = jwt.decode(id_token);
 
-	// 		const userData = this.GoogleOAuthTokenToData(decodedJWT);
+			const userData = this.GoogleOAuthTokenToData(decodedJWT);
 
-	// 		let	  createdUser;
-	// 		const usernameExists = await this.userService.getUserByUsername(userData.username);
-	// 		const emailExists = await this.userService.getUserByEmail(userData.email);
-	// 		const isRegistered = usernameExists || emailExists;
-	// 		if (!isRegistered) {
-	// 			// const createdUserID = await this.userRepository.create(
-	// 			// 	userData.username, userData.email, userData.first_name, userData.last_name,
-	// 			// 	userData.avatar_url, userData.auth_provider
-	// 			// );
+			let	  createdUser;
+			const usernameExists = await this.userRepository.findByUsername(userData.username);
+			const emailExists = await this.userRepository.findByUsername(userData.email);
+			const isRegistered = usernameExists || emailExists;
+			if (!isRegistered) {
+				const createdUserID = await this.userRepository.create(
+					userData.username, userData.email, userData.first_name, userData.last_name,
+					userData.avatar_url, userData.auth_provider
+				);
+				createdUser = await this.userRepository.findById(createdUserID);
+			} else {
+				createdUser = await this.userRepository.findByUsername(userData.username);
+			}
 
-	// 			// TODO: SHOULD USE createUserFromOAuth
-	// 			const createdUserID = await this.userService.createUser(
-	// 				userData.first_name, userData.last_name, userData.username, userData.email, 'temp_password'
-	// 			);
+			const currentSessionFingerprint = this.getFingerprint(userAgent, ip);
+			// clean up expired refresh tokens
+			// force max concurrent sessions
 
-	// 			createdUser = await this.userService.getUserById(createdUserID);
-	// 		} else {
-	// 			createdUser = await this.userService.getUserByUsername(userData.username); // TODO: WHY?
-	// 		}
+			const { accessToken, refreshToken } = await this.authUtils.generateTokenPair(
+				createdUser!.id,
+				this.authConfig.accessTokenExpiry,
+				this.authConfig.refreshTokenExpiry
+			);
 
-	// 		const currentSessionFingerprint = this.getFingerprint(userAgent, ip);
-	// 		// TODO:
-	// 		// clean up expired refresh tokens
-	// 		// force max concurrent sessions
+			await this.sessionManager.createSession(
+				refreshToken,
+				currentSessionFingerprint
+			);
 
-	// 		const { accessToken, refreshToken } = await this.authUtils.generateTokenPair(
-	// 			createdUser!.id,
-	// 			this.config.accessTokenExpiry,
-	// 			this.config.refreshTokenExpiry
-	// 		);
+			return { accessToken, refreshToken };
 
-	// 		await this.sessionService.createSession(
-	// 			refreshToken,
-	// 			currentSessionFingerprint
-	// 		);
+		} catch (err) {
+			console.log(err);
+			throw new Error('OAuth Google failed');
+		}
+	}
 
-	// 		return { accessToken, refreshToken };
+	// TO CHECK
+	async IntraLogIn(code: string, userAgent: string, ip: string) : Promise<{ accessToken: JWT_TOKEN, refreshToken: JWT_TOKEN }> {
+		try {
+			const { access_token } = await this.getIntraOAuthTokens(code);
 
-	// 	} catch (err) {
-	// 		console.log(err);
-	// 		throw new Error('OAuth Google failed');
-	// 	}
-	// }
+			const userData = await this.IntraOAuthTokenToData(access_token);
 
-	// // TO CHECK
-	// async IntraLogIn(code: string, userAgent: string, ip: string) : Promise<{ accessToken: JWT_TOKEN, refreshToken: JWT_TOKEN }> {
-	// 	try {
-	// 		const { access_token } = await this.getIntraOAuthTokens(code);
+			let	  createdUser;
+			const usernameExists = await this.userRepository.findByUsername(userData.username);
+			const emailExists = await this.userRepository.findByEmail(userData.email);
+			const isRegistered = usernameExists || emailExists;
+			if (!isRegistered) {
+				const createdUserID = await this.userRepository.create(
+					userData.username, userData.email, userData.first_name, userData.last_name,
+					userData.avatar_url, userData.auth_provider
+				);
+				createdUser = await this.userRepository.findById(createdUserID);
+			} else {
+				createdUser = await this.userRepository.findByUsername(userData.username);
+			}
 
-	// 		const userData = await this.IntraOAuthTokenToData(access_token);
+			const currentSessionFingerprint = this.getFingerprint(userAgent, ip);
+			// clean up expired refresh tokens
+			// force max concurrent sessions
 
-	// 		let	  createdUser;
-	// 		const usernameExists = await this.userService.getUserByUsername(userData.username);
-	// 		const emailExists = await this.userService.getUserByEmail(userData.email);
-	// 		const isRegistered = usernameExists || emailExists;
-	// 		if (!isRegistered) {
-	// 			// const createdUserID = await this.userRepository.create(
-	// 			// 	userData.username, userData.email, userData.first_name, userData.last_name,
-	// 			// 	userData.avatar_url, userData.auth_provider
-	// 			// );
+			const { accessToken, refreshToken } = await this.authUtils.generateTokenPair(
+				createdUser!.id,
+				this.authConfig.accessTokenExpiry,
+				this.authConfig.refreshTokenExpiry
+			);
 
-	// 			// TODO: SHOULD USE createUserFromOAuth
-	// 			const createdUserID = await this.userService.createUser(
-	// 				userData.first_name, userData.last_name, userData.username, userData.email, 'temp_password'
-	// 			);
+			await this.sessionManager.createSession(
+				refreshToken,
+				currentSessionFingerprint
+			);
 
-	// 			createdUser = await this.userService.getUserById(createdUserID);
-	// 		} else {
-	// 			createdUser = await this.userService.getUserByUsername(userData.username); // TODO: WHY?
-	// 		}
+			return { accessToken, refreshToken };
 
-	// 		const currentSessionFingerprint = this.getFingerprint(userAgent, ip);
-	// 		// TODO:
-	// 		// clean up expired refresh tokens
-	// 		// force max concurrent sessions
-
-	// 		const { accessToken, refreshToken } = await this.authUtils.generateTokenPair(
-	// 			createdUser!.id,
-	// 			this.config.accessTokenExpiry,
-	// 			this.config.refreshTokenExpiry
-	// 		);
-
-	// 		await this.sessionService.createSession(
-	// 			refreshToken,
-	// 			currentSessionFingerprint
-	// 		);
-
-	// 		return { accessToken, refreshToken };
-
-	// 	} catch (err) {
-	// 		console.log(err);
-	// 		throw new Error('OAuth Intra failed');
-	// 	}
-	// }
+		} catch (err) {
+			console.log(err);
+			throw new Error('OAuth Intra failed');
+		}
+	}
 
 	async changePassword(user_id: number, old_password: string, new_password: string) {
 		this.validateChangePasswordForm(old_password, new_password);
 
-		const existingUser = await this.userService.getUserById(user_id);
+		const existingUser = await this.userRepository.findById(user_id);
 		if (!existingUser)
 			throw new UserNotFoundError();
+
 		
 		const isValidPassword = 
 			await bcrypt.compare(old_password, existingUser.password);
 		if (!isValidPassword)
 			throw new InvalidCredentialsError();
 		
-		const hashedNewPassword = await bcrypt.hash(new_password!, this.config.bcryptRounds);
+		const hashedNewPassword = await bcrypt.hash(new_password!, this.authConfig.bcryptRounds);
 
-		await this.userService.updateUser(user_id, { password: hashedNewPassword });
+		this.userRepository.update(user_id, { password: hashedNewPassword });
 	}
 
-	// async fetchMe(user_id: number) {
-	// 	const existingUser = await this.userService.getUserById(user_id);
-	// 	if (!existingUser)
-	// 		throw new UserNotFoundError();
+	async fetchMe(user_id: number) {
+		const existingUser = await this.userRepository.findById(user_id);
+		if (!existingUser)
+			throw new UserNotFoundError();
 
-	// 	return this.extractPublicUserInfo(existingUser);
-	// }
+		return this.extractPublicUserInfo(existingUser);
+	}
 
 	private validateChangePasswordForm(old_password: string, new_password: string) {
 		if (old_password === new_password)
 			throw new Error('Passwords are the same');
 
 		const changePasswordSchema = z.object({
+			old_password: z.string()
+				.min(8, "Password must be at least 8 characters")
+				.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
+				.regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
+				.regex(/(?=.*\d)/, "Password must contain a digit"),
+			
 			new_password: z.string()
 				.min(8, "Password must be at least 8 characters")
 				.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
@@ -253,7 +301,7 @@ class AuthService {
 				.regex(/(?=.*\d)/, "Password must contain a digit")
 		});
 
-		const validationResult = changePasswordSchema.safeParse({ new_password });
+		const validationResult = changePasswordSchema.safeParse({ old_password, new_password });
 		if (!validationResult.success) {
 			const errors = validationResult.error.flatten();
 			throw new FormError(undefined, errors.fieldErrors);
@@ -305,7 +353,6 @@ class AuthService {
 		return bearerToken;
 	}
 
-	// TODO: MOVE TO MIDDLEWARE
 	private getFingerprint(userAgent: string, ip: string) : ISessionFingerprint {
 		const parser = new UAParser(userAgent);
 

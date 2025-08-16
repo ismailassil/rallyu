@@ -1,14 +1,12 @@
-import ResetPasswordService from "../services/resetService";
+import PasswordResetService from "../services/passwordResetService";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { IResetPasswordRequest, IResetPasswordUpdateRequest, IResetPasswordVerifyRequest } from "../types";
 import AuthResponseFactory from "./authResponseFactory";
 
-class ResetController {
-	private resetService: ResetPasswordService;
-
-	constructor() {
-		this.resetService = new ResetPasswordService;
-	}
+class PasswordResetController {
+	constructor(
+		private passwordResetService: PasswordResetService
+	) {}
 
 	async ResetPasswordSetupEndpoint(request: FastifyRequest, reply: FastifyReply) {
 		const { email } = request.body as IResetPasswordRequest;
@@ -17,7 +15,7 @@ class ResetController {
 			reply.status(400).send({ success: true, data: {} });
 
 		try {
-			const success = await this.resetService.setup(email);
+			const success = await this.passwordResetService.setup(email);
 			if (success)
 				reply.code(200);
 			else
@@ -38,7 +36,7 @@ class ResetController {
 			reply.status(400).send({ success: true, data: {} });
 
 		try {
-			const success = await this.resetService.verify(email, code);
+			const success = await this.passwordResetService.verify(email, code);
 			if (success)
 				reply.code(200);
 			else
@@ -59,7 +57,7 @@ class ResetController {
 			reply.status(400).send({ success: true, data: {} });
 
 		try {
-			const success = await this.resetService.update(email, code, password);
+			const success = await this.passwordResetService.update(email, code, password);
 			if (success)
 				reply.code(200);
 			else
@@ -74,4 +72,4 @@ class ResetController {
 	}
 }
 
-export default ResetController;
+export default PasswordResetController;

@@ -8,7 +8,7 @@ import DashboardGameCards from './components/DashboardGameCards';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Dashboard() {
-	const { user } = useAuth();
+	const { loggedInUser } = useAuth();
 
 	return (
 		<motion.main
@@ -19,7 +19,7 @@ export default function Dashboard() {
 		>
 			<div className="flex gap-4 size-full">
 				<article className="flex-5 flex h-full w-full flex-col gap-4">
-					<UserInfo firstname={user?.username || ''} />
+					<UserInfo firstname={loggedInUser?.username || ''} />
 					<section className="hide-scrollbar flex flex-col gap-4 md:overflow-x-hidden">
 						<DashboardGameCards />
 						<div className="flex gap-4 overflow-hidden flex-col mb-6 md:mb-0 md:flex-row">

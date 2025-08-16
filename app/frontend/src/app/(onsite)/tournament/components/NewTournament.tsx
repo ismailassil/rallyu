@@ -14,7 +14,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { AxiosResponse } from "axios";
 
 function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
-	const { user, api } = useAuth();
+	const { loggedInUser, apiClient } = useAuth();
 	const [game, setGame] = useState<number>(0);
 	const [access, setAccess] = useState<number>(0);
 	const [date, setDate] = useState<string>("");
@@ -36,12 +36,12 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 			if (![0, 1].includes(game)) return setErrGame(true);
 			if (!date || (dateTime - time) / (1000 * 60) < 30) return setErrDate(true);
 
-			const res: AxiosResponse = await api.instance.post('/v1/tournament/create', {
+			const res: AxiosResponse = await apiClient.instance.post('/v1/tournament/create', {
 				title,
 				game,
 				access,
 				date,
-				host_id: user?.id,
+				host_id: loggedInUser?.id,
 			});
 
 			// Show confirmation message!

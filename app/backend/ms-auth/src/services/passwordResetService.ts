@@ -1,15 +1,12 @@
-import ResetPasswordRepository from "../repositories/resetRepository";
+import PasswordResetRepository from "../repositories/passwordResetRepository";
 import UserRepository from "../repositories/userRepository";
 import bcrypt from 'bcrypt';
 
-class ResetPasswordService {
-	private resetRepository: ResetPasswordRepository;
-	private userRepository: UserRepository;
-
-	constructor() {
-		this.userRepository = new UserRepository();
-		this.resetRepository = new ResetPasswordRepository();
-	}
+class PasswordResetService {
+	constructor(
+		private resetRepository: PasswordResetRepository,
+		private userRepository: UserRepository
+	) {}
 
 	async setup(email: string) : Promise<boolean> {
 		const exists = await this.userRepository.findByEmail(email);
@@ -92,4 +89,4 @@ class ResetPasswordService {
 	}
 }
 
-export default ResetPasswordService;
+export default PasswordResetService;

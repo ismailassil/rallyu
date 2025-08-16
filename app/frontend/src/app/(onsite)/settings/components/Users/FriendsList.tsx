@@ -5,7 +5,7 @@ import { CircleMinus, UserMinus, X } from "lucide-react";
 
 
 export default function FriendsList() {
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 	const [friends, setFriends] = useState<UserItem[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
@@ -13,7 +13,7 @@ export default function FriendsList() {
 		async function fetchFriends() {
 		  try {
 			setIsLoading(true);
-			const data = await api.getAllFriends();
+			const data = await apiClient.getAllFriends();
 			const mappedFriends = mapAPIUserItemtoUserItem(data);
 			setFriends(mappedFriends);
 		  } catch (err) {
@@ -28,7 +28,7 @@ export default function FriendsList() {
 
 	async function handleUnfriend(user_id: number) {
 		try {
-			await api.unfriend(user_id);
+			await apiClient.unfriend(user_id);
 			setFriends(prev => prev.filter(friend => friend.id !== user_id));
 		} catch (err) {
 			alert('Error unfriending');

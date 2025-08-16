@@ -43,7 +43,7 @@ const Chat = ({ username }: { username?: string }) => {
 
 		socket.emit('notification_update_on_type', payload);
 
-		api.instance.get('/chat/history')
+		apiClient.instance.get('/chat/history')
 			.then((response: any) => {
 				console.log(response.data)
 				setMessages(response?.data)

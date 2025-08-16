@@ -6,7 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useHeaderContext } from "./context/HeaderContext";
 
 export default function Profile() {
-	const { logout, user } = useAuth();
+	const { logout, loggedInUser } = useAuth();
 
 	const { setIsNotif, setIsProfile, setIsSearch, isProfile, profileRef } = useHeaderContext();
 
@@ -65,7 +65,7 @@ export default function Profile() {
 							onClick={(e) => {
 								e.preventDefault();
 								setIsProfile(!isProfile);
-								router.push(`/users/${user?.username}`);
+								router.push(`/users/${loggedInUser?.username}`);
 							}}
 							className="hover:bg-hbbg mt-2 flex w-full items-center px-7 py-3 hover:cursor-pointer"
 						>

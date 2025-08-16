@@ -28,13 +28,26 @@ class TwoFactorRepository {
 		}
 	}
 
-	async findEnabled2FAMethodById(id: number) : Promise<any> {
+	async findEnabled2FAMethodById(id: number, user_id: number) : Promise<any> {
 		try {
 			const enabled2FAMethod = await db.get(
-				`SELECT * FROM _2fa_methods WHERE id = ?`,
-				[id]
+				`SELECT * FROM _2fa_methods WHERE id = ? AND user_id = ?`,
+				[id, user_id]
 			);
 			return enabled2FAMethod ?? null;
+		} catch (err: any) {
+			console.error('SQLite Error: ', err);
+			throw new InternalServerError();
+		}
+	}
+
+	async findPending2FAMethodById(id: number, user_id: number) : Promise<any> {
+		try {
+			const pending2FAMethod = await db.get(
+				`SELECT * FROM pending_2fa WHERE id = ? AND user_id = ?`,
+				[id, user_id]
+			);
+			return pending2FAMethod ?? null;
 		} catch (err: any) {
 			console.error('SQLite Error: ', err);
 			throw new InternalServerError();
@@ -106,6 +119,20 @@ class TwoFactorRepository {
 		}
 	}
 	
+	async createPending2FAMethod(method: string, temp_value: string, expires_at: number, user_id: number) : Promise<any> {
+		try {
+			const newPending2FAMethod = await db.run(
+				`INSERT INTO pending_2fa(method, temp_value, expires_at, user_id) VALUES (?, ?, ?, ?)`,
+				[method, temp_value, expires_at, user_id]
+			);
+			console.log('WE JUST CREATED A NEW PENDING TOTP METHOD: ', newPending2FAMethod);
+			return newPending2FAMethod.lastID;
+		} catch (err) {
+			console.error('SQLite Error: ', err);
+			throw new InternalServerError();
+		}
+	}
+
 	async createPendingTOTP2FAMethod(method: string, totp_temp_code: string, expires_at: number, user_id: number) : Promise<any> {
 		try {
 			const newPending2FAMethod = await db.run(
@@ -149,7 +176,7 @@ class TwoFactorRepository {
 			[pending2FAMethod.id]
 		);
 
-		return await this.findEnabled2FAMethodById(new2FAMethod.lastID);
+		return await this.findEnabled2FAMethodById(new2FAMethod.lastID, user_id);
 	}
 
 	async enablePending2FAOTPMethod(method: string, user_id: number) : Promise<any> {
@@ -168,7 +195,7 @@ class TwoFactorRepository {
 			[pending2FAMethod.id]
 		);
 
-		return await this.findEnabled2FAMethodById(new2FAMethod.lastID);
+		return await this.findEnabled2FAMethodById(new2FAMethod.lastID, user_id);
 	}
 
 	async createOTP(method: string, code: string, expires_at: number, user_id: number) : Promise<any> {
@@ -237,11 +264,11 @@ class TwoFactorRepository {
 		}
 	}
 
-	async deletePending2FAById(id: number) {
+	async deletePending2FAById(id: number, user_id: number) {
 		try {
 			const runResult = await db.run(
-				`DELETE FROM pending_2fa WHERE id = ?`,
-				[id]
+				`DELETE FROM pending_2fa WHERE id = ? AND user_id = ?`,
+				[id, user_id]
 			);
 			return runResult.changes > 0;
 		} catch (err: any) {
