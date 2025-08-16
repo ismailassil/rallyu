@@ -2,10 +2,12 @@ import { ChecksIcon } from "@phosphor-icons/react";
 import React, { useCallback } from "react";
 import { useNotification } from "../context/NotificationContext";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { useTranslations } from "next-intl";
 
 const Footer = () => {
 	const { notifications } = useNotification();
 	const { socket } = useAuth();
+	const t = useTranslations("headers.notification.footer");
 
 	const handleClearAll = useCallback(() => {
 		const data = {
@@ -34,13 +36,13 @@ const Footer = () => {
 						onClick={handleMarkAll}
 					>
 						<ChecksIcon size={18} />
-						Mark all as read
+						{t("asread")}
 					</button>
 					<button
 						className="flex cursor-pointer items-end gap-2 text-xs hover:underline"
 						onClick={handleClearAll}
 					>
-						Clear All
+						{t("clear")}
 					</button>
 				</div>
 			)}

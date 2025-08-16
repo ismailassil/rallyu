@@ -4,12 +4,12 @@ import { useTranslations } from "next-intl";
 
 const Header = () => {
 	const { notifLength: length } = useNotification();
-	const t = useTranslations("headers.notification");
+	const t = useTranslations("headers.notification.header");
 
 	return (
 		<div className="bg-card flex w-full flex-col px-4 py-3 text-start">
 			<p className="font-bold">{t("title")}</p>
-			<p className="text-gray text-xs text-gray-400">{t("subtitle", { length })}</p>
+			<p className="text-gray text-xs text-gray-400">{t("subtitle", { count: length })}</p>
 		</div>
 	);
 };

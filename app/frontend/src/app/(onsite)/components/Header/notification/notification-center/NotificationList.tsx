@@ -6,12 +6,14 @@ import NotificationCard from "./NotificationCard";
 import { useHeaderContext } from "../../context/HeaderContext";
 import Loading from "../items/ui/LoadingIndicator";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { useTranslations } from "next-intl";
 
 const NotificationList = () => {
 	const { notifications, isLoading } = useNotification();
 	const boxRef = useRef<HTMLUListElement>(null);
 	const { isNotif, setIsBottom } = useHeaderContext();
 	const { socket } = useAuth();
+	const t = useTranslations("headers.notification.box");
 
 	const handleScroll = useCallback(() => {
 		if (!boxRef.current) return;
@@ -82,7 +84,7 @@ const NotificationList = () => {
 			) : (
 				<div className="flex flex-col items-center gap-3 py-20">
 					<BellSimpleSlashIcon size={52} />
-					<span className="text-sm">No Current Notifications</span>
+					<span className="text-sm">{t("no_payload")}</span>
 				</div>
 			)}
 		</>

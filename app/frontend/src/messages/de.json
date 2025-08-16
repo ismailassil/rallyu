@@ -3,7 +3,7 @@
     "titles": {
       "greetings": "Willkommen zurück,",
       "leaderboard": "Bestenliste",
-      "snapshots": "Momentaufnahmen",
+      "snapshots": "Schnappschüsse",
       "friends": "Freunde"
     },
     "game": {
@@ -30,8 +30,31 @@
       }
     },
     "notification": {
-      "title": "Benachrichtigungen",
-      "subtitle": "Du hast {count, plural, =0 {keine neuen Benachrichtigungen} =1 {# Benachrichtigung} other {# Benachrichtigungen}}"
+      "header": {
+        "title": "Benachrichtigungen",
+        "subtitle": "Du hast {count, plural, =0 {keine neuen Benachrichtigungen} =1 {# Benachrichtigung} other {# Benachrichtigungen}}"
+      },
+      "box": {
+        "no_payload": "Keine aktuellen Benachrichtigungen",
+        "description": {
+          "game": "hat dich zu einem Spiel herausgefordert!",
+          "friend_request": "hat dir eine Freundschaftsanfrage gesendet!",
+          "chat": "hat dir eine Nachricht geschickt.",
+          "tournament": "hat dich eingeladen, ein Turnier zu starten!",
+          "status": ""
+        }
+      },
+      "footer": {
+        "asread": "Alle als gelesen markieren",
+        "clear": "Alles löschen"
+      }
     }
+  },
+  "states": {
+    "accept": "Annehmen",
+    "decline": "Ablehnen",
+    "reply": "Antworten",
+    "clear": "löschen",
+    "join": "{type, select, Game {Spiel}, Tournament {Turnier}} beitreten"
   }
 }

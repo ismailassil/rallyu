@@ -1,12 +1,13 @@
 import Image from "next/image";
 import moment from "moment";
 import { motion } from "framer-motion";
-import { NOTIFICATION_TYPE, USER_NOTIFICATION } from "../types/notifications.types";
+import { USER_NOTIFICATION } from "../types/notifications.types";
 import Chat from "../items/Chat";
 import FriendRequest from "../items/FriendRequest";
 import GameOrTournament from "../items/GameOrTournament";
 import { XIcon } from "@phosphor-icons/react";
 import { useNotification } from "../context/NotificationContext";
+import { useTranslations } from "next-intl";
 
 interface Props {
 	data: USER_NOTIFICATION;
@@ -16,7 +17,8 @@ interface Props {
 
 function NotificationCard({ data, handler, handleChatUpdate }: Props) {
 	const { id, senderUsername, senderId, content, type, updatedAt, status, avatar, state } = data;
-	const textDescriptionRef = getTextDescription(type, content);
+	const t = useTranslations("headers.notification.box");
+	const textDescriptionRef = t(type);
 	const dateRef = moment.utc(updatedAt).local().fromNow();
 	const { handleAccept, handleDecline } = useNotification();
 
@@ -84,20 +86,3 @@ function NotificationCard({ data, handler, handleChatUpdate }: Props) {
 }
 
 export default NotificationCard;
-
-export function getTextDescription(type: NOTIFICATION_TYPE, content: string = ""): string {
-	switch (type) {
-		case "game":
-			return "challenged you to a game!";
-		case "friend_request":
-			return "sent you a friend request!";
-		case "chat":
-			return "sent you a message.";
-		case "tournament":
-			return "invited you to start a tournament!";
-		case "status":
-			return content;
-		default:
-			return "something";
-	}
-}
