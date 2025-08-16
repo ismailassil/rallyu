@@ -11,13 +11,13 @@ import FirstConversation from './FirstConversation';
 
 /*
 	==== TO FIX ===
-	--> put day date in the middle of the conversation
 	--> online icon
 	--> make getting  messages from database more fast
 	--> clicking on chat icon shout setSelectedUser to null 
 	--> block and play 
 	--> check to fliter just once
-
+	
+	--> put day date in the middle of the conversation *
 	--> last user get message should be in the top *
 	--> add image if conversation is empty *
 	--> isloading *
@@ -28,11 +28,10 @@ import FirstConversation from './FirstConversation';
 const ConversationBody = () => {
 	const [message, setMessage] = useState("");
 	const [option, setOption] = useState(false);
-	const { socket, BOSS, messages, setShowConversation, setSelectedUser, selectedUser } = useChat();
+	const { socket, BOSS, api, messages, setShowConversation, setSelectedUser, selectedUser } = useChat();
 	const [filteredMessages, setfilteredMessages] = useState<MessageType[]>([]);
 	const messageRef = useRef<HTMLDivElement | null>(null);
 	const route = useRouter();
-	const [isBlocked, setIsBlocked] = useState(false);
 
 	useEffect(() => {
 		messageRef.current?.scrollIntoView({ behavior: 'auto' });
@@ -125,9 +124,17 @@ const ConversationBody = () => {
 						<>
 							<div className="absolute right-2.5 top-10 w-32 rounded-xl border border-white/20 backdrop-blur-md bg-white/10 p-3 space-y-2 z-50">
 								<button className="w-full rounded-md py-2 bg-white/10 hover:bg-green-600
-								 hover:text-white transition duration-300 cursor-pointer">Play</button>
+								 transition duration-300 cursor-pointer">Play</button>
 								<button className="w-full rounded-md py-2 bg-white/10 hover:bg-red-600 
-								hover:text-white transition duration-300 cursor-pointer" onClick={() => setIsBlocked(prev => !prev)}>Block</button>
+								transition duration-300 cursor-pointer"
+									onClick={async () => {
+										await api.blockUser(selectedUser?.id)
+										setOption(false)
+										window.history.pushState(null, "", `/chat`) // ====> read more about this
+										setSelectedUser(null)
+										setShowConversation(false)
+									}}
+								>Block</button>
 							</div>
 							<div className="fixed inset-0 bg-transparent z-40" onClick={() => setOption(false)} />
 						</>
@@ -160,7 +167,7 @@ const ConversationBody = () => {
 			{/* ----------------------------------------------------typing message and send ---------------------------------------------------- */}
 
 			<div className=' flex flex-col border-t border-t-white/30 p-4 '>
-				{!isBlocked ? (<div className='flex focus-within:bg-white/12 duration-200 transition-all bg-white/8 p-3 rounded-lg justify-between gap-3 focus-within:ring-2 focus-within:ring-white/18'>
+				<div className='flex focus-within:bg-white/12 duration-200 transition-all bg-white/8 p-3 rounded-lg justify-between gap-3 focus-within:ring-2 focus-within:ring-white/18'>
 					<input
 						id='input-text'
 						type='text'
@@ -182,9 +189,7 @@ const ConversationBody = () => {
 						alt='send icon'
 						className='hover:cursor-pointer' onClick={sendData}
 					/>
-				</div>) : (
-					<div className=' text-red-500 flex justify-center h-full p-3'>{` You can't text ${selectedUser?.first_name + " " + selectedUser?.last_name}`}</div>
-				)}
+				</div>
 			</div>
 		</div>
 	)

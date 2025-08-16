@@ -10,9 +10,9 @@ export type LoggedUser = {
 
 
 export type MessageType = {
-	id: number;
 	senderId: number;
 	receiverId: number;
 	text: string;
 	created_at: string;
+	isSeen: boolean
 }

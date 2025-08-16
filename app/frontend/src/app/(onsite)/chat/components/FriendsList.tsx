@@ -10,7 +10,7 @@ const FriendsList = () => {
 
 	const [prefix, setPrefix] = useState('');
 	const [filteredSuggestions, setFilteredSuggestions] = useState<LoggedUser[]>([]);
-	const { messages, BOSS, setShowConversation, friends, setSelectedUser, selectedUser } = useChat();
+	const { messages, BOSS, setShowConversation, friends, setSelectedUser, selectedUser, } = useChat();
 
 	const [displayUsers, setDisplayUsers] = useState<LoggedUser[] | null>(null);
 	const hasFriends = displayUsers?.length! > 0;
@@ -49,7 +49,7 @@ const FriendsList = () => {
 		});
 
 		setDisplayUsers(sorted);
-	}, [prefix, filteredSuggestions, friends, messages]);
+}, [prefix, filteredSuggestions, friends, messages]);
 
 
 	const setDate = (msg: string): string => {
@@ -97,6 +97,13 @@ const FriendsList = () => {
 									setPrefix("")
 									setShowConversation(true)
 									// setIsSeen(true)
+									if (lastMessage)
+										{
+											console.log('\n\n==============\n\n')
+											lastMessage.isSeen = true
+										}
+										else
+											alert('ll')
 									window.history.pushState(null, "", `/chat/${user?.username}`) // ====> read more about this
 								}}>
 									<div className={`flex gap-4 hover:cursor-pointer hover:bg-white/5 hover:rounded-lg p-2 ${selectedUser?.id === user?.id ? 'bg-white/15 rounded-lg' : 'bg-white/0'} w-full`}>
@@ -115,12 +122,12 @@ const FriendsList = () => {
 												{lastMessage && <div className='text-gray-400 flex-shrink-0 ml-2 text-xs min-w-0 truncate'>{setDate(lastMessage.created_at)}</div>}
 											</div>
 											<div className='flex w-full justify-between items-center'>
-												<div className='text-gray-400 text-xs md:text-sm truncate flex-1 '>
+												<div className='text-gray-400 text-xs md:text-sm truncate flex-1'>
 													{/* <div className='text-gray-400 text-xs md:text-sm truncate flex-1 min-w-0 max-w-[160px] md:max-w-[200px]'> */}
 													{lastMessage?.text || 'No messages yet'}
 												</div>
-												<div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />
-												{/* {isSeen && <div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />} */}
+												{/* <div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' /> */}
+												{!lastMessage?.isSeen && <div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />}
 											</div>
 										</div>
 									</div>

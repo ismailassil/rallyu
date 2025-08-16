@@ -59,7 +59,7 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 					</div>
 					<div>
 						<p className="font-bold">{senderUsername}</p>
-						<p className="text-sm">{t("headers.notification.description" + type)}</p>
+						<p className="text-sm">{t("headers.notification.description." + type)}</p>
 					</div>
 				</div>
 				{ToastTypesDetails[type].icon}

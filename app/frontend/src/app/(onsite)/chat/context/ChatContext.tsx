@@ -1,48 +1,52 @@
 "use client"
-import { useContext, createContext, useState, ReactNode, useEffect } from "react"
+import { useContext, createContext, useState, ReactNode, useEffect, useCallback } from "react"
 import React from 'react';
 import { useAuth } from "../../contexts/AuthContext";
 import { LoggedUser, MessageType } from "../types/chat.types";
-
+// import { notificationSound } from "../../../../..//public/message_sound.wav"
 
 
 type ChatContextType = {
-  showConversation: boolean;
-  setShowConversation: (show: boolean) => void;
-  isLoadingFriends: boolean;
+	showConversation: boolean;
+	setShowConversation: (show: boolean) => void;
+	isLoadingFriends: boolean;
 	setIsLoadingFriends: (show: boolean) => void;
-  friends: any[] | null;
+	friends: any[] | null;
 	BOSS: LoggedUser | null;
 	socket: any;
-  api: any;
+	api: any;
 	messages: MessageType[];
 	setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
 	selectedUser: LoggedUser | null;
-	setSelectedUser : React.Dispatch<React.SetStateAction<LoggedUser | null>>;
+	setSelectedUser: React.Dispatch<React.SetStateAction<LoggedUser | null>>;
+	// isSeen: boolean;
+	// setIsSeen: React.Dispatch<React.SetStateAction<boolean>>
+
 }
 
 const ChatContext = createContext<ChatContextType | null>(null)
 
 export const useChat = () => {
-  const context = useContext(ChatContext)
-  if (context === null) {
-    throw new Error("useChat must be used within a ChatProvider");
-  }
-  return context
+	const context = useContext(ChatContext)
+	if (context === null) {
+		throw new Error("useChat must be used within a ChatProvider");
+	}
+	return context
 }
 
 type ChatProviderProps = {
-  children: ReactNode;
+	children: ReactNode;
 }
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
-  const [showConversation, setShowConversation] = useState(false)
-  const [friends, setFriends] = useState<LoggedUser[] | null>(null)
-  const [isLoadingFriends, setIsLoadingFriends] = useState(true)
+	const [showConversation, setShowConversation] = useState(false)
+	const [friends, setFriends] = useState<LoggedUser[] | null>(null)
+	const [isLoadingFriends, setIsLoadingFriends] = useState(true)
 	const [messages, setMessages] = useState<MessageType[]>([])
 	const [selectedUser, setSelectedUser] = useState<LoggedUser | null>(null)
-  const { socket, api, user : BOSS } = useAuth()
-	
+	const { socket, api, user: BOSS } = useAuth()
+	// const [isSeen, setIsSeen] = useState(true);
+
 	useEffect(() => {
 		async function getAllFriends() {
 			try {
@@ -55,17 +59,24 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			}
 		}
 		getAllFriends();
-	}, []);
+	}, [showConversation, selectedUser]);
+
+	const playMessageSound = () => {
+		const audio = new Audio("/message.mp3");
+		audio.play().catch((e) => {
+			console.log("Failed to play sound:", e);
+		});
+	};
 
 	useEffect(() => {
 		function handleMessage(data: MessageType) {
-				// console.log(data);
-				setMessages((prev) => [...prev, data]);
+			playMessageSound();
+			setMessages((prev) => [...prev, data]);
 		}
 		
 		function handleUpdateMessage(data: MessageType) {
-				// console.log(data);
-				setMessages((prev) => [...prev, data]);
+			playMessageSound(); // CHECK this -------------------------------------------
+			setMessages((prev) => [...prev, data]);
 		}
 
 		socket.on('chat_receive_msg', handleMessage)
@@ -76,22 +87,24 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 		}
 	}, [])
 
-  return (
-    <ChatContext.Provider value={{
-      showConversation,
-      setShowConversation,
-      isLoadingFriends,
+	return (
+		<ChatContext.Provider value={{
+			showConversation,
+			setShowConversation,
+			isLoadingFriends,
 			setIsLoadingFriends,
-      api,
-      friends,
+			api,
+			friends,
 			socket,
 			BOSS,
 			messages,
 			setMessages,
 			selectedUser,
 			setSelectedUser,
-    }}>
-      {children}
-    </ChatContext.Provider>
-  )
+			// isSeen,
+			// setIsSeen
+		}}>
+			{children}
+		</ChatContext.Provider>
+	)
 }

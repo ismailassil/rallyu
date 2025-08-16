@@ -19,7 +19,7 @@ const Chat = ({ username }: { username?: string }) => {
 
 
 	useEffect(() => {
-		if (!username || username.length === 0 || !friends) return;
+		if (!username || username.length === 0 || !friends || friends.length === 0)	return;
 
 		const match = friends.find((element) => element.username === username);
 		if (match) {
@@ -27,15 +27,14 @@ const Chat = ({ username }: { username?: string }) => {
 			setShowConversation(true);
 		} else
 			route.replace('/chat/');
-
-	}, [friends, username, route, setShowConversation]);
+			
+		}, [username, route, friends?.length]);
 
 	useEffect(() => {
 		if (!BOSS?.id) return;
 
 		api.instance.get('/chat/history')
 			.then((response: any) => {
-				console.log(response.data)
 				setMessages(response?.data)
 			})
 			.catch((error: any) => {
@@ -64,7 +63,7 @@ const Chat = ({ username }: { username?: string }) => {
 
 							{/* ---------------------------------------thinking image--------------------------------------- */}
 
-							<div className={!showConversation ? `hidden md:flex md:w-[63%] border-2 h-full border-white/30 rounded-lg bg-white/4` : ` hidden`}>
+							<div className={!showConversation ? `hidden md:flex md:w-[63%] border h-full border-white/30 rounded-lg bg-white/4` : ` hidden`}>
 								<div className="flex size-full flex-col items-center justify-center">
 									<Image
 										width={300}
