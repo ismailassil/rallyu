@@ -6,7 +6,7 @@ import ProfilePreview from './ProfilePreview';
 import PersonalInformationsForm from './PersonalInformationsForm';
 import useUserProfile from '@/app/(onsite)/(user-profile)/users/context/useUserProfile';
 import useForm from '../hooks/useForm';
-import { alertError, alertLoading, alertSuccess } from '@/app/(auth)/components/Alert';
+import { alertError, alertLoading, alertSuccess } from '@/app/(auth)/components/CustomToast';
 import { toast } from 'sonner';
 
 export interface FormDataState {

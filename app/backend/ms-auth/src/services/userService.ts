@@ -42,17 +42,29 @@ class UserService {
 		return this.extractPublicUserInfo(targetUser); // TODO: SHOULD BE REMOVED
 	}
 
-	async getUserStats(requesterID: number, targetUsername: string) {
+	// USER METRICS (LEVEL/STREAKS/RANK) + USER MATCHES TOTALS (W/L/D)
+	async getUserPerformance(requesterID: number, targetUsername: string) {
 		const targetUser = await this.getUserByUsername(targetUsername);
 		if (!targetUser)
 			throw new UserNotFoundError();
 
 		await this.userRelationCheck(requesterID, targetUser.id);
 
-		return await this.statsService.getUserStats(targetUser.id);
+		return await this.statsService.getUserPerformance(targetUser.id);
 	}
 
-	async getUserMatches(requesterID: number, targetUsername: string, page: number) {
+	// USER METRICS (LEVEL/STREAKS/RANK) + USER MATCHES TOTALS (W/L/D)
+	// async getUserFullStats(requesterID: number, targetUsername: string) {
+	// 	const targetUser = await this.getUserByUsername(targetUsername);
+	// 	if (!targetUser)
+	// 		throw new UserNotFoundError();
+
+	// 	await this.userRelationCheck(requesterID, targetUser.id);
+
+	// 	return await this.statsService.getUserSummaryStats(targetUser.id);
+	// }
+
+	async getUserMatchesPage(requesterID: number, targetUsername: string, page: number) {
 		const targetUser = await this.getUserByUsername(targetUsername);
 		if (!targetUser)
 			throw new UserNotFoundError();
@@ -64,30 +76,30 @@ class UserService {
 
 	// TODO: USE ID INSTEAD OF USERNAME
 	// TODO: SHOULD THIS FUNCTION BE ONLY TAKING TARGET? THE LOGIC OF RELATION BETWEEN USERS CHECK SHOULD BE OUTSIDE?
-	async getUserFullInfo(requesterID: number, targetUsername: string) {
-		const targetUser = await this.getUserByUsername(targetUsername);
-		if (!targetUser)
-			throw new UserNotFoundError();
+	// async getUserFullInfo(requesterID: number, targetUsername: string) {
+	// 	const targetUser = await this.getUserByUsername(targetUsername);
+	// 	if (!targetUser)
+	// 		throw new UserNotFoundError();
 		
-		// RELATION CHECK
-		await this.userRelationCheck(requesterID, targetUser.id);
+	// 	// RELATION CHECK
+	// 	await this.userRelationCheck(requesterID, targetUser.id);
 
-		const currentRelation = (requesterID === targetUser.id) ? null : await this.relationsService.getRelationship(requesterID, targetUser.id);
+	// 	const currentRelation = (requesterID === targetUser.id) ? null : await this.relationsService.getRelationship(requesterID, targetUser.id);
 
-		const statsSummary = await this.statsService.getUserStatsSummary(targetUser.id); // TODO: REVIEW THIS
+	// 	const statsSummary = await this.statsService.getUserStatsSummary(targetUser.id); // TODO: REVIEW THIS
 
-		const recentMatches = await this.statsService.getUserRecentMatches(targetUser.id); // TODO: REVIEW THIS
+	// 	const recentMatches = await this.statsService.getUserRecentMatches(targetUser.id); // TODO: REVIEW THIS
 
-		return {
-			user: this.extractPublicUserInfo(targetUser), // TODO: REMOVE THIS
-			friendship_status: currentRelation, // TODO: RENAME THIS IN BOTH BACKEND AND FRONTEND
-			stats: {
-				user: statsSummary.user_stats,
-				matches: statsSummary.matches_stats
-			},
-			matches: recentMatches
-		}
-	}
+	// 	return {
+	// 		user: this.extractPublicUserInfo(targetUser), // TODO: REMOVE THIS
+	// 		friendship_status: currentRelation, // TODO: RENAME THIS IN BOTH BACKEND AND FRONTEND
+	// 		stats: {
+	// 			user: statsSummary.user_stats,
+	// 			matches: statsSummary.matches_stats
+	// 		},
+	// 		matches: recentMatches
+	// 	}
+	// }
 
 	// getAllUsers (Pagination) admin-only
 

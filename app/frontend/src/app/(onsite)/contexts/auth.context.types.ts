@@ -9,7 +9,6 @@ export type LoggedInUser = {
 	username: string,
 	email: string,
 	bio: string,
-	avatar_path: string,
 	avatar_url: string,
 	last_message : MessageType
 }

@@ -89,17 +89,17 @@ async function userRouter(fastify: FastifyInstance) {
 	});
 	
 	// GET USER STATS
-	fastify.get('/:username/stats', {
+	fastify.get('/:username/performance', {
 		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
-		handler: userController.fetchUserStats.bind(userController)
+		handler: userController.fetchUserPerformance.bind(userController)
 	});
 	
 	// GET USER MATCHES
 	fastify.get('/:username/matches', {
 		schema: userMatchesSchema,
 		preHandler: fastify.authenticate,
-		handler: userController.fetchUserMatches.bind(userController)
+		handler: userController.fetchUserMatchesPage.bind(userController)
 	});
 
 	// UPDATE USER AVATAR

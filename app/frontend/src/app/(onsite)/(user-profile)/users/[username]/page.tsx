@@ -36,25 +36,25 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 						user_id={userProfile.user.id}
 						fullName={userProfile.user.first_name + ' ' + userProfile.user.last_name}
 						username={userProfile.user.username}
-						avatar={userProfile.user.avatar_path}
+						avatarSrc={userProfile.user.avatar_url}
 						bio={userProfile.user.bio}
-						friendshipStatus={userProfile.friendship_status}
-						level={userProfile.stats.user.level}
-						globalRank={userProfile.stats.user.rank || 1}
-						winRate={userProfile.stats.matches.win_rate}
-						currentStreak={userProfile.stats.user.current_streak}
+						relationStatus={userProfile.user.relation}
+						level={userProfile.performance.level}
+						globalRank={userProfile.performance.rank || 1337}
+						winRate={userProfile.performance.win_rate}
+						currentStreak={userProfile.performance.current_streak}
 					/>
 					<div
 						className="hide-scrollbar flex flex-1 flex-col space-x-4
 							space-y-4 overflow-scroll overflow-x-hidden lg:flex-row lg:space-y-0"
 					>
 						<PerformanceCard 
-							totalXP={userProfile.stats.user.total_xp}
-							totalMatches={userProfile.stats.matches.matches}
-							longestStreak={userProfile.stats.user.longest_streak}
-							wins={userProfile.stats.matches.wins}
-							losses={userProfile.stats.matches.losses}
-							draws={userProfile.stats.matches.draws}
+							totalXP={userProfile.performance.total_xp}
+							totalMatches={userProfile.performance.total_matches}
+							longestStreak={userProfile.performance.longest_streak}
+							wins={userProfile.performance.total_wins}
+							losses={userProfile.performance.total_losses}
+							draws={userProfile.performance.total_draws}
 							timeSpent={timeSpentMockData}
 						/>
 						<GamesHistoryCard matches={userProfile.matches} />

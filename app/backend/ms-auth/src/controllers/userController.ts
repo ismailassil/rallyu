@@ -57,23 +57,6 @@ class UserController {
 		}
 	}
 
-	// GET FULL USER PROFILE (USER INFO + STATS SUMMARY + RECENT MATCHES + RELATIONSHIP)
-	// async fetchMe(request: FastifyRequest, reply: FastifyReply) {
-	// 	try {
-	// 		const user_id = request.user?.sub;
-
-	// 		const userProfile = await this.userService.fetchMe(user_id!);
-
-	// 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, userProfile);
-
-	// 		reply.code(status).send(body);
-	// 	} catch (err: any) {
-	// 		const { status, body } = AuthResponseFactory.getErrorResponse(err);
-
-	// 		reply.code(status).send(body);
-	// 	}
-	// }
-
 	// GET BASIC USER PROFILE (USER INFO)
 	async fetchUser(request: FastifyRequest, reply: FastifyReply) {
 		try {
@@ -92,14 +75,14 @@ class UserController {
 		}
 	}
 
-	async fetchUserStats(request: FastifyRequest, reply: FastifyReply) {
+	async fetchUserPerformance(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
 			const { username } = request.params as IProfileRequest;
 
-			const userStats = await this.userService.getUserStats(user_id!, username);
+			const userPerformance = await this.userService.getUserPerformance(user_id!, username);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userStats);
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userPerformance);
 
 			reply.code(status).send(body);
 		} catch (err: any) {
@@ -109,13 +92,13 @@ class UserController {
 		}
 	}
 
-	async fetchUserMatches(request: FastifyRequest, reply: FastifyReply) {
+	async fetchUserMatchesPage(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
 			const { page } = request.query as { page: number };
 			const { username } = request.params as IProfileRequest;
 
-			const userStats = await this.userService.getUserMatches(user_id!, username, page);
+			const userStats = await this.userService.getUserMatchesPage(user_id!, username, page);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userStats);
 

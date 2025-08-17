@@ -155,46 +155,18 @@ export class APIClient {
 
 	/*--------------------------------- Users Profiles ---------------------------------*/
 	
-	
-	async getAllFriends(){
-		const { data: res } = await this.client.get(`/users/friends`);
-		return res.data;
-	}
-	async getAllBlocked(){
-		const { data: res } = await this.client.get(`/users/blocked`);
-		return res.data;
-	}
-	async getAllIncomingFriendRequests(){
-		const { data: res } = await this.client.get(`/users/friends/requests/incoming`);
-		return res.data;
-	}
-	async getAllOutgoingFriendRequests(){
-		const { data: res } = await this.client.get(`/users/friends/requests/outgoing`);
-		return res.data;
-	}
-
-	async getUserInfo(username: string) : Promise<IUserProfile> {
-		const { data: res } = await this.client.get(`/users/${username}/profile`);
-		return res.data;
-	}
-	
-	async getUser(username: string) : Promise<any> {
+	async fetchUser(username: string) {
 		const { data: res } = await this.client.get(`/users/${username}`);
 		return res.data;
 	}
 	
-	async getUserPerformance(username: string) {
+	async fetchUserPerformance(username: string) {
 		const { data: res } = await this.client.get(`/users/${username}/performance`);
 		return res.data;
 	}
 	
-	async getUserGamesHistory(username: string) {
-		const { data: res } = await this.client.get(`/users/${username}/games?page=1`); // TODO
-		return res.data;
-	}
-
-	async getUserProfile(username: string) : Promise<IUserProfile> {
-		const { data: res } = await this.client.get(`/users/${username}/profile`);
+	async fetchUserMatchesPage(username: string, page: number) {
+		const { data: res } = await this.client.get(`/users/${username}/matches?page=${page}`); // TODO
 		return res.data;
 	}
 
@@ -217,7 +189,29 @@ export class APIClient {
 		return res.data;
 	}
 
+	// async checkUsernameAvailable(username: string) {
+	// 	const { data: res } = await this.client.get(`/users/${username}/performance`);
+
+	// }
+
 	/*--------------------------------- Users Relations ---------------------------------*/
+
+	async getAllFriends(){
+		const { data: res } = await this.client.get(`/users/friends`);
+		return res.data;
+	}
+	async getAllBlocked(){
+		const { data: res } = await this.client.get(`/users/blocked`);
+		return res.data;
+	}
+	async getAllIncomingFriendRequests(){
+		const { data: res } = await this.client.get(`/users/friends/requests/incoming`);
+		return res.data;
+	}
+	async getAllOutgoingFriendRequests(){
+		const { data: res } = await this.client.get(`/users/friends/requests/outgoing`);
+		return res.data;
+	}
 
 	async sendFriendRequest(user_id: number) {
 		const { data: res } = await this.client.post(`/users/${user_id}/friends/requests`);
@@ -299,8 +293,11 @@ export class APIClient {
 		console.log('APIClient::login();');
 		const { data: res } = await this.client.post('/auth/login', payload);
 		console.log('login: ', res);
+
 		this.setAccessToken(res.data.accessToken);
-		return res.data;
+
+		const user = this.normalizeUser(res.data.user);
+		return { user, accessToken: res.data.accessToken };
 	}
 
 	async logout() {
@@ -314,15 +311,9 @@ export class APIClient {
 		const { data: res } = await this.client.get('/auth/refresh');
 		console.log('refreshToken: ', res);
 		this.setAccessToken(res.data.accessToken);
-		return res.data;
-	}
-	
-	async fetchMe() {
-		console.log('APIClient::fetchMe();');
-		console.log('accessToken: ', this.accessToken);
-		const { data: res } = await this.client.get(`/auth/me`);
-		console.log('fetchCurrentUser: ', res);
-		return res.data;
+
+		const user = this.normalizeUser(res.data.user);
+		return { user, accessToken: res.data.accessToken };
 	}
 	
 	async register(payload: { 
@@ -353,9 +344,14 @@ export class APIClient {
 		return (ws);
 	}
 
+	private normalizeUser(user: any) {
+		user.avatar_url = (user.avatar_path && user.avatar_path[0] === "/") ? `http://localhost:4025/api/users${user.avatar_path}` : user.avatar_path;
+		return user;
+	}
+
 	private classifyError(err: any) {
-		if (!err.response) {
-			return { type: 'network', message: 'Something went wrong. Please try again.' };
+		if (err.response.data.message.includes('ECONNREFUSED')) {
+			return { type: 'network', message: 'Something went wrong, please try again' };
 		}
 		// const status = err.response.status;
 		// if (status === 401) {

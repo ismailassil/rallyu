@@ -107,14 +107,24 @@ class StatsService {
 	// 	return userProfile;
 	// }
 
-	async getUserStatsSummary(user_id: number) : Promise<any | null> {
+	async getUserPerformance(user_id: number) : Promise<any | null> {
 		const existingUser = await this.userRepository.findById(user_id);
 		if (!existingUser)
 			throw new UserNotFoundError();
 
-		const summary = await this.matchesRepository.getUserSummaryStats(existingUser.id);
+		const performance = await this.matchesRepository.getUserPerformance(existingUser.id);
 
-		return summary;
+		return performance;
+	}
+
+	async getUserStats(user_id: number) {
+		const existingUser = await this.userRepository.findById(user_id);
+		if (!existingUser)
+			throw new UserNotFoundError();
+
+		const stats = await this.matchesRepository.getUserStats(user_id);
+
+		return stats;
 	}
 
 	async getUserRecentMatches(user_id: number) : Promise<any | null> {
@@ -125,16 +135,6 @@ class StatsService {
 		const recentMatches = await this.matchesRepository.getUserRecentMatches(user_id);
 
 		return recentMatches;
-	}
-
-	async getUserStats(user_id: number) {
-		const existingUser = await this.userRepository.findById(user_id);
-		if (!existingUser)
-			throw new UserNotFoundError();
-
-		const userStats = await this.matchesRepository.getUserStats(user_id);
-
-		return userStats;
 	}
 
 	async getUserMatches(user_id: number, page: number) {

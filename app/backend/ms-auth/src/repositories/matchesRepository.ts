@@ -260,7 +260,7 @@ class MatchesRepository {
 		}
 	}
 
-	async getUserSummaryStats(user_id: number) : Promise<any | null> {
+	async getUserPerformance(user_id: number) : Promise<any | null> {
 		try {
 			const TMPTABLESQL = this.getTMPTABLESQL('all', 'all', 1);
 
@@ -268,10 +268,10 @@ class MatchesRepository {
 
 			const matches_stats = await db.get(`
 				SELECT
-					COUNT(*) AS matches,
-					COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score > player_away_score) OR (player_away_id = ? AND player_away_score > player_home_score) THEN 1 ELSE 0 END), 0) AS wins,
-					COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score < player_away_score) OR (player_away_id = ? AND player_away_score < player_home_score) THEN 1 ELSE 0 END), 0) AS losses,
-					COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score = player_away_score) OR (player_away_id = ? AND player_away_score = player_home_score) THEN 1 ELSE 0 END), 0) AS draws,
+					COUNT(*) AS total_matches,
+					COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score > player_away_score) OR (player_away_id = ? AND player_away_score > player_home_score) THEN 1 ELSE 0 END), 0) AS total_wins,
+					COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score < player_away_score) OR (player_away_id = ? AND player_away_score < player_home_score) THEN 1 ELSE 0 END), 0) AS total_losses,
+					COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score = player_away_score) OR (player_away_id = ? AND player_away_score = player_home_score) THEN 1 ELSE 0 END), 0) AS total_draws,
 					100.00 * COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score > player_away_score) OR (player_away_id = ? AND player_away_score > player_home_score) THEN 1 ELSE 0 END) * 1.0 / NULLIF(COUNT(*), 0), 0) AS win_rate
 				FROM matches
 				WHERE (player_home_id = ? OR player_away_id = ?)
@@ -279,12 +279,12 @@ class MatchesRepository {
 
 			const user_stats = await db.get(`
 				SELECT
-					*
+					level, total_xp, current_streak, longest_streak
 				FROM users_stats
 				WHERE user_id = ?
 			`, [user_id]);
 
-			return { user_stats, matches_stats };
+			return { ...user_stats, ...matches_stats };
 		} catch (err: any) {
 			console.error('SQLite Error: ', err);
 			throw new InternalServerError();

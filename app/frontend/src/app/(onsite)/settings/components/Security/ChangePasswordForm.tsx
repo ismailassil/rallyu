@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import FormField from "@/app/(auth)/signup/components/FormField";
 import useForm from "../hooks/useForm";
-import { alertError, alertLoading, alertSuccess } from "@/app/(auth)/components/Alert";
+import { alertError, alertLoading, alertSuccess } from "@/app/(auth)/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 
 export default function ChangePasswordForm() {

@@ -8,15 +8,15 @@ type ProfileCardProps = {
 	fullName: string,
 	username: string,
 	bio: string,
-	avatar: string,
-	friendshipStatus: string | null,
+	avatarSrc: string,
+	relationStatus: string | null,
 	level: number,
 	globalRank: number,
 	winRate: number,
 	currentStreak: number
 };
 
-export default function ProfileCard({ user_id, fullName, username, bio, avatar, friendshipStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
+export default function ProfileCard({ user_id, fullName, username, bio, avatarSrc, relationStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
 	// const [imgSrc, setImgSrc] = useState(null);
 
 	// useEffect(() => {
@@ -48,8 +48,8 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatar, 
 						<p className={`text-sm text-gray-400 lg:text-lg`}>
 							{bio || 'Something went wrong, please try again later.'}
 						</p>
-						{friendshipStatus && <Relations user_id={user_id} status={friendshipStatus}/>}
-						{!friendshipStatus && 
+						{relationStatus && <Relations user_id={user_id} status={relationStatus}/>}
+						{!relationStatus && 
 							<div className='flex gap-3 select-none'>
 								<div className={`flex flex-row pl-3.5 pr-3.5 pb-2 pt-2 gap-3 items-center ${funnelDisplay.className}
 									h-11 bg-white/4 rounded-xl border border-white/10 backdrop-blur-2xl transition-all duration-200
@@ -77,7 +77,7 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatar, 
 						<Image
 							className={`h-full w-full object-cover`}
 							// src={avatar || '/profile/image.png'}
-							src={avatar}
+							src={avatarSrc}
 							// width={100}
 							// height={100}
 							// quality={100}

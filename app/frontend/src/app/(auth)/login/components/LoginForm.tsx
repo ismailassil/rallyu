@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import Image from 'next/image';
 import FormFieldError from '../../signup/components/FormFieldError';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toast } from 'sonner';
-import { alertError, alertSuccess } from '../../components/Alert';
+import { alertError, alertLoading, alertSuccess } from '../../components/CustomToast';
 
 export default function LoginForm() {
 	const { login } = useAuth();
@@ -17,6 +17,10 @@ export default function LoginForm() {
 	const [passwordError, setPasswordError] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	useEffect(() => {
+		console.log('MOUNTING LOGIN FORM COMPONENT');
+	}, []);
 
 	function handleToggleShowPassword() {
 		setShowPassword(!showPassword);
@@ -37,8 +41,7 @@ export default function LoginForm() {
 	
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
-		toast.dismiss();
-
+		
 		const usernameErr = username ? '' : 'Username is required';
 		const passwordErr = password ? '' : 'Password is required';
 		setUsernameError(usernameErr);
@@ -49,10 +52,11 @@ export default function LoginForm() {
 		
 		setIsSubmitting(true);
 		try {
-			// alertLoading('Loggin you in...');
+			alertLoading('Loggin you in...');
 			await login(username, password);
 			alertSuccess('Logged in successfully');
 		} catch (err: any) {
+			console.log('ERROR CATCHED IN LOGIN FORM SUBMIT: ', err);
 			const msg = err.message;
 			alertError(msg);
 		} finally {

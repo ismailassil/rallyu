@@ -30,12 +30,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		async function initializeAuth() {
 			try {
 				const { user, accessToken } = await apiClient.refreshToken();
-	
-				// TODO: SHOULD BE DONE SOMEWHERE ELSE
-				const userAvatarBlob = await apiClient.getUserAvatar(user.avatar_path);
-				const userAvatarURL = URL.createObjectURL(userAvatarBlob);
-				user.avatar_url = userAvatarURL;
-	
+
 				setLoggedInUser(user);
 				setIsAuthenticated(true);
 				socket.connect(accessToken);
@@ -53,13 +48,15 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	
 	async function login(username: string, password: string) {
 		try {
-			setIsLoading(true);
+			// setIsLoading(true);
 			const { user, accessToken } = await apiClient.login({ username, password });
 
 			// TODO: SHOULD BE DONE SOMEWHERE ELSE
-			const userAvatarBlob = await apiClient.getUserAvatar(user.avatar_path);
-			const userAvatarURL = URL.createObjectURL(userAvatarBlob);
-			user.avatar_url = userAvatarURL;
+			if (user.avatar_path[0] == '/')
+				user.avatar_url = 'http://localhost:4025/api/users' + user.avatar_path;
+			// const userAvatarBlob = await apiClient.getUserAvatar(user.avatar_path);
+			// const userAvatarURL = URL.createObjectURL(userAvatarBlob);
+			// user.avatar_url = userAvatarURL;
 
 			setLoggedInUser(user);
 			setIsAuthenticated(true);
@@ -70,7 +67,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			// setUser(null);
 			// setIsAuthenticated(false);
 		} finally {
-			setIsLoading(false);
+			// setIsLoading(false);
 		}
 	}
 
