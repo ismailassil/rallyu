@@ -2,9 +2,9 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import Loading from "../game/components/Loading";
 import TournamentPanel from "./components/TournamentPanel";
 import { useAuth } from "../contexts/AuthContext";
+import Loading from "./components/Items/Loading";
 
 export default function Dashboard() {
 	const [start, setStart] = useState(false);

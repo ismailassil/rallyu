@@ -10,6 +10,12 @@ import useUserProfile, { UserProfileType } from "@/app/(onsite)/(user-profile)/u
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import FinishedUI from "./components/FinishedUI";
 import unicaOne from "@/app/fonts/unicaOne";
+import FooterPending from "./components/FooterPending";
+import FooterGoing from "./components/FooterGoing";
+import FooterFinished from "./components/FooterFinished";
+import StateStat from "./components/StateStat";
+import FooterCancelled from "./components/FooterCancelled";
+import Stat from "./components/Stat";
 
 const Brackets = function (props) {
 	const { user, api } = useAuth();
@@ -26,6 +32,8 @@ const Brackets = function (props) {
 
 				const data = res.data;
 
+				console.log(data);
+
 				setTournament(data.data);
 				isPlayerJoined(data.data);
 			} catch (err) {
@@ -36,29 +44,7 @@ const Brackets = function (props) {
 		loadData();
 	}, [slug]);
 
-	const joinTournamentHandler = async (e) => {
-		try {
-			const res = await api.instance.patch(`/v1/tournament/match/join/${slug}`, { id: user?.id });
-			
-			console.log(res.data);
-			setJoined(true);
-		} catch (err: unknown) {
-			console.error(err);
-		}
-	};
 
-	const leaveTournamentHandler = async (e) => {
-		try {
-			e.preventDefault();
-			const res = await api.instance.patch(`/v1/tournament/match/leave/${slug}`, { id: user?.id });
-
-			console.log(res);
-
-			setJoined(false);
-		} catch (err: unknown) {
-			console.log(err);
-		}
-	};
 
 	const winnerStyle = (matchNumber, player, type) => {
 		const style: string = type === "name" ? "grow" : "font-black";
@@ -90,6 +76,8 @@ const Brackets = function (props) {
 		return setJoined(false);
 	};
 
+	//** Add stats Host - Start_date - mode - contenders_size **/
+
 	return (
 		<AnimatePresence>
 			<motion.main
@@ -102,57 +90,44 @@ const Brackets = function (props) {
 					<div className=" max-w-300 w-full gap-10 p-4 flex flex-col min-h-fit">
 						{tournament && (
 							<>
-								<div className="mb-20 flex justify-between items-center">
-									<h1 className="text-3xl font-medium">{`${tournament?.tournament.title} - Tournament`}</h1>
-									{
-										tournament.tournament.state == "finished" && 
-											<div className={`overflow-hidden bg-card  relative text-lg
-															${unicaOne.className} text-blue-400
-															rounded-lg min-h-13 flex items-center px-6
-															border-1 border-white/10 hover:scale-102 duration-400 transition-all
-											`}>
-												<p>Tournament is finished</p>
-												<div
-													className="tournament-bg hover:scale-101 duration-900 absolute left-0 top-0
-														h-full w-full opacity-0 transition-all hover:opacity-20"
-												/>
-											</div>
-									}
-									{
-										tournament.tournament.state == "pending" &&
-										!joined ? (
-											<button
-												className="bg-main min-w-45 min-h-10 hover:scale-102
-																group relative flex max-h-10
-																cursor-pointer items-center justify-center
-																gap-3 overflow-hidden rounded-lg text-sm
-																transition-all duration-300
-																"
-												onClick={joinTournamentHandler}
-											>
-												Join
-											</button>
-										) : (
-											<button
-												className="bg-card border-card min-w-45 min-h-10 hover:scale-102 group
-																relative flex max-h-10 cursor-pointer
-																items-center justify-center gap-3
-																overflow-hidden rounded-lg border text-sm
-																transition-all duration-300
-																"
-												onClick={leaveTournamentHandler}
-											>
-												Leave
-											</button>
-										)
-									}
+								<div className="mb-10 flex justify-between items-center">
+									<h1 className="text-3xl font-medium">{`${tournament?.tournament.title} - Tournament`}&#127955;</h1>
+									<>
+										{
+											tournament.tournament.state == "pending" && 
+												<StateStat color="text-purple-400" statement="Tournament has not started" />
+										}
+										{
+											tournament.tournament.state == "going" && 
+												<StateStat color="text-yellow-400" statement="Tournament in progress" />
+										}
+										{
+											tournament.tournament.state == "finished" &&
+												<StateStat color="text-blue-400" statement="Tournament is completed" />
+										}
+										{
+											tournament.tournament.state == "cancelled" &&
+												<StateStat color="text-red-400" statement="Tournament is cancelled" />
+										}
+									</>
+								</div>
+								<div 
+									className=" grid w-full grid-cols-1 items-center justify-between md:grid-cols-2
+												lg:grid-rows-none gap-4 mb-10"
+								>
+									<Stat subject="Host" result={tournament.tournament.host_id} />
+									<Stat subject="Start Date" result={tournament.tournament.start_date.replace("T", " ")} />
+									<Stat subject="Contenders Size" result=
+										{`${tournament.tournament.contenders_joined}/${tournament.tournament.contenders_size}`}
+									/>
+									<Stat subject="Mode" result={tournament.tournament.mode} />
 								</div>
 								<h2 className="text-xl font-bold text-gray-300">Bracket</h2>
 								<div className="mb-8 flex justify-evenly font-extralight">
 									<p>Semi-final</p>
 									<p>Final</p>
 								</div>
-								<div className="flex w-full items-center justify-center">
+								<div className="flex w-full items-center justify-center mb-4">
 									<div className="max-w-3xs mr-[81px] flex w-full flex-col gap-14">
 										<div className="bg-card border-br-card relative flex w-full flex-col border-2">
 											<div className="flex px-6 py-3">
@@ -306,14 +281,30 @@ const Brackets = function (props) {
 										</div>
 									</div>
 								</div>
-								{
-									tournament.tournament.state == "ongoing" && joined &&
-										<ReadyButton slug={slug} readyProp={ready} />
-								}
-								{
-									tournament.tournament.state == "finished" &&
-										<FinishedUI />
-								}
+								<>
+									{
+										tournament.tournament.state == "pending" &&
+											<FooterPending joined={joined} setJoined={setJoined} slug={slug} title={tournament?.tournament.title} />
+									}
+								</>
+								<>
+									{
+										tournament.tournament.state == "ongoing" &&
+											<FooterGoing slug={slug} readyProp={ready} />
+									}
+								</>
+								<>
+									{
+										tournament.tournament.state == "finished" &&
+											<FooterFinished winner={"Salah"} />
+									}
+								</>
+								<>
+									{
+										tournament.tournament.state == "cancelled" &&
+											<FooterCancelled title={tournament?.tournament.title} />
+									}
+								</>
 							</>
 						)}
 					</div>

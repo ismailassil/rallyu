@@ -1,11 +1,9 @@
 import StartButton from "./Items/StartButton";
 import Filter from "./Items/Filter";
 import TournamentCard from "./Items/TournamentCard";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import unicaOne from "@/app/fonts/unicaOne";
 import { motion } from "framer-motion";
-import { ArrowClockwise, ArrowRight } from "@phosphor-icons/react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "../../contexts/AuthContext";
 
 interface errorObj {
