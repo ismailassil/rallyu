@@ -1,6 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import FormField from '@/app/(auth)/signup/components/FormField';
+import LanguageSwitcher from '../items/LanguageSwitcher';
 
 // interface FormFieldProps {
 // 	field: keyof FormDataState;
@@ -48,7 +49,7 @@ export default function PersonalInformationsForm({
 }: PersonalInformationsFormProps) {
 	return (
 		<div className="flex flex-col gap-4">
-			<form id='settings-personal-info-form' action="">
+			<form id='settings-personal-info-form' action="" className='flex flex-col gap-5'>
 				<FormField
 					className='field flex flex-col gap-0.5 min-w-0 flex-1'
 					iconSrc='/icons/firstname.svg'
@@ -115,6 +116,7 @@ export default function PersonalInformationsForm({
 					// setFieldAvailable={updateFieldAvailable}
 				/>
 			</form>
+			<LanguageSwitcher />
 		</div>
 	);
 }

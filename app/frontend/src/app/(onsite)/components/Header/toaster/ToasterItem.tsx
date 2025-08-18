@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TOAST_PAYLOAD, ToastTypesDetails } from "./Toast.types";
 import { useNotification } from "../notification/context/NotificationContext";
+import { useTranslations } from "next-intl";
 
 interface Props {
 	data: TOAST_PAYLOAD;
@@ -14,6 +15,7 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 	const [progress, setProgress] = useState(100);
 	const router = useRouter();
 	const { handleRemove, handleAccept, handleDecline } = useNotification();
+	const t = useTranslations("");
 
 	useEffect(() => {
 		const TIME = DEFAULT_TIME;
@@ -57,7 +59,7 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 					</div>
 					<div>
 						<p className="font-bold">{senderUsername}</p>
-						<p className="text-sm">{ToastTypesDetails[type].title}</p>
+						<p className="text-sm">{t("headers.notification.description." + type)}</p>
 					</div>
 				</div>
 				{ToastTypesDetails[type].icon}
@@ -68,13 +70,13 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 						className="hover:bg-main w-full"
 						onClick={() => handleAccept(data, true)}
 					>
-						Accept
+						{t("states.accept")}
 					</button>
 					<button
 						className="w-full hover:bg-red-600"
 						onClick={() => handleDecline(data, true)}
 					>
-						Decline
+						{t("states.decline")}
 					</button>
 				</div>
 			) : (
@@ -82,7 +84,7 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 					className="transition-color flex h-8 w-full cursor-pointer items-center justify-center divide-x divide-white/20 border-t-1 border-t-white/20 text-sm duration-400 hover:bg-white/10"
 					onClick={handleChat}
 				>
-					Reply
+					{t("states.reply")}
 				</button>
 			)}
 		</div>

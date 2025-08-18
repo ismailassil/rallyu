@@ -1,6 +1,9 @@
+import { useTranslations } from "next-intl";
 import GameCard from "../../components/Main/GameCard";
 
 const DashboardGameCards = () => {
+	const t = useTranslations("dashboard.game");
+
 	return (
 		<div className="flex gap-4 flex-col md:flex-row">
 			<GameCard
@@ -12,9 +15,9 @@ const DashboardGameCards = () => {
 					lg:-translate-x-1/2 lg:-bottom-40 lg:w-[300px]
 					transform group-hover:-translate-y-5 group-hover:scale-105
 					transition-transform duration-500"
-				text="Conquer the"
+				text={t('tournament.text')}
 				textClass="lg:text-2xl text-base"
-				subtext="Tournament"
+				subtext={t('tournament.subtext')}
 				subtextClass="text-4xl md:text-3xl lg:text-4xl"
 				transform="scale(1.1)"
 				opacity="0.5"
@@ -28,9 +31,9 @@ const DashboardGameCards = () => {
 					lg:-translate-x-1/2 lg:-bottom-14 lg:w-[300px]
 					transform group-hover:-translate-y-5 group-hover:scale-105
 					transition-transform duration-500"
-				text="1v1"
+				text={t('one_vs_one.text')}
 				textClass="text-4xl lg:text-2xl"
-				subtext="Fight for Glory"
+				subtext={t('one_vs_one.subtext')}
 				subtextClass="text-2xl lg:text-3xl"
 			/>
 			<GameCard
@@ -42,9 +45,9 @@ const DashboardGameCards = () => {
 					lg:-translate-x-1/2 lg:-bottom-21 lg:w-[300px]
 					transform group-hover:-translate-y-5 group-hover:scale-105
 					transition-transform duration-500"
-				text="Start"
+				text={t('training.text')}
 				textClass="text-2xl lg:text-2xl"
-				subtext="Training"
+				subtext={t("training.subtext")}
 				subtextClass="text-4xl lg:text-4xl"
 				transform="scale(1.1)"
 				opacity="0.5"

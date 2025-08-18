@@ -156,7 +156,7 @@ class NotifRepository {
 		try {
 			const stmt = fastify.database.prepare(`
 				SELECT id FROM messages
-				WHERE sender_id = ? AND receiver_id = ? AND type = ?
+				WHERE senderId = ? AND receiverId = ? AND type = ?
 				ORDER BY created_at DESC
 				LIMIT 1
 			`);

@@ -7,36 +7,39 @@ import moment from 'moment';
 import { MessageType } from '../types/chat.types';
 import { AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import FirstConversation from './FirstConversation';
 
 /*
 	==== TO FIX ===
-	--> put day date in the middle of the conversation
-	--> isloading
-	--> last user get message should be in the top
 	--> online icon
 	--> make getting  messages from database more fast
 	--> clicking on chat icon shout setSelectedUser to null 
-	--> add image if conversation is empty
 	--> block and play 
+	--> check to fliter just once
+	
+	--> put day date in the middle of the conversation *
+	--> last user get message should be in the top *
+	--> add image if conversation is empty *
+	--> isloading *
 
-*/ 
+*/
 
 
 const ConversationBody = () => {
 	const [message, setMessage] = useState("");
 	const [option, setOption] = useState(false);
-	const { socket, BOSS, messages, setShowConversation, setSelectedUser, selectedUser } = useChat();
+	const { socket, BOSS, api, messages, setShowConversation, setSelectedUser, selectedUser } = useChat();
 	const [filteredMessages, setfilteredMessages] = useState<MessageType[]>([]);
 	const messageRef = useRef<HTMLDivElement | null>(null);
 	const route = useRouter();
 
 	useEffect(() => {
-		messageRef.current?.scrollIntoView({ behavior: 'smooth' });
+		messageRef.current?.scrollIntoView({ behavior: 'auto' });
 	}, [filteredMessages]);
 
 	const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === "Enter") {
-			e.preventDefault()
+			e.preventDefault();
 			sendData();
 		}
 	}
@@ -51,12 +54,9 @@ const ConversationBody = () => {
 				text: data,
 			};
 			socket.emit('chat_send_msg', newMessage);
-			console.log(newMessage)
 			setMessage("");
 		}
 	};
-
-
 
 	useEffect(() => {
 		if (!BOSS || !selectedUser) return;
@@ -68,13 +68,30 @@ const ConversationBody = () => {
 		setfilteredMessages(filtered);
 	}, [messages, selectedUser?.id, BOSS?.id]);
 
+	const setDate = (currentMsg: string, prevMsg?: string): string => {
+		const currentDate = moment(currentMsg);
+		const prevDate = prevMsg ? moment(prevMsg) : null;
+
+
+		if (prevDate && prevDate.isSame(currentDate, "day")) {
+			return "";
+		}
+
+		if (currentDate.isSame(moment(), "day")) {
+			return "Today";
+		} else if (currentDate.isSame(moment().subtract(1, "day"), "day")) {
+			return "Yesterday";
+		} else {
+			return currentDate.format("MMMM DD, YYYY");
+		}
+	};
 
 	return (
 		<div className={` size-full border border-white/30 rounded-lg flex flex-col md:bg-white/4 `}>
 
 			{/* ----------------------------------------------------top bar and block button ---------------------------------------------------- */}
 
-			<div className='flex gap-4 p-4 pl-6 border-b border-b-white/30'>
+			<div className='flex justify-start gap-4 p-4 pl-6 border-b border-b-white/30'>
 				<div className='flex items-center md:hidden cursor-pointer'>
 					<ArrowCircleLeftIcon
 						size={28}
@@ -106,8 +123,18 @@ const ConversationBody = () => {
 					{option && (
 						<>
 							<div className="absolute right-2.5 top-10 w-32 rounded-xl border border-white/20 backdrop-blur-md bg-white/10 p-3 space-y-2 z-50">
-								<button className="w-full rounded-md py-2 bg-white/10 hover:bg-green-600 hover:text-white transition duration-300 cursor-pointer">Play</button>
-								<button className="w-full rounded-md py-2 bg-white/10 hover:bg-red-600 hover:text-white transition duration-300 cursor-pointer">Block</button>
+								<button className="w-full rounded-md py-2 bg-white/10 hover:bg-green-600
+								 transition duration-300 cursor-pointer">Play</button>
+								<button className="w-full rounded-md py-2 bg-white/10 hover:bg-red-600 
+								transition duration-300 cursor-pointer"
+									onClick={async () => {
+										await api.blockUser(selectedUser?.id)
+										setOption(false)
+										window.history.pushState(null, "", `/chat`) // ====> read more about this
+										setSelectedUser(null)
+										setShowConversation(false)
+									}}
+								>Block</button>
 							</div>
 							<div className="fixed inset-0 bg-transparent z-40" onClick={() => setOption(false)} />
 						</>
@@ -117,23 +144,29 @@ const ConversationBody = () => {
 
 			{/* ----------------------------------------------------message body ---------------------------------------------------- */}
 
-			<div className='overflow-y-auto custom-scrollbar p-4 flex-1 overflow-x-hidden flex flex-col justify-end mb-2'>
+			{filteredMessages.length > 0 ? (<div className='overflow-y-auto custom-scrollbar p-4 flex-1 overflow-x-hidden flex flex-col justify-end mb-2'>
 				<div className='flex flex-col gap-4 min-h-0'>
 					{filteredMessages.map((msg, index) => (
-						<div key={index}
-							className={`flex ${msg.senderId === BOSS?.id ? 'justify-end' : 'justify-start'}`}>
-							<div className={`max-w-[75%] border-white/30 border px-1.5 pt-1.5  flex flex-col rounded-lg  break-all ${msg.senderId === BOSS?.id ? 'bg-blue-600/20 rounded-br-sm' : 'bg-white/10 rounded-bl-sm'}`}>
-								<span>{msg.text}</span>
-								<span className='text-xs text-white/50 self-end'>{moment.utc(msg.created_at).local().format('HH:mm')}</span>
+						<React.Fragment key={index}>
+							<span className='text-xs text-white/50 m-auto'>{setDate(msg.created_at, filteredMessages[index - 1]?.created_at)}</span>
+							<div
+								className={`flex ${msg.senderId === BOSS?.id ? 'justify-end' : 'justify-start'}`}>
+								<div className={`max-w-[75%] border-white/30 border px-1.5 min-w-0 flex flex-col rounded-lg  break-words ${msg.senderId === BOSS?.id ? 'bg-blue-600/20 rounded-br-sm' : 'bg-white/10 rounded-bl-sm'}`}>
+									<span>{msg.text}</span>
+									<span className='text-xs text-white/50 self-end'>{moment.utc(msg.created_at).local().format('HH:mm')}</span>
+								</div>
 							</div>
-						</div>
+						</React.Fragment>
 					))}
 					<div ref={messageRef} />
 				</div>
-			</div>
+			</div>) : (
+				<FirstConversation />
+			)}
+
 			{/* ----------------------------------------------------typing message and send ---------------------------------------------------- */}
 
-			<div className=' flex flex-col border-t border-t-white/30 p-4 mt-auto'>
+			<div className=' flex flex-col border-t border-t-white/30 p-4 '>
 				<div className='flex focus-within:bg-white/12 duration-200 transition-all bg-white/8 p-3 rounded-lg justify-between gap-3 focus-within:ring-2 focus-within:ring-white/18'>
 					<input
 						id='input-text'

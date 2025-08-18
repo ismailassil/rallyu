@@ -3,6 +3,7 @@ import OutlineButton from "./ui/OutlineButton";
 import FilledButton from "./ui/FilledButton";
 import { XIcon } from "@phosphor-icons/react";
 import { NOTIFICATION_TYPE } from "../types/notifications.types";
+import { useTranslations } from "next-intl";
 
 interface Props {
 	type: NOTIFICATION_TYPE;
@@ -11,18 +12,11 @@ interface Props {
 }
 
 const GameOrTournament = ({ handleAccept, handleDecline, type }: Props) => {
-	function getText(type: string) {
-		switch (type) {
-			case "game":
-				return "Game";
-			case "tournament":
-				return "Tournament";
-		}
-	}
+	const t = useTranslations("states");
 
 	return (
 		<div className="ml-10 flex gap-2">
-			<FilledButton onClick={handleAccept}>Join {getText(type)}</FilledButton>
+			<FilledButton onClick={handleAccept}>{t("join", { type: type })}</FilledButton>
 			<OutlineButton onClick={handleDecline}>
 				<XIcon size={16} />
 			</OutlineButton>

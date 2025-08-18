@@ -1,14 +1,17 @@
 // import Image from "next/image";
 import unicaOne from "@/app/fonts/unicaOne";
 import Friend from "./Friend";
+import { useTranslations } from "next-intl";
 
 export default function FriendsPanel() {
+	const t = useTranslations("dashboard.titles");
+
 	return (
 		<aside className="bg-card border-br-card flex-2 hidden h-full w-full rounded-lg border-2 xl:block">
 			<div className="flex h-full flex-col">
 				<div className="group relative shrink-0 overflow-hidden">
 					<h1 className={`${unicaOne.className} p-10 select-none text-4xl uppercase`}>
-						Friends
+						{t('friends')}
 					</h1>
 					<div
 						className="w-15 h-15 bg-accent

@@ -78,37 +78,39 @@ services:
         condition: service_healthy
     image: rallyu/ms-chat:v1.0
     container_name: ms-chat
+    volumes:
+      - ./ms-chat/database/:/app/database/
     restart: always
     networks:
       - backend
     env_file:
       - .env
 
-  # ms-tournament:
-  #   build:
-  #     context: ms-tournament/
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     api-gateway:
-  #       condition: service_healthy
-  #   image: rallyu/ms-tournament:v1.0
-  #   container_name: ms-tournament
-  #   restart: always
-  #   networks:
-  #     - backend
+  ms-tournament:
+    build:
+      context: ms-tournament/
+      dockerfile: Dockerfile
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    image: rallyu/ms-tournament:v1.0
+    container_name: ms-tournament
+    restart: always
+    networks:
+      - backend
 
-  # ms-matchmaking:
-  #   build:
-  #     context: ms-matchmaking/
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     api-gateway:
-  #       condition: service_healthy
-  #   image: rallyu/ms-matchmaking
-  #   container_name: ms-matchmaking
-  #   restart: always
-  #   networks:
-  #     - backend
+  ms-matchmaking:
+    build:
+      context: ms-matchmaking/
+      dockerfile: Dockerfile
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    image: rallyu/ms-matchmaking
+    container_name: ms-matchmaking
+    restart: always
+    networks:
+      - backend
 
   ms-game:
     build:

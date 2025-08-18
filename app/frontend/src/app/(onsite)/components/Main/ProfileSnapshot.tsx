@@ -1,6 +1,9 @@
 import unicaOne from '@/app/fonts/unicaOne';
+import { useTranslations } from 'next-intl';
 
 const ProfileSnapshot = () => {
+	const t = useTranslations("dashboard.titles");
+
 	return (
 		<aside
 			className={`bg-card border-br-card h-full w-full flex-3 rounded-lg border-2`}
@@ -9,7 +12,7 @@ const ProfileSnapshot = () => {
 				<h1
 					className={`${unicaOne.className} px-11 py-9 select-none text-4xl uppercase`}
 				>
-					Snapshots
+					{t("snapshots")}
 				</h1>
 				<div
 					className="w-15 h-15 bg-accent

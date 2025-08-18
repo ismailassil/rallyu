@@ -1,0 +1,60 @@
+{
+  "dashboard": {
+    "titles": {
+      "greetings": "Bienvenido de nuevo,",
+      "leaderboard": "Clasificación",
+      "snapshots": "Instantáneas",
+      "friends": "Amigos"
+    },
+    "game": {
+      "tournament": {
+        "text": "Conquista el",
+        "subtext": "Torneo"
+      },
+      "one_vs_one": {
+        "text": "1v1",
+        "subtext": "Lucha por la gloria"
+      },
+      "training": {
+        "text": "Comenzar",
+        "subtext": "Entrenamiento"
+      }
+    }
+  },
+  "headers": {
+    "profile": {
+      "titles": {
+        "profile": "Perfil",
+        "settings": "Configuración",
+        "Logout": "Cerrar sesión"
+      }
+    },
+    "notification": {
+      "header": {
+        "title": "Notificaciones",
+        "subtitle": "Tienes {count, plural, =0 {ninguna notificación nueva} =1 {# notificación} other {# notificaciones}}"
+      },
+      "box": {
+        "no_payload": "Sin notificaciones actuales",
+        "description": {
+          "game": "¡te ha desafiado a un juego!",
+          "friend_request": "¡te ha enviado una solicitud de amistad!",
+          "chat": "te ha enviado un mensaje.",
+          "tournament": "¡te ha invitado a comenzar un torneo!",
+          "status": ""
+        }
+      },
+      "footer": {
+        "asread": "Marcar todo como leído",
+        "clear": "Borrar todo"
+      }
+    }
+  },
+  "states": {
+    "accept": "Aceptar",
+    "decline": "Rechazar",
+    "reply": "Responder",
+    "clear": "borrar",
+    "join": "Unirse al {type, select, Game {juego}, Tournament {torneo}}"
+  }
+}

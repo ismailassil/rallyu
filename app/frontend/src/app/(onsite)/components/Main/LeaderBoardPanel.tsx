@@ -1,9 +1,11 @@
 import unicaOne from '@/app/fonts/unicaOne';
 import LeaderboardItem from './LeaderBoardItem';
 import useIsWidth from '../../../hooks/useIsWidth';
+import { useTranslations } from 'next-intl';
 
 export default function LeaderboardPanel() {
 	const isWidth = useIsWidth(1024);
+	const t = useTranslations("dashboard.titles");
 
 	return (
 		<aside
@@ -16,7 +18,7 @@ export default function LeaderboardPanel() {
 					<h1
 						className={`${unicaOne.className} px-11 py-9 select-none text-4xl uppercase`}
 					>
-						Leaderboard
+						{t("leaderboard")}
 					</h1>
 					<div
 						className="w-15 h-15 bg-accent
