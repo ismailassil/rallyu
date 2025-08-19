@@ -148,7 +148,22 @@ class TournamentModel {
 							.padStart(2, "0")}`;
 
 			// Change state of tournaments to ongoing
-			this.DB.run(`UPDATE ${this.modelName} SET state='ongoing' WHERE start_date<='${strDate}' AND state='pending'`,
+			this.DB.run(
+				`
+				UPDATE ${this.modelName} SET state='ongoing' WHERE start_date<='${strDate}' AND 
+				state='pending' AND contenders_size=contenders_joined
+				`,
+				(err) => {
+					console.log(err);
+				}
+			);
+
+			// Change uncompleted tournament to cancelled
+			this.DB.run(
+				`
+				UPDATE ${this.modelName} SET state='cancelled' WHERE start_date<='${strDate}' AND 
+				state='pending' AND contenders_size<>contenders_joined
+				`,
 				(err) => {
 					console.log(err);
 				}
