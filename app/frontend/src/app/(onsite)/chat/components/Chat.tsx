@@ -12,35 +12,19 @@ import LoadingChat from "./LoadingChat";
 
 const Chat = ({ username }: { username?: string }) => {
 
-	const { BOSS, api, showConversation, setShowConversation, isLoadingFriends, friends,
-		setMessages, setSelectedUser, selectedUser } = useChat();
-
+	const { showConversation, setShowConversation, isLoadingFriends, friends, setSelectedUser, selectedUser } = useChat();
 	const route = useRouter();
 
-
 	useEffect(() => {
-		if (!username || username.length === 0 || !friends || friends.length === 0)	return;
-
+		if (!username || username.length === 0 || !friends || friends.length === 0) return;
 		const match = friends.find((element) => element.username === username);
 		if (match) {
 			setSelectedUser(match);
 			setShowConversation(true);
 		} else
 			route.replace('/chat/');
-			
-		}, [username, route, friends?.length]);
+	}, [username, route, friends?.length]);
 
-	useEffect(() => {
-		if (!BOSS?.id) return;
-
-		api.instance.get('/chat/history')
-			.then((response: any) => {
-				setMessages(response?.data)
-			})
-			.catch((error: any) => {
-				console.error("Error fetching chat history:", error);
-			});
-	}, []);
 
 	return (
 		<AnimatePresence>
@@ -55,7 +39,6 @@ const Chat = ({ username }: { username?: string }) => {
 
 					{!isLoadingFriends ?
 						(<>
-
 							{/* ---------------------------------------user's list--------------------------------------- */}
 							<div className={`${showConversation ? 'hidden md:flex' : 'flex'} flex-col size-full md:max-w-[35%] md:min-w-[35%] md:w-[35%]`}>
 								<FriendsList />
@@ -85,7 +68,7 @@ const Chat = ({ username }: { username?: string }) => {
 									<Conversation />
 								</div>
 							)}
-						</>) : ( <LoadingChat /> )}
+						</>) : (<LoadingChat />)}
 				</div>
 			</motion.main>
 		</AnimatePresence>

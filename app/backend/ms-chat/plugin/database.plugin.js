@@ -13,7 +13,6 @@ async function dbConnector(fastify, options) {
 			created_at DATETIME DEFAULT (datetime('now', 'subsec'))
 		)
 		`);
-		// text VAR(300) NOT NULL,
 	fastify.decorate('db', db);
 
 	fastify.addHook('onClose', (fastify, done) => {

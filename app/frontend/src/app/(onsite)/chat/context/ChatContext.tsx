@@ -3,8 +3,6 @@ import { useContext, createContext, useState, ReactNode, useEffect, useCallback 
 import React from 'react';
 import { useAuth } from "../../contexts/AuthContext";
 import { LoggedUser, MessageType } from "../types/chat.types";
-// import { notificationSound } from "../../../../..//public/message_sound.wav"
-
 
 type ChatContextType = {
 	showConversation: boolean;
@@ -19,8 +17,6 @@ type ChatContextType = {
 	setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
 	selectedUser: LoggedUser | null;
 	setSelectedUser: React.Dispatch<React.SetStateAction<LoggedUser | null>>;
-	// isSeen: boolean;
-	// setIsSeen: React.Dispatch<React.SetStateAction<boolean>>
 
 }
 
@@ -45,7 +41,6 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	const [messages, setMessages] = useState<MessageType[]>([])
 	const [selectedUser, setSelectedUser] = useState<LoggedUser | null>(null)
 	const { socket, api, user: BOSS } = useAuth()
-	// const [isSeen, setIsSeen] = useState(true);
 
 	useEffect(() => {
 		async function getAllFriends() {
@@ -75,7 +70,6 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 		}
 		
 		function handleUpdateMessage(data: MessageType) {
-			playMessageSound(); // CHECK this -------------------------------------------
 			setMessages((prev) => [...prev, data]);
 		}
 
@@ -86,6 +80,19 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			socket.off("chat_update_msg", handleUpdateMessage);
 		}
 	}, [])
+
+
+	useEffect(() => {
+		if (!BOSS?.id) return;
+
+		api.instance.get('/chat/history')
+			.then((response: any) => {
+				setMessages(response?.data)
+			})
+			.catch((error: any) => {
+				console.error("Error fetching chat history:", error);
+			});
+	}, []);
 
 	return (
 		<ChatContext.Provider value={{
@@ -101,8 +108,6 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			setMessages,
 			selectedUser,
 			setSelectedUser,
-			// isSeen,
-			// setIsSeen
 		}}>
 			{children}
 		</ChatContext.Provider>

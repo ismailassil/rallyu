@@ -29,7 +29,7 @@ await fastify.register(natsPlugin, {
 });
 
 fastify.get('/chat/history', async (req, res) => {
-	const userId = Number(req.headers['x-user-id']); // ensure it's a number
+	const userId = Number(req.headers['x-user-id']);
 
 	if (!userId) {
 		return res.status(400).send({ error: 'Missing or invalid user ID' });
