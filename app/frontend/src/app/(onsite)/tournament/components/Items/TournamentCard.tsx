@@ -38,7 +38,7 @@ function TournamentCard({
 		if (target.closest("button")) {
 			try {
 				const res: AxiosResponse = await api.instance.patch(`/v1/tournament/match/join/${id}`, { id: user?.id });
-				console.log(res);
+
 				setJoined(true);
 			} catch (err: unknown) {
 				console.error(err);

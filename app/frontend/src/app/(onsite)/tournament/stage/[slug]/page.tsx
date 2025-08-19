@@ -5,10 +5,8 @@ import Stats from "../../components/Items/Stats";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import ReadyButton from "./components/ReadyButton";
 import useUserProfile, { UserProfileType } from "@/app/(onsite)/(user-profile)/users/context/useUserProfile";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import FinishedUI from "./components/FinishedUI";
 import unicaOne from "@/app/fonts/unicaOne";
 import FooterPending from "./components/FooterPending";
 import FooterGoing from "./components/FooterGoing";
@@ -16,6 +14,7 @@ import FooterFinished from "./components/FooterFinished";
 import StateStat from "./components/StateStat";
 import FooterCancelled from "./components/FooterCancelled";
 import Stat from "./components/Stat";
+import { CloudWarningIcon } from "@phosphor-icons/react";
 
 const Brackets = function (props) {
 	const { user, api } = useAuth();
@@ -23,28 +22,27 @@ const Brackets = function (props) {
 	const [tournament, setTournament] = useState();
 	const [joined, setJoined] = useState<boolean>();
 	const [ready, setReady] = useState<boolean>(false);
+	const [error, setError] = useState({ status: false, message: "" });
 
 	useEffect(() => {
 		const loadData = async function () {
 			try {
 				// Need name of users
 				const res = await api.instance.get(`/v1/tournament/${slug}`);
-
 				const data = res.data;
 
-				console.log(data);
+				console.log(data.data);
 
 				setTournament(data.data);
 				isPlayerJoined(data.data);
+				setError({ status: false, message: "" });
 			} catch (err) {
-				console.error(err);
+				setError({ status: true, message: "Tournament service might not be available at the moment" });
 			}
 		};
 
 		loadData();
 	}, [slug]);
-
-
 
 	const winnerStyle = (matchNumber, player, type) => {
 		const style: string = type === "name" ? "grow" : "font-black";
@@ -57,8 +55,7 @@ const Brackets = function (props) {
 	};
 
 	const isPlayerJoined = (data) => {
-		for (let i = 0; data.matches.length - 1; i++) {
-			// I need user id 1
+		for (let i = 0; i < data.matches.length; i++) {
 			if (data.matches[i].player_1 === user?.id) {
 				if (data.matches[i].player_1_ready)
 					setReady(true);
@@ -72,11 +69,8 @@ const Brackets = function (props) {
 				return ;
 			}
 		}
-		// }
 		return setJoined(false);
 	};
-
-	//** Add stats Host - Start_date - mode - contenders_size **/
 
 	return (
 		<AnimatePresence>
@@ -98,7 +92,7 @@ const Brackets = function (props) {
 												<StateStat color="text-purple-400" statement="Tournament has not started" />
 										}
 										{
-											tournament.tournament.state == "going" && 
+											tournament.tournament.state == "ongoing" && 
 												<StateStat color="text-yellow-400" statement="Tournament in progress" />
 										}
 										{
@@ -284,7 +278,13 @@ const Brackets = function (props) {
 								<>
 									{
 										tournament.tournament.state == "pending" &&
-											<FooterPending joined={joined} setJoined={setJoined} slug={slug} title={tournament?.tournament.title} />
+											<FooterPending 
+												joined={joined}
+												setJoined={setJoined}
+												slug={slug}
+												title={tournament?.tournament.title} 
+												full={tournament.tournament.contenders_size === tournament.tournament.contenders_joined}
+											/>
 									}
 								</>
 								<>
@@ -307,6 +307,13 @@ const Brackets = function (props) {
 								</>
 							</>
 						)}
+						{ 
+							error.status && 
+								<div className="bg-red-700 flex gap-1 items-center py-5 px-5 rounded-full">
+									<CloudWarningIcon size={24} />
+									<p>{ error.message }</p>
+								</div>
+						}
 					</div>
 				</article>
 			</motion.main>
