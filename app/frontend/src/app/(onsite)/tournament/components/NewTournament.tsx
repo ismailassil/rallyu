@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Toaster } from "sonner";
 import { alertSuccess } from "@/app/(auth)/components/Alert";
 import { useRouter } from "next/navigation";
+import HostIn from "./Items/HostIn";
 
 function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 	const { user, api } = useAuth();
@@ -20,6 +21,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 	const [access, setAccess] = useState<number>(0);
 	const [date, setDate] = useState<string>("");
 	const [title, setTitle] = useState<string>("");
+	const [hostIn, setHostIn] = useState<boolean>(true);
 	const [errTitle, setErrTitle] = useState(false);
 	const [errGame, setErrGame] = useState(false);
 	const [errAcess, setErrAccess] = useState(false);
@@ -42,6 +44,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 				game,
 				access,
 				date,
+				in: hostIn,
 				host_id: user?.id,
 			});
 
@@ -51,6 +54,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 			setAccess(0);
 			setGame(0);
 			setTitle("");
+			setHostIn(true);
 
 			setTimeout(() => {
 				setValue(false);
@@ -93,6 +97,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 			<GameChoice game={game} setGame={setGame} error={errGame} setError={setErrGame} />
 			<Access access={access} setAccess={setAccess} error={errAcess} setError={setErrAccess} />
 			<StartDate date={date} setDate={setDate} error={errDate} setError={setErrDate} />
+			<HostIn hostIn={hostIn} setHostIn={setHostIn} />
 			<Toaster position='bottom-right' visibleToasts={1} />
 		</>
 	);

@@ -42,7 +42,7 @@ class TournamentController {
 			let userId: number | undefined = Number(req.headers["x-user-id"]);
 			
 			const tournaments: TournamentSchema[] =
-				await req.server.tournamentModel.tournamentGetAll(7);
+				await req.server.tournamentModel.tournamentGetAll(req.query.mode, req.query.search);
 			
 			if (userId) {
 				for (const tournament of tournaments) {
@@ -62,6 +62,7 @@ class TournamentController {
 				data: tournaments,
 			});
 		} catch (err: unknown) {
+			// req.server.log.error(err);
 			return rep.code(500).send({
 				status: false,
 				message: "Something went wrong"
@@ -77,13 +78,14 @@ class TournamentController {
 				access: number;
 				game: number;
 				date: string;
+				in: boolean;
 				host_id?: number;
 			};
 		}>,
 		rep: FastifyReply
 	) {
 		try {
-			const { title, game, access, date, host_id } = req.body;
+			const { title, game, access, date, in: hostIn, host_id } = req.body;
 			const now = Date.now();
 			const dateTime = new Date(date).getTime();
 
@@ -99,7 +101,7 @@ class TournamentController {
 				host_id
 			});
 
-			await req.server.tournamentMatchesModel.createTournamentMatches(newTournament.id);
+			await req.server.tournamentMatchesModel.createTournamentMatches(newTournament.id, hostIn, host_id as number);
 
 			return rep.code(201).send({
 				status: true,

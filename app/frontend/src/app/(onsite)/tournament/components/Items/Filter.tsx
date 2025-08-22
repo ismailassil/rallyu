@@ -1,8 +1,50 @@
-import { Hash, PingPong } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { HashIcon, PingPongIcon } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction, useState } from "react";
 
-function Filter() {
-	const [filter, setFilter] = useState(0);
+interface errorObj {
+	status: boolean;
+	message: string;
+}
+
+function Filter(
+	{ setTournaments, mode, setError }:
+	{ setTournaments: Dispatch<SetStateAction<never[]>>, mode: number, setError: Dispatch<SetStateAction<errorObj>> }
+) {
+	const [filter, setFilter] = useState(mode);
+	const { api } = useAuth();
+	const router = useRouter();
+
+	const filterTournaments = async function (e) {
+		e.preventDefault();
+		try {
+			if (filter === 0 || filter !== this) {
+				const req = await api.instance.get(
+					`/v1/tournament/tournaments?mode=${this === 1 ? "ping-pong" : "tic-tac-toe"}`
+				);
+
+				const data = req.data;
+				
+				setTournaments(data.data);
+				setFilter(this);
+				router.push(`/tournament?mode=${this === 1 ? "ping-pong" : "tic-tac-toe"}`);
+			} else {
+				const req = await api.instance.get(`/v1/tournament/tournaments`);
+
+				const data = req.data;
+
+				setTournaments(data.data);
+				setFilter(0);
+				router.push("/tournament");
+			}
+		} catch(err: unknown) {
+			setError({
+				status: true,
+				message: "Something went wrong"
+			});
+		}
+	};
 
 	return (
 		<div
@@ -12,29 +54,15 @@ function Filter() {
 				relative flex max-h-10 
 				items-center justify-center gap-1 rounded-lg border-white/20 bg-white/5 p-1.5 text-sm"
 		>
-			<PingPong
+			<PingPongIcon
 				size={10}
 				className={filter === 1 ? "bg-white text-black" : ""}
-				onClick={(e) => {
-					e.preventDefault();
-					if (filter === 1) {
-						setFilter(0);
-					} else {
-						setFilter(1);
-					}
-				}}
+				onClick={filterTournaments.bind(1)}
 			/>
-			<Hash
+			<HashIcon
 				size={10}
 				className={filter === 2 ? "bg-white text-black" : ""}
-				onClick={(e) => {
-					e.preventDefault();
-					if (filter === 2) {
-						setFilter(0);
-					} else {
-						setFilter(2);
-					}
-				}}
+				onClick={filterTournaments.bind(2)}
 			/>
 		</div>
 	);

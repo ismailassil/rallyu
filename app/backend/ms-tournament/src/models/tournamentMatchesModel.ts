@@ -49,26 +49,45 @@ class TournamentMatchesModel {
     });
   }
 
-  async promisifiedInsert(tournament_id, stage, stage_num) {
+  async promisifiedInsert(tournament_id, stage, stage_num, hostId: number = -1) {
     return new Promise((resolve, reject) => {
-      this.DB.run(
-        "INSERT INTO TournamentMatches (tournament_id, stage, stage_number) VALUES (?, ?, ?)",
-        [tournament_id, stage, stage_num],
-        (err) => {
-          if (err) reject(err);
-          else resolve(this);
-        }
-      );
+		if (hostId >= 0) {
+			this.DB.run(
+				"INSERT INTO TournamentMatches (tournament_id, stage, stage_number, player_1) VALUES (?, ?, ?, ?)",
+				[tournament_id, stage, stage_num, hostId],
+				(err) => {
+					if (err) reject(err);
+					else resolve(this);
+				}
+			);
+			return ;
+		}
+
+		this.DB.run(
+			"INSERT INTO TournamentMatches (tournament_id, stage, stage_number) VALUES (?, ?, ?)",
+			[tournament_id, stage, stage_num],
+			(err) => {
+			if (err) reject(err);
+			else resolve(this);
+			}
+		);
     });
   }
 
-  async createTournamentMatches(tournament_id: number) {
+  async createTournamentMatches(tournament_id: number, hostIn: boolean = false, hostId: number) {
     try {
-        await Promise.all([
-            this.promisifiedInsert(tournament_id, "semifinal", 1),
-            this.promisifiedInsert(tournament_id, "semifinal", 2),
-            this.promisifiedInsert(tournament_id, "final", 1),
-        ]);
+		if (!hostIn)
+			await Promise.all([
+				this.promisifiedInsert(tournament_id, "semifinal", 1),
+				this.promisifiedInsert(tournament_id, "semifinal", 2),
+				this.promisifiedInsert(tournament_id, "final", 1),
+			]);
+		else
+			await Promise.all([
+				this.promisifiedInsert(tournament_id, "semifinal", 1, hostId),
+				this.promisifiedInsert(tournament_id, "semifinal", 2),
+				this.promisifiedInsert(tournament_id, "final", 1),
+			]);
     } catch(err) {
         console.log(err);
     }

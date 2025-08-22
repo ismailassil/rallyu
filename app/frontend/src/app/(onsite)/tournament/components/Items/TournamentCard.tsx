@@ -1,10 +1,10 @@
-import { ArrowUUpRight, Check, MaskSad } from "@phosphor-icons/react";
+import { ArrowUUpRight, Check, HourglassSimpleMediumIcon, MaskSad, SmileyXEyesIcon, TrophyIcon } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { button } from "framer-motion/client";
+import { button, div } from "framer-motion/client";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { AxiosResponse } from "axios";
 
@@ -15,7 +15,7 @@ function TournamentCard({
 	size,
 	isPingPong,
 	isUserIn,
-
+	state
 }: {
 	id: number;
 	name: string;
@@ -23,6 +23,7 @@ function TournamentCard({
 	size: number;
 	isPingPong: boolean;
 	isUserIn: boolean;
+	state: string;
 }) {
 	const { user, api } = useAuth();
 	const router = useRouter();
@@ -45,7 +46,7 @@ function TournamentCard({
 			}
 			return;
 		}
-		if (["entered-id", "full-id"].includes(target.closest("div")?.id))
+		if (["entered-id", "full-id", "ongoing-id", "finished-id", "cancelled-id"].includes(target.closest("div")?.id))
 			return;
 		router.push(`tournament/stage/${id}`);
 	};
@@ -72,7 +73,7 @@ function TournamentCard({
 						<p>{active}/{size}</p>
 					</div>
 					{
-						(active === size && !joined) ?
+						state === "pending" && ((active === size && !joined) ?
 						(
 							<div
 								id="full-id" 
@@ -108,7 +109,37 @@ function TournamentCard({
 									</motion.div>
 								)}
 							</AnimatePresence>
-						)
+						))
+					}
+					{
+						state === "ongoing" &&
+							<div 
+								id="ongoing-id"
+								className="flex items-center justify-center gap-2 rounded-sm cursor-auto py-0.5 outline-yellow-400/10 outline"
+							>
+								<span className="text-sm text-yellow-400">Ongoing</span>
+								<HourglassSimpleMediumIcon size={16} className="text-yellow-400" />
+							</div>
+					}
+					{
+						state === "finished" &&
+							<div 
+								id="finished-id"
+								className="flex items-center justify-center gap-2 rounded-sm cursor-auto py-0.5 outline-blue-400/10 outline"	
+							>
+								<span className="text-sm text-blue-400">Completed</span>
+								<TrophyIcon size={16} className="text-blue-400" />
+							</div>
+					}
+					{
+						state === "cancelled" &&
+							<div 
+								id="cancelled-id"
+								className="flex items-center justify-center gap-2 rounded-sm cursor-auto py-0.5 outline-red-400/10 outline"
+							>
+								<span className="text-sm text-red-400">Cancelled</span>
+								<SmileyXEyesIcon size={16} className="text-red-400" />
+							</div>
 					}
 				</div>
 			</div>

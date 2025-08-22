@@ -30,7 +30,7 @@ function GameChoice({ game, setGame, error, setError }) {
 						className={`w-full ${game === 0 ? "bg-white text-black" : "hover:bg-white hover:text-black"}`}
 					>
 						<PingPong size={18} />
-						Online
+						Ping Pong
 					</div>
 					<div
 						onClick={(e) => {

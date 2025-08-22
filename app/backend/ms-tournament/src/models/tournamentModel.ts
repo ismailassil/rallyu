@@ -103,20 +103,52 @@ class TournamentModel {
 		return data;
 	}
 
-	async tournamentGetAll(limit: number) {
+	async tournamentGetAll(mode: string, search: string) {
 		const data: TournamentSchema[] = await new Promise<TournamentSchema[]>(
 			(resolve, reject) => {
-			this.DB.all(
-				`SELECT * FROM ${this.modelName} WHERE state='pending' LIMIT ?`,
-				[limit],
-				(err, rows: TournamentSchema[]) => {
-					if (err) reject(err);
-					else resolve(rows);
+				if (mode) {
+					if (search) {
+						this.DB.all(
+							`SELECT * FROM ${this.modelName} WHERE title LIKE ? AND mode=? ORDER BY id`,
+							[search + "%", mode],
+							(err, rows: TournamentSchema[]) => {
+								if (err) reject(err);
+								else resolve(rows);
+							}
+						);
+					} else {
+						this.DB.all(
+							`SELECT * FROM ${this.modelName} WHERE state='pending' AND mode=? ORDER BY id`,
+							[mode],
+							(err, rows: TournamentSchema[]) => {
+								if (err) reject(err);
+								else resolve(rows);
+							}
+						);
+					}
+				} else {
+					if (search) {
+						this.DB.all(
+							`SELECT * FROM ${this.modelName} WHERE title LIKE ? ORDER BY id DESC`,
+							[search + "%"],
+							(err, rows: TournamentSchema[]) => {
+								if (err) reject(err);
+								else resolve(rows);
+							}
+						);
+					} else {
+
+						this.DB.all(
+							`SELECT * FROM ${this.modelName} WHERE state='pending' ORDER BY id DESC`,
+							(err, rows: TournamentSchema[]) => {
+								if (err) reject(err);
+								else resolve(rows);
+							}
+						);
+					}
 				}
-			);
 			}
 		);
-
 		return data;
 	}
 

@@ -5,37 +5,68 @@ import { useEffect, useState } from "react";
 import unicaOne from "@/app/fonts/unicaOne";
 import { motion } from "framer-motion";
 import { useAuth } from "../../contexts/AuthContext";
+import { useSearchParams } from "next/navigation";
+import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react";
 
 interface errorObj {
 	status: boolean;
 	message: string;
 }
 
+const fetchData = async function (api, param, setTournaments, setError) {
+	try {
+		const req = await api.instance.get(`/v1/tournament/tournaments${param === 'ping-pong' ? "?mode=ping-pong" : param === 'tic-tac-toe' ? "?mode=tic-tac-toe" : ""}`);
+
+		const data = req.data;
+
+		setTournaments(data.data);
+	} catch (err: unknown) {
+		if (typeof err === "object")
+			setError({
+				status: true,
+				message: "Something went wrong: Service is currently unavailable.",
+			});
+	}
+};
+
 function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 	const [tournaments, setTournaments] = useState([]);
 	const [error, setError] = useState<errorObj>({ status: false, message: "" });
+	const [searchVal, setSearchVal] = useState<string>("");
 	const { api, user } = useAuth();
+	const param: string | null = useSearchParams().get('mode');
 
 	useEffect(() => {
-		const fetchData = async function () {
-			try {
-				const req = await api.instance.get(`/v1/tournament/tournaments?userId=${user?.id}`);
-				// const req = await fetch("http://localhost:3008/api/v1/tournaments?userId=1"); // Need user ID
+	
+		fetchData(api, param, setTournaments, setError);
+	}, [api.instance, user?.id]);
 
-				const data = req.data;
+	const searchTournament = async function (e) {
+		e.preventDefault();
 
-				setTournaments(data.data);
-			} catch (err: unknown) {
-				if (typeof err === "object")
-					setError({
-						status: true,
-						message: "Something went wrong: Service is currently unavailable.",
-					});
-			}
-		};
+		const val = (e.target as HTMLInputElement).value;
+		setSearchVal(val);
 
-		fetchData();
-	}, []);
+		if (!val) {
+			fetchData(api, param, setTournaments, setError);
+			return ;
+		}
+
+		try {
+			const mode = param === 'ping-pong' ? "?mode=ping-pong" : param === 'tic-tac-toe' ? "?mode=tic-tac-toe" : "";
+
+			const res = await api.instance.get(`/v1/tournament/tournaments${mode ? `${mode}&search=${val}` : `?search=${val}`}`);
+
+			const data = res.data;
+
+			setTournaments(data.data);
+		} catch (err) {
+			setError({
+				status: true,
+				message: "Something went wrong"
+			});
+		}
+	};
 
 	return (
 		<>
@@ -44,15 +75,52 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 				animate={{ opacity: 1, x: 0 }}
 				exit={{ opacity: 0, x: -100 }}
 				transition={{ type: "spring", stiffness: 120 }}
-				className="min-h-11 flex items-center justify-between"
+				className="min-h-11 flex items-center justify-between gap-4"
 			>
 				<div>
 					<h2 className={`${unicaOne.className} text-xl uppercase md:text-2xl`}>
 						<span className="font-semibold">Open Arenas</span>
 					</h2>
 				</div>
-				<div className="flex gap-3">
-					<Filter />
+				<div className="flex gap-3 grow">
+					<div 
+						className="bg-card flex items-center gap-2
+								border-white/20 border px-2 py-1 rounded-md
+								has-[input:focus]:bg-white  duration-300 transition-all grow"
+					>
+						<input 
+							id="search"
+							type="text"
+							className="peer w-full h-full border-none focus:outline-none focus:placeholder:text-background focus:text-black"
+							placeholder="Search"
+							onChange={searchTournament}
+							maxLength={20}
+							value={searchVal}
+						/>
+						<label htmlFor="search" className="hover:scale-110 peer-focus:text-black duration-300 transition-all order-[-1]">
+							<MagnifyingGlassIcon size={21}/>
+						</label>
+						<button className="text-white peer-focus:text-black duration-300 transition-all">
+							{
+								searchVal &&
+									<XIcon 
+										onClick={(e) => {
+											e.preventDefault();
+											
+											fetchData(api, param, setTournaments, setError);
+											setSearchVal("");
+										}}
+										size={21}
+										className="hover:cursor-pointer"
+									/>
+							}
+						</button>
+					</div>
+					<Filter
+						setTournaments={setTournaments}
+						mode={param === "ping-pong" ? 1 : (param === "tic-tac-toe" ? 2 : 0)}
+						setError={setError}
+					/>
 					<StartButton setValue={setValue} />
 				</div>
 			</motion.div>
@@ -81,7 +149,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 				)
 			}
 			{
-				tournaments.length > 0 && (
+				tournaments.length > 0 && !error.status && (
 					<motion.div
 						initial={{ opacity: 0, x: -100 }}
 						animate={{ opacity: 1, x: 0 }}
@@ -103,6 +171,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 										size={el.contenders_size}
 										isPingPong={el.mode === "ping-pong"}
 										isUserIn={el?.isUserIn ? true : false}
+										state={el.state}
 									/>
 								);
 							})

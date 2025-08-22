@@ -85,7 +85,9 @@ const Brackets = function (props) {
 						{tournament && (
 							<>
 								<div className="mb-10 flex justify-between items-center">
-									<h1 className="text-3xl font-medium">{`${tournament?.tournament.title} - Tournament`}&#127955;</h1>
+									<h1 className="text-3xl font-medium">
+										{`${tournament?.tournament.title} - Tournament ${tournament.tournament.mode === "ping-pong" ? "🏓" : "🌌"}`}
+									</h1>
 									<>
 										{
 											tournament.tournament.state == "pending" && 
