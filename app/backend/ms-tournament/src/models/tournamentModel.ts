@@ -15,21 +15,26 @@ class TournamentModel {
 			state varchar(255) DEFAULT pending NOT NULL,
             access varchar(255) NOT NULL,
             start_date timestamp NOT NULL,
-            notified INTEGER DEFAULT 0 NOT NULL
+            notified INTEGER DEFAULT 0 NOT NULL,
+			cancellation_reason varchar(255)
         );
 		CREATE TRIGGER IF NOT EXISTS tournament_finish AFTER UPDATE ON TournamentMatches
 			FOR EACH ROW
-			WHEN (OLD.stage='final' AND OLD.results IS NULL AND NEW.results IS NOT NULL)
+			WHEN (OLD.stage='final' AND OLD.winner IS NULL AND NEW.winner IS NOT NULL)
 		BEGIN
 			UPDATE ${this.modelName} SET state='finished' WHERE id=NEW.tournament_id;
 		END;
 		`;
+  public cancellation_reason = new Map<string, string>()
   private DB: sqlite3.Database;
   private app: FastifyInstance;
 
   constructor(app: FastifyInstance) {
     this.DB = app.DB;
     this.app = app;
+
+	this.cancellation_reason.set("not-enough-players", "Not enough players to participate");
+	this.cancellation_reason.set("match-cancel", "Two players forfeited their match during the tournament");
   }
 
 	async init() {
@@ -44,8 +49,8 @@ class TournamentModel {
 	async prepareStatement() {
 		return new Promise<sqlite3.Statement>((resolve, reject) => {
 				this.DB.prepare(
-				`INSERT INTO ${this.modelName} (title, host_id, mode, contenders_size, access, start_date)
-						VALUES (?, ?, ?, ?, ?, ?)`,
+				`INSERT INTO ${this.modelName} (title, host_id, mode, contenders_size, access, start_date, contenders_joined)
+						VALUES (?, ?, ?, ?, ?, ?, ?)`,
 				function (err) {
 					if (err) reject(err);
 					else resolve(this);
@@ -54,7 +59,7 @@ class TournamentModel {
 		});
   }
 
-	async tournamentAdd({ title, game, access, date, host_id }) {
+	async tournamentAdd({ title, game, access, date, host_id, hostIn = false }) {
 		const statement: sqlite3.Statement = await this.prepareStatement();
 
 		const id: number = await new Promise((resolve, reject) => {
@@ -65,6 +70,7 @@ class TournamentModel {
 				4,
 				!access ? "public" : "private",
 				date,
+				hostIn ? 1 : 0,
 				function (err: unknown) {
 					if (err) reject(err);
 					else resolve(this.lastID);
@@ -79,7 +85,7 @@ class TournamentModel {
 			start_date: date,
 			mode: game,
 			contenders_size: 4,
-			contenders_joined: 0,
+			contenders_joined: hostIn ? 1 : 0,
 			host_id,
 			notified: 0,
 		};
@@ -193,9 +199,10 @@ class TournamentModel {
 			// Change uncompleted tournament to cancelled
 			this.DB.run(
 				`
-				UPDATE ${this.modelName} SET state='cancelled' WHERE start_date<='${strDate}' AND 
+				UPDATE ${this.modelName} SET state='cancelled', cancellation_reason=? WHERE start_date<='${strDate}' AND 
 				state='pending' AND contenders_size<>contenders_joined
 				`,
+				[this.cancellation_reason["not-enough-players"]],
 				(err) => {
 					console.log(err);
 				}
@@ -205,7 +212,7 @@ class TournamentModel {
 			// NOTIFY USERS THAT THE TOURNAMENT HAS STARTED
 			const tournaments: notifcationTournamentStart[] =
 				await new Promise<notifcationTournamentStart[]>((resolve, reject) => {
-					this.DB.all(`SELECT t.id, t.host_id, m.player_1, m.player_2 
+					this.DB.all(`SELECT t.id, t.host_id, m.player_1, m.player_2
 						FROM TournamentMatches AS m INNER JOIN ${this.modelName} AS t
 						ON m.tournament_id=t.id
 						WHERE t.state='ongoing' AND t.notified=0 AND m.stage='semifinal'`,
@@ -215,8 +222,10 @@ class TournamentModel {
 						}
 					);
 				});
-
+			
+			let tournament_id = -1;
 			for (const tournament of tournaments) {
+				
 				this.app.js.publish("notification.dispatch", this.app.jsonCodec.encode({
 					senderId: tournament.host_id,
 					receiverId: tournament.player_1,
@@ -230,9 +239,20 @@ class TournamentModel {
 					type: "tournament",
 					actionUrl: `/tournament/stage/${tournament.id}`
 				} as NOTIFY_USER_PAYLOAD));
-
+				
 				this.DB.run(`UPDATE ${this.modelName} SET notified=1 WHERE id=?`, [tournament.id]);
+				
+				// Set tournamentMatchesTimer
+				if (tournament_id !== tournament.id) {
+					this.DB.run(`
+						UPDATE TournamentMatches SET start_time=datetime('now', 'localtime')
+						WHERE tournament_id=? AND stage='semifinal'`,
+						[tournament.id]
+					);
+				}
+				tournament_id = tournament.id;
 			}
+
 		}, 1000 * 10);
 	}
 }

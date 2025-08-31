@@ -16,22 +16,32 @@ class TournamentMatchesModel {
 				winner INTEGER,
 				results varchar(255),
 				stage varchar(255) NOT NULL,
-				stage_number number NOT NULL,
+				stage_number INTEGER NOT NULL,
+				start_time varchar(255) DEFAULT NULL,
 				FOREIGN KEY (tournament_id) REFERENCES Tournaments(id)
         	);
-			CREATE TRIGGER IF NOT EXISTS tournament_progress_1 AFTER UPDATE ON TournamentMatches
+			CREATE TRIGGER IF NOT EXISTS tournament_progress AFTER UPDATE ON TournamentMatches
+					FOR EACH ROW
+					WHEN (NEW.stage='semifinal' AND OLD.winner IS NULL AND NEW.winner IS NOT NULL)
+				BEGIN
+					UPDATE ${this.modelName}
+					SET player_1 = CASE WHEN NEW.stage_number=1 THEN NEW.winner ELSE player_1 END,
+      					player_2 = CASE WHEN NEW.stage_number=2 THEN NEW.winner ELSE player_2 END
+	  				WHERE stage='final' AND tournament_id=NEW.tournament_id;
+				END;
+
+			CREATE TRIGGER IF NOT EXISTS start_time_final_match AFTER UPDATE ON ${this.modelName}
 				FOR EACH ROW
-				WHEN (OLD.stage='semifinal' AND OLD.results IS NULL AND NEW.results IS NOT NULL)
-			BEGIN
-				UPDATE ${this.modelName} SET player_1=NEW.winner WHERE stage='final' AND tournament_id=NEW.tournament_id AND stage_number=1;
-			END;
-			CREATE TRIGGER IF NOT EXISTS tournament_progress_2 AFTER UPDATE ON TournamentMatches
-				FOR EACH ROW
-				WHEN (OLD.stage='semifinal' AND OLD.results IS NULL AND NEW.results IS NOT NULL)
-			BEGIN
-				UPDATE ${this.modelName} SET player_2=NEW.winner WHERE stage='final' AND tournament_id=NEW.tournament_id AND stage_number=2;
-			END;
+					WHEN (
+						(OLD.player_1 IS NULL OR OLD.player_2 IS NULL) AND
+						NEW.player_1 IS NOT NULL AND
+						NEW.player_2 IS NOT NULL
+					)
+				BEGIN
+					UPDATE ${this.modelName} SET start_time=datetime('now', 'localtime') WHERE id=NEW.id AND stage='final';
+				END;
         `;
+
 	private DB: sqlite3.Database;
 	private app: FastifyInstance;
 
@@ -133,18 +143,24 @@ class TournamentMatchesModel {
         });
     }
 
-    async playerReadyMatch(id: number, player_place: number) {
+    async playerReadyMatch(id: number, playerId: number) {
         await new Promise((resolve, reject) => {
 			this.DB.run(`UPDATE ${this.modelName}
-				SET player_${player_place}_ready = CASE
-					WHEN player_${player_place}_ready=1 THEN 0
-					ELSE 1 END
+				SET
+					player_1_ready = CASE WHEN player_1=? THEN 
+						CASE WHEN player_1_ready=1 THEN 0 ELSE 1 END
+						ELSE player_1_ready
+					END,
+					player_2_ready = CASE WHEN player_2=? THEN 
+						CASE WHEN player_2_ready=1 THEN 0 ELSE 1 END
+						ELSE player_2_ready
+					END
 				WHERE id = ?`,
-				[id],
+				[playerId, playerId, id],
 				(err) => {
 					if (err) reject(err)
 						else resolve(null)
-				})
+				});
         });
     }
 
@@ -160,10 +176,9 @@ class TournamentMatchesModel {
 				});
 			
 				// Notify everysingle user here that their match is ready to play!
-				if (data)
-					data.forEach(async (match: TournamentMatchesSchema) => {
-						// Notify every single user;
-					});
+				data.forEach(async (match: TournamentMatchesSchema) => {
+					// Notify every single user;
+				});
 			} catch (err) {
 				console.log(err);
 			}
@@ -179,9 +194,41 @@ class TournamentMatchesModel {
 		});
 		return (res);
 	}
-	// async finishTournament() {
-    //     this.DB.run(`UPDATE ${this.modelName} SET results='5|7' WHERE stage='final'`);
-    // }
+
+	async monitorTimeoutMatches() {
+		setInterval(async () => {
+			const matches: TournamentMatchesSchema [] = await new Promise<TournamentMatchesSchema []>((resolve, reject) => {
+				this.DB.all(`SELECT * FROM ${this.modelName} WHERE results IS NULL AND datetime('now', 'localtime')>=datetime(start_time, '+5 minutes')`,
+					[],
+					(err, rows: TournamentMatchesSchema []) => err ? reject(err) : resolve(rows)
+				);
+			});
+
+			for (const match of matches) {
+				if (!match.player_1_ready && !match.player_2_ready) {
+					this.DB.run(`UPDATE ${this.modelName} SET results='F|F' WHERE id=?`, [match.id], (err) => app.log.fatal(err));
+
+					// Add cancel reason later
+					this.DB.run(
+						`UPDATE Tournaments SET state='cancelled', cancellation_reason=? WHERE id=? AND state='ongoing'`,
+						[this.app.tournamentModel.cancellation_reason['match-cancel'], match.tournament_id],
+						(err) => app.log.fatal(err)
+					);
+					continue ;
+				}
+				if (match.player_1_ready && match.player_2_ready)
+					continue ;
+
+				const winner = match.player_1_ready ? 1 : 2;
+				this.DB.run(
+					`UPDATE ${this.modelName} SET winner=?, results=? WHERE id=?`,
+					[winner === 1 ? match.player_1 : match.player_2, winner === 1 ? "7|F" : "F|7", match.id],
+					(err) => app.log.fatal(err)
+				);
+			}
+
+		}, 1000 * 5)
+	}
 }
 
 const initTournamentMatchesModel = async function (app: FastifyInstance) {

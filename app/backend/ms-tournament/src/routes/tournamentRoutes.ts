@@ -44,7 +44,7 @@ const tournamentRoutes = function(app: FastifyInstance, options, done: HookHandl
 	app.patch("/match/leave/:tournamentId", TournamentController.leaveMatch);
 
 	// Match logic 
-	app.patch("/match/ready/:tournamentId", TournamentController.readyMatch);
+	app.patch("/match/ready", TournamentController.readyMatch);
 	app.patch("/match/progress", TournamentController.progressMatch);
 
     done();

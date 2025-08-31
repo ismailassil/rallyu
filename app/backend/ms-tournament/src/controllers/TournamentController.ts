@@ -8,17 +8,38 @@ class TournamentController {
 		try {
 			const { tournamentId }: { tournamentId: number } = req.params;
 
-			const tournament: TournamentSchema = await req.server.tournamentModel.tournamentGet(
+			const tournament = await req.server.tournamentModel.tournamentGet(
 				Number(tournamentId)
 			);
 
+			if (!tournament) return rep.code(200).send({
+				status: true,
+				data: {}
+			});
+
 			const tournamentMatches =
 				await req.server.tournamentMatchesModel.matchesGet(tournamentId);
+			
+			for (const match of tournamentMatches) {
+				if (match.player_1)
+					match.player_1_username = req.server.jsonCodec.decode(
+						(await req.server.nc.request("user.username", req.server.jsonCodec.encode({ user_id: match.player_1 }))).data
+					).username;
+				if (match.player_2)
+					match.player_2_username = req.server.jsonCodec.decode(
+						(await req.server.nc.request("user.username", req.server.jsonCodec.encode({ user_id: match.player_2 }))).data
+					).username
+				if (match.stage === "final" && match.winner) {
+					if (match.winner === match.player_1)
+						match.winner_username = match.player_1_username
+					if (match.winner === match.player_2)
+						match.winner_username = match.player_2_username
+				}
+			}
 
-			if (!tournament) return rep.code(404).send({
-				status: false,
-				message: "Tournament not found!"
-			});
+			tournament.host_username = req.server.jsonCodec.decode(
+				(await req.server.nc.request("user.username", req.server.jsonCodec.encode({ user_id: tournament.host_id }))).data
+			).username
 
 			return rep.code(200).send({
 				status: true,
@@ -98,7 +119,8 @@ class TournamentController {
 				game,
 				access,
 				date,
-				host_id
+				host_id,
+				hostIn
 			});
 
 			await req.server.tournamentMatchesModel.createTournamentMatches(newTournament.id, hostIn, host_id as number);
@@ -185,32 +207,21 @@ class TournamentController {
 
 	// PLAYER READY FOR THE MATCH
 	static async readyMatch(
-		req: FastifyRequest<{ Params: { tournamentId: number }; Body: { id: number } }>,
+		req: FastifyRequest<{ Body: { matchId: number } }>,
 		rep: FastifyReply
 	) {
 		try {
-			const { tournamentId } = req.params;
-			const { id: playerId } = req.body;
+			const { matchId } = req.body;
+			const playerId = Number(req.headers["x-user-id"]);
 
-			if (!playerId || !tournamentId)
+			if (!playerId || !matchId)
 				return rep.code(400).send({ status: false, message: "Bad request!" });
 
-			const tournamentMatches: TournamentMatchesSchema[] =
-				await req.server.tournamentMatchesModel.matchesGet(tournamentId);
-
-			for (const match of tournamentMatches) {
-				if (match.player_1 === playerId) {
-					await req.server.tournamentMatchesModel.playerReadyMatch(match.id, 1);
-					break;
-				}
-				if (match.player_2 === playerId) {
-					await req.server.tournamentMatchesModel.playerReadyMatch(match.id, 2);
-					break;
-				}
-			}
+			await req.server.tournamentMatchesModel.playerReadyMatch(matchId, playerId);
 
 			return rep.code(201).send({ status: true, message: "Ready for match!" });
 		} catch (err) {
+			req.server.log.fatal(err);
 			return rep.code(500).send({ status: false, message: "Something went wrong" });
 		}
 	}

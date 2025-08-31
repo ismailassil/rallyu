@@ -15,7 +15,7 @@ const natsPlugin = async function (app: FastifyInstance, options) {
 
 		app.decorate("nc", nc).decorate("js", nc.jetstream()).decorate("jsonCodec", JSONCodec());
     } catch(err: unknown) {
-        app.log.fatal(err);
+        app.log.fatal("NATS Server did not launch ", err);
     }
 };
 

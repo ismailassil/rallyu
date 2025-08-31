@@ -45,9 +45,9 @@ const FooterPending = function (
     return (
         <div className="flex flex-col gap-5">
             <div>
-                <p className="text-gray-300">
+                <p className="text-gray-300 text-center sm:text-left">
                     Join
-                    <span className={`font-black ${unicaOne.className}`}> { title } </span>
+                    <span className={`font-black ${unicaOne.className} text-white`}> { title } </span>
                     Tournament and compete for the trophy! &#129351;
                 </p>
                 <>

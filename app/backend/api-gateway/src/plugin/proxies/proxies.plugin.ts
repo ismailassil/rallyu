@@ -49,8 +49,8 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 	};
 
 	const tournamentProxyOptions = {
-		// upstream: `http://ms-tournament:${TOURNAMENT_PORT}`,
-		upstream: `http://host.docker.internal:${TOURNAMENT_PORT}`,
+		upstream: `http://ms-tournament:${TOURNAMENT_PORT}`,
+		// upstream: `http://host.docker.internal:${TOURNAMENT_PORT}`,
 		prefix: `/api/v1/tournament`,
 		rewritePrefix: `/api/v1/tournament`,
 		httpMethods: ['GET', 'POST', 'PATCH'],

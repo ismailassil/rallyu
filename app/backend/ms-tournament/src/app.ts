@@ -35,6 +35,7 @@ app.ready(async () => {
 	await initTournamentModel(app);
 	app.tournamentModel.startTournaments();
 	app.tournamentMatchesModel.monitorReadyMatches();
+	app.tournamentMatchesModel.monitorTimeoutMatches();
 });
 
 app.register(tournamentRoutes, { prefix: "/api/v1/tournament"});

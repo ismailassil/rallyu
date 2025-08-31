@@ -10,7 +10,7 @@ const StateStat = function ({ statement, color }: { statement: string, color: st
                     border-1 border-white/10 hover:scale-102 duration-400 transition-all
             `}
         >
-            <p>{ statement }</p>
+            <p className="text-center">{ statement }</p>
             <div
                 className="
                     tournament-bg hover:scale-101 duration-900 absolute left-0 top-0
