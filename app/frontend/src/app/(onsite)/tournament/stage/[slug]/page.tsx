@@ -61,8 +61,6 @@ const Brackets = function (props) {
 	useEffect(() => {
 		const loadData = async function () {
 			try {
-				// Need name of users
-				console.log("=====================");
 				const res = await api.instance.get(`/v1/tournament/${slug}`);
 				const data = res.data;
 
@@ -78,14 +76,6 @@ const Brackets = function (props) {
 
 		loadData();
 	}, [slug]);
-
-	const winnerStyle = (matchNumber, player) => {
-		if (!tournament.matches[matchNumber].winner) return "";
-
-		if (tournament.matches[matchNumber].winner === player) return "text-blue-400";
-
-		return "opacity-50";
-	};
 
 	const isPlayerJoined = (data) => {
 		if (!Object.keys(data).length)
@@ -212,9 +202,9 @@ const Brackets = function (props) {
 						}
 						{ 
 							error.status && 
-								<div className="bg-red-700 flex gap-1 items-center py-5 px-5 rounded-full">
-									<CloudWarningIcon size={24} />
-									<p>{ error.message }</p>
+								<div className="bg-red-700 flex gap-1 items-center justify-start py-5 px-5 rounded-full">
+									<CloudWarningIcon className="text-2xl sm:text-xl self-start sm:self-center" />
+									<p className="text-sm md:text-base">{ error.message }</p>
 								</div>
 						}
 					</div>

@@ -13,7 +13,7 @@ function TournamentPanel() {
 			<AnimatePresence>
 				<>
 					<Banner />
-					<Stats />
+					{/* <Stats /> */}
 					{!newTour ? (
 						<OpenArenas setValue={setNewTour} />
 					) : (

@@ -75,17 +75,17 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 				animate={{ opacity: 1, x: 0 }}
 				exit={{ opacity: 0, x: -100 }}
 				transition={{ type: "spring", stiffness: 120 }}
-				className="min-h-11 flex items-center justify-between gap-4"
+				className="min-h-11 flex items-center justify-between gap-4 flex-wrap"
 			>
 				<div>
-					<h2 className={`${unicaOne.className} text-xl uppercase md:text-2xl`}>
+					<h2 className={`${unicaOne.className} text-base uppercase sm:text-2xl`}>
 						<span className="font-semibold">Open Arenas</span>
 					</h2>
 				</div>
-				<div className="flex gap-3 grow">
+				<div className="flex gap-3 grow flex-wrap">
 					<div 
 						className="bg-card flex items-center gap-2
-								border-white/20 border px-2 py-1 rounded-md
+								border-white/20 border px-2 py-2 rounded-md
 								has-[input:focus]:bg-white  duration-300 transition-all grow"
 					>
 						<input 

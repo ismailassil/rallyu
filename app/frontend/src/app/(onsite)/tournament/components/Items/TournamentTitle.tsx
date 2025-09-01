@@ -50,15 +50,6 @@ function TournamentTitle({ value, setValue, error, setError }) {
 								}}
 							/>
 						)}
-						{/* <DiceFive
-						size={20}
-						weight="light"
-						className="hover:fill-accent cursor-pointer"
-						onClick={(e) => {
-							e.preventDefault();
-							setValue(random("Tournament"));
-						}}
-					/> */}
 					</div>
 				</div>
 			</motion.div>

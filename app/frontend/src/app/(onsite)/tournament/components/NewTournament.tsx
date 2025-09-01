@@ -95,7 +95,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 			</motion.div>
 			<TournamentTitle value={title} setValue={setTitle} error={errTitle} setError={setErrTitle} />
 			<GameChoice game={game} setGame={setGame} error={errGame} setError={setErrGame} />
-			<Access access={access} setAccess={setAccess} error={errAcess} setError={setErrAccess} />
+			{/* <Access access={access} setAccess={setAccess} error={errAcess} setError={setErrAccess} /> */}
 			<StartDate date={date} setDate={setDate} error={errDate} setError={setErrDate} />
 			<HostIn hostIn={hostIn} setHostIn={setHostIn} />
 			<Toaster position='bottom-right' visibleToasts={1} />
