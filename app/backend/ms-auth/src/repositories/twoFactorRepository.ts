@@ -118,6 +118,19 @@ class TwoFactorRepository {
 			throw new InternalServerError();
 		}
 	}
+
+	async findPendingLoginSessionById(id: number, user_id: number) {
+		try {
+			const pendingLoginSession = await db.get(
+				`SELECT * FROM pending_2fa_login WHERE id = ? user_id = ?`,
+				[id, user_id]
+			);
+			return pendingLoginSession ?? null;
+		} catch (err: any) {
+			console.error('SQLite Error: ', err);
+			throw new InternalServerError();
+		}
+	}
 	
 	async createPending2FAMethod(method: string, temp_value: string, expires_at: number, user_id: number) : Promise<any> {
 		try {
@@ -125,7 +138,7 @@ class TwoFactorRepository {
 				`INSERT INTO pending_2fa(method, temp_value, expires_at, user_id) VALUES (?, ?, ?, ?)`,
 				[method, temp_value, expires_at, user_id]
 			);
-			console.log('WE JUST CREATED A NEW PENDING TOTP METHOD: ', newPending2FAMethod);
+
 			return newPending2FAMethod.lastID;
 		} catch (err) {
 			console.error('SQLite Error: ', err);
@@ -133,70 +146,98 @@ class TwoFactorRepository {
 		}
 	}
 
-	async createPendingTOTP2FAMethod(method: string, totp_temp_code: string, expires_at: number, user_id: number) : Promise<any> {
+	async create2FAMethod(method: string, totp_secret: string | null, user_id: number) : Promise<any> {
 		try {
-			const newPending2FAMethod = await db.run(
-				`INSERT INTO pending_2fa(method, totp_temp_secret, expires_at, user_id) VALUES (?, ?, ?, ?)`,
-				[method, totp_temp_code, expires_at, user_id]
+			const new2FAMethod = await db.run(
+				`INSERT INTO _2fa_methods(method, totp_secret, user_id) VALUES (?, ?, ?)`,
+				[method, totp_secret, user_id]
 			);
-			console.log('WE JUST CREATED A NEW PENDING TOTP METHOD: ', newPending2FAMethod);
-			return newPending2FAMethod.lastID;
+
+			return new2FAMethod.lastID;
 		} catch (err) {
 			console.error('SQLite Error: ', err);
 			throw new InternalServerError();
 		}
 	}
 
-	async createPendingOTP2FAMethod(method: string, otp_temp_code: string, expires_at: number, user_id: number) : Promise<any> {
+	async createPendingLoginSession(method: string | null, code: string | null, expires_at: number, user_id: number) : Promise<any> {
 		try {
-			const newPending2FAMethod = await db.run(
-				`INSERT INTO pending_2fa(method, otp_temp_code, expires_at, user_id) VALUES (?, ?, ?, ?)`,
-				[method, otp_temp_code, expires_at, user_id]
+			const pendingLogin = await db.run(
+				`INSERT INTO pending_2fa_login(method, code, expires_at, user_id) VALUES (?, ?, ?, ?)`,
+				[method, code, expires_at, user_id]
 			);
-			return newPending2FAMethod.lastID;
+
+			return pendingLogin.lastID;
 		} catch (err) {
 			console.error('SQLite Error: ', err);
 			throw new InternalServerError();
 		}
 	}
 
-	async enablePending2FATOTPMethod(user_id: number) : Promise<any> {
-		const pending2FAMethod = await db.get(
-			`SELECT * FROM pending_2fa WHERE user_id = ? AND method = 'totp'`,
-			[user_id]
-		);
+	// async createPendingTOTP2FAMethod(method: string, totp_temp_code: string, expires_at: number, user_id: number) : Promise<any> {
+	// 	try {
+	// 		const newPending2FAMethod = await db.run(
+	// 			`INSERT INTO pending_2fa(method, totp_temp_secret, expires_at, user_id) VALUES (?, ?, ?, ?)`,
+	// 			[method, totp_temp_code, expires_at, user_id]
+	// 		);
+	// 		console.log('WE JUST CREATED A NEW PENDING TOTP METHOD: ', newPending2FAMethod);
+	// 		return newPending2FAMethod.lastID;
+	// 	} catch (err) {
+	// 		console.error('SQLite Error: ', err);
+	// 		throw new InternalServerError();
+	// 	}
+	// }
 
-		const new2FAMethod = await db.run(
-			`INSERT INTO _2fa_methods(method, totp_secret, user_id) VALUES (?, ?, ?)`,
-			[pending2FAMethod.method, pending2FAMethod.totp_temp_secret, pending2FAMethod.user_id]
-		);
+	// async createPendingOTP2FAMethod(method: string, otp_temp_code: string, expires_at: number, user_id: number) : Promise<any> {
+	// 	try {
+	// 		const newPending2FAMethod = await db.run(
+	// 			`INSERT INTO pending_2fa(method, otp_temp_code, expires_at, user_id) VALUES (?, ?, ?, ?)`,
+	// 			[method, otp_temp_code, expires_at, user_id]
+	// 		);
+	// 		return newPending2FAMethod.lastID;
+	// 	} catch (err) {
+	// 		console.error('SQLite Error: ', err);
+	// 		throw new InternalServerError();
+	// 	}
+	// }
 
-		await db.run(
-			`DELETE FROM pending_2fa WHERE id = ?`,
-			[pending2FAMethod.id]
-		);
+	// async enablePending2FATOTPMethod(user_id: number) : Promise<any> {
+	// 	const pending2FAMethod = await db.get(
+	// 		`SELECT * FROM pending_2fa WHERE user_id = ? AND method = 'totp'`,
+	// 		[user_id]
+	// 	);
 
-		return await this.findEnabled2FAMethodById(new2FAMethod.lastID, user_id);
-	}
+	// 	const new2FAMethod = await db.run(
+	// 		`INSERT INTO _2fa_methods(method, totp_secret, user_id) VALUES (?, ?, ?)`,
+	// 		[pending2FAMethod.method, pending2FAMethod.totp_temp_secret, pending2FAMethod.user_id]
+	// 	);
 
-	async enablePending2FAOTPMethod(method: string, user_id: number) : Promise<any> {
-		const pending2FAMethod = await db.get(
-			`SELECT * FROM pending_2fa WHERE user_id = ? AND method = ?`,
-			[user_id, method]
-		);
+	// 	await db.run(
+	// 		`DELETE FROM pending_2fa WHERE id = ?`,
+	// 		[pending2FAMethod.id]
+	// 	);
 
-		const new2FAMethod = await db.run(
-			`INSERT INTO _2fa_methods(method, user_id) VALUES (?, ?)`,
-			[pending2FAMethod.method, pending2FAMethod.user_id]
-		);
+	// 	return await this.findEnabled2FAMethodById(new2FAMethod.lastID, user_id);
+	// }
 
-		await db.run(
-			`DELETE FROM pending_2fa WHERE id = ?`,
-			[pending2FAMethod.id]
-		);
+	// async enablePending2FAOTPMethod(method: string, user_id: number) : Promise<any> {
+	// 	const pending2FAMethod = await db.get(
+	// 		`SELECT * FROM pending_2fa WHERE user_id = ? AND method = ?`,
+	// 		[user_id, method]
+	// 	);
 
-		return await this.findEnabled2FAMethodById(new2FAMethod.lastID, user_id);
-	}
+	// 	const new2FAMethod = await db.run(
+	// 		`INSERT INTO _2fa_methods(method, user_id) VALUES (?, ?)`,
+	// 		[pending2FAMethod.method, pending2FAMethod.user_id]
+	// 	);
+
+	// 	await db.run(
+	// 		`DELETE FROM pending_2fa WHERE id = ?`,
+	// 		[pending2FAMethod.id]
+	// 	);
+
+	// 	return await this.findEnabled2FAMethodById(new2FAMethod.lastID, user_id);
+	// }
 
 	async createOTP(method: string, code: string, expires_at: number, user_id: number) : Promise<any> {
 		try {
@@ -308,6 +349,19 @@ class TwoFactorRepository {
 			const runResult = await db.run(
 				`DELETE FROM otps WHERE user_id = ? AND id = ?`,
 				[user_id, id]
+			);
+			return runResult.changes > 0;
+		} catch (err: any) {
+			console.error('SQLite Error: ', err);
+			throw new InternalServerError();
+		}
+	}
+
+	async updatePendingLoginSession(id: number, type: string, code: string, expires_at: number, user_id: number) {
+		try {
+			const runResult = await db.run(
+				`UPDATE pending_2fa_login SET method = ?, code = ?, expires_at = ? WHERE user_id = ? AND id = ?`,
+				[type, code, expires_at, user_id, id]
 			);
 			return runResult.changes > 0;
 		} catch (err: any) {

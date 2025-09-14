@@ -4,13 +4,13 @@ all:
 	@echo "'make clean' to clean everything"
 
 up:
-	docker-compose -f './compose.backend.yaml' up -d --build
+	docker compose -f './compose.backend.yaml' up -d --build
 
 down:
-	docker-compose -f './compose.backend.yaml' down
+	docker compose -f './compose.backend.yaml' down
 
 ps:
-	@docker-compose -f './compose.backend.yaml' ps --format 'table {{.Name}}\t{{.Ports}}\t{{.Status}}'
+	@docker compose -f './compose.backend.yaml' ps --format 'table {{.Name}}\t{{.Ports}}\t{{.Status}}'
 
 re: down up
 

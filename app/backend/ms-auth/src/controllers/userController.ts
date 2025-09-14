@@ -38,13 +38,13 @@ class UserController {
 		}
 	}
 
-	async searchUser(request: FastifyRequest, reply: FastifyReply) {
+	async searchUserByUsername(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			// TODO: ADD SCHEMA
 			const user_id = request.user?.sub;
 			const { username } = request.query as { username: string };
 
-			const matchingUsers = await this.userService.searchUsersByUsername(user_id!, username);
+			const matchingUsers = await this.userService.searchUserByUsername(user_id!, username);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, matchingUsers);
 
@@ -152,25 +152,6 @@ class UserController {
 			reply.status(statusCode || 400).send({ success: false, error: errorCode });
 		}
 	}
-
-
-	// GET FULL USER PROFILE (USER INFO + STATS SUMMARY + RECENT MATCHES + RELATIONSHIP)
-	// async fetchFullUserProfile(request: FastifyRequest, reply: FastifyReply) {
-	// 	try {
-	// 		const user_id = request.user?.sub;
-	// 		const { username } = request.params as IProfileRequest;
-
-	// 		const userFullInfo = await this.userService.getUserFullInfo(user_id!, username);
-
-	// 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, userFullInfo);
-
-	// 		reply.code(status).send(body);
-	// 	} catch (err: any) {
-	// 		const { status, body } = AuthResponseFactory.getErrorResponse(err);
-
-	// 		reply.code(status).send(body);
-	// 	}
-	// }
 }
 
 export default UserController;

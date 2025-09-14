@@ -157,7 +157,7 @@ class UserService {
 	/*----------------------------------------------- DELETE -----------------------------------------------*/
 	/*----------------------------------------------- SEARCH -----------------------------------------------*/
 
-	async searchUsersByUsername(requesterID: number, targetUsername: string) {
+	async searchUserByUsername(requesterID: number, targetUsername: string) {
 		return await this.userRepository.searchByUsername(requesterID, targetUsername);
 	}
 

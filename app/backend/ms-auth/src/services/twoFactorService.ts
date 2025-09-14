@@ -3,7 +3,7 @@ import { db } from "../database";
 import TwoFactorRepository from "../repositories/twoFactorRepository";
 import UserRepository from "../repositories/userRepository";
 import { ISessionFingerprint } from "../types";
-import { InternalServerError, InvalidCredentialsError, UserNotFoundError, _2FAAlreadyEnabled, _2FAInvalidCode, _2FANotEnabled, _2FANotFound } from "../types/auth.types";
+import { InternalServerError, InvalidCredentialsError, SessionExpiredError, UserNotFoundError, _2FAAlreadyEnabled, _2FAExpiredCode, _2FAInvalidCode, _2FANotEnabled, _2FANotFound } from "../types/auth.types";
 import JWTUtils from "../utils/auth/Auth";
 import SessionManager from "./sessionService";
 
@@ -39,6 +39,10 @@ class TwoFactorService {
 
 	async getPendingMethods(userID: number) {
 		return await this.twoFactorRepository.findPending2FAMethods(userID);
+	}
+
+	async getPendingLoginSessionById(id: number, userID: number) {
+		return await this.twoFactorRepository.findPendingLoginSessionById(id, userID);
 	}
 
 
@@ -86,24 +90,107 @@ class TwoFactorService {
 		if (isAlreadyEnabled)
 			throw new _2FAAlreadyEnabled(type);
 
-		this.deletePending2FAMethodsByType(type, userID);
+		this.deletePending2FAMethodsByType(type, userID); // TODO: HOW SHOULD WE HANDLE THIS
 		
 		switch (type) {
 			case 'totp':
-				return this.createPendingTOTPMethod(userID);
+				this.createPendingTOTPMethod(userID);
+				break;
 			case 'email':
-				return this.createPendingOTPMethod(type, userID);
+				this.createPendingOTPMethod(type, userID);
+				break;
 			case 'sms':
-				return this.createPendingOTPMethod(type, userID);
+				this.createPendingOTPMethod(type, userID);
+				break;
 			default:
 				throw new InternalServerError(); // TODO: ADD METHOD NOT SUPPORTED
 		}
 
 		// TODO: ADD SENDING EMAIL OR SMS OUTSIDE THIS CLASS
 	}
-	
-	/*----------------------------------------------- UPDATE -----------------------------------------------*/
 
+	async create2FAMethod(type: string, totp_secret: string | null, userID: number) {
+		const isAlreadyEnabled = await this.getEnabledMethodByType(type, userID);
+		if (isAlreadyEnabled)
+			throw new _2FAAlreadyEnabled(type);
+
+		await this.twoFactorRepository.create2FAMethod(type, totp_secret, userID);
+	}
+
+	async create2FALoginChallenge(userID: number) {
+		const enabledMethods = await this.getEnabledMethods(userID);
+		if (enabledMethods.length == 0)
+			throw new _2FANotEnabled('');
+
+		const loginSessionID = await this.twoFactorRepository.createPendingLoginSession(null, null, this.nowPlusMinutes(10), userID);
+
+		return loginSessionID;
+	}
+	
+	/*----------------------------------------------- SOMETHINGS -----------------------------------------------*/
+
+	// TODO: CREATE THIS.VALIDATE PENDING METHOD
+	// TODO: CREATE VERIFYPENDINGMETHOD
+	async enablePending2FAMethod(type: string, code: string, userID: number) : Promise<void> {
+		// TODO: USER GETTERS
+		const pendingMethod = await this.twoFactorRepository.findPending2FAMethodByType(type, userID);
+		if (!pendingMethod)
+			throw new _2FANotFound(type);
+
+		if (this.nowInSeconds() > pendingMethod.expires_at)
+			throw new _2FAExpiredCode(type);
+		
+		const isValid = (type === 'totp') ? this._verifyTOTP(pendingMethod.temp_value, code)
+										  : this._verifyOTP(code, pendingMethod.temp_value);
+		if (!isValid)
+			throw new _2FAInvalidCode(type);
+		
+		await this.create2FAMethod(type, (type == 'totp') ? pendingMethod.temp_value : null, userID);
+		
+		await this.twoFactorRepository.deletePending2FAById(pendingMethod.id, userID);
+
+		console.log(`${type} is verified, deleted from pending, added to active 2fa`);
+		
+		return ;
+	}
+
+	async select2FALoginChallengeMethod(type: string, loginSessionID: number, userID: number) {
+		const isEnabled = await this.getEnabledMethodByType(type, userID);
+		if (!isEnabled)
+			throw new _2FANotEnabled(type);
+
+		// CHECK IF LOGIN SESSION EXPIRED
+		const pendingLoginSession = await this.getPendingLoginSessionById(loginSessionID, userID);
+		if (pendingLoginSession.expires_at > this.nowInSeconds())
+			throw new SessionExpiredError();
+
+		await this.twoFactorRepository.updatePendingLoginSession(loginSessionID, type, this.generateOTP(), this.nowPlusMinutes(10), userID);
+
+		// TODO: SEND EMAIL OR SMS VIA NOTIFICATION SERVICE
+	}
+
+	// TODO: THIS SHOULD BE MORE GENERAL (VERIFY 2FA CODE OR IS VALID LOGIN CHALLENGE)
+	async verify2FALoginChallengeCode(type: string, loginSessionID: number, code: string, userID: number) {
+		// TODO: SHOULD WE ABSTRACT THIS?
+		const isEnabled = await this.getEnabledMethodByType(type, userID);
+		if (!isEnabled)
+			throw new _2FANotEnabled(type);
+
+		const pendingLoginSession = await this.getPendingLoginSessionById(loginSessionID, userID);
+		if (pendingLoginSession.expires_at > this.nowInSeconds())
+			throw new _2FAExpiredCode(type);
+		
+		switch (type) {
+			case 'totp':
+				return this._verifyTOTP(pendingLoginSession.code, code);
+			case 'email':
+				return this._verifyOTP(pendingLoginSession.code, code);
+			case 'sms':
+				return this._verifyOTP(pendingLoginSession.code, code);
+			default:
+				throw new InternalServerError(); // TODO: ADD METHOD NOT SUPPORTED
+		}
+	}
 
 	/*----------------------------------------------- DELETE -----------------------------------------------*/
 
@@ -242,81 +329,56 @@ class TwoFactorService {
 	// 	return { user: userWithoutPassword, accessToken, refreshToken };
 	// }
 
-	async createPendingMethod(type: string, userID: number, contact?: string) : Promise<{ secret_base32: string | undefined, qr_code_url: string | undefined }> {
-		// const totp_temp_secret = this.generateTOTPSecret();
+	// async createPendingMethod(type: string, userID: number, contact?: string) : Promise<{ secret_base32: string | undefined, qr_code_url: string | undefined }> {
+	// 	// const totp_temp_secret = this.generateTOTPSecret();
 
-		// if a totp enabled method is already setup => return
-		// a user can't have an active method of the same type at the same time
+	// 	// if a totp enabled method is already setup => return
+	// 	// a user can't have an active method of the same type at the same time
 
-		const isEnabled = await this.twoFactorRepository.findEnabled2FAMethodByType(type, userID);
-		if (isEnabled)
-			throw new _2FAAlreadyEnabled(type);
+	// 	const isEnabled = await this.twoFactorRepository.findEnabled2FAMethodByType(type, userID);
+	// 	if (isEnabled)
+	// 		throw new _2FAAlreadyEnabled(type);
 
-		// ?
-		// await this.twoFactorRepository.findPending2FAMethodByType('totp', user_id)
+	// 	// ?
+	// 	// await this.twoFactorRepository.findPending2FAMethodByType('totp', user_id)
 
-		await this.twoFactorRepository.deletePending2FAByType(type, userID);
+	// 	await this.twoFactorRepository.deletePending2FAByType(type, userID);
 
 
-		let temp_value: string;
-		let QRCodeURL: string | undefined;
+	// 	let temp_value: string;
+	// 	let QRCodeURL: string | undefined;
 
-		if (type === 'totp') {
-			const totpSecrets = this.generateTOTPSecrets();
-			if (!totpSecrets)
-				throw new InternalServerError();
-			temp_value = totpSecrets.base32;
-			QRCodeURL = await QRCode.toDataURL(totpSecrets.otpauth_url);
-			if (!QRCodeURL)
-				throw new InternalServerError();
-		} else {
-			temp_value = this.generateOTP();
-			if (contact) {
-				if (type === 'email')
-					this.sendEmail(contact, temp_value);
-				else if (type === 'sms')
-					this.sendSMS(contact, temp_value);
-			}
-		}
+	// 	if (type === 'totp') {
+	// 		const totpSecrets = this.generateTOTPSecrets();
+	// 		if (!totpSecrets)
+	// 			throw new InternalServerError();
+	// 		temp_value = totpSecrets.base32;
+	// 		QRCodeURL = await QRCode.toDataURL(totpSecrets.otpauth_url);
+	// 		if (!QRCodeURL)
+	// 			throw new InternalServerError();
+	// 	} else {
+	// 		temp_value = this.generateOTP();
+	// 		if (contact) {
+	// 			if (type === 'email')
+	// 				this.sendEmail(contact, temp_value);
+	// 			else if (type === 'sms')
+	// 				this.sendSMS(contact, temp_value);
+	// 		}
+	// 	}
 
-		const pendingMethod = await this.twoFactorRepository.createPending2FAMethod(
-			type,
-			temp_value,
-			this.nowPlusMinutes(10),
-			userID
-		);
+	// 	const pendingMethod = await this.twoFactorRepository.createPending2FAMethod(
+	// 		type,
+	// 		temp_value,
+	// 		this.nowPlusMinutes(10),
+	// 		userID
+	// 	);
 
-		if (!pendingMethod)
-			throw new InternalServerError();
+	// 	if (!pendingMethod)
+	// 		throw new InternalServerError();
 
-		// console.log(`setupTOTP = ${{ secret_base32: totp_temp_secret.base32, secret_qrcode_url: QRCodeURL }}`);
-		return { secret_base32: type === 'totp' ? temp_value : undefined, qr_code_url: QRCodeURL };
-	}
-
-	// TODO: CREATE THIS.VALIDATE PENDING METHOD
-	// TODO: CREATE VERIFYPENDINGMETHOD
-	async enablePendingMethod(type: string, code: string, userID: number) : Promise<void> {
-		const pendingMethod = await this.twoFactorRepository.findPending2FAMethodByType(type, userID);
-		if (!pendingMethod)
-			throw new _2FANotFound(type);
-
-		if (this.nowInSeconds() > pendingMethod.expires_at)
-			throw new _2FAInvalidCode(type); // TODO: ADD _2FAExpiredCode ERROR CLASS
-		
-		const isValid = (type === 'totp') ? this._verifyTOTP(pendingMethod.temp_value, code)
-										  : this._verifyOTP(code, pendingMethod.temp_value);
-		if (!isValid)
-			throw new _2FAInvalidCode(type);
-
-		const new2FAMethod = (type === 'totp') ? await this.twoFactorRepository.enablePending2FATOTPMethod(userID)
-											   : await this.twoFactorRepository.enablePending2FAOTPMethod(type, userID);
-		if (!new2FAMethod)
-			throw new InternalServerError();
-
-		console.log(`${type} is verified, deleted from pending, added to active 2fa`);
-		
-		return ;
-	}
+	// 	// console.log(`setupTOTP = ${{ secret_base32: totp_temp_secret.base32, secret_qrcode_url: QRCodeURL }}`);
+	// 	return { secret_base32: type === 'totp' ? temp_value : undefined, qr_code_url: QRCodeURL };
+	// }
 
 	async verify2FAMethod(type: string, code: string, userID: number) : Promise<boolean> {
 		const enabledMethod = await this.twoFactorRepository.findEnabled2FAMethodByType(type, userID);

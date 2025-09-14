@@ -88,14 +88,14 @@ async function userRouter(fastify: FastifyInstance) {
 		handler: userController.deleteUser.bind(userController)
 	});
 	
-	// GET USER STATS
+	// GET USER PERFORMANCE
 	fastify.get('/:username/performance', {
 		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
 		handler: userController.fetchUserPerformance.bind(userController)
 	});
 	
-	// GET USER MATCHES
+	// GET USER MATCHES PAGE
 	fastify.get('/:username/matches', {
 		schema: userMatchesSchema,
 		preHandler: fastify.authenticate,
@@ -110,7 +110,7 @@ async function userRouter(fastify: FastifyInstance) {
 
 	fastify.get('/search-by-username', {
 		preHandler: fastify.authenticate,
-		handler: userController.searchUser.bind(userController)
+		handler: userController.searchUserByUsername.bind(userController)
 	});
 
 

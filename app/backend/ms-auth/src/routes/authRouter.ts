@@ -19,6 +19,7 @@ import ResetPasswordService from "../services/passwordResetService";
 import TwoFactorRepository from "../repositories/twoFactorRepository";
 import SessionRepository from "../repositories/sessionRepository";
 import JWTUtils from "../utils/auth/Auth";
+import TwoFactorController from "../controllers/twoFactorController";
 
 const DEFAULT_BCRYPT_ROUNDS = 12;
 const ACCESS_TOKEN_EXPIRY = '15m';
@@ -58,6 +59,7 @@ async function authRouter(fastify: FastifyInstance) {
 
 	const authService = new AuthService(authenticationConfig, _JWTUtils, userService, sessionService, twoFactorService);
 	const authController = new AuthController(authService, twoFactorService);
+	const twoFactorController = new TwoFactorController(twoFactorService);
 	// const mfaController: MFAController = new MFAController();
 	// const resetController: ResetController = new ResetController();
 
@@ -101,6 +103,30 @@ async function authRouter(fastify: FastifyInstance) {
 
 
 	/*----------------------------- Multi-Factor Authentication -----------------------------*/
+
+	fastify.get('/2fa/enabled', {
+		// TODO: ADD SCHEMA
+		// schema: auth2FASetupSchema,
+		preHandler: fastify.authenticate,
+		handler: twoFactorController.EnabledMethodsEndpoint.bind(twoFactorController)
+	});
+
+	// ADD ENDPOINTS FOR DELETING ENABLED METHODS
+
+	fastify.post('/2fa/:method/setup/init', {
+		// TODO: ADD SCHEMA
+		// schema: auth2FASetupSchema,
+		preHandler: fastify.authenticate,
+		handler: twoFactorController.SetupInitEndpoint.bind(twoFactorController)
+	});
+
+	fastify.post('/2fa/:method/setup/verify', {
+		// TODO: ADD SCHEMA
+		// schema: auth2FASetupSchema,
+		preHandler: fastify.authenticate,
+		handler: twoFactorController.SetupVerifyEndpoint.bind(twoFactorController)
+	});
+
 	// fastify.post('/mfa/send-code', {
 	// 	// schema: auth2FASetupSchema,
 	// 	// preHandler: fastify.authenticate,
