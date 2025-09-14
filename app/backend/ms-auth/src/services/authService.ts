@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import { CreateUserRequest, ILoginRequest, IRegisterRequest, ISQLCreateUser, User } from "../types";
 import bcrypt from 'bcrypt';
 import AuthUtils, { JWT_TOKEN, JWT_REFRESH_PAYLOAD } from '../utils/auth/Auth'
-import { FormError, FormFieldMissing, InvalidCredentialsError, PasswordLengthError, SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenExpiredError, TokenInvalidError, TokenRequiredError, UserAlreadyExistsError, UserNotFoundError, UsernameLengthError, WeakPasswordError } from "../types/auth.types";
+import { FormError, FormFieldMissing, InvalidCredentialsError, PasswordLengthError, SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenExpiredError, TokenInvalidError, TokenRequiredError, UserAlreadyExistsError, UserNotFoundError, UsernameLengthError, WeakPasswordError, _2FAInvalidCode } from "../types/auth.types";
 import { ISessionFingerprint } from "../types";
 import { UAParser } from 'ua-parser-js';
 import axios from "axios";
@@ -75,10 +75,14 @@ class AuthService {
 			throw new InvalidCredentialsError();
 
 		// TODO: IMPLEMENT LOGIN CHALLENGE
-		// const enabled2FAMethods = await this.twoFactorService.getEnabledMethods(existingUser.id);
-		// const _2FARequired = enabled2FAMethods.length > 0;
-		// if (_2FARequired)
-		// 	return { _2FARequired: true, enabled2FAMethods: enabled2FAMethods };
+		const enabled2FAMethods = await this.twoFactorService.getEnabledMethods(existingUser.id);
+		const _2FARequired = enabled2FAMethods.length > 0;
+		if (_2FARequired)
+			return {
+				_2FARequired: true, 
+				enabled2FAMethods: enabled2FAMethods.map((m: any) => m.method),
+				loginChallengeID: await this.twoFactorService.create2FALoginChallenge(existingUser.id)
+			};
 
 		// clean up expired refresh tokens
 		// force max concurrent sessions
@@ -110,6 +114,41 @@ class AuthService {
 		const { password: _, ...userWithoutPassword } = existingUser;
 
 		return { user: userWithoutPassword, newAccessToken, newRefreshToken };
+	}
+
+	async sendLoginChallenge2FACode(loginChallengeID: number, method: string, userAgent: string, ip: string) {
+
+		// TODO: LIMIT ATTEMPTS
+		// SET LOGIN CHALLENGE METHOD AND GENERATES CODE AND SENDS IT
+		await this.twoFactorService.select2FALoginChallengeMethod(method, loginChallengeID);
+
+		const loginChallenge = await this.twoFactorService.getPendingLoginSessionById(loginChallengeID);
+
+		// TODO: NOTIFICATION SERVICE TO SEND CODE IF METHOD == EMAIL || SMS
+		// if (method == 'sms' || method == 'email')
+		console.log(`CODE ${loginChallenge.code || 'XXXXXX'} WAS SENT TO ${'FLAN BEN FLAN'} VIA ${method}`);
+	}
+
+	async verifyLoginChallenge2FACode(loginChallengeID: number, method: string, code: string, userAgent: string, ip: string) {
+		const currentSessionFingerprint = this.getFingerprint(userAgent, ip); // TODO: REMOVE THIS
+
+		// TODO: LIMIT ATTEMPTS
+		const isValid = await this.twoFactorService.verify2FALoginChallengeCode(method, loginChallengeID, code);
+		if (!isValid)
+			throw new _2FAInvalidCode(method);
+
+		const loginChallenge = await this.twoFactorService.getPendingLoginSessionById(loginChallengeID);
+
+		await this.twoFactorService.deletePendingLoginChallenge(loginChallengeID, loginChallenge.user_id);
+
+		const existingUser = await this.userService.getUserById(loginChallenge.user_id);
+		// TODO: SHOULD WE CHECK FOR EXISTENCE?
+
+		const sessionTokens = await this.sessionService.createSession(existingUser.id, currentSessionFingerprint);
+
+		const { password: _, ...userWithoutPassword } = existingUser;
+
+		return { user: userWithoutPassword, accessToken: sessionTokens.accessToken, refreshToken: sessionTokens.refreshToken };
 	}
 
 	// TO CHECK

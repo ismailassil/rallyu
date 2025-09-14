@@ -119,11 +119,12 @@ class TwoFactorRepository {
 		}
 	}
 
-	async findPendingLoginSessionById(id: number, user_id: number) {
+	// async findPendingLoginSessionById(id: number, user_id: number) {
+	async findPendingLoginSessionById(id: number) {
 		try {
 			const pendingLoginSession = await db.get(
-				`SELECT * FROM pending_2fa_login WHERE id = ? user_id = ?`,
-				[id, user_id]
+				`SELECT * FROM pending_2fa_login WHERE id = ?`,
+				[id]
 			);
 			return pendingLoginSession ?? null;
 		} catch (err: any) {
@@ -348,6 +349,19 @@ class TwoFactorRepository {
 		try {
 			const runResult = await db.run(
 				`DELETE FROM otps WHERE user_id = ? AND id = ?`,
+				[user_id, id]
+			);
+			return runResult.changes > 0;
+		} catch (err: any) {
+			console.error('SQLite Error: ', err);
+			throw new InternalServerError();
+		}
+	}
+
+	async deletePendingLoginSession(id: number, user_id: number) {
+		try {
+			const runResult = await db.run(
+				`DELETE FROM pending_2fa_login WHERE user_id = ? AND id = ?`,
 				[user_id, id]
 			);
 			return runResult.changes > 0;

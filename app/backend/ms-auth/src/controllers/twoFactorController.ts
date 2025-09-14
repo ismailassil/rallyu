@@ -38,9 +38,9 @@ class TwoFactorController {
 			const user_id = request.user?.sub as number;
 			const { method } = request.params as { method: string };
 
-			await this.twoFactorService.createPending2FAMethod(method, user_id);
+			const totpSecrets = await this.twoFactorService.createPending2FAMethod(method, user_id);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, totpSecrets);
 
 			reply.status(status).send(body);
 

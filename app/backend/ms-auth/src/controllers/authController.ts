@@ -58,14 +58,63 @@ class AuthController {
 		try {
 			const { username, password } = request.body as ILoginRequest;
 			const userAgent = request.headers["user-agent"] || '';
+
+			const loginResult = await this.authService.LogIn(username, password, userAgent, request.ip);
+			if (loginResult._2FARequired) {
+				const { _2FARequired, enabled2FAMethods, loginChallengeID } = loginResult;
+				
+				const { status, body } = AuthResponseFactory.getSuccessResponse(200, { _2FARequired, enabled2FAMethods, loginChallengeID });
+
+				return reply.code(status).send(body);
+			}
 			
-			const { user, refreshToken, accessToken } 
-				= await this.authService.LogIn(username, password, userAgent, request.ip);
+			const { user, refreshToken, accessToken } = loginResult;
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
 
 			reply.code(status).setCookie(
-				'refreshToken', refreshToken, {
+				'refreshToken', refreshToken ?? '', { // TODO: CHECK REFRESH TOKEN TYPE ASSERTION
+					path: '/',
+					httpOnly: true,
+					secure: false,
+					sameSite: 'lax'
+				}
+			).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			reply.code(status).send(body);
+		}
+	}
+
+	async SendLoginChallenge2FACodeEndpoint(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const { loginChallengeID, method } = request.body as { loginChallengeID: number, method: string };
+			const userAgent = request.headers["user-agent"] || '';
+
+			await this.authService.sendLoginChallenge2FACode(loginChallengeID, method, userAgent, request.ip);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			reply.code(status).send(body);
+		}
+	}
+
+	async VerifyLoginChallenge2FACodeEndpoint(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const { loginChallengeID, method, code } = request.body as { loginChallengeID: number, method: string, code: string };
+			const userAgent = request.headers["user-agent"] || '';
+
+			const { user, refreshToken, accessToken } = await this.authService.verifyLoginChallenge2FACode(loginChallengeID, method, code, userAgent, request.ip);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
+
+			reply.code(status).setCookie(
+				'refreshToken', refreshToken ?? '', { // TODO: CHECK REFRESH TOKEN TYPE ASSERTION
 					path: '/',
 					httpOnly: true,
 					secure: false,

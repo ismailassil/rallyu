@@ -104,6 +104,18 @@ async function authRouter(fastify: FastifyInstance) {
 
 	/*----------------------------- Multi-Factor Authentication -----------------------------*/
 
+	fastify.post('/login/2fa/send', {
+		// TODO: ADD SCHEMA
+		// schema: authLoginSchema,
+		handler: authController.SendLoginChallenge2FACodeEndpoint.bind(authController)
+	});
+
+	fastify.post('/login/2fa/verify', {
+		// TODO: ADD SCHEMA
+		// schema: authLoginSchema,
+		handler: authController.VerifyLoginChallenge2FACodeEndpoint.bind(authController)
+	});
+
 	fastify.get('/2fa/enabled', {
 		// TODO: ADD SCHEMA
 		// schema: auth2FASetupSchema,
@@ -111,7 +123,7 @@ async function authRouter(fastify: FastifyInstance) {
 		handler: twoFactorController.EnabledMethodsEndpoint.bind(twoFactorController)
 	});
 
-	// ADD ENDPOINTS FOR DELETING ENABLED METHODS
+	// TODO: ADD ENDPOINTS FOR DELETING ENABLED METHODS
 
 	fastify.post('/2fa/:method/setup/init', {
 		// TODO: ADD SCHEMA

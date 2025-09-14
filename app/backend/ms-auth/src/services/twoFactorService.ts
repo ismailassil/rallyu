@@ -3,7 +3,7 @@ import { db } from "../database";
 import TwoFactorRepository from "../repositories/twoFactorRepository";
 import UserRepository from "../repositories/userRepository";
 import { ISessionFingerprint } from "../types";
-import { InternalServerError, InvalidCredentialsError, SessionExpiredError, UserNotFoundError, _2FAAlreadyEnabled, _2FAExpiredCode, _2FAInvalidCode, _2FANotEnabled, _2FANotFound } from "../types/auth.types";
+import { InternalServerError, InvalidCredentialsError, SessionExpiredError, SessionNotFoundError, UserNotFoundError, _2FAAlreadyEnabled, _2FAExpiredCode, _2FAInvalidCode, _2FANotEnabled, _2FANotFound } from "../types/auth.types";
 import JWTUtils from "../utils/auth/Auth";
 import SessionManager from "./sessionService";
 
@@ -41,8 +41,9 @@ class TwoFactorService {
 		return await this.twoFactorRepository.findPending2FAMethods(userID);
 	}
 
-	async getPendingLoginSessionById(id: number, userID: number) {
-		return await this.twoFactorRepository.findPendingLoginSessionById(id, userID);
+	// async getPendingLoginSessionById(id: number, userID: number) {
+	async getPendingLoginSessionById(id: number) {
+		return await this.twoFactorRepository.findPendingLoginSessionById(id);
 	}
 
 
@@ -50,6 +51,7 @@ class TwoFactorService {
 	// AUTH APP
 	private async createPendingTOTPMethod(userID: number) {
 		const totpSecrets = this.generateTOTPSecrets();
+		console.log(totpSecrets);
 
 		const pendingTOTPMethod = await this.twoFactorRepository.createPending2FAMethod(
 			'totp',
@@ -65,7 +67,7 @@ class TwoFactorService {
 		if (!QRCodeURL)
 			throw new InternalServerError();
 
-		return await this.getPendingMethodById(pendingTOTPMethod.id, userID);
+		return totpSecrets;
 	}
 	
 	// EMAIL | SMS
@@ -82,26 +84,24 @@ class TwoFactorService {
 		if (!pendingOTPMethod)
 			throw new InternalServerError();
 
-		return await this.getPendingMethodById(pendingOTPMethod.id, userID);
+		// return await this.getPendingMethodById(pendingOTPMethod.id, userID);
 	}
 	
-	async createPending2FAMethod(type: string, userID: number) {
+	async createPending2FAMethod(type: string, userID: number) : Promise<{ base32: string; otpauth_url: string } | void> {
 		const isAlreadyEnabled = await this.getEnabledMethodByType(type, userID);
 		if (isAlreadyEnabled)
 			throw new _2FAAlreadyEnabled(type);
 
-		this.deletePending2FAMethodsByType(type, userID); // TODO: HOW SHOULD WE HANDLE THIS
+		this.deletePending2FAMethodsByType(type, userID); // TODO: HOW SHOULD WE HANDLE THIS?
 		
 		switch (type) {
 			case 'totp':
-				this.createPendingTOTPMethod(userID);
-				break;
+				return await this.createPendingTOTPMethod(userID);
+				// break;
 			case 'email':
-				this.createPendingOTPMethod(type, userID);
-				break;
+				return await this.createPendingOTPMethod(type, userID);
 			case 'sms':
-				this.createPendingOTPMethod(type, userID);
-				break;
+				return await this.createPendingOTPMethod(type, userID);
 			default:
 				throw new InternalServerError(); // TODO: ADD METHOD NOT SUPPORTED
 		}
@@ -154,31 +154,44 @@ class TwoFactorService {
 		return ;
 	}
 
-	async select2FALoginChallengeMethod(type: string, loginSessionID: number, userID: number) {
-		const isEnabled = await this.getEnabledMethodByType(type, userID);
-		if (!isEnabled)
-			throw new _2FANotEnabled(type);
+	// TODO: SHOULD WE RENAME THIS TO setLoginChallengeMethod?
+	async select2FALoginChallengeMethod(type: string, loginSessionID: number) {
 
 		// CHECK IF LOGIN SESSION EXPIRED
-		const pendingLoginSession = await this.getPendingLoginSessionById(loginSessionID, userID);
-		if (pendingLoginSession.expires_at > this.nowInSeconds())
+		const pendingLoginSession = await this.getPendingLoginSessionById(loginSessionID);
+		if (!pendingLoginSession)
+			throw new SessionNotFoundError();
+
+		const isExpired = this.nowInSeconds() > pendingLoginSession.expires_at;
+		
+		const isEnabled = await this.getEnabledMethodByType(type, pendingLoginSession.user_id);
+		if (!isEnabled)
+			throw new _2FANotEnabled(type);
+		
+		if (isExpired)
 			throw new SessionExpiredError();
 
-		await this.twoFactorRepository.updatePendingLoginSession(loginSessionID, type, this.generateOTP(), this.nowPlusMinutes(10), userID);
+		await this.twoFactorRepository.updatePendingLoginSession(loginSessionID, type, this.generateOTP(), this.nowPlusMinutes(10), pendingLoginSession.user_id);
 
 		// TODO: SEND EMAIL OR SMS VIA NOTIFICATION SERVICE
 	}
 
 	// TODO: THIS SHOULD BE MORE GENERAL (VERIFY 2FA CODE OR IS VALID LOGIN CHALLENGE)
-	async verify2FALoginChallengeCode(type: string, loginSessionID: number, code: string, userID: number) {
+	async verify2FALoginChallengeCode(type: string, loginSessionID: number, code: string) {
 		// TODO: SHOULD WE ABSTRACT THIS?
-		const isEnabled = await this.getEnabledMethodByType(type, userID);
+		// CHECK IF LOGIN SESSION EXPIRED
+		const pendingLoginSession = await this.getPendingLoginSessionById(loginSessionID);
+		if (!pendingLoginSession)
+			throw new SessionNotFoundError();
+
+		const isExpired = this.nowInSeconds() > pendingLoginSession.expires_at;
+		
+		const isEnabled = await this.getEnabledMethodByType(type, pendingLoginSession.user_id);
 		if (!isEnabled)
 			throw new _2FANotEnabled(type);
-
-		const pendingLoginSession = await this.getPendingLoginSessionById(loginSessionID, userID);
-		if (pendingLoginSession.expires_at > this.nowInSeconds())
-			throw new _2FAExpiredCode(type);
+		
+		if (isExpired)
+			throw new SessionExpiredError();
 		
 		switch (type) {
 			case 'totp':
@@ -200,6 +213,10 @@ class TwoFactorService {
 
 	async deletePending2FAMethodsByType(type: string, userID: number) {
 		return this.twoFactorRepository.deletePending2FAByType(type, userID);
+	}
+
+	async deletePendingLoginChallenge(id: number, userID: number) {
+		return this.twoFactorRepository.deletePendingLoginSession(id, userID);
 	}
 
 
