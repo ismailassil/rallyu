@@ -8,9 +8,11 @@ import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toast } from 'sonner';
 import { alertError, alertLoading, alertSuccess } from '../../components/CustomToast';
+import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
 	const { login } = useAuth();
+	const router = useRouter();
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [usernameError, setUsernameError] = useState('');
@@ -53,8 +55,15 @@ export default function LoginForm() {
 		setIsSubmitting(true);
 		try {
 			alertLoading('Loggin you in...');
-			await login(username, password);
-			alertSuccess('Logged in successfully');
+			const res = await login(username, password);
+			if (res._2FARequired) {
+				alertSuccess('Two Factor Authentication is required!');
+
+				setTimeout(() => {
+					router.push('/two-factorv2');
+				}, 1000);
+			} else
+				alertSuccess('Logged in successfully');
 		} catch (err: any) {
 			console.log('ERROR CATCHED IN LOGIN FORM SUBMIT: ', err);
 			const msg = err.message;

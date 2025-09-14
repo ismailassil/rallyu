@@ -49,7 +49,14 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	async function login(username: string, password: string) {
 		try {
 			// setIsLoading(true);
-			const { user, accessToken } = await apiClient.login({ username, password });
+			const res = await apiClient.login({ username, password });
+			if (res._2FARequired) {
+				sessionStorage.setItem('loginChallengeID', JSON.stringify(res.loginChallengeID));
+				sessionStorage.setItem('enabledMethods', JSON.stringify(res.enabled2FAMethods));
+				return res;
+			}
+
+			const { user, accessToken } = res;
 
 			// TODO: SHOULD BE DONE SOMEWHERE ELSE
 			if (user.avatar_path[0] == '/')
@@ -61,6 +68,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			setLoggedInUser(user);
 			setIsAuthenticated(true);
 			socket.connect(accessToken);
+			return user;
 		} catch (err) {
 			console.log('Login Error Catched in AuthContext: ', err);
 			throw err; // TODO: SHOULD WE PROPAGATE?
@@ -69,6 +77,23 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		} finally {
 			// setIsLoading(false);
 		}
+	}
+
+	async function send2FACode(loginChallengeID: number, method: string) {
+		return apiClient.send2FACode({ loginChallengeID, method });
+	}
+	
+	async function verify2FACode(loginChallengeID: number, method: string, code: string) {
+		const { user, accessToken } = await apiClient.verify2FACode({ loginChallengeID, method, code });
+		
+		setLoggedInUser(user);
+		setIsAuthenticated(true);
+
+		sessionStorage.removeItem('loginChallengeID');
+		sessionStorage.removeItem('enabledMethods');
+
+		socket.connect(accessToken);
+		return { user, accessToken };
 	}
 
 	async function logout() {
@@ -112,6 +137,8 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		// ACTIONS
 		register,
 		login,
+		send2FACode,
+		verify2FACode,
 		logout,
 		apiClient,
 		socket

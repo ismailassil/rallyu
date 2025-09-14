@@ -251,7 +251,7 @@ export class APIClient {
 	/*-------------------------------------- 2FA --------------------------------------*/
 
 	async mfaEnabledMethods() {
-		const { data: res } = await this.client.get('/auth/mfa/enabled');
+		const { data: res } = await this.client.get('/auth/2fa/enabled');
 		return res.data;
 	}
 	
@@ -260,32 +260,32 @@ export class APIClient {
 		return res.data;
 	}
 
-	async mfaAuthAppSetupInit() {
-		const { data: res } = await this.client.post('/auth/mfa/totp/setup/init');
+	async mfaSetupInit(method: string) {
+		const { data: res } = await this.client.post(`/auth/2fa/${method}/setup/init`);
 		return res.data;
 	}
-	async mfaAuthAppSetupVerify(code: string) {
-		const { data: res } = await this.client.post('/auth/mfa/totp/setup/verify', { code });
+	async mfaSetupVerify(method: string, code: string) {
+		const { data: res } = await this.client.post(`/auth/2fa/${method}/setup/verify`, { code });
 		return res.data;
 	}
 	
-	async mfaEmailSetupInit() {
-		const { data: res } = await this.client.post('/auth/mfa/email/setup/init');
-		return res.data;
-	}
-	async mfaEmailSetupVerify(code: string) {
-		const { data: res } = await this.client.post('/auth/mfa/email/setup/verify', { code });
-		return res.data;
-	}
+	// async mfaEmailSetupInit() {
+	// 	const { data: res } = await this.client.post('/auth/mfa/email/setup/init');
+	// 	return res.data;
+	// }
+	// async mfaEmailSetupVerify(code: string) {
+	// 	const { data: res } = await this.client.post('/auth/mfa/email/setup/verify', { code });
+	// 	return res.data;
+	// }
 
-	async mfaPhoneSetupInit(phoneNumber: string) {
-		const { data: res } = await this.client.post('/auth/mfa/sms/setup/init', { phone: phoneNumber });
-		return res.data;
-	}
-	async mfaPhoneSetupVerify(code: string) {
-		const { data: res } = await this.client.post('/auth/mfa/sms/setup/verify', { code });
-		return res.data;
-	}
+	// async mfaPhoneSetupInit(phoneNumber: string) {
+	// 	const { data: res } = await this.client.post('/auth/mfa/sms/setup/init', { phone: phoneNumber });
+	// 	return res.data;
+	// }
+	// async mfaPhoneSetupVerify(code: string) {
+	// 	const { data: res } = await this.client.post('/auth/mfa/sms/setup/verify', { code });
+	// 	return res.data;
+	// }
 
 	/*--------------------------------- Authentication ---------------------------------*/
 
@@ -294,9 +294,38 @@ export class APIClient {
 		const { data: res } = await this.client.post('/auth/login', payload);
 		console.log('login: ', res);
 
+		if (res.data._2FARequired)
+			return res.data;
+
+		// if (res.data._2FARequired) {
+		// 	return {
+		// 		_2FARequired: true,
+		// 		enabled2FAMethods: res.data.enabled2FAMethods,
+		// 		loginChallengeId: res.data.loginChallengeID
+		// 	};
+		// }
+
 		this.setAccessToken(res.data.accessToken);
 
 		const user = this.normalizeUser(res.data.user);
+		return { user, accessToken: res.data.accessToken };
+	}
+
+
+	async send2FACode(payload: { loginChallengeID: number, method: string }) {
+		const { data: res } = await this.client.post('/auth/login/2fa/send', payload);
+		return res.data;
+	}
+
+	async verify2FACode(payload: { loginChallengeID: number, method: string, code: string }) : Promise<{
+		user: any;
+		accessToken: any;
+	}> {
+		const { data: res } = await this.client.post('/auth/login/2fa/verify', payload);
+
+		this.setAccessToken(res.data.accessToken);
+		const user = this.normalizeUser(res.data.user);
+
 		return { user, accessToken: res.data.accessToken };
 	}
 
@@ -350,9 +379,9 @@ export class APIClient {
 	}
 
 	private classifyError(err: any) {
-		if (err.response.data.message.includes('ECONNREFUSED')) {
-			return { type: 'network', message: 'Something went wrong, please try again' };
-		}
+		// if (err.response.data.message.includes('ECONNREFUSED')) {
+		// 	return { type: 'network', message: 'Something went wrong, please try again' };
+		// }
 		// const status = err.response.status;
 		// if (status === 401) {
 		// 	return { type: 'auth', message: 'Session expired. Please log in again.', original: err };
