@@ -1,8 +1,14 @@
 'use client';
 import Image from "next/image";
 import LoginForm from "./components/LoginForm";
+import { useEffect } from "react";
 
 export default function LoginPage() {
+	useEffect(() => {
+		sessionStorage.removeItem('loginChallengeID');
+		sessionStorage.removeItem('enabledMethods');
+	}, []);
+
 	return (
 		<main className="pt-30 flex h-[100vh] w-full pb-10">
 			<div className="flex h-full w-full justify-center overflow-auto">

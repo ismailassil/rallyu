@@ -84,16 +84,21 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	}
 	
 	async function verify2FACode(loginChallengeID: number, method: string, code: string) {
-		const { user, accessToken } = await apiClient.verify2FACode({ loginChallengeID, method, code });
-		
-		setLoggedInUser(user);
-		setIsAuthenticated(true);
-
-		sessionStorage.removeItem('loginChallengeID');
-		sessionStorage.removeItem('enabledMethods');
-
-		socket.connect(accessToken);
-		return { user, accessToken };
+		try {
+			const { user, accessToken } = await apiClient.verify2FACode({ loginChallengeID, method, code });
+			
+			setLoggedInUser(user);
+			setIsAuthenticated(true);
+	
+			sessionStorage.removeItem('loginChallengeID');
+			sessionStorage.removeItem('enabledMethods');
+	
+			socket.connect(accessToken);
+			return { user, accessToken };
+		} catch (err) {
+			console.log('Verify2FACode Error Catched in AuthContext: ', err);
+			throw err; // TODO: SHOULD WE PROPAGATE?
+		}
 	}
 
 	async function logout() {

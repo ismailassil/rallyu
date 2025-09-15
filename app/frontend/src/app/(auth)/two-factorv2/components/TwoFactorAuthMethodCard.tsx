@@ -1,12 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import React from "react";
 
-// const mfaData = [
-// 	{ method: 'totp', name: 'Authenticator App', icon: <Fingerprint  className='group-hover:text-blue-400 transition-all duration-900 h-14 w-14' />, contact: 'Google Authenticator, Authy, or similar apps', enabled: true },
-// 	{ method: 'email', name: 'Email Verification', icon: <Smartphone  className='group-hover:text-green-300 transition-all duration-900 h-14 w-14' />, contact: 'your-email@gmail.com', enabled: true },
-// 	{ method: 'sms', name: 'SMS Verification', icon: <Mail  className='group-hover:text-yellow-300 transition-all duration-900 h-14 w-14' />, contact: '+212636299821', enabled: false }
-// ];
-
 type TwoFactorAuthMethodCardProps = {
 	title: string;
 	icon: React.ReactNode;

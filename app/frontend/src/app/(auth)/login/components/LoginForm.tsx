@@ -6,9 +6,9 @@ import Image from 'next/image';
 import FormFieldError from '../../signup/components/FormFieldError';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { toast } from 'sonner';
 import { alertError, alertLoading, alertSuccess } from '../../components/CustomToast';
 import { useRouter } from 'next/navigation';
+import { APIError } from '@/app/(api)/APIClient';
 
 export default function LoginForm() {
 	const { login } = useAuth();
@@ -59,15 +59,15 @@ export default function LoginForm() {
 			if (res._2FARequired) {
 				alertSuccess('Two Factor Authentication is required!');
 
-				setTimeout(() => {
+				// setTimeout(() => {
 					router.push('/two-factorv2');
-				}, 1000);
+				// }, 1000);
 			} else
 				alertSuccess('Logged in successfully');
-		} catch (err: any) {
+		} catch (err) {
 			console.log('ERROR CATCHED IN LOGIN FORM SUBMIT: ', err);
-			const msg = err.message;
-			alertError(msg);
+			const apiErr = err as APIError;
+			alertError(apiErr.message);
 		} finally {
 			setIsSubmitting(false);
 		}

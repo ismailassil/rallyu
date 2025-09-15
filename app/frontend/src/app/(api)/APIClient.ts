@@ -61,6 +61,12 @@ interface IUserProfile {
 	games_history: Array<IGameHistory>
 }
 
+export type APIError = {
+	code: string;
+	message: string;
+	details?: any;
+}
+
 export class APIClient {
 	private client: AxiosInstance;
 	private accessToken: string = '';
@@ -378,7 +384,7 @@ export class APIClient {
 		return user;
 	}
 
-	private classifyError(err: any) {
+	private classifyError(err: any) : APIError {
 		// if (err.response.data.message.includes('ECONNREFUSED')) {
 		// 	return { type: 'network', message: 'Something went wrong, please try again' };
 		// }
@@ -396,6 +402,30 @@ export class APIClient {
 		// 	return { type: 'server', message: 'Server error. Please try again later.' };
 		// }
 		// return { type: 'unknown', message: 'An unexpected error occurred.' };
-		return { type: 'auth', message: err.response.data.error.message };
+
+		try {
+			if (!err.response) {
+				return {
+					code: 'NETWORK_ERR',
+					message: 'Network Error - Try again later!'
+				};
+			}
+
+			return {
+				code: err.response.data.error.code || 'ERROR',
+				message: err.response.data.error.message || 'Something Went Wrong! - Coming from ClassifyError'
+			};
+		} catch {
+			return {
+				code: 'ERROR',
+				message: 'Something Went Wrong! - Coming from ClassifyError'
+			};
+		}
+
+		// try {
+		// 	return { type: 'ms-auth', message: err.response.data.error.message };
+		// } catch {
+		// 	return { type: 'unknown', message: 'Something Went Wrong!' };
+		// }
 	}
 }
