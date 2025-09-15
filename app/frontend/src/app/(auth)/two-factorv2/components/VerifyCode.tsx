@@ -32,13 +32,14 @@ export default function VerifyCode({ session, selectedMethod } : VerifyCodeProps
 			alertError(apiErr.message);
 			router.replace('/login');
 		}
-	}, [session.loginChallengeID, selectedMethod, send2FACode, router]);
+	}, [session.loginChallengeID, selectedMethod]);
 
 	useEffect(() => {
+		console.log('calling sendCode from VerifyCode useEffect');
 		sendCode();
 	}, [sendCode]);
 
-	console.log('RENDERING VERIFYCODE');
+	console.log('RENDERING VERIFYCODE', session, selectedMethod);
 
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const value = e.target.value.replace(/\D/g, '');

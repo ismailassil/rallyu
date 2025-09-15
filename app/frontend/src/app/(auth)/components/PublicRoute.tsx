@@ -25,6 +25,8 @@ export default function PublicRoute({ children }: { children: React.ReactNode })
 		return ( <AuthLoadingSpinner /> );
 	}
 
+	console.log('RENDERING PUBLIC ROUTE');
+
 	return (
 		<>
 			<h1 className="fixed top-0 left-90">{'<PublicRoute />'}</h1>

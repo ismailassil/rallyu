@@ -89,7 +89,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			
 			setLoggedInUser(user);
 			setIsAuthenticated(true);
-	
+
 			sessionStorage.removeItem('loginChallengeID');
 			sessionStorage.removeItem('enabledMethods');
 	
