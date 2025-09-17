@@ -70,6 +70,25 @@ class TwoFactorController {
 			reply.code(status).send(body);
 		}
 	}
+
+	async DisableMethodEndpoint(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			// TODO: ADD SCHEMA
+			const user_id = request.user?.sub as number;
+			const { method } = request.params as { method: string };
+
+			await this.twoFactorService.disableEnabledMethod(user_id, method);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			reply.status(status).send(body);
+
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			reply.code(status).send(body);
+		}
+	}
 }
 
 export default TwoFactorController;

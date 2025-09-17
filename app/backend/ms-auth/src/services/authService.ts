@@ -80,7 +80,7 @@ class AuthService {
 		if (_2FARequired)
 			return {
 				_2FARequired: true, 
-				enabled2FAMethods: enabled2FAMethods.map((m: any) => m.method),
+				enabled2FAMethods,
 				loginChallengeID: await this.twoFactorService.create2FALoginChallenge(existingUser.id)
 			};
 
@@ -123,6 +123,10 @@ class AuthService {
 		await this.twoFactorService.select2FALoginChallengeMethod(method, loginChallengeID);
 
 		const loginChallenge = await this.twoFactorService.getPendingLoginSessionById(loginChallengeID);
+		if (loginChallenge.remaining_resends <= 0) {
+			await this.twoFactorService.deletePendingLoginChallenge(loginChallenge.id, loginChallenge.user_id);
+			throw new SessionExpiredError();
+		}
 
 		// TODO: NOTIFICATION SERVICE TO SEND CODE IF METHOD == EMAIL || SMS
 		// if (method == 'sms' || method == 'email')

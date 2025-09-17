@@ -60,7 +60,7 @@ export default function LoginForm() {
 				alertSuccess('Two Factor Authentication is required!');
 
 				// setTimeout(() => {
-					router.push('/two-factorv2');
+					router.push('/two-factorv3');
 				// }, 1000);
 			} else
 				alertSuccess('Logged in successfully');

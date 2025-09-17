@@ -161,11 +161,11 @@ class TwoFactorRepository {
 		}
 	}
 
-	async createPendingLoginSession(method: string | null, code: string | null, expires_at: number, user_id: number) : Promise<any> {
+	async createPendingLoginSession(method: string | null, code: string | null, max_attempts: number, max_resends: number, expires_at: number, user_id: number) : Promise<any> {
 		try {
 			const pendingLogin = await db.run(
-				`INSERT INTO pending_2fa_login(method, code, expires_at, user_id) VALUES (?, ?, ?, ?)`,
-				[method, code, expires_at, user_id]
+				`INSERT INTO pending_2fa_login(method, code, remaining_attempts, remaining_resends, expires_at, user_id) VALUES (?, ?, ?, ?, ?, ?)`,
+				[method, code, max_attempts, max_resends, expires_at, user_id]
 			);
 
 			return pendingLogin.lastID;
@@ -371,15 +371,40 @@ class TwoFactorRepository {
 		}
 	}
 
-	async updatePendingLoginSession(id: number, type: string, code: string, expires_at: number, user_id: number) {
+	// async updatePendingLoginSession(id: number, type: string, code: string, remaining_attempts: number, remaining_resends: number, expires_at: number, user_id: number) {
+	// 	try {
+	// 		const runResult = await db.run(
+	// 			`UPDATE pending_2fa_login SET method = ?, code = ?, remaining_attempts = ?, remaining_resends = ?, expires_at = ? WHERE user_id = ? AND id = ?`,
+	// 			[type, code, remaining_attempts, remaining_resends, expires_at, user_id, id]
+	// 		);
+	// 		return runResult.changes > 0;
+	// 	} catch (err: any) {
+	// 		console.error('SQLite Error: ', err);
+	// 		throw new InternalServerError();
+	// 	}
+	// }
+	async updatePendingLoginSession(id: number, user_id: number, updates: Partial<{
+		method: string,
+		code: string,
+		remaining_attempts: number,
+		remaining_resends: number,
+		expires_at: number
+	}>) {
 		try {
+			const fields = Object.keys(updates);
+			if (fields.length === 0) return false;
+	
+			const setClause = fields.map(f => `${f} = ?`).join(', ');
+			const values = fields.map(f => (updates as any)[f]);
+	
 			const runResult = await db.run(
-				`UPDATE pending_2fa_login SET method = ?, code = ?, expires_at = ? WHERE user_id = ? AND id = ?`,
-				[type, code, expires_at, user_id, id]
+				`UPDATE pending_2fa_login SET ${setClause} WHERE user_id = ? AND id = ?`,
+				[...values, user_id, id]
 			);
+	
 			return runResult.changes > 0;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
+			console.error("SQLite Error:", err);
 			throw new InternalServerError();
 		}
 	}

@@ -15,7 +15,7 @@ function MyQRCode({ src }: { src: string | null }) {
 	return (
 		<div className='rounded-3xl overflow-hidden'>
 			<Image 
-				src={src!}
+				src={src}
 				alt='QR Code'
 				height={180}
 				width={180}
@@ -30,7 +30,7 @@ interface SetupInitProps {
 	onGoBack: () => void
 }
 
-function AuthAppSetup({ onSubmit, onGoBack} : { onSubmit: () => void, onGoBack: () => void }) {
+function AuthAppSetup({ onSubmit, onGoBack } : { onSubmit: () => void, onGoBack: () => void }) {
 	const { apiClient } = useAuth();
 	const [secrets, setSecrets] = useState({
 		secret_base32: null,
@@ -48,7 +48,7 @@ function AuthAppSetup({ onSubmit, onGoBack} : { onSubmit: () => void, onGoBack: 
 
 	async function sideEffect() {
 		try {
-			const res = await apiClient.mfaAuthAppSetupInit();
+			const res = await apiClient.mfaSetupInit('totp');
 			console.log(res);
 			setSecrets(res);
 		} catch (err) {
@@ -103,7 +103,7 @@ function EmailSetup({ onSubmit, onGoBack } : { onSubmit: (contact: string) => vo
 		}
 
 		try {
-			const res = await apiClient.mfaEmailSetupInit();
+			const res = await apiClient.mfaSetupInit('email');
 			console.log(res);
 			onSubmit(email);
 		} catch (err) {

@@ -262,7 +262,7 @@ export class APIClient {
 	}
 	
 	async mfaDisableMethod(method: string) {
-		const { data: res } = await this.client.delete(`/auth/mfa/enabled/${method}`);
+		const { data: res } = await this.client.delete(`/auth/2fa/enabled/${method}`);
 		return res.data;
 	}
 

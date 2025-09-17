@@ -31,19 +31,21 @@ export default function VerifySetup({ selectedMethod, contactMethod, onSubmit, o
 		}
 
 		try {
-			let res = null;
+			// let res = null;
 
-			switch (selectedMethod) {
-				case 'totp':
-					res = await apiClient.mfaAuthAppSetupVerify(code);
-					break;
-				case 'email':
-					res = await apiClient.mfaEmailSetupVerify(code);
-					break;
-				case 'sms':
-					res = await apiClient.mfaPhoneSetupVerify(code);
-					break;
-			}
+			// switch (selectedMethod) {
+			// 	case 'totp':
+			// 		res = await apiClient.mfaAuthAppSetupVerify(code);
+			// 		break;
+			// 	case 'email':
+			// 		res = await apiClient.mfaEmailSetupVerify(code);
+			// 		break;
+			// 	case 'sms':
+			// 		res = await apiClient.mfaPhoneSetupVerify(code);
+			// 		break;
+			// }
+			const res = await apiClient.mfaSetupVerify(selectedMethod, code);
+			
 			console.log(res);
 			onSubmit(code);
 		} catch (err) {

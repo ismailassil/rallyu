@@ -193,6 +193,8 @@ const MIGRATIONS = [
 				
 				method TEXT, -- email, sms, totp,
 				code TEXT,
+				remaining_attempts INTEGER,
+				remaining_resends INTEGER,
 
 				expires_at DATETIME,
 

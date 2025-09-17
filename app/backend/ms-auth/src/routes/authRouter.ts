@@ -123,7 +123,12 @@ async function authRouter(fastify: FastifyInstance) {
 		handler: twoFactorController.EnabledMethodsEndpoint.bind(twoFactorController)
 	});
 
-	// TODO: ADD ENDPOINTS FOR DELETING ENABLED METHODS
+	fastify.delete('/2fa/enabled/:method', {
+		// TODO: ADD SCHEMA
+		// schema: auth2FASetupSchema,
+		preHandler: fastify.authenticate,
+		handler: twoFactorController.DisableMethodEndpoint.bind(twoFactorController)
+	});
 
 	fastify.post('/2fa/:method/setup/init', {
 		// TODO: ADD SCHEMA

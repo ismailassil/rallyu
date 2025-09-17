@@ -1,7 +1,10 @@
 'use client';
 import React, { RefObject, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronRight, Fingerprint, LoaderCircle, Mail, RefreshCw, Smartphone } from "lucide-react";
+import { ChevronRight, Fingerprint, Loader, LoaderCircle, Mail, RefreshCw, Smartphone } from "lucide-react";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { APIError } from "@/app/(api)/APIClient";
+import { alertError, alertSuccess } from "../components/CustomToast";
 
 const METHODS_META: Record<string, { title: string; description: string, icon: React.JSX.Element }> = {
 	totp: { title: 'Authenticator App', description: 'Google Authenticator, Authy, or similar apps', icon: <Fingerprint className='group-hover:text-blue-400 transition-all duration-900 h-14 w-14' /> },
@@ -36,12 +39,13 @@ function getLoginChallengeSession() {
 
 export default function Login2FAChallengePage() {
 	const router = useRouter();
+	const { send2FACode, verify2FACode } = useAuth();
 	const [currentStep, setCurrentStep] = useState('method');
 	const [selectedMethod, setSelectedMethod] = useState('');
 	const [code, setCode] = useState(['', '', '', '', '', '']);
 	const [isSendingCode, setIsSendingCode] = useState(false);
 	const [isVerifyingCode, setIsVerifyingCode] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
+	// const [isLoading, setIsLoading] = useState(false);
 	const inputRefs = useRef([]);
 
 	const session = getLoginChallengeSession();
@@ -60,31 +64,60 @@ export default function Login2FAChallengePage() {
 	async function handleSelectMethod(method: string) {
 		setSelectedMethod(method);
 
-		if (method === 'totp')
-			setCurrentStep('verify');
-		else {
+		try {
 			setIsSendingCode(true);
-			await new Promise(r => setTimeout(r, 1500));
-			setIsSendingCode(false);
+			await send2FACode(session!.loginChallengeID, method);
 			setCurrentStep('verify');
-			// setCodeExpriresIn
+			// if (method === 'totp') {
+
+			// }
+			// 	setCurrentStep('verify');
+			// else {
+			// }
+		} catch (err) {
+			const apiErr = err as APIError;
+			alertError(apiErr.message);
+			router.replace('/login');
+		} finally {
+			setIsSendingCode(false);
 		}
 	}
 
 	async function handleVerify() {
-		const toVerify = code.join('');
-
-		setIsVerifyingCode(true);
-		await new Promise(r => setTimeout(r, 1500));
-		setIsVerifyingCode(false);
+		try {
+			const toVerify = code.join('');
+			// alert(`SUBMIT -  ${toVerify}`);
+	
+			setIsVerifyingCode(true);
+			await verify2FACode(session!.loginChallengeID, selectedMethod, toVerify);
+			setIsVerifyingCode(false);
+		} catch (err) {
+			const apiErr = err as APIError;
+			alertError(apiErr.code.includes('SESSION') ? apiErr.message + ' - Please sign in again' : apiErr.message);
+			if (apiErr.code.includes('SESSION'))
+				router.replace('/login');
+		} finally {
+			setIsVerifyingCode(false);
+		}
 	}
 
 	function handleGoBack() {
-		
+		setCurrentStep('method');
 	}
 
-	function handleResend() {
-
+	async function handleResend() {
+		try {
+			setIsSendingCode(true);
+			await send2FACode(session!.loginChallengeID, selectedMethod);
+			alertSuccess('Code sent!');
+		} catch (err) {
+			const apiErr = err as APIError;
+			alertError(apiErr.code.includes('SESSION') ? apiErr.message + ' - Please sign in again' : apiErr.message);
+			if (apiErr.code.includes('SESSION'))
+				router.replace('/login');
+		} finally {
+			setIsSendingCode(false);
+		}
 	}
 
 	function handleReturnToLogin() {
@@ -104,7 +137,6 @@ export default function Login2FAChallengePage() {
 																methods={session.enabledMethods}
 																selectedMethod={selectedMethod}
 																isSendingCode={isSendingCode}
-																isLoading={isLoading}
 																onSelectMethod={handleSelectMethod}
 															/>}
 							{currentStep === 'verify' &&	<VerifyCode 
@@ -115,10 +147,9 @@ export default function Login2FAChallengePage() {
 																inputRefs={inputRefs}
 																isResendingCode={isSendingCode}
 																isVerifyingCode={isVerifyingCode}
-																isLoading={isLoading}
 																onVerify={handleVerify}
-																onGoBack={handleGoBack}
 																onResend={handleResend}
+																onGoBack={handleGoBack}
 																onReturnToLogin={handleReturnToLogin}
 															/>}
 						</div>
@@ -133,11 +164,10 @@ interface MethodSelectionProps {
 	methods: string[];
 	selectedMethod: string;
 	isSendingCode: boolean;
-	isLoading: boolean;
 	onSelectMethod: (method: string) => void;
 }
 
-function MethodSelection({ methods, selectedMethod, isSendingCode, isLoading, onSelectMethod } : MethodSelectionProps) {
+function MethodSelection({ methods, selectedMethod, isSendingCode, onSelectMethod } : MethodSelectionProps) {
 	return (
 		<div>
 			{methods.map(m => {
@@ -171,19 +201,24 @@ interface VerifyCodeProps {
 	inputRefs: RefObject<(HTMLInputElement | null)[]>;
 	isResendingCode: boolean;
 	isVerifyingCode: boolean;
-	isLoading: boolean;
 	onVerify: () => void;
 	onResend: () => void;
 	onGoBack: () => void;
 	onReturnToLogin: () => void;
 }
 
-function VerifyCode({ methods, selectedMethod, code, setCode, inputRefs, isResendingCode, isVerifyingCode, isLoading, onVerify, onResend, onGoBack, onReturnToLogin } : VerifyCodeProps) {
+function VerifyCode({ methods, selectedMethod, code, setCode, inputRefs, isResendingCode, isVerifyingCode, onVerify, onResend, onGoBack, onReturnToLogin } : VerifyCodeProps) {
 
 	const METHOD_HELP: Record<string, string> = {
 		totp: 'Enter the 6-digit code from your authenticator app',
 		sms: `We've sent a 6-digit code via SMS`,
 		email: `We've sent a 6-digit code to your Email`,
+	};
+
+	const METHOD_HELP2: Record<string, string> = {
+		totp: 'Cannot access your Authenticator App?',
+		sms: `Cannot access your Phone?`,
+		email: `Cannot access your Email?`,
 	};
 
 	return (
@@ -196,32 +231,37 @@ function VerifyCode({ methods, selectedMethod, code, setCode, inputRefs, isResen
 				<p className='mb-0 text-gray-200'>{METHOD_HELP[selectedMethod]}</p>
 			</div>
 
-			{/* Code Expiration */}
-
 			<div className="flex flex-col gap-4">
 				<CodeInput 
 					code={code}
 					setCode={setCode}
 					inputRefs={inputRefs}
+					isResendingCode={isResendingCode}
+					isVerifyingCode={isVerifyingCode}
+					onVerify={onVerify}
 				/>
 					<button
 						onClick={onVerify}
-						disabled={isLoading}
+						disabled={isResendingCode || isVerifyingCode}
 						className={`h-11 rounded-lg transition-all duration-500 ${
-							(code.every(digit => digit !== '') && !isVerifyingCode) ? 'bg-blue-600 hover:bg-blue-700 cursor-pointer' : 'bg-gray-500 cursor-not-allowed'
+							(code.every(digit => digit !== '') && !isVerifyingCode && !isResendingCode) ? 'bg-blue-600 hover:bg-blue-700 cursor-pointer' : 'bg-gray-500 cursor-not-allowed'
 						}`}
 					>
 						{isVerifyingCode ? (
-							<>
-								<RefreshCw className="w-4 h-4 animate-spin" />
+							<div className="flex justify-center items-center gap-2">
+								<Loader className="w-4 h-4 animate-spin" />
 								<span>Verifying...</span>
-							</>
+							</div >
 						) : (
 							<span>Verify Code</span>
 						)}
 					</button>
 			</div>
-			<p className='self-center'>Didn&#39;t get the code? <a className='font-semibold text-blue-500 hover:underline cursor-pointer' >Resend code</a></p>
+			<p className='self-center'>Didn&#39;t get the code? <a onClick={onResend} className={`font-semibold ${
+				(isResendingCode || isVerifyingCode) ? 'text-gray-500 cursor-not-allowed' : 'text-blue-500 hover:underline cursor-pointer'
+			}`}>Resend code</a></p>
+
+			{methods.length > 0 && <p className='self-center text-center'>{METHOD_HELP2[selectedMethod]}<br></br><a onClick={onGoBack} className="font-semibold text-blue-500 hover:underline cursor-pointer">Try other verification methods</a></p>}
 		</>
 	);
 }
@@ -230,13 +270,18 @@ interface CodeInputProps {
 	code: string[];
 	setCode: (newCode: string[]) => void;
 	inputRefs: RefObject<(HTMLInputElement | null)[]>;
-
+	isResendingCode: boolean;
+	isVerifyingCode: boolean;
+	onVerify: () => void;
 }
 
-function CodeInput({ code, setCode, inputRefs } : CodeInputProps) {
+function CodeInput({ code, setCode, inputRefs, isResendingCode, isVerifyingCode } : CodeInputProps) {
+	useEffect(() => {
+		if (inputRefs.current?.[0])
+			inputRefs.current?.[0]?.focus();
+	}, []);
 
 	function handleChange(i: number, value: string) {
-		console.log('handleChange', i, value);
 		if (!/^\d*$/.test(value)) return;
 	
 		const newCode = [...code];
@@ -245,13 +290,9 @@ function CodeInput({ code, setCode, inputRefs } : CodeInputProps) {
 	
 		if (value && i < 5)
 			inputRefs.current?.[i + 1]?.focus();
-	
-		if (newCode.every(v => v !== ''))
-			console.log('Verification triggered');
 	}
 
 	function handleKeyPress(i: number, e: React.KeyboardEvent) {
-		console.log('handleKeyPress', i, e.key);
 		if (e.key === 'ArrowLeft' || e.key === 'ArrowRight')
 			e.preventDefault();
 		if (e.key === 'Backspace' && !code[i] && i > 0) {
@@ -262,12 +303,10 @@ function CodeInput({ code, setCode, inputRefs } : CodeInputProps) {
 	function handlePaste(e: React.ClipboardEvent) {
 		e.preventDefault();
 		const data = e.clipboardData.getData('text').replace(/\D/g, '');
-		console.log('handlePaste', data);
 	
 		if (data.length === 6) {
 			const newCode = data.split('');
 			setCode(newCode);
-			console.log('Verification triggered');
 		}
 	}
 
@@ -282,11 +321,11 @@ function CodeInput({ code, setCode, inputRefs } : CodeInputProps) {
 						onChange={(e) => handleChange(i, e.target.value)}
 						onKeyDown={(e) => handleKeyPress(i, e)}
 						onPaste={(e) => handlePaste(e)}
-						
-						className="bg-white/8 border-2 border-white/10 flex-1 w-0 text-3xl text-center font-bold rounded-xl backdrop-blur-2xl focus:bg-white/20 focus:border-white/20 focus:outline-none transition-all duration-400 caret-transparent"
+						disabled={isResendingCode || isVerifyingCode}
+						className="bg-white/8 border-2 border-white/10 flex-1 w-0 text-3xl text-center font-bold rounded-xl backdrop-blur-2xl focus:bg-white/20 focus:border-white/20 focus:outline-none focus-within:scale-105 transition-all duration-300 caret-transparent"
 					/>
 				);
 			})}
 		</div>
-	  );
+	);
 }
