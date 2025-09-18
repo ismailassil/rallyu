@@ -19,10 +19,10 @@ class UserRepository {
 			const runResult = await db.run(
 				`INSERT INTO users (username, password, email, first_name, last_name, avatar_path, auth_provider) 
 					VALUES (?, ?, ?, ?, ?, ?, ?)`,
-				[username, password, email, first_name, last_name, "/avatars/default.png", auth_provider]
+				[username, password, email, first_name, last_name, avatar_path, auth_provider]
 			);
 
-			// need to be moved somewhere else
+			// TODO: need to be moved somewhere else
 			const statResult = await db.run(
 				`INSERT INTO users_stats (level, total_xp, current_streak, longest_streak, user_id)
 					VALUES (?, ?, ?, ?, ?)`,
@@ -145,6 +145,7 @@ class UserRepository {
 		}
 	}
 
+	// TODO: REMOVE THIS
 	async updateAvatar(id: number, avatar_path: string) {
 		try {
 			const runResult = await db.run(

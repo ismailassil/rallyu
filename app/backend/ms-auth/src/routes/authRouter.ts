@@ -1,65 +1,50 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { FastifyInstance } from "fastify";
 import AuthController from "../controllers/authController";
 import Authenticate from "../middleware/Authenticate";
 import { authLoginSchema, authLogoutSchema, authMFAVerifySchema, authOAuthSchema, authRefreshSchema, authRegisterSchema, authResetPasswordSchema, authResetPasswordUpdateSchema, authResetPasswordVerifySchema } from "../schemas/auth.schema";
 import bcrypt from 'bcrypt';
 import cookie from '@fastify/cookie';
-import { db } from "../database";
-import MFAController from "../controllers/mfaController";
-import ResetController from "../controllers/passwordResetController";
-import AuthService, { AuthServiceConfig } from "../services/authService";
-import UserService from "../services/userService";
-import RelationsService from "../services/relationsService";
-import RelationsRepository from "../repositories/relationsRepository";
-import StatsService from "../services/statsService";
-import UserRepository from "../repositories/userRepository";
-import SessionService from "../services/sessionService";
-import TwoFactorService from "../services/twoFactorService";
-import ResetPasswordService from "../services/passwordResetService";
-import TwoFactorRepository from "../repositories/twoFactorRepository";
-import SessionRepository from "../repositories/sessionRepository";
-import JWTUtils from "../utils/auth/Auth";
 import TwoFactorController from "../controllers/twoFactorController";
 
-const DEFAULT_BCRYPT_ROUNDS = 12;
-const ACCESS_TOKEN_EXPIRY = '15m';
-const REFRESH_TOKEN_EXPIRY = '7d';
-const SESSION_HARD_EXPIRY = '30d';
-const MAX_CONCURRENT_SESSIONS = 4;
-const MAX_SESSION_FINGERPRINT_CHANGE = 1;
-const BCRYPT_TIMING_HASH = bcrypt.hashSync('xuotjds;glsgf34%(#1fjkfdsfdsklnkcldsaf', 12);
+// const DEFAULT_BCRYPT_ROUNDS = 12;
+// const ACCESS_TOKEN_EXPIRY = '15m';
+// const REFRESH_TOKEN_EXPIRY = '7d';
+// const SESSION_HARD_EXPIRY = '30d';
+// const MAX_CONCURRENT_SESSIONS = 4;
+// const MAX_SESSION_FINGERPRINT_CHANGE = 1;
+// const BCRYPT_TIMING_HASH = bcrypt.hashSync('xuotjds;glsgf34%(#1fjkfdsfdsklnkcldsaf', 12);
 
-export const authenticationConfig: AuthServiceConfig = {
-	bcryptRounds: DEFAULT_BCRYPT_ROUNDS,
-	bcryptDummyHash: BCRYPT_TIMING_HASH,
-	accessTokenExpiry: ACCESS_TOKEN_EXPIRY,
-	refreshTokenExpiry: REFRESH_TOKEN_EXPIRY,
-	sessionHardExpiry: SESSION_HARD_EXPIRY,
-	allowIpChange: true,
-	allowBrowserChange: false,
-	allowDeviceChange: false,
-	maxConcurrentSessions: MAX_CONCURRENT_SESSIONS,
-	maxSessionFingerprintChange: MAX_SESSION_FINGERPRINT_CHANGE
-}
+// export const authenticationConfig: AuthServiceConfig = {
+// 	bcryptRounds: DEFAULT_BCRYPT_ROUNDS,
+// 	bcryptDummyHash: BCRYPT_TIMING_HASH,
+// 	accessTokenExpiry: ACCESS_TOKEN_EXPIRY,
+// 	refreshTokenExpiry: REFRESH_TOKEN_EXPIRY,
+// 	sessionHardExpiry: SESSION_HARD_EXPIRY,
+// 	allowIpChange: true,
+// 	allowBrowserChange: false,
+// 	allowDeviceChange: false,
+// 	maxConcurrentSessions: MAX_CONCURRENT_SESSIONS,
+// 	maxSessionFingerprintChange: MAX_SESSION_FINGERPRINT_CHANGE
+// }
 
-async function authRouter(fastify: FastifyInstance) {
-	const _JWTUtils = new JWTUtils();
+async function authRouter(fastify: FastifyInstance, opts: { authController: AuthController, twoFactorController: TwoFactorController }) {
+	// const _JWTUtils = new JWTUtils();
 
-	const userRepository = new UserRepository();
-	const relationsRepository = new RelationsRepository();
-	const twoFactorRepository = new TwoFactorRepository();
-	const sessionRepository = new SessionRepository();
+	// const userRepository = new UserRepository();
+	// const relationsRepository = new RelationsRepository();
+	// const twoFactorRepository = new TwoFactorRepository();
+	// const sessionRepository = new SessionRepository();
 
-	const relationsService = new RelationsService(relationsRepository);
-	const statsService = new StatsService();
-	const userService = new UserService(userRepository, relationsService, statsService);
-	const sessionService = new SessionService(authenticationConfig, _JWTUtils, sessionRepository);
-	const twoFactorService = new TwoFactorService(twoFactorRepository);
-	// const resetService = new ResetPasswordService();
+	// const relationsService = new RelationsService(relationsRepository);
+	// const statsService = new StatsService();
+	// const userService = new UserService(userRepository, relationsService, statsService);
+	// const sessionService = new SessionService(authenticationConfig, _JWTUtils, sessionRepository);
+	// const twoFactorService = new TwoFactorService(twoFactorRepository);
+	// // const resetService = new ResetPasswordService();
 
-	const authService = new AuthService(authenticationConfig, _JWTUtils, userService, sessionService, twoFactorService);
-	const authController = new AuthController(authService, twoFactorService);
-	const twoFactorController = new TwoFactorController(twoFactorService);
+	// const authService = new AuthService(authenticationConfig, _JWTUtils, userService, sessionService, twoFactorService);
+	// const authController = new AuthController(authService, twoFactorService);
+	// const twoFactorController = new TwoFactorController(twoFactorService);
 	// const mfaController: MFAController = new MFAController();
 	// const resetController: ResetController = new ResetController();
 
@@ -71,34 +56,34 @@ async function authRouter(fastify: FastifyInstance) {
 	/*-------------------------------- Local Authentication --------------------------------*/
 	fastify.post('/register', {
 		schema: authRegisterSchema,
-		handler: authController.RegisterEndpoint.bind(authController)
+		handler: opts.authController.RegisterEndpoint.bind(opts.authController)
 	});
 	
 	fastify.post('/login', {
 		schema: authLoginSchema,
-		handler: authController.LoginEndpoint.bind(authController)
+		handler: opts.authController.LoginEndpoint.bind(opts.authController)
 	});
 	
 	fastify.post('/logout', {
 		schema: authLogoutSchema,
 		preHandler: fastify.authenticate,
-		handler: authController.LogoutEndpoint.bind(authController)
+		handler: opts.authController.LogoutEndpoint.bind(opts.authController)
 	});
 	
 	fastify.get('/refresh', {
 		schema: authRefreshSchema,
-		handler: authController.RefreshEndpoint.bind(authController)
+		handler: opts.authController.RefreshEndpoint.bind(opts.authController)
 	});
 
 
 	/*-------------------------------- Remote Authentication --------------------------------*/
 	// fastify.get('/google/callback', {
 	// 	schema: authOAuthSchema,
-	// 	handler: authController.GoogleOAuthEndpoint.bind(authController)
+	// 	handler: opts.authController.GoogleOAuthEndpoint.bind(opts.authController)
 	// });
 	// fastify.get('/42/callback', {
 	// 	schema: authOAuthSchema,
-	// 	handler: authController.IntraOAuthEndpoint.bind(authController)
+	// 	handler: opts.authController.IntraOAuthEndpoint.bind(opts.authController)
 	// });
 
 
@@ -107,41 +92,41 @@ async function authRouter(fastify: FastifyInstance) {
 	fastify.post('/login/2fa/send', {
 		// TODO: ADD SCHEMA
 		// schema: authLoginSchema,
-		handler: authController.SendLoginChallenge2FACodeEndpoint.bind(authController)
+		handler: opts.authController.SendLoginChallenge2FACodeEndpoint.bind(opts.authController)
 	});
 
 	fastify.post('/login/2fa/verify', {
 		// TODO: ADD SCHEMA
 		// schema: authLoginSchema,
-		handler: authController.VerifyLoginChallenge2FACodeEndpoint.bind(authController)
+		handler: opts.authController.VerifyLoginChallenge2FACodeEndpoint.bind(opts.authController)
 	});
 
 	fastify.get('/2fa/enabled', {
 		// TODO: ADD SCHEMA
 		// schema: auth2FASetupSchema,
 		preHandler: fastify.authenticate,
-		handler: twoFactorController.EnabledMethodsEndpoint.bind(twoFactorController)
+		handler: opts.twoFactorController.EnabledMethodsEndpoint.bind(opts.twoFactorController)
 	});
 
 	fastify.delete('/2fa/enabled/:method', {
 		// TODO: ADD SCHEMA
 		// schema: auth2FASetupSchema,
 		preHandler: fastify.authenticate,
-		handler: twoFactorController.DisableMethodEndpoint.bind(twoFactorController)
+		handler: opts.twoFactorController.DisableMethodEndpoint.bind(opts.twoFactorController)
 	});
 
 	fastify.post('/2fa/:method/setup/init', {
 		// TODO: ADD SCHEMA
 		// schema: auth2FASetupSchema,
 		preHandler: fastify.authenticate,
-		handler: twoFactorController.SetupInitEndpoint.bind(twoFactorController)
+		handler: opts.twoFactorController.SetupInitEndpoint.bind(opts.twoFactorController)
 	});
 
 	fastify.post('/2fa/:method/setup/verify', {
 		// TODO: ADD SCHEMA
 		// schema: auth2FASetupSchema,
 		preHandler: fastify.authenticate,
-		handler: twoFactorController.SetupVerifyEndpoint.bind(twoFactorController)
+		handler: opts.twoFactorController.SetupVerifyEndpoint.bind(opts.twoFactorController)
 	});
 
 	// fastify.post('/mfa/send-code', {
@@ -221,7 +206,7 @@ async function authRouter(fastify: FastifyInstance) {
 	fastify.post('/change-password', {
 		preHandler: fastify.authenticate,
 		// schema: authResetPasswordSchema,
-		handler: authController.changePasswordEndpoint.bind(authController)
+		handler: opts.authController.changePasswordEndpoint.bind(opts.authController)
 	});
 
 	// fastify.post('/reset/setup', {
@@ -239,7 +224,7 @@ async function authRouter(fastify: FastifyInstance) {
 	// 	handler: resetController.ResetPasswordUpdateEndpoint.bind(resetController)
 	// });
 
-	// fastify.delete('/revoke-all', authController.RevokeAllRoute.bind(authController));
+	// fastify.delete('/revoke-all', authController.RevokeAllRoute.bind(opts.authController));
 
 	// SESSION / DEVICE MANAGEMENT
 	// GET /auth/sessions — List active sessions/devices

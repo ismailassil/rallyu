@@ -12,6 +12,8 @@ import { z } from 'zod';
 import TwoFactorService from "./twoFactorService";
 import UserService from "./userService";
 import SessionService from "./sessionService";
+import { AuthConfig } from "../config/auth";
+import JWTUtils from "../utils/auth/Auth";
 
 // TODO
 	// VERIFY THE EXISTENCE OF ALL THOSE ENV VARS
@@ -29,24 +31,24 @@ const INTRA_OAUTH_FRONTEND_REDIRECT_URI = process.env['INTRA_OAUTH_FRONTEND_REDI
 const INTRA_OAUTH_AUTH_URI = process.env['INTRA_OAUTH_AUTH_URI'];
 const INTRA_OAUTH_EXCHANGE_URL = process.env['INTRA_OAUTH_EXCHANGE_URL'];
 
-export interface AuthServiceConfig {
-	bcryptRounds: number,
-	bcryptDummyHash: string,
-	accessTokenExpiry: string,
-	refreshTokenExpiry: string,
-	sessionHardExpiry: string,
-	maxConcurrentSessions: number,
-	maxSessionFingerprintChange: number,
-	allowIpChange: boolean,
-	allowBrowserChange: boolean,
-	allowDeviceChange: boolean
-}
+// export interface AuthServiceConfig {
+// 	bcryptRounds: number,
+// 	bcryptDummyHash: string,
+// 	accessTokenExpiry: string,
+// 	refreshTokenExpiry: string,
+// 	sessionHardExpiry: string,
+// 	maxConcurrentSessions: number,
+// 	maxSessionFingerprintChange: number,
+// 	allowIpChange: boolean,
+// 	allowBrowserChange: boolean,
+// 	allowDeviceChange: boolean
+// }
 
 class AuthService {
 	// TODO: IMPLEMENT A PASSWORD MANAGER
 	constructor(
-		private config: AuthServiceConfig,
-		private authUtils: AuthUtils,
+		private authConfig: AuthConfig,
+		private jwtUtils: JWTUtils,
 		private userService: UserService,
 		private sessionService: SessionService,
 		private twoFactorService: TwoFactorService
@@ -57,7 +59,7 @@ class AuthService {
 
 		if (await this.userService.isUsernameTaken(username))
 			throw new UserAlreadyExistsError('Username');
-		if (await this.userService.isEmailTaken(username))
+		if (await this.userService.isEmailTaken(email))
 			throw new UserAlreadyExistsError('Email');
 
 		// SHOULD WE HASH HERE? OR KEEP IT INSIDE USERS CREATION

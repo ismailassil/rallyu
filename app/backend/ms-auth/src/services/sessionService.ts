@@ -3,35 +3,14 @@ import { ISessionFingerprint } from "../types";
 import SessionRepository from "../repositories/sessionRepository";
 import JWTUtils, { JWT_REFRESH_PAYLOAD } from "../utils/auth/Auth";
 import { SessionExpiredError, SessionRevokedError, SessionNotFoundError } from "../types/auth.types";
-import { AuthServiceConfig } from "./authService";
-
-export interface SessionServiceConfig {
-	sessionExpiry: string,
-	maxConcurrentSessions: number,
-	maxSessionFingerprintChange: number,
-	allowIpChange: boolean,
-	allowBrowserChange: boolean,
-	allowDeviceChange: boolean
-}
+import { AuthConfig } from "../config/auth";
 
 class SessionService {
-	// TODO: REMOVE THIS
-	private sessionConfig: SessionServiceConfig;
-
 	constructor(
-		private authConfig: AuthServiceConfig,
+		private authConfig: AuthConfig,
 		private JWTUtils: JWTUtils,
 		private sessionRepository: SessionRepository
-	) {
-		this.sessionConfig = {
-			sessionExpiry: authConfig.sessionHardExpiry,
-			maxConcurrentSessions: authConfig.maxConcurrentSessions,
-			maxSessionFingerprintChange: authConfig.maxSessionFingerprintChange,
-			allowIpChange: authConfig.allowIpChange,
-			allowBrowserChange: authConfig.allowBrowserChange,
-			allowDeviceChange: authConfig.allowDeviceChange
-		}
-	}
+	) {}
 
 	public async createSession(userID: number, currentSessionFingerprint: ISessionFingerprint) {
 		const { device_name, browser_version, ip_address }: ISessionFingerprint = currentSessionFingerprint;

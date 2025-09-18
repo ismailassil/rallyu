@@ -1,6 +1,10 @@
 import initializeApp from "./app";
 import fastify, { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import dotenv from 'dotenv';
+import { appConfig } from "./config";
 const UAParser = require('ua-parser-js');
+
+dotenv.config();
 
 async function main() {
 	const fastify: FastifyInstance = await initializeApp();

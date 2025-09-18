@@ -13,8 +13,8 @@ import fastify from "fastify";
 class UserService {
 	constructor(
 		private userRepository: UserRepository,
-		private relationsService: RelationsService,
-		private statsService: StatsService
+		// private relationsService: RelationsService,
+		// private statsService: StatsService
 	) {}
 
 	/*----------------------------------------------- GETTERS -----------------------------------------------*/
@@ -164,7 +164,7 @@ class UserService {
 	/*----------------------------------------------- CHECKS -----------------------------------------------*/
 	
 	async isCredentialsTaken(username: string, email: string) {
-		// TODO: SHOULD BE ONE SQL QUERY
+		// TODO: CAN BE OPTIMIZED USING ONE SQL QUERY
 		return (await this.isEmailTaken(email) && await this.isUsernameTaken(username));
 	}
 
