@@ -85,7 +85,7 @@ async function initializeApp() : Promise<FastifyInstance> {
 		await runMigrations();
 		return await buildApp();
 	} catch (err) {
-		console.log(err);
+		console.log('APP BUILD ERROR:', err);
 		process.exit(1);
 	}
 }

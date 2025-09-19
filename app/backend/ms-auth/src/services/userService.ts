@@ -11,11 +11,15 @@ import RelationsService from "./relationsService";
 import fastify from "fastify";
 
 class UserService {
+	private relationsService: RelationsService;
+	private statsService: StatsService;
+
 	constructor(
 		private userRepository: UserRepository,
-		// private relationsService: RelationsService,
-		// private statsService: StatsService
-	) {}
+	) {
+		this.statsService = new StatsService();
+		this.relationsService = new RelationsService(new RelationsRepository());
+	}
 
 	/*----------------------------------------------- GETTERS -----------------------------------------------*/
 

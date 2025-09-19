@@ -1,11 +1,5 @@
-import { authenticationConfig } from "../controllers/authController";
-import { db } from "../database";
 import TwoFactorRepository from "../repositories/twoFactorRepository";
-import UserRepository from "../repositories/userRepository";
-import { ISessionFingerprint } from "../types";
 import { InternalServerError, InvalidCredentialsError, SessionExpiredError, SessionNotFoundError, UserNotFoundError, _2FAAlreadyEnabled, _2FAExpiredCode, _2FAInvalidCode, _2FANotEnabled, _2FANotFound } from "../types/auth.types";
-import JWTUtils from "../utils/auth/Auth";
-import SessionManager from "./sessionService";
 
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');

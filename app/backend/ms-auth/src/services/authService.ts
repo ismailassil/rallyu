@@ -31,19 +31,6 @@ const INTRA_OAUTH_FRONTEND_REDIRECT_URI = process.env['INTRA_OAUTH_FRONTEND_REDI
 const INTRA_OAUTH_AUTH_URI = process.env['INTRA_OAUTH_AUTH_URI'];
 const INTRA_OAUTH_EXCHANGE_URL = process.env['INTRA_OAUTH_EXCHANGE_URL'];
 
-// export interface AuthServiceConfig {
-// 	bcryptRounds: number,
-// 	bcryptDummyHash: string,
-// 	accessTokenExpiry: string,
-// 	refreshTokenExpiry: string,
-// 	sessionHardExpiry: string,
-// 	maxConcurrentSessions: number,
-// 	maxSessionFingerprintChange: number,
-// 	allowIpChange: boolean,
-// 	allowBrowserChange: boolean,
-// 	allowDeviceChange: boolean
-// }
-
 class AuthService {
 	// TODO: IMPLEMENT A PASSWORD MANAGER
 	constructor(
@@ -72,7 +59,7 @@ class AuthService {
 
 		const existingUser = await this.userService.getUserByUsername(username);
 		const isValidPassword = 
-			await bcrypt.compare(password, existingUser ? existingUser.password : this.config.bcryptDummyHash); // TODO: PASSWORD HASHER
+			await bcrypt.compare(password, existingUser ? existingUser.password : this.authConfig.bcryptTimingHash); // TODO: PASSWORD HASHER
 		if (!existingUser || !isValidPassword)
 			throw new InvalidCredentialsError();
 
@@ -105,7 +92,7 @@ class AuthService {
 	async Refresh(refreshToken: string, userAgent: string, ip: string) {
 		const currentSessionFingerprint = this.getFingerprint(userAgent, ip);
 
-		const refreshTokenPayload: JWT_REFRESH_PAYLOAD = this.authUtils.decodeJWT(refreshToken);
+		const refreshTokenPayload: JWT_REFRESH_PAYLOAD = this.jwtUtils.decodeJWT(refreshToken);
 		const existingUser = await this.userService.getUserById(refreshTokenPayload.sub);
 		if (!existingUser)
 			throw new UserNotFoundError();
@@ -273,7 +260,7 @@ class AuthService {
 		if (!isValidPassword)
 			throw new InvalidCredentialsError();
 		
-		const hashedNewPassword = await bcrypt.hash(new_password!, this.config.bcryptRounds);
+		const hashedNewPassword = await bcrypt.hash(new_password!, this.authConfig.bcryptHashRounds);
 
 		await this.userService.updateUser(user_id, { password: hashedNewPassword });
 	}

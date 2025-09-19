@@ -117,11 +117,11 @@ class SessionService {
 		if ((Date.now() / 1000) > isFound.expires_at)	// EXPIRED
 			throw new SessionExpiredError('Session revoked for expiration');
 
-		if (!this.sessionConfig.allowIpChange && isFound.ip_address !== ip_address)					// IP CHANGE
+		if (!this.authConfig.allowIpChange && isFound.ip_address !== ip_address)					// IP CHANGE
 			throw new SessionRevokedError('Session revoked for ip change');
-		if (!this.sessionConfig.allowDeviceChange && isFound.device_name !== device_name)			// DEVICE CHANGE
+		if (!this.authConfig.allowDeviceChange && isFound.device_name !== device_name)			// DEVICE CHANGE
 			throw new SessionRevokedError('Session revoked for device change');
-		if (!this.sessionConfig.allowBrowserChange && isFound.browser_version !== browser_version)	// BROWSER CHANGE
+		if (!this.authConfig.allowBrowserChange && isFound.browser_version !== browser_version)	// BROWSER CHANGE
 			throw new SessionRevokedError('Session revoked for browser change');
 	}
 

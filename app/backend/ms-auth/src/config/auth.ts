@@ -5,6 +5,8 @@ export type AuthConfig = {
 	refreshSecret: string;
 	accessExpires: number;		// IN SECONDS
 	refreshExpires: number;		// IN SECONDS
+	bcryptHashRounds: number;
+	bcryptTimingHash: string;
 	maxConcurrentSessions: number;
 	allowIpChange: boolean;
 	allowBrowserChange: boolean;
@@ -16,6 +18,8 @@ export const authConfig: AuthConfig = {
 	refreshSecret: env.JWT_REFRESH_SECRET,
 	accessExpires: env.JWT_ACCESS_EXP,
 	refreshExpires: env.JWT_REFRESH_EXP,
+	bcryptHashRounds: env.BCRYPT_HASH_ROUNDS,
+	bcryptTimingHash: env.BCRYPT_TIMING_HASH,
 	maxConcurrentSessions: env.MAX_CONCURRENT_SESSION,
 	allowIpChange: env.ALLOW_IP_CHANGE,
 	allowBrowserChange: env.ALLOW_BROWSER_CHANGE,

@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const envSchema = z.object({
 	NODE_ENV: z.enum(['development', 'production']),
@@ -10,11 +13,28 @@ const envSchema = z.object({
 	BCRYPT_HASH_ROUNDS: z.coerce.number().int().min(12).max(36).default(12),
 	BCRYPT_TIMING_HASH: z.string().min(32),
 	MAX_CONCURRENT_SESSION: z.coerce.number().int().min(1).default(5),
-	ALLOW_IP_CHANGE: z.boolean(),
-	ALLOW_BROWSER_CHANGE: z.boolean(),
-	ALLOW_DEVICE_CHANGE: z.boolean(),
+	ALLOW_IP_CHANGE: z.coerce.boolean(),
+	ALLOW_BROWSER_CHANGE: z.coerce.boolean(),
+	ALLOW_DEVICE_CHANGE: z.coerce.boolean(),
 	SQLITE3_DB_PATH: z.string()
 });
 
 export type Env = z.infer<typeof envSchema>;
-export const env: Env = envSchema.parse(process.env);
+
+let env: Env;
+
+try {
+	env = envSchema.parse(process.env);
+} catch (err) {
+	if (err instanceof z.ZodError) {
+	console.error("ENV VARS VALIDATION ERROR:");
+	for (const issue of err.errors) {
+		console.error(`- ${issue.path.join(".") || "(root)"}: ${issue.message}`);
+	}
+	} else {
+	console.error(err);
+	}
+	process.exit(1);
+}
+
+export { env };
