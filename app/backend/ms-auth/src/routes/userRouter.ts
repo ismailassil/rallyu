@@ -1,38 +1,25 @@
-import fastify, { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { FastifyInstance } from "fastify";
 import UserController from "../controllers/userController";
-import StatsController from "../controllers/statsController";
 import RelationsController from "../controllers/userRelationsContoller";
 import RelationsRepository from "../repositories/relationsRepository";
-import { matchesRequestSchema, relationsRequestSchema, statsRequestSchema, userMatchesSchema, userProfileSchema, userUpdateSchema } from "../schemas/users.schema";
+import { relationsRequestSchema, userMatchesSchema, userProfileSchema, userUpdateSchema } from "../schemas/users.schema";
 import Authenticate from "../middleware/Authenticate";
-import MatchesRepository from "../repositories/matchesRepository";
 import fastifyMutipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import path from "path";
-import { IRelationsRequest } from "../types";
-import MatchesController from "../controllers/matchesController";
 import UserRepository from "../repositories/userRepository";
 import UserService from "../services/userService";
 import RelationsService from "../services/relationsService";
-import StatsService from "../services/statsService";
 
 async function userRouter(fastify: FastifyInstance) {
 	const userRepository = new UserRepository();
 	const relationsRepository = new RelationsRepository();
 
-	const relationsService = new RelationsService(relationsRepository);
-	const statsService = new StatsService();
-	const userService: UserService = new UserService(userRepository, relationsService, statsService);
-	relationsService.setUserService(userService);
+	const relationsService = new RelationsService(userRepository, relationsRepository);
+	const userService: UserService = new UserService(userRepository);
 	
 	const userController: UserController = new UserController(userService);
 	const relationsController: RelationsController = new RelationsController(relationsService);
-
-	const statsController: StatsController = new StatsController();
-	const usersRepo: UserRepository = new UserRepository();
-	const relRepo: RelationsRepository = new RelationsRepository();
-	const statsRepo: MatchesRepository = new MatchesRepository();
-	const matchesController: MatchesController = new MatchesController();
 
 	await fastify.register(fastifyMutipart, {
 		limits: {
@@ -56,12 +43,11 @@ async function userRouter(fastify: FastifyInstance) {
 	
 	// CHECK IF USERNAME AVAILABLE
 	fastify.get('/username-available', {
-		// preHandler: fastify.authenticate,
 		handler: userController.usernameAvailable.bind(userController)
 	});
+	
 	// CHECK IF EMAIL AVAILABLE
 	fastify.get('/email-available', {
-		// preHandler: fastify.authenticate,
 		handler: userController.emailAvailable.bind(userController)
 	});
 
@@ -88,11 +74,11 @@ async function userRouter(fastify: FastifyInstance) {
 		handler: userController.deleteUser.bind(userController)
 	});
 	
-	// GET USER PERFORMANCE
-	fastify.get('/:username/performance', {
+	// GET USER FULL STATS
+	fastify.get('/:username/full-stats', {
 		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
-		handler: userController.fetchUserPerformance.bind(userController)
+		handler: userController.fetchUserFullStats.bind(userController)
 	});
 	
 	// GET USER MATCHES PAGE
@@ -173,23 +159,6 @@ async function userRouter(fastify: FastifyInstance) {
 		schema: relationsRequestSchema,
 		handler: relationsController.unblockUser.bind(relationsController)
 	});
-
-	// USER MANAGEMENT (admin or self-service)
-	// GET /users — List users (admin only)
-	// POST /users — Create user (admin creating users directly)
-	// GET /users/:id — Get user by ID
-	// PUT /users/:id — Full update of user info
-	// PATCH /users/:id — Partial update of user info
-	// DELETE /users/:id — Delete user
-	
-	// POST /reset-password/setup - Reset password (check if a account exists + send OTP to email)
-	// POST /reset-password/verify - Check if OTP is valid
-	// POST /reset-password/update - Update password
-	
-	// ACCOUNT MANAGEMENT (self-service)
-	// GET /account — Get own profile (alias for /auth/me)
-	// PATCH /account — Update own profile
-	// DELETE /account — Delete own account (optional)
 
 	/*-------------------------------------------- MATCHES --------------------------------------------*/
 	// fastify.get('/match/:id', {

@@ -6,20 +6,22 @@ import { InternalServerError } from "../types/auth.types";
 class UserRepository {
 
 	async create(
-		username: string,
-		email: string,
 		first_name: string,
 		last_name: string,
-		avatar_path: string,
-		auth_provider: string,
-		password?: string
+		email: string,
+		username: string,
+		password?: string,
+		avatar_path: string = '/avatars/default.png',
+		auth_provider: string = 'local',
+		role: string = 'user',
+		bio: string = 'DFK',
 	) : Promise<number> {
 		
 		try {
 			const runResult = await db.run(
-				`INSERT INTO users (username, password, email, first_name, last_name, avatar_path, auth_provider) 
-					VALUES (?, ?, ?, ?, ?, ?, ?)`,
-				[username, password, email, first_name, last_name, avatar_path, auth_provider]
+				`INSERT INTO users (username, password, email, first_name, last_name, avatar_path, auth_provider, role, bio) 
+					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+				[username, password, email, first_name, last_name, avatar_path, auth_provider, role, bio]
 			);
 
 			// TODO: need to be moved somewhere else

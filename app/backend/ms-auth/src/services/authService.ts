@@ -17,19 +17,19 @@ import JWTUtils from "../utils/auth/Auth";
 
 // TODO
 	// VERIFY THE EXISTENCE OF ALL THOSE ENV VARS
-const GOOGLE_OAUTH_CLIENT_ID = process.env['GOOGLE_OAUTH_CLIENT_ID'];
-const GOOGLE_OAUTH_CLIENT_SECRET = process.env['GOOGLE_OAUTH_CLIENT_SECRET'];
-const GOOGLE_OAUTH_BACKEND_REDIRECT_URI = process.env['GOOGLE_OAUTH_BACKEND_REDIRECT_URI'];
-const GOOGLE_OAUTH_FRONTEND_REDIRECT_URI = process.env['GOOGLE_OAUTH_FRONTEND_REDIRECT_URI'];
-const GOOGLE_OAUTH_AUTH_URI = process.env['GOOGLE_OAUTH_AUTH_URI'];
-const GOOGLE_OAUTH_EXCHANGE_URL = process.env['GOOGLE_OAUTH_EXCHANGE_URL'];
+// const GOOGLE_OAUTH_CLIENT_ID = process.env['GOOGLE_OAUTH_CLIENT_ID'];
+// const GOOGLE_OAUTH_CLIENT_SECRET = process.env['GOOGLE_OAUTH_CLIENT_SECRET'];
+// const GOOGLE_OAUTH_BACKEND_REDIRECT_URI = process.env['GOOGLE_OAUTH_BACKEND_REDIRECT_URI'];
+// const GOOGLE_OAUTH_FRONTEND_REDIRECT_URI = process.env['GOOGLE_OAUTH_FRONTEND_REDIRECT_URI'];
+// const GOOGLE_OAUTH_AUTH_URI = process.env['GOOGLE_OAUTH_AUTH_URI'];
+// const GOOGLE_OAUTH_EXCHANGE_URL = process.env['GOOGLE_OAUTH_EXCHANGE_URL'];
 
-const INTRA_OAUTH_CLIENT_ID = process.env['INTRA_OAUTH_CLIENT_ID'];
-const INTRA_OAUTH_CLIENT_SECRET = process.env['INTRA_OAUTH_CLIENT_SECRET'];
-const INTRA_OAUTH_BACKEND_REDIRECT_URI = process.env['INTRA_OAUTH_BACKEND_REDIRECT_URI'];
-const INTRA_OAUTH_FRONTEND_REDIRECT_URI = process.env['INTRA_OAUTH_FRONTEND_REDIRECT_URI'];
-const INTRA_OAUTH_AUTH_URI = process.env['INTRA_OAUTH_AUTH_URI'];
-const INTRA_OAUTH_EXCHANGE_URL = process.env['INTRA_OAUTH_EXCHANGE_URL'];
+// const INTRA_OAUTH_CLIENT_ID = process.env['INTRA_OAUTH_CLIENT_ID'];
+// const INTRA_OAUTH_CLIENT_SECRET = process.env['INTRA_OAUTH_CLIENT_SECRET'];
+// const INTRA_OAUTH_BACKEND_REDIRECT_URI = process.env['INTRA_OAUTH_BACKEND_REDIRECT_URI'];
+// const INTRA_OAUTH_FRONTEND_REDIRECT_URI = process.env['INTRA_OAUTH_FRONTEND_REDIRECT_URI'];
+// const INTRA_OAUTH_AUTH_URI = process.env['INTRA_OAUTH_AUTH_URI'];
+// const INTRA_OAUTH_EXCHANGE_URL = process.env['INTRA_OAUTH_EXCHANGE_URL'];
 
 class AuthService {
 	// TODO: IMPLEMENT A PASSWORD MANAGER
@@ -44,14 +44,14 @@ class AuthService {
 	async SignUp(first_name: string, last_name: string, username: string, email: string, password: string) : Promise<void> {
 		this.validateRegisterForm(username, password, email, first_name, last_name);
 
-		if (await this.userService.isUsernameTaken(username))
-			throw new UserAlreadyExistsError('Username');
-		if (await this.userService.isEmailTaken(email))
-			throw new UserAlreadyExistsError('Email');
+		// if (await this.userService.isUsernameTaken(username))
+		// 	throw new UserAlreadyExistsError('Username');
+		// if (await this.userService.isEmailTaken(email))
+		// 	throw new UserAlreadyExistsError('Email');
 
-		// SHOULD WE HASH HERE? OR KEEP IT INSIDE USERS CREATION
+		const hashedPassword = await bcrypt.hash(password!, this.authConfig.bcryptHashRounds);
 
-		const createdUserID = await this.userService.createUser(first_name, last_name, username, email, password);
+		await this.userService.createUser(first_name, last_name, username, email, hashedPassword);
 	}
 
 	async LogIn(username: string, password: string, userAgent: string, ip: string) {
@@ -361,62 +361,62 @@ class AuthService {
 	}
 
 	// TO CHECK
-	private async getGoogleOAuthTokens(code: string): Promise<any> {
-		const body = {
-			code,
-			client_id: GOOGLE_OAUTH_CLIENT_ID,
-			client_secret: GOOGLE_OAUTH_CLIENT_SECRET,
-			redirect_uri: GOOGLE_OAUTH_BACKEND_REDIRECT_URI,
-			grant_type: 'authorization_code'
-		};
+	// private async getGoogleOAuthTokens(code: string): Promise<any> {
+	// 	const body = {
+	// 		code,
+	// 		client_id: GOOGLE_OAUTH_CLIENT_ID,
+	// 		client_secret: GOOGLE_OAUTH_CLIENT_SECRET,
+	// 		redirect_uri: GOOGLE_OAUTH_BACKEND_REDIRECT_URI,
+	// 		grant_type: 'authorization_code'
+	// 	};
 
-		const { data } = await axios.post(GOOGLE_OAUTH_EXCHANGE_URL!, body);
-		console.log(data);
-		return data;
-	}
+	// 	const { data } = await axios.post(GOOGLE_OAUTH_EXCHANGE_URL!, body);
+	// 	console.log(data);
+	// 	return data;
+	// }
 
-	// TO CHECK
-	private GoogleOAuthTokenToData(data: any) : ISQLCreateUser {
-		return {
-			email: data.email,
-			username: data.email.split('@')[0],
-			first_name: data.given_name || data.name.split(' ')[0] || 'Ismail',
-			last_name: data.family_name || data.name.split(' ')[1] || 'Demnati',
-			avatar_url: data.picture || 'https://pbs.twimg.com/profile_images/1300555471468851202/xtUnFLEm_200x200.jpg',
-			auth_provider: 'Google'
-		}
-	}
+	// // TO CHECK
+	// private GoogleOAuthTokenToData(data: any) : ISQLCreateUser {
+	// 	return {
+	// 		email: data.email,
+	// 		username: data.email.split('@')[0],
+	// 		first_name: data.given_name || data.name.split(' ')[0] || 'Ismail',
+	// 		last_name: data.family_name || data.name.split(' ')[1] || 'Demnati',
+	// 		avatar_url: data.picture || 'https://pbs.twimg.com/profile_images/1300555471468851202/xtUnFLEm_200x200.jpg',
+	// 		auth_provider: 'Google'
+	// 	}
+	// }
 
 	// TODO
 		// ADD STATE FOR CSRF
 	// TO CHECK
-	private async getIntraOAuthTokens(code: string): Promise<any> {
-		const body = {
-			code,
-			client_id: INTRA_OAUTH_CLIENT_ID,
-			client_secret: INTRA_OAUTH_CLIENT_SECRET,
-			redirect_uri: INTRA_OAUTH_BACKEND_REDIRECT_URI,
-			grant_type: 'authorization_code'
-		};
+	// private async getIntraOAuthTokens(code: string): Promise<any> {
+	// 	const body = {
+	// 		code,
+	// 		client_id: INTRA_OAUTH_CLIENT_ID,
+	// 		client_secret: INTRA_OAUTH_CLIENT_SECRET,
+	// 		redirect_uri: INTRA_OAUTH_BACKEND_REDIRECT_URI,
+	// 		grant_type: 'authorization_code'
+	// 	};
 
-		const { data } = await axios.post(INTRA_OAUTH_EXCHANGE_URL!, body);
-		console.log(data);
-		return data;
-	}
+	// 	const { data } = await axios.post(INTRA_OAUTH_EXCHANGE_URL!, body);
+	// 	console.log(data);
+	// 	return data;
+	// }
 
-	// TO CHECK
-	private async IntraOAuthTokenToData(access_token: string) : Promise<ISQLCreateUser> {
-		const { data } = await axios.get(`https://api.intra.42.fr/v2/me?access_token=${access_token}`);
+	// // TO CHECK
+	// private async IntraOAuthTokenToData(access_token: string) : Promise<ISQLCreateUser> {
+	// 	const { data } = await axios.get(`https://api.intra.42.fr/v2/me?access_token=${access_token}`);
 
-		return {
-			email: data.email,
-			username: data.login,
-			first_name: data.first_name || data.usual_first_name.split(' ')[0] || data.displayname.split(' ')[0],
-			last_name: data.last_name || data.usual_last_name.split(' ')[0] || data.displayname.split(' ')[0],
-			avatar_url: data.image.link || 'https://pbs.twimg.com/profile_images/1300555471468851202/xtUnFLEm_200x200.jpg',
-			auth_provider: '42'
-		}
-	}
+	// 	return {
+	// 		email: data.email,
+	// 		username: data.login,
+	// 		first_name: data.first_name || data.usual_first_name.split(' ')[0] || data.displayname.split(' ')[0],
+	// 		last_name: data.last_name || data.usual_last_name.split(' ')[0] || data.displayname.split(' ')[0],
+	// 		avatar_url: data.image.link || 'https://pbs.twimg.com/profile_images/1300555471468851202/xtUnFLEm_200x200.jpg',
+	// 		auth_provider: '42'
+	// 	}
+	// }
 
 	private extractPublicUserInfo(privateUserInfo: any) {
 		console.log('PRIVATE INFO: ', privateUserInfo);

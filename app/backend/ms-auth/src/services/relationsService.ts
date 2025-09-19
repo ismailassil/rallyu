@@ -1,12 +1,10 @@
 import RelationsRepository from "../repositories/relationsRepository";
 import UserRepository from "../repositories/userRepository";
 import { InternalServerError, UserNotFoundError } from "../types/auth.types";
-import UserService from "./userService";
 
 class RelationsService {
-	private userService?: UserService;
-
 	constructor(
+		private userRepository: UserRepository,
 		private relationsRepository: RelationsRepository
 	) {}
 
@@ -33,28 +31,14 @@ class RelationsService {
 		return await this.relationsRepository.findOutgoingBlocks(userID);
 	}
 	
-	async getRelationship(requesterID: number, targetID: number) {
-		const currentRelation = await this.relationsRepository.findTwoWaysByUsers(requesterID, targetID);
-
-		// TODO: ENHANCE RELATIONS NAMES/TYPES
-		switch (currentRelation.relations_status) {
-			case 'ACCEPTED':
-				return 'FRIENDS';
-			case 'BLOCKED':
-				return 'BLOCKED';
-			case 'PENDING':
-				return (currentRelation.requester_user_id === requesterID) ? 'OUTGOING' : 'INCOMING';
-			default:
-				return 'NONE';
-		}
-	}
-	
 	/*----------------------------------------------- REQUESTS -----------------------------------------------*/
 
 	// TODO: CLEAN UP THIS MESS | SHOULD WE REMOVE CHECKING FOR USER EXISTENCE? AND ONLY USER RELATIONS?
 	// TARGET USER EXISTENCE CHECK IS ONLY NEEDED IN WRITE OPERATIONS SUCH AS SENDING A FRIEND REQUEST
 	async sendFriendRequest(fromUserID: number, toUserID: number) {
-		await this.userExistsCheck(toUserID);
+		const targetUser = await this.userRepository.findById(toUserID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const existingTwoWayRelation = await this.relationsRepository.findTwoWaysByUsers(
 			fromUserID,
@@ -76,7 +60,9 @@ class RelationsService {
 	}
 
 	async cancelFriendRequest(fromUserID: number, toUserID: number) {
-		await this.userExistsCheck(toUserID);
+		const targetUser = await this.userRepository.findById(toUserID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const existingTwoWayRelation = await this.relationsRepository.findTwoWaysByUsers(
 			fromUserID,
@@ -93,7 +79,9 @@ class RelationsService {
 	}
 
 	async acceptFriendRequest(fromUserID: number, toUserID: number) {
-		await this.userExistsCheck(fromUserID);
+		const targetUser = await this.userRepository.findById(fromUserID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const existingTwoWayRelation = await this.relationsRepository.findTwoWaysByUsers(
 			fromUserID,
@@ -122,7 +110,9 @@ class RelationsService {
 	}
 
 	async rejectFriendRequest(fromUserID: number, toUserID: number) {
-		await this.userExistsCheck(fromUserID);
+		const targetUser = await this.userRepository.findById(fromUserID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const existingTwoWayRelation = await this.relationsRepository.findTwoWaysByUsers(
 			fromUserID,
@@ -139,7 +129,9 @@ class RelationsService {
 	}
 	
 	async blockUser(blockerID: number, blockedID: number) {
-		await this.userExistsCheck(blockedID);
+		const targetUser = await this.userRepository.findById(blockedID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const existingTwoWayRelation = await this.relationsRepository.findTwoWaysByUsers(
 			blockerID,
@@ -165,7 +157,9 @@ class RelationsService {
 	}
 
 	async unblockUser(unblockerID: number, unblockedID: number) {
-		await this.userExistsCheck(unblockedID);
+		const targetUser = await this.userRepository.findById(unblockedID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const existingOneWayRelation = await this.relationsRepository.findOneWayByUsers(
 			unblockerID,
@@ -179,7 +173,9 @@ class RelationsService {
 	}
 	
 	async unfriend(unfrienderUserID: number, unfriendedUserID: number) {
-		await this.userExistsCheck(unfriendedUserID);
+		const targetUser = await this.userRepository.findById(unfriendedUserID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 		
 		const existingTwoWayRelation = await this.relationsRepository.findTwoWaysByUsers(
 			unfrienderUserID,
@@ -192,22 +188,13 @@ class RelationsService {
 		await this.relationsRepository.deleteRelationById(existingTwoWayRelation.id);
 	}
 
-	/*----------------------------------------------- CHECKS -----------------------------------------------*/
+	async canViewUser(viewerId: number, targetUserId: number) {
+		const isBlocked = await this.relationsRepository.findTwoWaysBlockBetweenUsers(
+			viewerId,
+			targetUserId
+		);
 
-	async userExistsCheck(userID: number) {
-		if (!this.userService)
-			throw new InternalServerError();
-
-		await this.userService.userExistsCheck(userID);
-	}
-
-	async isBlocked(blockerID: number, blockedID: number) {
-		return await this.relationsRepository.findOneWayBlockBetweenUsers(blockerID, blockedID) != null;
-	}
-
-	/*----------------------------------------------- SETTERS -----------------------------------------------*/
-	public setUserService(userService: UserService) {
-		this.userService = userService;
+		return !isBlocked;
 	}
 }
 

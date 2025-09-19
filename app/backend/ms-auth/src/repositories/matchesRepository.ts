@@ -260,6 +260,7 @@ class MatchesRepository {
 		}
 	}
 
+	// this should be separated
 	async getUserPerformance(user_id: number) : Promise<any | null> {
 		try {
 			const TMPTABLESQL = this.getTMPTABLESQL('all', 'all', 1);

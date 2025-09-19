@@ -74,7 +74,7 @@ async function buildApp(): Promise<FastifyInstance> {
 	// 	NATS_USER: process.env["NATS_USER"] || "",
 	// 	NATS_PASSWORD: process.env["NATS_PASSWORD"] || "" });
 	await fastify.register(authRouter, { prefix: '/auth', authController, twoFactorController });
-	// await fastify.register(userRouter, { prefix: '/users' });
+	await fastify.register(userRouter, { prefix: '/users' });
 
 	return fastify;
 }

@@ -63,7 +63,7 @@ class UserController {
 			const user_id = request.user?.sub;
 			const { username } = request.params as IProfileRequest;
 
-			const user = await this.userService.getUser(user_id!, username);
+			const user = await this.userService.getUserPublicProfile(user_id!, username);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, user);
 
@@ -75,14 +75,14 @@ class UserController {
 		}
 	}
 
-	async fetchUserPerformance(request: FastifyRequest, reply: FastifyReply) {
+	async fetchUserFullStats(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
 			const { username } = request.params as IProfileRequest;
 
-			const userPerformance = await this.userService.getUserPerformance(user_id!, username);
+			const userFullStats = await this.userService.getUserFullStats(user_id!, username);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userPerformance);
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userFullStats);
 
 			reply.code(status).send(body);
 		} catch (err: any) {
@@ -95,10 +95,10 @@ class UserController {
 	async fetchUserMatchesPage(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
-			const { page } = request.query as { page: number };
+			const { page } = request.query as { page: number }; // TODO: ADD PAGINATION
 			const { username } = request.params as IProfileRequest;
 
-			const userStats = await this.userService.getUserMatchesPage(user_id!, username, page);
+			const userStats = await this.userService.getUserMatches(user_id!, username);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userStats);
 

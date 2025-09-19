@@ -6,19 +6,23 @@ import StatsService from "./statsService";
 import fs, { createWriteStream } from 'fs';
 import { pipeline } from "stream/promises";
 import { z } from 'zod';
-import bcrypt from 'bcrypt';
+import UserStatsRepository from "../repositories/userStatsRepository";
+import MatchesRepository from "../repositories/matchesRepository";
 import RelationsService from "./relationsService";
-import fastify from "fastify";
 
 class UserService {
 	private relationsService: RelationsService;
 	private statsService: StatsService;
+	private userStatsRepository: UserStatsRepository;
+	private matchesRepository: MatchesRepository;
 
 	constructor(
 		private userRepository: UserRepository,
 	) {
 		this.statsService = new StatsService();
-		this.relationsService = new RelationsService(new RelationsRepository());
+		this.relationsService = new RelationsService(userRepository, new RelationsRepository());
+		this.userStatsRepository = new UserStatsRepository();
+		this.matchesRepository = new MatchesRepository();
 	}
 
 	/*----------------------------------------------- GETTERS -----------------------------------------------*/
@@ -35,104 +39,82 @@ class UserService {
 		return await this.userRepository.findByEmail(email);
 	}
 
-	// TODO: USE ID INSTEAD OF USERNAME
-	async getUser(requesterID: number, targetUsername: string) {
+	async getUserPublicProfile(viewerID: number, targetUsername: string) {
 		const targetUser = await this.getUserByUsername(targetUsername);
 		if (!targetUser)
 			throw new UserNotFoundError();
-
-		await this.userRelationCheck(requesterID, targetUser.id);
-
-		return this.extractPublicUserInfo(targetUser); // TODO: SHOULD BE REMOVED
-	}
-
-	// USER METRICS (LEVEL/STREAKS/RANK) + USER MATCHES TOTALS (W/L/D)
-	async getUserPerformance(requesterID: number, targetUsername: string) {
-		const targetUser = await this.getUserByUsername(targetUsername);
-		if (!targetUser)
-			throw new UserNotFoundError();
-
-		await this.userRelationCheck(requesterID, targetUser.id);
-
-		return await this.statsService.getUserPerformance(targetUser.id);
-	}
-
-	// USER METRICS (LEVEL/STREAKS/RANK) + USER MATCHES TOTALS (W/L/D)
-	// async getUserFullStats(requesterID: number, targetUsername: string) {
-	// 	const targetUser = await this.getUserByUsername(targetUsername);
-	// 	if (!targetUser)
-	// 		throw new UserNotFoundError();
-
-	// 	await this.userRelationCheck(requesterID, targetUser.id);
-
-	// 	return await this.statsService.getUserSummaryStats(targetUser.id);
-	// }
-
-	async getUserMatchesPage(requesterID: number, targetUsername: string, page: number) {
-		const targetUser = await this.getUserByUsername(targetUsername);
-		if (!targetUser)
-			throw new UserNotFoundError();
-
-		await this.userRelationCheck(requesterID, targetUser.id);
-
-		return await this.statsService.getUserMatches(targetUser.id, page);
-	}
-
-	// TODO: USE ID INSTEAD OF USERNAME
-	// TODO: SHOULD THIS FUNCTION BE ONLY TAKING TARGET? THE LOGIC OF RELATION BETWEEN USERS CHECK SHOULD BE OUTSIDE?
-	// async getUserFullInfo(requesterID: number, targetUsername: string) {
-	// 	const targetUser = await this.getUserByUsername(targetUsername);
-	// 	if (!targetUser)
-	// 		throw new UserNotFoundError();
 		
-	// 	// RELATION CHECK
-	// 	await this.userRelationCheck(requesterID, targetUser.id);
+		const isAllowed = this.relationsService.canViewUser(viewerID, targetUser.id);
+		if (!isAllowed)
+			throw new UserNotFoundError();
 
-	// 	const currentRelation = (requesterID === targetUser.id) ? null : await this.relationsService.getRelationship(requesterID, targetUser.id);
+		// fetch and assemble the profile data
+		const userData = await this.userRepository.findById(targetUser.id);
 
-	// 	const statsSummary = await this.statsService.getUserStatsSummary(targetUser.id); // TODO: REVIEW THIS
+		// this should return: user_stats(attr) + games stats (w/l/d grouped by game type)
+		const userPerformance = await this.statsService.getUserPerformance(targetUser.id);
 
-	// 	const recentMatches = await this.statsService.getUserRecentMatches(targetUser.id); // TODO: REVIEW THIS
+		const recentMatches = await this.matchesRepository.getUserMatches(targetUser.id, 'all', 'all', 1);
 
-	// 	return {
-	// 		user: this.extractPublicUserInfo(targetUser), // TODO: REMOVE THIS
-	// 		friendship_status: currentRelation, // TODO: RENAME THIS IN BOTH BACKEND AND FRONTEND
-	// 		stats: {
-	// 			user: statsSummary.user_stats,
-	// 			matches: statsSummary.matches_stats
-	// 		},
-	// 		matches: recentMatches
-	// 	}
-	// }
+		return { ...userData, performance: userPerformance, recentMatches };
+	}
 
-	// getAllUsers (Pagination) admin-only
+	async getUserMatches(viewerID: number, targetUsername: string) {
+		const targetUser = await this.getUserByUsername(targetUsername);
+		if (!targetUser)
+			throw new UserNotFoundError();
+		
+		const isAllowed = this.relationsService.canViewUser(viewerID, targetUser.id);
+		if (!isAllowed)
+			throw new UserNotFoundError();
 
+		const userMatches = this.matchesRepository.getAllMatchesByUser(targetUser.id);
+
+		return userMatches;
+	}
+
+	async getUserFullStats(viewerID: number, targetUsername: string) {
+		const targetUser = await this.getUserByUsername(targetUsername);
+		if (!targetUser)
+			throw new UserNotFoundError();
+		
+		const isAllowed = this.relationsService.canViewUser(viewerID, targetUser.id);
+		if (!isAllowed)
+			throw new UserNotFoundError();
+
+		const userMatches = this.statsService.getUserFullStats(targetUser.id);
+
+		return userMatches;
+	}
 
 	/*----------------------------------------------- CREATE -----------------------------------------------*/
 
-	async createUser(first_name: string, last_name: string, username: string, email: string, password: string) {
-		this.validateUserCreation(username, password, email, first_name, last_name);
+	async createUser(
+		first_name: string, 
+		last_name: string, 
+		username: string, 
+		email: string, 
+		hashedPassword: string
+	) {
+		// TODO: SHOULD THIS BE HERE?
+		// this.validateUserCreation(username, password, email, first_name, last_name);
 
-		// CHECK IF USER WITH CREDENTIALS EXISTS
-		if (await this.isCredentialsTaken(username, email))
-			throw new UserAlreadyExistsError('Username/Email');
+		if (await this.isUsernameTaken(username))
+			throw new UserAlreadyExistsError('Username');
+		if (await this.isEmailTaken(email))
+			throw new UserAlreadyExistsError('Email');
 
-		const bcryptRounds = 12; // TODO: INJECT CONFIGURATION
-		const hashedPassword = await bcrypt.hash(password!, bcryptRounds); // TODO: PASSWORD HASHER
-
+		// CREATE A USER
 		const createdUserID = await this.userRepository.create(
 			username,
 			email,
 			first_name,
 			last_name,
-			'/avatars/default.png',
-			'local',
 			hashedPassword
 		);
 
-		// TODO: CREATE USER STATS
-		// TODO: WHAT SHOULD IT RETURN
-		return createdUserID;
+		// CREATE USER STATS
+		await this.userStatsRepository.createForUser(createdUserID);
 	}
 
 	// TODO: IMPLEMENT createUserFromOAuth
@@ -140,21 +122,13 @@ class UserService {
 	/*----------------------------------------------- UPDATE -----------------------------------------------*/
 
 	async updateUser(userID: number, updates: any) {
-		this.userExistsCheck(userID);
+		const existingUser = await this.userRepository.findById(userID);
+		if (!existingUser)
+			throw new UserNotFoundError();
 
 		const changes = await this.userRepository.update(userID, updates);
 		return changes;
 	}
-
-	// async updateUserPassword(userID: number, newPassword: string) {
-	// 	this.validateUserExists(userID);
-
-	// 	const bcryptRounds = 12; // TODO: INJECT CONFIGURATION
-	// 	const newHashedPassword = await bcrypt.hash(newPassword!, bcryptRounds); // TODO: PASSWORDHASHER
-
-	// 	const changes = await this.updateUser(userID, { password: newHashedPassword });
-	// 	return changes;
-	// }
 
 	// TODO: UPDATE AVATAR
 
@@ -166,11 +140,6 @@ class UserService {
 	}
 
 	/*----------------------------------------------- CHECKS -----------------------------------------------*/
-	
-	async isCredentialsTaken(username: string, email: string) {
-		// TODO: CAN BE OPTIMIZED USING ONE SQL QUERY
-		return (await this.isEmailTaken(email) && await this.isUsernameTaken(username));
-	}
 
 	async isEmailTaken(email: string) {
 		return await this.userRepository.findByEmail(email) != null;
@@ -178,17 +147,6 @@ class UserService {
 	
 	async isUsernameTaken(username: string) {
 		return await this.userRepository.findByUsername(username) != null;
-	}
-
-	async userRelationCheck(requesterID: number, targetID: number) {
-		if (await this.relationsService.isBlocked(targetID, requesterID))
-			throw new UserNotFoundError();
-	}
-
-	async userExistsCheck(userID: number) {
-		const existingUser = await this.userRepository.findById(userID);
-		if (!existingUser)
-			throw new UserNotFoundError();
 	}
 
 	/*----------------------------------------------- VALIDATION -----------------------------------------------*/
@@ -280,35 +238,6 @@ class UserService {
 
 		return publicUserInfo;
 	}
-
-	// private extractPublicRelation(user_id: number, relation: any) {
-	// 	if (relation && relation.relation_status === 'BLOCKED')
-	// 		throw new UserNotFoundError();
-
-	// 	let friendship_status = 'NONE';
-	// 	if (relation && relation.relation_status === 'ACCEPTED')
-	// 		friendship_status = 'FRIENDS';
-	// 	if (relation && relation.relation_status === 'PENDING')
-	// 		friendship_status = (relation.requester_user_id === user_id) ? 'OUTGOING' : 'INCOMING';
-
-	// 	return friendship_status;
-	// }
-
-	// async getUsername(user_id: number) {
-	// 	const existingUser = await this.userRepository.findById(user_id);
-	// 	if (!existingUser)
-	// 		throw new UserNotFoundError();
-
-	// 	return existingUser.username;
-	// }
-
-	// async getAvatar(user_id: number) {
-	// 	const existingUser = await this.userRepository.findById(user_id);
-	// 	if (!existingUser)
-	// 		throw new UserNotFoundError();
-
-	// 	return existingUser.avatar_path;
-	// }
 }
 
 export default UserService;

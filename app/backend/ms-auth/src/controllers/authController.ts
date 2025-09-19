@@ -206,22 +206,22 @@ class AuthController {
 	// 	}
 	// }
 
-	async changePasswordEndpoint(request: FastifyRequest, reply: FastifyReply) {
-		try {
-			const user_id = request.user?.sub;
-			const { old_password, new_password } = request.body as { old_password: string, new_password: string };
+	// async changePasswordEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	// 	try {
+	// 		const user_id = request.user?.sub;
+	// 		const { old_password, new_password } = request.body as { old_password: string, new_password: string };
 
-			await this.authService.changePassword(user_id!, old_password, new_password);
+	// 		await this.authService.changePassword(user_id!, old_password, new_password);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+	// 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
-			reply.code(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+	// 		reply.code(status).send(body);
+	// 	} catch (err: any) {
+	// 		const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
-		}
-	}
+	// 		reply.code(status).send(body);
+	// 	}
+	// }
 
 	// async fetchMeEndpoint(request: FastifyRequest, reply: FastifyReply) {
 	// 	try {
