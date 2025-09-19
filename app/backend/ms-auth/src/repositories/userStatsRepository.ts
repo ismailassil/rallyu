@@ -2,7 +2,6 @@ import { db } from '../database';
 import { InternalServerError } from '../types/auth.types';
 
 class UserStatsRepository {
-
 	async createForUser(userID: number) {
 		try {
 			const runResult = await db.run(

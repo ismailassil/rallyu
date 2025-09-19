@@ -32,7 +32,6 @@ import JWTUtils from "../utils/auth/Auth";
 // const INTRA_OAUTH_EXCHANGE_URL = process.env['INTRA_OAUTH_EXCHANGE_URL'];
 
 class AuthService {
-	// TODO: IMPLEMENT A PASSWORD MANAGER
 	constructor(
 		private authConfig: AuthConfig,
 		private jwtUtils: JWTUtils,

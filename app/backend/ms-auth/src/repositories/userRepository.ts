@@ -24,12 +24,6 @@ class UserRepository {
 				[username, password, email, first_name, last_name, avatar_path, auth_provider, role, bio]
 			);
 
-			// TODO: need to be moved somewhere else
-			const statResult = await db.run(
-				`INSERT INTO users_stats (level, total_xp, current_streak, longest_streak, user_id)
-					VALUES (?, ?, ?, ?, ?)`,
-				[0, 0, 0, 0, runResult.lastID]
-			);
 			return runResult.lastID;
 		} catch (err: any) {
 			console.error('SQLite Error: ', err);
@@ -160,31 +154,6 @@ class UserRepository {
 			throw new InternalServerError();
 		}
 	}
-
-	// async exists(username: string, email: string) : Promise<boolean> {
-	// 	const usernameResult = await this.findByUsername(username);
-	// 	const emailResult = await this.findByEmail(email);
-
-	// 	if (usernameResult || emailResult)
-	// 		return true;
-	// 	return false;
-	// }
-
-	// async existsByUsername(username: string) : Promise<boolean> {
-	// 	const usernameResult = await this.findByUsername(username);
-
-	// 	if (usernameResult)
-	// 		return true;
-	// 	return false;
-	// }
-
-	// async existsByEmail(email: string) : Promise<boolean> {
-	// 	const emailResult = await this.findByEmail(email);
-
-	// 	if (emailResult)
-	// 		return true;
-	// 	return false;
-	// }
 }
 
 export default UserRepository;

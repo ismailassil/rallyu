@@ -97,7 +97,7 @@ class StatsService {
 		if (!existingUser)
 			throw new UserNotFoundError();
 
-		const fullStats = await this.matchesRepository.getUserStats(existingUser.id);
+		const fullStats = await this.matchesRepository.getUserFullStats(existingUser.id);
 
 		return fullStats;
 	}
