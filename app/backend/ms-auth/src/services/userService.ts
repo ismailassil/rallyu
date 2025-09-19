@@ -49,14 +49,14 @@ class UserService {
 			throw new UserNotFoundError();
 
 		// fetch and assemble the profile data
-		const userData = await this.userRepository.findById(targetUser.id);
+		const { password: _, ...userWithoutPassword } = targetUser;
 
 		// this should return: user_stats(attr) + games stats (w/l/d grouped by game type)
 		const userPerformance = await this.statsService.getUserPerformance(targetUser.id);
 
 		const recentMatches = await this.matchesRepository.getUserMatches(targetUser.id, 'all', 'all', 1);
 
-		return { ...userData, performance: userPerformance, recentMatches };
+		return { ...userWithoutPassword, performance: userPerformance, recentMatches };
 	}
 
 	async getUserMatches(viewerID: number, targetUsername: string) {
