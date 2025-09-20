@@ -404,18 +404,18 @@ class TwoFactorService {
 	// 	return { secret_base32: type === 'totp' ? temp_value : undefined, qr_code_url: QRCodeURL };
 	// }
 
-	async verify2FAMethod(type: string, code: string, userID: number) : Promise<boolean> {
-		const enabledMethod = await this.twoFactorRepository.findEnabled2FAMethodByType(type, userID);
-		if (!enabledMethod)
-			throw new _2FANotEnabled(type);
+	// async verify2FAMethod(type: string, code: string, userID: number) : Promise<boolean> {
+	// 	const enabledMethod = await this.twoFactorRepository.findEnabled2FAMethodByType(type, userID);
+	// 	if (!enabledMethod)
+	// 		throw new _2FANotEnabled(type);
 
-		const isValid = (type === 'totp') ? this._verifyTOTP(enabledMethod.totp_secret, code.toString())
-        								  : this._verifyOTP(code, await this.getCurrentOTP(type, userID));
-		if (!isValid)
-			throw new _2FAInvalidCode(type); // delete it
+	// 	const isValid = (type === 'totp') ? this._verifyTOTP(enabledMethod.totp_secret, code.toString())
+    //     								  : this._verifyOTP(code, await this.getCurrentOTP(type, userID));
+	// 	if (!isValid)
+	// 		throw new _2FAInvalidCode(type); // delete it
 
-		return true;
-	}
+	// 	return true;
+	// }
 
 	// async verifyTOTP(totp_code: string, user_id: number) : Promise<boolean> {
 	// 	const enabledTOTP = await this.twoFactorRepository.findEnabled2FAMethodByType('totp', user_id);

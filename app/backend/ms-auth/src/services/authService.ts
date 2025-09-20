@@ -1,8 +1,5 @@
-import UserRepository from "../repositories/userRepository";
-import jwt from 'jsonwebtoken'
-import { CreateUserRequest, ILoginRequest, IRegisterRequest, ISQLCreateUser, User } from "../types";
 import bcrypt from 'bcrypt';
-import AuthUtils, { JWT_TOKEN, JWT_REFRESH_PAYLOAD } from '../utils/auth/Auth'
+import { JWT_REFRESH_PAYLOAD } from '../utils/auth/Auth'
 import { FormError, FormFieldMissing, InvalidCredentialsError, PasswordLengthError, SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenExpiredError, TokenInvalidError, TokenRequiredError, UserAlreadyExistsError, UserNotFoundError, UsernameLengthError, WeakPasswordError, _2FAInvalidCode } from "../types/auth.types";
 import { ISessionFingerprint } from "../types";
 import { UAParser } from 'ua-parser-js';
