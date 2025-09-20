@@ -43,14 +43,14 @@ class AuthService {
 	async SignUp(first_name: string, last_name: string, username: string, email: string, password: string) : Promise<void> {
 		this.validateRegisterForm(username, password, email, first_name, last_name);
 
-		// if (await this.userService.isUsernameTaken(username))
-		// 	throw new UserAlreadyExistsError('Username');
-		// if (await this.userService.isEmailTaken(email))
-		// 	throw new UserAlreadyExistsError('Email');
+		if (await this.userService.isUsernameTaken(username))
+			throw new UserAlreadyExistsError('Username');
+		if (await this.userService.isEmailTaken(email))
+			throw new UserAlreadyExistsError('Email');
 
 		const hashedPassword = await bcrypt.hash(password!, this.authConfig.bcryptHashRounds);
 
-		await this.userService.createUser(first_name, last_name, username, email, hashedPassword);
+		await this.userService.createUser(first_name, last_name, username, email, password, hashedPassword);
 	}
 
 	async LogIn(username: string, password: string, userAgent: string, ip: string) {

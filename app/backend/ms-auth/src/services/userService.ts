@@ -97,10 +97,10 @@ class UserService {
 		last_name: string, 
 		username: string, 
 		email: string, 
+		password: string,
 		hashedPassword: string
 	) {
-		// TODO: SHOULD THIS BE HERE?
-		// this.validateUserCreation(username, password, email, first_name, last_name);
+		this.validateUserCreation(username, password, email, first_name, last_name);
 
 		if (await this.isUsernameTaken(username))
 			throw new UserAlreadyExistsError('Username');
