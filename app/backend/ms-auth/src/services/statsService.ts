@@ -5,13 +5,12 @@ import UserRepository from "../repositories/userRepository";
 import { InternalServerError, UserNotFoundError } from "../types/auth.types";
 
 class StatsService {
-	private userRepository: UserRepository;
-	private statsRepository: StatsRepository;
+	
 
-	constructor() {
-		this.userRepository = new UserRepository();
-		this.statsRepository = new StatsRepository();
-	}
+	constructor(
+		private userRepository: UserRepository,
+		private statsRepository: StatsRepository
+	) {}
 
 	async createUserRecords(userID: number) {
 		const existingUser = await this.userRepository.findById(userID);

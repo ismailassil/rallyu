@@ -82,7 +82,7 @@ class UserRepository {
 					AND (r.relation_status != 'BLOCKED' OR r.relation_status IS NULL)`,
 				[user_id, user_id, username]
 			);
-			return allResult ?? null;
+			return allResult;
 		} catch (err: any) {
 			console.error('SQLite Error: ', err);
 			throw new InternalServerError();

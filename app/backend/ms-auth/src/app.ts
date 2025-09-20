@@ -20,6 +20,12 @@ import TwoFactorService from './services/twoFactorService';
 import AuthService from './services/authService';
 import AuthController from './controllers/authController';
 import TwoFactorController from './controllers/twoFactorController';
+import UserController from './controllers/userController';
+import RelationsController from './controllers/relationsContoller';
+import RelationsService from './services/relationsService';
+import StatsService from './services/statsService';
+import StatsRepository from './repositories/statsRepository';
+import MatchesRepository from './repositories/matchesRepository';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
@@ -56,16 +62,23 @@ async function buildApp(): Promise<FastifyInstance> {
 	const userRepository = new UserRepository();
 	const sessionsRepository = new SessionRepository();
 	const twoFactorRepository = new TwoFactorRepository();
+	const relationsRepository = new RelationsRepository();
+	const statsRepository = new StatsRepository();
+	const matchesRepository = new MatchesRepository();
 
 	// INIT SERVICES
 	const sessionService = new SessionService(authConfig, jwtUtils, sessionsRepository);
 	const twoFactorService = new TwoFactorService(twoFactorRepository);
-	const userService = new UserService(userRepository);
+	const statsService = new StatsService(userRepository, statsRepository);
+	const relationsService = new RelationsService(userRepository, relationsRepository);
+	const userService = new UserService(userRepository, relationsService, statsService, matchesRepository);
 	const authService = new AuthService(authConfig, jwtUtils, userService, sessionService, twoFactorService);
 
 	// INIT CONTROLLERS
 	const authController = new AuthController(authService, twoFactorService);
 	const twoFactorController = new TwoFactorController(twoFactorService);
+	const userController = new UserController(userService);
+	const relationsController= new RelationsController(relationsService);
 	
 
 	// REGISTER AUTH PLUGIN
@@ -74,7 +87,7 @@ async function buildApp(): Promise<FastifyInstance> {
 	// 	NATS_USER: process.env["NATS_USER"] || "",
 	// 	NATS_PASSWORD: process.env["NATS_PASSWORD"] || "" });
 	await fastify.register(authRouter, { prefix: '/auth', authController, twoFactorController });
-	await fastify.register(userRouter, { prefix: '/users' });
+	await fastify.register(userRouter, { prefix: '/users', userController, relationsController });
 
 	return fastify;
 }

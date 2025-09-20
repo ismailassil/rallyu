@@ -10,17 +10,12 @@ import MatchesRepository from "../repositories/matchesRepository";
 import RelationsService from "./relationsService";
 
 class UserService {
-	private relationsService: RelationsService;
-	private statsService: StatsService;
-	private matchesRepository: MatchesRepository;
-
 	constructor(
 		private userRepository: UserRepository,
-	) {
-		this.statsService = new StatsService();
-		this.relationsService = new RelationsService(userRepository, new RelationsRepository());
-		this.matchesRepository = new MatchesRepository();
-	}
+		private relationsService: RelationsService,
+		private statsService: StatsService,
+		private matchesRepository: MatchesRepository
+	) {}
 
 	/*----------------------------------------------- GETTERS -----------------------------------------------*/
 
