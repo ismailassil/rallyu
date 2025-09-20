@@ -183,6 +183,6 @@ async function test() {
 	// console.log('DetailesStats:', detailedStats);
 }
 
-test();
+// test();
 
 export default MatchesRepository;
