@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import UserController from "../controllers/userController";
-import RelationsController from "../controllers/userRelationsContoller";
+import RelationsController from "../controllers/relationsContoller";
 import RelationsRepository from "../repositories/relationsRepository";
 import { relationsRequestSchema, userMatchesSchema, userProfileSchema, userUpdateSchema } from "../schemas/users.schema";
 import Authenticate from "../middleware/Authenticate";
@@ -40,55 +40,45 @@ async function userRouter(fastify: FastifyInstance) {
 
 	
 	/*-------------------------------------------- AVAILABILITY --------------------------------------------*/
-	
-	// CHECK IF USERNAME AVAILABLE
+
 	fastify.get('/username-available', {
 		handler: userController.usernameAvailable.bind(userController)
 	});
-	
-	// CHECK IF EMAIL AVAILABLE
 	fastify.get('/email-available', {
 		handler: userController.emailAvailable.bind(userController)
 	});
 
 
 	/*------------------------------------------------ USERS ------------------------------------------------*/
-	// GET USER
+
 	fastify.get('/:username', {
 		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
 		handler: userController.fetchUser.bind(userController)
 	});
-	
-	// UPDATE USER (SELF-SERVICE)
 	fastify.put('/:username', {
 		schema: userUpdateSchema,
 		preHandler: fastify.authenticate,
 		handler: userController.updateUser.bind(userController)
 	});
-	
-	// DELETE USER (SELF-SERVICE)
 	fastify.delete('/:username', {
 		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
 		handler: userController.deleteUser.bind(userController)
 	});
 	
-	// GET USER FULL STATS
-	fastify.get('/:username/full-stats', {
-		schema: userProfileSchema,
-		preHandler: fastify.authenticate,
-		handler: userController.fetchUserFullStats.bind(userController)
-	});
-	
-	// GET USER MATCHES PAGE
 	fastify.get('/:username/matches', {
 		schema: userMatchesSchema,
 		preHandler: fastify.authenticate,
-		handler: userController.fetchUserMatchesPage.bind(userController)
+		handler: userController.fetchUserMatches.bind(userController)
+	});
+	fastify.get('/:username/analytics', {
+		schema: userProfileSchema,
+		preHandler: fastify.authenticate,
+		handler: userController.fetchUserAnalytics.bind(userController)
 	});
 
-	// UPDATE USER AVATAR
+
 	fastify.post('/:username/avatar', {
 		preHandler: fastify.authenticate,
 		handler: userController.uploadAvatar.bind(userController)
@@ -101,6 +91,7 @@ async function userRouter(fastify: FastifyInstance) {
 
 
 	/*-------------------------------------------- USER RELATIONS --------------------------------------------*/
+
 	fastify.get('/friends', {
 		preHandler: fastify.authenticate,
 		handler: relationsController.fetchFriends.bind(relationsController)
@@ -123,53 +114,36 @@ async function userRouter(fastify: FastifyInstance) {
 		schema: relationsRequestSchema,
 		handler: relationsController.sendFriendRequest.bind(relationsController)
 	});
-	
 	fastify.delete('/:user_id/friends/requests', {
 		preHandler: fastify.authenticate,
 		schema: relationsRequestSchema,
 		handler: relationsController.cancelFriendRequest.bind(relationsController)
 	});
-	
 	fastify.put('/:user_id/friends/accept', {
 		preHandler: fastify.authenticate,
 		schema: relationsRequestSchema,
 		handler: relationsController.acceptFriendRequest.bind(relationsController)
 	});
-	
 	fastify.put('/:user_id/friends/reject', {
 		preHandler: fastify.authenticate,
 		schema: relationsRequestSchema,
 		handler: relationsController.rejectFriendRequest.bind(relationsController)
 	});
-	
 	fastify.delete('/:user_id/friends', {
 		preHandler: fastify.authenticate,
 		schema: relationsRequestSchema,
 		handler: relationsController.unfriend.bind(relationsController)
 	});
-	
 	fastify.post('/:user_id/block', {
 		preHandler: fastify.authenticate,
 		schema: relationsRequestSchema,
 		handler: relationsController.blockUser.bind(relationsController)
 	});
-
 	fastify.delete('/:user_id/block', {
 		preHandler: fastify.authenticate,
 		schema: relationsRequestSchema,
 		handler: relationsController.unblockUser.bind(relationsController)
 	});
-
-	/*-------------------------------------------- MATCHES --------------------------------------------*/
-	// fastify.get('/match/:id', {
-	// 	// preHandler: fastify.authenticate,
-	// 	handler: matchesController.getMatch.bind(matchesController)
-	// });
-
-	// fastify.post('/match', {
-	// 	// preHandler: fastify.authenticate,
-	// 	handler: matchesController.newMatch.bind(matchesController)
-	// });
 }
 
 export default userRouter;

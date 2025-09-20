@@ -1,105 +1,62 @@
 import { db } from "../database";
 import MatchesRepository from "../repositories/matchesRepository";
+import StatsRepository from "../repositories/statsRepository";
 import UserRepository from "../repositories/userRepository";
 import { InternalServerError, UserNotFoundError } from "../types/auth.types";
 
-interface IUserPerformance {
-	level: number,
-	xp: number,
-	rank: number,
-	win_rate: number,
-	current_streak: string,
-	longest_streak: number,
-	games : {
-		games: number,
-		wins: number,
-		losses: number,
-		draws: number,
-		ping_pong: {
-			games: number,
-			wins: number,
-			losses: number,
-			draws: number,
-			win_rate: number
-		},
-		tic_tac_toe: {
-			games: number,
-			wins: number,
-			losses: number,
-			draws: number,
-			win_rate: number
-		}
-	}
-};
-
-interface IGame {
-	game_type: string,
-	total_matches: number,
-	wins: number,
-	losses: number,
-	draws: number,
-	average_score: number
-}
-
-interface IGameHistory {
-	game_id: number,
-	game_type: string,
-	player_home: {
-		username: string,
-		avatar: string,
-		score: string
-	},
-	player_away: {
-		username: string,
-		avatar: string,
-		score: string
-	}
-}
-
-interface IUserInfo {
-	first_name: string,
-	last_name: string,
-	email: string,
-	username: string,
-	bio: string,
-	avatar_url: string,
-	role: string
-}
-
-interface IUserProfile {
-	profile: IUserInfo,
-	performance: IUserPerformance,
-	games_history: Array<IGameHistory>
-}
-
 class StatsService {
 	private userRepository: UserRepository;
-	private matchesRepository: MatchesRepository;
+	private statsRepository: StatsRepository;
 
 	constructor() {
 		this.userRepository = new UserRepository();
-		this.matchesRepository = new MatchesRepository();
+		this.statsRepository = new StatsRepository();
 	}
 
-	async getUserPerformance(userID: number) : Promise<any | null> {
+	async createUserRecords(userID: number) {
 		const existingUser = await this.userRepository.findById(userID);
 		if (!existingUser)
 			throw new UserNotFoundError();
 
-		// performance = level, xp... total matches (w/l/d)
-		const performance = await this.matchesRepository.getUserPerformance(existingUser.id);
-
-		return performance;
+		await this.statsRepository.create(userID);
 	}
 
-	async getUserFullStats(userID: number) {
+	async getUserRecords(userID: number) : Promise<any | null> {
 		const existingUser = await this.userRepository.findById(userID);
 		if (!existingUser)
 			throw new UserNotFoundError();
 
-		const fullStats = await this.matchesRepository.getUserFullStats(existingUser.id);
+		const records = await this.statsRepository.getUserRecords(userID);
 
-		return fullStats;
+		return records;
+	}
+
+	async getUserStats(
+		userID: number, 
+		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
+		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all'
+	) {
+		const existingUser = await this.userRepository.findById(userID);
+		if (!existingUser)
+			throw new UserNotFoundError();
+
+		const stats = await this.statsRepository.getUserStats(userID, timeFilter, gameTypeFilter);
+
+		return stats;
+	}
+
+	async getUserAnalytics(
+		userID: number, 
+		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
+		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all'
+	) {
+		const existingUser = await this.userRepository.findById(userID);
+		if (!existingUser)
+			throw new UserNotFoundError();
+
+		const analytics = await this.statsRepository.getUserDetailedAnalytics(userID, timeFilter, gameTypeFilter);
+
+		return analytics;
 	}
 }
 

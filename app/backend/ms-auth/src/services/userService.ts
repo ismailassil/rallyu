@@ -6,14 +6,12 @@ import StatsService from "./statsService";
 import fs, { createWriteStream } from 'fs';
 import { pipeline } from "stream/promises";
 import { z } from 'zod';
-import UserStatsRepository from "../repositories/userStatsRepository";
 import MatchesRepository from "../repositories/matchesRepository";
 import RelationsService from "./relationsService";
 
 class UserService {
 	private relationsService: RelationsService;
 	private statsService: StatsService;
-	private userStatsRepository: UserStatsRepository;
 	private matchesRepository: MatchesRepository;
 
 	constructor(
@@ -21,7 +19,6 @@ class UserService {
 	) {
 		this.statsService = new StatsService();
 		this.relationsService = new RelationsService(userRepository, new RelationsRepository());
-		this.userStatsRepository = new UserStatsRepository();
 		this.matchesRepository = new MatchesRepository();
 	}
 
@@ -44,47 +41,58 @@ class UserService {
 		if (!targetUser)
 			throw new UserNotFoundError();
 		
-		const isAllowed = this.relationsService.canViewUser(viewerID, targetUser.id);
+		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
 			throw new UserNotFoundError();
 
-		// fetch and assemble the profile data
 		const { password: _, ...userWithoutPassword } = targetUser;
 
-		// this should return: user_stats(attr) + games stats (w/l/d grouped by game type)
-		const userPerformance = await this.statsService.getUserPerformance(targetUser.id);
+		const userRecords = await this.statsService.getUserRecords(targetUser.id);
+		const userStats = await this.statsService.getUserStats(targetUser.id, 'all', 'all');
+		const userRecentMatches = 
+			await this.matchesRepository.getMatchesByUser(targetUser.id, 'all', 'all', { page: 1, limit: 10 });
 
-		const recentMatches = await this.matchesRepository.getUserMatches(targetUser.id, 'all', 'all', 1);
-
-		return { ...userWithoutPassword, performance: userPerformance, recentMatches };
+		return { ...userWithoutPassword, userRecords, userStats, userRecentMatches };
 	}
 
-	async getUserMatches(viewerID: number, targetUsername: string) {
+	async getUserMatches(
+		viewerID: number, 
+		targetUsername: string, 
+		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
+		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all' = 'all',
+		paginationFilter?: { page: number, limit: number }
+	) {
 		const targetUser = await this.getUserByUsername(targetUsername);
 		if (!targetUser)
 			throw new UserNotFoundError();
-		
-		const isAllowed = this.relationsService.canViewUser(viewerID, targetUser.id);
+
+		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
 			throw new UserNotFoundError();
 
-		const userMatches = this.matchesRepository.getAllMatchesByUser(targetUser.id);
-
+		const userMatches = 
+			await this.matchesRepository.getMatchesByUser(targetUser.id, timeFilter, gameTypeFilter, paginationFilter);
+		
 		return userMatches;
 	}
 
-	async getUserFullStats(viewerID: number, targetUsername: string) {
+	async getUserAnalytics(
+		viewerID: number, 
+		targetUsername: string, 
+		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
+		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all' = 'all'
+	) {
 		const targetUser = await this.getUserByUsername(targetUsername);
 		if (!targetUser)
 			throw new UserNotFoundError();
-		
-		const isAllowed = this.relationsService.canViewUser(viewerID, targetUser.id);
+
+		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
 			throw new UserNotFoundError();
 
-		const userMatches = this.statsService.getUserFullStats(targetUser.id);
-
-		return userMatches;
+		const userAnalytics = await this.statsService.getUserAnalytics(targetUser.id, timeFilter, gameTypeFilter);
+		
+		return userAnalytics;
 	}
 
 	/*----------------------------------------------- CREATE -----------------------------------------------*/
@@ -114,7 +122,7 @@ class UserService {
 		);
 
 		// CREATE USER STATS
-		await this.userStatsRepository.createForUser(createdUserID);
+		await this.statsService.createUserRecords(createdUserID);
 	}
 
 	// TODO: IMPLEMENT createUserFromOAuth
