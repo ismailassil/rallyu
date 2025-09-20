@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Relations from './Relations';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
@@ -17,17 +16,6 @@ type ProfileCardProps = {
 };
 
 export default function ProfileCard({ user_id, fullName, username, bio, avatarSrc, relationStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
-	// const [imgSrc, setImgSrc] = useState(null);
-
-	// useEffect(() => {
-	// 	fetch(avatar)
-	// 	  .then(res => res.blob())
-	// 	  .then(blob => setImgSrc(URL.createObjectURL(blob)));
-	// }, []);
-
-	// if (!imgSrc)
-	// 	return null;
-
 	return (
 		<header
 			className="bg-card border-br-card flex w-full flex-col items-center gap-8 lg:gap-12
@@ -48,14 +36,13 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatarSr
 						<p className={`text-sm text-gray-400 lg:text-lg`}>
 							{bio || 'Something went wrong, please try again later.'}
 						</p>
-						{relationStatus && <Relations user_id={user_id} status={relationStatus}/>}
+						{relationStatus && <Relations user_id={user_id} status={relationStatus} />}
 						{!relationStatus && 
 							<div className='flex gap-3 select-none'>
-								<div className={`flex flex-row pl-3.5 pr-3.5 pb-2 pt-2 gap-3 items-center ${funnelDisplay.className}
+								<a className={`flex flex-row pl-3.5 pr-3.5 pb-2 pt-2 gap-3 items-center ${funnelDisplay.className}
 									h-11 bg-white/4 rounded-xl border border-white/10 backdrop-blur-2xl transition-all duration-200
-									hover:bg-white/6 hover:scale-102`}
-									// onClick={onClick}
-									>
+									hover:bg-white/6 hover:scale-102`} href='/settings'
+								>
 									<Image
 										alt='Edit Profile'
 										src='/icons/user-pencil.svg'
@@ -64,8 +51,9 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatarSr
 									>
 									</Image>
 									<p className='text-lg text-white/85'>Edit Profile</p>
-								</div>
-							</div>}
+								</a>
+							</div>
+						}
 						
 					</div>
 					<div
@@ -116,7 +104,7 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatarSr
 						<span className="inline md:hidden lg:inline"><br /></span>
 						Rank
 					</span>
-					<span className='text-xl lg:text-3xl font-bold text-white/90 text-center lg:text-start'>#{1 || globalRank}</span>
+					<span className='text-xl lg:text-3xl font-bold text-white/90 text-center lg:text-start'>#{globalRank}</span>
 				</div>
 				<div className='flex-1 bg-white/4 border border-white/10 rounded-2xl pl-4 pr-4 pt-2 pb-2
 								flex flex-col items-center justify-between backdrop-blur-xl
@@ -128,7 +116,7 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatarSr
 						<span className="inline md:hidden lg:inline"><br /></span>
 						Rate
 					</span>
-					<span className='text-xl lg:text-3xl font-bold text-white/90 text-center lg:text-start'>{winRate?.toFixed(1)}%</span>
+					<span className='text-xl lg:text-3xl font-bold text-white/90 text-center lg:text-start'>{winRate.toFixed(2)}%</span>
 				</div>
 				<div className='flex-1 bg-white/4 border border-white/10 rounded-2xl pl-4 pr-4 pt-2 pb-2
 								flex flex-col items-center justify-between backdrop-blur-xl

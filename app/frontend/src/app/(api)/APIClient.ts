@@ -1,66 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance } from 'axios';
 
-interface IUserPerformance {
-	level: number,
-	xp: number,
-	rank: number,
-	win_rate: number,
-	current_streak: string,
-	longest_streak: number,
-	games : {
-		games: number,
-		wins: number,
-		losses: number,
-		draws: number,
-		ping_pong: {
-			games: number,
-			wins: number,
-			losses: number,
-			draws: number,
-			win_rate: number
-		},
-		tic_tac_toe: {
-			games: number,
-			wins: number,
-			losses: number,
-			draws: number,
-			win_rate: number
-		}
-	}
-};
-
-interface IGameHistory {
-	game_id: number,
-	game_type: string,
-	player_home: {
-		username: string,
-		avatar: string,
-		score: string
-	},
-	player_away: {
-		username: string,
-		avatar: string,
-		score: string
-	}
-}
-
-interface IUserInfo {
-	first_name: string,
-	last_name: string,
-	email: string,
-	username: string,
-	bio: string,
-	avatar_url: string,
-	role: string
-}
-
-interface IUserProfile {
-	profile: IUserInfo,
-	performance: IUserPerformance,
-	games_history: Array<IGameHistory>
-}
-
 export type APIError = {
 	code: string;
 	message: string;
@@ -163,25 +103,22 @@ export class APIClient {
 	
 	async fetchUser(username: string) {
 		const { data: res } = await this.client.get(`/users/${username}`);
-		return res.data;
-	}
-	
-	async fetchUserPerformance(username: string) {
-		const { data: res } = await this.client.get(`/users/${username}/performance`);
-		return res.data;
-	}
-	
-	async fetchUserMatchesPage(username: string, page: number) {
-		const { data: res } = await this.client.get(`/users/${username}/matches?page=${page}`); // TODO
+		// if (res?.data?.user?.avatar_path)
+		res.data.user = this.normalizeUser(res.data.user);
 		return res.data;
 	}
 
-	async getUserAvatar(url: string) {
-		const { data } = await this.client.get(`/users${url}`, {
-			responseType: 'blob'
-		});
-		return data;
+	async fetchUserMatchesPage(username: string, page?: number) {
+		const { data: res } = await this.client.get(`/users/${username}/matches${page ? `?page=${page}` : ``}`);
+		return res.data;
 	}
+
+	// async getUserAvatar(url: string) {
+	// 	const { data } = await this.client.get(`/users${url}`, {
+	// 		responseType: 'blob'
+	// 	});
+	// 	return data;
+	// }
 	
 	async uploadUserAvatar(profilePicture: FormData) {
 		const { data: res } = await this.client.post(`/users/TODO/avatar`, profilePicture, {

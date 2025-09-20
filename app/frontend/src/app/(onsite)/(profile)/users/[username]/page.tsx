@@ -1,10 +1,14 @@
 'use client';
-import { use } from 'react';
+import { use, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import useUserProfile from '../context/useUserProfile';
 import ProfileCard from '../components/ProfileCard';
 import PerformanceCard from '../components/PerformaceCard';
 import GamesHistoryCard from '../components/GamesHistoryCard';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
+import { alertError } from '@/app/(auth)/components/CustomToast';
+import { APIError } from '@/app/(api)/APIClient';
+import { UserProfile } from '../../types';
+import { AuthLoadingSpinner } from '@/app/(auth)/components/LoadingSpinners';
 
 const timeSpentMockData = [
 	{ date: "2023-01-01", timeSpent: 5 },
@@ -18,10 +22,32 @@ const timeSpentMockData = [
 
 export default function UserProfilePage({ params } : { params: Promise<{ username: string }> }) {
 	const { username } = use(params);
-	const { isLoading, userProfile } = useUserProfile(username);
+	const { apiClient } = useAuth();
+	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		async function fetchUserProfile() {
+			try {
+				setIsLoading(true);
+				const data = await apiClient.fetchUser(username);
+				setUserProfile(data);
+				setIsLoading(false);
+			} catch (err) {
+
+				const apiErr = err as APIError;
+				alertError(apiErr.message);
+
+			} finally {
+				setIsLoading(false);
+			}
+		}
+
+		fetchUserProfile();
+	}, []);
 	
 	if (isLoading || !userProfile)
-		return <h1 className='top-50 left-7 bg-red-500'>still loading</h1>;
+		return <AuthLoadingSpinner />;
 
 	return (
 		<motion.main
@@ -38,26 +64,26 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 						username={userProfile.user.username}
 						avatarSrc={userProfile.user.avatar_url}
 						bio={userProfile.user.bio}
-						relationStatus={userProfile.user.relation}
-						level={userProfile.performance.level}
-						globalRank={userProfile.performance.rank || 1337}
-						winRate={userProfile.performance.win_rate}
-						currentStreak={userProfile.performance.current_streak}
+						relationStatus={userProfile.currentRelationship}
+						level={userProfile.userRecords.level}
+						globalRank={userProfile.userRecords.rank || 1337}
+						winRate={userProfile.userStats.win_rate}
+						currentStreak={userProfile.userRecords.current_streak}
 					/>
 					<div
 						className="hide-scrollbar flex flex-1 flex-col space-x-4
 							space-y-4 overflow-scroll overflow-x-hidden lg:flex-row lg:space-y-0"
 					>
 						<PerformanceCard 
-							totalXP={userProfile.performance.total_xp}
-							totalMatches={userProfile.performance.total_matches}
-							longestStreak={userProfile.performance.longest_streak}
-							wins={userProfile.performance.total_wins}
-							losses={userProfile.performance.total_losses}
-							draws={userProfile.performance.total_draws}
+							totalXP={userProfile.userRecords.total_xp}
+							totalMatches={userProfile.userStats.matches}
+							longestStreak={userProfile.userRecords.longest_streak}
+							wins={userProfile.userStats.wins}
+							losses={userProfile.userStats.losses}
+							draws={userProfile.userStats.draws}
 							timeSpent={timeSpentMockData}
 						/>
-						<GamesHistoryCard matches={userProfile.matches} />
+						<GamesHistoryCard matches={userProfile.userRecentMatches} />
 					</div>
 				</article>
 				{/* <FriendsPanel /> */}

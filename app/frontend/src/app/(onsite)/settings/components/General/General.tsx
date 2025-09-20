@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../../contexts/AuthContext';
 import ProfilePreview from './ProfilePreview';
 import PersonalInformationsForm from './PersonalInformationsForm';
-import useUserProfile from '@/app/(onsite)/(user-profile)/users/context/useUserProfile';
+import useUserProfile from '@/app/(onsite)/(profile)/users/context/useUserProfile';
 import useForm from '../hooks/useForm';
 import { alertError, alertLoading, alertSuccess } from '@/app/(auth)/components/CustomToast';
 import { toast } from 'sonner';

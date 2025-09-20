@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import ReadyButton from "./components/ReadyButton";
-import useUserProfile, { UserProfileType } from "@/app/(onsite)/(user-profile)/users/context/useUserProfile";
+import useUserProfile, { UserProfileType } from "@/app/(onsite)/(profile)/users/context/useUserProfile";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import FinishedUI from "./components/FinishedUI";
 

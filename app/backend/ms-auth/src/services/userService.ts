@@ -42,12 +42,19 @@ class UserService {
 
 		const { password: _, ...userWithoutPassword } = targetUser;
 
+		const currentRelationship = await this.relationsService.getRelationBetweenTwoUsers(viewerID, targetUser.id);
 		const userRecords = await this.statsService.getUserRecords(targetUser.id);
 		const userStats = await this.statsService.getUserStats(targetUser.id, 'all', 'all');
 		const userRecentMatches = 
 			await this.matchesRepository.getMatchesByUser(targetUser.id, 'all', 'all', { page: 1, limit: 10 });
 
-		return { ...userWithoutPassword, userRecords, userStats, userRecentMatches };
+		return {
+			user: userWithoutPassword,
+			currentRelationship,
+			userRecords,
+			userStats,
+			userRecentMatches
+		};
 	}
 
 	async getUserMatches(

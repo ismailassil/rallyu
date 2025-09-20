@@ -30,6 +30,23 @@ class RelationsService {
 	async getOutgoingBlocks(userID: number) {
 		return await this.relationsRepository.findOutgoingBlocks(userID);
 	}
+
+	async getRelationBetweenTwoUsers(userID: number, targetUserID: number) {
+		if (userID === targetUserID)
+			return null;
+
+		const currentRelationship = 
+			await this.relationsRepository.findTwoWaysByUsers(userID, targetUserID);
+		
+		switch (currentRelationship.relation_status) {
+			case 'ACCEPTED':
+				return 'FRIENDS';
+			case 'PENDING':
+				return (currentRelationship.requester_user_id === userID) ? 'OUTGOING' : 'INCOMING';
+			default:
+				return 'NONE';
+		}
+	}
 	
 	/*----------------------------------------------- REQUESTS -----------------------------------------------*/
 
