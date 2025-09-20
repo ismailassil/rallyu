@@ -26,7 +26,7 @@ class StatsRepository {
 					total_xp,
 					current_streak,
 					longest_streak
-				FROM user_stats
+				FROM users_stats
 				WHERE user_id = ?
 			`, [user_id]);
 
