@@ -96,6 +96,24 @@ class UserService {
 		
 		return userAnalytics;
 	}
+	async getUserAnalyticsByDay(
+		viewerID: number, 
+		targetUsername: string, 
+		daysCount: number = 7,
+		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all' = 'all'
+	) {
+		const targetUser = await this.getUserByUsername(targetUsername);
+		if (!targetUser)
+			throw new UserNotFoundError();
+
+		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
+		if (!isAllowed)
+			throw new UserNotFoundError();
+
+		const userAnalytics = await this.statsService.getUserAnalyticsByDay(targetUser.id, daysCount, gameTypeFilter);
+		
+		return userAnalytics;
+	}
 
 	/*----------------------------------------------- CREATE -----------------------------------------------*/
 

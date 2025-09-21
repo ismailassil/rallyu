@@ -69,6 +69,11 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 		preHandler: fastify.authenticate,
 		handler: opts.userController.fetchUserAnalytics.bind(opts.userController)
 	});
+	fastify.get('/:username/analytics-by-day', {
+		schema: userProfileSchema,
+		preHandler: fastify.authenticate,
+		handler: opts.userController.fetchUserAnalyticsByDay.bind(opts.userController)
+	});
 
 
 	fastify.post('/:username/avatar', {

@@ -90,6 +90,22 @@ class UserController {
 			reply.code(status).send(body);
 		}
 	}
+	async fetchUserAnalyticsByDay(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+			const { username } = request.params as IProfileRequest;
+
+			const userAnalyticsByDay = await this.userService.getUserAnalyticsByDay(user_id!, username);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userAnalyticsByDay);
+
+			reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			reply.code(status).send(body);
+		}
+	}
 
 	async fetchUserMatches(request: FastifyRequest, reply: FastifyReply) {
 		try {

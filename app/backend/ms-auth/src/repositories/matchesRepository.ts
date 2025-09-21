@@ -167,20 +167,22 @@ async function test() {
 	await db.connect('../database/database.db');
 
 	const matchesRepo = new MatchesRepository();
-	const { sql, params } = matchesRepo.buildUserMatchesCTE(1337, '0d', 'XO', { page: 2, limit: 10 });
+	// const { sql, params } = matchesRepo.buildUserMatchesCTE(1337, 'all', 'XO', { page: 1, limit: 7 });
 
-	const interpolated = interpolateSQL(sql, params);
+	// const interpolated = interpolateSQL(sql, params);
 
-	console.log("SQL (with params colored):\n", interpolated);
-	console.log("\nRaw params array:", params);
+	// console.log("SQL (with params colored):\n", interpolated);
+	// console.log("\nRaw params array:", params);
 
-	const matches = await matchesRepo.getMatchesByUser(8, 'all', 'all');
+	// const matches = await matchesRepo.getMatchesByUser(1337, '7d', 'all');
 	// const stats = await matchesRepo.getUserStats(8, 'all', 'all');
 	// const detailedStats = await matchesRepo.getUserDetailedStats(8, 'all', 'all');
+	// const trendsGroupedByDay = await matchesRepo.getUserDetailedAnalyticsGroupedByDay(8, 'PING PONG', 7);
 
-	console.log('Matches:', matches);
+	// console.log('Matches:', matches);
 	// console.log('Stats:', stats);
 	// console.log('DetailesStats:', detailedStats);
+	// console.log('TrendsGroupedByDay:', trendsGroupedByDay);
 }
 
 // test();

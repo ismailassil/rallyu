@@ -117,6 +117,10 @@ export class APIClient {
 		const { data: res } = await this.client.get(`/users/${username}/analytics`);
 		return res.data;
 	}
+	async fetchUserAnalyticsByDay(username: string) {
+		const { data: res } = await this.client.get(`/users/${username}/analytics-by-day`);
+		return res.data;
+	}
 
 	// async getUserAvatar(url: string) {
 	// 	const { data } = await this.client.get(`/users${url}`, {

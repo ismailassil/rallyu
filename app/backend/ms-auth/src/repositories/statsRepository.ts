@@ -71,6 +71,69 @@ class StatsRepository {
 		}
 	}
 
+	async getUserDetailedAnalyticsGroupedByDay(
+		user_id: number,
+		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all',
+		lastAvailableDaysCount: number
+	) {
+		try {
+			const CTE = this.buildUserMatchesCTE(user_id, 'all', gameTypeFilter);
+
+			const detailedStatsGroupedByDay = await db.all(`
+				${CTE.sql}
+				SELECT 
+					date(finished_at) as day,
+
+					COUNT(*) AS matches,
+
+					COALESCE(SUM(CASE WHEN outcome = 'W' THEN 1 ELSE 0 END), 0) AS wins,
+					COALESCE(SUM(CASE WHEN outcome = 'L' THEN 1 ELSE 0 END), 0) AS losses,
+					COALESCE(SUM(CASE WHEN outcome = 'D' THEN 1 ELSE 0 END), 0) AS draws,
+
+					CASE
+						WHEN COUNT(*) = 0 THEN 0
+						ELSE ROUND(100.00 * COALESCE(SUM(CASE WHEN outcome = 'W' THEN 1 ELSE 0 END), 0) / COUNT(*), 2)
+					END AS win_rate,
+
+					COALESCE(SUM(user_score), 0) AS total_user_score,
+					COALESCE(MAX(user_score), 0) AS max_user_score,
+					COALESCE(MIN(user_score), 0) AS min_user_score,
+					COALESCE(AVG(user_score), 0) AS avg_user_score,
+
+					COALESCE(AVG(CASE WHEN outcome = 'W' THEN user_score ELSE NULL END), 0) AS avg_user_win_score,
+					COALESCE(AVG(CASE WHEN outcome = 'L' THEN user_score ELSE NULL END), 0) AS avg_user_loss_score,
+					COALESCE(AVG(CASE WHEN outcome = 'D' THEN user_score ELSE NULL END), 0) AS avg_user_draw_score,
+					
+					COALESCE(SUM(opp_score), 0) AS total_opp_score,
+					COALESCE(MAX(opp_score), 0) AS max_opp_score,
+					COALESCE(MIN(opp_score), 0) AS min_opp_score,
+					COALESCE(AVG(opp_score), 0) AS avg_opp_score,
+					
+					COALESCE(AVG(CASE WHEN outcome = 'W' THEN opp_score ELSE NULL END), 0) AS avg_opp_win_score,
+					COALESCE(AVG(CASE WHEN outcome = 'L' THEN opp_score ELSE NULL END), 0) AS avg_opp_loss_score,
+					COALESCE(AVG(CASE WHEN outcome = 'D' THEN opp_score ELSE NULL END), 0) AS avg_opp_draw_score,
+
+					COALESCE(SUM(duration), 0) AS total_duration,
+					COALESCE(MAX(duration), 0) AS max_duration,
+					COALESCE(MIN(duration), 0) AS min_duration,
+					COALESCE(AVG(duration), 0) AS avg_duration,
+
+					COALESCE(AVG(CASE WHEN outcome = 'W' THEN duration ELSE NULL END), 0) AS avg_user_win_duration,
+					COALESCE(AVG(CASE WHEN outcome = 'L' THEN duration ELSE NULL END), 0) AS avg_user_loss_duration,
+					COALESCE(AVG(CASE WHEN outcome = 'D' THEN duration ELSE NULL END), 0) AS avg_user_draw_duration
+				FROM user_matches
+				GROUP BY day
+				ORDER BY day DESC
+				LIMIT ${lastAvailableDaysCount}
+			`, CTE.params);
+
+			return detailedStatsGroupedByDay;
+		} catch (err: any) {
+			console.error('SQLite Error: ', err);
+			throw new InternalServerError();
+		}
+	}
+
 	async getUserDetailedAnalytics(
 		user_id: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
