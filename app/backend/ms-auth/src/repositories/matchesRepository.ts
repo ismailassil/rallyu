@@ -44,24 +44,47 @@ class MatchesRepository {
 
 	async getMatchesByUser(
 		user_id: number,
-		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all',
+		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
+		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all' = 'all',
 		paginationFilter?: { page: number, limit: number }
 	) {
 		try {
+			const countCTE = this.buildUserMatchesCTE(user_id, timeFilter, gameTypeFilter);
+			const countResult = await db.get(`
+				${countCTE.sql}
+				SELECT COUNT(*) as total_count FROM user_matches
+			`, countCTE.params);
+
 			const CTE = this.buildUserMatchesCTE(user_id, timeFilter, gameTypeFilter, paginationFilter);
 
 			console.info('Running the following SQL: ', `
 				${CTE.sql}
 				SELECT * FROM user_matches
-			`);
+			`, 'with params: ', CTE.params);
 
-			const results = await db.all(`
+			const matchesResults = await db.all(`
 				${CTE.sql}
 				SELECT * FROM user_matches
 			`, CTE.params);
 
-			return results;
+			// pagination meta data
+			let pagination = null;
+			if (paginationFilter) {
+				const { page, limit } = paginationFilter;
+				const totalPages = Math.ceil(countResult.total_count / limit);
+
+				pagination = {
+					current_page: page,
+					per_page: limit,
+					total: countResult.total_count,
+					total_pages: totalPages,
+					has_next: page < totalPages,
+					has_prev: page > 1,
+					next_page: page < totalPages ? page + 1 : null,
+					prev_page: page > 1 ? page - 1 : null
+				}
+			}
+			return pagination ? { matches: matchesResults, pagination } : matchesResults;
 		} catch (err: any) {
 			console.error('SQLite Error: ', err);
 			throw new InternalServerError();

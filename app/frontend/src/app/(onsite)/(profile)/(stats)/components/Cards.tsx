@@ -1,3 +1,5 @@
+import CountUp from "react-countup";
+
 type StatItem = {
 	label: string;
 	value: string | number;
@@ -9,7 +11,7 @@ type StatCardProps = {
 	items: StatItem[];
 };
 
-export function StatCard({ title, value, subtitle, subtitleColor, icon } : { title: string, value: string, subtitle: string, icon: React.ReactNode, subtitleColor: string }) {
+export function StatCard({ title, value, suffix, decimals, subtitle, subtitleColor, icon } : { title: string, value: number | string, suffix?: string, decimals?: number, subtitle: string, icon: React.ReactNode, subtitleColor: string }) {
 	return (
 		<div className="bg-white/4 border border-white/10 w-full rounded-2xl backdrop-blur-2xl px-4 py-3 flex flex-col gap-7 flex-1">
 			<div className="flex items-center justify-between">
@@ -17,7 +19,16 @@ export function StatCard({ title, value, subtitle, subtitleColor, icon } : { tit
 				{icon}
 			</div>
 			<div className="flex items-end justify-between">
-				<p className="font-extrabold text-3xl">{value}</p>
+				{
+					typeof value === 'number' ? <CountUp 
+						end={value} 
+						suffix={suffix || ''}
+						duration={4} 
+						decimals={decimals || 0} 
+						useEasing={true} 
+						className="font-extrabold text-3xl"
+					/> : <p className="font-extrabold text-3xl">{value}</p>
+				}
 				<p className={`text-sm ${subtitleColor}`}>{subtitle}</p>
 			</div>
 		</div>

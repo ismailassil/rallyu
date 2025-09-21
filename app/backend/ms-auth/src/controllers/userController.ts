@@ -110,10 +110,24 @@ class UserController {
 	async fetchUserMatches(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
-			const { page } = request.query as { page: number }; // TODO: ADD PAGINATION
+
+			const { page, limit, gameTypeFilter, timeFilter } = request.query as Record<string, any>;
+
+			// PAGINATION FILTER
+			const paginationFilterValidated = (page && limit) ? { page: Number(page), limit: Number(limit) } : undefined;
+
+			// TIME FILTER
+			const validGameTypes = ['PING PONG', 'XO', 'TICTACTOE', 'all'];
+			const gameFilterValidated = validGameTypes.includes(gameTypeFilter) ? gameTypeFilter : undefined;
+
+			// GAMETYPE FILTER
+			const validTimeFilters = ['0d','1d','7d','30d','90d','1y','all'];
+        	const timeFilterValidated = validTimeFilters.includes(timeFilter) ? timeFilter : undefined;
+
+			console.log('REQUEST QUERY: ', request.query);
 			const { username } = request.params as IProfileRequest;
 
-			const userMatches = await this.userService.getUserMatches(user_id!, username);
+			const userMatches = await this.userService.getUserMatches(user_id!, username, timeFilterValidated, gameFilterValidated, paginationFilterValidated);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userMatches);
 

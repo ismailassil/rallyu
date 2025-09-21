@@ -60,7 +60,7 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 	});
 	
 	fastify.get('/:username/matches', {
-		schema: userMatchesSchema,
+		// schema: userMatchesSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.fetchUserMatches.bind(opts.userController)
 	});

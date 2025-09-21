@@ -145,7 +145,9 @@ export default function UserStatsPage() {
 						/>
 						<StatCard
 							title="Win Rate"
-							value={`${totals.win_rate.toFixed(2)}%`}
+							value={totals.win_rate}
+							suffix='%'
+							decimals={2}
 							subtitle=""
 							subtitleColor="text-green-500"
 							icon={<TrendingUp size={20} />}
@@ -159,7 +161,9 @@ export default function UserStatsPage() {
 						/>
 						<StatCard
 							title="Time Played"
-							value={`${(durations.total_duration / 3600).toFixed(1)}h`}
+							value={durations.total_duration / 3600}
+							suffix='h'
+							decimals={2}
 							subtitle={`${Math.round(durations.total_duration / 60)} minutes total`}
 							subtitleColor="text-yellow-500"
 							icon={<Clock size={20} />}

@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance } from 'axios';
 
+interface FetchMatchesOptions {
+	page?: number;
+	limit?: number;
+	gameType?: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all';
+	time?: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all';
+}
+
 export type APIError = {
 	code: string;
 	message: string;
@@ -108,10 +115,17 @@ export class APIClient {
 		return res.data;
 	}
 
-	async fetchUserMatchesPage(username: string, page?: number) {
-		const { data: res } = await this.client.get(`/users/${username}/matches${page ? `?page=${page}` : ``}`);
+	async fetchUserMatchesPage(username: string, options: FetchMatchesOptions = {}) {
+		const params = new URLSearchParams();
+	  
+		if (options.page) params.append("page", options.page.toString());
+		if (options.limit) params.append("limit", options.limit.toString());
+		if (options.gameType) params.append("gameTypeFilter", options.gameType);
+		if (options.time) params.append("timeFilter", options.time);
+	  
+		const { data: res } = await this.client.get(`/users/${username}/matches?${params.toString()}`);
 		return res.data;
-	}
+	  }
 
 	async fetchUserAnalytics(username: string) {
 		const { data: res } = await this.client.get(`/users/${username}/analytics`);
