@@ -109,14 +109,23 @@ export default function UserStatsPage() {
 	const oppAvgScoreTrend = userAnalyticsByDay!.map(d => ({ date: d.day, avgScore: d.avg_opp_score }));
 	const oppScoreTrend = userAnalyticsByDay!.map(d => ({ date: d.day, score: d.total_opp_score }));
 	const gamesPerDay = userAnalyticsByDay!.map(d => ({ date: d.day, games: d.matches }));
-	const timeSpent = userAnalyticsByDay!.map(d => ({ date: d.day, timeSpent: d.total_duration / 3600 }));
+	// const timeSpent = userAnalyticsByDay!.map(d => {
+	// 	const hours = Math.floor(d.total_duration / 3600);
+	// 	const minutes = Math.floor((d.total_duration % 3600) / 60);
+
+	// 	let durationString = '';
+	// 	if (hours > 0) durationString += `${hours}h`;
+	// 	durationString += `${minutes}m`;
+	// 	return { date: d.day, timeSpent: d.total_duration, unit: durationString };
+	// });
+	const timeSpent = userAnalyticsByDay!.map(d => ({ date: d.day, timeSpent: (d.total_duration / 3600).toFixed(1) }));
 
 	return (
 		<main className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6">
 			<div className="bg-white/4 border border-white/10  w-full rounded-2xl backdrop-blur-2xl pb-12">
 				<header className="relative shrink-0 overflow-hidden">
 					<h1
-					className={`${funnelDisplay.className} font-bold py-10 px-13 select-none text-4xl capitalize relative left-0 hover:left-4 transition-all duration-500`}
+						className={`${funnelDisplay.className} font-bold py-10 px-13 select-none text-4xl capitalize relative left-0 hover:left-4 transition-all duration-500`}
 					>
 						Your Statistics
 					</h1>
@@ -178,32 +187,6 @@ export default function UserStatsPage() {
 
 					{/* LINE3 */}
 					<section className='grid gap-4 grid-cols-2'>
-						{/* <StatDetailedCard
-							title="Today Performance --"
-							items={[
-								{ label: "Matches", value: 12 },
-								{ label: "Wins", value: 56 },
-								{ label: "Losses", value: 22 },
-								{ label: "Draws", value: 12 },
-							]}
-						/> */}
-						{/* <div className='flex flex-col gap-4'>
-							<StatCard
-								title="Clutch Wins --"
-								value="23"
-								subtitle="14.7% of wins"
-								subtitleColor="text-green-500"
-								icon={<Trophy size={20} />}
-							/>
-							<StatCard
-								title="Shutouts --"
-								value="7"
-								subtitle="4.5% of wins"
-								subtitleColor="text-blue-500"
-								icon={<Clock size={20} />}
-							/>
-							
-						</div> */}
 						<StatDetailedCard
 							title="Score Records"
 							items={[
@@ -212,22 +195,6 @@ export default function UserStatsPage() {
 								{ label: 'Average Score', value: scores.avg_user_score.toFixed(2) }
 							]}
 						/>
-						{/* <div className='flex flex-col gap-4'>
-							<StatCard
-								title="Blowout Losses --"
-								value="18"
-								subtitle="24.7% of losses"
-								subtitleColor="text-red-500"
-								icon={<Target size={20} />}
-							/>
-							<StatCard
-								title="Blowout Wins --"
-								value="34"
-								subtitle="21.7% of wins"
-								subtitleColor="text-green-500"
-								icon={<TrendingUp size={20} />}
-							/>
-						</div> */}
 						<StatDetailedCard
 							title="Average Points by Outcome"
 							items={[
@@ -236,14 +203,6 @@ export default function UserStatsPage() {
 								{ label: 'Per Draw', value: scores.avg_user_draw_score.toFixed(2) }
 							]}
 						/>
-						{/* <StatDetailedCard
-							title="Record Streaks --"
-							items={[
-								{ label: "Longest Win", value: 12 },
-								{ label: "Longest Loss", value: 56 },
-								{ label: "Longest Draw", value: 22 },
-							]}
-						/> */}
 					</section>
 
 					{/* LINE4 */}
@@ -353,16 +312,7 @@ export default function UserStatsPage() {
 					</section>
 
 					{/* LINE3 */}
-					<section className='grid gap-4 grid-cols-4'>
-						<StatDetailedCard
-							title="Today Performance --"
-							items={[
-								{ label: "Matches", value: 12 },
-								{ label: "Wins", value: 56 },
-								{ label: "Losses", value: 22 },
-								{ label: "Draws", value: 12 },
-							]}
-						/>
+					<section className='grid gap-4 grid-cols-2'>
 						<StatDetailedCard
 							title="Score Records"
 							items={[
@@ -377,14 +327,6 @@ export default function UserStatsPage() {
 								{ label: 'Per Win', value: scores.avg_opp_win_score.toFixed(2) },
 								{ label: 'Per Loss', value: scores.avg_opp_loss_score.toFixed(2) },
 								{ label: 'Per Draw', value: scores.avg_opp_draw_score.toFixed(2) }
-							]}
-						/>
-						<StatDetailedCard
-							title="Record Streaks --"
-							items={[
-								{ label: "Longest Win", value: 12 },
-								{ label: "Longest Loss", value: 56 },
-								{ label: "Longest Draw", value: 22 },
 							]}
 						/>
 					</section>

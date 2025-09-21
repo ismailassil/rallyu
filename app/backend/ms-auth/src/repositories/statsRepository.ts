@@ -98,29 +98,29 @@ class StatsRepository {
 					COALESCE(SUM(user_score), 0) AS total_user_score,
 					COALESCE(MAX(user_score), 0) AS max_user_score,
 					COALESCE(MIN(user_score), 0) AS min_user_score,
-					COALESCE(AVG(user_score), 0) AS avg_user_score,
+					ROUND(COALESCE(AVG(user_score), 0), 2) AS avg_user_score,
 
-					COALESCE(AVG(CASE WHEN outcome = 'W' THEN user_score ELSE NULL END), 0) AS avg_user_win_score,
-					COALESCE(AVG(CASE WHEN outcome = 'L' THEN user_score ELSE NULL END), 0) AS avg_user_loss_score,
-					COALESCE(AVG(CASE WHEN outcome = 'D' THEN user_score ELSE NULL END), 0) AS avg_user_draw_score,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN user_score ELSE NULL END), 0), 2) AS avg_user_win_score,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN user_score ELSE NULL END), 0), 2) AS avg_user_loss_score,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN user_score ELSE NULL END), 0), 2) AS avg_user_draw_score,
 					
 					COALESCE(SUM(opp_score), 0) AS total_opp_score,
 					COALESCE(MAX(opp_score), 0) AS max_opp_score,
 					COALESCE(MIN(opp_score), 0) AS min_opp_score,
-					COALESCE(AVG(opp_score), 0) AS avg_opp_score,
+					ROUND(COALESCE(AVG(opp_score), 0), 2) AS avg_opp_score,
 					
-					COALESCE(AVG(CASE WHEN outcome = 'W' THEN opp_score ELSE NULL END), 0) AS avg_opp_win_score,
-					COALESCE(AVG(CASE WHEN outcome = 'L' THEN opp_score ELSE NULL END), 0) AS avg_opp_loss_score,
-					COALESCE(AVG(CASE WHEN outcome = 'D' THEN opp_score ELSE NULL END), 0) AS avg_opp_draw_score,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_win_score,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_loss_score,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_draw_score,
 
 					COALESCE(SUM(duration), 0) AS total_duration,
 					COALESCE(MAX(duration), 0) AS max_duration,
 					COALESCE(MIN(duration), 0) AS min_duration,
-					COALESCE(AVG(duration), 0) AS avg_duration,
+					ROUND(COALESCE(AVG(duration), 0), 2) AS avg_duration,
 
-					COALESCE(AVG(CASE WHEN outcome = 'W' THEN duration ELSE NULL END), 0) AS avg_user_win_duration,
-					COALESCE(AVG(CASE WHEN outcome = 'L' THEN duration ELSE NULL END), 0) AS avg_user_loss_duration,
-					COALESCE(AVG(CASE WHEN outcome = 'D' THEN duration ELSE NULL END), 0) AS avg_user_draw_duration
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN duration ELSE NULL END), 0), 2) AS avg_user_win_duration,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN duration ELSE NULL END), 0), 2) AS avg_user_loss_duration,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN duration ELSE NULL END), 0), 2) AS avg_user_draw_duration
 				FROM user_matches
 				GROUP BY day
 				ORDER BY day DESC
@@ -160,29 +160,29 @@ class StatsRepository {
 					COALESCE(SUM(user_score), 0) AS total_user_score,
 					COALESCE(MAX(user_score), 0) AS max_user_score,
 					COALESCE(MIN(user_score), 0) AS min_user_score,
-					COALESCE(AVG(user_score), 0) AS avg_user_score,
+					ROUND(COALESCE(AVG(user_score), 0), 2) AS avg_user_score,
 
-					COALESCE(AVG(CASE WHEN outcome = 'W' THEN user_score ELSE NULL END), 0) AS avg_user_win_score,
-					COALESCE(AVG(CASE WHEN outcome = 'L' THEN user_score ELSE NULL END), 0) AS avg_user_loss_score,
-					COALESCE(AVG(CASE WHEN outcome = 'D' THEN user_score ELSE NULL END), 0) AS avg_user_draw_score,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN user_score ELSE NULL END), 0), 2) AS avg_user_win_score,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN user_score ELSE NULL END), 0), 2) AS avg_user_loss_score,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN user_score ELSE NULL END), 0), 2) AS avg_user_draw_score,
 					
 					COALESCE(SUM(opp_score), 0) AS total_opp_score,
 					COALESCE(MAX(opp_score), 0) AS max_opp_score,
 					COALESCE(MIN(opp_score), 0) AS min_opp_score,
-					COALESCE(AVG(opp_score), 0) AS avg_opp_score,
+					ROUND(COALESCE(AVG(opp_score), 0), 2) AS avg_opp_score,
 					
-					COALESCE(AVG(CASE WHEN outcome = 'W' THEN opp_score ELSE NULL END), 0) AS avg_opp_win_score,
-					COALESCE(AVG(CASE WHEN outcome = 'L' THEN opp_score ELSE NULL END), 0) AS avg_opp_loss_score,
-					COALESCE(AVG(CASE WHEN outcome = 'D' THEN opp_score ELSE NULL END), 0) AS avg_opp_draw_score,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_win_score,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_loss_score,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_draw_score,
 
 					COALESCE(SUM(duration), 0) AS total_duration,
 					COALESCE(MAX(duration), 0) AS max_duration,
 					COALESCE(MIN(duration), 0) AS min_duration,
-					COALESCE(AVG(duration), 0) AS avg_duration,
+					ROUND(COALESCE(AVG(duration), 0), 2) AS avg_duration,
 
-					COALESCE(AVG(CASE WHEN outcome = 'W' THEN duration ELSE NULL END), 0) AS avg_user_win_duration,
-					COALESCE(AVG(CASE WHEN outcome = 'L' THEN duration ELSE NULL END), 0) AS avg_user_loss_duration,
-					COALESCE(AVG(CASE WHEN outcome = 'D' THEN duration ELSE NULL END), 0) AS avg_user_draw_duration
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN duration ELSE NULL END), 0), 2) AS avg_user_win_duration,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN duration ELSE NULL END), 0), 2) AS avg_user_loss_duration,
+					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN duration ELSE NULL END), 0), 2) AS avg_user_draw_duration
 				FROM user_matches
 			`, CTE.params);
 
