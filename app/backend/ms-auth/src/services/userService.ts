@@ -47,13 +47,21 @@ class UserService {
 		const userStats = await this.statsService.getUserStats(targetUser.id, 'all', 'all');
 		const { matches: userRecentMatches } = 
 			await this.matchesRepository.getMatchesByUser(targetUser.id, 'all', 'all', { page: 1, limit: 10 });
+		const userRecentDetailedAnalytics: any[] = await this.statsService.getUserAnalyticsByDay(targetUser.id, 7, 'all');
+		const userRecentTimeSpent = userRecentDetailedAnalytics.map((item) => {
+			return {
+				day: item.day,
+				total_duration: item.total_duration
+			}
+		});
 
 		return {
 			user: userWithoutPassword,
 			currentRelationship,
 			userRecords,
 			userStats,
-			userRecentMatches
+			userRecentMatches,
+			userRecentTimeSpent
 		};
 	}
 

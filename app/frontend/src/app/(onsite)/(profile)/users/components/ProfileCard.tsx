@@ -71,6 +71,7 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatarSr
 							// quality={100}
 							fill
 							alt="Profile Image"
+							draggable={false}
 							// unoptimized
 						/>
 					</div>
@@ -79,12 +80,16 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatarSr
 					<div>
 						<div className="flex h-full flex-col gap-1">
 							<div className="flex justify-between">
-								<p className="font-semibold">Level {level}</p>
-								<p className="text-gray-300">60%</p>
+								<p className="font-semibold">Level {Math.floor(level)}</p>
+								<p className="text-gray-300">{Math.floor((level % 1) * 100)}%</p>
 							</div>
 							<div className="h-full w-full">
 								<div className="bg-card h-2 w-full rounded-full">
-									<div className="bg-accent h-2 w-[60%] rounded-full"></div>
+									<div 
+										className={`bg-accent h-2 rounded-full`}
+										style={{ width: `${Math.floor((level % 1) * 100)}%` }}
+									>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -95,7 +100,7 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatarSr
 				className={`*:hover:scale-102 *:duration-200 *:transform flex h-full w-full flex-row gap-3 lg:w-[25%] lg:flex-col ${funnelDisplay.className} flex-1 lg:max-w-72`}
 			>
 				<div className='flex-1 bg-white/4 border border-white/10 rounded-2xl pl-4 pr-4 pt-2 pb-2
-								flex flex-col items-center justify-between backdrop-blur-xl
+								flex flex-col items-center justify-between backdrop-blur-xl select-none
 								hover:bg-white/6
 								lg:flex-row'>
 					<span className='text-lg lg:text-xl font-semibold text-white/60 text-center lg:text-start'>
@@ -107,7 +112,7 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatarSr
 					<span className='text-xl lg:text-3xl font-bold text-white/90 text-center lg:text-start'>#{globalRank}</span>
 				</div>
 				<div className='flex-1 bg-white/4 border border-white/10 rounded-2xl pl-4 pr-4 pt-2 pb-2
-								flex flex-col items-center justify-between backdrop-blur-xl
+								flex flex-col items-center justify-between backdrop-blur-xl select-none
 								hover:bg-white/6
 								lg:flex-row'>
 					<span className='text-lg lg:text-xl font-semibold text-white/60 text-center lg:text-start'>
@@ -119,7 +124,7 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatarSr
 					<span className='text-xl lg:text-3xl font-bold text-white/90 text-center lg:text-start'>{winRate.toFixed(2)}%</span>
 				</div>
 				<div className='flex-1 bg-white/4 border border-white/10 rounded-2xl pl-4 pr-4 pt-2 pb-2
-								flex flex-col items-center justify-between backdrop-blur-xl
+								flex flex-col items-center justify-between backdrop-blur-xl select-none
 								hover:bg-white/6
 								lg:flex-row'>
 					<span className='text-lg lg:text-xl font-semibold text-white/60 text-center lg:text-start'>

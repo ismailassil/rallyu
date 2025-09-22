@@ -1,6 +1,7 @@
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import CountUp from "react-countup";
 import Chart from "./Chart";
+import Image from "next/image";
 
 type PerformanceCardProps = {
 	totalXP: number,
@@ -9,10 +10,12 @@ type PerformanceCardProps = {
 	wins: number,
 	losses: number,
 	draws: number,
-	timeSpent: {date: string, timeSpent: number}[]
+	timeSpent: { day: string, total_duration: number }[]
 }
 
 export default function PerformanceCard({ totalXP, totalMatches, longestStreak, wins, losses, draws, timeSpent } : PerformanceCardProps) {
+	const timeSpentToShow = timeSpent.map((item) => ({ date: item.day, timeSpent: item.total_duration / 60 }));
+
 	return (
 		<div className="flex-3 min-h-130 max-h-220 flex h-full w-full flex-col gap-4">
 			<section className={`bg-card border-br-card h-full w-full flex-1 rounded-2xl border-1 select-none`}>
@@ -117,14 +120,28 @@ export default function PerformanceCard({ totalXP, totalMatches, longestStreak, 
 							</div>
 
 							<div
-								className="jusitfy-between bg-white/4 border border-white/10 min-h-70 hover:scale-101 flex max-h-80
+								className="jusitfy-between bg-white/4 border border-white/10 min-h-70 hover:scale-101 flex h-full
 										w-full flex-1 flex-col items-center backdrop-blur-xl
 										gap-3 overflow-hidden rounded-2xl pt-5 transition-all duration-200 hover:bg-white/6"
 							>
 								<p className="text-xl text-white/60 font-bold">Time Spent on Platform</p>
 								<div className="relative h-full w-full">
-									{/* <Chart data={data} dataKey='timeSpent' unit='Hours'/> */}
-									<Chart data={timeSpent} dataKey='timeSpent' unit='Hours'/>
+									{timeSpentToShow.length === 0 ? 
+										<div className="flex flex-col justify-center items-center w-full h-full gap-2">
+											<Image
+												src={'/meme/thinking.gif'}
+												width={360}
+												height={360}
+												alt="No data available"
+												className="rounded-2xl blur-[1.25px] hover:blur-none transition-all duration-500 hover:scale-102 cursor-grab"
+												draggable={false}
+											>
+											</Image>
+											<h1 className="text-white/60">No data available</h1>
+										</div>
+										:
+										<Chart data={timeSpentToShow} dataKey='timeSpent' unit='Minutes'/>
+									}
 								</div>
 							</div>
 						</div>

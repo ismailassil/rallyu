@@ -27,7 +27,7 @@ function Chart<T extends string>({ data, dataKey, unit }: ChartProps<T>) {
 	return (
 		<div className="absolute -bottom-[6px] -left-2 w-full">
 			<ResponsiveContainer width="104%" height={230}>
-				<AreaChart data={data}>
+				<AreaChart data={data} >
 					<defs>
 						<linearGradient id="colorGradient" x1="0" y1="0" x2="1" y2="0">
 							<stop offset="0%" stopColor="#ffe600" />

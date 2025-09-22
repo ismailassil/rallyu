@@ -9,10 +9,12 @@ type GameProps = {
     finished_at: string,
     user_id: number,
     user_username: string,
+	user_avatar_path: string,
     user_score: number,
     opp_score: number,
     opponent_id: number,
     opponent_username: string,
+	opponent_avatar_path: string,
     duration: number,
     outcome: string
 }
@@ -24,10 +26,12 @@ function Game({
 		finished_at, 
 		user_id, 
 		user_username, 
+		user_avatar_path,
 		user_score, 
 		opp_score, 
 		opponent_id, 
 		opponent_username, 
+		opponent_avatar_path,
 		duration, 
 		outcome 
 	} : GameProps) {
@@ -62,7 +66,7 @@ function Game({
 							// ${gameInfo.player_home.score === gameInfo.player_away.score ? "ring-3 ring-gray-600" : gameInfo.player_home.score > gameInfo.player_away.score ? "ring-3 ring-green-500" : "ring-2"}`
 							// ${matchResult === 0 ? "ring-3 ring-gray-600" : matchResult >= 1 ? "ring-3 ring-green-500" : "ring-2"}`}
 						// src={gameInfo.player_home.avatar}
-						src={'/profile/image.png'}
+						src={`http://localhost:4025/api/users${user_avatar_path}`}
 						width={100}
 						height={100}
 						alt="Profile Image"
@@ -85,7 +89,7 @@ function Game({
 						// ${gameInfo.player_home.score === gameInfo.player_away.score ? "ring-3 ring-gray-600" : gameInfo.player_home.score < gameInfo.player_away.score ? "ring-3 ring-green-500" : "ring-2"}`}
 							// ${matchResult === 0 ? "ring-3 ring-gray-600" : matchResult <= -1 ? "ring-3 ring-green-500" : "ring-2"}`}
 						// src={gameInfo.player_away.avatar}
-						src={'/profile/image.png'}
+						src={`http://localhost:4025/api/users${opponent_avatar_path}`}
 						width={100}
 						height={100}
 						alt="Profile Image"
@@ -97,6 +101,41 @@ function Game({
 }
 
 export default function GamesHistoryCard({ matches } : { matches: GameProps[] }) {
+	if (matches.length === 0) {
+		return (
+			<aside
+			className={`bg-card border-br-card min-h-130 max-h-220 h-full w-full min-w-[30%] flex-[2.5] rounded-2xl border-1 select-none`}
+		>
+			<div className="flex h-full flex-col">
+				<div className="group relative shrink-0 overflow-hidden">
+					<h1 className={`text-blue-500 ${funnelDisplay.className} font-bold py-10 px-13 select-none text-4xl capitalize relative left-0 hover:left-4 transition-all duration-500`}>
+							Games History
+					</h1>
+					<div
+						className="w-18 h-5 absolute
+								left-0 top-[calc(51%)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500
+								transition-all duration-200 group-hover:scale-105"
+					></div>
+				</div>
+				<div className="hide-scrollbar mb-4 max-h-[calc(100vh-19rem)] flex-1 overflow-y-auto flex justify-center items-center">
+					<div className="flex flex-col gap-y-2.5 pl-4 pr-4 justify-center items-center">
+						<Image
+							src={'/meme/sad.png'}
+							width={150}
+							height={150}
+							alt="No data available"
+							className="rounded-2xl  blur-[0.75px] hover:blur-none transition-all duration-500 hover:scale-102 cursor-grab"
+							draggable={false}
+							>
+						</Image>
+						<h1 className="text-white/60">No data available</h1>
+					</div>
+				</div>
+			</div>
+		</aside>
+		);
+	}
+
 	return (
 		<aside
 			className={`bg-card border-br-card min-h-130 max-h-220 h-full w-full min-w-[30%] flex-[2.5] rounded-2xl border-1 select-none`}
@@ -114,21 +153,6 @@ export default function GamesHistoryCard({ matches } : { matches: GameProps[] })
 				</div>
 				<div className="hide-scrollbar mb-4 max-h-[calc(100vh-19rem)] flex-1 overflow-y-auto">
 					<div className="flex flex-col gap-y-2.5 pl-4 pr-4">
-						{/* {Array.from({ length: 10 }).map((_, i) => (
-							<Game
-								key={i}
-								opponent="Nabil Azouz"
-								myName="Ismail Assil"
-								type={i % 2 ? "xo" : undefined}
-								score={{
-									me: i % 3 === 0 ? 5 : i % 3 === 1 ? 2 : 5,
-									opponent: i % 3 === 0 ? 2 : i % 3 === 1 ? 5 : 5,
-								}}
-								opponentImage="/profile/image_1.jpg"
-								myImage="/profile/image.png"
-								matchxp={i % 3 === 0 ? 0 : i % 2 ? -50 : 100}
-							/>
-						))} */}
 						{matches.map((match) => (
 							<Game
 								key={match.match_id}
@@ -138,10 +162,12 @@ export default function GamesHistoryCard({ matches } : { matches: GameProps[] })
 								finished_at={match.finished_at}
 								user_id={match.user_id}
 								user_username={match.user_username}
+								user_avatar_path={match.user_avatar_path}
 								user_score={match.user_score}
 								opp_score={match.opp_score}
 								opponent_id={match.opponent_id}
 								opponent_username={match.opponent_username}
+								opponent_avatar_path={match.opponent_avatar_path}
 								duration={match.duration}
 								outcome={match.outcome}
 							/>

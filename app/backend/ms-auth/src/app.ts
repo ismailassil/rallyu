@@ -82,10 +82,12 @@ async function buildApp(): Promise<FastifyInstance> {
 	
 
 	// REGISTER AUTH PLUGIN
-	// await fastify.register(natsPlugin, {
-	// 	NATS_URL: process.env["NATS_URL"] || "", 
-	// 	NATS_USER: process.env["NATS_USER"] || "",
-	// 	NATS_PASSWORD: process.env["NATS_PASSWORD"] || "" });
+	await fastify.register(natsPlugin, {
+		NATS_URL: process.env["NATS_URL"] || "", 
+		NATS_USER: process.env["NATS_USER"] || "",
+		NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
+		userService: userService
+	});
 	await fastify.register(authRouter, { prefix: '/auth', authController, twoFactorController });
 	await fastify.register(userRouter, { prefix: '/users', userController, relationsController });
 

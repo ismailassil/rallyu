@@ -9,18 +9,10 @@ import { alertError } from '@/app/(auth)/components/CustomToast';
 import { APIError } from '@/app/(api)/APIClient';
 import { UserProfile } from '../../types';
 import { AuthLoadingSpinner } from '@/app/(auth)/components/LoadingSpinners';
-
-const timeSpentMockData = [
-	{ date: "2023-01-01", timeSpent: 5 },
-	{ date: "2023-01-02", timeSpent: 19 },
-	{ date: "2023-01-03", timeSpent: 10 },
-	{ date: "2023-01-04", timeSpent: 14 },
-	{ date: "2023-01-05", timeSpent: 16 },
-	{ date: "2023-01-06", timeSpent: 6 },
-	{ date: "2023-01-07", timeSpent: 16 }
-];
+import { useRouter } from 'next/navigation';
 
 export default function UserProfilePage({ params } : { params: Promise<{ username: string }> }) {
+	const router = useRouter();
 	const { username } = use(params);
 	const { apiClient } = useAuth();
 	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -32,22 +24,30 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 				setIsLoading(true);
 				const data = await apiClient.fetchUser(username);
 				setUserProfile(data);
-				setIsLoading(false);
 			} catch (err) {
-
 				const apiErr = err as APIError;
+				if (apiErr.code.includes('USER_NOT_FOUND'))
+					router.replace('/404');
 				alertError(apiErr.message);
-
+				console.log(err);
 			} finally {
 				setIsLoading(false);
 			}
 		}
 
 		fetchUserProfile();
-	}, []);
+	}, [username]);
+
+	useEffect(() => {
+		if (!isLoading && !userProfile) {
+			router.replace('/404');
+		}
+	}, [isLoading, userProfile, router]);
 	
-	if (isLoading || !userProfile)
+	if (isLoading)
 		return <AuthLoadingSpinner />;
+	if (!userProfile)
+		return null;
 
 	return (
 		<motion.main
@@ -66,7 +66,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 						bio={userProfile.user.bio}
 						relationStatus={userProfile.currentRelationship}
 						level={userProfile.userRecords.level}
-						globalRank={userProfile.userRecords.rank || 1337}
+						globalRank={userProfile.userRecords.rank}
 						winRate={userProfile.userStats.win_rate}
 						currentStreak={userProfile.userRecords.current_streak}
 					/>
@@ -81,7 +81,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 							wins={userProfile.userStats.wins}
 							losses={userProfile.userStats.losses}
 							draws={userProfile.userStats.draws}
-							timeSpent={timeSpentMockData}
+							timeSpent={userProfile.userRecentTimeSpent}
 						/>
 						<GamesHistoryCard matches={userProfile.userRecentMatches} />
 					</div>

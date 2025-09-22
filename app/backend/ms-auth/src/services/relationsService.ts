@@ -37,6 +37,8 @@ class RelationsService {
 
 		const currentRelationship = 
 			await this.relationsRepository.findTwoWaysByUsers(userID, targetUserID);
+		if (!currentRelationship)
+			return 'NONE';
 		
 		switch (currentRelationship.relation_status) {
 			case 'ACCEPTED':
