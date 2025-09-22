@@ -47,7 +47,7 @@ class MatchesRepository {
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
 		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all' = 'all',
 		paginationFilter?: { page: number, limit: number }
-	) {
+	) : Promise<any> {
 		try {
 			const countCTE = this.buildUserMatchesCTE(user_id, timeFilter, gameTypeFilter);
 			const countResult = await db.get(`

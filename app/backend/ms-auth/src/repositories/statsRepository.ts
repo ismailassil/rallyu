@@ -16,17 +16,54 @@ class StatsRepository {
 		}
 	}
 
+	async getRankByXP(paginationFilter?: { page: number, limit: number }) {
+		try {
+			const paginationCondition = paginationFilter ? 'LIMIT ? OFFSET ?' : '';
+			const params = paginationFilter ? [paginationFilter.limit, (paginationFilter.page - 1) * paginationFilter.limit] : [];
+
+			const rankByXP = await db.all(`
+				SELECT 
+					ROW_NUMBER() OVER (ORDER BY s.total_xp DESC, u.id ASC) AS rank,
+					u.username,
+					u.avatar_path,
+					s.level,
+					s.total_xp,
+					u.id
+				FROM users_stats s
+				JOIN users u ON s.user_id = u.id
+				ORDER BY rank
+				${paginationCondition};
+			`, params);
+
+			return rankByXP;
+		} catch (err: any) {
+			console.error('SQLite Error: ', err);
+			throw new InternalServerError();
+		}
+	}
+
 	async getUserRecords(
 		user_id: number
 	) {
 		try {
 			const records = await db.get(`
-				SELECT
+				WITH ranked_users AS (
+					SELECT
+						ROW_NUMBER() OVER (ORDER BY total_xp DESC) as rank,
+						level,
+						total_xp,
+						current_streak,
+						longest_streak,
+						user_id
+					FROM users_stats
+				)
+				SELECT 
+					rank,
 					level,
 					total_xp,
 					current_streak,
 					longest_streak
-				FROM users_stats
+				FROM ranked_users
 				WHERE user_id = ?
 			`, [user_id]);
 

@@ -70,6 +70,12 @@ class StatsService {
 
 		return analytics;
 	}
+
+	async getRankByXP(paginationFilter?: { page: number, limit: number }) {
+		const rankByXP = await this.statsRepository.getRankByXP(paginationFilter);
+
+		return rankByXP;
+	}
 }
 
 export default StatsService;

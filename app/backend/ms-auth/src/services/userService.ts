@@ -45,7 +45,7 @@ class UserService {
 		const currentRelationship = await this.relationsService.getRelationBetweenTwoUsers(viewerID, targetUser.id);
 		const userRecords = await this.statsService.getUserRecords(targetUser.id);
 		const userStats = await this.statsService.getUserStats(targetUser.id, 'all', 'all');
-		const userRecentMatches = 
+		const { matches: userRecentMatches } = 
 			await this.matchesRepository.getMatchesByUser(targetUser.id, 'all', 'all', { page: 1, limit: 10 });
 
 		return {
@@ -113,6 +113,10 @@ class UserService {
 		const userAnalytics = await this.statsService.getUserAnalyticsByDay(targetUser.id, daysCount, gameTypeFilter);
 		
 		return userAnalytics;
+	}
+
+	async getRankLeaderboard(paginationFilter?: { page: number, limit: number }) {
+		return await this.statsService.getRankByXP(paginationFilter);
 	}
 
 	/*----------------------------------------------- CREATE -----------------------------------------------*/

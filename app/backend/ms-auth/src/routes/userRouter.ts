@@ -59,6 +59,11 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 		handler: opts.userController.deleteUser.bind(opts.userController)
 	});
 	
+	fastify.get('/leaderboard', {
+		// schema: userMatchesSchema,
+		preHandler: fastify.authenticate,
+		handler: opts.userController.fetchRankLeaderboard.bind(opts.userController)
+	});
 	fastify.get('/:username/matches', {
 		// schema: userMatchesSchema,
 		preHandler: fastify.authenticate,

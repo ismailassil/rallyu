@@ -139,6 +139,29 @@ class UserController {
 		}
 	}
 
+	async fetchRankLeaderboard(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+
+			const { page, limit } = request.query as Record<string, any>;
+
+			// PAGINATION FILTER
+			const paginationFilterValidated = (page && limit) ? { page: Number(page), limit: Number(limit) } : undefined;
+
+			const { username } = request.params as IProfileRequest;
+
+			const userMatches = await this.userService.getRankLeaderboard(paginationFilterValidated);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userMatches);
+
+			reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			reply.code(status).send(body);
+		}
+	}
+
 	async updateUser(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
