@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-// import Image from "next/image";
 import dmSans from "./fonts/dmSans";
 import AuthProvider from "./(onsite)/contexts/AuthContext";
 import Script from "next/script";
+import funnelDisplay from "./fonts/FunnelDisplay";
 
 export const metadata: Metadata = {
 	title: "Rallyu",
@@ -18,21 +18,8 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<Script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"/>
-			<body className={`${dmSans.className} relative antialiased`}>
+			<body className={`${dmSans.className} ${funnelDisplay.variable} relative antialiased`}>
 			<h1 className="fixed top-0">RootLayout</h1>
-				{/* <div className="-z-1 fixed inset-0">
-					<Image
-						src="/background/main/background.svg"
-						alt="background"
-						quality={100}
-						fill={true}
-						sizes="100vw"
-						style={{
-							objectFit: "cover",
-							backgroundRepeat: "no-repeat",
-						}}
-					/>
-				</div> */}
 				<AuthProvider>
 					{children}
 				</AuthProvider>

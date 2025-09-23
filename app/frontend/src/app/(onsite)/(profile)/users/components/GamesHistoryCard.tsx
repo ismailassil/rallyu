@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import MainCardWithHeader from "@/app/(onsite)/(refactoredUIComponents)/MainCardWithHeader";
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import Image from "next/image";
 
@@ -37,7 +38,7 @@ function Game({
 	} : GameProps) {
 
 	return (
-		<div className="bg-white/4 border border-white/10 hover:scale-101 duration-200 hover:bg-hbg hover:border-hbbg relative flex items-center justify-between overflow-hidden rounded-2xl px-5 py-6 transition-all">
+		<div className="single-game-history-card relative overflow-hidden">
 			<div
 				className={`w-19 h-8 absolute -top-1 left-1/2 flex -translate-x-1/2 items-end justify-center pb-1 ${
 					outcome === 'W' ? "bg-green-600" : outcome === 'L' ? "bg-red-600" : "bg-gray-600"
@@ -135,6 +136,32 @@ export default function GamesHistoryCard({ matches } : { matches: GameProps[] })
 		</aside>
 		);
 	}
+
+	return (
+		<MainCardWithHeader headerName='Games History' className='font-funnel-display flex-3'>
+			<div className="group flex flex-col gap-4 px-6">
+				{matches.map((match) => (
+					<Game
+						key={match.match_id}
+						match_id={match.match_id}
+						game_type={match.game_type}
+						started_at={match.started_at}
+						finished_at={match.finished_at}
+						user_id={match.user_id}
+						user_username={match.user_username}
+						user_avatar_path={match.user_avatar_path}
+						user_score={match.user_score}
+						opp_score={match.opp_score}
+						opponent_id={match.opponent_id}
+						opponent_username={match.opponent_username}
+						opponent_avatar_path={match.opponent_avatar_path}
+						duration={match.duration}
+						outcome={match.outcome}
+					/>
+				))}
+			</div>
+		</MainCardWithHeader>
+	);
 
 	return (
 		<aside

@@ -25,7 +25,7 @@ function Chart<T extends string>({ data, dataKey, unit }: ChartProps<T>) {
 	}
 
 	return (
-		<div className="absolute -bottom-[6px] -left-2 w-full">
+		<div className="relative -left-2 -bottom-2 w-full h-full">
 			<ResponsiveContainer width="104%" height={230}>
 				<AreaChart data={data} >
 					<defs>
