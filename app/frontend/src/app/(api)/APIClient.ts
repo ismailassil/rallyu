@@ -133,6 +133,10 @@ export class APIClient {
 		const { data: res } = await this.client.get(`/users/${username}/analytics-by-day`);
 		return res.data;
 	}
+	async fetchLeaderboard() {
+		const { data: res } = await this.client.get(`/users/leaderboard?page=1&limit=10`);
+		return res.data;
+	}
 
 	async searchUsersByUsername(username: string) {
 		const { data: res } = await this.client.get(`/users/search-by-username?username=${username}`);

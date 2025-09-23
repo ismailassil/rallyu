@@ -56,7 +56,7 @@ export default function LeaderboardItem({
 
 			{/* Middle Content */}
 			<div className="ml-5 flex-grow flex justify-between items-center">
-				<h2 className="text-wrap text-base capitalize lg:text-lg">
+				<h2 className="text-wrap text-base lg:text-lg">
 					{username}
 				</h2>
 				<p className="text-sm text-gray-400 bg-white/7 p-2 

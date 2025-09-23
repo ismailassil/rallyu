@@ -6,9 +6,36 @@ import { motion } from 'framer-motion';
 import ProfileSnapshot from '../components/Main/ProfileSnapshot';
 import DashboardGameCards from './components/DashboardGameCards';
 import { useAuth } from '../contexts/AuthContext';
+import ProfileSnapshotV2 from '../components/Main/ProfileSnapshotV2';
+import { useEffect, useState } from 'react';
 
 export default function Dashboard() {
-	const { loggedInUser } = useAuth();
+	const { loggedInUser, apiClient } = useAuth();
+	const [userAnalytics, setUserAnalytics] = useState(null);
+	const [userAnalyticsByDay, setUserAnalyticsByDay] = useState(null);
+
+	useEffect(() => {
+		async function fetchUserSnapshots() {
+			try {
+				// setIsLoading(true);
+				const analytics = await apiClient.fetchUserAnalytics(loggedInUser!.username);
+				const analyticsByDay = await apiClient.fetchUserAnalyticsByDay(loggedInUser!.username);
+				setUserAnalytics(analytics);
+				setUserAnalyticsByDay(analyticsByDay);
+				// setIsLoading(false);
+			} catch (err) {
+				console.log(err);
+
+				// const apiErr = err as APIError;
+				// alertError(apiErr.message);
+				
+			} finally {
+				// setIsLoading(false);
+			}
+		}
+
+		fetchUserSnapshots();
+	}, []);
 
 	return (
 		<motion.main
@@ -24,7 +51,7 @@ export default function Dashboard() {
 						<DashboardGameCards />
 						<div className="flex gap-4 overflow-hidden flex-col mb-6 md:mb-0 md:flex-row">
 							<LeaderboardPanel />
-							<ProfileSnapshot />
+							<ProfileSnapshotV2 />
 						</div>
 					</section>
 				</article>

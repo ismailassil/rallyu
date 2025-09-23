@@ -1,9 +1,30 @@
 import unicaOne from '@/app/fonts/unicaOne';
 import LeaderboardItem from './LeaderBoardItem';
 import useIsWidth from '../../../hooks/useIsWidth';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { APIError } from '@/app/(api)/APIClient';
 
 export default function LeaderboardPanel() {
+	const [leaderboard, setLeaderboard] = useState([]);
+	const { apiClient } = useAuth();
 	const isWidth = useIsWidth(1024);
+
+	useEffect(() => {
+		async function fetchLeaderboard() {
+			try {
+				const data = await apiClient.fetchLeaderboard();
+				setLeaderboard(data);
+			} catch (err) {
+				console.log(err);
+			}
+		}
+
+		fetchLeaderboard();
+	}, []);
+
+	if (leaderboard.length === 0)
+		return <h1>Loading...</h1>;
 
 	return (
 		<aside
@@ -26,14 +47,14 @@ export default function LeaderboardPanel() {
 				</div>
 				<div className={`custom-scroll flex-1 overflow-y-auto block`}>
 					<div className="flex flex-col gap-y-2 pb-4 pl-4 pr-4">
-						{extendedLeaderboard.map((player, i) => (
+						{leaderboard.map((item, i) => (
 							<LeaderboardItem
 								position={i}
 								key={i}
-								img={player.img}
-								username={player.username}
-								rank={player.rank}
-								score={player.score}
+								img={`http://localhost:4025/api/users${item.avatar_path}`}
+								username={item.username}
+								rank={item.rank}
+								score={item.total_xp}
 							/>
 						))}
 					</div>
@@ -43,34 +64,34 @@ export default function LeaderboardPanel() {
 	);
 }
 
-const leaderboardData = [
-	{
-		username: 'Rass L7ok',
-		rank: 1,
-		score: 9850,
-		img: '/profile/image_1.jpg',
-	},
-	{
-		username: 'Lmouch',
-		rank: 2,
-		score: 9720,
-		img: '/profile/image_2.jpg',
-	},
-	{
-		username: 'Moul Chi',
-		rank: 3,
-		score: 9450,
-		img: '/profile/image_1.jpg',
-	},
-];
+// const leaderboardData = [
+// 	{
+// 		username: 'Rass L7ok',
+// 		rank: 1,
+// 		score: 9850,
+// 		img: '/profile/image_1.jpg',
+// 	},
+// 	{
+// 		username: 'Lmouch',
+// 		rank: 2,
+// 		score: 9720,
+// 		img: '/profile/image_2.jpg',
+// 	},
+// 	{
+// 		username: 'Moul Chi',
+// 		rank: 3,
+// 		score: 9450,
+// 		img: '/profile/image_1.jpg',
+// 	},
+// ];
 
-// Generate additional sample data
-const extendedLeaderboard = [
-	...leaderboardData,
-	...Array.from({ length: 6 }).map((_, i) => ({
-		username: `Player ${i + 6}`,
-		rank: i + 4,
-		score: 8500 - (i * 100),
-		img: `/profile/image_${(i % 2) + 1}.jpg`,
-	})),
-];
+// // Generate additional sample data
+// const extendedLeaderboard = [
+// 	...leaderboardData,
+// 	...Array.from({ length: 6 }).map((_, i) => ({
+// 		username: `Player ${i + 6}`,
+// 		rank: i + 4,
+// 		score: 8500 - (i * 100),
+// 		img: `/profile/image_${(i % 2) + 1}.jpg`,
+// 	})),
+// ];
