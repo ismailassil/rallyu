@@ -18,7 +18,7 @@ const MIGRATIONS = [
 				username TEXT UNIQUE NOT NULL,
 				password TEXT,
 				bio TEXT DEFAULT 'DFK',
-				avatar_url TEXT DEFAULT '/avatars/default.png',
+				avatar_url TEXT DEFAULT '/users/avatars/default.png',
 
 				-- EXTRA
 				auth_provider TEXT DEFAULT 'local',

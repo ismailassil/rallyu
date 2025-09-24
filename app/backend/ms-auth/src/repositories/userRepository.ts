@@ -11,7 +11,7 @@ class UserRepository {
 		email: string,
 		username: string,
 		password?: string,
-		avatar_url: string = '/avatars/default.png',
+		avatar_url: string = '/users/avatars/default.png',
 		auth_provider: string = 'local',
 		role: string = 'user',
 		bio: string = 'DFK',
