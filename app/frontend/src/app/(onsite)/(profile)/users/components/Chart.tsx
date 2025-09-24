@@ -25,8 +25,8 @@ function Chart<T extends string>({ data, dataKey, unit }: ChartProps<T>) {
 	}
 
 	return (
-		<div className="relative -left-2 -bottom-2 w-full h-full">
-			<ResponsiveContainer width="104%" height={230}>
+		<div className="relative -bottom-2 w-full h-full flex flex-col justify-end items-center grow-1">
+			<ResponsiveContainer width='102%' height={275} className=''>
 				<AreaChart data={data} >
 					<defs>
 						<linearGradient id="colorGradient" x1="0" y1="0" x2="1" y2="0">

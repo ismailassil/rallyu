@@ -29,9 +29,9 @@ export default function GameCard({
 }: GameCardProps) {
 	return (
 		<div
-			className="bg-card border-br-card group relative flex h-full md:max-h-[300px]
+			className="bg-white/6 border border-white/6 rounded-2xl group relative flex h-full md:max-h-[300px]
 					md:min-h-[290px] transform cursor-pointer items-center w-full
-					overflow-hidden rounded-lg border-2 transition-transform
+					overflow-hidden transition-transform
 					duration-500 md:items-start md:justify-center"
 		>
 			{isBackground && (

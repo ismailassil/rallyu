@@ -1,117 +1,50 @@
 import React, { useState } from 'react';
-import Image from 'next/image';
-import funnelDisplay from '@/app/fonts/FunnelDisplay';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
+import Button from './Button';
+import { LocalUserMinusIcon, LocalUserPlusIcon, LocalUserXIcon } from './LocalIcon';
 
-function Button({ text, icon, onClick } : { text: string, icon: string, onClick: () => void } ) {
-	return (
-		<>
-			<div className={`flex flex-row pl-3.5 pr-3.5 pb-2 pt-2 gap-3 items-center ${funnelDisplay.className}
-							h-11 bg-white/4 rounded-xl border border-white/10 backdrop-blur-2xl transition-all duration-200
-							hover:bg-white/6 hover:scale-102`}
-				 onClick={onClick}
-			>
-				<Image
-					alt={text}
-					src={icon}
-					height={20}
-					width={20}
-				/>
-				<p className='text-[16px] sm:text-lg text-white/85'>{text}</p>
-			</div>
-		</>
-	);
-}
+export type FriendshipStatus = 'NONE' | 'OUTGOING' | 'INCOMING' | 'FRIENDS' | null;
 
-
-export default function Relations({ user_id, status } : { user_id: number, status: string | null }) {
-	const [friendshipStatus, setFriendshipStatus] = useState<string | null>(status);
+export default function Relations({ userId, currentStatus } : { userId: number, currentStatus: FriendshipStatus }) {
+	const [friendshipStatus, setFriendshipStatus] = useState<FriendshipStatus>(currentStatus);
 	const { apiClient } = useAuth();
 
-	if (!status)
+	if (!friendshipStatus)
 		return null;
 
-	async function handleAdd() {
+	async function executeAction(action: () => Promise<void>, next: FriendshipStatus, message: string) {
 		try {
-			await apiClient.sendFriendRequest(user_id);
-			setFriendshipStatus('OUTGOING');
-			alert('Request Sent!');
+			await action();
+			setFriendshipStatus(next);
+			alert(message);
 		} catch {
 			alert('Something wrong happened!');
 		}
 	}
 
-	async function handleAccept() {
-		try {
-			await apiClient.acceptFriendRequest(user_id);
-			setFriendshipStatus('FRIENDS');
-			alert('Request Accepted!');
-		} catch {
-			alert('Something wrong happened!');
-		}
-	}
+	const ACTIONS = {
+		add: () => executeAction(() => apiClient.sendFriendRequest(userId), 'OUTGOING', 'Request Sent!'),
+		accept: () => executeAction(() => apiClient.acceptFriendRequest(userId), 'FRIENDS', 'Request Accepted!'),
+		cancel: () => executeAction(() => apiClient.cancelFriendRequest(userId), 'NONE', 'Request Canceled!'),
+		reject: () => executeAction(() => apiClient.rejectFriendRequest(userId), 'NONE', 'Request Rejected!'),
+		unfriend: () => executeAction(() => apiClient.unfriend(userId), 'NONE', 'Unfriended!'),
+		block: () => executeAction(() => apiClient.blockUser(userId), 'NONE', 'Blocked!'),
+	};
 
-	async function handleCancel() {
-		try {
-			await apiClient.cancelFriendRequest(user_id);
-			setFriendshipStatus('NONE');
-			alert('Request Canceled!');
-		} catch {
-			alert('Something wrong happened!');
-		}
-	}
-
-	async function handleReject() {
-		try {
-			await apiClient.rejectFriendRequest(user_id);
-			setFriendshipStatus('NONE');
-			alert('Request Rejected!');
-		} catch {
-			alert('Something wrong happened!');
-		}
-	}
-
-	async function handleUnfriend() {
-		try {
-			await apiClient.unfriend(user_id);
-			setFriendshipStatus('NONE');
-			alert('Unfriended!');
-		} catch {
-			alert('Something wrong happened!');
-		}
-	}
-
-	async function handleBlock() {
-		try {
-			await apiClient.blockUser(user_id);
-			setFriendshipStatus('NONE');
-			alert('Blocked!');
-		} catch {
-			alert('Something wrong happened!');
-		}
-	}
+	const BUTTONS = {
+		NONE: [<Button key="add" text="Add" icon={LocalUserPlusIcon} onClick={ACTIONS.add} />],
+		OUTGOING: [<Button key="cancel" text="Cancel" icon={LocalUserMinusIcon} onClick={ACTIONS.cancel} />],
+		INCOMING: [
+			<Button key="accept" text="Accept" icon={LocalUserPlusIcon} onClick={ACTIONS.accept} />,
+			<Button key="reject" text="Decline" icon={LocalUserMinusIcon} onClick={ACTIONS.reject} />,
+		],
+		FRIENDS: [<Button key="unfriend" text="Unfriend" icon={LocalUserMinusIcon} onClick={ACTIONS.unfriend} />],
+	};
 
 	return (
-		<div className='flex gap-3 *:cursor-pointer select-none'>
-			{friendshipStatus === 'NONE' && (
-				<Button text='Add' icon='/icons/user-plus.svg' onClick={handleAdd} />
-			)}
-
-			{friendshipStatus === 'OUTGOING' && (
-				<Button text='Cancel' icon='/icons/user-minus.svg' onClick={handleCancel} />
-			)}
-
-			{friendshipStatus === 'INCOMING' && (
-				<>
-					<Button text='Accept' icon='/icons/user-plus.svg' onClick={handleAccept} />
-					<Button text='Decline' icon='/icons/user-minus.svg' onClick={handleReject} />
-				</>
-			)}
-
-			{friendshipStatus === 'FRIENDS' && (
-				<Button text='Unfriend' icon='/icons/user-minus.svg' onClick={handleUnfriend} />
-			)}
-			<Button text='Block' icon='/icons/user-x.svg' onClick={handleBlock} />
+		<div className="flex gap-3">
+			{BUTTONS[friendshipStatus]}
+			<Button text="Block" icon={LocalUserXIcon} onClick={ACTIONS.block} />
 		</div>
 	);
 }

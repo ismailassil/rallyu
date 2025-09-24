@@ -121,7 +121,7 @@ import IncomingFriendRequestsList from './IncomingFriendRequestsList';
 
 // 	return (
 // 		<div className='grid grid-cols-2 px-18 gap-3'>
-// 			{friends.map(({ id, first_name, last_name, updated_at, avatar_path }) => (
+// 			{friends.map(({ id, first_name, last_name, updated_at, avatar_url }) => (
 // 				<div
 // 					key={id}
 // 					className={`${funnelDisplay.className} w-full rounded-2xl bg-gradient-to-br from-white/0 to-white/4 border-1 border-white/10
@@ -130,7 +130,7 @@ import IncomingFriendRequestsList from './IncomingFriendRequestsList';
 // 					<div className='flex gap-3 items-center'>
 // 						<div className="rounded-full h-10 w-10 ring-1 ring-white/10">
 // 							<Image
-// 								src={`http://localhost:4025/api/users${avatar_path}` || '/profile/image.png'}
+// 								src={`http://localhost:4025/api${avatar_url}` || '/profile/image.png'}
 // 								alt="Profile Image"
 // 								width={96}
 // 								height={96}

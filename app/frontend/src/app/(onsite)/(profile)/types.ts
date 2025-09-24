@@ -17,7 +17,6 @@ export interface User {
 	last_name: string;
 	bio: string;
 	avatar_url: string;
-	avatar_path: string;
 	auth_provider: string;
 	role: string;
 	created_at: string; // ISO-like datetime
@@ -48,12 +47,12 @@ export interface UserRecentMatch {
     finished_at: string,
     user_id: number,
     user_username: string,
-	user_avatar_path: string,
+	user_avatar_url: string,
     user_score: number,
     opp_score: number,
     opponent_id: number,
     opponent_username: string,
-	opponent_avatar_path: string,
+	opponent_avatar_url: string,
     duration: number,
     outcome: string
 }

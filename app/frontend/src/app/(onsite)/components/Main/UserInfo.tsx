@@ -7,7 +7,7 @@ type UserInfoProps = {
 export default function UserInfo({ firstname }: UserInfoProps) {
 	return (
 		<header
-			className="px-13 py-10 bg-card border-br-card flex
+			className="main-card-wrapper flex px-13 py-10 
 				w-full items-center overflow-hidden rounded-lg border-2"
 		>
 			<h1

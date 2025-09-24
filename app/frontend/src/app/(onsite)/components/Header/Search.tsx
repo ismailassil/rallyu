@@ -9,7 +9,7 @@ import { useAuth } from "../../contexts/AuthContext";
 interface SearchByUsernameResult {
 	id: number,
 	username: string,
-	avatar_path: string
+	avatar_url: string
 }
 
 export default function Search() {
@@ -156,7 +156,7 @@ export default function Search() {
 														border-b-br-card pl-10 hover:bg-hbg/30 hover:cursor-pointer
 														"
 												>
-													<Image src={`http://localhost:4025/api/users${elem.avatar_path}`} alt="Command Logo" width={42} height={42} className="rounded-full border-2 border-white/20"/>
+													<Image src={`http://localhost:4025/api${elem.avatar_url}`} alt="Command Logo" width={42} height={42} className="rounded-full border-2 border-white/20"/>
 													<p>{elem.username}</p>
 												</a>
 										);

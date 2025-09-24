@@ -1,21 +1,23 @@
-import Image from 'next/image';
-import Relations from './Relations';
+import Relations, { FriendshipStatus } from './Relations';
 import MainCardWrapper from '@/app/(onsite)/(refactoredUIComponents)/MainCardWrapper';
+import Button from './Button';
+import { LocalUserPencilIcon } from './LocalIcon';
+import Avatar from './Avatar';
 
 type ProfileCardProps = {
-	user_id: number,
+	userId: number,
 	fullName: string,
 	username: string,
 	bio: string,
-	avatarSrc: string,
-	relationStatus: string | null,
+	avatar: string,
+	friendshipStatus: string | null,
 	level: number,
 	globalRank: number,
 	winRate: number,
 	currentStreak: number
 };
 
-export default function ProfileCard({ user_id, fullName, username, bio, avatarSrc, relationStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
+export default function ProfileCard({ userId, fullName, username, bio, avatar, friendshipStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
 	return (
 		<MainCardWrapper className='flex flex-col items-center gap-8
 									p-10 min-h-[300px] max-h-[500px]
@@ -37,46 +39,22 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatarSr
 						<p className={`text-sm text-gray-400 lg:text-lg`}>
 							{bio}
 						</p>
-						{relationStatus && <Relations user_id={user_id} status={relationStatus} />}
-						{!relationStatus && 
-							<div className='flex gap-3 select-none'>
-								<a className={`flex flex-row pl-3.5 pr-3.5 pb-2 pt-2 gap-3 items-center 
-									h-11 bg-white/4 rounded-xl border border-white/10 backdrop-blur-2xl transition-all duration-200
-									hover:bg-white/6 hover:scale-102`} href='/settings'
-								>
-									<Image
-										alt='Edit Profile'
-										src='/icons/user-pencil.svg'
-										height={20}
-										width={20}
-									>
-									</Image>
-									<p className='text-lg text-white/85'>Edit Profile</p>
-								</a>
-							</div>
-						}
-						
+						{/* Relations Buttons */}
+						{friendshipStatus && <Relations userId={userId} currentStatus={friendshipStatus as FriendshipStatus} />}
+						{/* Edit Profile Button */}
+						{!friendshipStatus && <a className='flex gap-3' href='/settings'><Button key="edit" text="Edit Profile" icon={LocalUserPencilIcon} /></a>}
 					</div>
-					<div
-						className="ring-4 hover:ring-3 aspect-square h-[60%] sm:h-[80%] self-start sm:self-center
-							overflow-hidden rounded-full relative
-							ring-white/10 transition-all duration-500 hover:scale-105 hover:ring-white/30
-							"
-					>
-						<Image
-							className={`h-full w-full object-cover`}
-							// src={avatar || '/profile/image.png'}
-							src={avatarSrc}
-							// width={100}
-							// height={100}
-							// quality={100}
-							fill
-							alt="Profile Image"
-							draggable={false}
-							// unoptimized
-						/>
-					</div>
+					{/* Avatar */}
+					<Avatar 
+						avatar={avatar}
+						width={100}
+						height={100}
+						className='ring-4 hover:ring-3 aspect-square h-[60%] sm:h-[80%] self-start sm:self-center
+						overflow-hidden rounded-full relative
+						ring-white/10 transition-all duration-500 hover:scale-105 hover:ring-white/30'
+					/>
 				</div>
+				{/* Level Bar */}
 				<div className="flex h-[16%] w-full flex-col justify-end">
 					<div>
 						<div className="flex h-full flex-col gap-1">
@@ -98,7 +76,7 @@ export default function ProfileCard({ user_id, fullName, username, bio, avatarSr
 				</div>
 			</div>
 
-			{/* Right Section (stats) */}
+			{/* Right Section (Stats) */}
 			<div
 				className={`*:hover:scale-102 *:duration-300 *:transform flex h-full w-full flex-row gap-3 lg:w-[25%] lg:flex-col  flex-1 lg:max-w-72`}
 			>

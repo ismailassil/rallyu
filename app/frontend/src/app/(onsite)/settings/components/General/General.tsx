@@ -15,7 +15,7 @@ export interface FormDataState {
 	username: string;
 	email: string;
 	bio: string;
-	avatar_path: string;
+	avatar_url: string;
 }
 
 export interface FormData {

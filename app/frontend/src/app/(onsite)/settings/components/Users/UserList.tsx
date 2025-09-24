@@ -9,7 +9,7 @@ export interface APIUserItem {
 	first_name: string;
 	last_name: string;
 	username: string;
-	avatar_path: string;
+	avatar_url: string;
 	updated_at: string;
 }
 
@@ -38,7 +38,7 @@ export function mapAPIUserItemtoUserItem(users: APIUserItem[]) {
 		id: usr.id,
 		username: usr.username,
 		fullName: usr.first_name + ' ' + usr.last_name,
-		avatar: `http://localhost:4025/api/users${usr.avatar_path}`,
+		avatar: `http://localhost:4025/api${usr.avatar_url}`,
 		since: usr.updated_at
 	}));
 

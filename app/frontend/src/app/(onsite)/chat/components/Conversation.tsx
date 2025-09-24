@@ -85,7 +85,7 @@ const ConversationBody = () => {
 					<Image
 						fill
 						sizes='48px'
-						src={`http://localhost:4025/api/users${selectedUser?.avatar_path}`}
+						src={`http://localhost:4025/api${selectedUser?.avatar_url}`}
 						alt={`${selectedUser?.first_name + " " + selectedUser?.last_name} image`}
 						className='object-cover'
 					/>

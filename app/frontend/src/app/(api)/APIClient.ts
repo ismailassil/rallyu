@@ -110,7 +110,7 @@ export class APIClient {
 	
 	async fetchUser(username: string) {
 		const { data: res } = await this.client.get(`/users/${username}`);
-		res.data.user = this.normalizeUser(res.data.user);
+		// res.data.user = this.normalizeUser(res.data.user);
 		return res.data;
 	}
 
@@ -280,8 +280,7 @@ export class APIClient {
 
 		this.setAccessToken(res.data.accessToken);
 
-		const user = this.normalizeUser(res.data.user);
-		return { user, accessToken: res.data.accessToken };
+		return { user: res.data.user, accessToken: res.data.accessToken };
 	}
 
 
@@ -297,9 +296,8 @@ export class APIClient {
 		const { data: res } = await this.client.post('/auth/login/2fa/verify', payload);
 
 		this.setAccessToken(res.data.accessToken);
-		const user = this.normalizeUser(res.data.user);
 
-		return { user, accessToken: res.data.accessToken };
+		return { user: res.data.user, accessToken: res.data.accessToken };
 	}
 
 	async logout() {
@@ -314,8 +312,7 @@ export class APIClient {
 		console.log('refreshToken: ', res);
 		this.setAccessToken(res.data.accessToken);
 
-		const user = this.normalizeUser(res.data.user);
-		return { user, accessToken: res.data.accessToken };
+		return { user: res.data.user, accessToken: res.data.accessToken };
 	}
 	
 	async register(payload: { 
@@ -346,30 +343,7 @@ export class APIClient {
 		return (ws);
 	}
 
-	private normalizeUser(user: any) {
-		user.avatar_url = (user.avatar_path && user.avatar_path[0] === "/") ? `http://localhost:4025/api/users${user.avatar_path}` : user.avatar_path;
-		return user;
-	}
-
 	private classifyError(err: any) : APIError {
-		// if (err.response.data.message.includes('ECONNREFUSED')) {
-		// 	return { type: 'network', message: 'Something went wrong, please try again' };
-		// }
-		// const status = err.response.status;
-		// if (status === 401) {
-		// 	return { type: 'auth', message: 'Session expired. Please log in again.', original: err };
-		// }
-		// if (status === 403) {
-		// 	return { type: 'forbidden', message: 'You do not have permission for this action.' };
-		// }
-		// if (status === 422) {
-		// 	return { type: 'validation', details: err.response.data?.errors };
-		// }
-		// if (status >= 500) {
-		// 	return { type: 'server', message: 'Server error. Please try again later.' };
-		// }
-		// return { type: 'unknown', message: 'An unexpected error occurred.' };
-
 		try {
 			if (!err.response) {
 				return {
@@ -388,11 +362,5 @@ export class APIClient {
 				message: 'Something Went Wrong! - Coming from ClassifyError'
 			};
 		}
-
-		// try {
-		// 	return { type: 'ms-auth', message: err.response.data.error.message };
-		// } catch {
-		// 	return { type: 'unknown', message: 'Something Went Wrong!' };
-		// }
 	}
 }

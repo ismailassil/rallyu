@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "localhost",
         port: "4025",
-        pathname: "/api/users/avatars/*",
+        pathname: "/api/users/avatars/**",
       },
     ],
   },

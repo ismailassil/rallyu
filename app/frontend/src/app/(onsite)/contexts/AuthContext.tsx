@@ -58,13 +58,6 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 			const { user, accessToken } = res;
 
-			// TODO: SHOULD BE DONE SOMEWHERE ELSE
-			if (user.avatar_path[0] == '/')
-				user.avatar_url = 'http://localhost:4025/api/users' + user.avatar_path;
-			// const userAvatarBlob = await apiClient.getUserAvatar(user.avatar_path);
-			// const userAvatarURL = URL.createObjectURL(userAvatarBlob);
-			// user.avatar_url = userAvatarURL;
-
 			setLoggedInUser(user);
 			setIsAuthenticated(true);
 			socket.connect(accessToken);

@@ -1,0 +1,346 @@
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import CountUp from 'react-countup';
+import { useAuth } from '../../contexts/AuthContext';
+import Chart from '../../(profile)/users/components/Chart';
+import MainCardWithHeader from '../../(refactoredUIComponents)/MainCardWithHeader';
+import GameCard from '../../(profile)/users/components/GameCard';
+import { secondsToHMS, secondsToMinutes } from '@/app/(api)/utils';
+
+const PREFIX = {
+	total_xp: "Total XP",
+	win_rate: "Win Rate",
+	current_streak: "Current Streak",
+	longest_streak: "Longest Streak",
+
+	matches: "Games Played",
+	wins: "Games Won",
+	losses: "Games Lost",
+	draws: "Games Drawn",
+	
+	total_user_score: "Total Score",
+	max_user_score: "Highest Score",
+	min_user_score: "Lowest Score",
+	avg_user_score: "Average Score",
+	
+	total_duration: "Total Playtime",
+	max_duration: "Longest Game",
+	min_duration: "Shortest Game",
+	avg_duration: "Average Game"
+};
+
+const SUFFIX = {
+	total_xp: "XP",
+	win_rate: "%",
+	current_streak: "",
+	longest_streak: "",
+
+	matches: "",
+	wins: "",
+	losses: "",
+	draws: "",
+	
+	total_user_score: "",
+	max_user_score: "",
+	min_user_score: "",
+	avg_user_score: "",
+	
+	total_duration: "m",
+	max_duration: "m",
+	min_duration: "m",
+	avg_duration: "m"
+};
+
+const DECIMALS = {
+	total_xp: 0,
+	win_rate: 2,
+	current_streak: 0,
+	longest_streak: 0,
+
+	matches: 0,
+	wins: 0,
+	losses: 0,
+	draws: 0,
+	
+	total_user_score: 0,
+	max_user_score: 0,
+	min_user_score: 0,
+	avg_user_score: 1,
+	
+	total_duration: 1,
+	max_duration: 0,
+	min_duration: 0,
+	avg_duration: 1
+};
+
+interface ProfileSnapshotProps {
+	records: {
+		total_xp: number;
+		win_rate: number;
+		current_streak: number;
+		longest_streak: number;
+	};
+	totals: {
+		matches: number;
+		wins: number;
+		losses: number;
+		draws: number;
+	};
+	scores: {
+		total_user_score: number;
+		max_user_score: number;
+		min_user_score: number;
+		avg_user_score: number;
+	};
+	durations: {
+		total_duration: number;
+		max_duration: number;
+		min_duration: number;
+		avg_duration: number;
+	};
+}
+
+export default function SnapshotCard() {
+	const { loggedInUser, apiClient } = useAuth();
+	const [userAnalytics, setUserAnalytics] = useState<ProfileSnapshotProps | null>(null);
+	const [userProfile, setUserProfile] = useState<any>(null);
+	const [index, setIndex] = useState(0);
+	
+	useEffect(() => {
+		async function fetchUserAnalytics() {
+			try {
+				const analytics = await apiClient.fetchUserAnalytics(loggedInUser!.username);
+				const profile = await apiClient.fetchUser(loggedInUser!.username);
+				console.log('fetched user analytics: ', analytics);
+				console.log('fetched user profile: ', profile);
+				setUserAnalytics(analytics);
+				setUserProfile(profile);
+			} catch (err) {
+				console.log(err);
+			}
+		}
+	
+		fetchUserAnalytics();
+	}, [loggedInUser]);
+
+	function flattenData(obj: Record<string, any>) {
+		return Object.keys(obj)
+		.filter(key => PREFIX[key] !== undefined)
+		.map(key => {
+			return {
+				prefix: PREFIX[key],
+				value: key.includes('duration') ? secondsToMinutes(obj[key]) : obj[key],
+				suffix: SUFFIX[key],
+				decimals: DECIMALS[key]
+			};
+		});
+	}
+	
+	const recordsArray = userProfile ? flattenData(userProfile.userRecords || {}) : [];
+	const totalsArray = userAnalytics ? flattenData(userAnalytics.totals || {}) : [];
+	const scoresArray = userAnalytics ? flattenData(userAnalytics.scores || {}) : [];
+	const durationsArray = userAnalytics ? flattenData(userAnalytics.durations || {}) : [];
+	const timeSpent = userProfile ? userProfile.userRecentTimeSpent.map(d => ({ date: d.day, timeSpent: (d.total_duration / 3600).toFixed(1) })) : {};
+	
+	useEffect(() => {
+		if (recordsArray.length === 0) return;
+		const id = setInterval(() => {
+			setIndex((prev) => {
+				if (prev === recordsArray.length - 1) return 0;
+				return prev + 1;
+			});
+		}, 10000);
+		return () => clearInterval(id);
+	}, [recordsArray.length]);
+	
+	const recordStatToShow = recordsArray[index];
+	const totalStatToShow = totalsArray[index];
+	const scoreStatToShow = scoresArray[index];
+	const durationStatToShow = durationsArray[index];
+	const matchToShow = userProfile ? userProfile.userRecentMatches[index] || userProfile.userRecentMatches[0] : null;
+
+	console.log('debug: ', {recordStatToShow, totalStatToShow, scoreStatToShow, durationStatToShow});
+	
+	if (!userAnalytics) return <div>Loading...</div>;
+
+	return (
+		<MainCardWithHeader headerName='Snapshots' color='notwhite' className='font-funnel-display flex-3 select-none'>
+			<div className="group flex flex-col gap-4 px-6">
+				{matchToShow &&
+					<div className='relative'>
+						<AnimatePresence mode='popLayout' >
+							<motion.div
+								key={matchToShow.match_id}
+								initial={{ opacity: 0, y: 50, filter: "blur(5px)" }}
+								animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+								exit={{ opacity: 0, y: -50, filter: "blur(5px)" }}
+								transition={{ duration: 0.5, ease: 'easeInOut', delay: 0 }}
+								className=""
+							>
+								<GameCard
+									match_id={matchToShow?.match_id}
+									game_type={matchToShow?.game_type}
+									started_at={matchToShow?.started_at}
+									finished_at={matchToShow?.finished_at}
+									user_id={matchToShow?.user_id}
+									user_username={matchToShow?.user_username}
+									user_avatar_url={matchToShow?.user_avatar_url}
+									user_score={matchToShow?.user_score}
+									opp_score={matchToShow?.opp_score}
+									opponent_id={matchToShow?.opponent_id}
+									opponent_username={matchToShow?.opponent_username}
+									opponent_avatar_url={matchToShow?.opponent_avatar_url}
+									duration={matchToShow?.duration}
+									outcome={matchToShow?.outcome}
+								/>
+							</motion.div>
+						</AnimatePresence>
+					</div>
+				}
+				<div className='bg-white/4 border border-white/10 min-h-14 hover:scale-101 
+					overflow-hidden rounded-2xl p-5 py-2 transition-all backdrop-blur-xl
+					duration-200 sm:flex-row sm:justify-between hover:bg-white/6'
+				>
+					<AnimatePresence mode='popLayout' >
+						<motion.div
+							key={recordStatToShow.prefix}
+							initial={{ opacity: 0, x: -50, filter: "blur(5px)" }}
+							animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+							exit={{ opacity: 0, x: 50, filter: "blur(5px)" }}
+							transition={{ duration: 0.5, ease: 'easeInOut', delay: 0 }}
+							className="flex flex-row items-center justify-between
+								lg:flex-row"
+						>
+							<p className="text-2xl text-white/60 font-bold">{recordStatToShow.prefix}</p>
+							<p className="text-3xl text-white/80 font-bold">
+								<CountUp 
+									end={recordStatToShow.value} 
+									suffix={recordStatToShow.suffix} 
+									duration={2} 
+									useEasing={true} 
+								/>
+							</p>
+						</motion.div>
+					</AnimatePresence>
+				</div>
+								
+				<div className="flex w-full gap-3 text-center">
+					<div className='bg-white/4 border border-white/10 hover:scale-101 
+						overflow-hidden rounded-2xl p-5 py-2 transition-all backdrop-blur-xl
+						duration-200 sm:flex-row sm:justify-between hover:bg-white/6 flex-1'
+					>
+						<AnimatePresence mode='popLayout' >
+							<motion.div
+								key={totalStatToShow.prefix}
+								initial={{ opacity: 0, y: 60, filter: "blur(5px)" }}
+								animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+								exit={{ opacity: 0, y: -60, filter: "blur(5px)" }}
+								transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.9 }}
+								className="flex flex-row items-center justify-between
+								lg:flex-row"
+							>
+								<p className="text-xl text-white/60 font-bold text-start">
+									{totalStatToShow.prefix.split(' ')[0]}
+									<br />
+									{totalStatToShow.prefix.split(' ')[1]}
+								</p>
+								<p className="text-3xl text-white/80 font-bold">
+									<CountUp 
+										end={totalStatToShow.value} 
+										suffix={totalStatToShow.suffix} 
+										duration={2} 
+										useEasing={true} 
+									/>
+								</p>
+							</motion.div>
+						</AnimatePresence>
+					</div>
+					<div className='bg-white/4 border border-white/10 hover:scale-101 
+						overflow-hidden rounded-2xl p-5 py-2 transition-all backdrop-blur-xl
+						duration-200 sm:flex-row sm:justify-between hover:bg-white/6 flex-1'
+					>
+						<AnimatePresence mode='popLayout' >
+							<motion.div
+								key={scoreStatToShow.prefix}
+								initial={{ opacity: 0, y: -60, filter: "blur(5px)" }}
+								animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+								exit={{ opacity: 0, y: 60, filter: "blur(5px)" }}
+								transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.3 }}
+								className="flex flex-row items-center justify-between
+									lg:flex-row"
+							>
+								<p className="text-xl text-white/60 font-bold text-start">
+									{scoreStatToShow.prefix.split(' ')[0]}
+									<br />
+									{scoreStatToShow.prefix.split(' ')[1]}
+								</p>
+								<p className="text-3xl text-white/80 font-bold">
+									<CountUp 
+										end={scoreStatToShow.value} 
+										suffix={scoreStatToShow.suffix} 
+										duration={2} 
+										useEasing={true} 
+									/>
+								</p>
+							</motion.div>
+						</AnimatePresence>
+					</div>
+				</div>
+
+				<div className='bg-white/4 border border-white/10 min-h-14 hover:scale-101 
+						overflow-hidden rounded-2xl p-5 py-2 transition-all backdrop-blur-xl
+						duration-200 sm:flex-row sm:justify-between hover:bg-white/6'
+				>
+					<AnimatePresence mode='popLayout' >
+						<motion.div
+							key={durationStatToShow.prefix}
+							initial={{ opacity: 0, x: 50, filter: "blur(5px)" }}
+							animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+							exit={{ opacity: 0, x: -50, filter: "blur(5px)" }}
+							transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.6 }}
+							className="flex flex-row items-center justify-between
+								lg:flex-row"
+						>
+							<p className="text-2xl text-white/60 font-bold">{durationStatToShow.prefix}</p>
+							<p className="text-3xl text-white/80 font-bold">
+								<CountUp 
+									end={durationStatToShow.value} 
+									suffix={durationStatToShow.suffix} 
+									duration={2} 
+									useEasing={true} 
+								/>
+							</p>
+						</motion.div>
+					</AnimatePresence>
+				</div>
+				<div
+					className="jusitfy-between bg-white/4 border border-white/10 min-h-70 hover:scale-101 flex h-full
+							w-full flex-1 flex-col items-center backdrop-blur-xl
+							gap-3 overflow-hidden rounded-2xl pt-5 transition-all duration-200 hover:bg-white/6"
+				>
+					<p className="text-xl text-white/60 font-bold">Time Spent on Platform</p>
+					<div className="relative h-full w-full">
+						{Object.keys(timeSpent).length === 0 ? (
+							<div className="flex flex-col justify-center items-center w-full h-full gap-2">
+								<Image
+									src={'/meme/thinking.gif'}
+									width={360}
+									height={360}
+									alt="No data available"
+									className="rounded-2xl blur-[1.25px] hover:blur-none transition-all duration-500 hover:scale-102 cursor-grab"
+									draggable={false}
+								>
+								</Image>
+								<h1 className="text-white/60">No data available</h1>
+							</div>
+							) : (
+								<Chart data={timeSpent} dataKey="timeSpent" unit="hours" />
+							) 
+						}
+					</div>
+				</div>
+			</div>
+		</MainCardWithHeader>
+	);
+};

@@ -36,7 +36,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 		}
 
 		fetchUserProfile();
-	}, [username]);
+	}, [username, apiClient, router]);
 
 	useEffect(() => {
 		if (!isLoading && !userProfile) {
@@ -59,20 +59,19 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 			<div className="flex h-full w-full gap-6 rounded-lg">
 				<article className="flex-5 flex h-full w-full flex-col gap-4">
 					<ProfileCard 
-						user_id={userProfile.user.id}
+						userId={userProfile.user.id}
 						fullName={userProfile.user.first_name + ' ' + userProfile.user.last_name}
 						username={userProfile.user.username}
-						avatarSrc={userProfile.user.avatar_url}
+						avatar={userProfile.user.avatar_url}
 						bio={userProfile.user.bio}
-						relationStatus={userProfile.currentRelationship}
+						friendshipStatus={userProfile.currentRelationship}
 						level={userProfile.userRecords.level}
 						globalRank={userProfile.userRecords.rank}
 						winRate={userProfile.userStats.win_rate}
 						currentStreak={userProfile.userRecords.current_streak}
 					/>
 					<div
-						className="hide-scrollbar flex flex-1 flex-col space-x-4
-							space-y-4 overflow-scroll overflow-x-hidden lg:flex-row lg:space-y-0"
+						className="hide-scrollbar flex flex-1 flex-col gap-4 lg:flex-row overflow-scroll overflow-x-hidden"
 					>
 						<PerformanceCard 
 							totalXP={userProfile.userRecords.total_xp}
