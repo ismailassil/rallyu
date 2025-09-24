@@ -272,7 +272,7 @@ class UserService {
 			email: privateUserInfo.email,
 			username: privateUserInfo.username,
 			bio: privateUserInfo.bio,
-			avatar_path: privateUserInfo.avatar_path,
+			avatar_url: privateUserInfo.avatar_url,
 			role: privateUserInfo.role
 		}
 

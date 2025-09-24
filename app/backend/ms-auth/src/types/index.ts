@@ -9,7 +9,7 @@ export interface User {
 	username: string,
 	password: string,
 	bio: string,
-	avatar_path: string,
+	avatar_url: string,
 	auth_provider: string,
 	role: string,
 	created_at: string,

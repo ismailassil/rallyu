@@ -141,12 +141,12 @@ class MatchesRepository {
 					m.finished_at,
 					u_self.id AS user_id,
 					u_self.username AS user_username,
-					u_self.avatar_path AS user_avatar_path,
+					u_self.avatar_url AS user_avatar_url,
 					CASE WHEN m.player_home_id = ? THEN m.player_home_score ELSE m.player_away_score END AS user_score,
 					CASE WHEN m.player_home_id = ? THEN m.player_away_score ELSE m.player_home_score END AS opp_score,
 					u_opp.id AS opponent_id,
 					u_opp.username AS opponent_username,
-					u_opp.avatar_path AS opponent_avatar_path,
+					u_opp.avatar_url AS opponent_avatar_url,
 					(strftime('%s', m.finished_at) - strftime('%s', m.started_at)) AS duration,
 					CASE
 						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score) 

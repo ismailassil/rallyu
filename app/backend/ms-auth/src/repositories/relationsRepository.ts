@@ -243,7 +243,7 @@ class RelationsRepository {
 					users.username,
 					users.first_name,
 					users.last_name,
-					users.avatar_path,
+					users.avatar_url,
 					relations.relation_status,
 					relations.updated_at
 				FROM relations

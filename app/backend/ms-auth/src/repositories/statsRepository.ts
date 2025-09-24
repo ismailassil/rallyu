@@ -25,7 +25,7 @@ class StatsRepository {
 				SELECT 
 					ROW_NUMBER() OVER (ORDER BY s.total_xp DESC, u.id ASC) AS rank,
 					u.username,
-					u.avatar_path,
+					u.avatar_url,
 					s.level,
 					s.total_xp,
 					u.id

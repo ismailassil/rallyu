@@ -2,7 +2,7 @@ import { db } from "../database";
 import { CreateUserRequest, ISQLCreateUser, User } from "../types";
 import { InternalServerError } from "../types/auth.types";
 
-// avatar_url => avatar_path
+// avatar_url => avatar_url
 class UserRepository {
 
 	async create(
@@ -11,7 +11,7 @@ class UserRepository {
 		email: string,
 		username: string,
 		password?: string,
-		avatar_path: string = '/avatars/default.png',
+		avatar_url: string = '/avatars/default.png',
 		auth_provider: string = 'local',
 		role: string = 'user',
 		bio: string = 'DFK',
@@ -19,9 +19,9 @@ class UserRepository {
 		
 		try {
 			const runResult = await db.run(
-				`INSERT INTO users (username, password, email, first_name, last_name, avatar_path, auth_provider, role, bio) 
+				`INSERT INTO users (username, password, email, first_name, last_name, avatar_url, auth_provider, role, bio) 
 					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-				[username, password, email, first_name, last_name, avatar_path, auth_provider, role, bio]
+				[username, password, email, first_name, last_name, avatar_url, auth_provider, role, bio]
 			);
 
 			return runResult.lastID;
@@ -73,7 +73,7 @@ class UserRepository {
 	async searchByUsername(user_id: number, username: string) {
 		try {
 			const allResult = await db.all(
-				`SELECT u.id, u.username, u.avatar_path
+				`SELECT u.id, u.username, u.avatar_url
 					FROM users u 
 				LEFT JOIN relations r 
 					ON ((r.requester_user_id = u.id AND r.receiver_user_id = ?)
@@ -142,11 +142,11 @@ class UserRepository {
 	}
 
 	// TODO: REMOVE THIS
-	async updateAvatar(id: number, avatar_path: string) {
+	async updateAvatar(id: number, avatar_url: string) {
 		try {
 			const runResult = await db.run(
-				`UPDATE users SET avatar_path = ? WHERE id = ?`
-			, [avatar_path, id]);
+				`UPDATE users SET avatar_url = ? WHERE id = ?`
+			, [avatar_url, id]);
 
 			return runResult.changes > 0;
 		} catch (err: any) {
