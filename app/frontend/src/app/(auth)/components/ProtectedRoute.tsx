@@ -14,12 +14,12 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 		console.log('isAuthenticated: ', isAuthenticated);
 		console.log('isLoading: ', isLoading);
 
-		// if (!isLoading && !isAuthenticated) {
-		// 	router.replace('/login');
-		// }
+		if (!isLoading && !isAuthenticated) {
+			router.replace('/login');
+		}
 	}, [isLoading, isAuthenticated]);
 
-	// const authFinished = !isLoading;
+	const authFinished = !isLoading;
 
 	if (!authFinished || !isAuthenticated) {
 		return ( <AuthLoadingSpinner /> );
