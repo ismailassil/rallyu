@@ -146,10 +146,10 @@ class UserService {
 
 		// CREATE A USER
 		const createdUserID = await this.userRepository.create(
-			username,
-			email,
 			first_name,
 			last_name,
+			email,
+			username,
 			hashedPassword
 		);
 
