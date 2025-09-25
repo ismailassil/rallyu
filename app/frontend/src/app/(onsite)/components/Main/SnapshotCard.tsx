@@ -7,6 +7,8 @@ import Chart from '../../(profile)/users/components/Chart';
 import MainCardWithHeader from '../../(refactoredUIComponents)/MainCardWithHeader';
 import GameCard from '../../(profile)/users/components/GameCard';
 import { secondsToHMS, secondsToMinutes } from '@/app/(api)/utils';
+import ChartCardWrapper from '../../(refactoredUIComponents)/ChartCardWrapper';
+import { useTranslations } from 'next-intl';
 
 const PREFIX = {
 	total_xp: "Total XP",
@@ -31,7 +33,7 @@ const PREFIX = {
 };
 
 const SUFFIX = {
-	total_xp: "XP",
+	total_xp: " XP",
 	win_rate: "%",
 	current_streak: "",
 	longest_streak: "",
@@ -106,6 +108,7 @@ export default function SnapshotCard() {
 	const [userAnalytics, setUserAnalytics] = useState<ProfileSnapshotProps | null>(null);
 	const [userProfile, setUserProfile] = useState<any>(null);
 	const [index, setIndex] = useState(0);
+	const t = useTranslations("dashboard.titles");
 	
 	useEffect(() => {
 		async function fetchUserAnalytics() {
@@ -141,7 +144,7 @@ export default function SnapshotCard() {
 	const totalsArray = userAnalytics ? flattenData(userAnalytics.totals || {}) : [];
 	const scoresArray = userAnalytics ? flattenData(userAnalytics.scores || {}) : [];
 	const durationsArray = userAnalytics ? flattenData(userAnalytics.durations || {}) : [];
-	const timeSpent = userProfile ? userProfile.userRecentTimeSpent.map(d => ({ date: d.day, timeSpent: (d.total_duration / 3600).toFixed(1) })) : {};
+	const timeSpentToShow = userProfile ? userProfile.userRecentTimeSpent.map((item) => ({ date: item.day, timeSpent: item.total_duration / 60 })) : {};
 	
 	useEffect(() => {
 		if (recordsArray.length === 0) return;
@@ -150,7 +153,7 @@ export default function SnapshotCard() {
 				if (prev === recordsArray.length - 1) return 0;
 				return prev + 1;
 			});
-		}, 10000);
+		}, 8000);
 		return () => clearInterval(id);
 	}, [recordsArray.length]);
 	
@@ -165,16 +168,16 @@ export default function SnapshotCard() {
 	if (!userAnalytics) return <div>Loading...</div>;
 
 	return (
-		<MainCardWithHeader headerName='Snapshots' color='notwhite' className='font-funnel-display flex-3 select-none'>
-			<div className="group flex flex-col gap-4 px-6">
+		<MainCardWithHeader headerName={t("snapshots")} color='notwhite' className='font-funnel-display flex-3 select-none'>
+			<div className="group flex flex-col gap-4">
 				{matchToShow &&
-					<div className='relative'>
-						<AnimatePresence mode='popLayout' >
+					<div className='relative px-6 py-0.5 overflow-hidden'>
+						<AnimatePresence mode='popLayout'>
 							<motion.div
 								key={matchToShow.match_id}
-								initial={{ opacity: 0, y: 50, filter: "blur(5px)" }}
-								animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-								exit={{ opacity: 0, y: -50, filter: "blur(5px)" }}
+								initial={{ opacity: 0, y: 100, filter: "blur(5px)", scale: 0.9 }}
+								animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
+								exit={{ opacity: 0, y: -20, filter: "blur(5px)", scale: 0.9 }}
 								transition={{ duration: 0.5, ease: 'easeInOut', delay: 0 }}
 								className=""
 							>
@@ -198,131 +201,120 @@ export default function SnapshotCard() {
 						</AnimatePresence>
 					</div>
 				}
-				<div className='bg-white/4 border border-white/10 min-h-14 hover:scale-101 
-					overflow-hidden rounded-2xl p-5 py-2 transition-all backdrop-blur-xl
-					duration-200 sm:flex-row sm:justify-between hover:bg-white/6'
-				>
-					<AnimatePresence mode='popLayout' >
-						<motion.div
-							key={recordStatToShow.prefix}
-							initial={{ opacity: 0, x: -50, filter: "blur(5px)" }}
-							animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-							exit={{ opacity: 0, x: 50, filter: "blur(5px)" }}
-							transition={{ duration: 0.5, ease: 'easeInOut', delay: 0 }}
-							className="flex flex-row items-center justify-between
-								lg:flex-row"
-						>
-							<p className="text-2xl text-white/60 font-bold">{recordStatToShow.prefix}</p>
-							<p className="text-3xl text-white/80 font-bold">
-								<CountUp 
-									end={recordStatToShow.value} 
-									suffix={recordStatToShow.suffix} 
-									duration={2} 
-									useEasing={true} 
-								/>
-							</p>
-						</motion.div>
-					</AnimatePresence>
-				</div>
-								
-				<div className="flex w-full gap-3 text-center">
-					<div className='bg-white/4 border border-white/10 hover:scale-101 
-						overflow-hidden rounded-2xl p-5 py-2 transition-all backdrop-blur-xl
-						duration-200 sm:flex-row sm:justify-between hover:bg-white/6 flex-1'
+				<div className='px-6 flex flex-col gap-4'>
+					<div className='profile-inner-stat-card-animated flex-1 relative'
 					>
 						<AnimatePresence mode='popLayout' >
 							<motion.div
-								key={totalStatToShow.prefix}
-								initial={{ opacity: 0, y: 60, filter: "blur(5px)" }}
-								animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-								exit={{ opacity: 0, y: -60, filter: "blur(5px)" }}
-								transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.9 }}
-								className="flex flex-row items-center justify-between
-								lg:flex-row"
-							>
-								<p className="text-xl text-white/60 font-bold text-start">
-									{totalStatToShow.prefix.split(' ')[0]}
-									<br />
-									{totalStatToShow.prefix.split(' ')[1]}
-								</p>
-								<p className="text-3xl text-white/80 font-bold">
-									<CountUp 
-										end={totalStatToShow.value} 
-										suffix={totalStatToShow.suffix} 
-										duration={2} 
-										useEasing={true} 
-									/>
-								</p>
-							</motion.div>
-						</AnimatePresence>
-					</div>
-					<div className='bg-white/4 border border-white/10 hover:scale-101 
-						overflow-hidden rounded-2xl p-5 py-2 transition-all backdrop-blur-xl
-						duration-200 sm:flex-row sm:justify-between hover:bg-white/6 flex-1'
-					>
-						<AnimatePresence mode='popLayout' >
-							<motion.div
-								key={scoreStatToShow.prefix}
-								initial={{ opacity: 0, y: -60, filter: "blur(5px)" }}
-								animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-								exit={{ opacity: 0, y: 60, filter: "blur(5px)" }}
-								transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.3 }}
+								key={recordStatToShow.prefix}
+								initial={{ opacity: 0, x: -50, filter: "blur(5px)" }}
+								animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+								exit={{ opacity: 0, x: 50, filter: "blur(5px)" }}
+								transition={{ duration: 0.5, ease: 'easeInOut', delay: 0 }}
 								className="flex flex-row items-center justify-between
 									lg:flex-row"
 							>
-								<p className="text-xl text-white/60 font-bold text-start">
-									{scoreStatToShow.prefix.split(' ')[0]}
-									<br />
-									{scoreStatToShow.prefix.split(' ')[1]}
-								</p>
+								<p className="text-2xl text-white/60 font-bold">{recordStatToShow.prefix}</p>
 								<p className="text-3xl text-white/80 font-bold">
 									<CountUp 
-										end={scoreStatToShow.value} 
-										suffix={scoreStatToShow.suffix} 
-										duration={2} 
+										end={recordStatToShow.value} 
+										suffix={recordStatToShow.suffix} 
+										duration={5} 
 										useEasing={true} 
 									/>
 								</p>
 							</motion.div>
 						</AnimatePresence>
 					</div>
-				</div>
-
-				<div className='bg-white/4 border border-white/10 min-h-14 hover:scale-101 
-						overflow-hidden rounded-2xl p-5 py-2 transition-all backdrop-blur-xl
-						duration-200 sm:flex-row sm:justify-between hover:bg-white/6'
-				>
-					<AnimatePresence mode='popLayout' >
-						<motion.div
-							key={durationStatToShow.prefix}
-							initial={{ opacity: 0, x: 50, filter: "blur(5px)" }}
-							animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-							exit={{ opacity: 0, x: -50, filter: "blur(5px)" }}
-							transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.6 }}
-							className="flex flex-row items-center justify-between
-								lg:flex-row"
+									
+					<div className="flex w-full gap-4 text-center">
+						<div className='profile-inner-stat-card-animated flex-1 relative'
 						>
-							<p className="text-2xl text-white/60 font-bold">{durationStatToShow.prefix}</p>
-							<p className="text-3xl text-white/80 font-bold">
-								<CountUp 
-									end={durationStatToShow.value} 
-									suffix={durationStatToShow.suffix} 
-									duration={2} 
-									useEasing={true} 
-								/>
-							</p>
-						</motion.div>
-					</AnimatePresence>
-				</div>
-				<div
-					className="jusitfy-between bg-white/4 border border-white/10 min-h-70 hover:scale-101 flex h-full
-							w-full flex-1 flex-col items-center backdrop-blur-xl
-							gap-3 overflow-hidden rounded-2xl pt-5 transition-all duration-200 hover:bg-white/6"
-				>
-					<p className="text-xl text-white/60 font-bold">Time Spent on Platform</p>
-					<div className="relative h-full w-full">
-						{Object.keys(timeSpent).length === 0 ? (
-							<div className="flex flex-col justify-center items-center w-full h-full gap-2">
+							<AnimatePresence mode='popLayout' >
+								<motion.div
+									key={totalStatToShow.prefix}
+									initial={{ opacity: 0, y: 60, filter: "blur(5px)" }}
+									animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+									exit={{ opacity: 0, y: -60, filter: "blur(5px)" }}
+									transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.9 }}
+									className="flex flex-row items-center justify-between
+									lg:flex-row"
+								>
+									<p className="text-xl text-white/60 font-bold text-start">
+										{totalStatToShow.prefix.split(' ')[0]}
+										<br />
+										{totalStatToShow.prefix.split(' ')[1]}
+									</p>
+									<p className="text-3xl text-white/80 font-bold">
+										<CountUp 
+											end={totalStatToShow.value} 
+											suffix={totalStatToShow.suffix} 
+											duration={5} 
+											useEasing={true} 
+										/>
+									</p>
+								</motion.div>
+							</AnimatePresence>
+						</div>
+						<div className='profile-inner-stat-card-animated flex-1 relative'
+						>
+							<AnimatePresence mode='popLayout' >
+								<motion.div
+									key={scoreStatToShow.prefix}
+									initial={{ opacity: 0, y: -60, filter: "blur(5px)" }}
+									animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+									exit={{ opacity: 0, y: 60, filter: "blur(5px)" }}
+									transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.3 }}
+									className="flex flex-row items-center justify-between
+										lg:flex-row"
+								>
+									<p className="text-xl text-white/60 font-bold text-start">
+										{scoreStatToShow.prefix.split(' ')[0]}
+										<br />
+										{scoreStatToShow.prefix.split(' ')[1]}
+									</p>
+									<p className="text-3xl text-white/80 font-bold">
+										<CountUp 
+											end={scoreStatToShow.value} 
+											suffix={scoreStatToShow.suffix} 
+											duration={5} 
+											useEasing={true} 
+										/>
+									</p>
+								</motion.div>
+							</AnimatePresence>
+						</div>
+					</div>
+
+					<div className='profile-inner-stat-card-animated flex-1 relative'
+					>
+						<AnimatePresence mode='popLayout' >
+							<motion.div
+								key={durationStatToShow.prefix}
+								initial={{ opacity: 0, x: 50, filter: "blur(5px)" }}
+								animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+								exit={{ opacity: 0, x: -50, filter: "blur(5px)" }}
+								transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.6 }}
+								className="flex flex-row items-center justify-between
+									lg:flex-row"
+							>
+								<p className="text-2xl text-white/60 font-bold">{durationStatToShow.prefix}</p>
+								<p className="text-3xl text-white/80 font-bold">
+									<CountUp 
+										end={durationStatToShow.value} 
+										suffix={durationStatToShow.suffix} 
+										duration={5} 
+										useEasing={true} 
+									/>
+								</p>
+							</motion.div>
+						</AnimatePresence>
+					</div>
+
+					<ChartCardWrapper>
+						<p className="text-xl text-white/60 font-bold">Time Spent on Platform</p>
+						{timeSpentToShow.length === 0 ? 
+							<div className="flex flex-col justify-center items-center w-full h-full gap-2 grow-1">
 								<Image
 									src={'/meme/thinking.gif'}
 									width={360}
@@ -334,11 +326,10 @@ export default function SnapshotCard() {
 								</Image>
 								<h1 className="text-white/60">No data available</h1>
 							</div>
-							) : (
-								<Chart data={timeSpent} dataKey="timeSpent" unit="hours" />
-							) 
+							:
+							<Chart data={timeSpentToShow} dataKey='timeSpent' unit='Minutes'/>
 						}
-					</div>
+					</ChartCardWrapper>
 				</div>
 			</div>
 		</MainCardWithHeader>
