@@ -12,11 +12,11 @@ export const verifyUserJWT = async (req: FastifyRequest, rep: FastifyReply) => {
 	// TODO: Verify the JWT Here
 	let accessToken: string = "";
 
-	const isWebSocket = req.url.startsWith('/api/v1/matchmaking/join?token');
+	const isWebSocket = req.headers.upgrade === 'websocket';
 	const authHeader = req.headers.authorization as string;
-	
+
 	if (isWebSocket) {
-		accessToken = (req.query  as { token: string }).token;
+		accessToken = (req.query  as { accessToken: string }).accessToken;
 	} else if (authHeader) {
 		accessToken = authHeader?.startsWith('Bearer ')
 			? authHeader.slice(7)

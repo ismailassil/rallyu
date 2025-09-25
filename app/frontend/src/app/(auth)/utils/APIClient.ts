@@ -348,7 +348,7 @@ export class APIClient {
 
 	connectWebSocket(path: string) {
 		const url = `ws://localhost:4025/api${path}`; // TODO Change to dynamic
-		const ws = new WebSocket(url + `?token=${this.accessToken}`);
+		const ws = new WebSocket(`${url}${url.includes('?') ? '&' : '?'}accessToken=${this.accessToken}`);
 
 		return (ws);
 	}

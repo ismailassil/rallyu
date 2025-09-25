@@ -2,6 +2,7 @@ const Fastify = require('fastify')
 const path = require('path')
 const fastifyStatic = require('@fastify/static')
 const { game } = require('./plugins/queue')
+require('dotenv').config()
 const fastify = Fastify({
 	logger: {
 		level: 'info',
@@ -15,12 +16,9 @@ const fastify = Fastify({
 	}
 })
 
-fastify.register(fastifyStatic, { root: path.join(__dirname, 'dist') })
-fastify.register(require('@fastify/websocket'))
-fastify.register(require('@fastify/jwt'), { 
-	secret: process.env.ROOM_ACCESS || "4CC3SS_R00M_"
-});
-fastify.register(game, { prefix: '/game'})
+fastify.register(fastifyStatic, { root: path.join(__dirname, 'dist') });
+fastify.register(require('@fastify/websocket'));
+fastify.register(game, { prefix: '/game'});
 
 fastify.listen({ port: 5010, host: '0.0.0.0' }, (err) => {
 	if (err) {

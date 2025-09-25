@@ -22,6 +22,7 @@ export interface GameState {
 		}
 	],
 	gameStatus: string, // 'connecting', 'waiting', 'ready', 'playing', 'scored', 'gameover'
+	opponentDC: boolean,
 	lastUpdateTime: number,
 	index: number | undefined
 }

@@ -15,5 +15,9 @@ ps:
 re: down up
 
 clean:
-	docker rm `docker ps -aq` -f
-	docker image rm `docker images -q` -f
+	@if [ -n "$$(docker ps -aq)" ]; then \
+		docker rm -f $$(docker ps -aq); \
+	fi
+	@if [ -n "$$(docker images -q)" ]; then \
+		docker rmi -f $$(docker images -q); \
+	fi

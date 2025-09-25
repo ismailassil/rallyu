@@ -51,24 +51,16 @@ export const render = (ctx: CanvasRenderingContext2D, gameState: GameState) => {
 		0,                          // start angle
 		2 * Math.PI                 // end angle (full circle)
 	);
-	ctx.fill();
 
-	switch (gameState.gameStatus) {
-		case 'connecting':
-			ctx.fillText('Connecting...', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
-			break;
-		case 'waiting':
-			ctx.fillText('waiting for opponent...', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
-			break;
-		case 'ready':
-			ctx.fillText(
-				'You', // ▼ | ctx.font = "30px sans-serif";
-				gameState.players[0].rect.x,
-				gameState.players[0].rect.y - 80
-			)
-			break;
-		// default: | make the default case not do anything
+	if (gameState.opponentDC) {
+		ctx.fillText(
+			'DC', // ▼ | ctx.font = "30px sans-serif";
+			gameState.players[1].rect.x,
+			gameState.players[1].rect.y - 80
+		)
 	}
+
+	ctx.fill();
 }
 
 export default render

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion"
 import BattleFriend from "./BattleFriend"
 import QueueButton from "./QueueButton"
+import QueueToggleButton from "./re_QueueButton"
 import unicaOne from "@/app/fonts/unicaOne"
 import PickGame from "./PickGame"
 
@@ -32,7 +33,8 @@ const LobbyCard = () => {
                         <BattleFriend fullname={"Amine maila"} img={"/profile/image_2.jpg"} />
                     </div>
                 </div>
-                <QueueButton />
+                <QueueToggleButton />
+                {/* <QueueButton /> */}
             </motion.div>
         </>
 

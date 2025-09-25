@@ -4,7 +4,7 @@ import fp from 'fastify-plugin';
 import { proxiesOpts } from './proxies.types';
 
 const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) => {
-	const { AUTH_PORT, NOTIF_PORT, CHAT_PORT, XO_PORT, TOURNAMENT_PORT, MATCHMAKING_PORT } = opts;
+	const { AUTH_PORT, NOTIF_PORT, CHAT_PORT, XO_PORT, TOURNAMENT_PORT, MATCHMAKING_PORT, GAME_PORT } = opts;
 
 	//// AUTH & USERS //////////////////////////////////
 	const authProxyOptions = {
@@ -65,6 +65,14 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 		websocket: true,
 	}
 
+	const gameProxyOptions = {
+		upstream: `http://ms-game:${GAME_PORT}`,
+		prefix: '/api/game',
+		rewritePrefix: '/game',
+		httpMethods: ['GET', 'POST'],
+		websocket: true,
+	}
+
 	await fastify.register(proxy, authProxyOptions);
 	await fastify.register(proxy, usersProxyOptions);
 	await fastify.register(proxy, notifProxyOptions);
@@ -72,6 +80,7 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 	await fastify.register(proxy, xoGameProxyOptions);
 	await fastify.register(proxy, tournamentProxyOptions);
 	await fastify.register(proxy, matchmakingProxyOptions);
+	await fastify.register(proxy, gameProxyOptions);
 });
 
 export default endpointsPlugin;
