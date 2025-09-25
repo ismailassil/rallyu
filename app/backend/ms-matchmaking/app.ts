@@ -5,6 +5,9 @@ import matchmakingRoutes from "./routes/macthmakingRoutes.js";
 import matchmakingSocketRoutes from "./routes/matchmakingSocketRoute.js";
 import { Codec, connect, Msg, NatsConnection, StringCodec, Subscription } from "nats";
 import natsServer from "./config/natsServer.js";
+import dotenv from 'dotenv'
+
+dotenv.config();
 
 const app = fastify(serverObject);
 
@@ -30,6 +33,11 @@ app.register(async function (app: FastifyInstance, optiosn) {
     } catch(err: unknown) {
         app.log.fatal(err);
     }
+});
+
+app.get('/health', async (request, reply) => {
+    console.log("health check!");
+    return { status: 'ok', service: 'matchmaking' };
 });
 
 app.register(async function (app: FastifyInstance) {

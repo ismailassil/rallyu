@@ -8,8 +8,11 @@
 */
 const { v4: uuidv4 } = require("uuid");
 const { updateState, getVelocity, angles } = require('./physics')
+const jwt = require('jsonwebtoken');
 const WebSocket = require('ws')
 
+const JWT_ROOM_SECRET = process.env.JWT_ROOM_SECRET || 'R00M_4CC3SS_';
+const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
 
 /*
 	Packet: Obj: any
@@ -34,17 +37,17 @@ const game = async (fastify, options) => {
 
 
 	fastify.decorate('json', (socket, obj) => {
-		if (player.socket?.readyState === WebSocket.OPEN)
+		if (socket?.readyState === WebSocket.OPEN)
 			socket.send(JSON.stringify(obj))
 	})
 
 	const rooms = new Map() // Map<roomid, Room>
 
-	const closeRoom = (room) => {
+	const closeRoom = (room, code, msg) => {
 		// test this if players already closed sockets
 		room.players.forEach(p => {
 			if (p.socket?.readyState === WebSocket.OPEN)
-				p.socket.close(1000);
+				p.socket.close(code, msg);
 		})
 		room.cleanUp();
 		rooms.delete(room.id)
@@ -82,7 +85,8 @@ const game = async (fastify, options) => {
 		}
 
 		setupEventListeners(room, index) {
-			this.socket.on("message", () => {
+			this.socket.off('close', this.detachSocket);
+			this.socket.on("message", (message) => {
 				try {
 					const data = JSON.parse(message.toString())
 					room.state.players[data.pid].y = data.y
@@ -92,12 +96,12 @@ const game = async (fastify, options) => {
 				}
 			});
 
-			this.socket.on("close", () => {
+			this.socket.on("close", (ev) => {
 				this.detachSocket();
 				if (ev.code === 1000) return;
 
 				const otherPlayer = room.players[index ^ 1].socket
-				if (otherPlayer.readyState === WebSocket.OPEN) { // checks if otherPlayer didn't close too
+				if (otherPlayer && otherPlayer.readyState === WebSocket.OPEN) { // checks if otherPlayer didn't close too
 					fastify.json(otherPlayer, { type: 'opp_left' })
 				}
 			});
@@ -138,15 +142,15 @@ const game = async (fastify, options) => {
 			});
 
 			this.intervalId = setInterval(()=> {
-				if (!room.state.pause) updateState(room.state)
+				if (!this.state.pause) updateState(this.state)
 	
-				room.players.forEach((player, index) => {
+				this.players.forEach((player, index) => {
 					fastify.json(player.socket, {
 						type: 'state',
 						state: {
-							b: { x: room.state.ball.x, y: room.state.ball.y },
-							p: room.state.players[index ^ 1].y,
-							s: [ room.state.score[0], room.state.score[1] ]
+							b: { x: this.state.ball.x, y: this.state.ball.y },
+							p: this.state.players[index ^ 1].y,
+							s: [ this.state.score[0], this.state.score[1] ]
 						}
 					})
 				})
@@ -161,47 +165,59 @@ const game = async (fastify, options) => {
 
 	fastify.get('/:roomid' , { websocket: true }, (socket, req) => {
 		try {
-			const { token } = req.query;
-			const decoded = fastify.jwt.verify(token);
+			const { tempToken } = req.query;
+			const decoded = jwt.verify(tempToken, JWT_ROOM_SECRET);
 			if (decoded.roomId !== req.params.roomid)
-				throw new Error("Room ID mismatch")
+				throw new Error("Match room ID mismatch")
 
 			const room = rooms.get(decoded.roomId);
 			if (!room)
-				throw new Error("Room not found");
+				throw new Error("Match room not found");
 
 			const player = room.players.find(player => player.id === decoded.playerId)
 			if (!player)
-				throw new Error("Player not in room");
+				throw new Error("Player not in match room");
 			if (player.connected)
 				throw new Error("A connection already exits");
 
 			player.attachSocket(socket);
 			if (room.running) {
 				room.players.forEach(player => {
-					fastify.json(player.socket, { type: 'start' });
+					fastify.json(player.socket, { type: 'play' });
 				});
 			} else if (room.players.every(p => p.connected)) {
 				clearTimeout(room.expirationTimer);
 				room.startGame();
 			}
 
-			socket.on('close', () => {
-				player.detachSocket();
-			})
+			socket.on('close', player.detachSocket);
 		} catch (e) {
+			console.error("Match room error: ", e);
+			
 			return socket.close(1001, `Access denied: ${e.message}`);
 		}
 	})
 
 	fastify.post('/create-room', (req, res) => {
+		const auth = req.headers.authorization.startsWith('Bearer ')
+            ? req.headers.authorization.slice(7)
+            : req.headers.authorization;
+
+		if (auth !== MS_MATCHMAKING_API_KEY)
+			return res.code(401);
+
 		const { playersIds } = req.body;
+		if (!playersIds) {
+			return res.code(400).json({
+				error: 'players ids not provided.'
+			})
+		}
 		const roomId = uuidv4();
 		const room = new Room(roomId);
 		room.players = [new Player(roomId, playersIds[0]), new Player(roomId, playersIds[1])];
 
 		room.expirationTimer = setTimeout(() => {
-			closeRoom(room);
+			closeRoom(room, 1002, "Match room timeout reached");
 		}, ROOM_EXPIRATION_TIME)
 
 		rooms.set(roomId, room);
@@ -209,14 +225,14 @@ const game = async (fastify, options) => {
 		return {
 			roomId,
 			authTokens: {
-				[playersIds[0]]: fastify.jwt.sign({
+				[playersIds[0]]: jwt.sign({
 					roomId,
 					playerId: playersIds[0]
-				}),
-				[playersIds[1]]: fastify.jwt.sign({
+				}, JWT_ROOM_SECRET, { expiresIn: '5m' }),
+				[playersIds[1]]: jwt.sign({
 					roomId,
 					playerId: playersIds[1]
-				})
+				}, JWT_ROOM_SECRET, { expiresIn: '5m' })
 			}
 		};
 	})

@@ -69,6 +69,7 @@ await fastify.register(proxiesPlugin, {
 	XO_PORT: process.env.XO_PORT ?? '',
 	TOURNAMENT_PORT: process.env.TOURNAMENT_PORT ?? '',
 	MATCHMAKING_PORT: process.env.MATCHMAKING_PORT ?? '',
+	GAME_PORT: process.env.GAME_PORT ?? ''
 });
 
 // ** METRICS Plugin
@@ -85,7 +86,7 @@ fastify.get('/health', { exposeHeadRoute: false }, function (_, res: FastifyRepl
 });
 
 (() => {
-	fastify.listen({ host: '::', port: SERVER_PORT }, (error) => {
+	fastify.listen({ host: '0.0.0.0', port: SERVER_PORT }, (error) => {
 		if (error) {
 			fastify.log.error('[SERVER] ' + (error as Error).message);
 			process.exit(1);
