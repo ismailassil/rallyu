@@ -4,10 +4,8 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../../contexts/AuthContext';
 import ProfilePreview from './ProfilePreview';
 import PersonalInformationsForm from './PersonalInformationsForm';
-import useUserProfile from '@/app/(onsite)/(profile)/users/context/useUserProfile';
 import useForm from '../hooks/useForm';
 import { alertError, alertLoading, alertSuccess } from '@/app/(auth)/components/CustomToast';
-import { toast } from 'sonner';
 
 export interface FormDataState {
 	first_name: string;
@@ -26,12 +24,18 @@ export interface FormData {
 	bio: string;
 }
 
-export default function General() {
-	const { apiClient, loggedInUser, updateLoggedInUserState } = useAuth();
-	// const { isLoading, userProfile } = useUserProfile(user!.username);
 
-	const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
-	const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
+/*
+	In this tab the user can only update: First Name, Last Name, Username, Email, Bio, Avatar
+	Password change is in Security tab
+*/
+
+export default function GeneralSettingsTab() {
+	const { apiClient, loggedInUser, updateLoggedInUserState } = useAuth();
+
+	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+	const [avatarFile, setAvatarFile] = useState<File | null>(null);
+
 	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm({
 		fname: loggedInUser!.first_name,
 		lname: loggedInUser!.last_name,
@@ -40,21 +44,18 @@ export default function General() {
 		bio: loggedInUser!.bio
 	});
 
-	// if (isLoading || !userProfile)
-	// 	return <h1 className='top-50 left-7 bg-red-500'>still loading</h1>;
-
 	function handleProfilePictureFileChange(e: ChangeEvent<HTMLInputElement>) {
 		const selectedFile = e.target.files?.[0];
 		if (!selectedFile) return;
-		setProfilePicturePreview(URL.createObjectURL(selectedFile));
-		setProfilePictureFile(selectedFile);
+		setAvatarPreview(URL.createObjectURL(selectedFile));
+		setAvatarFile(selectedFile);
 	}
 
 	function handleProfilePictureRemove() {
 		const fileInput = document.getElementById('profile-upload') as HTMLInputElement;
 		if (fileInput) fileInput.value = '';
-		setProfilePictureFile(null);
-		setProfilePicturePreview(null);
+		setAvatarFile(null);
+		setAvatarPreview(null);
 	}
 
 	// function handleFormChange(e: ChangeEvent<HTMLInputElement>) {
@@ -63,18 +64,18 @@ export default function General() {
 	// }
 
 	async function handleProfilePictureSubmit() {
-		if (!profilePictureFile) return;
+		if (!avatarFile) return;
 
 		const form = new FormData();
-		form.append('file', profilePictureFile);
+		form.append('file', avatarFile);
 
 		try {
 			// alertLoading('Uploading Profile Picture...');
 			await apiClient.uploadUserAvatar(form);
-			if (profilePicturePreview)
-				updateLoggedInUserState({ avatar_url: profilePicturePreview });
+			if (avatarPreview)
+				updateLoggedInUserState({ avatar_url: avatarPreview });
 			// alertSuccess('Profile Picture changed successfully');
-			setProfilePictureFile(null);
+			setAvatarFile(null);
 		} catch {
 			// alertError('Something went wrong, please try again later');
 		}
@@ -136,9 +137,9 @@ export default function General() {
 
 	return (
 		<motion.div
-			initial={{ opacity: 0, x: 25 }}
-			animate={{ opacity: 1, x: 0 }}
-			transition={{ duration: 0.3 }}
+			initial={{ opacity: 0, x: 25, scale: 0.99 }}
+			animate={{ opacity: 1, x: 0, scale: 1 }}
+			transition={{ duration: 0.5 }}
 		>
 			<div className="flex flex-col gap-4">
 				<SettingsCard
@@ -151,8 +152,8 @@ export default function General() {
 					<div className="flex flex-col gap-8 px-18">
 						<ProfilePreview
 							values={formData}
-							file={profilePictureFile}
-							preview={profilePicturePreview}
+							file={avatarFile}
+							preview={avatarPreview}
 							onAdd={handleProfilePictureFileChange}
 							onRemove={handleProfilePictureRemove}
 						/>
