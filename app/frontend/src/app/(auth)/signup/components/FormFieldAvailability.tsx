@@ -25,19 +25,20 @@ function getFieldStatusDisplay(label: string, fieldStatus: FieldStatus) {
 	}
 }
 
-async function checkFormFieldAvailability(name: string, value: string) {
-	try {
-		const response = await fetch(`http://localhost:4025/api/users/available?${name}=${value}`, {
-			method: 'GET'
-		});
+// async function checkFormFieldAvailability(name: string, value: string) {
+// 	const { apiClient } = useAuth();
+// 	try {
+// 		const response = await fetch(`http://localhost:4025/api/users/available?${name}=${value}`, {
+// 			method: 'GET'
+// 		});
 		
-		const isAvailable = response.ok ? true : false;
+// 		const isAvailable = response.ok ? true : false;
 		
-		return isAvailable;
-	} catch {
-		return null;
-	}
-}
+// 		return isAvailable;
+// 	} catch {
+// 		return null;
+// 	}
+// }
 
 export default function FormFieldAvailability({
 	label,
@@ -46,13 +47,14 @@ export default function FormFieldAvailability({
 	setFieldAvailable
 }: FormFieldAvailabilityProps) {
 	const [fieldStatus, setFieldStatus] = useState<FieldStatus>(null);
-	const { loggedInUser, isAuthenticated, isLoading } = useAuth();
+	const { loggedInUser, isAuthenticated, isLoading, apiClient } = useAuth();
 
 	useEffect(() => {
 			setFieldStatus('CHECKING');
 
 			async function check(name: string, value: string) {
-				const isAvailable = await checkFormFieldAvailability(name, value);
+				const isAvailable = name === 'username' ? await apiClient?.isUsernameAvailable(value.trim()) : await apiClient?.isEmailAvailable(value.trim());
+				console.log(`check ${name}=${value} isAvailable`, isAvailable);
 				if (isAvailable === true) {
 					setFieldStatus('AVAILABLE');
 					setFieldAvailable?.(name, true);

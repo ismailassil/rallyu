@@ -262,6 +262,16 @@ export class APIClient {
 
 	/*--------------------------------- Authentication ---------------------------------*/
 
+	async isUsernameAvailable(username: string) {
+		const { data: res } = await this.client.get(`/users/username-available?username=${username}`);
+		return res.data;
+	}
+
+	async isEmailAvailable(email: string) {
+		const { data: res } = await this.client.get(`/users/email-available?email=${email}`);
+		return res.data;
+	}
+
 	async login(payload: { username: string, password: string }) {
 		console.log('APIClient::login();');
 		const { data: res } = await this.client.post('/auth/login', payload);
