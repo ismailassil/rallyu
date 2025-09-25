@@ -23,9 +23,7 @@ const JWT_ACCESS_SECRET = 'jwt-access-secret';
 const JWT_REFRESH_SECRET = 'jwt-refresh-secret';
 
 class JWTUtils {
-	constructor() {
-		
-	}
+	constructor() {}
 	
 	private signJWT<T extends object>(payload: T, JWT_SECRET: string, exp: jwt.SignOptions["expiresIn"] = '15m') : Promise<string> {
 		return new Promise((resolve, reject) => {
@@ -132,7 +130,6 @@ class JWTUtils {
 
 		return { accessToken, refreshToken };
 	}
-
 }
 
 export default JWTUtils;

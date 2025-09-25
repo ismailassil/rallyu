@@ -1,45 +1,12 @@
 // /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
-import { APIClient } from '@/app/(auth)/utils/APIClient';
-import SocketClient from '@/app/(auth)/utils/SocketClient';
+import { APIClient } from '@/app/(api)/APIClient';
+import SocketClient from '@/app/(api)/SocketClient';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { MessageType } from '../chat/types/chat.types';
-
-// we need to remove this and make everything on demand
-// type User = {
-// 	id: string;
-// 	username: string;
-// 	email: string;
-// }
-
-type User = {
-	id: number,
-	first_name: string,
-	last_name: string,
-	username: string,
-	email: string,
-	bio: string,
-	avatar_path: string,
-	avatar_url: string,
-	relation_status: string,
-	last_message : MessageType
-}
-
-
-type AuthContextType = {
-	user: User | null;
-	updateUser: (payload: Partial<User>) => void;
-	isLoading: boolean;
-	isAuthenticated: boolean;
-	register: (first_name: string, last_name: string, username: string, email: string, password: string) => Promise<void>;
-	login: (username: string, password: string) => Promise<void>;
-	logout: () => Promise<void>;
-	api: APIClient;
-	socket: SocketClient;
-}
+import { AuthContextType, LoggedInUser } from './auth.context.types';
 
 const AuthContext = createContext<AuthContextType | null>(null);
-const api = new APIClient('http://localhost:4025/api');
+const apiClient = new APIClient('http://localhost:4025/api');
 const socket = new SocketClient();
 
 export function useAuth() : AuthContextType {
@@ -54,68 +21,88 @@ type AuthProviderType = {
 }
 
 export default function AuthProvider({ children } : AuthProviderType ) {
-	const [user, setUser] = useState<User | null>(null);
+	const [loggedInUser, setLoggedInUser] = useState<LoggedInUser | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-	// will run one on page refresh
+	// THIS USE EFFECT WILL ONLY RUN ON PAGE FIRSTLOAD/REFRESH
 	useEffect(() => {
-		console.log('useEffect in AuthProvider');
+		async function initializeAuth() {
+			try {
+				const { user, accessToken } = await apiClient.refreshToken();
+
+				setLoggedInUser(user);
+				setIsAuthenticated(true);
+				socket.connect(accessToken);
+			} catch {
+				console.log('No valid refresh token found!');
+				setLoggedInUser(null);
+				setIsAuthenticated(false);
+			} finally {
+				setIsLoading(false);
+			}
+		}
+
 		initializeAuth();
 	}, []);
-
-	async function initializeAuth() {
-		try {
-			const { accessToken } = await api.refreshToken();
-			const { user } = await api.fetchMe();
-			const userAvatarBlob = await api.getUserAvatar(user.avatar_path);
-			const userAvatarURL = URL.createObjectURL(userAvatarBlob);
-			user.avatar_url = userAvatarURL;
-			setUser(user);
-			setIsAuthenticated(true);
-			socket.connect(accessToken);
-		} catch {
-			console.log('No valid refresh token found!');
-			setUser(null);
-			setIsAuthenticated(false);
-		} finally {
-			setIsLoading(false);
-		}
-	}
 	
-	async function login(
-		username: string, 
-		password: string
-	) {
+	async function login(username: string, password: string) {
 		try {
 			// setIsLoading(true);
-			const { user, accessToken } = await api.login({ username, password });
-			// const data = await api.fetchCurrentUser();
-			const userAvatarBlob = await api.getUserAvatar(user.avatar_path);
-			const userAvatarURL = URL.createObjectURL(userAvatarBlob);
-			user.avatar_url = userAvatarURL;
-			setUser(user);
+			const res = await apiClient.login({ username, password });
+			if (res._2FARequired) {
+				sessionStorage.setItem('loginChallengeID', JSON.stringify(res.loginChallengeID));
+				sessionStorage.setItem('enabledMethods', JSON.stringify(res.enabled2FAMethods));
+				return res;
+			}
+
+			const { user, accessToken } = res;
+
+			setLoggedInUser(user);
 			setIsAuthenticated(true);
 			socket.connect(accessToken);
+			return user;
 		} catch (err) {
 			console.log('Login Error Catched in AuthContext: ', err);
-			throw err;
+			throw err; // TODO: SHOULD WE PROPAGATE?
 			// setUser(null);
 			// setIsAuthenticated(false);
 		} finally {
-			setIsLoading(false);
+			// setIsLoading(false);
+		}
+	}
+
+	async function send2FACode(loginChallengeID: number, method: string) {
+		return apiClient.send2FACode({ loginChallengeID, method });
+	}
+	
+	async function verify2FACode(loginChallengeID: number, method: string, code: string) {
+		try {
+			const { user, accessToken } = await apiClient.verify2FACode({ loginChallengeID, method, code });
+			
+			setLoggedInUser(user);
+			setIsAuthenticated(true);
+
+			sessionStorage.removeItem('loginChallengeID');
+			sessionStorage.removeItem('enabledMethods');
+	
+			socket.connect(accessToken);
+			return { user, accessToken };
+		} catch (err) {
+			console.log('Verify2FACode Error Catched in AuthContext: ', err);
+			throw err; // TODO: SHOULD WE PROPAGATE?
 		}
 	}
 
 	async function logout() {
 		try {
-			await api.logout();
-			setUser(null);
+			await apiClient.logout();
+			setLoggedInUser(null);
 			setIsAuthenticated(false);
 			socket.disconnect();
 		} catch (err) {
 			console.log('Logout Error Catched in AuthContext: ', err);
-			throw err;
+			throw err; // TODO: SHOULD WE PROPAGATE?
 		}
 	}
 	
@@ -127,34 +114,32 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		password: string 
 	) {
 		try {
-			await api.register({ first_name, last_name, username, email, password });
+			await apiClient.register({ first_name, last_name, username, email, password });
 		} catch (err) {
 			console.log('Register Error Catched in AuthContext: ', err);
 			throw err;
 		}
 	}
 
-	async function updateUser(payload: Partial<User>) {
-		setUser(prev => prev ? { ...prev, ...payload } : prev);
+	async function updateLoggedInUserState(payload: Partial<LoggedInUser>) {
+		setLoggedInUser(prev => prev ? { ...prev, ...payload } : prev);
 	}
 
 	const value = {
-		// state
-		// accessToken,
-		user,
-		updateUser,
+		// STATE
+		loggedInUser,
+		updateLoggedInUserState,
 		isLoading,
 		isAuthenticated,
 
-		// actions
+		// ACTIONS
 		register,
 		login,
+		send2FACode,
+		verify2FACode,
 		logout,
-		api,
+		apiClient,
 		socket
-		// refreshToken,
-		// getCurrentUser,
-		// authFetch
 	};
 
 	return (

@@ -3,7 +3,7 @@ import Image from "next/image";
 import SettingsCard from "../SettingsCards";
 import { XIcon, Fingerprint, Smartphone, Mail, Check, Laptop, MapPin, Clock, Trash2, Monitor } from "lucide-react";
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
-import MFASetup from "../../../mfa/page";
+import MFASetup from "../../../2fa/page";
 import ChangePasswordForm from "./ChangePasswordForm";
 import TwoFactorAuth from "./TwoFactorAuth";
 import { useRouter } from "next/navigation";

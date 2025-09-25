@@ -4,14 +4,22 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useHeaderContext } from "./context/HeaderContext";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../../contexts/AuthContext";
+
+interface SearchByUsernameResult {
+	id: number,
+	username: string,
+	avatar_url: string
+}
 
 export default function Search() {
 	const router = useRouter();
+	const { apiClient } = useAuth();
 	const [search, setSearch] = useState<string>("");
 	const div1Ref = useRef<HTMLDivElement>(null);
 	const div2Ref = useRef<HTMLDivElement>(null);
 
-	const [results, setResults] = useState([]);
+	const [results, setResults] = useState<SearchByUsernameResult[]>([]);
 
 	const { setIsNotif, setIsProfile, isSearch, setIsSearch } = useHeaderContext();
 
@@ -58,10 +66,16 @@ export default function Search() {
 			return ;
 		}
 
-		fetch(`http://localhost:4025/api/users/search?username=${search}`)
-		.then(res => res.json())
-		.then(data => { setResults(data); console.log(data); })
-		.catch(() => setResults([]));
+		async function fetchUsersByUsername() {
+			try {
+				const data = await apiClient.searchUsersByUsername(search);
+				setResults(data);
+			} catch {
+				setResults([]);
+			}
+		}
+
+		fetchUsersByUsername();
 	}, [search]);
 
 	return (
@@ -131,29 +145,20 @@ export default function Search() {
 								className="min-h-90 max-h-118 border-br-card custom-scroll
 									mt-3 h-full w-full overflow-auto rounded-lg border-2 bg-white/10"
 							>
-								{/* {Array.from({ length: 10 }).map((_, i) => (
-								<div
-									key={i}
-									className="w-full h-17 flex items-center border-b-1
-										border-b-br-card pl-10 hover:bg-hbg/30 hover:cursor-pointer"
-									>
-									Person
-									</div>
-							))} */}
 								<ul>
 									{results.map((elem) => {
-										// return <li key={elem.username}>{elem.username}</li>;
 										return (
-												<div
-													onClick={() => {setIsSearch(false); router.push(`/users/${elem.username}`); }}
+												<a
+													href={`/users/${elem.username}`}
+													onClick={() => setIsSearch(false)}
 													key={elem.username}
 													className="w-full h-17 flex items-center gap-4 border-b-1
 														border-b-br-card pl-10 hover:bg-hbg/30 hover:cursor-pointer
 														"
 												>
-													<Image src={`http://localhost:4025/api/users${elem.avatar_path}`} alt="Command Logo" width={42} height={42} className="rounded-full border-2 border-white/20"/>
+													<Image src={`http://localhost:4025/api${elem.avatar_url}`} alt="Command Logo" width={42} height={42} className="rounded-full border-2 border-white/20"/>
 													<p>{elem.username}</p>
-												</div>
+												</a>
 										);
 									})}
 								</ul>

@@ -18,7 +18,7 @@ const MIGRATIONS = [
 				username TEXT UNIQUE NOT NULL,
 				password TEXT,
 				bio TEXT DEFAULT 'DFK',
-				avatar_path TEXT DEFAULT '/avatars/default.png',
+				avatar_url TEXT DEFAULT '/users/avatars/default.png',
 
 				-- EXTRA
 				auth_provider TEXT DEFAULT 'local',
@@ -74,17 +74,16 @@ const MIGRATIONS = [
 		name: 'create-pending-2fa-table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS pending_2fa (
-				id INTEGER PRIMARY KEY AUTOINCREMENT, -- 2FA ID
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				
-				method TEXT NOT NULL, -- email, sms, totp,
-				otp_temp_code TEXT,
-				totp_temp_secret TEXT,
+				method TEXT NOT NULL,
+				temp_value TEXT,
 
 				expires_at DATETIME,
 
 				user_id INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id)
-			)
+			);
 		`
 	},
 	{
@@ -194,6 +193,8 @@ const MIGRATIONS = [
 				
 				method TEXT, -- email, sms, totp,
 				code TEXT,
+				remaining_attempts INTEGER,
+				remaining_resends INTEGER,
 
 				expires_at DATETIME,
 

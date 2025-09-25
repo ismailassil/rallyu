@@ -7,7 +7,7 @@ import Security from "./components/Security/Security";
 import { useState } from "react";
 import { Cog, UsersIcon, Gamepad2, Fingerprint } from "lucide-react";
 import { Toaster, toast } from "sonner";
-import { alertLoading } from "@/app/(auth)/components/Alert";
+import { alertLoading } from "@/app/(auth)/components/CustomToast";
 
 const tabs = [
 	{ key: 'General', label: 'General', icon: <Cog size={18} /> },

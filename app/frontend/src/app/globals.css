@@ -1,6 +1,11 @@
-@import url('https://fonts.cdnfonts.com/css/serious');
+/* @import url('https://fonts.cdnfonts.com/css/serious'); */
+/* @import "tailwindcss"; */
+
+/* @import "tailwindcss/preflight"; */
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
 @import "tailwindcss";
-@tailwind utilities;
 
 :root {
 	--background: black;
@@ -66,7 +71,10 @@
 	--color-bg: rgba(255, 255, 255, 0.08);
 	--color-hbbg: rgba(255, 255, 255, 0.1);
 	--color-hbg: rgba(255, 255, 255, 0.07);
-	--font-fdisplay: var(--font-funnel-display);
+
+	/* --color-bg-main-card: rgba(255, 255, 255, 0.04);
+	--color-br-main-card: rgba(255, 255, 255, 0.06); */
+	--font-funnel-display: var(--font-funnel-display);
 }
 
 .scrolling {
@@ -360,6 +368,65 @@ input[type='number']::-webkit-inner-spin-button {
 }
 
 /* GLOBAL CSS (xezzuz) */
+
+/* --------- Cards --------- */
+.main-card-wrapper {
+	background-color: rgba(255, 255, 255, 0.04);
+	border-color: rgba(255, 255, 255, 0.06);
+	border-width: 1px;
+	border-radius: var(--radius-2xl);
+	backdrop-filter: blur(10px);
+}
+
+.profile-inner-stat-card {
+	@apply bg-white/4 border border-white/10 rounded-2xl px-4 py-2 backdrop-blur-xl;
+	
+	@apply hover:bg-white/6;
+
+	@apply flex flex-col flex-1 justify-between gap-1 items-center select-none;
+
+	@apply transition-all duration-300 hover:scale-101;
+
+	@apply lg:flex-row;
+}
+
+.profile-card-button {
+	@apply bg-white/4 border border-white/10 rounded-xl px-4 py-2 backdrop-blur-xl;
+
+	@apply hover:bg-white/6;
+
+	@apply transition-all duration-300 hover:scale-101;
+}
+
+.chart-card-wrapper {
+	@apply bg-white/4 border border-white/10 rounded-2xl pt-4 backdrop-blur-xl;
+
+	@apply select-none;
+
+	@apply hover:bg-white/6;
+
+	@apply transition-all duration-300 hover:scale-101;
+}
+
+.single-game-history-card {
+	@apply bg-white/4 border border-white/10 rounded-2xl px-5 py-6 backdrop-blur-xl;
+
+	@apply flex justify-between gap-1 items-center select-none;
+	
+	@apply hover:bg-white/6;
+
+	@apply transition-all duration-300 hover:scale-101;
+}
+
+.single-leaderboard-item-card {
+	@apply bg-white/4 border border-white/10 rounded-2xl px-5 py-4 backdrop-blur-xl;
+
+	@apply flex justify-center items-center gap-4 select-none;
+	
+	@apply hover:bg-white/6;
+
+	@apply transition-all duration-300 hover:scale-101;
+}
 
 /* --------- OR --------- */
 .or-separator::before,

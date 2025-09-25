@@ -46,7 +46,7 @@ export default function FormFieldAvailability({
 	setFieldAvailable
 }: FormFieldAvailabilityProps) {
 	const [fieldStatus, setFieldStatus] = useState<FieldStatus>(null);
-	const { user, isAuthenticated, isLoading } = useAuth();
+	const { loggedInUser, isAuthenticated, isLoading } = useAuth();
 
 	useEffect(() => {
 			setFieldStatus('CHECKING');
@@ -65,7 +65,7 @@ export default function FormFieldAvailability({
 				}
 			}
 			if (!isLoading) {
-				if (isAuthenticated && ((name == 'username' && user?.username == value.trim()) || (name == 'email' && user?.email == value.trim()))) {
+				if (isAuthenticated && ((name == 'username' && loggedInUser?.username == value.trim()) || (name == 'email' && loggedInUser?.email == value.trim()))) {
 					setFieldStatus(null);
 					setFieldAvailable?.(name, true);
 				}

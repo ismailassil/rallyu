@@ -5,7 +5,7 @@ import { CircleMinus, X } from "lucide-react";
 
 
 export default function BlockedList() {
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 	const [blocked, setBlocked] = useState<UserItem[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
@@ -13,7 +13,7 @@ export default function BlockedList() {
 		async function fetchBlockedUsers() {
 		  try {
 			setIsLoading(true);
-			const data = await api.getAllBlocked();
+			const data = await apiClient.getAllBlocked();
 			const mappedBlocked = mapAPIUserItemtoUserItem(data);
 			setBlocked(mappedBlocked);
 		  } catch (err) {
@@ -28,7 +28,7 @@ export default function BlockedList() {
 
 	async function handleUnblock(user_id: number) {
 		try {
-			await api.unblockUser(user_id);
+			await apiClient.unblockUser(user_id);
 			setBlocked(prev => prev.filter(blocked => blocked.id !== user_id));
 		} catch (err) {
 			alert('Error unblocking');

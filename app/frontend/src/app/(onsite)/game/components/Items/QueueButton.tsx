@@ -3,7 +3,7 @@ import AnimatedLetters from "./AnimatedLetters";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 
 function QueueButton() {
-	const { user, api } = useAuth();
+	const { loggedInUser, apiClient } = useAuth();
 	const [ clicked, setClicked ] = useState(false);
 
 	const onClick = async (e: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
@@ -11,10 +11,10 @@ function QueueButton() {
 		try {
 			// connect to match maker
 			if (!clicked) {
-				const res = await api.instance.post("/v1/matchmaking/join", { id: user?.id });
+				const res = await apiClient.instance.post("/v1/matchmaking/join", { id: loggedInUser?.id });
 				console.log(res);
 
-				const ws = api.connectWebSocket("/v1/matchmaking/join");
+				const ws = apiClient.connectWebSocket("/v1/matchmaking/join");
 
 				ws.onopen = () => {
 					console.log('WebSocket connected');

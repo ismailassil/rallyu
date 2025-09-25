@@ -13,16 +13,16 @@ interface ProfilePreviewProps {
 }
 
 export default function ProfilePreview({ values, file, preview, onAdd, onRemove } : ProfilePreviewProps) {
-	const { user } = useAuth();
+	const { loggedInUser } = useAuth();
 
-	console.log('PROFILE PREVIEW IN SETTINGS: ', user);
+	console.log('PROFILE PREVIEW IN SETTINGS: ', loggedInUser);
 
 	return (
 		<div className="flex items-center bg-gradient-to-br from-white/0 to-white/8 border-1 border-white/10 w-full rounded-3xl py-6 px-8 justify-between">
 			<div className="flex gap-8">
 				<div className="rounded-full h-27 w-27 ring-4 ring-white/10 relative">
 					<Image
-						src={preview || user!.avatar_url || '/profile/image.png'} // TODO
+						src={preview || loggedInUser!.avatar_url || '/profile/image.png'} // TODO
 						alt="Profile Image"
 						fill
 						className="h-full w-full object-cover rounded-full"
@@ -38,16 +38,16 @@ export default function ProfilePreview({ values, file, preview, onAdd, onRemove 
 				</div>
 				<div>
 					<h1 className="font-bold text-xl text-white/90 capitalize">
-						{values.fname || user!.first_name} {values.lname || user!.last_name}
+						{values.fname || loggedInUser!.first_name} {values.lname || loggedInUser!.last_name}
 					</h1>
 					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
-						@{values.username || user!.username}
+						@{values.username || loggedInUser!.username}
 					</p>
 					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
-						{values.email || user!.email}
+						{values.email || loggedInUser!.email}
 					</p>
 					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
-						{values.bio || user!.bio}
+						{values.bio || loggedInUser!.bio}
 					</p>
 				</div>
 			</div>

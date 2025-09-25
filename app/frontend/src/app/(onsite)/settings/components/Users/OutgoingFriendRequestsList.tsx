@@ -4,7 +4,7 @@ import UserList, { UserItem, mapAPIUserItemtoUserItem } from "./UserList";
 import { CircleMinus, X } from "lucide-react";
 
 export default function OutgoingFriendRequestsList() {
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 	const [outgoing, setOutgoing] = useState<UserItem[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
@@ -12,7 +12,7 @@ export default function OutgoingFriendRequestsList() {
 		async function fetchOutgoingRequests() {
 			try {
 				setIsLoading(true);
-				const data = await api.getAllOutgoingFriendRequests();
+				const data = await apiClient.getAllOutgoingFriendRequests();
 				const mappedOutgoing = mapAPIUserItemtoUserItem(data);
 				setOutgoing(mappedOutgoing);
 			} catch (err) {
@@ -26,7 +26,7 @@ export default function OutgoingFriendRequestsList() {
 
 	async function handleCancel(user_id: number) {
 		try {
-			await api.cancelFriendRequest(user_id);
+			await apiClient.cancelFriendRequest(user_id);
 			setOutgoing(prev => prev.filter(request => request.id !== user_id));
 		} catch (err) {
 			alert("Error canceling request");

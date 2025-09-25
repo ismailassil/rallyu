@@ -5,14 +5,14 @@ const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   /* config options here */
-  // reactStrictMode: false,
+  reactStrictMode: false,
   images: {
     remotePatterns: [
       {
         protocol: "http",
         hostname: "localhost",
         port: "4025",
-        pathname: "/api/users/avatars/*",
+        pathname: "/api/users/avatars/**",
       },
     ],
   },

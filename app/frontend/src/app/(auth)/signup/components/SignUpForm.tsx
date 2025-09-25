@@ -5,7 +5,7 @@ import { useState } from 'react';
 import useForm from '../hooks/useForm';
 import FormField from './FormField';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { alertError, alertSuccess } from '../../components/Alert';
+import { alertError, alertSuccess } from '../../components/CustomToast';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
@@ -51,10 +51,11 @@ export default function SignUpForm() {
 				formData.password
 			);
 			alertSuccess('Account created successfully...');
-			setTimeout(() => {
-				toast.dismiss();
-				router.replace('/login');
-			}, 2000);
+			// setTimeout(() => {
+			// 	toast.dismiss();
+			// 	router.replace('/login');
+			// }, 2000);
+			router.replace('/login');
 		} catch (err: any) {
 			const msg = err.message;
 			alertError(msg);

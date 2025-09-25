@@ -25,7 +25,7 @@ function TournamentCard({
 	isUserIn: boolean;
 	state: string;
 }) {
-	const { user, api } = useAuth();
+	const { loggedInUser, apiClient } = useAuth();
 	const router = useRouter();
 	const [joined, setJoined] = useState(isUserIn);
 
@@ -38,8 +38,7 @@ function TournamentCard({
 
 		if (target.closest("button")) {
 			try {
-				const res: AxiosResponse = await api.instance.patch(`/v1/tournament/match/join/${id}`, { id: user?.id });
-
+				const res: AxiosResponse = await apiClient.instance.patch(`/v1/tournament/match/join/${id}`, { id: loggedInUser?.id });
 				setJoined(true);
 			} catch (err: unknown) {
 				console.error(err);

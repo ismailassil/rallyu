@@ -49,6 +49,8 @@ function shouldIgnorePath(path: string): boolean {
 		'/api/auth/refresh',
 		'/api/auth/login',
 		'/api/auth/register',
+		'/api/auth/login/2fa/send',
+		'/api/auth/login/2fa/verify'
 	];
 
 	const avatarPath = '/api/users/avatars';

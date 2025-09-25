@@ -1,28 +1,19 @@
-import fastify, { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { FastifyInstance } from "fastify";
 import UserController from "../controllers/userController";
-import StatsController from "../controllers/statsController";
-import RelationsController from "../controllers/userRelationsContoller";
+import RelationsController from "../controllers/relationsContoller";
 import RelationsRepository from "../repositories/relationsRepository";
-import { matchesRequestSchema, relationsRequestSchema, statsRequestSchema, userMatchesSchema, userProfileSchema, userUpdateSchema } from "../schemas/users.schema";
+import { relationsRequestSchema, userMatchesSchema, userProfileSchema, userUpdateSchema } from "../schemas/users.schema";
 import Authenticate from "../middleware/Authenticate";
-import MatchesRepository from "../repositories/matchesRepository";
-import fastifyMutipart from '@fastify/multipart';
+import fastifyMultipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import path from "path";
-import { IRelationsRequest } from "../types";
-import MatchesController from "../controllers/matchesController";
 import UserRepository from "../repositories/userRepository";
+import UserService from "../services/userService";
+import RelationsService from "../services/relationsService";
 
-async function userRouter(fastify: FastifyInstance) {
-	const userController: UserController = new UserController();
-	const statsController: StatsController = new StatsController();
-	const relationsController: RelationsController = new RelationsController();
-	const usersRepo: UserRepository = new UserRepository();
-	const relRepo: RelationsRepository = new RelationsRepository();
-	const statsRepo: MatchesRepository = new MatchesRepository();
-	const matchesController: MatchesController = new MatchesController();
+async function userRouter(fastify: FastifyInstance, opts: { userController: UserController, relationsController: RelationsController }) {
 
-	await fastify.register(fastifyMutipart, {
+	await fastify.register(fastifyMultipart, {
 		limits: {
 			files: 1,
 			fileSize: 2 * 1024 * 1024,
@@ -39,155 +30,121 @@ async function userRouter(fastify: FastifyInstance) {
 	fastify.decorate('requireAuth', { preHandler: fastify.authenticate }); // preHandler hook
 	fastify.decorateRequest('user', null);
 
-	fastify.get('/available', userController.UsernameEmailAvailable.bind(userController));
+	
+	/*-------------------------------------------- AVAILABILITY --------------------------------------------*/
 
-	/*-------------------------------------------- USER MANAGEMENT --------------------------------------------*/
-	fastify.get('/search', {
-		// preHandler: fastify.authenticate,
-		handler: async (request: FastifyRequest, reply: FastifyReply) => {
-			try {
-				const { username } = request.query as { username: string };
-
-				const results = await usersRepo.searchByUsername(username);
-
-				console.log('Search result: ', results);
-
-				reply.status(200).send(results);
-			} catch (err: any) {
-				reply.status(500);
-			}
-		}
+	fastify.get('/username-available', {
+		handler: opts.userController.usernameAvailable.bind(opts.userController)
+	});
+	fastify.get('/email-available', {
+		handler: opts.userController.emailAvailable.bind(opts.userController)
 	});
 
-	fastify.get('/me', {
-		// schema: userProfileSchema,
-		preHandler: fastify.authenticate,
-		handler: userController.fetchMe.bind(userController)
-	});
+
+	/*------------------------------------------------ USERS ------------------------------------------------*/
 
 	fastify.get('/:username', {
 		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
-		handler: userController.getUser.bind(userController)
+		handler: opts.userController.fetchUser.bind(opts.userController)
 	});
-	
 	fastify.put('/:username', {
 		schema: userUpdateSchema,
 		preHandler: fastify.authenticate,
-		handler: userController.updateUser.bind(userController)
+		handler: opts.userController.updateUser.bind(opts.userController)
 	});
-	
 	fastify.delete('/:username', {
 		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
-		handler: userController.deleteUser.bind(userController)
+		handler: opts.userController.deleteUser.bind(opts.userController)
 	});
 	
-	fastify.get('/:username/stats', {
+	fastify.get('/leaderboard', {
+		// schema: userMatchesSchema,
+		preHandler: fastify.authenticate,
+		handler: opts.userController.fetchRankLeaderboard.bind(opts.userController)
+	});
+	fastify.get('/:username/matches', {
+		// schema: userMatchesSchema,
+		preHandler: fastify.authenticate,
+		handler: opts.userController.fetchUserMatches.bind(opts.userController)
+	});
+	fastify.get('/:username/analytics', {
 		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
-		handler: userController.getUserStats.bind(userController)
+		handler: opts.userController.fetchUserAnalytics.bind(opts.userController)
 	});
-	
-	fastify.get('/:username/matches', {
-		schema: userMatchesSchema,
+	fastify.get('/:username/analytics-by-day', {
+		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
-		handler: userController.getUserMatches.bind(userController)
+		handler: opts.userController.fetchUserAnalyticsByDay.bind(opts.userController)
 	});
+
 
 	fastify.post('/:username/avatar', {
 		preHandler: fastify.authenticate,
-		handler: userController.uploadAvatar.bind(userController)
+		handler: opts.userController.uploadAvatar.bind(opts.userController)
+	});
+
+	fastify.get('/search-by-username', {
+		preHandler: fastify.authenticate,
+		handler: opts.userController.searchUserByUsername.bind(opts.userController)
 	});
 
 
 	/*-------------------------------------------- USER RELATIONS --------------------------------------------*/
-	
-	fastify.post('/:user_id/friends/requests', {
-		preHandler: fastify.authenticate,
-		schema: relationsRequestSchema,
-		handler: relationsController.sendFriendRequest.bind(relationsController)
-	});
-	
-	fastify.delete('/:user_id/friends/requests', {
-		preHandler: fastify.authenticate,
-		schema: relationsRequestSchema,
-		handler: relationsController.cancelFriendRequest.bind(relationsController)
-	});
-	
-	fastify.put('/:user_id/friends/accept', {
-		preHandler: fastify.authenticate,
-		schema: relationsRequestSchema,
-		handler: relationsController.acceptFriendRequest.bind(relationsController)
-	});
-	
-	fastify.put('/:user_id/friends/reject', {
-		preHandler: fastify.authenticate,
-		schema: relationsRequestSchema,
-		handler: relationsController.rejectFriendRequest.bind(relationsController)
-	});
-	
-	fastify.delete('/:user_id/friends', {
-		preHandler: fastify.authenticate,
-		schema: relationsRequestSchema,
-		handler: relationsController.unfriend.bind(relationsController)
-	});
-	
-	fastify.post('/:user_id/block', {
-		preHandler: fastify.authenticate,
-		schema: relationsRequestSchema,
-		handler: relationsController.blockUser.bind(relationsController)
-	});
 
-	fastify.delete('/:user_id/block', {
-		preHandler: fastify.authenticate,
-		schema: relationsRequestSchema,
-		handler: relationsController.unblockUser.bind(relationsController)
-	});
-	
 	fastify.get('/friends', {
 		preHandler: fastify.authenticate,
-		handler: relationsController.getAllFriends.bind(relationsController)
+		handler: opts.relationsController.fetchFriends.bind(opts.relationsController)
 	});
 	fastify.get('/blocked', {
 		preHandler: fastify.authenticate,
-		handler: relationsController.getAllBlocked.bind(relationsController)
+		handler: opts.relationsController.fetchBlocked.bind(opts.relationsController)
 	});
 	fastify.get('/friends/requests/incoming', {
 		preHandler: fastify.authenticate,
-		handler: relationsController.getAllIncomingFriendRequests.bind(relationsController)
+		handler: opts.relationsController.fetchIncomingFriendRequests.bind(opts.relationsController)
 	});
 	fastify.get('/friends/requests/outgoing', {
 		preHandler: fastify.authenticate,
-		handler: relationsController.getAllOutgoingFriendRequests.bind(relationsController)
+		handler: opts.relationsController.fetchOutgoingFriendRequests.bind(opts.relationsController)
 	});
 
-	// USER MANAGEMENT (admin or self-service)
-	// GET /users — List users (admin only)
-	// POST /users — Create user (admin creating users directly)
-	// GET /users/:id — Get user by ID
-	// PUT /users/:id — Full update of user info
-	// PATCH /users/:id — Partial update of user info
-	// DELETE /users/:id — Delete user
-	
-	// POST /reset-password/setup - Reset password (check if a account exists + send OTP to email)
-	// POST /reset-password/verify - Check if OTP is valid
-	// POST /reset-password/update - Update password
-	
-	// ACCOUNT MANAGEMENT (self-service)
-	// GET /account — Get own profile (alias for /auth/me)
-	// PATCH /account — Update own profile
-	// DELETE /account — Delete own account (optional)
-
-	/*-------------------------------------------- MATCHES --------------------------------------------*/
-	fastify.get('/match/:id', {
-		// preHandler: fastify.authenticate,
-		handler: matchesController.getMatch.bind(matchesController)
+	fastify.post('/:user_id/friends/requests', {
+		preHandler: fastify.authenticate,
+		schema: relationsRequestSchema,
+		handler: opts.relationsController.sendFriendRequest.bind(opts.relationsController)
 	});
-
-	fastify.post('/match', {
-		// preHandler: fastify.authenticate,
-		handler: matchesController.newMatch.bind(matchesController)
+	fastify.delete('/:user_id/friends/requests', {
+		preHandler: fastify.authenticate,
+		schema: relationsRequestSchema,
+		handler: opts.relationsController.cancelFriendRequest.bind(opts.relationsController)
+	});
+	fastify.put('/:user_id/friends/accept', {
+		preHandler: fastify.authenticate,
+		schema: relationsRequestSchema,
+		handler: opts.relationsController.acceptFriendRequest.bind(opts.relationsController)
+	});
+	fastify.put('/:user_id/friends/reject', {
+		preHandler: fastify.authenticate,
+		schema: relationsRequestSchema,
+		handler: opts.relationsController.rejectFriendRequest.bind(opts.relationsController)
+	});
+	fastify.delete('/:user_id/friends', {
+		preHandler: fastify.authenticate,
+		schema: relationsRequestSchema,
+		handler: opts.relationsController.unfriend.bind(opts.relationsController)
+	});
+	fastify.post('/:user_id/block', {
+		preHandler: fastify.authenticate,
+		schema: relationsRequestSchema,
+		handler: opts.relationsController.blockUser.bind(opts.relationsController)
+	});
+	fastify.delete('/:user_id/block', {
+		preHandler: fastify.authenticate,
+		schema: relationsRequestSchema,
+		handler: opts.relationsController.unblockUser.bind(opts.relationsController)
 	});
 }
 

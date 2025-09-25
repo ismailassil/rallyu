@@ -57,7 +57,7 @@ class AuthResponseFactory {
 
 		return {
 			status: statusCode,
-			body: { success: true, data: data ?? null }
+			body: { success: true, data: data ?? {} }
 		}
 	}
 }

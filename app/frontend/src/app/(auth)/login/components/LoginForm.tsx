@@ -1,22 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import Image from 'next/image';
 import FormFieldError from '../../signup/components/FormFieldError';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { toast } from 'sonner';
-import { alertError, alertSuccess } from '../../components/Alert';
+import { alertError, alertLoading, alertSuccess } from '../../components/CustomToast';
+import { useRouter } from 'next/navigation';
+import { APIError } from '@/app/(api)/APIClient';
 
 export default function LoginForm() {
 	const { login } = useAuth();
+	const router = useRouter();
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [usernameError, setUsernameError] = useState('');
 	const [passwordError, setPasswordError] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	useEffect(() => {
+		console.log('MOUNTING LOGIN FORM COMPONENT');
+	}, []);
 
 	function handleToggleShowPassword() {
 		setShowPassword(!showPassword);
@@ -37,8 +43,7 @@ export default function LoginForm() {
 	
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
-		toast.dismiss();
-
+		
 		const usernameErr = username ? '' : 'Username is required';
 		const passwordErr = password ? '' : 'Password is required';
 		setUsernameError(usernameErr);
@@ -49,12 +54,20 @@ export default function LoginForm() {
 		
 		setIsSubmitting(true);
 		try {
-			// alertLoading('Loggin you in...');
-			await login(username, password);
-			alertSuccess('Logged in successfully');
-		} catch (err: any) {
-			const msg = err.message;
-			alertError(msg);
+			alertLoading('Loggin you in...');
+			const res = await login(username, password);
+			if (res._2FARequired) {
+				alertSuccess('Two Factor Authentication is required!');
+
+				// setTimeout(() => {
+					router.push('/two-factorv3');
+				// }, 1000);
+			} else
+				alertSuccess('Logged in successfully');
+		} catch (err) {
+			console.log('ERROR CATCHED IN LOGIN FORM SUBMIT: ', err);
+			const apiErr = err as APIError;
+			alertError(apiErr.message);
 		} finally {
 			setIsSubmitting(false);
 		}

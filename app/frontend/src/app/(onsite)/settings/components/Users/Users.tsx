@@ -85,7 +85,7 @@ import IncomingFriendRequestsList from './IncomingFriendRequestsList';
 // }
 
 // function FriendsList() {
-// 	const { api } = useAuth();
+// 	const { apiClient } = useAuth();
 // 	const [friends, setFriends] = useState([]);
 // 	const [isLoading, setIsLoading] = useState(true);
 
@@ -94,7 +94,7 @@ import IncomingFriendRequestsList from './IncomingFriendRequestsList';
 // 		async function fetchFriends() {
 // 		  try {
 // 			setIsLoading(true);
-// 			const data = await api.getAllFriends();
+// 			const data = await apiClient.getAllFriends();
 // 			setFriends(data);
 // 		  } catch (err) {
 // 			alert('Error fetching friends');
@@ -108,7 +108,7 @@ import IncomingFriendRequestsList from './IncomingFriendRequestsList';
 
 // 	async function handleUnfriend(user_id: number) {
 // 		try {
-// 			await api.unfriend(user_id);
+// 			await apiClient.unfriend(user_id);
 // 			setFriends(prev => prev.filter(friend => friend.id !== user_id));
 // 		} catch (err) {
 // 			alert('Error unfriending');
@@ -121,7 +121,7 @@ import IncomingFriendRequestsList from './IncomingFriendRequestsList';
 
 // 	return (
 // 		<div className='grid grid-cols-2 px-18 gap-3'>
-// 			{friends.map(({ id, first_name, last_name, updated_at, avatar_path }) => (
+// 			{friends.map(({ id, first_name, last_name, updated_at, avatar_url }) => (
 // 				<div
 // 					key={id}
 // 					className={`${funnelDisplay.className} w-full rounded-2xl bg-gradient-to-br from-white/0 to-white/4 border-1 border-white/10
@@ -130,7 +130,7 @@ import IncomingFriendRequestsList from './IncomingFriendRequestsList';
 // 					<div className='flex gap-3 items-center'>
 // 						<div className="rounded-full h-10 w-10 ring-1 ring-white/10">
 // 							<Image
-// 								src={`http://localhost:4025/api/users${avatar_path}` || '/profile/image.png'}
+// 								src={`http://localhost:4025/api${avatar_url}` || '/profile/image.png'}
 // 								alt="Profile Image"
 // 								width={96}
 // 								height={96}

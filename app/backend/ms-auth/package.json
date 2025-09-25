@@ -32,9 +32,9 @@
     "qrcode": "^1.5.4",
     "speakeasy": "^2.0.0",
     "sqlite3": "^5.1.7",
+    "ts-node": "10.9.2",
     "typescript": "^5.8.3",
     "ua-parser-js": "^2.0.3",
-    "zod": "^3.25.67",
-    "ts-node": "10.9.2"
+    "zod": "^3.25.76"
   }
 }
