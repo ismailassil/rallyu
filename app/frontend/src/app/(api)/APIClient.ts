@@ -143,12 +143,12 @@ export class APIClient {
 		return res.data;
 	}
 
-	// async getUserAvatar(url: string) {
-	// 	const { data } = await this.client.get(`/users${url}`, {
-	// 		responseType: 'blob'
-	// 	});
-	// 	return data;
-	// }
+	async getUserAvatarBlob(url: string) {
+		const { data } = await this.client.get(`${url}`, {
+			responseType: 'blob'
+		});
+		return data;
+	}
 	
 	async uploadUserAvatar(profilePicture: FormData) {
 		const { data: res } = await this.client.post(`/users/TODO/avatar`, profilePicture, {

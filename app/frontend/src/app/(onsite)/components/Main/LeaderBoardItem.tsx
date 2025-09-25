@@ -40,7 +40,7 @@ export default function LeaderboardItem({
 
 			{/* Profile Image */}
 			<div className="flex ring-accen ring-2 aspect-square h-[40px] w-[40px] items-center justify-center rounded-full lg:h-[45px] lg:w-[45px]">
-				<Avatar avatar={img} width={100} height={100} className='overflow-hidden rounded-full' />
+				<Avatar avatar={img} width={100} height={100} className='h-full w-full' />
 			</div>
 
 			{/* Middle Content */}
