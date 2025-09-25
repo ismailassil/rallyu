@@ -5,6 +5,7 @@ import AuthProvider from "./(onsite)/contexts/AuthContext";
 import Script from "next/script";
 import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import funnelDisplay from "./fonts/FunnelDisplay";
 
 export const metadata: Metadata = {
 	title: "Rallyu",
