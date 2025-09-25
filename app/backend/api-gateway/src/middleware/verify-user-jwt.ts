@@ -5,6 +5,7 @@ import chalk from 'chalk';
 
 export const verifyUserJWT = async (req: FastifyRequest, rep: FastifyReply) => {
 	fastify.log.info(chalk.yellow("[REQUEST]: " + req.url));
+	fastify.log.info(chalk.yellow("IS PUBLIC ROUTE? " + shouldIgnorePath(req.url)));
 	if (shouldIgnorePath(req.url)) return;
 
 	fastify.log.info(chalk.green('[REQUEST][PASSED]: ' + req.url));
@@ -50,18 +51,20 @@ function shouldIgnorePath(path: string): boolean {
 		'/api/auth/login',
 		'/api/auth/register',
 		'/api/auth/login/2fa/send',
-		'/api/auth/login/2fa/verify'
+		'/api/auth/login/2fa/verify',
 	];
 
 	const avatarPath = '/api/users/avatars';
-	const availablePath = '/api/users/available';
+	const usernameAvailablePath = '/api/users/username-available';
+	const emailAvailablePath = '/api/users/email-available';
 	const resetPath = 'api/auth/reset';
 	const searchTEMP = '/api/users/search';
 
 	return (
 		allRoutes.includes(path) ||
 		path.startsWith(avatarPath) ||
-		path.startsWith(availablePath) ||
+		path.startsWith(usernameAvailablePath) ||
+		path.startsWith(emailAvailablePath) ||
 		path.startsWith(resetPath) ||
 		path.startsWith(searchTEMP)
 	);

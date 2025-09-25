@@ -17,7 +17,9 @@ class UserController {
 
 			const isTaken = await this.userService.isUsernameTaken(username);
 
-			reply.status(isTaken ? 404 : 200).send({ success: true, available: !isTaken });
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, !isTaken);
+
+			reply.status(status).send(body);
 
 		} catch (err: any) {
 			reply.status(500).send({ success: false, data: {} })
@@ -31,7 +33,9 @@ class UserController {
 
 			const isTaken = await this.userService.isEmailTaken(email);
 
-			reply.status(isTaken ? 404 : 200).send({ success: true, available: !isTaken });
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, !isTaken);
+
+			reply.status(status).send(body);
 
 		} catch (err: any) {
 			reply.status(500).send({ success: false, data: {} })
