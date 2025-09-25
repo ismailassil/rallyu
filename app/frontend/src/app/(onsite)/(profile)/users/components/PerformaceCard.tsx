@@ -23,7 +23,12 @@ export default function PerformanceCard({ totalXP, totalMatches, longestStreak, 
 				<div className="profile-inner-stat-card">
 					<p className="text-2xl text-white/60 font-bold">Total XP</p>
 					<p className="text-3xl text-white/80 font-bold">
-						<CountUp end={totalXP} /> XP
+						<CountUp 
+							end={totalXP} 
+							suffix={' XP'} 
+							duration={5} 
+							useEasing={true} 
+						/>
 					</p>
 				</div>
 
@@ -36,7 +41,11 @@ export default function PerformanceCard({ totalXP, totalMatches, longestStreak, 
 							Played
 						</p>
 						<p className="text-3xl text-white/80 font-bold">
-							<CountUp end={totalMatches} />
+							<CountUp 
+								end={totalMatches} 
+								duration={5} 
+								useEasing={true} 
+							/>
 						</p>
 					</div>
 					<div className="profile-inner-stat-card">
@@ -47,7 +56,11 @@ export default function PerformanceCard({ totalXP, totalMatches, longestStreak, 
 							Streak
 						</p>
 						<p className="text-3xl text-white/80 font-bold">
-							<CountUp end={longestStreak} />
+							<CountUp 
+								end={longestStreak} 
+								duration={5} 
+								useEasing={true} 
+							/>
 						</p>
 					</div>
 				</div>
@@ -56,19 +69,31 @@ export default function PerformanceCard({ totalXP, totalMatches, longestStreak, 
 					<div className="profile-inner-stat-card">
 						<p className="text-lg text-white/60 font-bold">Wins</p>
 						<p className="text-3xl text-white/80 font-bold">
-							<CountUp end={wins} />
+							<CountUp 
+								end={wins} 
+								duration={5} 
+								useEasing={true} 
+							/>
 						</p>
 					</div>
 					<div className="profile-inner-stat-card">
 						<p className="text-lg text-white/60 font-bold">Losses</p>
 						<p className="text-3xl text-white/80 font-bold">
-							<CountUp end={losses} />
+							<CountUp 
+								end={losses} 
+								duration={5} 
+								useEasing={true} 
+							/>
 						</p>
 					</div>
 					<div className="profile-inner-stat-card">
 						<p className="text-lg text-white/60 font-bold">Draws</p>
 						<p className="text-3xl text-white/80 font-bold">
-							<CountUp end={draws} />
+							<CountUp 
+								end={draws} 
+								duration={5} 
+								useEasing={true} 
+							/>
 						</p>
 					</div>
 				</div>

@@ -375,13 +375,13 @@ input[type='number']::-webkit-inner-spin-button {
 	border-color: rgba(255, 255, 255, 0.06);
 	border-width: 1px;
 	border-radius: var(--radius-2xl);
-	backdrop-filter: blur(10px);
+	backdrop-filter: blur(3px);
 }
 
 .profile-inner-stat-card {
-	@apply bg-white/4 border border-white/10 rounded-2xl px-4 py-2 backdrop-blur-xl;
+	@apply bg-white/2 border border-white/8 rounded-2xl px-4 py-2;
 	
-	@apply hover:bg-white/6;
+	@apply hover:bg-white/4;
 
 	@apply flex flex-col flex-1 justify-between gap-1 items-center select-none;
 
@@ -390,40 +390,50 @@ input[type='number']::-webkit-inner-spin-button {
 	@apply lg:flex-row;
 }
 
-.profile-card-button {
-	@apply bg-white/4 border border-white/10 rounded-xl px-4 py-2 backdrop-blur-xl;
+.profile-inner-stat-card-animated {
+	@apply bg-white/2 border border-white/8 rounded-2xl px-4 py-2;
+	
+	@apply hover:bg-white/4;
 
-	@apply hover:bg-white/6;
+	@apply transition-all duration-300 hover:scale-101 overflow-hidden;
+
+	@apply lg:flex-row;
+}
+
+.profile-card-button {
+	@apply bg-white/2 border border-white/8 rounded-xl px-4 py-2;
+
+	@apply hover:bg-white/4;
 
 	@apply transition-all duration-300 hover:scale-101;
 }
 
 .chart-card-wrapper {
-	@apply bg-white/4 border border-white/10 rounded-2xl pt-4 backdrop-blur-xl;
+	@apply bg-white/2 border border-white/8 rounded-2xl pt-4;
 
 	@apply select-none;
 
-	@apply hover:bg-white/6;
+	@apply hover:bg-white/4;
 
-	@apply transition-all duration-300 hover:scale-101;
+	@apply transition-all duration-300 hover:scale-[100.3%];
 }
 
 .single-game-history-card {
-	@apply bg-white/4 border border-white/10 rounded-2xl px-5 py-6 backdrop-blur-xl;
+	@apply bg-white/2 border border-white/8 rounded-2xl px-5 py-6;
 
 	@apply flex justify-between gap-1 items-center select-none;
 	
-	@apply hover:bg-white/6;
+	@apply hover:bg-white/4;
 
 	@apply transition-all duration-300 hover:scale-101;
 }
 
 .single-leaderboard-item-card {
-	@apply bg-white/4 border border-white/10 rounded-2xl px-5 py-4 backdrop-blur-xl;
+	@apply bg-white/2 border border-white/8 rounded-2xl px-5 py-4;
 
 	@apply flex justify-center items-center gap-4 select-none;
 	
-	@apply hover:bg-white/6;
+	@apply hover:bg-white/4;
 
 	@apply transition-all duration-300 hover:scale-101;
 }
