@@ -6,9 +6,11 @@ export function normalizeAvatarUrl(avatarURL: string) {
 	try {
 		// if its already a valid absolute URL => return it
 		new URL(avatarURL);
+		console.log('normalizeAvatarUrl: valid absolute URL', avatarURL);
 		return avatarURL;
 	} catch {
 		// not a valid URL => relative
+		console.log('normalizeAvatarUrl: relative URL', avatarURL);
 		return `${API_GATEWAY_BASE_URL}${avatarURL}`;
 	}
 }

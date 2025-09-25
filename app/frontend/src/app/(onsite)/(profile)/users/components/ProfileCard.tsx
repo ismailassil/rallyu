@@ -49,7 +49,7 @@ export default function ProfileCard({ userId, fullName, username, bio, avatar, f
 						avatar={avatar}
 						width={100}
 						height={100}
-						className='ring-4 hover:ring-3 aspect-square h-[60%] sm:h-[80%] self-start sm:self-center
+						className='ring-4 hover:ring-3 aspect-square h-24 sm:h-36 lg:h-48 self-start sm:self-center
 						overflow-hidden rounded-full relative
 						ring-white/10 transition-all duration-500 hover:scale-105 hover:ring-white/30'
 					/>

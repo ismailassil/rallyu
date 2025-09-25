@@ -245,9 +245,9 @@ class UserService {
 
 		await pipeline(fileData.file, createWriteStream(filepath));
 
-		await this.userRepository.updateAvatar(user_id, `/avatars/${fileName}`);
+		await this.userRepository.updateAvatar(user_id, `/users/avatars/${fileName}`);
 
-		return `/avatars/${fileName}`;
+		return `/users/avatars/${fileName}`;
 
 		// try {
 		// 	await pipeline(fileData.file, createWriteStream(filepath));

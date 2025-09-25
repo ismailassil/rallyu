@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import SettingsCard from '../SettingsCards';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -24,7 +24,6 @@ export interface FormData {
 	bio: string;
 }
 
-
 /*
 	In this tab the user can only update: First Name, Last Name, Username, Email, Bio, Avatar
 	Password change is in Security tab
@@ -32,7 +31,6 @@ export interface FormData {
 
 export default function GeneralSettingsTab() {
 	const { apiClient, loggedInUser, updateLoggedInUserState } = useAuth();
-
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
@@ -44,26 +42,21 @@ export default function GeneralSettingsTab() {
 		bio: loggedInUser!.bio
 	});
 
-	function handleProfilePictureFileChange(e: ChangeEvent<HTMLInputElement>) {
+	function handleAvatarFileChange(e: ChangeEvent<HTMLInputElement>) {
 		const selectedFile = e.target.files?.[0];
 		if (!selectedFile) return;
 		setAvatarPreview(URL.createObjectURL(selectedFile));
 		setAvatarFile(selectedFile);
 	}
 
-	function handleProfilePictureRemove() {
+	function handleAvatarFileRemove() {
 		const fileInput = document.getElementById('profile-upload') as HTMLInputElement;
 		if (fileInput) fileInput.value = '';
 		setAvatarFile(null);
 		setAvatarPreview(null);
 	}
 
-	// function handleFormChange(e: ChangeEvent<HTMLInputElement>) {
-	// 	const { name, value } = e.target;
-	// 	setFormData(prev => ({ ...prev, [name]: value }));
-	// }
-
-	async function handleProfilePictureSubmit() {
+	async function uploadAvatar() {
 		if (!avatarFile) return;
 
 		const form = new FormData();
@@ -72,8 +65,8 @@ export default function GeneralSettingsTab() {
 		try {
 			// alertLoading('Uploading Profile Picture...');
 			await apiClient.uploadUserAvatar(form);
-			if (avatarPreview)
-				updateLoggedInUserState({ avatar_url: avatarPreview });
+			// if (avatarPreview)
+			// 	updateLoggedInUserState({ avatar_url: avatarPreview });
 			// alertSuccess('Profile Picture changed successfully');
 			setAvatarFile(null);
 		} catch {
@@ -81,7 +74,22 @@ export default function GeneralSettingsTab() {
 		}
 	}
 
-	async function handleFormSubmit() {
+	async function updateUserInfo() {
+		const payload = getUpdatedFormPayload();
+
+		if (Object.keys(payload).length === 0) {
+			alertError('No changes to submit');
+			return;
+		}
+
+		if (!validateAll())
+			return ;
+
+		await apiClient.updateUser(loggedInUser!.username, payload);
+		updateLoggedInUserState(payload); // AuthContext
+	}
+
+	function getUpdatedFormPayload() {
 		const payload: Partial<FormData> = {};
 
 		const keyMap: Record<string, string> = {
@@ -91,7 +99,7 @@ export default function GeneralSettingsTab() {
 		
 		for (const key in formData) {
 			const mappedKey = keyMap[key] || key;
-			const userValue = user![mappedKey as keyof typeof user];
+			const userValue = loggedInUser![mappedKey as keyof typeof loggedInUser];
 			const formValue = formData[key as keyof FormData];
 
 			if (formValue !== '' && formValue !== userValue) {
@@ -99,41 +107,20 @@ export default function GeneralSettingsTab() {
 			}
 		}
 
-		console.log('Paylod to submit: ', payload);
-		console.log('Object.keys(payloadToSubmit).length: ', Object.keys(payload).length);
-
-		if (Object.keys(payload).length === 0) {
-			alertError('DEV - No changes to submit');
-			alert('DEV - No changes to submit');
-			return;
-		}
-
-		const isValid = validateAll();
-		if (!isValid)
-			return ;
-
-		try {
-			// alertLoading('Submitting form...');
-			const res = await apiClient.updateUser(user!.username, payload);
-			console.log('Update user response: ', res);
-			// alertSuccess('Form changes saved successfully');
-			updateUser(payload); // AuthContext
-
-		} catch {
-			// alertError('Someting went wrong, please try again');
-		}
+		return payload;
 	}
 
 	async function handleSubmit() {
 		try {
 			alertLoading('Submitting changes...');
-			await handleFormSubmit();
-			await handleProfilePictureSubmit();
+			await updateUserInfo();
+			await uploadAvatar();
 			alertSuccess('Changes saved successfully');
 		} catch {
 			alertError('Something went wrong, please try again');
 		}
 	}
+
 
 	return (
 		<motion.div
@@ -153,9 +140,9 @@ export default function GeneralSettingsTab() {
 						<ProfilePreview
 							values={formData}
 							file={avatarFile}
-							preview={avatarPreview}
-							onAdd={handleProfilePictureFileChange}
-							onRemove={handleProfilePictureRemove}
+							avatarBlobPreview={avatarPreview}
+							onAdd={handleAvatarFileChange}
+							onRemove={handleAvatarFileRemove}
 						/>
 						<PersonalInformationsForm
 							formData={formData}

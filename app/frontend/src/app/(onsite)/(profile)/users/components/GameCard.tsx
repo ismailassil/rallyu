@@ -30,7 +30,7 @@ const outcomeStyles: Record<Outcome, { bg: string; ring: string; label: string }
 function PlayerAvatar({ avatar, ringClass } : { avatar: string; ringClass: string; }) {
 	return (
 		<div className="flex aspect-square h-[40px] w-[40px] items-center justify-center rounded-full lg:h-[45px] lg:w-[45px]">
-			<Avatar avatar={avatar} width={100} height={100} className={`overflow-hidden rounded-full ${ringClass}`} />
+			<Avatar avatar={avatar} width={100} height={100} className={`h-full w-full ${ringClass}`} />
 		</div>
 	);
 }
