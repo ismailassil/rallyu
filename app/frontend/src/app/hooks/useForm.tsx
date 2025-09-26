@@ -1,6 +1,5 @@
 import React, { useReducer, useRef } from "react";
 import { z } from "zod";
-// import { validateField } from "./Helpers";
 
 type UseFormReturn = readonly [
 	values: Record<string, string>,
@@ -9,7 +8,7 @@ type UseFormReturn = readonly [
 	debounced: Record<string, boolean>,
 	handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
 	validateAll: () => boolean,
-	resetForm: () => void
+	resetForm: (newValues?: Record<string, string>) => void
 ];
 
 type UseFormOptions = {
@@ -207,8 +206,8 @@ function useForm(
 		return Object.keys(currentErrors).length === 0;
 	}
 
-	function resetForm() : void {
-		dispatch({ type: 'RESET',  initialValues });
+	function resetForm(newValues?: Record<string, string>) : void {
+		dispatch({ type: 'RESET', initialValues: newValues || initialValues });
 	}
 
 	return [

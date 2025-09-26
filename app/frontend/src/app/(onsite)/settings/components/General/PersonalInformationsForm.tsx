@@ -1,36 +1,6 @@
 import React, { ChangeEvent } from 'react';
-import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import FormField from '@/app/(auth)/signup/components/FormField';
 import LanguageSwitcher from '../items/LanguageSwitcher';
-
-// interface FormFieldProps {
-// 	field: keyof FormDataState;
-// 	label: string;
-// 	placeholder: string;
-// 	iconSrc: string;
-// 	value: string;
-// 	onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-// }
-
-// function FormField({ field, label, placeholder, iconSrc, value, onChange }: FormFieldProps) {
-// 	return (
-// 		<div className="field flex flex-col gap-0.5 box-border flex-1">
-// 			<label htmlFor={field}>{label}</label>
-// 			<div className="flex flex-row pl-3.5 pr-3.5 pb-2 pt-2 gap-3 items-center h-11 bg-white/6 rounded-lg border border-white/10">
-// 				<Image alt={label} src={iconSrc} width={20} height={20} />
-// 				<input
-// 					id={field}
-// 					name={field}
-// 					type="text"
-// 					placeholder={placeholder}
-// 					className="outline-none flex-1 overflow-hidden"
-// 					value={value}
-// 					onChange={onChange}
-// 				/>
-// 			</div>
-// 		</div>
-// 	);
-// }
 
 interface PersonalInformationsFormProps {
 	formData: Record<string, string>;
@@ -38,6 +8,7 @@ interface PersonalInformationsFormProps {
 	errors: Record<string, string>;
 	debounced: Record<string, boolean>;
 	onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+	setFieldAvailable?: (name: string, available: boolean) => void;
 }
 
 export default function PersonalInformationsForm({ 
@@ -45,8 +16,9 @@ export default function PersonalInformationsForm({
 	touched,
 	errors,
 	debounced,
-	onChange
-}: PersonalInformationsFormProps) {
+	onChange,
+	setFieldAvailable
+} : PersonalInformationsFormProps) {
 	return (
 		<div className="flex flex-col gap-4">
 			<form id='settings-personal-info-form' action="" className='flex flex-col gap-5'>
@@ -54,25 +26,25 @@ export default function PersonalInformationsForm({
 					className='field flex flex-col gap-0.5 min-w-0 flex-1'
 					iconSrc='/icons/firstname.svg'
 					label='First Name'
-					field='fname'
-					inputPlaceholder={formData.fname}
-					inputValue={formData.fname}
+					field='first_name'
+					inputPlaceholder={formData.first_name}
+					inputValue={formData.first_name}
 					onChange={onChange}
-					touch={touched.fname}
-					error={errors.fname}
-					debounced={debounced.fname}
+					touched={touched.first_name}
+					error={errors.first_name}
+					debounced={debounced.first_name}
 				/>
 				<FormField
 					className='field flex flex-col gap-0.5 min-w-0 flex-1'
 					iconSrc='/icons/lastname.svg'
 					label='Last Name'
-					field='lname'
-					inputPlaceholder={formData.lname}
-					inputValue={formData.lname}
+					field='last_name'
+					inputPlaceholder={formData.last_name}
+					inputValue={formData.last_name}
 					onChange={onChange}
-					touch={touched.lname}
-					error={errors.lname}
-					debounced={debounced.lname}
+					touched={touched.last_name}
+					error={errors.last_name}
+					debounced={debounced.last_name}
 				/>
 				<FormField
 					className='field flex flex-col gap-0.5 box-border'
@@ -82,12 +54,11 @@ export default function PersonalInformationsForm({
 					inputPlaceholder={formData.username}
 					inputValue={formData.username}
 					onChange={onChange}
-					touch={touched.username}
+					touched={touched.username}
 					error={errors.username}
 					debounced={debounced.username}
-					// availabilityChecked={false}
-					// setFieldAvailable={updateFieldAvailable}
-					/>
+					setFieldAvailable={setFieldAvailable}
+				/>
 				<FormField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/mail.svg'
@@ -96,24 +67,22 @@ export default function PersonalInformationsForm({
 					inputPlaceholder={formData.email}
 					inputValue={formData.email}
 					onChange={onChange}
-					touch={touched.email}
+					touched={touched.email}
 					error={errors.email}
 					debounced={debounced.email}
-					// availabilityChecked={false}
-					// setFieldAvailable={updateFieldAvailable}
+					setFieldAvailable={setFieldAvailable}
 				/>
 				<FormField
 					className='field flex flex-col gap-0.5 box-border'
-					iconSrc='/icons/mail.svg'
+					iconSrc='/icons/note.svg'
 					label='Bio'
 					field='bio'
 					inputPlaceholder={formData.bio}
 					inputValue={formData.bio}
 					onChange={onChange}
-					touch={touched.bio}
+					touched={touched.bio}
 					error={errors.bio}
 					debounced={debounced.bio}
-					// setFieldAvailable={updateFieldAvailable}
 				/>
 			</form>
 			<LanguageSwitcher />

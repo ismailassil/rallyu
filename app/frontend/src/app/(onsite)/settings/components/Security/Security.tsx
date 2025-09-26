@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
-import SettingsCard from "../SettingsCards";
+import SettingsCard from "../SettingsCard";
 import { XIcon, Fingerprint, Smartphone, Mail, Check, Laptop, MapPin, Clock, Trash2, Monitor } from "lucide-react";
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import MFASetup from "../../../2fa/page";

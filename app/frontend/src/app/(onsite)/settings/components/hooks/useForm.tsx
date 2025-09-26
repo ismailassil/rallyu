@@ -105,7 +105,7 @@ function useForm(initialValues: Record<string, string>) {
 		debounceTimeout.current[name] = setTimeout(() => {
 			const err = validateField(name, value, state.values);
 			dispatch({ type: 'SET_ERROR', name, err });
-		  }, 1);
+		  }, 2000);
 	}
 
 	function validateAll() : boolean {

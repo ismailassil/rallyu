@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import SettingsCard from '../SettingsCards';
+import SettingsCard from '../SettingsCard';
 import { motion } from 'framer-motion';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
 import Image from 'next/image';
