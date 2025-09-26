@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, ReactNode } from 'react';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
 import { Upload, X } from 'lucide-react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
@@ -6,29 +6,78 @@ import Avatar from '@/app/(onsite)/(profile)/users/components/Avatar';
 
 interface ProfilePreviewProps {
 	values: Record<string, string>;
-	file: File | null;
+	avatarFile: File | null;
 	avatarBlobPreview: string | null;
-	onAdd: (e: ChangeEvent<HTMLInputElement>) => void;
-	onRemove: () => void;
+	onAddAvatarFile: (e: ChangeEvent<HTMLInputElement>) => void;
+	onRemoveAvatarFile: () => void;
 }
 
-export default function ProfilePreview({ values, file, avatarBlobPreview, onAdd, onRemove } : ProfilePreviewProps) {
+type ButtonProps = {
+	children: ReactNode;
+	actionIcon?: ReactNode;
+	onClick?: () => void;
+	disabled?: boolean;
+	asLabel?: boolean;
+	htmlFor?: string; // only used when asLabel is true
+};
+
+function Button({ children, actionIcon, onClick, disabled = false, asLabel = false, htmlFor  } : ButtonProps) {
+	const className = `flex gap-2 justify-center items-center px-5 py-1.5 rounded-full h-10 select-none
+						bg-white/6 border border-white/8 transition-all duration-800 ease-in-out
+						font-funnel-display font-medium
+						${disabled 
+						? 'opacity-0 pointer-events-none translate-y-0.5' 
+						: 'opacity-100 hover:bg-white hover:text-black cursor-pointer'
+					}`;
+	
+	if (asLabel) {
+		return (
+			<label htmlFor={htmlFor} className={className}>
+				{actionIcon}
+				{children}
+			</label>
+		);
+	}
+
+	return (
+		<button
+			onClick={onClick}
+			className={className}
+			disabled={disabled}
+		>
+			{actionIcon}
+			{children}
+		</button>
+	);
+}
+
+export default function ProfilePreview({ values, avatarFile, avatarBlobPreview, onAddAvatarFile, onRemoveAvatarFile } : ProfilePreviewProps) {
 	const { loggedInUser } = useAuth();
 
 	return (
-		<div className="flex items-center bg-gradient-to-br from-white/0 to-white/8 border-1 border-white/10 w-full rounded-3xl py-6 px-8 justify-between">
+		<div className="bg-white/2 border border-white/8
+						flex items-center w-full rounded-3xl py-7 px-9 justify-between">
 			<div className="flex gap-8">
 				{/* Avatar and User Info */}
-				<Avatar
-					avatar={avatarBlobPreview || loggedInUser!.avatar_url}
-					width={100}
-					height={100}
-					className='h-27 w-27 ring-4 ring-white/10 relative'
-				>
-				</Avatar>
+				<div className='relative'>
+					<label htmlFor="profile-upload">
+						<div className='absolute rounded-full w-full h-full flex justify-center items-center
+									bg-black/60 opacity-0 hover:opacity-100 cursor-pointer
+									z-1 transition-all duration-500'
+						>
+							<Upload size={36} />
+						</div>
+					</label>
+					<Avatar
+						avatar={avatarBlobPreview || loggedInUser!.avatar_url}
+						width={100}
+						height={100}
+						className='h-27 w-27 ring-4 ring-white/10 relative'
+					/>
+				</div>
 				<div>
 					<h1 className="font-bold text-xl text-white/90 capitalize">
-						{values.fname || loggedInUser!.first_name} {values.lname || loggedInUser!.last_name}
+						{values.first_name || loggedInUser!.first_name} {values.last_name || loggedInUser!.last_name}
 					</h1>
 					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
 						@{values.username || loggedInUser!.username}
@@ -41,33 +90,32 @@ export default function ProfilePreview({ values, file, avatarBlobPreview, onAdd,
 					</p>
 				</div>
 			</div>
+			
+
+			{/* Change / Remove Picture Button */}
+			{avatarFile ? (
+				<Button 
+					actionIcon={<X size={16} />}
+					onClick={onRemoveAvatarFile}
+				>
+					Remove Picture
+				</Button>
+			) : (
+				<Button 
+					actionIcon={<Upload size={16} />}
+					asLabel
+					htmlFor='profile-upload'
+				>
+					Change Picture
+				</Button>
+			)}
 			<input
 				id="profile-upload"
 				type="file"
 				accept="image/*"
-				// className="hidden"
-				onChange={onAdd}
+				className="hidden"
+				onChange={onAddAvatarFile}
 			/>
-			<div className={`border-1 border-white/10 rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium backdrop-blur-xs h-10`}>
-				<div className="flex items-center gap-2 justify-center">
-					{file ? (
-						<>
-							<X size={16} />
-							<button onClick={onRemove} className="cursor-pointer text-white/80">
-								Remove Picture
-							</button>
-						</>
-					) : (
-						<>
-							<Upload size={16} />
-							<label htmlFor="profile-upload" className="cursor-pointer text-white/80">
-							
-								Change Picture
-							</label>
-						</>
-					)}
-				</div>
-			</div>
 		</div>
 	);
 }

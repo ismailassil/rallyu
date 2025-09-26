@@ -89,10 +89,22 @@ class UserRepository {
 		}
 	}
 
-	async update(id: number, updates: Partial<Pick<User, 'username' | 'password' | 'first_name' | 'last_name'>>) : Promise<boolean> {
+	async update(id: number, updates: Partial<Pick<User, 'username' | 'password' | 'first_name' | 'last_name' | 'email' | 'bio' | 'avatar_url'>>) : Promise<boolean> {
 		const keys = [];
 		const values = [];
 
+		if (updates.first_name) {
+			keys.push(`first_name = ?`);
+			values.push(updates.first_name);
+		}
+		if (updates.last_name) {
+			keys.push(`last_name = ?`);
+			values.push(updates.last_name);
+		}
+		if (updates.email) {
+			keys.push(`email = ?`);
+			values.push(updates.username);
+		}
 		if (updates.username) {
 			keys.push(`username = ?`);
 			values.push(updates.username);
@@ -101,13 +113,13 @@ class UserRepository {
 			keys.push(`password = ?`);
 			values.push(updates.password);
 		}
-		if (updates.first_name) {
-			keys.push(`first_name = ?`);
-			values.push(updates.first_name);
+		if (updates.bio) {
+			keys.push(`bio = ?`);
+			values.push(updates.bio);
 		}
-		if (updates.last_name) {
-			keys.push(`last_name = ?`);
-			values.push(updates.last_name);
+		if (updates.avatar_url) {
+			keys.push(`avatar_url = ?`);
+			values.push(updates.avatar_url);
 		}
 
 		if (keys.length === 0)

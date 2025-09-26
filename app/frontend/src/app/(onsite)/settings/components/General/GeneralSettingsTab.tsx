@@ -1,11 +1,13 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
-import SettingsCard from '../SettingsCards';
+import React, { useState, ChangeEvent, useCallback } from 'react';
+import SettingsCard from '../SettingsCard';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../../contexts/AuthContext';
 import ProfilePreview from './ProfilePreview';
 import PersonalInformationsForm from './PersonalInformationsForm';
-import useForm from '../hooks/useForm';
-import { alertError, alertLoading, alertSuccess } from '@/app/(auth)/components/CustomToast';
+import useForm from '@/app/hooks/useForm';
+import { alertError, alertSuccess } from '@/app/(auth)/components/CustomToast';
+import { LoaderCircle } from 'lucide-react';
+import { personalInfoSettingsSchema } from '@/app/(api)/schema';
 
 export interface FormDataState {
 	first_name: string;
@@ -33,14 +35,22 @@ export default function GeneralSettingsTab() {
 	const { apiClient, loggedInUser, updateLoggedInUserState } = useAuth();
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
+	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm({
-		fname: loggedInUser!.first_name,
-		lname: loggedInUser!.last_name,
-		username: loggedInUser!.username,
-		email: loggedInUser!.email,
-		bio: loggedInUser!.bio
+	const [formData, touched, errors, debounced, handleChange, validateAll, resetForm] = useForm(
+		personalInfoSettingsSchema,
+		{ first_name: loggedInUser!.first_name, last_name: loggedInUser!.last_name, username: loggedInUser!.username, email: loggedInUser!.email, bio: loggedInUser!.bio }
+	);
+	const [fieldsAvailable, setFieldsAvailable] = useState({
+		username: true,
+		email: true
 	});
+
+	const updateFieldAvailable = useCallback((name: string, available: boolean) => {
+		setFieldsAvailable(prev => ({ ...prev, [name]: available }));
+	}, []);
+
+	const showSaveChanges = ((Object.keys(getUpdatedFormPayload()).length > 0 || avatarFile !== null) && Object.keys(errors).length === 0 && fieldsAvailable.username && fieldsAvailable.email);
 
 	function handleAvatarFileChange(e: ChangeEvent<HTMLInputElement>) {
 		const selectedFile = e.target.files?.[0];
@@ -57,32 +67,20 @@ export default function GeneralSettingsTab() {
 	}
 
 	async function uploadAvatar() {
-		if (!avatarFile) return;
+		if (!avatarFile)
+			return ;
 
 		const form = new FormData();
 		form.append('file', avatarFile);
 
-		try {
-			// alertLoading('Uploading Profile Picture...');
-			await apiClient.uploadUserAvatar(form);
-			// if (avatarPreview)
-			// 	updateLoggedInUserState({ avatar_url: avatarPreview });
-			// alertSuccess('Profile Picture changed successfully');
-			setAvatarFile(null);
-		} catch {
-			// alertError('Something went wrong, please try again later');
-		}
+		await apiClient.uploadUserAvatar(form);
+		setAvatarFile(null);
 	}
 
 	async function updateUserInfo() {
 		const payload = getUpdatedFormPayload();
 
-		if (Object.keys(payload).length === 0) {
-			alertError('No changes to submit');
-			return;
-		}
-
-		if (!validateAll())
+		if (Object.keys(payload).length === 0 || !validateAll())
 			return ;
 
 		await apiClient.updateUser(loggedInUser!.username, payload);
@@ -92,18 +90,12 @@ export default function GeneralSettingsTab() {
 	function getUpdatedFormPayload() {
 		const payload: Partial<FormData> = {};
 
-		const keyMap: Record<string, string> = {
-			fname: 'first_name',
-			lname: 'last_name',
-		};
-		
 		for (const key in formData) {
-			const mappedKey = keyMap[key] || key;
-			const userValue = loggedInUser![mappedKey as keyof typeof loggedInUser];
-			const formValue = formData[key as keyof FormData];
+			const oldValue = loggedInUser![key as keyof typeof loggedInUser];
+			const newValue = formData[key as keyof FormData];
 
-			if (formValue !== '' && formValue !== userValue) {
-				payload[mappedKey as keyof typeof payload] = formValue;
+			if (newValue !== '' && newValue !== oldValue) {
+				payload[key as keyof FormData] = newValue;
 			}
 		}
 
@@ -111,13 +103,25 @@ export default function GeneralSettingsTab() {
 	}
 
 	async function handleSubmit() {
+		const isValid = validateAll();
+		if (!isValid)
+			return ;
+
+		if (!fieldsAvailable.username || !fieldsAvailable.email)
+			return ;
+
 		try {
-			alertLoading('Submitting changes...');
+			setIsSubmitting(true);
 			await updateUserInfo();
 			await uploadAvatar();
 			alertSuccess('Changes saved successfully');
-		} catch {
-			alertError('Something went wrong, please try again');
+			updateLoggedInUserState(getUpdatedFormPayload());
+			resetForm(formData);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (err: any) {
+			alertError(err.message || 'Something went wrong, please try again later');
+		} finally {
+			setIsSubmitting(false);
 		}
 	}
 
@@ -133,16 +137,19 @@ export default function GeneralSettingsTab() {
 					title="Personal Informations"
 					subtitle="Update your account profile information and email address"
 					isForm={true}
+					actionIcon={isSubmitting ? <LoaderCircle size={16} className='animate-spin' /> : undefined}
 					formSubmitLabel='Save Changes'
 					onSubmit={handleSubmit}
+					isButtonHidden={!showSaveChanges}
+					isButtonDisabled={isSubmitting}
 				>
 					<div className="flex flex-col gap-8 px-18">
-						<ProfilePreview
+						<ProfilePreview 
 							values={formData}
-							file={avatarFile}
+							avatarFile={avatarFile}
 							avatarBlobPreview={avatarPreview}
-							onAdd={handleAvatarFileChange}
-							onRemove={handleAvatarFileRemove}
+							onAddAvatarFile={handleAvatarFileChange}
+							onRemoveAvatarFile={handleAvatarFileRemove}
 						/>
 						<PersonalInformationsForm
 							formData={formData}
@@ -150,6 +157,7 @@ export default function GeneralSettingsTab() {
 							errors={errors}
 							debounced={debounced}
 							onChange={handleChange}
+							setFieldAvailable={updateFieldAvailable}
 						/>
 					</div>
 				</SettingsCard>

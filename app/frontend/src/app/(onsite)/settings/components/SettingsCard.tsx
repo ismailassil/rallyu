@@ -1,6 +1,24 @@
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
 import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
+import MainCardWrapper from '../../(refactoredUIComponents)/MainCardWrapper';
+
+function Button({ children, actionIcon, onClick, hidden = false, disabled = false  } : { children: ReactNode, actionIcon: React.ReactNode, onClick?: () => void, hidden?: boolean, disabled?: boolean }) {
+	return (
+		<button
+			onClick={onClick}
+			className={`flex gap-2 justify-center items-center px-5 py-1.5 rounded-full h-10 select-none
+					bg-white/6 border border-white/8 transition-all duration-500 ease-in-out
+					font-funnel-display font-medium
+						${hidden ? 'opacity-0 pointer-events-none scale-99 translate-y-0.5' : ''}
+						${disabled ? 'opacity-50 pointer-events-none' : 'hover:bg-white hover:text-black cursor-pointer'}
+					`}
+		>
+			{actionIcon}
+			{children}
+		</button>
+	);
+}
 
 export default function SettingsCard({ 
 	children,
@@ -12,12 +30,14 @@ export default function SettingsCard({
 	onAction,
 	isForm = false, 
 	formSubmitLabel = 'Submit',
-	formId,
+	isButtonHidden = false,
+	isButtonDisabled = false,
+	// formId,
 	onSubmit,
 	isRadio = false, 
 	isFoldable = false, 
 	defaultExpanded = true 
-  }: { 
+  } : { 
 	children?: ReactNode, 
 	title: string, 
 	subtitle: string, 
@@ -27,8 +47,10 @@ export default function SettingsCard({
 	onAction?: () => void,
 	isForm?: boolean,
 	formSubmitLabel?: string,
-	formId?: string,
-	onSubmit?: (data: any) => void,
+	isButtonHidden?: boolean,
+	isButtonDisabled?: boolean,
+	// formId?: string,
+	onSubmit?: () => void,
 	isRadio?: boolean,
 	isFoldable?: boolean,
 	defaultExpanded?: boolean 
@@ -40,8 +62,8 @@ export default function SettingsCard({
 	};
 
 	return (
-		<div className='bg-white/4 border border-white/10 w-full rounded-2xl backdrop-blur-2xl'>
-
+		<MainCardWrapper>
+			{/* Header */}
 			<div className="py-8">
 				<div className='flex justify-between items-center pr-18'>
 					<div className="flex-1">
@@ -57,17 +79,9 @@ export default function SettingsCard({
 					</div>
 					
 					<div className="flex items-start gap-3">
-						{isForm && (
-							<div className={`border-1 border-white/10 rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium backdrop-blur-xs h-10
-											hover:bg-white hover:text-black transition-all duration-500 cursor-pointer`}>
-								<div className="flex items-center gap-2 justify-center cursor-pointer">
-									<Check size={16}/>
-									{ formId && <button className='cursor-pointer' form={formId}>{formSubmitLabel}</button> }
-									{ onSubmit && <button className='cursor-pointer' onClick={onSubmit}>{formSubmitLabel}</button> }
-								</div>
-							</div>
-						)}
-
+						{isForm && onSubmit &&
+							<Button actionIcon={actionIcon} onClick={onSubmit} disabled={isButtonDisabled} hidden={isButtonHidden}>{formSubmitLabel}</Button>
+						}
 						{isAction && (
 							<div className={`border-1 border-white/10 rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium backdrop-blur-xs h-10
 											hover:bg-white hover:text-black transition-all duration-500 cursor-pointer`}>
@@ -94,6 +108,7 @@ export default function SettingsCard({
 				</div>
 			</div>
 
+			{/* Content */}
 			{children && (
 				<div 
 				className={`overflow-hidden transition-all duration-600 ease-in-out ${ 
@@ -107,6 +122,7 @@ export default function SettingsCard({
 					</div>
 				</div>
 			)}
-		</div>
+
+		</MainCardWrapper>
 	);
 }

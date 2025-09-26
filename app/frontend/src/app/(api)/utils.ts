@@ -1,20 +1,3 @@
-export const API_GATEWAY_BASE_URL = 'http://localhost:4025/api';
-
-
-// normalizes '/avatars/xyz' to 'https://ms-auth/avatars/something.png'
-export function normalizeAvatarUrl(avatarURL: string) {
-	try {
-		// if its already a valid absolute URL => return it
-		new URL(avatarURL);
-		console.log('normalizeAvatarUrl: valid absolute URL', avatarURL);
-		return avatarURL;
-	} catch {
-		// not a valid URL => relative
-		console.log('normalizeAvatarUrl: relative URL', avatarURL);
-		return `${API_GATEWAY_BASE_URL}${avatarURL}`;
-	}
-}
-
 export function secondsToHMS(seconds: number) {
 	seconds = Number(seconds);
 	const h = Math.floor(seconds / 3600);
@@ -31,4 +14,17 @@ export function secondsToHMS(seconds: number) {
 
 export function secondsToMinutes(seconds: number) {
 	return Math.floor(seconds / 60);
+}
+
+export function simulateBackendCall(ms: number) {
+	const shouldFail = Math.random() < 0.5; 
+	
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			if (shouldFail)
+				reject(new Error('Simulated backend error'));
+			else
+				resolve({ message: 'Simulated backend sucess' });
+		}, ms);
+	});
 }
