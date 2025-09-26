@@ -8,6 +8,38 @@ import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { alertError, alertSuccess } from '../../components/CustomToast';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { z } from 'zod';
+
+const signupSchema = z.object({
+	first_name: z.string()
+		.nonempty("First name is required")
+		.min(2, "First name must be at least 2 characters")
+		.max(10, "First name must be at most 10 characters")
+		.regex(/^[A-Za-z]+$/, "First name must contain only letters"),
+
+	last_name: z.string()
+		.nonempty("Last name is required")
+		.min(2, "Last name must be at least 2 characters")
+		.max(10, "Last name must be at most 10 characters")
+		.regex(/^[A-Za-z]+$/, "Last name must contain only letters"),
+
+	username: z.string()
+		.nonempty("Username is required")
+		.min(3, "Username must be at least 3 characters")
+		.max(50, "Username must be at most 50 characters")
+		.regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
+
+	email: z.string()
+		.nonempty("Email is required")
+		.email("Invalid email address"),
+
+	password: z.string()
+		.nonempty("Password is required")
+		.min(8, "Password must be at least 8 characters")
+		.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
+		.regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
+		.regex(/(?=.*\d)/, "Password must contain a digit"),
+});
 
 export default function SignUpForm() {
 	const { register } = useAuth();
@@ -18,13 +50,11 @@ export default function SignUpForm() {
 	});
 	const router = useRouter();
 
-	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm({
-		fname: '',
-		lname: '',
-		username: '',
-		email: '',
-		password: ''
-	});
+	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm(
+		signupSchema,
+		{ first_name: '', last_name: '', username: '', email: '', password: '' },
+		{ debounceMs: { password: 1500 } } // debounce password validation by 700ms
+	);
 
 	const updateFieldAvailable = useCallback((name: string, available: boolean) => {
 		setFieldsAvailable(prev => ({ ...prev, [name]: available }));
@@ -44,17 +74,13 @@ export default function SignUpForm() {
 		setIsSubmitting(true);
 		try {
 			await register(
-				formData.fname,
-				formData.lname,
+				formData.first_name,
+				formData.last_name,
 				formData.username,
 				formData.email,
 				formData.password
 			);
 			alertSuccess('Account created successfully...');
-			// setTimeout(() => {
-			// 	toast.dismiss();
-			// 	router.replace('/login');
-			// }, 2000);
 			router.replace('/login');
 		} catch (err: any) {
 			const msg = err.message;
@@ -64,6 +90,11 @@ export default function SignUpForm() {
 		}
 	}
 
+	console.log('formData:', formData);
+	console.log('errors:', errors);
+	console.log('touched:', touched);
+	console.log('debounced:', debounced);
+
 	return (
 		<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
 			<div className='flex flex-col gap-5 sm:flex-row sm:gap-2'>
@@ -71,25 +102,25 @@ export default function SignUpForm() {
 					className='field flex flex-col gap-0.5 min-w-0 flex-1'
 					iconSrc='/icons/firstname.svg'
 					label='First Name'
-					field='fname'
+					field='first_name'
 					inputPlaceholder='Achraf'
-					inputValue={formData.fname}
+					inputValue={formData.first_name}
 					onChange={handleChange}
-					touch={touched.fname}
-					error={errors.fname}
-					debounced={debounced.fname}
+					touched={touched.first_name}
+					error={errors.first_name}
+					debounced={debounced.first_name}
 				/>
 				<FormField 
 					className='field flex flex-col gap-0.5 min-w-0 flex-1'
 					iconSrc='/icons/lastname.svg'
 					label='Last Name'
-					field='lname'
+					field='last_name'
 					inputPlaceholder='Demnati'
-					inputValue={formData.lname}
+					inputValue={formData.last_name}
 					onChange={handleChange}
-					touch={touched.lname}
-					error={errors.lname}
-					debounced={debounced.lname}
+					touched={touched.last_name}
+					error={errors.last_name}
+					debounced={debounced.last_name}
 				/>
 			</div>
 			<FormField 
@@ -100,10 +131,10 @@ export default function SignUpForm() {
 				inputPlaceholder='xezzuz'
 				inputValue={formData.username}
 				onChange={handleChange}
-				touch={touched.username}
+				touched={touched.username}
 				error={errors.username}
 				debounced={debounced.username}
-				setFieldAvailable={updateFieldAvailable}
+				// setFieldAvailable={updateFieldAvailable}
 			/>
 			<FormField 
 				className='field flex flex-col gap-0.5 box-border'
@@ -113,10 +144,10 @@ export default function SignUpForm() {
 				inputPlaceholder='iassil@1337.student.ma'
 				inputValue={formData.email}
 				onChange={handleChange}
-				touch={touched.email}
+				touched={touched.email}
 				error={errors.email}
 				debounced={debounced.email}
-				setFieldAvailable={updateFieldAvailable}
+				// setFieldAvailable={updateFieldAvailable}
 			/>
 			<FormField 
 				className='field flex flex-col gap-0.5 box-border'
@@ -127,7 +158,7 @@ export default function SignUpForm() {
 				inputValue={formData.password}
 				hidden={true}
 				onChange={handleChange}
-				touch={touched.password}
+				touched={touched.password}
 				error={errors.password}
 				debounced={debounced.password}
 			/>

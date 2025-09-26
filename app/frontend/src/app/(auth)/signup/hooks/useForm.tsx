@@ -1,5 +1,20 @@
 import React, { useReducer, useRef } from "react";
-import { validateField } from "./Helpers";
+import { z } from "zod";
+// import { validateField } from "./Helpers";
+
+type UseFormReturn = readonly [
+	values: Record<string, string>,
+	touched: Record<string, boolean>,
+	errors: Record<string, string>,
+	debounced: Record<string, boolean>,
+	handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+	validateAll: () => boolean,
+	resetForm: () => void
+];
+
+type UseFormOptions = {
+	debounceMs?: number | Record<string, number>; // debounce time per field in milliseconds
+}
 
 type FormState = {
 	values: Record<string, string>;
@@ -22,6 +37,7 @@ type SetErrorAction = {
 
 type ValidateAllAction = {
 	type: 'VALIDATE_ALL';
+	updatedErrors: Record<string, string>;
 };
 
 type ResetAction = {
@@ -56,19 +72,24 @@ function formReducer(state: FormState, action: FormAction) : FormState {
 			};
 		}
 		case 'VALIDATE_ALL': {
+			const { updatedErrors } = action;
 			const updatedTouched: Record<string, boolean> = {};
-			const updatedErrors: Record<string, string> = {};
+			// const updatedErrors: Record<string, string> = {};
 			const updatedDebounced: Record<string, boolean> = {};
 			
-			Object.keys(state.values).forEach(key => {
-				const err = validateField(key, state.values[key]);
-				console.log(key, 'error', err);
-				if (err) updatedErrors[key] = err;
-			});
+			// we moved validation outside
+
+			// Object.keys(state.values).forEach(key => {
+			// 	const err = validateField(key, state.values[key]);
+			// 	console.log(key, 'error', err);
+			// 	if (err) updatedErrors[key] = err;
+			// });
+
 			Object.keys(state.values).forEach(key => {
 				updatedTouched[key] = true;
 				updatedDebounced[key] = true;
 			});
+
 			return {
 				...state,
 				touched: updatedTouched,
@@ -76,12 +97,66 @@ function formReducer(state: FormState, action: FormAction) : FormState {
 				debounced: updatedDebounced
 			};
 		}
+		case 'RESET': {
+			const { initialValues } = action;
+			return {
+				values: initialValues,
+				touched: {},
+				errors: {},
+				debounced: {}
+			};
+		}
 		default:
 			return state;
 	}
 }
 
-function useForm(initialValues: Record<string, string>) {
+// validate all fields using zod schema
+function validateAllFields(zodSchema: z.ZodSchema, values: Record<string, string>) : Record<string, string> {
+	try {
+		zodSchema.parse(values);
+		return {};
+	} catch (err) {
+		if (err instanceof z.ZodError) {
+			const currentErrors : Record<string, string> = {};
+
+			console.log('ZodError:', err.issues);
+
+			for (const issue of err.issues) {
+				const fieldName = issue.path[0];
+				if (typeof fieldName === 'string') {
+					if (currentErrors[fieldName]) continue; // only keep the first error per field
+					currentErrors[fieldName] = issue.message;
+				}
+			}
+
+			return currentErrors;
+		}
+	}
+	return {};
+}
+
+// validate a single field using zod schema
+function validateField(zodSchema: z.ZodSchema, fieldName: string, fieldValue: string) : string {
+	try {
+		/* eslint-disable @typescript-eslint/no-explicit-any */
+		const fieldSchema = (zodSchema as any).shape?.[fieldName];
+		console.log('fieldSchema:', fieldSchema);
+		if (fieldSchema)
+			fieldSchema.parse(fieldValue);
+	} catch (err) {
+		if (err instanceof z.ZodError)
+			return err.issues[0]?.message || 'Invalid value';
+		return 'Invalid value';
+	}
+	return '';
+}
+
+function useForm(
+	zodSchema: z.ZodObject,
+	initialValues: Record<string, string>, 
+	options: UseFormOptions = {}
+) : UseFormReturn {
 	const [state, dispatch] = useReducer(formReducer, {
 		values: initialValues,
 		touched: {},
@@ -89,36 +164,47 @@ function useForm(initialValues: Record<string, string>) {
 		debounced: {}
 	});
 
+	const { debounceMs = 500 } = options;
 	const debounceTimeout = useRef<Record<string, NodeJS.Timeout>>({});
 
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) : void {
 		const { name, value } = e.target;
 
-		const debounceMs = name === 'password' ? 2000 : 500 ;
-
 		clearTimeout(debounceTimeout.current[name]);
 
+		// immediate update
 		dispatch({ type: 'CHANGE', name, value });
+
+		const debounceDelay = typeof debounceMs === 'number' ? debounceMs : (debounceMs[name] || 500);
 		
 		debounceTimeout.current[name] = setTimeout(() => {
-			const err = validateField(name, value);
+			const err = validateField(zodSchema, name, value);
+			console.log('ValidateField Current Error:', name, value, err);
 			dispatch({ type: 'SET_ERROR', name, err });
-			console.log(debounceMs);
-		}, debounceMs);
+		}, debounceDelay);
 	}
 
+	// function validateAll() : boolean {
+	// 	dispatch({ type: 'VALIDATE_ALL' });
+	// 	return validateAllSync();
+	// }
+
+	// function validateAllSync() : boolean {
+	// 	const errors: Record<string, string> = {};
+	// 	Object.keys(state.values).forEach(key => {
+	// 		const err = validateField(key, state.values[key]);
+	// 		if (err) errors[key] = err;
+	// 	});
+	// 	return Object.keys(errors).length === 0;
+	// }
 	function validateAll() : boolean {
-		dispatch({ type: 'VALIDATE_ALL' });
-		return validateAllSync();
-	}
+		const currentErrors = validateAllFields(zodSchema, state.values);
 
-	function validateAllSync() : boolean {
-		const errors: Record<string, string> = {};
-		Object.keys(state.values).forEach(key => {
-			const err = validateField(key, state.values[key]);
-			if (err) errors[key] = err;
-		});
-		return Object.keys(errors).length === 0;
+		console.log('ValidateAll Current Errors:', currentErrors);
+
+		dispatch({ type: 'VALIDATE_ALL', updatedErrors: currentErrors });
+
+		return Object.keys(currentErrors).length === 0;
 	}
 
 	function resetForm() : void {
