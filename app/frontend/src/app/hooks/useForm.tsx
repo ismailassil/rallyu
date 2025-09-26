@@ -163,7 +163,7 @@ function useForm(
 		debounced: {}
 	});
 
-	const { debounceMs = 500 } = options;
+	const { debounceMs = 600 } = options;
 	const debounceTimeout = useRef<Record<string, NodeJS.Timeout>>({});
 
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) : void {
@@ -174,7 +174,7 @@ function useForm(
 		// immediate update
 		dispatch({ type: 'CHANGE', name, value });
 
-		const debounceDelay = typeof debounceMs === 'number' ? debounceMs : (debounceMs[name] || 500);
+		const debounceDelay = typeof debounceMs === 'number' ? debounceMs : (debounceMs[name] || 600);
 		
 		debounceTimeout.current[name] = setTimeout(() => {
 			const err = validateField(zodSchema, name, value);

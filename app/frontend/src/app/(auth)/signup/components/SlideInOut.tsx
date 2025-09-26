@@ -12,7 +12,6 @@ export default function SlideInOut({ children }: SlideInOutProps) {
 			animate={{ opacity: 1, height: "auto" }}
 			exit={{ opacity: 0, height: 0 }}
 			transition={{ duration: 0.4, ease: "easeOut" }}
-			// className={`${className}`}
 		>
 			{children}
 		</motion.div>

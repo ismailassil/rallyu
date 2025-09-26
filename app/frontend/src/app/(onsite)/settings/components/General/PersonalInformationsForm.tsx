@@ -1,6 +1,8 @@
 import React, { ChangeEvent } from 'react';
 import FormField from '@/app/(auth)/signup/components/FormField';
 import LanguageSwitcher from '../items/LanguageSwitcher';
+import FormFieldAvailability from '@/app/(auth)/signup/components/FormFieldAvailability';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 
 interface PersonalInformationsFormProps {
 	formData: Record<string, string>;
@@ -19,6 +21,7 @@ export default function PersonalInformationsForm({
 	onChange,
 	setFieldAvailable
 } : PersonalInformationsFormProps) {
+	const { loggedInUser } = useAuth();
 	return (
 		<div className="flex flex-col gap-4">
 			<form id='settings-personal-info-form' action="" className='flex flex-col gap-5'>
@@ -57,8 +60,16 @@ export default function PersonalInformationsForm({
 					touched={touched.username}
 					error={errors.username}
 					debounced={debounced.username}
-					setFieldAvailable={setFieldAvailable}
-				/>
+				>
+					{(formData.username !== loggedInUser?.username) && debounced.username && touched.username && !errors.username && formData.username && formData.username.length >= 3 && (
+						<FormFieldAvailability 
+							label='Username'
+							name='username'
+							value={formData.username}
+							setFieldAvailable={setFieldAvailable}
+						/>
+					)}
+				</FormField>
 				<FormField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/mail.svg'
@@ -70,8 +81,16 @@ export default function PersonalInformationsForm({
 					touched={touched.email}
 					error={errors.email}
 					debounced={debounced.email}
-					setFieldAvailable={setFieldAvailable}
-				/>
+				>
+					{(formData.username !== loggedInUser?.username) && debounced.email && touched.email && !errors.email && formData.email && formData.email.length >= 3 && (
+						<FormFieldAvailability 
+							label='Email'
+							name='email'
+							value={formData.email}
+							setFieldAvailable={setFieldAvailable}
+						/>
+					)}
+				</FormField>
 				<FormField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/note.svg'

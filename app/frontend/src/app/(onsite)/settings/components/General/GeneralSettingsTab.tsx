@@ -39,7 +39,8 @@ export default function GeneralSettingsTab() {
 
 	const [formData, touched, errors, debounced, handleChange, validateAll, resetForm] = useForm(
 		personalInfoSettingsSchema,
-		{ first_name: loggedInUser!.first_name, last_name: loggedInUser!.last_name, username: loggedInUser!.username, email: loggedInUser!.email, bio: loggedInUser!.bio }
+		{ first_name: loggedInUser!.first_name, last_name: loggedInUser!.last_name, username: loggedInUser!.username, email: loggedInUser!.email, bio: loggedInUser!.bio },
+		{ debounceMs: { username: 1200, email: 1200 } } // debounce username and email validation by 1000ms
 	);
 	const [fieldsAvailable, setFieldsAvailable] = useState({
 		username: true,
