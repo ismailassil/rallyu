@@ -1,10 +1,28 @@
 import { AnimatePresence } from "framer-motion";
 import LobbyCard from "./Items/LobbyCard";
 import GameField from "./Items/GameField";
-import { GameProvider, useGame } from "../contexts/gameContext";
+import { useGame } from "../contexts/gameContext";
+import { useAuth } from "../../contexts/AuthContext";
+import { useEffect } from "react";
 
 function GamePanel() {
-	const { connection } = useGame();
+	const { apiClient, loggedInUser } = useAuth();
+	const { setUrl } = useGame();
+
+	useEffect(() => {
+		(async () => {
+			try {
+				if (!loggedInUser)
+					return;
+				const res = await apiClient.fetchPlayerStatus(loggedInUser.id);
+
+				setUrl(`/game/room/${res.roomId}?user=${loggedInUser.id}`);
+			} catch (err) {
+				console.log(`Game Service: ${err}`);
+			}
+		})()
+	}, [])
+
 	return (
 		<div className="flex w-full gap-4 flex-col lg:flex-row">
 			<AnimatePresence>

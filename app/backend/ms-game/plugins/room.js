@@ -1,6 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
 const { updateState, getVelocity, angles } = require('./physics')
-const jwt = require('jsonwebtoken');
 const WebSocket = require('ws')
 
 const JWT_ROOM_SECRET = process.env.JWT_ROOM_SECRET || 'R00M_4CC3SS_';
@@ -18,10 +17,12 @@ const game = async (fastify, options) => {
 	})
 
 	const rooms = new Map() // Map<roomid, Room>
+	const userSessions = new Map() // Map<userid, roomid>
 
 	const closeRoom = (room, code, msg) => {
 		// test this if players already closed sockets
 		room.players.forEach(p => {
+			userSessions.delete(p.id);
 			if (p.socket?.readyState === WebSocket.OPEN)
 				p.socket.close(code, msg);
 		})
@@ -139,18 +140,20 @@ const game = async (fastify, options) => {
 		}
 	}
 
-	fastify.get('/:roomid' , { websocket: true }, (socket, req) => {
+	fastify.get('/room/:roomid' , { websocket: true }, (socket, req) => {
 		try {
-			const { tempToken } = req.query;
-			const decoded = jwt.verify(tempToken, JWT_ROOM_SECRET);
-			if (decoded.roomId !== req.params.roomid)
-				throw new Error("Match room ID mismatch")
+			const { roomid } = req.params;
+			const user = Number(req.query.user);
+			const sessionId = userSessions.get(user);
 
-			const room = rooms.get(decoded.roomId);
+			if (sessionId != roomid) 
+				throw new Error("Session and room ID mismatch");
+
+			const room = rooms.get(roomid);
 			if (!room)
 				throw new Error("Match room not found");
 
-			const player = room.players.find(player => player.id === decoded.playerId)
+			const player = room.players.find(player => player.id === user);
 			if (!player)
 				throw new Error("Player not in match room");
 			if (player.connected)
@@ -159,7 +162,11 @@ const game = async (fastify, options) => {
 			player.attachSocket(socket);
 			if (room.running) {
 				room.players.forEach(player => {
-					fastify.json(player.socket, { type: 'play' });
+					fastify.json(player.socket, {
+						type: 'play',
+						score: room.state.score
+						//timer
+					});
 				});
 			} else if (room.players.every(p => p.connected)) {
 				clearTimeout(room.expirationTimer);
@@ -174,6 +181,17 @@ const game = async (fastify, options) => {
 		}
 	})
 
+	fastify.get('/user/:userid', (req, res) => {
+		const user = Number(req.params.userid);
+		const session = userSessions.get(user);
+		if (!session){
+			return res.code(404).send({
+				message: 'user not currently on an active game.'
+			})
+		}
+		return { roomId: session };
+	})
+
 	fastify.post('/create-room', (req, res) => {
 		const auth = req.headers.authorization.startsWith('Bearer ')
             ? req.headers.authorization.slice(7)
@@ -184,8 +202,8 @@ const game = async (fastify, options) => {
 
 		const { playersIds } = req.body;
 		if (!playersIds) {
-			return res.code(400).json({
-				error: 'players ids not provided.'
+			return res.code(400).send({
+				message: 'players ids not provided.'
 			})
 		}
 		const roomId = uuidv4();
@@ -197,20 +215,11 @@ const game = async (fastify, options) => {
 		}, ROOM_EXPIRATION_TIME)
 
 		rooms.set(roomId, room);
-
-		return {
-			roomId,
-			authTokens: {
-				[playersIds[0]]: jwt.sign({
-					roomId,
-					playerId: playersIds[0]
-				}, JWT_ROOM_SECRET, { expiresIn: '5m' }),
-				[playersIds[1]]: jwt.sign({
-					roomId,
-					playerId: playersIds[1]
-				}, JWT_ROOM_SECRET, { expiresIn: '5m' })
-			}
-		};
+		playersIds.forEach(id => {
+			userSessions.set(id, roomId);
+		})
+		console.log('1st sessions: ', userSessions);
+		return { roomId };
 	})
 }
 

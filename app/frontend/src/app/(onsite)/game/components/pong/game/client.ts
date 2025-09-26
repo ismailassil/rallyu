@@ -1,4 +1,4 @@
-import { APIClient } from '@/app/(auth)/utils/APIClient';
+import { APIClient } from '@/app/(api)/APIClient';
 import type { GameState, MessageCallBack } from "../types/GameTypes"
 
 const MAX_RETRIES = 3;
@@ -8,9 +8,8 @@ class SocketProxy {
 	private socket: WebSocket | null = null;
 	private subscribers: MessageCallBack[] = [];
 	private url: string | null = null;
-	private api: APIClient | null = null;
 	private retryAttemts: number = 0;
-	private destroyed: boolean = false;
+	private destroyed: boolean = true;
 
 	private constructor() {};
 
@@ -38,10 +37,10 @@ class SocketProxy {
 	}
 
 	public connect(url: string, api: APIClient): (() => void) {
-		console.log('url: ', url);
 		this.url = url;
 		this.socket = api.connectWebSocket(url);
 		this.socket.onopen = (): void => {
+			this.destroyed = false;
 			console.log('Connected to Pong Server');
 		}
 
@@ -79,7 +78,9 @@ class SocketProxy {
 
 	public disconnect(): void {
 		this.destroyed = true;
+		this.url = null;
 		this.socket?.close(1000, "Normal");
+		this.socket = null;
 	}
 
 	public send(message: any): void {
@@ -102,6 +103,8 @@ export const setupCommunications = (gameStateRef: React.RefObject<GameState>, pr
 				break;
 			case 'play':
 				gameStateRef.current.opponentDC = false;
+				gameStateRef.current.players[0].score = data.score[0]
+				gameStateRef.current.players[1].score = data.score[1]
 				break;
 			case 'ready':
 				gameStateRef.current.index = data.i

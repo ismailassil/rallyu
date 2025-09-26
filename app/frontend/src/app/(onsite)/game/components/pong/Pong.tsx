@@ -64,7 +64,12 @@ const Pong = () => {
 	}, []);
 
 	return (
-		<canvas className='max-w-full rounded-lg border border-neutral-700 bg-neutral-900/50' ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} />
+		<canvas
+			className='max-w-full rounded-lg border border-neutral-700 bg-neutral-900/50'
+			ref={canvasRef}
+			width={CANVAS_WIDTH}
+			height={CANVAS_HEIGHT}
+		/>
 	)
 }
 

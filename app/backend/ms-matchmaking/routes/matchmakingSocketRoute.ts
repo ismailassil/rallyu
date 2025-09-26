@@ -31,15 +31,8 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
 
                     const data = await res.json();
     
-                    console.log("data received from game service: ", data);
-                    console.log("keys: ", keys);
                     keys.forEach(key => {
-                        const message = {
-                            roomId: data.roomId,
-                            token: data.authTokens[key]
-                        }
-                        console.log("message to players: ", message);
-                        matchQueue.get(key)?.send(JSON.stringify(message))
+                        matchQueue.get(key)?.send(JSON.stringify(data))
                     });
                     keys.forEach(key => matchQueue.delete(key));
                 } catch (err) {

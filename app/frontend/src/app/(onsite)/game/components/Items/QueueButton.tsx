@@ -12,6 +12,8 @@ const QueueToggleButton = () => {
 
 	useEffect(() => {
 		let interval: NodeJS.Timeout;
+		if (!loggedInUser)
+			return; // implement error notif pop up here
 		if (isSearching) {
 			interval = setInterval(() => {
 				setQueueTime(t => t + 1);
@@ -22,13 +24,13 @@ const QueueToggleButton = () => {
 	
 			ws.onopen = () => {
 				console.log('WebSocket connected');
-				ws.send(JSON.stringify({ id: loggedInUser?.id }));
+				ws.send(JSON.stringify({ id: loggedInUser.id }));
 			};
 			
 			ws.onmessage = (event: MessageEvent) => { // message will be 
 				try {
 					const data = JSON.parse(event.data);
-					setUrl(`/game/${data.roomId}?tempToken=${data.token}`);
+					setUrl(`/game/room/${data.roomId}?user=${loggedInUser.id}`);
 					ws.close();
 				} catch (err) {
 					console.error("Invalid JSON from server: ", err);
