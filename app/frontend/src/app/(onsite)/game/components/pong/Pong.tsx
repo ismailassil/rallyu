@@ -32,7 +32,7 @@ const initGameState = (): GameState => {
 }
 
 const Pong = () => {
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 	const { url, toggleConnection } = useGame();
 	const socketProxy = useRef<SocketProxy>(SocketProxy.getInstance());
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -44,7 +44,7 @@ const Pong = () => {
 				return ;
 			}
 			gameStateRef.current.gameStatus = 'connecting';
-			const disconnect = socketProxy.current.connect(url, api);
+			const disconnect = socketProxy.current.connect(url, apiClient);
 			toggleConnection();
 			return disconnect;
 		}

@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion"
 import BattleFriend from "./BattleFriend"
-import QueueButton from "./QueueButton"
-import QueueToggleButton from "./re_QueueButton"
+import QueueToggleButton from "./QueueButton"
 import unicaOne from "@/app/fonts/unicaOne"
 import PickGame from "./PickGame"
 

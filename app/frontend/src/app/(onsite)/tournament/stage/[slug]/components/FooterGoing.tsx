@@ -11,7 +11,7 @@ const FooterGoing = function (
     { readyProp: boolean, joined: boolean, startTime: string | null, waiting: boolean, matchId: number}
 ) {
     const [ready, setReady] = useState<boolean>(readyProp);
-    const { api } = useAuth();
+    const { apiClient } = useAuth();
     const [timeRunsOut, setTimeRunsOut] = useState<boolean>(true);
 
 
@@ -22,7 +22,7 @@ const FooterGoing = function (
             return ;
 
         try {
-            const res: AxiosResponse = await api.instance.patch(`/v1/tournament/match/ready`, { matchId: matchId });
+            const res: AxiosResponse = await apiClient.instance.patch(`/v1/tournament/match/ready`, { matchId: matchId });
 
             console.log(res);
 

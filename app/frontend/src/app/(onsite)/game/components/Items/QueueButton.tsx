@@ -1,65 +1,93 @@
-import { useState, useRef } from "react";
-import AnimatedLetters from "./AnimatedLetters";
-import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { useGame } from "../../contexts/gameContext";
+import { useState, useEffect, useRef } from 'react';
+import { useGame } from '../../contexts/gameContext';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 
-function QueueButton() {
-	const { loggedInUser, apiClient } = useAuth();
-	const [ clicked, setClicked ] = useState(false);
-	const { setUrl } = useGame();
-	const wsRef = useRef<WebSocket | null>(null);
+const QueueToggleButton = () => {
+  const [isSearching, setIsSearching] = useState(false);
+  const [queueTime, setQueueTime] = useState(0);
+  const { loggedInUser, apiClient } = useAuth();
+  const { setUrl } = useGame();
+  const wsRef = useRef<WebSocket | null>(null);
 
-	const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-		e.preventDefault();
-		const newClicked = !clicked;
-		try {
-			if (newClicked) {
-				const ws = api.connectWebSocket("/v1/matchmaking/join");
-				wsRef.current = ws;
 
-				setClicked(newClicked);
-				ws.onopen = () => {
-					console.log('WebSocket connected');
-					ws.send(JSON.stringify({ id: user?.id }));
-				};
-				
-				ws.onmessage = (event: MessageEvent) => { // message will be 
-					const data = JSON.parse(event.data);
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isSearching) {
+      interval = setInterval(() => {
+        setQueueTime(t => t + 1);
+      }, 1000);
 
-					console.log("data from matchmaking ws: ", data);
-					setUrl(`/game/${data.roomId}?tempToken=${data.token}`);
-					ws.close();
-				}
-				
-			} else if (wsRef.current) {
-				wsRef.current.close();
-				wsRef.current = null;
-			}
-		} catch (err: unknown) {
-			console.error(err);
-		}
-	};
+      const ws = apiClient.connectWebSocket("/v1/matchmaking/join");
+      wsRef.current = ws;
+  
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+        ws.send(JSON.stringify({ id: loggedInUser?.id }));
+      };
+      
+      ws.onmessage = (event: MessageEvent) => { // message will be 
+        try {
+          const data = JSON.parse(event.data);
+          setUrl(`/game/${data.roomId}?tempToken=${data.token}`);
+          ws.close();
+        } catch (err) {
+          console.error("Invalid JSON from server: ", err);
+        }
+      }
+    } else if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+      setQueueTime(0);
+    }
+    return () => clearInterval(interval);
+  }, [isSearching]);
 
-	return (
-		<button
-			onClick={onClick}
-		  className="mt-auto rounded-full py-[1.2rem] px-[3rem]
-			bg-black text-white uppercase font-black cursor-pointer overflow-hidden
-			relative group box-border"
-		>
-		  <div className={`grid inset-0 absolute text-black bg-white  
-			${clicked ? 'translate-y-full': ''}
-			transform transition-transform duration-150`
-			}>
-			<span className=" w-full h-full content-center scale-100 group-hover:scale-110 transform transition-transform duration-300">
-				Start
-			</span>
-		  </div>
-		  <div className="inline-flex">
-			<AnimatedLetters text="In Queue" trigger={clicked} />
-		  </div>
-		</button>
-	  );
-}
+  const handleToggleQueue = () => {
+    setIsSearching(!isSearching);
+  };
 
-export default QueueButton;
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const getButtonContent = () => {
+    if (!isSearching) return "Start Game";
+    else return `In Queue... ${formatTime(queueTime)}`;
+  };
+
+  const getButtonStyles = () => {
+    const baseStyles = "w-full mt-auto relative px-8 py-3 rounded-xl font-semibold text-base transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none w-80 shadow-lg";
+    if (isSearching) {
+        return `${baseStyles} bg-black/50 text-gray-200 text-sm border-2 border-gray-500/30  hover:bg-gray-600/10`;
+    }
+    return `${baseStyles} bg-white backdrop-blur-sm text-black text-sm border-2 border-gray-400/50 hover:border-gray-300/70 focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50`;
+  };
+
+  return (
+    <button
+      onClick={handleToggleQueue}
+      className={`${getButtonStyles()}`}
+    >
+      {isSearching && (
+        <div className="absolute inset-0 rounded-xl">
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-gray-300/20 to-transparent opacity-15 animate-pulse"></div>
+        </div>
+      )}
+      
+      <span className="relative z-10 flex items-center justify-center space-x-2">
+        {isSearching
+          ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+
+          : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        }
+        <span>{getButtonContent()}</span>
+      </span>
+    </button>
+  );
+};
+
+export default QueueToggleButton;

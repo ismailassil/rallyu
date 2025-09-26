@@ -1,11 +1,3 @@
-/*
-	Keys :
-		t => type Values :	w => waiting
-												s => start
-												o => gameover
-		r => result Values :	w => winner
-													l => loser
-*/
 const { v4: uuidv4 } = require("uuid");
 const { updateState, getVelocity, angles } = require('./physics')
 const jwt = require('jsonwebtoken');
@@ -13,22 +5,6 @@ const WebSocket = require('ws')
 
 const JWT_ROOM_SECRET = process.env.JWT_ROOM_SECRET || 'R00M_4CC3SS_';
 const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
-
-/*
-	Packet: Obj: any
-
-	Player {
-		playerId: string,
-		socket: WebSocket,
-		connected: true
-	}
-
-	Room {
-		players: [Player, Player],
-		state: GameState
-	}
-
-*/
 
 const game = async (fastify, options) => {
 	const ROOM_EXPIRATION_TIME = 10000; // 10 sec

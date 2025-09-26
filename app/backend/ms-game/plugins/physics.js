@@ -92,7 +92,7 @@ const updateState = (gameState) => {
 		gameState.score[1]++
 		gameState.ball = resetBall("left")
 		gameState.pause = true
-		setTimeout(() => gameState.pause = false, 300)
+		setTimeout(() => gameState.pause = false, 1000)
 		return
 	}
 	
@@ -101,7 +101,7 @@ const updateState = (gameState) => {
 		gameState.score[0]++
 		gameState.ball = resetBall("right")
 		gameState.pause = true
-		setTimeout(() => gameState.pause = false, 300)
+		setTimeout(() => gameState.pause = false, 1000)
 		return
 	}
 

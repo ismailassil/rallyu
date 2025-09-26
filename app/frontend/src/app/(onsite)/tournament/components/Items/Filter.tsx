@@ -13,14 +13,14 @@ function Filter(
 	{ setTournaments: Dispatch<SetStateAction<never[]>>, mode: number, setError: Dispatch<SetStateAction<errorObj>> }
 ) {
 	const [filter, setFilter] = useState(mode);
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 	const router = useRouter();
 
 	const filterTournaments = async function (e) {
 		e.preventDefault();
 		try {
 			if (filter === 0 || filter !== this) {
-				const req = await api.instance.get(
+				const req = await apiClient.instance.get(
 					`/v1/tournament/tournaments?mode=${this === 1 ? "ping-pong" : "tic-tac-toe"}`
 				);
 
@@ -30,7 +30,7 @@ function Filter(
 				setFilter(this);
 				router.push(`/tournament?mode=${this === 1 ? "ping-pong" : "tic-tac-toe"}`);
 			} else {
-				const req = await api.instance.get(`/v1/tournament/tournaments`);
+				const req = await apiClient.instance.get(`/v1/tournament/tournaments`);
 
 				const data = req.data;
 
