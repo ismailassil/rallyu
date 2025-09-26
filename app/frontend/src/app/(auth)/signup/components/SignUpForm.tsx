@@ -8,20 +8,22 @@ import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { alertError, alertSuccess } from '../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import { signupFormSchema } from '@/app/(api)/schema';
+import PasswordStrength from './PasswordStrength';
+import FormFieldAvailability from './FormFieldAvailability';
 
 export default function SignUpForm() {
+	const router = useRouter();
 	const { register } = useAuth();
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 	const [fieldsAvailable, setFieldsAvailable] = useState({
 		username: false,
 		email: false
 	});
-	const router = useRouter();
 
 	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm(
 		signupFormSchema,
 		{ first_name: '', last_name: '', username: '', email: '', password: '' },
-		{ debounceMs: { password: 1500 } } // debounce password validation by 1500ms
+		{ debounceMs: { email: 1200, password: 1200 } }
 	);
 
 	const updateFieldAvailable = useCallback((name: string, available: boolean) => {
@@ -50,8 +52,7 @@ export default function SignUpForm() {
 			alertSuccess('Account created successfully...');
 			router.replace('/login');
 		} catch (err: any) {
-			const msg = err.message;
-			alertError(msg);
+			alertError(err.message || 'Something went wrong, please try again later');
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -96,8 +97,16 @@ export default function SignUpForm() {
 				touched={touched.username}
 				error={errors.username}
 				debounced={debounced.username}
-				setFieldAvailable={updateFieldAvailable}
-			/>
+			>
+				{debounced.username && touched.username && !errors.username && formData.username && formData.username.length >= 3 && (
+					<FormFieldAvailability 
+						label='Username'
+						name='username'
+						value={formData.username}
+						setFieldAvailable={updateFieldAvailable}
+					/>
+				)}
+			</FormField>
 			<FormField 
 				className='field flex flex-col gap-0.5 box-border'
 				iconSrc='/icons/mail.svg'
@@ -109,8 +118,16 @@ export default function SignUpForm() {
 				touched={touched.email}
 				error={errors.email}
 				debounced={debounced.email}
-				setFieldAvailable={updateFieldAvailable}
-			/>
+			>
+				{debounced.email && touched.email && !errors.email && formData.email && formData.email.length >= 3 && (
+					<FormFieldAvailability 
+						label='Email'
+						name='email'
+						value={formData.email}
+						setFieldAvailable={updateFieldAvailable}
+					/>
+				)}
+			</FormField>
 			<FormField 
 				className='field flex flex-col gap-0.5 box-border'
 				iconSrc='/icons/lock.svg'
@@ -123,7 +140,9 @@ export default function SignUpForm() {
 				touched={touched.password}
 				error={errors.password}
 				debounced={debounced.password}
-			/>
+			>
+				{touched.password && formData.password && <PasswordStrength value={formData.password} />}
+			</FormField>
 			<button className={`h-11 mt-2 rounded-lg transition-all duration-200 ${
 					isSubmitting 
 					? 'bg-gray-700 cursor-not-allowed'
@@ -134,7 +153,6 @@ export default function SignUpForm() {
 				>
 					Sign Up
 			</button>
-				
 		</form>
 	);
 }

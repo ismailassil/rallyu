@@ -31,6 +31,14 @@ export const signupFormSchema = z.object({
 		.regex(/(?=.*\d)/, "Password must contain a digit"),
 });
 
+export const loginFormSchema = z.object({
+	username: z.string()
+		.nonempty("Username is required"),
+
+	password: z.string()
+		.nonempty("Password is required")
+});
+
 export const personalInfoSettingsSchema = z.object({
 	first_name: z.string()
 		.nonempty("First name is required")

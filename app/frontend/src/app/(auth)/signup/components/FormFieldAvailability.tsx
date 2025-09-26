@@ -25,64 +25,45 @@ function getFieldStatusDisplay(label: string, fieldStatus: FieldStatus) {
 	}
 }
 
-// async function checkFormFieldAvailability(name: string, value: string) {
-// 	const { apiClient } = useAuth();
-// 	try {
-// 		const response = await fetch(`http://localhost:4025/api/users/available?${name}=${value}`, {
-// 			method: 'GET'
-// 		});
-		
-// 		const isAvailable = response.ok ? true : false;
-		
-// 		return isAvailable;
-// 	} catch {
-// 		return null;
-// 	}
-// }
-
 export default function FormFieldAvailability({
 	label,
 	name,
 	value,
 	setFieldAvailable
-}: FormFieldAvailabilityProps) {
+} : FormFieldAvailabilityProps) {
 	const [fieldStatus, setFieldStatus] = useState<FieldStatus>(null);
 	const { loggedInUser, isAuthenticated, isLoading, apiClient } = useAuth();
 
 	useEffect(() => {
 			setFieldStatus('CHECKING');
+			async function fetchAvailability(name: string, value: string) {
+				let isAvailable: boolean | null = null;
 
-			async function check(name: string, value: string) {
-				const isAvailable = name === 'username' ? await apiClient?.isUsernameAvailable(value.trim()) : await apiClient?.isEmailAvailable(value.trim());
-				console.log(`check ${name}=${value} isAvailable`, isAvailable);
-				if (isAvailable === true) {
-					setFieldStatus('AVAILABLE');
-					setFieldAvailable?.(name, true);
-				} else if (isAvailable === false) {
-					setFieldStatus('TAKEN');
-					setFieldAvailable?.(name, false);
-				} else {
+				try {
+					if (name === 'username') isAvailable = await apiClient?.isUsernameAvailable(value.trim());
+					else if (name === 'email') isAvailable = await apiClient?.isEmailAvailable(value.trim());
+					setFieldStatus(isAvailable === true ? 'AVAILABLE' : isAvailable === false ? 'TAKEN' : 'ERROR');
+					setFieldAvailable?.(name, isAvailable === true);
+				} catch {
 					setFieldStatus('ERROR');
 					setFieldAvailable?.(name, false);
 				}
 			}
-			if (!isLoading) {
-				if (isAuthenticated && ((name == 'username' && loggedInUser?.username == value.trim()) || (name == 'email' && loggedInUser?.email == value.trim()))) {
-					setFieldStatus(null);
-					setFieldAvailable?.(name, true);
-				}
-				else
-					check(name, value);
-			}
+			// if (!isLoading) {
+			// 	if (isAuthenticated && ((name == 'username' && loggedInUser?.username == value.trim()) || (name == 'email' && loggedInUser?.email == value.trim()))) {
+			// 		setFieldStatus(null);
+			// 		setFieldAvailable?.(name, true);
+			// 	}
+			// 	else
+			// }
+			fetchAvailability(name, value);
 
-	}, [name, value, setFieldAvailable, isAuthenticated, isLoading]);
+	}, [name, value]);
 
 	const fieldStatusDisplay = getFieldStatusDisplay(label, fieldStatus);
-	console.log('fieldStatusDisplay', fieldStatusDisplay);
 
 	if (!fieldStatusDisplay) return null;
 
-	console.log(`rendring FormFieldAvailability`);
 	return (
 		<SlideInOut>
 			<div className={`${fieldStatusDisplay.color} font-light text-xs flex items-center p-1 gap-1.5`}>
