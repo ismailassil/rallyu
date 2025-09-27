@@ -43,7 +43,7 @@ export default function GeneralSettingsTab() {
 		{ debounceMs: { username: 1200, email: 1200 } } // debounce username and email validation by 1000ms
 	);
 	const [fieldsAvailable, setFieldsAvailable] = useState({
-		username: true,
+		username: true, 
 		email: true
 	});
 

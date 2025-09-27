@@ -27,6 +27,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	// THIS USE EFFECT WILL ONLY RUN ON PAGE FIRSTLOAD/REFRESH
 	useEffect(() => {
+		console.log('AuthProvider useEffect - Checking authentication status...');
 		async function initializeAuth() {
 			try {
 				const { user, accessToken } = await apiClient.refreshToken();

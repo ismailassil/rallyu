@@ -1,9 +1,19 @@
 'use client';
 import Image from "next/image";
 import SignUpForm from "./components/SignUpForm";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function SignUpPage() {
+	const router = useRouter();
 	return (
+		<motion.div
+			key={'signup-page'}
+			initial={{ opacity: 0, x: -5 }}
+			animate={{ opacity: 1, x: 0 }}
+			exit={{ opacity: 0, x: -5 }}
+			transition={{ duration: 0.8, delay: 0 }}
+		>
 			<main className="pt-30 flex h-[100vh] w-full pb-10">
 				<div className="flex h-full w-full justify-center overflow-auto">
 					<div className="mine flex h-full w-[650px] items-start justify-center pb-20 pl-10 pr-10 pt-20 lg:items-center">
@@ -25,10 +35,11 @@ export default function SignUpPage() {
 							</div>
 							<div className='or-separator flex flex-row gap-2 justify-center items-center text-gray-200'>OR</div>
 							<SignUpForm />
-							<p className='self-center'>Already have an account? <a href='/login' className='font-semibold  text-blue-500 hover:underline'>Login</a></p>
+							<p className='self-center'>Already have an account? <a onClick={() => router.push('/login')} className='font-semibold  text-blue-500 hover:underline cursor-pointer'>Login</a></p>
 						</div>
 					</div>
 				</div>
 			</main>
+		</motion.div>
 	);
 }

@@ -82,7 +82,7 @@ export default function PersonalInformationsForm({
 					error={errors.email}
 					debounced={debounced.email}
 				>
-					{(formData.username !== loggedInUser?.username) && debounced.email && touched.email && !errors.email && formData.email && formData.email.length >= 3 && (
+					{(formData.email !== loggedInUser?.email) && debounced.email && touched.email && !errors.email && formData.email && formData.email.length >= 3 && (
 						<FormFieldAvailability 
 							label='Email'
 							name='email'

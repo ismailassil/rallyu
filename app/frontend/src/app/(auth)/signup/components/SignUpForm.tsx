@@ -23,7 +23,7 @@ export default function SignUpForm() {
 	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm(
 		signupFormSchema,
 		{ first_name: '', last_name: '', username: '', email: '', password: '' },
-		{ debounceMs: { email: 1200, password: 1200 } }
+		{ debounceMs: { email: 1200, username: 1200, password: 1200 } }
 	);
 
 	const updateFieldAvailable = useCallback((name: string, available: boolean) => {
