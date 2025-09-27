@@ -1,8 +1,8 @@
 import CountUp from "react-countup";
 import Chart from "./Chart";
 import Image from "next/image";
-import MainCardWithHeader from "@/app/(onsite)/(refactoredUIComponents)/MainCardWithHeader";
-import ChartCardWrapper from "@/app/(onsite)/(refactoredUIComponents)/ChartCardWrapper";
+import MainCardWithHeader from "@/app/(onsite)/components/UI/MainCardWithHeader";
+import ChartCardWrapper from "@/app/(onsite)/components/UI/ChartCardWrapper";
 
 type PerformanceCardProps = {
 	totalXP: number,

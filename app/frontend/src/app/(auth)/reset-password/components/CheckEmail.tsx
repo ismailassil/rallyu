@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useState } from "react";
-import FormFieldError from "../../signup/components/FormFieldError";
+import FormFieldError from "../../components/Forms/FormFieldError";
 import { AnimatePresence } from "framer-motion";
 
 async function verifyOTP(email: string, code: string) : Promise<void> {

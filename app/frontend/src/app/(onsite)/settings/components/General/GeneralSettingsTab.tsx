@@ -5,7 +5,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import ProfilePreview from './ProfilePreview';
 import PersonalInformationsForm from './PersonalInformationsForm';
 import useForm from '@/app/hooks/useForm';
-import { toastError, toastSuccess } from '@/app/(auth)/components/CustomToast';
+import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import { LoaderCircle } from 'lucide-react';
 import { personalInfoSettingsSchema } from '@/app/(api)/schema';
 

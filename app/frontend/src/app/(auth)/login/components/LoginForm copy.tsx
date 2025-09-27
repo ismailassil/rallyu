@@ -3,10 +3,10 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import Image from 'next/image';
-import FormFieldError from '../../signup/components/FormFieldError';
+import FormFieldError from '../../components/Forms/FormFieldError';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { toastError, toastLoading, toastSuccess } from '../../components/CustomToast';
+import { toastError, toastLoading, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import { APIError } from '@/app/(api)/APIClient';
 

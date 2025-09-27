@@ -1,7 +1,7 @@
 import LeaderboardItem, { AnimatedLeaderboardItem } from './LeaderBoardItem';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import MainCardWithHeader from '../../(refactoredUIComponents)/MainCardWithHeader';
+import MainCardWithHeader from '../UI/MainCardWithHeader';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 

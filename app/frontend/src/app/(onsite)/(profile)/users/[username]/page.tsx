@@ -5,7 +5,7 @@ import ProfileCard from '../components/ProfileCard';
 import PerformanceCard from '../components/PerformaceCard';
 import GamesHistoryCard from '../components/GamesHistoryCard';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { toastError } from '@/app/(auth)/components/CustomToast';
+import { toastError } from '@/app/components/CustomToast';
 import { APIError } from '@/app/(api)/APIClient';
 import { UserProfile } from '../../types';
 import { AuthLoadingSpinner } from '@/app/(auth)/components/LoadingSpinners';

@@ -3,9 +3,9 @@
 import React from 'react';
 import { useState } from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { toastError, toastSuccess } from '../../components/CustomToast';
+import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
-import FormField from '../../signup/components/FormField';
+import FormField from '../../components/Forms/FormField';
 import useForm from '@/app/hooks/useForm';
 import { loginFormSchema } from '@/app/(api)/schema';
 

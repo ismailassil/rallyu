@@ -1,5 +1,5 @@
 import Image from "next/image";
-import FormFieldError from "../../signup/components/FormFieldError";
+import FormFieldError from "../../components/Forms/FormFieldError";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Fingerprint, LoaderCircle, Mail, RefreshCw, Smartphone, QrCode, X, Loader, Shield, ArrowLeft, Check } from "lucide-react";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { APIError } from "@/app/(api)/APIClient";
-import { toastSuccess, toastError } from "@/app/(auth)/components/CustomToast";
+import { toastSuccess, toastError } from "@/app/components/CustomToast";
 import { Toaster } from "sonner";
 
 const METHODS_META: Record<string, { title: string; description: string, icon: React.JSX.Element }> = {

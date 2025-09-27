@@ -1,5 +1,5 @@
 import Relations, { FriendshipStatus } from './Relations';
-import MainCardWrapper from '@/app/(onsite)/(refactoredUIComponents)/MainCardWrapper';
+import MainCardWrapper from '@/app/(onsite)/components/UI/MainCardWrapper';
 import Button from './Button';
 import { LocalUserPencilIcon } from './LocalIcon';
 import Avatar from './Avatar';

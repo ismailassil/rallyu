@@ -3,13 +3,13 @@
 import React, { useCallback } from 'react';
 import { useState } from 'react';
 import useForm from '@/app/hooks/useForm';
-import FormField from './FormField';
+import FormField from '../../components/Forms/FormField';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { toastError, toastSuccess } from '../../components/CustomToast';
+import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import { signupFormSchema } from '@/app/(api)/schema';
-import PasswordStrength from './PasswordStrength';
-import FormFieldAvailability from './FormFieldAvailability';
+import PasswordStrength from '../../components/Forms/PasswordStrength';
+import FormFieldAvailability from '../../components/Forms/FormFieldAvailability';
 
 export default function SignUpForm() {
 	const router = useRouter();

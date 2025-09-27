@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import Background from './(auth)/components/Background';
+import Background from './(auth)/components/UI/Background';
 import Card from './components/Card';
 import rallyuFeatures from './components/CardContent';
 import LandingPageHeader from './components/LandingPageHeader';

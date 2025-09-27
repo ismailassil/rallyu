@@ -7,7 +7,7 @@ import Security from "./components/Security/Security";
 import { useState } from "react";
 import { Cog, UsersIcon, Gamepad2, Fingerprint } from "lucide-react";
 import { Toaster } from "sonner";
-import { toastLoading } from "@/app/(auth)/components/CustomToast";
+import { toastLoading } from "@/app/components/CustomToast";
 
 type Tab = {
 	label: string;

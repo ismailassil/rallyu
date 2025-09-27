@@ -11,7 +11,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { AxiosResponse } from "axios";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
-import { toastSuccess } from '@/app/(auth)/components/CustomToast';
+import { toastSuccess } from '@/app/components/CustomToast';
 import { useRouter } from "next/navigation";
 import HostIn from "./Items/HostIn";
 

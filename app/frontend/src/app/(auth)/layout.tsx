@@ -1,8 +1,8 @@
 'use client';
-import Header from "./components/Header";
+import Header from "./components/UI/Header";
 import "@/app/globals.css";
 import { Toaster } from "sonner";
-import PublicRoute from "./components/PublicRoute";
+import PublicRoute from "./components/AuthGuards/PublicRoute";
 
 export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
 	return (

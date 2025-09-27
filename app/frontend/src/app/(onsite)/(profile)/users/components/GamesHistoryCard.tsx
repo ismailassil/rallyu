@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import MainCardWithHeader from "@/app/(onsite)/(refactoredUIComponents)/MainCardWithHeader";
+import MainCardWithHeader from "@/app/(onsite)/components/UI/MainCardWithHeader";
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import Image from "next/image";
 import GameCard, { GameProps } from "./GameCard";

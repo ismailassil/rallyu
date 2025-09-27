@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { ChevronRight, Fingerprint, Loader, LoaderCircle, Mail, RefreshCw, Smartphone } from "lucide-react";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { APIError } from "@/app/(api)/APIClient";
-import { toastError, toastSuccess } from "../components/CustomToast";
+import { toastError, toastSuccess } from "../../components/CustomToast";
 
 const METHODS_META: Record<string, { title: string; description: string, icon: React.JSX.Element }> = {
 	totp: { title: 'Authenticator App', description: 'Google Authenticator, Authy, or similar apps', icon: <Fingerprint className='group-hover:text-blue-400 transition-all duration-900 h-14 w-14' /> },

@@ -1,4 +1,4 @@
-import { toastSuccess } from "@/app/(auth)/components/CustomToast";
+import { toastSuccess } from "@/app/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import unicaOne from "@/app/fonts/unicaOne";
 import { CloudWarningIcon, MaskSad } from "@phosphor-icons/react";
