@@ -103,7 +103,7 @@ class UserRepository {
 		}
 		if (updates.email) {
 			keys.push(`email = ?`);
-			values.push(updates.username);
+			values.push(updates.email);
 		}
 		if (updates.username) {
 			keys.push(`username = ?`);
