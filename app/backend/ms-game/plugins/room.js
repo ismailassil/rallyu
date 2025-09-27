@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { updateState, getVelocity, angles } = require('./physics')
-const WebSocket = require('ws')
+const WebSocket = require('ws');
+const { type } = require("os");
 
 const JWT_ROOM_SECRET = process.env.JWT_ROOM_SECRET || 'R00M_4CC3SS_';
 const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
@@ -28,6 +29,26 @@ const game = async (fastify, options) => {
 		})
 		room.cleanUp();
 		rooms.delete(room.id)
+	}
+
+	const getResults = (scores) => {
+		const [p1, p2] = scores;
+	  
+		if (p1 > p2) return ["win", "loss"];
+		if (p1 < p2) return ["loss", "win"];
+		return ["tie", "tie"];
+	}
+	
+	const sendGameOverPacket = (room) => {
+		const scores = [room.players[0].score, room.players[1].score];
+		const results = getResults(scores);
+
+		room.players.forEach((p, i) => {
+			fastify.json(p.socket,  {
+				type: 'gameover',
+				result: results[i]
+			})
+		})
 	}
 
 	const setupPackets = (room) => {
@@ -93,18 +114,19 @@ const game = async (fastify, options) => {
 			this.timeoutId = null;
 			this.intervalId = null;
 			this.expirationTimer = null;
+			this.gameTimerId = null;
 
 			const initialAngle = angles[Math.floor(Math.random() * angles.length)];
 			this.state = {
 				ball: {
 					x: 400,
 					y: 300,
-					speed: 7,
+					speed: 8,
 					angle: initialAngle,
 					dir: 'left',
-					velocity: getVelocity(initialAngle, 7)
+					velocity: getVelocity(initialAngle, 8)
 				},
-				players: [{ x: 30, y: 300 }, { x: 770, y: 300 }],
+				players: [{ x: 20, y: 300 }, { x: 780, y: 300 }],
 				score: [0, 0],
 				pause: true
 			};
@@ -137,6 +159,7 @@ const game = async (fastify, options) => {
 		cleanUp() {
 			clearTimeout(this.timeoutId);
 			clearInterval(this.intervalId);
+			clearTimeout(this.gameTimerId);
 		}
 	}
 
@@ -174,6 +197,10 @@ const game = async (fastify, options) => {
 				});
 			} else if (room.players.every(p => p.connected)) {
 				clearTimeout(room.expirationTimer);
+				room.gameTimerId = setTimeout(() => {
+					sendGameOverPacket(room);
+					closeRoom(room, 1003, 'Game Over');
+				}, 60000)
 				room.startGame();
 			}
 

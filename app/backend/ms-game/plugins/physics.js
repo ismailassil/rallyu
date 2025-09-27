@@ -14,7 +14,7 @@ const bounceBall = (ball, paddle) => {
 	ball.angle = ball.dir === 'right'
 		? Math.PI - (normalized * maxBounceAngle)
 		: normalized * maxBounceAngle
-	ball.speed = clamp(ball.speed * (Math.abs(normalized) * (0.7 - 0.3) + 0.7), 7, 11)
+	ball.speed = clamp(ball.speed * (Math.abs(normalized) * (0.7 - 0.3) + 0.7), 8, 12)
 	ball.velocity = getVelocity(ball.angle, ball.speed)
 	ball.dir = ball.dir === 'right' ? 'left' : 'right'
 }
@@ -43,7 +43,7 @@ const resetBall = (dir) => {
 	return ({
 		x: 400,
 		y: 300,
-		speed: 7,
+		speed: 8,
 		angle: initialAngle,
 		velocity: getVelocity(initialAngle, 8)
 	})

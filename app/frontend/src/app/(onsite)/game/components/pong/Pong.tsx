@@ -16,11 +16,11 @@ const initGameState = (): GameState => {
 		ball: { x: 400, y: 300, width: 10, height: 10 },
 		players:[
 			{
-				rect: { x: 35, y: 300, width: 10, height: 60 },
+				rect: { x: 20, y: 300, width: 10, height: 60 },
 				score: 0
 			},
 			{
-				rect: { x: 765, y: 300, width: 10, height: 60 },
+				rect: { x: 780, y: 300, width: 10, height: 60 },
 				score: 0
 			}
 		],

@@ -109,6 +109,10 @@ export const setupCommunications = (gameStateRef: React.RefObject<GameState>, pr
 				gameStateRef.current.players[0].score = data.score[0]
 				gameStateRef.current.players[1].score = data.score[1]
 				break;
+			case 'gameover':
+				gameStateRef.current.serverBall = { x: 400, y: 300, width: 10, height: 10 };
+				proxy.disconnect();
+				break;
 			case 'ready':
 				gameStateRef.current.index = data.i
 				break;

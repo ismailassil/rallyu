@@ -6,8 +6,7 @@ export const setupInputHandlers = (canvas: HTMLCanvasElement, gameState: GameSta
 	const handleMouseMove = (event: MouseEvent) => {
 		const rect = canvas.getBoundingClientRect();
 		const mouseY = event.clientY - rect.top;
-		const canvasY = mouseY * (canvas.height / rect.height);
-		const boundedY = Math.max(HALF_PADDLE, Math.min(canvasY, canvas.height) - HALF_PADDLE);
+		const boundedY = Math.max(HALF_PADDLE, Math.min(mouseY, canvas.height) - HALF_PADDLE);
 		
 		gameState.players[0].rect.y = boundedY;
 		if (gameState.index !== undefined)
