@@ -9,7 +9,6 @@ import { ChartCard, StatCard, StatDetailedCard } from '../components/Cards';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { APIError } from '@/app/(api)/APIClient';
 import { toastError } from '@/app/components/CustomToast';
-import { AuthLoadingSpinner } from '@/app/(auth)/components/LoadingSpinners';
 
 const data = {
 	gameTypeDistData: [
@@ -94,7 +93,8 @@ export default function UserStatsPage() {
 	}, []);
 
 	if (isLoading || !userAnalytics)
-		return <AuthLoadingSpinner />;
+		return null;
+		// return <AuthLoadingSpinner />;
 
 	const { totals, scores, durations, opponents } = userAnalytics;
 

@@ -2,14 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
 import { Clock, Target, TrendingUp, Trophy } from 'lucide-react';
-import Chart from '../components/Charts/Chart';
 import ChartPie from '../components/Charts/ChartPie';
 import ChartBar from '../components/Charts/ChartBar';
 import { ChartCard, StatCard, StatDetailedCard } from '../components/Cards';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { APIError } from '@/app/(api)/APIClient';
 import { toastError } from '@/app/components/CustomToast';
-import { AuthLoadingSpinner } from '@/app/(auth)/components/LoadingSpinners';
 
 export default function UserStatsPage() {
 	const { apiClient, loggedInUser } = useAuth();
@@ -37,7 +35,8 @@ export default function UserStatsPage() {
 	}, []);
 
 	if (isLoading || !userAnalytics)
-		return <AuthLoadingSpinner />;
+		return null;
+		// return <AuthLoadingSpinner />;
 	
 	const { totals, scores, durations, opponents } = userAnalytics;
 
