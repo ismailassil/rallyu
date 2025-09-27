@@ -6,7 +6,7 @@ import Image from 'next/image';
 import FormFieldError from '../../signup/components/FormFieldError';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { alertError, alertLoading, alertSuccess } from '../../components/CustomToast';
+import { toastError, toastLoading, toastSuccess } from '../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import { APIError } from '@/app/(api)/APIClient';
 
@@ -54,20 +54,20 @@ export default function LoginForm() {
 		
 		setIsSubmitting(true);
 		try {
-			alertLoading('Loggin you in...');
+			toastLoading('Loggin you in...');
 			const res = await login(username, password);
 			if (res._2FARequired) {
-				alertSuccess('Two Factor Authentication is required!');
+				toastSuccess('Two Factor Authentication is required!');
 
 				// setTimeout(() => {
 					router.push('/two-factorv3');
 				// }, 1000);
 			} else
-				alertSuccess('Logged in successfully');
+				toastSuccess('Logged in successfully');
 		} catch (err) {
 			console.log('ERROR CATCHED IN LOGIN FORM SUBMIT: ', err);
 			const apiErr = err as APIError;
-			alertError(apiErr.message);
+			toastError(apiErr.message);
 		} finally {
 			setIsSubmitting(false);
 		}

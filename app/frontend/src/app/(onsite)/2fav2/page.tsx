@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Fingerprint, LoaderCircle, Mail, RefreshCw, Smartphone, QrCode, X, Loader, Shield, ArrowLeft, Check } from "lucide-react";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { APIError } from "@/app/(api)/APIClient";
-import { alertSuccess, alertError } from "@/app/(auth)/components/CustomToast";
+import { toastSuccess, toastError } from "@/app/(auth)/components/CustomToast";
 import { Toaster } from "sonner";
 
 const METHODS_META: Record<string, { title: string; description: string, icon: React.JSX.Element }> = {
@@ -43,7 +43,7 @@ export default function Setup2FAPage() {
 			setEnabledMethods(enabledMethods);
 		} catch (err) {
 			const apiErr = err as APIError;
-			alertError(apiErr.message);
+			toastError(apiErr.message);
 		} finally {
 			setIsLoading(false);
 		}
@@ -65,7 +65,7 @@ export default function Setup2FAPage() {
 				setCurrentStep('verify-setup');
 		} catch (err) {
 			const apiErr = err as APIError;
-			alertError(apiErr.message);
+			toastError(apiErr.message);
 		} finally {
 			setIsLoading(false);
 		}
@@ -82,11 +82,11 @@ export default function Setup2FAPage() {
 			setIsLoading(true);
 			await delay(6000);
 			await apiClient.mfaDisableMethod(method);
-			alertSuccess(`${METHODS_META[method].title} disabled successfully`);
+			toastSuccess(`${METHODS_META[method].title} disabled successfully`);
 			await getEnabledMethods();
 		} catch (err) {
 			const apiErr = err as APIError;
-			alertError(apiErr.message);
+			toastError(apiErr.message);
 		} finally {
 			setIsLoading(false);
 		}
@@ -99,7 +99,7 @@ export default function Setup2FAPage() {
 			
 			await delay(6000);
 			await apiClient.mfaSetupVerify(selectedMethod, toVerify);
-			alertSuccess(`${METHODS_META[selectedMethod].title} setup successfully!`);
+			toastSuccess(`${METHODS_META[selectedMethod].title} setup successfully!`);
 			
 			setCurrentStep('done');
 			setCode(['', '', '', '', '', '']);
@@ -108,7 +108,7 @@ export default function Setup2FAPage() {
 			await getEnabledMethods();
 		} catch (err) {
 			const apiErr = err as APIError;
-			alertError(apiErr.message);
+			toastError(apiErr.message);
 		} finally {
 			setIsVerifyingCode(false);
 		}
@@ -119,10 +119,10 @@ export default function Setup2FAPage() {
 			setIsSendingCode(true);
 			await delay(6000);
 			await apiClient.mfaSetupInit(selectedMethod);
-			alertSuccess('Code sent!');
+			toastSuccess('Code sent!');
 		} catch (err) {
 			const apiErr = err as APIError;
-			alertError(apiErr.message);
+			toastError(apiErr.message);
 		} finally {
 			setIsSendingCode(false);
 		}

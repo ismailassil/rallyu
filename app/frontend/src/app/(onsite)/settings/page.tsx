@@ -7,7 +7,7 @@ import Security from "./components/Security/Security";
 import { useState } from "react";
 import { Cog, UsersIcon, Gamepad2, Fingerprint } from "lucide-react";
 import { Toaster } from "sonner";
-import { alertLoading } from "@/app/(auth)/components/CustomToast";
+import { toastLoading } from "@/app/(auth)/components/CustomToast";
 
 type Tab = {
 	label: string;
@@ -56,7 +56,7 @@ export default function SettingsPage() {
 	}
 
 	setTimeout(() => {
-		alertLoading('DEV - Page still under development.');
+		toastLoading('DEV - Page still under development.');
 	}, 2000);
 	
 	return (

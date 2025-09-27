@@ -8,7 +8,7 @@ import ChartBar from '../components/Charts/ChartBar';
 import { ChartCard, StatCard, StatDetailedCard } from '../components/Cards';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { APIError } from '@/app/(api)/APIClient';
-import { alertError } from '@/app/(auth)/components/CustomToast';
+import { toastError } from '@/app/(auth)/components/CustomToast';
 import { AuthLoadingSpinner } from '@/app/(auth)/components/LoadingSpinners';
 
 export default function UserStatsPage() {
@@ -26,7 +26,7 @@ export default function UserStatsPage() {
 			} catch (err) {
 
 				const apiErr = err as APIError;
-				alertError(apiErr.message);
+				toastError(apiErr.message);
 				
 			} finally {
 				setIsLoading(false);

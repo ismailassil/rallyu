@@ -5,7 +5,7 @@ import { useState } from 'react';
 import useForm from '@/app/hooks/useForm';
 import FormField from './FormField';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { alertError, alertSuccess } from '../../components/CustomToast';
+import { toastError, toastSuccess } from '../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import { signupFormSchema } from '@/app/(api)/schema';
 import PasswordStrength from './PasswordStrength';
@@ -49,10 +49,10 @@ export default function SignUpForm() {
 				formData.email,
 				formData.password
 			);
-			alertSuccess('Account created successfully...');
+			toastSuccess('Account created successfully...');
 			router.replace('/login');
 		} catch (err: any) {
-			alertError(err.message || 'Something went wrong, please try again later');
+			toastError(err.message || 'Something went wrong, please try again later');
 		} finally {
 			setIsSubmitting(false);
 		}

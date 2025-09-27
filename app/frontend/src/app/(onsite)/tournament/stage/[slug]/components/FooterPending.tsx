@@ -1,4 +1,4 @@
-import { alertSuccess } from "@/app/(auth)/components/Alert";
+import { toastSuccess } from "@/app/(auth)/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import unicaOne from "@/app/fonts/unicaOne";
 import { CloudWarningIcon, MaskSad } from "@phosphor-icons/react";
@@ -21,7 +21,7 @@ const FooterPending = function (
         try {
             await api.instance.patch(`/v1/tournament/match/join/${slug}`, { id: user?.id });
 
-            alertSuccess("Joined the tournament successfully");
+            toastSuccess("Joined the tournament successfully");
             setJoined(true);
             setError({ status: false, message: "" });
         } catch (err: unknown) {
@@ -34,7 +34,7 @@ const FooterPending = function (
         try {
             await api.instance.patch(`/v1/tournament/match/leave/${slug}`, { id: user?.id });
 
-            alertSuccess("Left the tournament successfully");
+            toastSuccess("Left the tournament successfully");
             setJoined(false);
             setError({ status: false, message: "" });
         } catch (err: unknown) {

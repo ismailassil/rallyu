@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { ChevronRight, Fingerprint, Loader, LoaderCircle, Mail, RefreshCw, Smartphone } from "lucide-react";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { APIError } from "@/app/(api)/APIClient";
-import { alertError, alertSuccess } from "../components/CustomToast";
+import { toastError, toastSuccess } from "../components/CustomToast";
 
 const METHODS_META: Record<string, { title: string; description: string, icon: React.JSX.Element }> = {
 	totp: { title: 'Authenticator App', description: 'Google Authenticator, Authy, or similar apps', icon: <Fingerprint className='group-hover:text-blue-400 transition-all duration-900 h-14 w-14' /> },
@@ -76,7 +76,7 @@ export default function Login2FAChallengePage() {
 			// }
 		} catch (err) {
 			const apiErr = err as APIError;
-			alertError(apiErr.message);
+			toastError(apiErr.message);
 			router.replace('/login');
 		} finally {
 			setIsSendingCode(false);
@@ -93,7 +93,7 @@ export default function Login2FAChallengePage() {
 			setIsVerifyingCode(false);
 		} catch (err) {
 			const apiErr = err as APIError;
-			alertError(apiErr.code.includes('SESSION') ? apiErr.message + ' - Please sign in again' : apiErr.message);
+			toastError(apiErr.code.includes('SESSION') ? apiErr.message + ' - Please sign in again' : apiErr.message);
 			if (apiErr.code.includes('SESSION'))
 				router.replace('/login');
 		} finally {
@@ -109,10 +109,10 @@ export default function Login2FAChallengePage() {
 		try {
 			setIsSendingCode(true);
 			await send2FACode(session!.loginChallengeID, selectedMethod);
-			alertSuccess('Code sent!');
+			toastSuccess('Code sent!');
 		} catch (err) {
 			const apiErr = err as APIError;
-			alertError(apiErr.code.includes('SESSION') ? apiErr.message + ' - Please sign in again' : apiErr.message);
+			toastError(apiErr.code.includes('SESSION') ? apiErr.message + ' - Please sign in again' : apiErr.message);
 			if (apiErr.code.includes('SESSION'))
 				router.replace('/login');
 		} finally {

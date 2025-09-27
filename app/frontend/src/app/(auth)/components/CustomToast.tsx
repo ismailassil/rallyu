@@ -36,31 +36,28 @@ export default function CustomToast({ level, message } : { level: string, messag
 	);
 }
 
-export function alertLoading(message: string) {
+export function toastLoading(message: string) {
 	toast.dismiss();
 	const id = toast(<CustomToast level='LOADING' message={message || 'Processsing...'} />, {
 		unstyled: true, duration: 30000, dismissible: true,
-		// className: 'w-full flex items-center justify-center'
 		className: 'w-full flex items-end justify-end cursor-pointer'
 	});
 	return id;
 }
 
-export function alertSuccess(message: string) {
+export function toastSuccess(message: string) {
 	toast.dismiss();
 	const id = toast(<CustomToast level='SUCCESS' message={message || 'Success'} />, {
 		unstyled: true, duration: 2000, dismissible: true,
-		// className: 'w-full flex items-center justify-center'
 		className: 'w-full flex items-end justify-end cursor-pointer'
 	});
 	return id;
 }
 
-export function alertError(message: string) {
+export function toastError(message: string) {
 	toast.dismiss();
 	const id = toast(<CustomToast level='ERROR' message={message || 'Something went wrong. Try again.'} />, {
 		unstyled: true, duration: 6000, dismissible: true,
-		// className: 'w-full flex items-center justify-center'
 		className: 'w-full flex items-end justify-end cursor-pointer'
 	});
 	return id;

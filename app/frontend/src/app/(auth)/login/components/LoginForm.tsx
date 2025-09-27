@@ -3,7 +3,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { alertError, alertSuccess } from '../../components/CustomToast';
+import { toastError, toastSuccess } from '../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import FormField from '../../signup/components/FormField';
 import useForm from '@/app/hooks/useForm';
@@ -29,12 +29,12 @@ export default function LoginForm() {
 		try {
 			const res = await login(formData.username, formData.password);
 			if (res._2FARequired) {
-				alertSuccess('Two Factor Authentication is required!');
+				toastSuccess('Two Factor Authentication is required!');
 				router.push('/two-factorv3');
 			} else
-				alertSuccess('Logged in successfully');
+				toastSuccess('Logged in successfully');
 		} catch (err: any) {
-			alertError(err.message || 'Something went wrong, please try again later');
+			toastError(err.message || 'Something went wrong, please try again later');
 		} finally {
 			setIsSubmitting(false);
 		}

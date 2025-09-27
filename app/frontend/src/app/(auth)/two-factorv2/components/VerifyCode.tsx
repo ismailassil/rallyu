@@ -1,6 +1,6 @@
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { useCallback, useEffect, useState } from "react";
-import { alertError, alertLoading, alertSuccess } from "../../components/CustomToast";
+import { toastError, toastLoading, toastSuccess } from "../../components/CustomToast";
 import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -24,12 +24,12 @@ export default function VerifyCode({ session, selectedMethod } : VerifyCodeProps
 
 	const sendCode = useCallback(async () => {
 		try {
-			alertLoading('Sending code...');
+			toastLoading('Sending code...');
 			await send2FACode(session.loginChallengeID, selectedMethod);
-			alertSuccess('Code sent!');
+			toastSuccess('Code sent!');
 		} catch (err) {
 			const apiErr = err as APIError;
-			alertError(apiErr.message);
+			toastError(apiErr.message);
 			router.replace('/login');
 		}
 	}, [session.loginChallengeID, selectedMethod]);
@@ -56,9 +56,9 @@ export default function VerifyCode({ session, selectedMethod } : VerifyCodeProps
 		// add validation
 
 		try {
-			alertLoading('Verificating Code...');
+			toastLoading('Verificating Code...');
 			await verify2FACode(session.loginChallengeID, selectedMethod, code);
-			alertSuccess('Logged in successfully');
+			toastSuccess('Logged in successfully');
 		} catch (err) {
 			// VERIFICATION ERRORS
 				// SESSION EXPIRED
@@ -66,7 +66,7 @@ export default function VerifyCode({ session, selectedMethod } : VerifyCodeProps
 				// SESSION REVOKED (MAX SUBMIT/RESEND ATTEMPTS)
 				// 2FA INVALID CODE
 			const apiErr = err as APIError;
-			alertError(apiErr.message);
+			toastError(apiErr.message);
 			if (apiErr.code.includes('SESSION'))
 				router.replace('/login');
 		}
