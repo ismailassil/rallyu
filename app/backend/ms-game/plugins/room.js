@@ -61,8 +61,7 @@ const game = async (fastify, options) => {
 			this.connected = false;
 		}
 
-		setupEventListeners(room, index) {
-			this.socket.off('close', this.detachSocket);
+		setupEventListeners(room) {
 			this.socket.on("message", (message) => {
 				try {
 					const data = JSON.parse(message.toString())
@@ -75,11 +74,12 @@ const game = async (fastify, options) => {
 
 			this.socket.on("close", (ev) => {
 				this.detachSocket();
+				console.log('Player disconncted');
 				if (ev.code === 1000) return;
 
-				const otherPlayer = room.players[index ^ 1].socket
-				if (otherPlayer && otherPlayer.readyState === WebSocket.OPEN) { // checks if otherPlayer didn't close too
-					fastify.json(otherPlayer, { type: 'opp_left' })
+				const otherPlayer = room.players.find(p => p.id !== this.id);
+				if (otherPlayer && otherPlayer.socket && otherPlayer.socket.readyState === WebSocket.OPEN) { // checks if otherPlayer didn't close too
+					fastify.json(otherPlayer.socket, { type: 'opp_left' })
 				}
 			});
 		}
@@ -114,13 +114,13 @@ const game = async (fastify, options) => {
 			this.running = true;
 			this.timeoutId = setupPackets(this);
 
-			this.players.forEach((p, index) => {
-				p.setupEventListeners(this, index);
+			this.players.forEach((p) => {
+				p.setupEventListeners(this);
 			});
 
 			this.intervalId = setInterval(()=> {
 				if (!this.state.pause) updateState(this.state)
-	
+
 				this.players.forEach((player, index) => {
 					fastify.json(player.socket, {
 						type: 'state',
@@ -161,12 +161,16 @@ const game = async (fastify, options) => {
 
 			player.attachSocket(socket);
 			if (room.running) {
-				room.players.forEach(player => {
-					fastify.json(player.socket, {
-						type: 'play',
-						score: room.state.score
-						//timer
-					});
+				const index = room.players.indexOf(player);
+				player.setupEventListeners(room);
+				fastify.json(room.players[index ^ 1].socket, {
+					type: 'opp_joined'
+				})
+				fastify.json(player.socket, {
+					type: 'reconnected',
+					score: room.state.score,
+					i: index
+					//timer
 				});
 			} else if (room.players.every(p => p.connected)) {
 				clearTimeout(room.expirationTimer);

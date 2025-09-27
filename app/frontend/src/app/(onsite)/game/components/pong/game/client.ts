@@ -101,8 +101,11 @@ export const setupCommunications = (gameStateRef: React.RefObject<GameState>, pr
 			case 'opp_left':
 				gameStateRef.current.opponentDC = true;
 				break;
-			case 'play':
+			case 'opp_joined':
 				gameStateRef.current.opponentDC = false;
+				break;
+			case 'reconnected':
+				gameStateRef.current.index = data.i;
 				gameStateRef.current.players[0].score = data.score[0]
 				gameStateRef.current.players[1].score = data.score[1]
 				break;
