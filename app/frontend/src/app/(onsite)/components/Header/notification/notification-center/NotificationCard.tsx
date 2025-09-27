@@ -8,6 +8,7 @@ import GameOrTournament from "../items/GameOrTournament";
 import { XIcon } from "@phosphor-icons/react";
 import { useNotification } from "../context/NotificationContext";
 import { useTranslations } from "next-intl";
+import Avatar from "@/app/(onsite)/(profile)/users/components/Avatar";
 
 interface Props {
 	data: USER_NOTIFICATION;
@@ -18,7 +19,7 @@ interface Props {
 function NotificationCard({ data, handler, handleChatUpdate }: Props) {
 	const { id, senderUsername, senderId, content, type, updatedAt, status, avatar, state } = data;
 	const t = useTranslations("headers.notification.box");
-	const textDescriptionRef = t('description.' + type)
+	const textDescriptionRef = t('description.' + type);
 	// const textDescriptionRef = t(type);
 	const dateRef = moment.utc(updatedAt).local().fromNow();
 	const { handleAccept, handleDecline } = useNotification();
@@ -33,17 +34,12 @@ function NotificationCard({ data, handler, handleChatUpdate }: Props) {
 			)}
 			<div className="flex flex-1 justify-between select-none">
 				<div className="flex w-full gap-3">
-					<div
+					<Avatar
+						avatar={avatar}
+						width={40}
+						height={40}
 						className={`flex aspect-square max-h-8 min-h-8 max-w-8 min-w-8 overflow-hidden rounded-full ring-yellow-400 ${status === "unread" && "ring-1"}`}
-					>
-						<Image
-							src={"http://localhost:4025/api/users" + avatar}
-							alt="Profile Image"
-							width={40}
-							height={40}
-							className="object-cover"
-						/>
-					</div>
+					/>
 					<div>
 						<p className="text-sm font-light">
 							<span className="font-semibold">{senderUsername}</span>{" "}

@@ -22,4 +22,5 @@ export async function handleUserRequests(msg: any, userService: UserService) {
 		default:
 			break ;
 	}
+	console.log(`[NATS] Received a message on [${msg.subject}] subject`);
 }

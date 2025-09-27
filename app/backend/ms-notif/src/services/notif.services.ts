@@ -267,7 +267,7 @@ class NotifSerives {
 			status: data.status,
 			state: data.state,
 			actionUrl: data.action_url,
-			avatar: res_dec.avatar_path,
+			avatar: res_dec.avatar_url,
 		};
 	}
 
