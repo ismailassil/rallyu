@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import FormField from "@/app/(auth)/components/Forms/FormField";
-import useForm from "../hooks/useForm";
+import useForm from "../deprecatedhooks/useForm";
 import { toastError, toastLoading, toastSuccess } from "@/app/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 

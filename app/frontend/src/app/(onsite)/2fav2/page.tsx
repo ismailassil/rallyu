@@ -6,11 +6,13 @@ import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { APIError } from "@/app/(api)/APIClient";
 import { toastSuccess, toastError } from "@/app/components/CustomToast";
 import { Toaster } from "sonner";
+import MainCardWrapper from "../components/UI/MainCardWrapper";
+import { motion } from "framer-motion";
 
 const METHODS_META: Record<string, { title: string; description: string, icon: React.JSX.Element }> = {
-	totp: { title: 'Authenticator App', description: 'Google Authenticator, Authy, or similar apps', icon: <Fingerprint className='group-hover:text-blue-400 transition-all duration-900 h-14 w-14' /> },
-	sms: { title: 'SMS', description: 'Receive codes via SMS', icon: <Smartphone className='group-hover:text-green-300 transition-all duration-900 h-14 w-14' /> },
-	email: { title: 'Email', description: 'Receive codes via Email', icon: <Mail className='group-hover:text-yellow-300 transition-all duration-900 h-14 w-14' /> }
+	totp: { title: 'Authenticator App', description: 'Using Google Authenticator, Authy...', icon: <Fingerprint size={54} className='group-hover:text-blue-400 transition-all duration-900' /> },
+	sms: { title: 'SMS', description: 'Receive codes via SMS', icon: <Smartphone size={54}  className='group-hover:text-green-300 transition-all duration-900' /> },
+	email: { title: 'Email', description: 'Receive codes via Email', icon: <Mail size={54}  className='group-hover:text-yellow-300 transition-all duration-900' /> }
 };
 
 function delay(ms: number) {
@@ -18,7 +20,7 @@ function delay(ms: number) {
 }
 
 
-export default function Setup2FAPage() {
+export default function TwoFAManagerPage() {
 	const router = useRouter();
 	const { apiClient } = useAuth();
 	const [currentStep, setCurrentStep] = useState('overview');
@@ -153,11 +155,57 @@ export default function Setup2FAPage() {
 	return (
 		<>
 			<Toaster position='bottom-right' visibleToasts={1} />
-			<main className="pt-30 flex h-[100vh] w-full pb-10">
-				<div className="flex h-full w-full justify-center overflow-auto">
-					<div className="mine flex h-full w-[1000px] items-start justify-center pb-20 pl-10 pr-10 pt-20 lg:items-center">
-						<div className='rounded-[0px] max-w-[750px] w-full p-9 sm:p-18
-									flex flex-col gap-10 items-center'>
+			<motion.main
+				initial={{ opacity: 0, y: -50 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 1, delay: 0.5 }}
+				className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
+			>
+			<MainCardWrapper className="h-full w-full custom-scrollbar font-funnel-display">
+				<div className="h-full w-full sm:flex justify-center items-center overflow-auto px-6 py-16">
+					{/* <h1>-----------------------------------------------------------------------------</h1> */}
+					{currentStep === 'overview' && (
+						<MethodsOverview 
+							methods={enabledMethods}
+							isLoading={isLoading}
+							selectedMethod={selectedMethod}
+							onSetupMethod={handleSetupMethod}
+							onDisableMethod={handleDisableMethod}
+						/>
+					)}
+					{/* <h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1>
+					<h1>Some Content</h1> */}
+					{/* <h1>-----------------------------------------------------------------------------</h1> */}
+				</div>
+				{/* <div className="flex h-full w-full justify-center items-center py-20 px-20">
+						<div className=''>
 							{currentStep === 'overview' && (
 								<MethodsOverview 
 									methods={enabledMethods}
@@ -205,9 +253,9 @@ export default function Setup2FAPage() {
 								</>
 							)}
 						</div>
-					</div>
-				</div>
-			</main>
+				</div> */}
+			</MainCardWrapper>
+			</motion.main>
 		</>
 	);
 }
@@ -222,24 +270,28 @@ interface MethodsOverviewProps {
 
 function MethodsOverview({ methods, isLoading, selectedMethod, onSetupMethod, onDisableMethod }: MethodsOverviewProps) {
 	return (
-		<>
-			<Shield size={64} className="bg-blue-500 rounded-full p-3"/>
-			<div className='flex flex-col gap-2 px-6'>
-				<h1 className='font-semibold text-3xl text-center'>Two-Factor Authentication</h1>
+		<div className="max-w-[575px] flex flex-col items-center gap-14">
+			{/* Header */}
+			<div className='flex flex-col'>
+				<Fingerprint size={64} className="bg-blue-500 rounded-full p-2 self-center mb-6"/>
+				<h1 className='font-semibold text-3xl text-center mb-3'>Two-Factor Authentication</h1>
 				<p className='mb-0 text-white/85 text-center'>Add an extra layer of security to your account by choosing your preferred verification method.</p>
 			</div>
 
+			{/* Methods List */}
 			<div className='flex flex-col gap-4 w-full'>
 				{Object.keys(METHODS_META).map(m => {
 					const isEnabled = methods.includes(m);
 					const isSelectedMethod = selectedMethod === m;
 					console.log('selectedMethod', selectedMethod, 'isSelected ? ', isSelectedMethod);
 					return (
-						<div key={METHODS_META[m].title} className="bg-white/4 w-full rounded-3xl backdrop-blur-2xl px-5 py-6 border-1 border-white/10 flex gap-4 items-center hover:bg-white/6 transition-all duration-500">
-							{METHODS_META[m].icon}
+						<div key={METHODS_META[m].title} className="single-two-fa-card">
 							<div>
-								<h1 className='font-semibold text-2xl mb-1.5 flex items-center gap-4'>{METHODS_META[m].title}</h1>
-								<p className='font-light text-white/75'>{METHODS_META[m].description}</p>
+								{METHODS_META[m].icon}
+							</div>
+							<div>
+								<h1 className='font-semibold text-sm sm:text-base md:text-lg lg:text-2xl mb-1.5 flex items-center gap-4'>{METHODS_META[m].title}</h1>
+								<p className='font-light text-sm lg:text-base text-white/75'>{METHODS_META[m].description}</p>
 							</div>
 							<button
 								onClick={isEnabled ? () => onDisableMethod(m) : () => onSetupMethod(m)}
@@ -262,10 +314,11 @@ function MethodsOverview({ methods, isLoading, selectedMethod, onSetupMethod, on
 				})}
 			</div>
 
+			{/* Recommendation */}
 			<div className='bg-blue-500/6 px-6 py-4 rounded-2xl backdrop-blur-2xl border-1 border-white/8 text-lg text-blue-400'>
 				<p><span className='font-bold'>Recommendation: </span>Authenticator apps provide the highest security and work without internet connection.</p>
 			</div>
-		</>
+		</div>
 	);
 }
 

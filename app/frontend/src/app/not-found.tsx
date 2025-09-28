@@ -27,13 +27,14 @@ export default function Custom404() {
 					className="bg-card hover:scale-102 mt-10 rounded-full border-2 border-white/20
 						px-6 py-3 transition-transform
 						duration-300 hover:cursor-pointer hover:border-white/40"
-					onClick={(e) => {
-						e.preventDefault();
-						if (window.history.state && window.history.state.idx > 0){
-							router.back();
-						} else {
-							router.push("/");
-						}
+					onClick={() => {
+						// e.preventDefault();
+						// if (window.history.state && window.history.state.idx > 0){
+						// 	router.back();
+						// } else {
+						// 	router.push("/");
+						// }
+						router.back();
 					}}
 				>
 					Go back

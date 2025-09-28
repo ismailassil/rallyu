@@ -185,7 +185,7 @@ export default function Security() {
 					isAction={true}
 					actionLabel='Manage 2FA'
 					actionIcon={<Fingerprint size={16} />}
-					onAction={() => router.push('/mfa')}
+					onAction={() => router.push('/2fav2')}
 				>
 				</SettingsCard>
 				<SettingsCard 
