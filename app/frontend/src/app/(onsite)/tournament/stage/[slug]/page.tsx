@@ -50,8 +50,7 @@ const currentUserMatch = function(matches, player) {
 };
 
 const Brackets = function (props) {
-	const router = useRouter();
-	const { user, api } = useAuth();
+	const { loggedInUser, apiClient } = useAuth();
 	const { slug } = useParams();
 	const [tournament, setTournament] = useState({});
 	const [joined, setJoined] = useState<boolean>(false);
@@ -61,7 +60,9 @@ const Brackets = function (props) {
 	useEffect(() => {
 		const loadData = async function () {
 			try {
-				const res = await api.instance.get(`/v1/tournament/${slug}`);
+				// Need name of users
+				const res = await apiClient.instance.get(`/v1/tournament/${slug}`);
+
 				const data = res.data;
 
 				console.log(data.data);
@@ -77,17 +78,50 @@ const Brackets = function (props) {
 		loadData();
 	}, [slug]);
 
+	const joinTournamentHandler = async (e) => {
+		try {
+			const res = await apiClient.instance.patch(`/v1/tournament/match/join/${slug}`, { id: loggedInUser?.id });
+			
+			console.log(res.data);
+			setJoined(true);
+		} catch (err: unknown) {
+			console.error(err);
+		}
+	};
+
+	const leaveTournamentHandler = async (e) => {
+		try {
+			e.preventDefault();
+			const res = await apiClient.instance.patch(`/v1/tournament/match/leave/${slug}`, { id: loggedInUser?.id });
+
+			console.log(res);
+
+			setJoined(false);
+		} catch (err: unknown) {
+			console.log(err);
+		}
+	};
+
+	const winnerStyle = (matchNumber, player, type) => {
+		const style: string = type === "name" ? "grow" : "font-black";
+
+		if (!tournament.matches[matchNumber].winner) return style.concat("");
+
+		if (!tournament.matches[matchNumber].winner === player) return style.concat(" text-blue-400");
+
+		return style.concat(" opacity-50");
+	};
+
 	const isPlayerJoined = (data) => {
-		if (!Object.keys(data).length)
-			return setJoined(false);
-		for (let i = data?.matches.length - 1; i >= 0; i--) {
-			if (data.matches[i].player_1 === user?.id) {
+		for (let i = 0; data.matches.length - 1; i++) {
+			// I need user id 1
+			if (data.matches[i].player_1 === loggedInUser?.id) {
 				if (data.matches[i].player_1_ready)
 					setReady(true);
 				setJoined(true);
 				return ;
 			}
-			if (data.matches[i].player_2 === user?.id) {
+			if (data.matches[i].player_2 === loggedInUser?.id) {
 				if (data.matches[i].player_2_ready)
 					setReady(true);
 				setJoined(true);

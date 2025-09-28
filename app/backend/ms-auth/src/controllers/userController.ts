@@ -6,48 +6,54 @@ import { AuthError, UserNotFoundError } from "../types/auth.types";
 import AuthResponseFactory from "./authResponseFactory";
 
 class UserController {
-	private userService: UserService;
-	private userRepository: UserRepository;
+	constructor(
+		private userService: UserService
+	) {}
 
-	constructor() {
-		this.userService = new UserService();
-		this.userRepository = new UserRepository();
-	}
-
-	async UsernameEmailAvailable(request: FastifyRequest, reply: FastifyReply) {
+	async usernameAvailable(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { username, email } = request.query as { username?: string, email?: string };
+			// TODO: ADD SCHEMA
+			const { username } = request.query as { username: string };
 
-			if (!username && !email) {
-				reply.status(400).send({ success: false, data: {} });
-				return ;
-			}
+			const isTaken = await this.userService.isUsernameTaken(username);
 
-			let isTaken;
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, !isTaken);
 
-			if (username && !email)
-				isTaken = await this.userRepository.findByUsername(username);
-			else if (email && !username)
-				isTaken = await this.userRepository.findByEmail(email);
-			// else
-			// 	isTaken = await this.userRepository.exists(username!, email!);
-
-			reply.status(isTaken ? 404 : 200).send({ success: true, available: !isTaken });
+			reply.status(status).send(body);
 
 		} catch (err: any) {
 			reply.status(500).send({ success: false, data: {} })
 		}
 	}
 
-	async fetchMe(request: FastifyRequest, reply: FastifyReply) {
+	async emailAvailable(request: FastifyRequest, reply: FastifyReply) {
 		try {
+			// TODO: ADD SCHEMA
+			const { email } = request.query as { email: string };
+
+			const isTaken = await this.userService.isEmailTaken(email);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, !isTaken);
+
+			reply.status(status).send(body);
+
+		} catch (err: any) {
+			reply.status(500).send({ success: false, data: {} })
+		}
+	}
+
+	async searchUserByUsername(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			// TODO: ADD SCHEMA
 			const user_id = request.user?.sub;
+			const { username } = request.query as { username: string };
 
-			const userProfile = await this.userService.fetchMe(user_id!);
+			const matchingUsers = await this.userService.searchUserByUsername(user_id!, username);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userProfile);
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, matchingUsers);
 
-			reply.code(status).send(body);
+			reply.status(status).send(body);
+
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
@@ -55,30 +61,14 @@ class UserController {
 		}
 	}
 
-	async getUser(request: FastifyRequest, reply: FastifyReply) {
+	async fetchUser(request: FastifyRequest, reply: FastifyReply) {
 		try {
+			const user_id = request.user?.sub;
 			const { username } = request.params as IProfileRequest;
-			const user_id = request.user?.sub;
 
-			const userProfile = await this.userService.getUser(user_id!, username);
+			const user = await this.userService.getUserPublicProfile(user_id!, username);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userProfile);
-
-			reply.code(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
-
-			reply.code(status).send(body);
-		}
-	}
-
-	async getUserStats(request: FastifyRequest, reply: FastifyReply) {
-		try {
-			const user_id = request.user?.sub;
-
-			const userStats = await this.userService.getUserStats(user_id!);
-
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userStats);
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, user);
 
 			reply.code(status).send(body);
 		} catch (err: any) {
@@ -88,14 +78,85 @@ class UserController {
 		}
 	}
 
-	async getUserMatches(request: FastifyRequest, reply: FastifyReply) {
+	async fetchUserAnalytics(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { page } = request.query as { page: number };
+			const user_id = request.user?.sub;
+			const { username } = request.params as IProfileRequest;
+
+			const userAnalytics = await this.userService.getUserAnalytics(user_id!, username);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userAnalytics);
+
+			reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			reply.code(status).send(body);
+		}
+	}
+	async fetchUserAnalyticsByDay(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+			const { username } = request.params as IProfileRequest;
+
+			const userAnalyticsByDay = await this.userService.getUserAnalyticsByDay(user_id!, username);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userAnalyticsByDay);
+
+			reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			reply.code(status).send(body);
+		}
+	}
+
+	async fetchUserMatches(request: FastifyRequest, reply: FastifyReply) {
+		try {
 			const user_id = request.user?.sub;
 
-			const userStats = await this.userService.getUserMatches(user_id!, page);
+			const { page, limit, gameTypeFilter, timeFilter } = request.query as Record<string, any>;
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userStats);
+			// PAGINATION FILTER
+			const paginationFilterValidated = (page && limit) ? { page: Number(page), limit: Number(limit) } : undefined;
+
+			// TIME FILTER
+			const validGameTypes = ['PING PONG', 'XO', 'TICTACTOE', 'all'];
+			const gameFilterValidated = validGameTypes.includes(gameTypeFilter) ? gameTypeFilter : undefined;
+
+			// GAMETYPE FILTER
+			const validTimeFilters = ['0d','1d','7d','30d','90d','1y','all'];
+        	const timeFilterValidated = validTimeFilters.includes(timeFilter) ? timeFilter : undefined;
+
+			console.log('REQUEST QUERY: ', request.query);
+			const { username } = request.params as IProfileRequest;
+
+			const userMatches = await this.userService.getUserMatches(user_id!, username, timeFilterValidated, gameFilterValidated, paginationFilterValidated);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userMatches);
+
+			reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			reply.code(status).send(body);
+		}
+	}
+
+	async fetchRankLeaderboard(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+
+			const { page, limit } = request.query as Record<string, any>;
+
+			// PAGINATION FILTER
+			const paginationFilterValidated = (page && limit) ? { page: Number(page), limit: Number(limit) } : undefined;
+
+			const { username } = request.params as IProfileRequest;
+
+			const userMatches = await this.userService.getRankLeaderboard(paginationFilterValidated);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userMatches);
 
 			reply.code(status).send(body);
 		} catch (err: any) {

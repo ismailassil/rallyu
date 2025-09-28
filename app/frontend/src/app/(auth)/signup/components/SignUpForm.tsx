@@ -2,29 +2,29 @@
 'use client';
 import React, { useCallback } from 'react';
 import { useState } from 'react';
-import useForm from '../hooks/useForm';
+import useForm from '@/app/hooks/useForm';
 import FormField from './FormField';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { alertError, alertSuccess } from '../../components/Alert';
-import { toast } from 'sonner';
+import { alertError, alertSuccess } from '../../components/CustomToast';
 import { useRouter } from 'next/navigation';
+import { signupFormSchema } from '@/app/(api)/schema';
+import PasswordStrength from './PasswordStrength';
+import FormFieldAvailability from './FormFieldAvailability';
 
 export default function SignUpForm() {
+	const router = useRouter();
 	const { register } = useAuth();
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 	const [fieldsAvailable, setFieldsAvailable] = useState({
 		username: false,
 		email: false
 	});
-	const router = useRouter();
 
-	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm({
-		fname: '',
-		lname: '',
-		username: '',
-		email: '',
-		password: ''
-	});
+	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm(
+		signupFormSchema,
+		{ first_name: '', last_name: '', username: '', email: '', password: '' },
+		{ debounceMs: { email: 1200, password: 1200 } }
+	);
 
 	const updateFieldAvailable = useCallback((name: string, available: boolean) => {
 		setFieldsAvailable(prev => ({ ...prev, [name]: available }));
@@ -32,7 +32,6 @@ export default function SignUpForm() {
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
-		toast.dismiss();
 
 		const isValid = validateAll();
 		if (!isValid)
@@ -44,20 +43,16 @@ export default function SignUpForm() {
 		setIsSubmitting(true);
 		try {
 			await register(
-				formData.fname,
-				formData.lname,
+				formData.first_name,
+				formData.last_name,
 				formData.username,
 				formData.email,
 				formData.password
 			);
 			alertSuccess('Account created successfully...');
-			setTimeout(() => {
-				toast.dismiss();
-				router.replace('/login');
-			}, 2000);
+			router.replace('/login');
 		} catch (err: any) {
-			const msg = err.message;
-			alertError(msg);
+			alertError(err.message || 'Something went wrong, please try again later');
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -70,25 +65,25 @@ export default function SignUpForm() {
 					className='field flex flex-col gap-0.5 min-w-0 flex-1'
 					iconSrc='/icons/firstname.svg'
 					label='First Name'
-					field='fname'
+					field='first_name'
 					inputPlaceholder='Achraf'
-					inputValue={formData.fname}
+					inputValue={formData.first_name}
 					onChange={handleChange}
-					touch={touched.fname}
-					error={errors.fname}
-					debounced={debounced.fname}
+					touched={touched.first_name}
+					error={errors.first_name}
+					debounced={debounced.first_name}
 				/>
 				<FormField 
 					className='field flex flex-col gap-0.5 min-w-0 flex-1'
 					iconSrc='/icons/lastname.svg'
 					label='Last Name'
-					field='lname'
+					field='last_name'
 					inputPlaceholder='Demnati'
-					inputValue={formData.lname}
+					inputValue={formData.last_name}
 					onChange={handleChange}
-					touch={touched.lname}
-					error={errors.lname}
-					debounced={debounced.lname}
+					touched={touched.last_name}
+					error={errors.last_name}
+					debounced={debounced.last_name}
 				/>
 			</div>
 			<FormField 
@@ -99,11 +94,19 @@ export default function SignUpForm() {
 				inputPlaceholder='xezzuz'
 				inputValue={formData.username}
 				onChange={handleChange}
-				touch={touched.username}
+				touched={touched.username}
 				error={errors.username}
 				debounced={debounced.username}
-				setFieldAvailable={updateFieldAvailable}
-			/>
+			>
+				{debounced.username && touched.username && !errors.username && formData.username && formData.username.length >= 3 && (
+					<FormFieldAvailability 
+						label='Username'
+						name='username'
+						value={formData.username}
+						setFieldAvailable={updateFieldAvailable}
+					/>
+				)}
+			</FormField>
 			<FormField 
 				className='field flex flex-col gap-0.5 box-border'
 				iconSrc='/icons/mail.svg'
@@ -112,11 +115,19 @@ export default function SignUpForm() {
 				inputPlaceholder='iassil@1337.student.ma'
 				inputValue={formData.email}
 				onChange={handleChange}
-				touch={touched.email}
+				touched={touched.email}
 				error={errors.email}
 				debounced={debounced.email}
-				setFieldAvailable={updateFieldAvailable}
-			/>
+			>
+				{debounced.email && touched.email && !errors.email && formData.email && formData.email.length >= 3 && (
+					<FormFieldAvailability 
+						label='Email'
+						name='email'
+						value={formData.email}
+						setFieldAvailable={updateFieldAvailable}
+					/>
+				)}
+			</FormField>
 			<FormField 
 				className='field flex flex-col gap-0.5 box-border'
 				iconSrc='/icons/lock.svg'
@@ -126,10 +137,12 @@ export default function SignUpForm() {
 				inputValue={formData.password}
 				hidden={true}
 				onChange={handleChange}
-				touch={touched.password}
+				touched={touched.password}
 				error={errors.password}
 				debounced={debounced.password}
-			/>
+			>
+				{touched.password && formData.password && <PasswordStrength value={formData.password} />}
+			</FormField>
 			<button className={`h-11 mt-2 rounded-lg transition-all duration-200 ${
 					isSubmitting 
 					? 'bg-gray-700 cursor-not-allowed'
@@ -140,7 +153,6 @@ export default function SignUpForm() {
 				>
 					Sign Up
 			</button>
-				
 		</form>
 	);
 }

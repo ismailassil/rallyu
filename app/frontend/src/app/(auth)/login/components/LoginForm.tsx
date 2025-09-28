@@ -2,59 +2,39 @@
 'use client';
 import React from 'react';
 import { useState } from 'react';
-import Image from 'next/image';
-import FormFieldError from '../../signup/components/FormFieldError';
-import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { toast } from 'sonner';
-import { alertError, alertSuccess } from '../../components/Alert';
+import { alertError, alertSuccess } from '../../components/CustomToast';
+import { useRouter } from 'next/navigation';
+import FormField from '../../signup/components/FormField';
+import useForm from '@/app/hooks/useForm';
+import { loginFormSchema } from '@/app/(api)/schema';
 
 export default function LoginForm() {
 	const { login } = useAuth();
-	const [username, setUsername] = useState('');
-	const [password, setPassword] = useState('');
-	const [usernameError, setUsernameError] = useState('');
-	const [passwordError, setPasswordError] = useState('');
-	const [showPassword, setShowPassword] = useState(false);
+	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm(
+		loginFormSchema,
+		{ username: '', email: '', password: '' }
+	);
 
-	function handleToggleShowPassword() {
-		setShowPassword(!showPassword);
-	}
-	
-	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-		const { name, value } = e.target;
-		
-		if (name === 'username') {
-			if (value) setUsernameError('');
-			setUsername(value);
-		}
-		else if (name === 'password') {
-			if (value) setPasswordError('');
-			setPassword(value);
-		}
-	}
-	
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
-		toast.dismiss();
-
-		const usernameErr = username ? '' : 'Username is required';
-		const passwordErr = password ? '' : 'Password is required';
-		setUsernameError(usernameErr);
-		setPasswordError(passwordErr);
-
-		if (usernameErr || passwordErr)
+		
+		const isValid = validateAll();
+		if (!isValid)
 			return ;
 		
 		setIsSubmitting(true);
 		try {
-			// alertLoading('Loggin you in...');
-			await login(username, password);
-			alertSuccess('Logged in successfully');
+			const res = await login(formData.username, formData.password);
+			if (res._2FARequired) {
+				alertSuccess('Two Factor Authentication is required!');
+				router.push('/two-factorv3');
+			} else
+				alertSuccess('Logged in successfully');
 		} catch (err: any) {
-			const msg = err.message;
-			alertError(msg);
+			alertError(err.message || 'Something went wrong, please try again later');
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -62,59 +42,31 @@ export default function LoginForm() {
 
 	return (
 		<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-			<div className='field flex flex-col gap-0.5 box-border'>
-				<label htmlFor="username">Username</label>
-				<div className='flex flex-row pl-3.5 pr-3.5 pb-2 pt-2 gap-3 items-center h-11 bg-white/6 rounded-lg custom-input border border-white/10'>
-					<Image 
-						alt='Username' 
-						src='/icons/at.svg' 
-						width={20} 
-						height={20}
-					></Image>
-					<input 
-						id='username' 
-						name='username' 
-						type='text' 
-						placeholder='xezzuz' 
-						value={username} 
-						onChange={handleChange} 
-						className='outline-none flex-1 overflow-hidden' 
-					/>
-				</div>
-				<AnimatePresence>
-					{usernameError && <FormFieldError error={usernameError} />}
-				</AnimatePresence>
-			</div>
-			<div className='field flex flex-col gap-0.5 box-border'>
-				<label htmlFor="password">Password</label>
-				<div className='flex flex-row pl-3.5 pr-3.5 pb-2 pt-2 gap-3 items-center h-11 bg-white/6 rounded-lg custom-input border border-white/10'>
-					<Image 
-						alt='Password' 
-						src='/icons/lock.svg' 
-						width={20} 
-						height={20}
-					></Image>
-					<input 
-						id='password' 
-						name='password' 
-						type={ showPassword ? 'text' : 'password'}
-						placeholder='••••••••••••••••' 
-						value={password} 
-						onChange={handleChange} 
-						className='outline-none flex-1 overflow-hidden' 
-						/>
-					<Image alt='Hide Password' 
-						src	={showPassword ? '/icons/eye.svg' : '/icons/eye-slash-light.svg' } 
-						width={showPassword ? 18.5 : 20} 
-						height={showPassword ? 18.5 : 20}
-						onClick={handleToggleShowPassword}
-					></Image>
-				</div>
-				<AnimatePresence>
-					{passwordError && <FormFieldError error={passwordError} />}
-				</AnimatePresence>
-				<a href='/reset-password' className='text-blue-50 font-light text-sm text-right hover:underline font-poppins'>Forgot Password?</a>
-			</div>
+			<FormField 
+				className='field flex flex-col gap-0.5 box-border'
+				iconSrc='/icons/at.svg'
+				label='Username'
+				field='username'
+				inputPlaceholder='xezzuz'
+				inputValue={formData.username}
+				onChange={handleChange}
+				touched={touched.username}
+				error={errors.username}
+				debounced={debounced.username}
+			/>
+			<FormField 
+				className='field flex flex-col gap-0.5 box-border'
+				iconSrc='/icons/lock.svg'
+				label='Password'
+				field='password'
+				inputPlaceholder='••••••••••••••••'
+				inputValue={formData.password}
+				hidden={true}
+				onChange={handleChange}
+				touched={touched.password}
+				error={errors.password}
+				debounced={debounced.password}
+			/>
 			<button className={`h-11 mt-2 rounded-lg transition-all duration-200 ${
 					isSubmitting 
 					? 'bg-gray-700 cursor-not-allowed'
@@ -123,7 +75,7 @@ export default function LoginForm() {
 					type='submit'
 					disabled={isSubmitting}
 				>
-					Sign in
+					Sign Up
 			</button>
 		</form>
 	);

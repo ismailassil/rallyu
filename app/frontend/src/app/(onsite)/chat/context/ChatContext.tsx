@@ -45,7 +45,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	useEffect(() => {
 		async function getAllFriends() {
 			try {
-				const allFriends = await api.getAllFriends();
+				const allFriends = await apiClient.getAllFriends();
 				setFriends(allFriends);
 			} catch (err: any) {
 				console.log(err);

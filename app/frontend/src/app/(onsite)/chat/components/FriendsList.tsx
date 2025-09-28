@@ -103,7 +103,7 @@ const FriendsList = () => {
 											<Image
 												width={50}
 												height={50}
-												src={`http://localhost:4025/api/users${user?.avatar_path}`}
+												src={`http://localhost:4025/api${user?.avatar_url}`}
 												alt={`${user?.first_name + " " + user?.last_name} avatar`}
 												className='w-full h-full object-cover'
 											/>

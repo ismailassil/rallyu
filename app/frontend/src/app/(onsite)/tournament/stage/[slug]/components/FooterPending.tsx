@@ -10,7 +10,7 @@ const FooterPending = function (
     { joined, setJoined, slug, title, full }:
     { joined: boolean | undefined, setJoined: Dispatch<SetStateAction<boolean | undefined>>, slug: ParamValue, title: string, full: boolean }
 ) {
-    const { api, user } = useAuth();
+    const { apiClient, loggedInUser } = useAuth();
     const [error, setError] = useState({
         status: false,
         message: "Something went wrong; Try again later!"
@@ -19,7 +19,7 @@ const FooterPending = function (
     const joinTournamentHandler = async (e) => {
         e.preventDefault();
         try {
-            await api.instance.patch(`/v1/tournament/match/join/${slug}`, { id: user?.id });
+            await apiClient.instance.patch(`/v1/tournament/match/join/${slug}`, { id: user?.id });
 
             alertSuccess("Joined the tournament successfully");
             setJoined(true);
@@ -32,7 +32,7 @@ const FooterPending = function (
     const leaveTournamentHandler = async (e) => {
         e.preventDefault();
         try {
-            await api.instance.patch(`/v1/tournament/match/leave/${slug}`, { id: user?.id });
+            await apiClient.instance.patch(`/v1/tournament/match/leave/${slug}`, { id: user?.id });
 
             alertSuccess("Left the tournament successfully");
             setJoined(false);

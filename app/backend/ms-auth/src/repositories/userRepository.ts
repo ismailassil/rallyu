@@ -2,32 +2,28 @@ import { db } from "../database";
 import { CreateUserRequest, ISQLCreateUser, User } from "../types";
 import { InternalServerError } from "../types/auth.types";
 
-// avatar_url => avatar_path
+// avatar_url => avatar_url
 class UserRepository {
 
 	async create(
-		username: string,
-		email: string,
 		first_name: string,
 		last_name: string,
-		avatar_path: string,
-		auth_provider: string,
-		password?: string
+		email: string,
+		username: string,
+		password?: string,
+		avatar_url: string = '/users/avatars/default.png',
+		auth_provider: string = 'local',
+		role: string = 'user',
+		bio: string = 'DFK',
 	) : Promise<number> {
 		
 		try {
 			const runResult = await db.run(
-				`INSERT INTO users (username, password, email, first_name, last_name, avatar_path, auth_provider) 
-					VALUES (?, ?, ?, ?, ?, ?, ?)`,
-				[username, password, email, first_name, last_name, "/avatars/default.png", auth_provider]
+				`INSERT INTO users (username, password, email, first_name, last_name, avatar_url, auth_provider, role, bio) 
+					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+				[username, password, email, first_name, last_name, avatar_url, auth_provider, role, bio]
 			);
 
-			// need to be moved somewhere else
-			const statResult = await db.run(
-				`INSERT INTO users_stats (level, total_xp, current_streak, longest_streak, user_id)
-					VALUES (?, ?, ?, ?, ?)`,
-				[0, 0, 0, 0, runResult.lastID]
-			);
 			return runResult.lastID;
 		} catch (err: any) {
 			console.error('SQLite Error: ', err);
@@ -74,23 +70,41 @@ class UserRepository {
 		}
 	}
 
-	async searchByUsername(username: string) {
+	async searchByUsername(user_id: number, username: string) {
 		try {
 			const allResult = await db.all(
-				`SELECT username, avatar_path FROM users WHERE username LIKE '%' || ? || '%'`,
-				[username]
+				`SELECT u.id, u.username, u.avatar_url
+					FROM users u 
+				LEFT JOIN relations r 
+					ON ((r.requester_user_id = u.id AND r.receiver_user_id = ?)
+						OR (r.requester_user_id = ? AND r.receiver_user_id = u.id))
+				WHERE (u.username LIKE '%' || ? || '%')
+					AND (r.relation_status != 'BLOCKED' OR r.relation_status IS NULL)`,
+				[user_id, user_id, username]
 			);
-			return allResult ?? null;
+			return allResult;
 		} catch (err: any) {
 			console.error('SQLite Error: ', err);
 			throw new InternalServerError();
 		}
 	}
 
-	async update(id: number, updates: Partial<Pick<User, 'username' | 'password' | 'first_name' | 'last_name'>>) : Promise<boolean> {
+	async update(id: number, updates: Partial<Pick<User, 'username' | 'password' | 'first_name' | 'last_name' | 'email' | 'bio' | 'avatar_url'>>) : Promise<boolean> {
 		const keys = [];
 		const values = [];
 
+		if (updates.first_name) {
+			keys.push(`first_name = ?`);
+			values.push(updates.first_name);
+		}
+		if (updates.last_name) {
+			keys.push(`last_name = ?`);
+			values.push(updates.last_name);
+		}
+		if (updates.email) {
+			keys.push(`email = ?`);
+			values.push(updates.username);
+		}
 		if (updates.username) {
 			keys.push(`username = ?`);
 			values.push(updates.username);
@@ -99,13 +113,13 @@ class UserRepository {
 			keys.push(`password = ?`);
 			values.push(updates.password);
 		}
-		if (updates.first_name) {
-			keys.push(`first_name = ?`);
-			values.push(updates.first_name);
+		if (updates.bio) {
+			keys.push(`bio = ?`);
+			values.push(updates.bio);
 		}
-		if (updates.last_name) {
-			keys.push(`last_name = ?`);
-			values.push(updates.last_name);
+		if (updates.avatar_url) {
+			keys.push(`avatar_url = ?`);
+			values.push(updates.avatar_url);
 		}
 
 		if (keys.length === 0)
@@ -139,11 +153,12 @@ class UserRepository {
 		}
 	}
 
-	async updateAvatar(id: number, avatar_path: string) {
+	// TODO: REMOVE THIS
+	async updateAvatar(id: number, avatar_url: string) {
 		try {
 			const runResult = await db.run(
-				`UPDATE users SET avatar_path = ? WHERE id = ?`
-			, [avatar_path, id]);
+				`UPDATE users SET avatar_url = ? WHERE id = ?`
+			, [avatar_url, id]);
 
 			return runResult.changes > 0;
 		} catch (err: any) {
@@ -151,31 +166,6 @@ class UserRepository {
 			throw new InternalServerError();
 		}
 	}
-
-	// async exists(username: string, email: string) : Promise<boolean> {
-	// 	const usernameResult = await this.findByUsername(username);
-	// 	const emailResult = await this.findByEmail(email);
-
-	// 	if (usernameResult || emailResult)
-	// 		return true;
-	// 	return false;
-	// }
-
-	// async existsByUsername(username: string) : Promise<boolean> {
-	// 	const usernameResult = await this.findByUsername(username);
-
-	// 	if (usernameResult)
-	// 		return true;
-	// 	return false;
-	// }
-
-	// async existsByEmail(email: string) : Promise<boolean> {
-	// 	const emailResult = await this.findByEmail(email);
-
-	// 	if (emailResult)
-	// 		return true;
-	// 	return false;
-	// }
 }
 
 export default UserRepository;

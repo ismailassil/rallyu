@@ -3,7 +3,7 @@
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import ProgressBar from "./ProgressBar";
+import { AuthLoadingSpinner } from "./LoadingSpinners";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
 	const { isAuthenticated, isLoading } = useAuth();
@@ -22,7 +22,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 	const authFinished = !isLoading;
 
 	if (!authFinished || !isAuthenticated) {
-		return ( <ProgressBar complete={authFinished}/> );
+		return ( <AuthLoadingSpinner /> );
 	}
 
 	return (

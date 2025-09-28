@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
-import SettingsCard from "../SettingsCards";
+import SettingsCard from "../SettingsCard";
 import { XIcon, Fingerprint, Smartphone, Mail, Check, Laptop, MapPin, Clock, Trash2, Monitor } from "lucide-react";
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
-import MFASetup from "../../../mfa/page";
+import MFASetup from "../../../2fa/page";
 import ChangePasswordForm from "./ChangePasswordForm";
 import TwoFactorAuth from "./TwoFactorAuth";
 import { useRouter } from "next/navigation";
@@ -172,9 +172,9 @@ export default function Security() {
 
 	return (
 		<motion.div
-			initial={{ opacity: 0, x: 25 }}
-			animate={{ opacity: 1, x: 0 }}
-			transition={{ duration: 0.3, delay: 0 }}
+			initial={{ opacity: 0, x: 25, scale: 0.99 }}
+			animate={{ opacity: 1, x: 0, scale: 1 }}
+			transition={{ duration: 0.5 }}
 		>
 			<div className='flex flex-col gap-4'>
 				<SettingsCard 

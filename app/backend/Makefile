@@ -4,16 +4,20 @@ all:
 	@echo "'make clean' to clean everything"
 
 up:
-	docker-compose -f './compose.backend.yaml' up -d --build
+	docker compose -f './compose.backend.yaml' up -d --build
 
 down:
-	docker-compose -f './compose.backend.yaml' down
+	docker compose -f './compose.backend.yaml' down
 
 ps:
-	@docker-compose -f './compose.backend.yaml' ps --format 'table {{.Name}}\t{{.Ports}}\t{{.Status}}'
+	@docker compose -f './compose.backend.yaml' ps --format 'table {{.Name}}\t{{.Ports}}\t{{.Status}}'
 
 re: down up
 
 clean:
-	docker rm `docker ps -aq` -f
-	docker image rm `docker images -q` -f
+	@if [ -n "$$(docker ps -aq)" ]; then \
+		docker rm -f $$(docker ps -aq); \
+	fi
+	@if [ -n "$$(docker images -q)" ]; then \
+		docker rmi -f $$(docker images -q); \
+	fi

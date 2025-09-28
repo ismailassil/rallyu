@@ -53,7 +53,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 	const [notifLength, setNotifLength] = useState<number>(0);
 
 	const { isNotif, isBottom, isProfile, isSearch } = useHeaderContext();
-	const { api, socket } = useAuth();
+	const { apiClient, socket } = useAuth();
 	const router = useRouter();
 
 	const isNotifRef = useRef<boolean>(isNotif);
@@ -138,7 +138,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		pageRef.current += 1;
 		setIsLoading(true);
 
-		api.instance
+		apiClient.instance
 			.get<HistoryPayload>(`/notif/history?page=${pageRef.current}`)
 			.then((response) => {
 				setNotifications((prev) => [...prev, ...response.data.message]);
@@ -146,7 +146,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 			})
 			.catch((err) => console.log(err))
 			.finally(() => setIsLoading(false));
-	}, [isBottom, api]);
+	}, [isBottom, apiClient]);
 
 	useEffect(() => {
 		let length = 0;
@@ -172,7 +172,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 			}
 			try {
 				if (type === "friend_request") {
-					await api.acceptFriendRequest(senderId);
+					await apiClient.acceptFriendRequest(senderId);
 				} else if (type === "game") {
 					const payload: UPDATE_NOTIFICATION_DATA = {
 						notificationId: data.id,
@@ -196,7 +196,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				console.error(err);
 			}
 		},
-		[api, handleRemove, router, socket]
+		[apiClient, handleRemove, router, socket]
 	);
 
 	const handleDecline = useCallback(
@@ -208,7 +208,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 			}
 			try {
 				if (type === "friend_request") {
-					await api.rejectFriendRequest(senderId);
+					await apiClient.rejectFriendRequest(senderId);
 				} else if (type === "game") {
 				} else if (type === "tournament") {
 					const payload: UPDATE_NOTIFICATION_DATA = {
@@ -223,7 +223,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				console.error(err);
 			}
 		},
-		[api, handleRemove, socket]
+		[apiClient, handleRemove, socket]
 	);
 
 	const values = useMemo<NOTIFICATION_CONTEXT>(

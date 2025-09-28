@@ -1,46 +1,7 @@
-import { time } from "console";
 import { db } from "../database";
 import { InternalServerError } from "../types/auth.types";
 
 class MatchesRepository {
-	private TMPTABLE = `
-		CREATE TEMP TABLE tmp_user_matches AS
-			WITH user_matches AS (
-				SELECT
-					m.id AS match_id,
-					m.started_at,
-					m.finished_at,
-					CASE WHEN m.player_home_id = ? THEN m.player_home_score ELSE m.player_away_score END AS user_score,
-					CASE WHEN m.player_home_id = ? THEN m.player_away_score ELSE m.player_home_score END AS opp_score,
-					CASE WHEN m.player_home_id = ? THEN m.player_away_id ELSE m.player_home_id END AS opponent_id,
-					(strftime('%s', m.finished_at) - strftime('%s', m.started_at)) AS duration,
-					CASE
-						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score) 
-						OR (m.player_away_id = ? AND m.player_away_score > m.player_home_score) THEN 'W'
-						WHEN (m.player_home_id = ? AND m.player_home_score < m.player_away_score) 
-						OR (m.player_away_id = ? AND m.player_away_score < m.player_home_score) THEN 'L'
-						ELSE 'D'
-					END AS outcome,
-					u.username AS opponent_username
-				FROM matches m
-				JOIN users u
-				ON u.id = CASE
-							WHEN m.player_home_id = ? THEN m.player_away_id
-							ELSE m.player_home_id
-							END
-				WHERE m.player_home_id = ? OR m.player_away_id = ?
-			)
-			SELECT * FROM user_matches;
-	`;
-
-	private TIMEPERIODS = {
-		'0d': '',
-		'1d': '-1 days',
-		'7d': '-7 days',
-		'30d': '-30 days',
-		'90d': '-90 days',
-		'1y': '-1 year'
-	}
 
 	async create(
 		player_home_score: number,
@@ -81,441 +42,97 @@ class MatchesRepository {
 		}
 	}
 
-	async getAllMatchesByUser(user_id: number) : Promise<any | null> {
-		try {
-			const results = await db.all(
-				`SELECT * FROM matches WHERE player_home_id = ? OR player_away_id = ?`,
-				[user_id, user_id]
-			);
-			return results;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async getMatchesPageByUser(user_id: number, page: number) : Promise<any | null> {
-		const offset = (page - 1) * 5;
-		try {
-			const results = await db.all(
-				`SELECT * FROM matches WHERE player_home_id = ? OR player_away_id = ?
-					ORDER BY started_at DESC
-						LIMIT 5 OFFSET ?`,
-				[user_id, user_id, offset]
-			);
-			return results;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async getTotalMatchesByUser(user_id: number): Promise<number> {
-		try {
-			const result = await db.get(
-				`SELECT COUNT(*) as count FROM matches WHERE player_home_id = ? OR player_away_id = ?`,
-				[user_id, user_id]
-			);
-			return result?.count ?? 0;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async getTotalWinsByUser(user_id: number): Promise<number> {
-		try {
-			const result = await db.get(
-				`SELECT COUNT(*) as count FROM matches
-				 WHERE (player_home_id = ? AND player_home_score > player_away_score)
-				 OR (player_away_id = ? AND player_away_score > player_home_score)`,
-				[user_id, user_id]
-			);
-			return result?.count ?? 0;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async getTotalLossesByUser(user_id: number): Promise<number> {
-		try {
-			const result = await db.get(
-				`SELECT COUNT(*) as count FROM matches
-				 WHERE (player_home_id = ? AND player_home_score < player_away_score)
-				 OR (player_away_id = ? AND player_away_score < player_home_score)`,
-				[user_id, user_id]
-			);
-			return result?.count ?? 0;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async getTotalDrawsByUser(user_id: number): Promise<number> {
-		try {
-			const result = await db.get(
-				`SELECT COUNT(*) as count FROM matches
-				 WHERE (player_home_id = ? OR player_away_id = ?) AND player_home_score = player_away_score`,
-				[user_id, user_id]
-			);
-			return result?.count ?? 0;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async getAverageScoreByUser(user_id: number): Promise<number> {
-		try {
-			const result = await db.get(
-				`SELECT AVG(
-					CASE 
-						WHEN player_home_id = ? THEN player_home_score
-						WHEN player_away_id = ? THEN player_away_score
-					END
-				) AS average_score FROM matches WHERE player_home_id = ? OR player_away_id = ?`,
-				[user_id, user_id, user_id, user_id]
-			);
-			return result?.avg_score ?? 0;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async getMatchesStatsByUserPerGameType(user_id: number) : Promise<any> {
-		try {
-			const results = await db.all(
-				`SELECT
-					game_type,
-					COUNT(*) AS total_matches,
-					SUM(
-
-						CASE
-							WHEN (player_home_id = ? AND player_home_score > player_away_score)
-							OR (player_away_id = ? AND player_away_score > player_home_score)
-							THEN 1 ELSE 0
-						END
-
-					) AS wins,
-					SUM(
-
-						CASE
-							WHEN (player_home_id = ? AND player_home_score < player_away_score)
-							OR (player_away_id = ? AND player_away_score < player_home_score)
-							THEN 1 ELSE 0
-						END
-
-					) AS losses,
-					SUM(
-
-						CASE
-							WHEN (player_home_id = ? AND player_home_score = player_away_score)
-							OR (player_away_id = ? AND player_away_score = player_home_score)
-							THEN 1 ELSE 0
-						END
-
-					) AS draws,
-					AVG(
-
-						CASE
-							WHEN (player_home_id = ?) THEN player_home_score
-							WHEN (player_away_id = ?) THEN player_away_score
-						END
-
-					) AS average_score
-				FROM matches
-				WHERE (player_home_id = ?) OR (player_away_id = ?)
-				GROUP BY game_type`,
-				[user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id]
-			); // i need to add total playtime + avg game playtime
-			return results;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async getMatchesPageByUser_(user_id: number, page: number) : Promise<any | null> {
-		const offset = (page - 1) * 5;
-		try {
-			const results = await db.all(`
-				SELECT	uh.username AS player_home_username,
-						uh.avatar_url AS player_home_avatar,
-						ua.username AS player_away_username,
-						ua.avatar_url AS player_away_avatar,
-						m.*
-					FROM matches m
-				JOIN users uh ON (m.player_home_id = uh.id)
-				JOIN users ua ON (m.player_away_id = ua.id)
-				WHERE (m.player_home_id = ? OR m.player_away_id = ?)`,
-				[user_id, user_id]
-			);
-			return results;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async getUserSummaryStats(user_id: number) : Promise<any | null> {
-		try {
-			const TMPTABLESQL = this.getTMPTABLESQL('all', 'all', 1);
-
-			await db.run('DROP TABLE IF EXISTS tmp_user_matches;');
-
-			const matches_stats = await db.get(`
-				SELECT
-					COUNT(*) AS matches,
-					COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score > player_away_score) OR (player_away_id = ? AND player_away_score > player_home_score) THEN 1 ELSE 0 END), 0) AS wins,
-					COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score < player_away_score) OR (player_away_id = ? AND player_away_score < player_home_score) THEN 1 ELSE 0 END), 0) AS losses,
-					COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score = player_away_score) OR (player_away_id = ? AND player_away_score = player_home_score) THEN 1 ELSE 0 END), 0) AS draws,
-					100.00 * COALESCE(SUM(CASE WHEN (player_home_id = ? AND player_home_score > player_away_score) OR (player_away_id = ? AND player_away_score > player_home_score) THEN 1 ELSE 0 END) * 1.0 / NULLIF(COUNT(*), 0), 0) AS win_rate
-				FROM matches
-				WHERE (player_home_id = ? OR player_away_id = ?)
-			`, [user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id]);
-
-			const user_stats = await db.get(`
-				SELECT
-					*
-				FROM users_stats
-				WHERE user_id = ?
-			`, [user_id]);
-
-			return { user_stats, matches_stats };
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async getUserRecentMatches(user_id: number) : Promise<any | null> {
-		try {
-			const TMPTABLESQL = this.getTMPTABLESQL('all', 'all', 1);
-
-			await db.run('DROP TABLE IF EXISTS tmp_user_matches;');
-			await db.run(TMPTABLESQL, [user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id]);
-
-			const result = await db.all(`SELECT * FROM tmp_user_matches`);
-
-			return result;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async getUserMatches(
-		user_id: number, 
+	async getMatchesByUser(
+		user_id: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
 		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all' = 'all',
-		pageFilter: number
-	) : Promise<any | null> {
+		paginationFilter?: { page: number, limit: number }
+	) : Promise<any> {
 		try {
-			const TMPTABLESQL = this.getTMPTABLESQL(timeFilter, gameTypeFilter, pageFilter);
+			const countCTE = this.buildUserMatchesCTE(user_id, timeFilter, gameTypeFilter);
+			const countResult = await db.get(`
+				${countCTE.sql}
+				SELECT COUNT(*) as total_count FROM user_matches
+			`, countCTE.params);
 
-			console.log('TMP TABLE SQL: ', TMPTABLESQL);
-			await db.run('DROP TABLE IF EXISTS tmp_user_matches;');
-			await db.run(TMPTABLESQL, [user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id]);
+			const CTE = this.buildUserMatchesCTE(user_id, timeFilter, gameTypeFilter, paginationFilter);
 
-			const result = await db.all(`SELECT * FROM tmp_user_matches`);
+			console.info('Running the following SQL: ', `
+				${CTE.sql}
+				SELECT * FROM user_matches
+			`, 'with params: ', CTE.params);
 
-			return result;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
+			const matchesResults = await db.all(`
+				${CTE.sql}
+				SELECT * FROM user_matches
+			`, CTE.params);
 
-	async getUserStats(
-		user_id: number, 
-		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all' = 'all'
-	) : Promise<any | null> {
+			// pagination meta data
+			let pagination = null;
+			if (paginationFilter) {
+				const { page, limit } = paginationFilter;
+				const totalPages = Math.ceil(countResult.total_count / limit);
 
-		
-		// `match_id	started_at	finished_at	user_score	opp_score	opponent_id	opponent_username	duration	outcome`;
-		try {
-			const TMPTABLESQL = this.getTMPTABLESQL(timeFilter, gameTypeFilter);
-
-			await db.run('DROP TABLE IF EXISTS tmp_user_matches;');
-			console.log('TMP TABLE SQL: ', TMPTABLESQL);
-			await db.run(TMPTABLESQL, [user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id, user_id]);
-
-			// matches | wins | losses | draws | win_rate
-			// total/max/min/avg user score | total/max/min/avg opp score
-			// avg user score by outcome | avg opp score by outcome | avg duration by outcome
-
-			const stats = await db.get(`
-				SELECT 
-					COUNT(*) AS matches,
-
-					SUM(CASE WHEN outcome = 'W' THEN 1 ELSE 0 END) AS wins,
-					SUM(CASE WHEN outcome = 'L' THEN 1 ELSE 0 END) AS losses,
-					SUM(CASE WHEN outcome = 'D' THEN 1 ELSE 0 END) AS draws,
-
-					100.00 * SUM(CASE WHEN outcome = 'W' THEN 1 ELSE 0 END) / COUNT(*) AS win_rate,
-
-					SUM(user_score) AS total_user_score,
-					MAX(user_score) AS max_user_score,
-					MIN(user_score) AS min_user_score,
-					AVG(user_score) AS avg_user_score,
-
-					AVG(CASE WHEN outcome = 'W' THEN user_score ELSE NULL END) AS avg_user_win_score,
-					AVG(CASE WHEN outcome = 'L' THEN user_score ELSE NULL END) AS avg_user_loss_score,
-					AVG(CASE WHEN outcome = 'D' THEN user_score ELSE NULL END) AS avg_user_draw_score,
-					
-					SUM(opp_score) AS total_opp_score,
-					MAX(opp_score) AS max_opp_score,
-					MIN(opp_score) AS min_opp_score,
-					AVG(opp_score) AS avg_opp_score,
-					
-					AVG(CASE WHEN outcome = 'W' THEN opp_score ELSE NULL END) AS avg_opp_win_score,
-					AVG(CASE WHEN outcome = 'L' THEN opp_score ELSE NULL END) AS avg_opp_loss_score,
-					AVG(CASE WHEN outcome = 'D' THEN opp_score ELSE NULL END) AS avg_opp_draw_score,
-
-					SUM(duration) AS total_duration,
-					MAX(duration) AS max_duration,
-					MIN(duration) AS min_duration,
-					AVG(duration) AS avg_duration,
-
-					AVG(CASE WHEN outcome = 'W' THEN duration ELSE NULL END) AS avg_user_win_duration,
-					AVG(CASE WHEN outcome = 'L' THEN duration ELSE NULL END) AS avg_user_loss_duration,
-					AVG(CASE WHEN outcome = 'D' THEN duration ELSE NULL END) AS avg_user_draw_duration
-				FROM tmp_user_matches
-			`);
-
-			const uniqueOpponents = await db.get(`
-				SELECT
-					COUNT(DISTINCT opponent_id) AS unique_opponents
-				FROM tmp_user_matches
-			`);
-
-			const mostFrequentOpponent = await db.get(`
-				SELECT
-					opponent_id, opponent_username, COUNT(*) as matches
-				FROM tmp_user_matches
-				GROUP BY opponent_id, opponent_username
-				ORDER BY matches DESC
-				LIMIT 1
-			`);
-
-			const mostWinsOpponent = await db.get(`
-				SELECT
-					opponent_id, opponent_username, SUM(CASE WHEN outcome = 'W' THEN 1 ELSE 0 END) as wins
-				FROM tmp_user_matches
-				GROUP BY opponent_id, opponent_username
-				ORDER BY wins DESC
-				LIMIT 1
-			`);
-
-			const mostLossesOpponent = await db.get(`
-				SELECT
-					opponent_id, opponent_username, SUM(CASE WHEN outcome = 'L' THEN 1 ELSE 0 END) as losses
-				FROM tmp_user_matches
-				GROUP BY opponent_id, opponent_username
-				ORDER BY losses DESC
-				LIMIT 1
-			`);
-
-			const mostDrawsOpponent = await db.get(`
-				SELECT
-					opponent_id, opponent_username, SUM(CASE WHEN outcome = 'D' THEN 1 ELSE 0 END) as draws
-				FROM tmp_user_matches
-				GROUP BY opponent_id, opponent_username
-				ORDER BY draws DESC
-				LIMIT 1
-			`);
-
-			const mostScoredAgainstOpponent = await db.get(`
-				SELECT
-					opponent_id, opponent_username, SUM(user_score) as total_scored
-				FROM tmp_user_matches
-				GROUP BY opponent_id, opponent_username
-				ORDER BY total_scored DESC
-				LIMIT 1
-			`);
-
-			const mostConcededToOpponent = await db.get(`
-				SELECT
-					opponent_id, opponent_username, SUM(opp_score) as total_conceded
-				FROM tmp_user_matches
-				GROUP BY opponent_id, opponent_username
-				ORDER BY total_conceded DESC
-				LIMIT 1
-			`);
-
-			return {
-				totals: {
-					matches: stats.matches,
-					wins: stats.wins,
-					losses: stats.losses,
-					draws: stats.draws,
-					win_rate: stats.win_rate,
-				},
-				scores: {
-					total_user_score: stats.total_user_score,
-					max_user_score: stats.max_user_score,
-					min_user_score: stats.min_user_score,
-					avg_user_score: stats.avg_user_score,
-					avg_user_win_score: stats.avg_user_win_score,
-					avg_user_loss_score: stats.avg_user_loss_score,
-					avg_user_draw_score: stats.avg_user_draw_score,
-
-					total_opp_score: stats.total_opp_score,
-					max_opp_score: stats.max_opp_score,
-					min_opp_score: stats.min_opp_score,
-					avg_opp_score: stats.avg_opp_score,
-					avg_opp_win_score: stats.avg_opp_win_score,
-					avg_opp_loss_score: stats.avg_opp_loss_score,
-					avg_opp_draw_score: stats.avg_opp_draw_score,
-				},
-				durations: {
-					total_duration: stats.total_duration,
-					max_duration: stats.max_duration,
-					min_duration: stats.min_duration,
-					avg_duration: stats.avg_duration,
-					avg_user_win_duration: stats.avg_user_win_duration,
-					avg_user_loss_duration: stats.avg_user_loss_duration,
-					avg_user_draw_duration: stats.avg_user_draw_duration,
-				},
-				opponents: {
-					uniqueOpponents,
-					mostFrequentOpponent,
-					mostWinsOpponent,
-					mostLossesOpponent,
-					mostDrawsOpponent,
-					mostScoredAgainstOpponent,
-					mostConcededToOpponent,
+				pagination = {
+					current_page: page,
+					per_page: limit,
+					total: countResult.total_count,
+					total_pages: totalPages,
+					has_next: page < totalPages,
+					has_prev: page > 1,
+					next_page: page < totalPages ? page + 1 : null,
+					prev_page: page > 1 ? page - 1 : null
 				}
 			}
-
+			return pagination ? { matches: matchesResults, pagination } : matchesResults;
 		} catch (err: any) {
 			console.error('SQLite Error: ', err);
 			throw new InternalServerError();
 		}
 	}
 
-	private getTMPTABLESQL(
-		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all' = 'all',
-		pageFilter?: number
-	) : string {
+	private TIMEPERIODS = {
+		'0d': '',
+		'1d': '-1 days',
+		'7d': '-7 days',
+		'30d': '-30 days',
+		'90d': '-90 days',
+		'1y': '-1 year'
+	}
 
-		const timeCondition = timeFilter === 'all' ? '' : timeFilter === '0d' ? `AND date(finished_at) = date('now')`
-			: `AND date(finished_at) >= date('now', '${this.TIMEPERIODS[timeFilter]}')`;
- 		const gameTypeCondition = gameTypeFilter === 'all' ? '' : `AND game_type = '${gameTypeFilter}'`;
-		const pageCondition = pageFilter ? `ORDER BY finished_at LIMIT ${pageFilter * 2} OFFSET ${(pageFilter - 1) * 2}` : '';
-		const whereClause = timeCondition + gameTypeCondition + pageCondition;
+	buildUserMatchesCTE(
+		user_id: number,
+		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
+		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all',
+		paginationFilter?: { page: number, limit: number }
+	) : { sql: string, params: any[] } {
+		const timeCondition = 
+			timeFilter === 'all' ? '' :
+			timeFilter === '0d' ? `AND date(m.finished_at) = date('now')` : `AND date(m.finished_at) >= date('now', ?)`;
 
-	// +----------+------------+-------------+---------+---------------+------------+----------+-------------+-------------------+----------+---------+
-	// | match_id | started_at | finished_at | user_id | user_username | user_score | opp_score| opponent_id | opponent_username | duration | outcome |
-	// +----------+------------+-------------+---------+---------------+------------+----------+-------------+-------------------+----------+---------+
+		const gameTypeCondition = 
+			gameTypeFilter === 'all' ? '' : `AND game_type = ?`;
+		
+		const paginationCondition = 
+			paginationFilter ? 'LIMIT ? OFFSET ?' : '';
+		
+		const params: any[] = [
+			user_id, user_id, user_id, user_id, user_id,
+			user_id, user_id, user_id, user_id, user_id
+		];
+
+		if (timeFilter !== 'all' && timeFilter !== '0d')
+			params.push(this.TIMEPERIODS[timeFilter]);
+		if (gameTypeFilter !== 'all')
+			params.push(gameTypeFilter);
+		if (paginationFilter) {
+			const offset = (paginationFilter.page - 1) * paginationFilter.limit;
+			params.push(paginationFilter.limit, offset);
+		}
+
+
 
 		const SQL = `
-			CREATE TEMP TABLE tmp_user_matches AS
 			WITH user_matches AS (
 				SELECT
 					m.id AS match_id,
@@ -524,10 +141,12 @@ class MatchesRepository {
 					m.finished_at,
 					u_self.id AS user_id,
 					u_self.username AS user_username,
+					u_self.avatar_url AS user_avatar_url,
 					CASE WHEN m.player_home_id = ? THEN m.player_home_score ELSE m.player_away_score END AS user_score,
 					CASE WHEN m.player_home_id = ? THEN m.player_away_score ELSE m.player_home_score END AS opp_score,
 					u_opp.id AS opponent_id,
 					u_opp.username AS opponent_username,
+					u_opp.avatar_url AS opponent_avatar_url,
 					(strftime('%s', m.finished_at) - strftime('%s', m.started_at)) AS duration,
 					CASE
 						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score) 
@@ -537,21 +156,60 @@ class MatchesRepository {
 						ELSE 'D'
 					END AS outcome
 				FROM matches m
-				JOIN users u_self
-					ON u_self.id = ?
-				JOIN users u_opp
-					ON u_opp.id = CASE
-									WHEN m.player_home_id = ? THEN m.player_away_id ELSE m.player_home_id
-						  		  END
-
+				JOIN users u_self ON u_self.id = ?
+				JOIN users u_opp ON u_opp.id = CASE
+					WHEN m.player_home_id = ? THEN m.player_away_id 
+					ELSE m.player_home_id
+				END
 				WHERE (m.player_home_id = ? OR m.player_away_id = ?)
-				${whereClause}
+				${timeCondition}
+				${gameTypeCondition}
+				ORDER BY m.finished_at DESC
+				${paginationCondition}
 			)
-			SELECT * FROM user_matches;
 		`;
 
-		return SQL;
+		return { sql: SQL, params };
 	}
 }
+
+function colorizeParam(param: any): string {
+	if (typeof param === "number") return `\x1b[33m${param}\x1b[0m`; // yellow for numbers
+	if (typeof param === "string") return `\x1b[32m'${param}'\x1b[0m`; // green for strings
+	if (param === null) return `\x1b[31mNULL\x1b[0m`; // red for null
+	return `\x1b[35m${param}\x1b[0m`; // magenta fallback
+}
+
+function interpolateSQL(sql: string, params: any[]): string {
+	let i = 0;
+	return sql.replace(/\?/g, () => {
+		if (i >= params.length) return "?"; // extra ?
+		return colorizeParam(params[i++]);
+	});
+}
+
+async function test() {
+	await db.connect('../database/database.db');
+
+	const matchesRepo = new MatchesRepository();
+	// const { sql, params } = matchesRepo.buildUserMatchesCTE(1337, 'all', 'XO', { page: 1, limit: 7 });
+
+	// const interpolated = interpolateSQL(sql, params);
+
+	// console.log("SQL (with params colored):\n", interpolated);
+	// console.log("\nRaw params array:", params);
+
+	// const matches = await matchesRepo.getMatchesByUser(1337, '7d', 'all');
+	// const stats = await matchesRepo.getUserStats(8, 'all', 'all');
+	// const detailedStats = await matchesRepo.getUserDetailedStats(8, 'all', 'all');
+	// const trendsGroupedByDay = await matchesRepo.getUserDetailedAnalyticsGroupedByDay(8, 'PING PONG', 7);
+
+	// console.log('Matches:', matches);
+	// console.log('Stats:', stats);
+	// console.log('DetailesStats:', detailedStats);
+	// console.log('TrendsGroupedByDay:', trendsGroupedByDay);
+}
+
+// test();
 
 export default MatchesRepository;

@@ -1,3 +1,4 @@
+import { APIClient } from '@/app/(api)/APIClient';
 import type { GameState, MessageCallBack } from "../types/GameTypes"
 
 const MAX_RETRIES = 3;
@@ -8,8 +9,7 @@ class SocketProxy {
 	private subscribers: MessageCallBack[] = [];
 	private url: string | null = null;
 	private retryAttemts: number = 0;
-	private destroyed: boolean = false;
-
+	private destroyed: boolean = true;
 
 	private constructor() {};
 
@@ -36,11 +36,11 @@ class SocketProxy {
 		}
 	}
 
-	public connect(url: string): (() => void) {
+	public connect(url: string, api: APIClient): (() => void) {
 		this.url = url;
-		this.socket = new WebSocket(url);
-
+		this.socket = api.connectWebSocket(url);
 		this.socket.onopen = (): void => {
+			this.destroyed = false;
 			console.log('Connected to Pong Server');
 		}
 
@@ -50,8 +50,10 @@ class SocketProxy {
 
 		this.socket.onclose = (event: CloseEvent): void => {
 			console.log("Disconnected from Pong Websocket");
-			if (event.code === 1000) // normal disconnection
+			if (event.code > 1000) {
+				console.log(event.reason);
 				return;
+			}
 
 			if (this.retryAttemts >= MAX_RETRIES) {
 				console.warn("Max retry attemts reached.");
@@ -59,7 +61,7 @@ class SocketProxy {
 			}
 
 			console.log("Reconnecting...");
-			setTimeout(() => this.reconnect(), 5000); // reconnect after 5 seconds
+			setTimeout(() => this.reconnect(api), 5000); // reconnect after 5 seconds
 			this.retryAttemts++;
 		}
 
@@ -69,14 +71,16 @@ class SocketProxy {
 		return this.disconnect.bind(this);
 	}
 
-	private reconnect(): void {
+	private reconnect(api: APIClient): void {
 		if (this.url && !this.destroyed)
-			this.connect(this.url);
+			this.connect(this.url, api);
 	}
 
 	public disconnect(): void {
 		this.destroyed = true;
+		this.url = null;
 		this.socket?.close(1000, "Normal");
+		this.socket = null;
 	}
 
 	public send(message: any): void {
@@ -92,16 +96,25 @@ class SocketProxy {
 
 export const setupCommunications = (gameStateRef: React.RefObject<GameState>, proxy: SocketProxy): (() => void) => {
 	return proxy.subscribe((data: any): void => {
+		gameStateRef.current.gameStatus = data.type
 		switch (data.type) {
-			case 'waiting':
-				gameStateRef.current.gameStatus = 'waiting'
+			case 'opp_left':
+				gameStateRef.current.opponentDC = true;
+				break;
+			case 'opp_joined':
+				gameStateRef.current.opponentDC = false;
+				break;
+			case 'reconnected':
+				gameStateRef.current.index = data.i;
+				gameStateRef.current.players[0].score = data.score[0]
+				gameStateRef.current.players[1].score = data.score[1]
+				break;
+			case 'gameover':
+				gameStateRef.current.serverBall = { x: 400, y: 300, width: 10, height: 10 };
+				proxy.disconnect();
 				break;
 			case 'ready':
-				gameStateRef.current.gameStatus = 'ready'
 				gameStateRef.current.index = data.i
-				break;
-			case 'start':
-				gameStateRef.current.gameStatus = 'playing'
 				break;
 			case 'state':
 				gameStateRef.current.serverBall = data.state.b

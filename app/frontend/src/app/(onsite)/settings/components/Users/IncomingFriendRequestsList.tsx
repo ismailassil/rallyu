@@ -4,7 +4,7 @@ import UserList, { UserItem, mapAPIUserItemtoUserItem } from "./UserList";
 import { Check, CircleMinus, X } from "lucide-react";
 
 export default function IncomingFriendRequestsList() {
-	const { api } = useAuth();
+	const { apiClient } = useAuth();
 	const [incoming, setIncoming] = useState<UserItem[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
@@ -12,7 +12,7 @@ export default function IncomingFriendRequestsList() {
 		async function fetchIncomingRequests() {
 			try {
 				setIsLoading(true);
-				const data = await api.getAllIncomingFriendRequests();
+				const data = await apiClient.getAllIncomingFriendRequests();
 				const mappedIncoming = mapAPIUserItemtoUserItem(data);
 				setIncoming(mappedIncoming);
 			} catch (err) {
@@ -26,7 +26,7 @@ export default function IncomingFriendRequestsList() {
 
 	async function handleDecline(user_id: number) {
 		try {
-			await api.rejectFriendRequest(user_id);
+			await apiClient.rejectFriendRequest(user_id);
 			setIncoming(prev => prev.filter(request => request.id !== user_id));
 		} catch (err) {
 			alert("Error declining request");
@@ -35,7 +35,7 @@ export default function IncomingFriendRequestsList() {
 
 	async function handleAccept(user_id: number) {
 		try {
-			await api.acceptFriendRequest(user_id);
+			await apiClient.acceptFriendRequest(user_id);
 			setIncoming(prev => prev.filter(request => request.id !== user_id));
 		} catch (err) {
 			alert("Error accepting request");

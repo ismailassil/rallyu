@@ -33,13 +33,13 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 	const [tournaments, setTournaments] = useState([]);
 	const [error, setError] = useState<errorObj>({ status: false, message: "" });
 	const [searchVal, setSearchVal] = useState<string>("");
-	const { api, user } = useAuth();
+	const { apiClient, loggedInUser } = useAuth();
 	const param: string | null = useSearchParams().get('mode');
 
 	useEffect(() => {
 	
-		fetchData(api, param, setTournaments, setError);
-	}, [api.instance, user?.id]);
+		fetchData(apiClient, param, setTournaments, setError);
+	}, [apiClient.instance, loggedInUser?.id]);
 
 	const searchTournament = async function (e) {
 		e.preventDefault();
@@ -48,14 +48,14 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 		setSearchVal(val);
 
 		if (!val) {
-			fetchData(api, param, setTournaments, setError);
+			fetchData(apiClient, param, setTournaments, setError);
 			return ;
 		}
 
 		try {
 			const mode = param === 'ping-pong' ? "?mode=ping-pong" : param === 'tic-tac-toe' ? "?mode=tic-tac-toe" : "";
 
-			const res = await api.instance.get(`/v1/tournament/tournaments${mode ? `${mode}&search=${val}` : `?search=${val}`}`);
+			const res = await apiClient.instance.get(`/v1/tournament/tournaments${mode ? `${mode}&search=${val}` : `?search=${val}`}`);
 
 			const data = res.data;
 
@@ -107,7 +107,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 										onClick={(e) => {
 											e.preventDefault();
 											
-											fetchData(api, param, setTournaments, setError);
+											fetchData(apiClient, param, setTournaments, setError);
 											setSearchVal("");
 										}}
 										size={21}

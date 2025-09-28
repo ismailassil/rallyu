@@ -148,8 +148,15 @@ export class _2FAAlreadyEnabled extends AuthError {
 
 export class _2FAInvalidCode extends AuthError {
 	constructor(type: string, message: string = '2FA code is not valid', details: any = {}) {
-		message = `2FA ${type} is not valid`;
-		super(message, 400, `AUTH_2FA_${type.toUpperCase()}_INVALID_CODE`, details);
+		message = `2FA ${type} verification code is not valid`;
+		super(message, 400, `AUTH_2FA_BY_${type.toUpperCase()}_INVALID_CODE`, details);
+	}
+}
+
+export class _2FAExpiredCode extends AuthError {
+	constructor(type: string, message: string = '2FA code expired', details: any = {}) {
+		message = `2FA ${type} verification code expired`;
+		super(message, 400, `AUTH_2FA_BY_${type.toUpperCase()}_EXPIRED_CODE`, details);
 	}
 }
 

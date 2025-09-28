@@ -16,10 +16,10 @@ type FormFieldProps = {
 	inputValue: string;
 	hidden?: boolean;
 	onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-	touch: boolean;
+	touched: boolean;
 	error?: string;
 	debounced: boolean;
-	setFieldAvailable?: (name: string, available: boolean) => void;
+	children?: React.ReactNode;
 };
 
 function FormField({ 
@@ -31,10 +31,10 @@ function FormField({
 	inputValue, 
 	hidden, 
 	onChange, 
-	touch, 
+	touched, 
 	error, 
 	debounced, 
-	setFieldAvailable 
+	children
 } : FormFieldProps) {
 
 	const [inputHidden, setInputHidden] = useState(hidden);
@@ -63,19 +63,13 @@ function FormField({
 						width={!inputHidden ? 20 : 18.5} 
 						height={!inputHidden ? 20 : 18.5}
 						onClick={handleToggleShowInput}
+						className="cursor-pointer"
 					></Image>
 				}
 			</div>
 			<AnimatePresence>
-				{ field === 'password' && touch && inputValue && <PasswordStrength value={inputValue} /> }
-				{ debounced && touch && error && <FormFieldError key="1" error={error} /> }
-				{ (field === 'username' || field === 'email') && debounced && touch && !error && inputValue && inputValue.length >= 3 && 
-						<FormFieldAvailability key="2" setFieldAvailable={setFieldAvailable}
-							label={label}
-							name={field}
-							value={inputValue}
-						/>
-				}
+				{children}
+				{debounced && touched && error && <FormFieldError error={error} />}
 			</AnimatePresence>
 		</div>
 	);
