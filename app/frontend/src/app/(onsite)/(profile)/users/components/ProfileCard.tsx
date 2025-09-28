@@ -3,6 +3,7 @@ import MainCardWrapper from '@/app/(onsite)/components/UI/MainCardWrapper';
 import Button from './Button';
 import { LocalUserPencilIcon } from './LocalIcon';
 import Avatar from './Avatar';
+import { useRouter } from 'next/navigation';
 
 type ProfileCardProps = {
 	userId: number,
@@ -18,6 +19,7 @@ type ProfileCardProps = {
 };
 
 export default function ProfileCard({ userId, fullName, username, bio, avatar, friendshipStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
+	const router = useRouter();
 	return (
 		<MainCardWrapper className='flex flex-col items-center gap-8
 									p-10 min-h-[300px] max-h-[500px]
@@ -42,7 +44,7 @@ export default function ProfileCard({ userId, fullName, username, bio, avatar, f
 						{/* Relations Buttons */}
 						{friendshipStatus && <Relations userId={userId} currentStatus={friendshipStatus as FriendshipStatus} />}
 						{/* Edit Profile Button */}
-						{!friendshipStatus && <a className='flex gap-3' href='/settings'><Button key="edit" text="Edit Profile" icon={LocalUserPencilIcon} /></a>}
+						{!friendshipStatus && <div><Button key="edit" text="Edit Profile" icon={LocalUserPencilIcon} onClick={() => router.push('/settings')} /></div>}
 					</div>
 					{/* Avatar */}
 					<Avatar 

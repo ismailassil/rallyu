@@ -172,11 +172,13 @@ export default function Security() {
 
 	return (
 		<motion.div
-			initial={{ opacity: 0, x: 25, scale: 0.99 }}
-			animate={{ opacity: 1, x: 0, scale: 1 }}
+			initial={{ opacity: 0, x: 5 }}
+			animate={{ opacity: 1, x: 0 }}
+			exit={{ opacity: 1, x: -5 }}
 			transition={{ duration: 0.5 }}
 		>
 			<div className='flex flex-col gap-4'>
+				{/* <TwoFactorAuth /> */}
 				<SettingsCard 
 					title="Two-factor Authentication"
 					subtitle="Add an extra layer of security to your account by choosing your preferred verification method"
@@ -185,13 +187,12 @@ export default function Security() {
 					actionIcon={<Fingerprint size={16} />}
 					onAction={() => router.push('/mfa')}
 				>
-					{/* <TwoFactorAuth /> */}
 				</SettingsCard>
 				<SettingsCard 
 					title="Change Password"
 					subtitle="Modify your current password"
 					isForm={true}
-					formId='settings-change-password-form'
+					// formId='settings-change-password-form'
 					formSubmitLabel='Save Changes'
 				>
 					<ChangePasswordForm />

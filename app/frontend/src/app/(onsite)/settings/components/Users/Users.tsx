@@ -232,8 +232,9 @@ import IncomingFriendRequestsList from './IncomingFriendRequestsList';
 export default function Users() {
 	return (
 		<motion.div
-			initial={{ opacity: 0, x: 25, scale: 0.99 }}
-			animate={{ opacity: 1, x: 0, scale: 1 }}
+			initial={{ opacity: 0, x: 5 }}
+			animate={{ opacity: 1, x: 0 }}
+			exit={{ opacity: 1, x: -5 }}
 			transition={{ duration: 0.5 }}
 		>
 			<div className='flex flex-col gap-4'>
