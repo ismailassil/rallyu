@@ -4,7 +4,7 @@ import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyMetrics from 'fastify-metrics';
-import { FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyReply } from 'fastify';
 import { verifyMetricsToken } from './middleware/verify-metrics-token.js';
 import { natsPlugin } from './plugin/nats/nats.plugin.js';
 import { socketioPlugin } from './plugin/socketio/socketio.plugin.js';
@@ -72,7 +72,7 @@ await fastify.register(proxiesPlugin, {
 });
 
 // ** METRICS Plugin
-fastify.register(fastifyMetrics, { endpoint: '/inter-metrics' });
+fastify.register(fastifyMetrics as any, {	endpoint: '/inter-metrics' });
 
 // ** HOOK ENDPOINTS
 fastify.addHook('preHandler', verifyMetricsToken);

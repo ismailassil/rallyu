@@ -1,8 +1,8 @@
-import { FastifyInstance } from "fastify";
+import type { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
-import { connect, JSONCodec, NatsConnection, ErrorCode } from "nats";
-import { NatsOpts } from "../types/nats.types.js";
-import {
+import { connect, JSONCodec, type NatsConnection, } from "nats";
+import type { NatsOpts } from "../types/nats.types.js";
+import type {
 	NOTIFY_USER_PAYLOAD,
 	UPDATE_ACTION_PAYLOAD,
 	UPDATE_ON_TYPE_PAYLOAD,

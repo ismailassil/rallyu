@@ -1,5 +1,5 @@
 import 'fastify';
-import { Codec, JetStreamClient, MsgHdrs, NatsConnection } from 'nats';
+import type { Codec, JetStreamClient, NatsConnection } from 'nats';
 
 declare module 'fastify' {
 	interface FastifyInstance {

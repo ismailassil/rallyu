@@ -1,5 +1,5 @@
 import { timingSafeEqual } from 'crypto';
-import { FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
 export const verifyMetricsToken = async (req: FastifyRequest, rep: FastifyReply) => {
 	if (req.url === '/inter-metrics') {

@@ -1,6 +1,6 @@
-import fastify from "../app.js";
-import NotifRepository from "../repositories/notif.repository.js";
-import {
+import fastify from "@/app.js";
+import NotifRepository from "@/repositories/notif.repository.js";
+import type {
 	NOTIFY_USER_PAYLOAD,
 	RAW_NOTIFICATION,
 	UPDATE_ON_TYPE_PAYLOAD,
@@ -8,7 +8,7 @@ import {
 	UPDATE_STATUS_PAYLOAD,
 	USER_NOTIFICATION,
 	UPDATE_ACTION_PAYLOAD,
-} from "../shared/types/notifications.types.js";
+} from "@/shared/types/notifications.types.js";
 import { millis } from "nats";
 
 enum GATEWAY_SUBJECTS {
@@ -248,12 +248,20 @@ class NotifSerives {
 	}
 
 	private async filterMessage(data: RAW_NOTIFICATION): Promise<USER_NOTIFICATION> {
-		const res = await fastify.nats.request(
-			"user.avatar",
-			fastify.jc.encode({ user_id: data.sender_id }),
-		);
-
-		const res_dec = fastify.jc.decode(res.data);
+		const cachedAvatar = await fastify.redis.get(`avatar:${data.sender_id}`);
+		let avatar;
+		if (cachedAvatar !== null) {
+			avatar = cachedAvatar;
+		}
+		else {
+			const res = await fastify.nats.request(
+				"user.avatar",
+				fastify.jc.encode({ user_id: data.sender_id }),
+			);
+			
+			avatar = fastify.jc.decode(res.data).avatar_path;
+			fastify.redis.setex(`avatar:${data.sender_id}`, 15 * 60, avatar);
+		}
 
 		return {
 			id: data.id,
@@ -267,22 +275,30 @@ class NotifSerives {
 			status: data.status,
 			state: data.state,
 			actionUrl: data.action_url,
-			avatar: res_dec.avatar_path,
+			avatar: avatar,
 		};
 	}
 
 	private async registerNotification(payload: NOTIFY_USER_PAYLOAD): Promise<RAW_NOTIFICATION> {
 		const { senderId } = payload;
-		const senderUser = await fastify.nats.request(
-			"user.username",
-			fastify.jc.encode({ user_id: senderId }),
-		);
 
-		const senderUsername = fastify.jc.decode(senderUser.data);
+		const cachedUsername = await fastify.redis.get(`username:${senderId}`);
+		let senderUsername;
+
+		if (cachedUsername !== null) {
+			senderUsername = cachedUsername;
+		} else {
+			const senderUser = await fastify.nats.request(
+				"user.username",
+				fastify.jc.encode({ user_id: senderId }),
+			);
+			
+			senderUsername = fastify.jc.decode(senderUser.data).username;
+		}
 
 		const data: RAW_NOTIFICATION = await this.notifRepository.registerMessage(
 			payload,
-			senderUsername.username,
+			senderUsername,
 		);
 
 		return data;

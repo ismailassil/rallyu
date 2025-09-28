@@ -1,13 +1,13 @@
-import { FastifyInstance } from "fastify";
+import type { FastifyInstance } from "fastify";
 import { Server, Socket } from "socket.io";
-import { socketioOpts } from "../plugin/socketio/socketio.types";
-import { JWT_ACCESS_PAYLOAD } from "../types/jwt.types";
-import { MessageType } from "../types/chat.types";
-import {
+import type { socketioOpts } from "@/plugin/socketio/socketio.types.js";
+import type { JWT_ACCESS_PAYLOAD } from "@/types/jwt.types.js";
+import type { MessageType } from "@/types/chat.types.js";
+import type {
 	UPDATE_NOTIFICATION_DATA,
 	UPDATE_ON_TYPE_DATA,
 	UPDATE_ON_TYPE_PAYLOAD,
-} from "../types/notification.types";
+} from "@/types/notification.types.js";
 
 class SocketIOService {
 	private readonly io: Server;

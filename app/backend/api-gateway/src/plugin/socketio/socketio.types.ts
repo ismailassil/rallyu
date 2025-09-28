@@ -1,12 +1,11 @@
 import 'fastify';
 import { Server } from 'socket.io';
-import { ChatPayload, MessageType } from '../../types/chat.types.js';
-import {
+import type { ChatPayload, MessageType } from '../../types/chat.types.js';
+import type {
 	UPDATE_NOTIFICATION_DATA,
 	UPDATE_ON_TYPE_DATA,
-	UPDATE_ON_TYPE_PAYLOAD,
 	USER_NOTIFICATION,
-} from '../../types/notification.types.js';
+} from '@/types/notification.types.js';
 
 declare module 'fastify' {
 	export interface FastifyInstance {

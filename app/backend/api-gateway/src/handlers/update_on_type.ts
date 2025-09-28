@@ -1,6 +1,6 @@
-import { JsMsg, Msg, NatsError } from 'nats';
+import type { JsMsg } from 'nats';
 import { app as fastify } from '../app.js';
-import { UPDATE_ON_TYPE_PAYLOAD } from '../types/notification.types.js';
+import type { UPDATE_ON_TYPE_PAYLOAD } from '../types/notification.types.js';
 
 export async function handleUpdateNotifOnType(m: JsMsg) {
 	fastify.log.info('[NATS] Message Arrived to `notification.update_on_type`');

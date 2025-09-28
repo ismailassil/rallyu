@@ -1,6 +1,6 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
-import { socketioOpts } from './socketio.types';
+import type { socketioOpts } from './socketio.types.js';
 import SocketIOService from '../../services/SocketIOService.js';
 
 export const socketioPlugin = fp(async function (

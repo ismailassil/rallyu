@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 import fastifyPlugin from 'fastify-plugin';
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';

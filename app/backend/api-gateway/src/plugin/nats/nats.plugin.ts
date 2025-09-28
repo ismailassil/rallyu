@@ -1,6 +1,6 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
-import { NatsPluginOpts } from './nats.types';
+import type { NatsPluginOpts } from './nats.types.js';
 import NatsService from '../../services/NatsService.js';
 
 export const natsPlugin = fp(

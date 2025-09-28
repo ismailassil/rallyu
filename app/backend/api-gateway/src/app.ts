@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance } from 'fastify';
+import fastify, { type FastifyInstance } from 'fastify';
 
 const app: FastifyInstance = fastify({
 	logger: {

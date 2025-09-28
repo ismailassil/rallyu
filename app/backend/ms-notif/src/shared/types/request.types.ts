@@ -1,4 +1,4 @@
-import { NOTIFICATION_STATUS, NOTIFICATION_TYPE } from "./notifications.types";
+import type { NOTIFICATION_STATUS } from "./notifications.types.js";
 
 type NOTIFICATION_SCOPE = 'all' | 'single';
 

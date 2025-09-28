@@ -6,6 +6,7 @@ import schemasPlugin from './shared/plugins/schema.plugin.js';
 import databasePlugin from './shared/plugins/database.plugin.js';
 import { natsPlugin } from './shared/plugins/nats.plugin.js';
 import fastifyPrintRoutes from 'fastify-print-routes';
+import fastifyRedis from '@fastify/redis';
 
 const PORT = parseInt(process.env.PORT || '');
 const routesPrefix = { prefix: '/notif' };
@@ -15,6 +16,12 @@ fastify.register(schemasPlugin);
 fastify.register(databasePlugin);
 fastify.register(NotifRoutes, routesPrefix);
 fastify.register(fastifySchedule);
+fastify.register(fastifyRedis, {
+	url: "redis://redis",
+	password: process.env.REDIS_PASSWORD ?? "",
+	connectionName: "Notification Client",
+	closeClient: true,
+})
 // fastify.register(CronJobPlugin); // TODO: Activate this in Production
 fastify.register(natsPlugin, {
 	NATS_URL: process.env.NATS_URL ?? undefined,

@@ -1,7 +1,7 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import proxy from '@fastify/http-proxy';
 import fp from 'fastify-plugin';
-import { proxiesOpts } from './proxies.types';
+import type { proxiesOpts } from './proxies.types.js';
 
 const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) => {
 	const { AUTH_PORT, NOTIF_PORT, CHAT_PORT, XO_PORT, TOURNAMENT_PORT, MATCHMAKING_PORT } = opts;

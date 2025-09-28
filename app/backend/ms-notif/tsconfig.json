@@ -1,19 +1,24 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "rootDir": "./src",
-    "moduleResolution": "node",
-    // "baseUrl": "./src",
-    "types": ["node"],
-    "resolveJsonModule": true,
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    /* Type Checking */
-    "strict": true,
-    "skipLibCheck": true
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", ".eslintrc.cjs"]
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"target": "es2022",
+		"allowJs": true,
+		"resolveJsonModule": true,
+		"moduleDetection": "force",
+		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"module": "NodeNext",
+		"outDir": "dist",
+		"sourceMap": true,
+		"lib": ["es2022"],
+		"baseUrl": "./src",
+		"paths": {
+			"@/*": ["*"]
+		}
+  	},
+	"include": ["./src/**/*"]
 }

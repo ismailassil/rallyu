@@ -1,8 +1,8 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
-import fastify from '../app.js';
-import NotifServices from '../services/notif.services.js';
-import { IFetchQuery } from '../shared/types/request.types.js';
-import {
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import fastify from '@/app.js';
+import NotifServices from '@/services/notif.services.js';
+import type { IFetchQuery } from '@/shared/types/request.types.js';
+import type {
 	RAW_NOTIFICATION,
 	USER_NOTIFICATION,
 } from '../shared/types/notifications.types.js';

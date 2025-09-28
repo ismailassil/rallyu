@@ -1,5 +1,5 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { JWT_ACCESS_PAYLOAD } from '../types/jwt.types';
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import type { JWT_ACCESS_PAYLOAD } from '../types/jwt.types.js';
 import { app as fastify } from '../app.js';
 import chalk from 'chalk';
 

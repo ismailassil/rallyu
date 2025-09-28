@@ -1,6 +1,6 @@
-import fastify from "../app.js";
-import { NotificationNotFoundException } from "../shared/exceptions/NotificationNotFoundException.js";
-import {
+import fastify from "@/app.js";
+import { NotificationNotFoundException } from "@/shared/exceptions/NotificationNotFoundException.js";
+import type {
 	NOTIFICATION_STATE,
 	NOTIFICATION_STATUS,
 	NOTIFICATION_TYPE,

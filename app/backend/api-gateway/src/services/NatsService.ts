@@ -1,19 +1,21 @@
-import {
-	AckPolicy,
-	connect,
+import type {
 	Consumer,
-	DeliverPolicy,
 	JetStreamClient,
 	JetStreamManager,
 	JsMsg,
+	NatsConnection,
+} from 'nats';
+import {
+	AckPolicy,
+	connect,
+	DeliverPolicy,
 	JSONCodec,
 	nanos,
-	NatsConnection,
 	StringCodec,
 } from 'nats';
-import { NatsPluginOpts } from '../plugin/nats/nats.types';
+import type { NatsPluginOpts } from '@/plugin/nats/nats.types.js';
 import chalk from 'chalk';
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import { handleNotify } from '../handlers/notify.js';
 import { handleUpdateNotifAction } from '../handlers/update_action.js';
 import handleChatMsg from '../handlers/chat_events.js';

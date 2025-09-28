@@ -1,7 +1,6 @@
-import NotifControllers from '../controllers/notif.controllers.js';
-import { FastifyInstance, FastifyReply } from 'fastify';
-import historySchema from '../shared/schemas/history.schema.js';
-import updateSchema from '../shared/schemas/update.schema.js';
+import NotifControllers from '@/controllers/notif.controllers.js';
+import type { FastifyInstance, FastifyReply } from 'fastify';
+import historySchema from '@/shared/schemas/history.schema.js';
 
 const NotifRoutes = async (fastify: FastifyInstance) => {
 	const notifControllers = new NotifControllers();
@@ -20,12 +19,3 @@ const NotifRoutes = async (fastify: FastifyInstance) => {
 };
 
 export default NotifRoutes;
-
-/***
- * 
-	fastify.post(
-		'/notify',
-		{ schema: notifySchema },
-		notifControllers.notify.bind(notifControllers),
-	);
- */

@@ -1,6 +1,6 @@
-import { JsMsg } from 'nats';
+import type { JsMsg } from 'nats';
 import { app as fastify } from '../app.js';
-import { ChatPayload } from '../types/chat.types.js';
+import type { ChatPayload } from '../types/chat.types.js';
 
 function handleChatMsg(m: JsMsg) {
 	fastify.log.info(m.subject);
