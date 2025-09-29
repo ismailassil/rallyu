@@ -11,7 +11,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { AxiosResponse } from "axios";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
-import { alertSuccess } from "@/app/(auth)/components/Alert";
+import { toastSuccess } from '@/app/components/CustomToast';
 import { useRouter } from "next/navigation";
 import HostIn from "./Items/HostIn";
 
@@ -47,7 +47,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 				host_id: loggedInUser?.id,
 			});
 
-			alertSuccess(res.data.message);
+			toastSuccess(res.data.message);
 
 			setDate("");
 			setAccess(0);

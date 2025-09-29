@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import CountUp from 'react-countup';
 import { useAuth } from '../../contexts/AuthContext';
 import Chart from '../../(profile)/users/components/Chart';
-import MainCardWithHeader from '../../(refactoredUIComponents)/MainCardWithHeader';
+import MainCardWithHeader from '../UI/MainCardWithHeader';
 import GameCard from '../../(profile)/users/components/GameCard';
 import { secondsToHMS, secondsToMinutes } from '@/app/(api)/utils';
-import ChartCardWrapper from '../../(refactoredUIComponents)/ChartCardWrapper';
+import ChartCardWrapper from '../UI/ChartCardWrapper';
 import { useTranslations } from 'next-intl';
 
 const PREFIX = {

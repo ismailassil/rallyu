@@ -7,7 +7,7 @@ import Security from "./components/Security/Security";
 import { useState } from "react";
 import { Cog, UsersIcon, Gamepad2, Fingerprint } from "lucide-react";
 import { Toaster } from "sonner";
-import { alertLoading } from "@/app/(auth)/components/CustomToast";
+import { toastLoading } from "@/app/components/CustomToast";
 
 type Tab = {
 	label: string;
@@ -28,7 +28,7 @@ function TabSelector({ activeTab, onSelect } : { activeTab: string, onSelect: (t
 				<button
 					key={label}
 					onClick={() => onSelect(label)}
-					className={`rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium backdrop-blur-xs flex gap-2 items-center box-border justify-center
+					className={`rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium flex gap-2 items-center box-border justify-center
 					${activeTab === label
 						? 'border-1 font-bold text-black bg-white flex-2'
 						: 'border-1 border-white/10 hover:bg-white/10 flex-1'
@@ -56,7 +56,7 @@ export default function SettingsPage() {
 	}
 
 	setTimeout(() => {
-		alertLoading('DEV - Page still under development.');
+		toastLoading('DEV - Page still under development.');
 	}, 2000);
 	
 	return (

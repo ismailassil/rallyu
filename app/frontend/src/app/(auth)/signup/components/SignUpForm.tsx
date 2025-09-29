@@ -3,13 +3,13 @@
 import React, { useCallback } from 'react';
 import { useState } from 'react';
 import useForm from '@/app/hooks/useForm';
-import FormField from './FormField';
+import FormField from '../../components/Forms/FormField';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { alertError, alertSuccess } from '../../components/CustomToast';
+import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import { signupFormSchema } from '@/app/(api)/schema';
-import PasswordStrength from './PasswordStrength';
-import FormFieldAvailability from './FormFieldAvailability';
+import PasswordStrength from '../../components/Forms/PasswordStrength';
+import FormFieldAvailability from '../../components/Forms/FormFieldAvailability';
 
 export default function SignUpForm() {
 	const router = useRouter();
@@ -23,7 +23,7 @@ export default function SignUpForm() {
 	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm(
 		signupFormSchema,
 		{ first_name: '', last_name: '', username: '', email: '', password: '' },
-		{ debounceMs: { email: 1200, password: 1200 } }
+		{ debounceMs: { email: 1200, username: 1200, password: 1200 } }
 	);
 
 	const updateFieldAvailable = useCallback((name: string, available: boolean) => {
@@ -49,10 +49,10 @@ export default function SignUpForm() {
 				formData.email,
 				formData.password
 			);
-			alertSuccess('Account created successfully...');
+			toastSuccess('Account created successfully...');
 			router.replace('/login');
 		} catch (err: any) {
-			alertError(err.message || 'Something went wrong, please try again later');
+			toastError(err.message || 'Something went wrong, please try again later');
 		} finally {
 			setIsSubmitting(false);
 		}

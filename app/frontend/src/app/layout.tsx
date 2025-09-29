@@ -6,6 +6,7 @@ import Script from "next/script";
 import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import funnelDisplay from "./fonts/FunnelDisplay";
+import BackgroundManager from "./components/BackgroundManager";
 
 export const metadata: Metadata = {
 	title: "Rallyu",
@@ -26,7 +27,10 @@ export default async function RootLayout({
 			<body className={`${dmSans.className} ${funnelDisplay.variable} relative antialiased`}>
 				<NextIntlClientProvider messages={messages} locale={locale}>
 					<h1 className="fixed top-0">RootLayout</h1>
-					<AuthProvider>{children}</AuthProvider>
+					<AuthProvider>
+						<BackgroundManager />
+						{children}
+					</AuthProvider>
 				</NextIntlClientProvider>
 			</body>
 		</html>

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { TOAST_PAYLOAD, ToastTypesDetails } from "./Toast.types";
 import { useNotification } from "../notification/context/NotificationContext";
 import { useTranslations } from "next-intl";
+import Avatar from "@/app/(onsite)/(profile)/users/components/Avatar";
 
 interface Props {
 	data: TOAST_PAYLOAD;
@@ -48,18 +49,15 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 					style={{ width: `${progress}%` }}
 				/>
 				<div className="relative flex items-center gap-5 select-none">
-					<div className="flex h-12 w-12 overflow-hidden rounded-full ring-1 ring-white/30">
-						<Image
-							src={image}
-							alt="Profile Icon"
-							className="object-cover"
-							width={90}
-							height={90}
-						/>
-					</div>
+					<Avatar
+						avatar={image}
+						width={40}
+						height={40}
+						className="flex h-12 w-12 overflow-hidden rounded-full ring-1 ring-white/30"
+					/>
 					<div>
 						<p className="font-bold">{senderUsername}</p>
-						<p className="text-sm">{t("headers.notification.description." + type)}</p>
+						<p className="text-sm">{t("headers.notification.box.description." + type)}</p>
 					</div>
 				</div>
 				{ToastTypesDetails[type].icon}

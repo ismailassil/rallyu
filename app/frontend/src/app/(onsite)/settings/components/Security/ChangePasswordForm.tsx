@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import FormField from "@/app/(auth)/signup/components/FormField";
-import useForm from "../hooks/useForm";
-import { alertError, alertLoading, alertSuccess } from "@/app/(auth)/components/CustomToast";
+import FormField from "@/app/(auth)/components/Forms/FormField";
+import useForm from "../deprecatedhooks/useForm";
+import { toastError, toastLoading, toastSuccess } from "@/app/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 
 export default function ChangePasswordForm() {
@@ -24,12 +24,12 @@ export default function ChangePasswordForm() {
 			return ;
 
 		try {
-			alertLoading('Changing password...');
+			toastLoading('Changing password...');
 			const res = await apiClient.changePassword({ old_password: formData['current-password'], new_password: formData['new-password']});
 			console.log('Update password response: ', res);
-			alertSuccess('Password changed successfully');
+			toastSuccess('Password changed successfully');
 		} catch (err) {
-			alertError('Someting went wrong, please try again');
+			toastError('Someting went wrong, please try again');
 		}
 	}
 

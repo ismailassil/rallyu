@@ -5,7 +5,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import ProfilePreview from './ProfilePreview';
 import PersonalInformationsForm from './PersonalInformationsForm';
 import useForm from '@/app/hooks/useForm';
-import { alertError, alertSuccess } from '@/app/(auth)/components/CustomToast';
+import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import { LoaderCircle } from 'lucide-react';
 import { personalInfoSettingsSchema } from '@/app/(api)/schema';
 
@@ -43,7 +43,7 @@ export default function GeneralSettingsTab() {
 		{ debounceMs: { username: 1200, email: 1200 } } // debounce username and email validation by 1000ms
 	);
 	const [fieldsAvailable, setFieldsAvailable] = useState({
-		username: true,
+		username: true, 
 		email: true
 	});
 
@@ -115,12 +115,12 @@ export default function GeneralSettingsTab() {
 			setIsSubmitting(true);
 			await updateUserInfo();
 			await uploadAvatar();
-			alertSuccess('Changes saved successfully');
+			toastSuccess('Changes saved successfully');
 			updateLoggedInUserState(getUpdatedFormPayload());
 			resetForm(formData);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
-			alertError(err.message || 'Something went wrong, please try again later');
+			toastError(err.message || 'Something went wrong, please try again later');
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -129,8 +129,9 @@ export default function GeneralSettingsTab() {
 
 	return (
 		<motion.div
-			initial={{ opacity: 0, x: 25, scale: 0.99 }}
-			animate={{ opacity: 1, x: 0, scale: 1 }}
+			initial={{ opacity: 0, x: 5 }}
+			animate={{ opacity: 1, x: 0 }}
+			exit={{ opacity: 1, x: -5 }}
 			transition={{ duration: 0.5 }}
 		>
 			<div className="flex flex-col gap-4">

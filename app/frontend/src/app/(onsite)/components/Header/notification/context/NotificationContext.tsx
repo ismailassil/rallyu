@@ -33,9 +33,10 @@ export function useNotification() {
 }
 
 function getToastData(data: USER_NOTIFICATION): TOAST_PAYLOAD {
+	console.log("Creating toast for notification:", data);
 	return {
 		id: data.id,
-		image: "/profile/image_2.jpg",
+		image: data.avatar,
 		senderUsername: data.senderUsername,
 		senderId: data.senderId,
 		type: data.type,

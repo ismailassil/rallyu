@@ -8,8 +8,7 @@ import ChartBar from '../components/Charts/ChartBar';
 import { ChartCard, StatCard, StatDetailedCard } from '../components/Cards';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { APIError } from '@/app/(api)/APIClient';
-import { alertError } from '@/app/(auth)/components/CustomToast';
-import { AuthLoadingSpinner } from '@/app/(auth)/components/LoadingSpinners';
+import { toastError } from '@/app/components/CustomToast';
 
 const data = {
 	gameTypeDistData: [
@@ -83,7 +82,7 @@ export default function UserStatsPage() {
 			} catch (err) {
 
 				const apiErr = err as APIError;
-				alertError(apiErr.message);
+				toastError(apiErr.message);
 				
 			} finally {
 				setIsLoading(false);
@@ -94,7 +93,8 @@ export default function UserStatsPage() {
 	}, []);
 
 	if (isLoading || !userAnalytics)
-		return <AuthLoadingSpinner />;
+		return null;
+		// return <AuthLoadingSpinner />;
 
 	const { totals, scores, durations, opponents } = userAnalytics;
 

@@ -1,7 +1,7 @@
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
 import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
-import MainCardWrapper from '../../(refactoredUIComponents)/MainCardWrapper';
+import MainCardWrapper from '../../components/UI/MainCardWrapper';
 
 function Button({ children, actionIcon, onClick, hidden = false, disabled = false  } : { children: ReactNode, actionIcon: React.ReactNode, onClick?: () => void, hidden?: boolean, disabled?: boolean }) {
 	return (

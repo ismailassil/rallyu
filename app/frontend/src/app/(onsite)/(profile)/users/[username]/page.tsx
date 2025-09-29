@@ -5,10 +5,9 @@ import ProfileCard from '../components/ProfileCard';
 import PerformanceCard from '../components/PerformaceCard';
 import GamesHistoryCard from '../components/GamesHistoryCard';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { alertError } from '@/app/(auth)/components/CustomToast';
+import { toastError } from '@/app/components/CustomToast';
 import { APIError } from '@/app/(api)/APIClient';
 import { UserProfile } from '../../types';
-import { AuthLoadingSpinner } from '@/app/(auth)/components/LoadingSpinners';
 import { useRouter } from 'next/navigation';
 
 export default function UserProfilePage({ params } : { params: Promise<{ username: string }> }) {
@@ -28,7 +27,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 				const apiErr = err as APIError;
 				if (apiErr.code.includes('USER_NOT_FOUND'))
 					router.replace('/404');
-				alertError(apiErr.message);
+				toastError(apiErr.message);
 				console.log(err);
 			} finally {
 				setIsLoading(false);
@@ -45,7 +44,8 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 	}, [isLoading, userProfile, router]);
 	
 	if (isLoading)
-		return <AuthLoadingSpinner />;
+		return null;
+		// return <AuthLoadingSpinner />;
 	if (!userProfile)
 		return null;
 

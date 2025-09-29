@@ -1,12 +1,18 @@
 import TwoFactorRepository from "../repositories/twoFactorRepository";
 import { InternalServerError, InvalidCredentialsError, SessionExpiredError, SessionNotFoundError, UserNotFoundError, _2FAAlreadyEnabled, _2FAExpiredCode, _2FAInvalidCode, _2FANotEnabled, _2FANotFound } from "../types/auth.types";
+import MailingService from "./MailingService";
+import WhatsAppService from "./WhatsAppService";
+import UserService from "./userService";
 
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 
 class TwoFactorService {
 	constructor(
-		private twoFactorRepository: TwoFactorRepository
+		private twoFactorRepository: TwoFactorRepository,
+		private userService: UserService,
+		private mailingService: MailingService,
+		private smsService: WhatsAppService
 	) {}
 
 	/*----------------------------------------------- GETTERS -----------------------------------------------*/
@@ -87,6 +93,10 @@ class TwoFactorService {
 	}
 	
 	async createPending2FAMethod(type: string, userID: number) : Promise<{ secret_base32: string; secret_qrcode_url: string } | void> {
+		const targetUser = await this.userService.getUserById(userID);
+		if (!targetUser)
+			throw new UserNotFoundError();
+
 		const isAlreadyEnabled = await this.getEnabledMethodByType(type, userID);
 		if (isAlreadyEnabled)
 			throw new _2FAAlreadyEnabled(type);
@@ -94,13 +104,34 @@ class TwoFactorService {
 		this.deletePending2FAMethodsByType(type, userID); // TODO: HOW SHOULD WE HANDLE THIS?
 		
 		switch (type) {
-			case 'totp':
+			case 'totp': {
 				return await this.createPendingTOTPMethod(userID);
-				// break;
-			case 'email':
-				return await this.createPendingOTPMethod(type, userID);
-			case 'sms':
-				return await this.createPendingOTPMethod(type, userID);
+			}
+			case 'email': {
+				console.log('Creating pending email method');
+				await this.createPendingOTPMethod(type, userID);
+				if (targetUser.email)
+					await this.mailingService.sendEmail({
+						from: this.mailingService.config.mailingServiceUser,
+						to: targetUser.email,
+						subject: 'Your RALLYU verification code',
+						text: `Your verification code is: ${await this.getCurrentOTP(type, userID)}`
+					});
+				else
+					throw new InvalidCredentialsError('No email associated with this account');
+				console.log(`Email sent to ${targetUser.email} with code: ${await this.getCurrentOTP(type, userID)}`);
+				break;
+			}
+			case 'sms': {
+				console.log('Creating pending sms method');
+				await this.createPendingOTPMethod(type, userID);
+				if (targetUser.phone)
+					await this.smsService.sendMessage(targetUser.phone, `Your RALLYU verification code is: ${await this.getCurrentOTP(type, userID)}`);
+				else
+					throw new InvalidCredentialsError('No phone number associated with this account');
+				console.log(`SMS sent to ${targetUser.phone} with code: ${await this.getCurrentOTP(type, userID)}`);
+				break;
+			}
 			default:
 				throw new InternalServerError(); // TODO: ADD METHOD NOT SUPPORTED
 		}
@@ -495,12 +526,14 @@ class TwoFactorService {
 	}
 
 	private async getCurrentOTP(type: string, userID: number): Promise<string> {
-		const currentOTP = await this.twoFactorRepository.findOTPByType(type, userID);
+		const currentOTP = await this.twoFactorRepository.findPending2FAMethodByType(type, userID);
+
+		console.log(`getCurrentOTP: ${currentOTP}`);
 
 		// TODO: SEPARATION
 		if (!currentOTP || this.nowInSeconds() > currentOTP.expires_at)
 			throw new _2FAInvalidCode(type);
-		return currentOTP.code;
+		return currentOTP.temp_value;
 	}
 }
 

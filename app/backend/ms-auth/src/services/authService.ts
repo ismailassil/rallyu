@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { JWT_REFRESH_PAYLOAD } from '../utils/auth/Auth'
-import { FormError, FormFieldMissing, InvalidCredentialsError, PasswordLengthError, SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenExpiredError, TokenInvalidError, TokenRequiredError, UserAlreadyExistsError, UserNotFoundError, UsernameLengthError, WeakPasswordError, _2FAInvalidCode } from "../types/auth.types";
+import { FormError, FormFieldMissing, InternalServerError, InvalidCredentialsError, PasswordLengthError, SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenExpiredError, TokenInvalidError, TokenRequiredError, UserAlreadyExistsError, UserNotFoundError, UsernameLengthError, WeakPasswordError, _2FAInvalidCode } from "../types/auth.types";
 import { ISessionFingerprint } from "../types";
 import { UAParser } from 'ua-parser-js';
 import axios from "axios";
@@ -11,6 +11,8 @@ import UserService from "./userService";
 import SessionService from "./sessionService";
 import { AuthConfig } from "../config/auth";
 import JWTUtils from "../utils/auth/Auth";
+import MailingService from './MailingService';
+import WhatsAppService from './WhatsAppService';
 
 // TODO
 	// VERIFY THE EXISTENCE OF ALL THOSE ENV VARS
@@ -34,7 +36,9 @@ class AuthService {
 		private jwtUtils: JWTUtils,
 		private userService: UserService,
 		private sessionService: SessionService,
-		private twoFactorService: TwoFactorService
+		private twoFactorService: TwoFactorService,
+		private mailingService: MailingService,
+		private smsService: WhatsAppService
 	) {}
 
 	async SignUp(first_name: string, last_name: string, username: string, email: string, password: string) : Promise<void> {
@@ -113,9 +117,39 @@ class AuthService {
 			throw new SessionExpiredError();
 		}
 
+		const targetUser = await this.userService.getUserById(loginChallenge.user_id);
+		if (!targetUser)
+			throw new UserNotFoundError();
+
+		switch (method) {
+			case 'email': {
+				if (targetUser.email)
+					await this.mailingService.sendEmail({
+						from: this.mailingService.config.mailingServiceUser,
+						to: targetUser.email,
+						subject: 'Your RALLYU verification code',
+						text: `Your verification code is: ${loginChallenge.code}`
+					});
+				else
+					throw new InvalidCredentialsError('No email associated with this account');
+				console.log(`Email sent to ${targetUser.email} with code: ${loginChallenge.code}`);
+				break;
+			}
+			case 'sms': {
+				if (targetUser.phone)
+					await this.smsService.sendMessage(targetUser.phone, `Your RALLYU verification code is: ${loginChallenge.code}}`);
+				else
+					throw new InvalidCredentialsError('No phone number associated with this account');
+				console.log(`SMS sent to ${targetUser.phone} with code: ${loginChallenge.code}`);
+				break;
+			}
+			default:
+				throw new InternalServerError(); // TODO: ADD METHOD NOT SUPPORTED
+		}
+
 		// TODO: NOTIFICATION SERVICE TO SEND CODE IF METHOD == EMAIL || SMS
 		// if (method == 'sms' || method == 'email')
-		console.log(`CODE ${loginChallenge.code || 'XXXXXX'} WAS SENT TO ${'FLAN BEN FLAN'} VIA ${method}`);
+		// console.log(`CODE ${loginChallenge.code || 'XXXXXX'} WAS SENT TO ${'FLAN BEN FLAN'} VIA ${method}`);
 	}
 
 	async verifyLoginChallenge2FACode(loginChallengeID: number, method: string, code: string, userAgent: string, ip: string) {

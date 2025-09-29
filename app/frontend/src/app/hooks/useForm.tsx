@@ -179,6 +179,7 @@ function useForm(
 		debounceTimeout.current[name] = setTimeout(() => {
 			const err = validateField(zodSchema, name, value);
 			console.log('ValidateField Current Error:', name, value, err);
+			// if (err)
 			dispatch({ type: 'SET_ERROR', name, err });
 		}, debounceDelay);
 	}

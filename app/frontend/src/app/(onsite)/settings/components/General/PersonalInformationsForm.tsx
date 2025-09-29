@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
-import FormField from '@/app/(auth)/signup/components/FormField';
+import FormField from '@/app/(auth)/components/Forms/FormField';
 import LanguageSwitcher from '../items/LanguageSwitcher';
-import FormFieldAvailability from '@/app/(auth)/signup/components/FormFieldAvailability';
+import FormFieldAvailability from '@/app/(auth)/components/Forms/FormFieldAvailability';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 
 interface PersonalInformationsFormProps {
@@ -82,7 +82,7 @@ export default function PersonalInformationsForm({
 					error={errors.email}
 					debounced={debounced.email}
 				>
-					{(formData.username !== loggedInUser?.username) && debounced.email && touched.email && !errors.email && formData.email && formData.email.length >= 3 && (
+					{(formData.email !== loggedInUser?.email) && debounced.email && touched.email && !errors.email && formData.email && formData.email.length >= 3 && (
 						<FormFieldAvailability 
 							label='Email'
 							name='email'

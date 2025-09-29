@@ -12,6 +12,32 @@
 	--foreground: #ffffff;
 }
 
+.background-main {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1000;
+	background: url('/background/main/background.svg') no-repeat center center fixed;
+	background-size: cover;
+	pointer-events: none;
+	filter: brightness(0.78);
+}
+
+.background-auth {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1000;
+	background: url('/background/main/signup_background.svg') no-repeat center center fixed;
+	background-size: cover;
+	pointer-events: none;
+	filter: brightness(0.78);
+}
+
 /* autofill background color */
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
@@ -445,6 +471,16 @@ input[type='number']::-webkit-inner-spin-button {
 	@apply flex justify-center items-center gap-4 select-none;
 	
 	@apply hover:bg-white/4;
+
+	@apply transition-all duration-300 hover:scale-101;
+}
+
+.single-two-fa-card {
+	@apply bg-white/2 border border-white/8 rounded-3xl px-8 py-6;
+	
+	@apply hover:bg-white/4;
+
+	@apply flex gap-5 items-center select-none;
 
 	@apply transition-all duration-300 hover:scale-101;
 }

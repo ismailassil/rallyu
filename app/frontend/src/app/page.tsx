@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Background from './(auth)/components/Background';
 import Card from './components/Card';
 import rallyuFeatures from './components/CardContent';
 import LandingPageHeader from './components/LandingPageHeader';
@@ -33,7 +32,6 @@ const Page = function () {
 
 	return (
 		<>
-			<Background />
 			<LandingPageHeader />
 			<div className="w-full h-[calc(100vh-124px)] mt-20 px-12 flex flex-col items-center">
 				<div className="max-w-250 flex flex-col justify-between gap-5 h-full">

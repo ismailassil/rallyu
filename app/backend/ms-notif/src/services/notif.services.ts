@@ -259,7 +259,7 @@ class NotifSerives {
 				fastify.jc.encode({ user_id: data.sender_id }),
 			);
 			
-			avatar = fastify.jc.decode(res.data).avatar_path;
+			avatar = fastify.jc.decode(res.data).avatar_url;
 			fastify.redis.setex(`avatar:${data.sender_id}`, 15 * 60, avatar);
 		}
 
