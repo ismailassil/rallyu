@@ -6,8 +6,8 @@ import MethodsOverview from "./MethodsOverview";
 import { Loader, Check } from "lucide-react";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { APIError } from "@/app/(api)/APIClient";
-import { toastSuccess, toastError } from "@/app/components/CustomToast";
-import { Toaster } from "sonner";
+import { toastSuccess, toastError, toastLoading } from "@/app/components/CustomToast";
+import { Toaster, toast } from "sonner";
 import MainCardWrapper from "../components/UI/MainCardWrapper";
 import { motion } from "framer-motion";
 import SetupTOTP from "./SetupTOTP";
@@ -36,19 +36,22 @@ export default function TwoFAManagerPage() {
 	const inputRefs = useRef([]);
 
 	useEffect(() => {
+		
 		fetchEnabledMethods();
 	}, []);
-
+	
 	async function fetchEnabledMethods() {
 		try {
 			setIsLoading(true);
-			await simulateBackendCall(6000);
+			toastLoading('Loading enabled methods...');
+			
 			const enabledMethods = await apiClient.mfaEnabledMethods();
 			setEnabledMethods(enabledMethods);
 		} catch (err) {
 			const apiErr = err as APIError;
 			toastError(apiErr.message);
 		} finally {
+			toastSuccess('Enabled methods loaded');
 			setIsLoading(false);
 		}
 	}
@@ -58,7 +61,7 @@ export default function TwoFAManagerPage() {
 		
 		try {
 			setIsLoading(true);
-			await simulateBackendCall(6000);
+			
 			const res = await apiClient.mfaSetupInit(method);
 			if (method === 'totp')
 				setTotpSecrets(res);
@@ -84,7 +87,7 @@ export default function TwoFAManagerPage() {
 
 		try {
 			setIsLoading(true);
-			await simulateBackendCall(6000);
+			
 			await apiClient.mfaDisableMethod(method);
 			toastSuccess(`${METHODS_META[method].title} disabled successfully`);
 			await fetchEnabledMethods();
@@ -101,7 +104,7 @@ export default function TwoFAManagerPage() {
 			const toVerify = code.join('');
 			setIsVerifyingCode(true);
 			
-			await simulateBackendCall(6000);
+			
 			await apiClient.mfaSetupVerify(selectedMethod, toVerify);
 			toastSuccess(`${METHODS_META[selectedMethod].title} setup successfully!`);
 			
@@ -121,7 +124,6 @@ export default function TwoFAManagerPage() {
 	async function handleResendCode() {
 		try {
 			setIsSendingCode(true);
-			await simulateBackendCall(6000);
 			await apiClient.mfaSetupInit(selectedMethod);
 			toastSuccess('Code sent!');
 		} catch (err) {

@@ -26,6 +26,8 @@ import RelationsService from './services/relationsService';
 import StatsService from './services/statsService';
 import StatsRepository from './repositories/statsRepository';
 import MatchesRepository from './repositories/matchesRepository';
+import WhatsAppService from './services/WhatsAppService';
+import MailingService from './services/MailingService';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
@@ -34,8 +36,8 @@ async function buildApp(): Promise<FastifyInstance> {
 			target: 'pino-pretty',
 			options: {
 			  colorize: true,
-			  translateTime: 'SYS:standard', // human-readable timestamp
-			  ignore: 'pid,hostname'         // remove unnecessary fields
+			  translateTime: 'SYS:standard',
+			  ignore: 'pid,hostname'
 			}
 		  }
 		},
@@ -45,7 +47,7 @@ async function buildApp(): Promise<FastifyInstance> {
 				allErrors: true
 			}
 		}
-	  });
+	});
 
 	// REGISTER DATABASE PLUGIN
 	// fastify.register(SQLitePlugin);
@@ -67,12 +69,15 @@ async function buildApp(): Promise<FastifyInstance> {
 	const matchesRepository = new MatchesRepository();
 
 	// INIT SERVICES
+	const whatsAppService = new WhatsAppService(fastify.log);
+	await whatsAppService.isReady; // TODO: HANDLE ERRORS
+	const mailingService = new MailingService(appConfig.mailing);
 	const sessionService = new SessionService(authConfig, jwtUtils, sessionsRepository);
-	const twoFactorService = new TwoFactorService(twoFactorRepository);
 	const statsService = new StatsService(userRepository, statsRepository);
 	const relationsService = new RelationsService(userRepository, relationsRepository);
 	const userService = new UserService(userRepository, relationsService, statsService, matchesRepository);
-	const authService = new AuthService(authConfig, jwtUtils, userService, sessionService, twoFactorService);
+	const twoFactorService = new TwoFactorService(twoFactorRepository, userService, mailingService, whatsAppService);
+	const authService = new AuthService(authConfig, jwtUtils, userService, sessionService, twoFactorService, mailingService, whatsAppService);
 
 	// INIT CONTROLLERS
 	const authController = new AuthController(authService, twoFactorService);

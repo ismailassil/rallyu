@@ -1,4 +1,5 @@
 import { env } from "./env";
+import { mailingConfig, MailingConfig } from "./mailing";
 
 export type AuthConfig = {
 	accessSecret: string;
@@ -11,6 +12,7 @@ export type AuthConfig = {
 	allowIpChange: boolean;
 	allowBrowserChange: boolean;
 	allowDeviceChange: boolean;
+	mailingConfig: MailingConfig;
 }
 
 export const authConfig: AuthConfig = {
@@ -23,5 +25,6 @@ export const authConfig: AuthConfig = {
 	maxConcurrentSessions: env.MAX_CONCURRENT_SESSION,
 	allowIpChange: env.ALLOW_IP_CHANGE,
 	allowBrowserChange: env.ALLOW_BROWSER_CHANGE,
-	allowDeviceChange: env.ALLOW_DEVICE_CHANGE
+	allowDeviceChange: env.ALLOW_DEVICE_CHANGE,
+	mailingConfig: mailingConfig
 }

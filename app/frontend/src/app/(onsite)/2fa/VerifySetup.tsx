@@ -68,8 +68,12 @@ export default function VerifySetup({ selectedMethod, code, setCode, inputRefs, 
 
 				<p className='self-center'>
 					Didn&#39;t receive the code? 
-					<a 
-						onClick={onResend} 
+					<span 
+						onClick={
+							(isResendingCode || isVerifyingCode)
+							? undefined
+							: onResend
+						}
 						className={`font-semibold ml-1 ${
 							(isResendingCode || isVerifyingCode) 
 								? 'text-gray-500 cursor-not-allowed' 
@@ -77,7 +81,7 @@ export default function VerifySetup({ selectedMethod, code, setCode, inputRefs, 
 						}`}
 					>
 						Resend code
-					</a>
+					</span>
 				</p>
 			</div>
 		</div>

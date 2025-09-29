@@ -16,6 +16,9 @@ const envSchema = z.object({
 	ALLOW_IP_CHANGE: z.coerce.boolean(),
 	ALLOW_BROWSER_CHANGE: z.coerce.boolean(),
 	ALLOW_DEVICE_CHANGE: z.coerce.boolean(),
+	MAILING_SERVICE_PROVIDER: z.string(),
+	MAILING_SERVICE_USER: z.string(),
+	MAILING_SERVICE_PASS: z.string(),
 	SQLITE3_DB_PATH: z.string()
 });
 
