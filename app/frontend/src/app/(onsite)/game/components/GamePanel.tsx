@@ -24,14 +24,14 @@ function GamePanel() {
 	}, [])
 
 	return (
-		<div className="flex w-full gap-4 flex-col lg:flex-row">
+		<div className="flex w-full gap-4 flex-col xl:flex-row">
 			<AnimatePresence>
-				<div className="flex flex-col justify-center items-center basis-2/3 w-full border border-white/15 bg-card rounded-md">
+				<div className="flex flex-col justify-center items-center w-full border border-white/15 bg-card rounded-md p-4 min-w-0 flex-3">
 					<GameField />
 				</div>
 			</AnimatePresence>
 			<AnimatePresence>
-				<div className="flex basis-1/3 flex-col hide-scrollbar max-h-200 lg:max-h-full bg-card border border-white/15 rounded-md w-full">
+				<div className="flex flex-col hide-scrollbar lg:max-h-full bg-card border border-white/15 rounded-md w-full overflow-hidden flex-1 min-w-[300px]">
 					<LobbyCard /> {/* switch between lobby and chat*/}
 				</div>
 			</AnimatePresence>

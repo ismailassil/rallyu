@@ -1,9 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { updateState, getVelocity, angles } = require('./physics')
 const WebSocket = require('ws');
-const { type } = require("os");
 
-const JWT_ROOM_SECRET = process.env.JWT_ROOM_SECRET || 'R00M_4CC3SS_';
 const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
 
 const game = async (fastify, options) => {
@@ -119,14 +117,14 @@ const game = async (fastify, options) => {
 			const initialAngle = angles[Math.floor(Math.random() * angles.length)];
 			this.state = {
 				ball: {
-					x: 400,
-					y: 300,
-					speed: 8,
+					x: 800,
+					y: 600,
+					speed: 14,
 					angle: initialAngle,
 					dir: 'left',
-					velocity: getVelocity(initialAngle, 8)
+					velocity: getVelocity(initialAngle, 14)
 				},
-				players: [{ x: 20, y: 300 }, { x: 780, y: 300 }],
+				players: [{ x: 20, y: 600 }, { x: 1580, y: 600 }],
 				score: [0, 0],
 				pause: true
 			};

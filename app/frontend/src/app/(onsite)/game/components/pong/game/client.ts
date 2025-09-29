@@ -110,7 +110,7 @@ export const setupCommunications = (gameStateRef: React.RefObject<GameState>, pr
 				gameStateRef.current.players[1].score = data.score[1]
 				break;
 			case 'gameover':
-				gameStateRef.current.serverBall = { x: 400, y: 300, width: 10, height: 10 };
+				gameStateRef.current.serverBall = { x: 800, y: 600, width: 20, height: 20 };
 				proxy.disconnect();
 				break;
 			case 'ready':
@@ -119,7 +119,7 @@ export const setupCommunications = (gameStateRef: React.RefObject<GameState>, pr
 			case 'state':
 				gameStateRef.current.serverBall = data.state.b
 				if (gameStateRef.current.index === 1)
-					gameStateRef.current.serverBall.x = 800 - gameStateRef.current.serverBall.x;
+					gameStateRef.current.serverBall.x = 1600 - gameStateRef.current.serverBall.x;
 				gameStateRef.current.serverPlayerY = data.state.p
 				gameStateRef.current.players[0].score = data.state.s[0]
 				gameStateRef.current.players[1].score = data.state.s[1]

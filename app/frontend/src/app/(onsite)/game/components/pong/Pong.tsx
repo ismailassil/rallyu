@@ -6,21 +6,21 @@ import { setupCommunications } from "./game/client";
 import { useGame } from "../../contexts/gameContext";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 
-export const CANVAS_WIDTH = 800;
-export const CANVAS_HEIGHT = 600;
+export const CANVAS_WIDTH = 1600;
+export const CANVAS_HEIGHT = 1200;
 
 const initGameState = (): GameState => {
 	return ({
-		serverPlayerY: 300,
-		serverBall: { x: 400, y: 300, width: 10, height: 10 },
-		ball: { x: 400, y: 300, width: 10, height: 10 },
+		serverPlayerY: 600,
+		serverBall: { x: 800, y: 600, width: 20, height: 20 },
+		ball: { x: 800, y: 600, width: 20, height: 20 },
 		players:[
 			{
-				rect: { x: 20, y: 300, width: 10, height: 60 },
+				rect: { x: 20, y: 600, width: 15, height: 100 },
 				score: 0
 			},
 			{
-				rect: { x: 780, y: 300, width: 10, height: 60 },
+				rect: { x: 1580, y: 600, width: 15, height: 100 },
 				score: 0
 			}
 		],
@@ -65,10 +65,16 @@ const Pong = () => {
 
 	return (
 		<canvas
-			className='max-w-full rounded-lg border border-neutral-700 bg-neutral-900/50'
+			className='max-w-full max-h-full rounded-lg border shadow-xl border-neutral-700 bg-neutral-900/50' //border-neutral-700
 			ref={canvasRef}
 			width={CANVAS_WIDTH}
 			height={CANVAS_HEIGHT}
+			style={{ 
+				width: 'auto',
+				height: 'auto',
+				maxWidth: '100%',
+				maxHeight: '100%'
+			}}
 		/>
 	)
 }

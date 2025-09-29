@@ -1,7 +1,7 @@
 const maxBounceAngle = 0.785398 // RAD / 45 degrees
-const PADDLE_WIDTH = 10
-const PADDLE_HEIGHT = 60
-const BALL_RADIUS = 5
+const PADDLE_WIDTH = 15
+const PADDLE_HEIGHT = 100
+const BALL_RADIUS = 10
 const angles = [2.61799, 3.66519, 3.14159 ,0, 0.523599, 5.75959];
 
 const clamp = (value, min, max) => {
@@ -14,7 +14,7 @@ const bounceBall = (ball, paddle) => {
 	ball.angle = ball.dir === 'right'
 		? Math.PI - (normalized * maxBounceAngle)
 		: normalized * maxBounceAngle
-	ball.speed = clamp(ball.speed * (Math.abs(normalized) * (0.7 - 0.3) + 0.7), 8, 12)
+	ball.speed = clamp(ball.speed * (Math.abs(normalized) * (0.7 - 0.3) + 0.7), 14, 19)
 	ball.velocity = getVelocity(ball.angle, ball.speed)
 	ball.dir = ball.dir === 'right' ? 'left' : 'right'
 }
@@ -41,11 +41,11 @@ const resetBall = (dir) => {
 	const initialAngle = angles[side + Math.floor(Math.random() * (angles.length / 2))];
 
 	return ({
-		x: 400,
-		y: 300,
-		speed: 8,
+		x: 800,
+		y: 600,
+		speed: 14,
 		angle: initialAngle,
-		velocity: getVelocity(initialAngle, 8)
+		velocity: getVelocity(initialAngle, 14)
 	})
 }
 
@@ -80,8 +80,8 @@ const updateState = (gameState) => {
 	}
 
 	// bottom wall bounce
-	if (newBall.y + BALL_RADIUS > 600) {
-		gameState.ball.y = 600 - BALL_RADIUS
+	if (newBall.y + BALL_RADIUS > 1200) {
+		gameState.ball.y = 1200 - BALL_RADIUS
 		gameState.ball.angle *= -1
 		gameState.ball.velocity.dy *= -1
 		return
@@ -97,7 +97,7 @@ const updateState = (gameState) => {
 	}
 	
 	// left player scored
-	if (newBall.x > 800) {
+	if (newBall.x > 1600) {
 		gameState.score[0]++
 		gameState.ball = resetBall("right")
 		gameState.pause = true
