@@ -63,7 +63,6 @@ class AuthService {
 		if (!existingUser || !isValidPassword)
 			throw new InvalidCredentialsError();
 
-		// TODO: IMPLEMENT LOGIN CHALLENGE
 		const enabled2FAMethods = await this.twoFactorService.getEnabledMethods(existingUser.id);
 		const _2FARequired = enabled2FAMethods.length > 0;
 		if (_2FARequired)
@@ -106,9 +105,6 @@ class AuthService {
 	}
 
 	async sendLoginChallenge2FACode(loginChallengeID: number, method: string, userAgent: string, ip: string) {
-
-		// TODO: LIMIT ATTEMPTS
-		// SET LOGIN CHALLENGE METHOD AND GENERATES CODE AND SENDS IT
 		await this.twoFactorService.select2FALoginChallengeMethod(method, loginChallengeID);
 
 		const loginChallenge = await this.twoFactorService.getPendingLoginSessionById(loginChallengeID);
@@ -137,7 +133,7 @@ class AuthService {
 			}
 			case 'sms': {
 				if (targetUser.phone)
-					await this.smsService.sendMessage(targetUser.phone, `Your RALLYU verification code is: ${loginChallenge.code}}`);
+					await this.smsService.sendMessage(targetUser.phone, `Your RALLYU verification code is: ${loginChallenge.code}`);
 				else
 					throw new InvalidCredentialsError('No phone number associated with this account');
 				console.log(`SMS sent to ${targetUser.phone} with code: ${loginChallenge.code}`);
@@ -146,10 +142,6 @@ class AuthService {
 			default:
 				throw new InternalServerError(); // TODO: ADD METHOD NOT SUPPORTED
 		}
-
-		// TODO: NOTIFICATION SERVICE TO SEND CODE IF METHOD == EMAIL || SMS
-		// if (method == 'sms' || method == 'email')
-		// console.log(`CODE ${loginChallenge.code || 'XXXXXX'} WAS SENT TO ${'FLAN BEN FLAN'} VIA ${method}`);
 	}
 
 	async verifyLoginChallenge2FACode(loginChallengeID: number, method: string, code: string, userAgent: string, ip: string) {
@@ -278,44 +270,36 @@ class AuthService {
 	// 	}
 	// }
 
-	async changePassword(user_id: number, old_password: string, new_password: string) {
-		this.validateChangePasswordForm(old_password, new_password);
+	async changePassword(user_id: number, oldPassword: string, newPassword: string) {
+		this.validateChangePasswordForm(oldPassword, newPassword);
 
 		const existingUser = await this.userService.getUserById(user_id);
 		if (!existingUser)
 			throw new UserNotFoundError();
 		
 		const isValidPassword = 
-			await bcrypt.compare(old_password, existingUser.password);
+			await bcrypt.compare(oldPassword, existingUser.password);
 		if (!isValidPassword)
 			throw new InvalidCredentialsError();
 		
-		const hashedNewPassword = await bcrypt.hash(new_password!, this.authConfig.bcryptHashRounds);
+		const newHashedPassword = await bcrypt.hash(newPassword!, this.authConfig.bcryptHashRounds);
 
-		await this.userService.updateUser(user_id, { password: hashedNewPassword });
+		await this.userService.updateUser(user_id, { password: newHashedPassword });
 	}
 
-	// async fetchMe(user_id: number) {
-	// 	const existingUser = await this.userService.getUserById(user_id);
-	// 	if (!existingUser)
-	// 		throw new UserNotFoundError();
-
-	// 	return this.extractPublicUserInfo(existingUser);
-	// }
-
-	private validateChangePasswordForm(old_password: string, new_password: string) {
-		if (old_password === new_password)
+	private validateChangePasswordForm(oldPassword: string, newPassword: string) {
+		if (oldPassword === newPassword)
 			throw new Error('Passwords are the same');
 
 		const changePasswordSchema = z.object({
-			new_password: z.string()
+			newPassword: z.string()
 				.min(8, "Password must be at least 8 characters")
 				.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
 				.regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
 				.regex(/(?=.*\d)/, "Password must contain a digit")
 		});
 
-		const validationResult = changePasswordSchema.safeParse({ new_password });
+		const validationResult = changePasswordSchema.safeParse({ newPassword });
 		if (!validationResult.success) {
 			const errors = validationResult.error.flatten();
 			throw new FormError(undefined, errors.fieldErrors);

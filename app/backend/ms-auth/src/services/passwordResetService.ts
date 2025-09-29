@@ -1,83 +1,81 @@
 import PasswordResetRepository from "../repositories/passwordResetRepository";
-import UserRepository from "../repositories/userRepository";
 import bcrypt from 'bcrypt';
+import { InvalidCredentialsError, NoEmailIsAssociated, UserNotFoundError } from "../types/auth.types";
+import MailingService from "./MailingService";
+import WhatsAppService from "./WhatsAppService";
+import { AuthConfig } from "../config/auth";
+import UserService from "./userService";
 
 class PasswordResetService {
 	constructor(
+		private authConfig: AuthConfig,
+		private userService: UserService,
 		private resetRepository: PasswordResetRepository,
-		private userRepository: UserRepository
+		private mailingService: MailingService,
+		private smsService: WhatsAppService
 	) {}
 
-	async setup(email: string) : Promise<boolean> {
-		const exists = await this.userRepository.findByEmail(email);
-		if (!exists)
-			return false; // throw user not found
-
-		const existingUser = await this.userRepository.findByEmail(email);
+	async setup(email: string) {
+		const existingUser = await this.userService.getUserByEmail(email);
 		if (!existingUser)
-			return false;
+			throw new NoEmailIsAssociated();
 
-		await this.resetRepository.deleteAll(existingUser.id);
+		await this.resetRepository.deleteAllByUserID(existingUser.id);
 
 		const OTP = this.generateOTP();
-		await this.resetRepository.create(existingUser.id, OTP, this.nowPlusMinutes(5));
-		this.sendEmail(email, OTP);
 
-		return true;
+		await this.resetRepository.create(existingUser.id, OTP, this.nowPlusMinutes(5));
+
+		await this.sendPasswordResetEmail(email, OTP);
 	}
 
 	async verify(email: string, code: string) {
-		const exists = await this.userRepository.findByEmail(email);
-		if (!exists)
-			return false; // throw user not found
-
-		const existingUser = await this.userRepository.findByEmail(email);
+		const existingUser = await this.userService.getUserByEmail(email);
 		if (!existingUser)
-			return false;
+			throw new NoEmailIsAssociated();
 
 		const resetPasswordRow = await this.resetRepository.findByUserID(existingUser.id);
-		console.log('resetPasswordRow', resetPasswordRow);
-		if (this.nowInSeconds() > resetPasswordRow.expires_at)
-			return false;
+		if (!resetPasswordRow || this.nowInSeconds() > resetPasswordRow.expires_at)
+			throw new Error('Reset request expired or not found');
 		if (code !== resetPasswordRow.code)
-			return false;
-
-		return true;
+			throw new Error('Invalid code');
 	}
 
 	async update(email: string, code: string, newPassword: string) {
-		const exists = await this.userRepository.findByEmail(email);
-		if (!exists)
-			return false; // throw user not found
-
-		const existingUser = await this.userRepository.findByEmail(email);
+		const existingUser = await this.userService.getUserByEmail(email);
 		if (!existingUser)
-			return false;
+			throw new NoEmailIsAssociated();
 
 		const resetPasswordRow = await this.resetRepository.findByUserID(existingUser.id);
-		// if (this.nowInSeconds() > resetPasswordRow.expires_at)
-		// 	return false;
-		if (code !== resetPasswordRow.code)
-			return false;
 
-		const AUTH_BCRYPT_ROUNDS = 12; // TODO
-		const hashedPassword = await bcrypt.hash(newPassword, AUTH_BCRYPT_ROUNDS);
-		const newUser = this.userRepository.update(existingUser.id, { password: hashedPassword });
-		if (!newUser)
-			return false;
-		return true;
+		// NOTE: We allow updating password even if the reset request expired
+		if (!resetPasswordRow || this.nowInSeconds() > resetPasswordRow.expires_at)
+			throw new Error('Reset request expired or not found');
+		if (code !== resetPasswordRow.code)
+			throw new Error('Invalid code');
+
+		const newHashedPassword = await bcrypt.hash(newPassword!, this.authConfig.bcryptHashRounds);
+
+		await this.userService.updateUser(existingUser.id, { password: newHashedPassword });
+
+		await this.resetRepository.deleteAllByUserID(existingUser.id);
 	}
 
 	private generateOTP() {
 		return ('' + Math.floor(100000 + Math.random() * 90000));
 	}
 
-	private sendEmail(email: string, code: string) {
-		console.log(`Email sent to ${email} with code: ${code}`);
+	private async sendPasswordResetEmail(email: string, code: string) {
+		await this.mailingService.sendEmail({
+			from: this.mailingService.config.mailingServiceUser,
+			to: email,
+			subject: 'Password Reset Code',
+			text: `Your password reset code is: ${code}`
+		});
 	}
 	
-	private sendSMS(phone: string, code: string) {
-		console.log(`SMS sent to ${phone} with code: ${code}`);
+	private async sendPasswordResetSMS(phone: string, code: string) {
+		await this.smsService.sendMessage(phone, `Your password reset code is: ${code}`);
 	}
 	
 	private nowPlusMinutes(minutes: number) {

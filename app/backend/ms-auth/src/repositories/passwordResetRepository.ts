@@ -29,7 +29,7 @@ class PasswordResetRepository {
 		}
 	}
 
-	async deleteAll(user_id: number) {
+	async deleteAllByUserID(user_id: number) {
 		try {
 			const runResult = await db.run(
 				`DELETE FROM reset_password WHERE user_id = ?`,

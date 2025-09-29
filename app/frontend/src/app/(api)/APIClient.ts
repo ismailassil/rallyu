@@ -241,24 +241,6 @@ export class APIClient {
 		const { data: res } = await this.client.post(`/auth/2fa/${method}/setup/verify`, { code });
 		return res.data;
 	}
-	
-	// async mfaEmailSetupInit() {
-	// 	const { data: res } = await this.client.post('/auth/mfa/email/setup/init');
-	// 	return res.data;
-	// }
-	// async mfaEmailSetupVerify(code: string) {
-	// 	const { data: res } = await this.client.post('/auth/mfa/email/setup/verify', { code });
-	// 	return res.data;
-	// }
-
-	// async mfaPhoneSetupInit(phoneNumber: string) {
-	// 	const { data: res } = await this.client.post('/auth/mfa/sms/setup/init', { phone: phoneNumber });
-	// 	return res.data;
-	// }
-	// async mfaPhoneSetupVerify(code: string) {
-	// 	const { data: res } = await this.client.post('/auth/mfa/sms/setup/verify', { code });
-	// 	return res.data;
-	// }
 
 	/*--------------------------------- Authentication ---------------------------------*/
 
@@ -279,14 +261,6 @@ export class APIClient {
 
 		if (res.data._2FARequired)
 			return res.data;
-
-		// if (res.data._2FARequired) {
-		// 	return {
-		// 		_2FARequired: true,
-		// 		enabled2FAMethods: res.data.enabled2FAMethods,
-		// 		loginChallengeId: res.data.loginChallengeID
-		// 	};
-		// }
 
 		this.setAccessToken(res.data.accessToken);
 
@@ -338,18 +312,35 @@ export class APIClient {
 		return data;
 	}
 
+	/*--------------------------------- Password Management ---------------------------------*/
+
 	async changePassword(payload: {
-		old_password: string,
-		new_password: string
+		oldPassword: string,
+		newPassword: string
 	}) {
 		const { data: res } = await this.client.post(`/auth/change-password`, payload);
 		return res.data;
 	}
 
-	async fetchPlayerStatus(user_id: number) {
-		const res = await this.client.get(`/game/user/${user_id}`);
+	async requestPasswordReset(email: string) {
+		const { data: res } = await this.client.post(`/auth/reset-password`, { email });
 		return res.data;
 	}
+
+	async verifyPasswordResetCode(payload: { email: string, code: string }) {
+		const { data: res } = await this.client.post(`/auth/reset-verify`, payload);
+		return res.data;
+	}
+
+	async resetPassword(payload: { email: string, code: string, newPassword: string }) {
+		const { data: res } = await this.client.post(`/auth/reset-update`, payload);
+		return res.data;
+	}
+
+	// async fetchPlayerStatus(user_id: number) {
+	// 	const res = await this.client.get(`/game/user/${user_id}`);
+	// 	return res.data;
+	// }
 
 	connectWebSocket(path: string) {
 		const url = `ws://localhost:4025/api${path}`; // TODO Change to dynamic

@@ -4,8 +4,13 @@ import Authenticate from "../middleware/Authenticate";
 import { authLoginSchema, authLogoutSchema, authMFAVerifySchema, authOAuthSchema, authRefreshSchema, authRegisterSchema, authResetPasswordSchema, authResetPasswordUpdateSchema, authResetPasswordVerifySchema } from "../schemas/auth.schema";
 import cookie from '@fastify/cookie';
 import TwoFactorController from "../controllers/twoFactorController";
+import PasswordResetController from "../controllers/passwordResetController";
 
-async function authRouter(fastify: FastifyInstance, opts: { authController: AuthController, twoFactorController: TwoFactorController }) {
+async function authRouter(fastify: FastifyInstance, opts: {
+	authController: AuthController,
+	twoFactorController: TwoFactorController,
+	passwordResetController: PasswordResetController
+}) {
 	fastify.decorate('authenticate', Authenticate); // auth middleware for protected routes
 	fastify.decorate('requireAuth', { preHandler: fastify.authenticate }); // preHandler hook
 	fastify.decorateRequest('user', null);
@@ -89,26 +94,30 @@ async function authRouter(fastify: FastifyInstance, opts: { authController: Auth
 
 	/*------------------------------------ Password Management ------------------------------------*/
 
-	// fastify.post('/change-password', {
-	// 	preHandler: fastify.authenticate,
-	// 	// schema: authResetPasswordSchema,
-	// 	handler: opts.authController.changePasswordEndpoint.bind(opts.authController)
-	// });
+	fastify.post('/change-password', {
+		// TODO: ADD SCHEMA
+		preHandler: fastify.authenticate,
+		// schema: authResetPasswordSchema,
+		handler: opts.authController.changePasswordEndpoint.bind(opts.authController)
+	});
 
-	// fastify.post('/reset/setup', {
-	// 	schema: authResetPasswordSchema,
-	// 	handler: resetController.ResetPasswordSetupEndpoint.bind(resetController)
-	// });
+	fastify.post('/reset-password', {
+		// TODO: ADD SCHEMA
+		// schema: authResetPasswordSchema,
+		handler: opts.passwordResetController.ResetPasswordSetupEndpoint.bind(opts.passwordResetController)
+	});
 
-	// fastify.post('/reset/verify', {
-	// 	schema: authResetPasswordVerifySchema,
-	// 	handler: resetController.ResetPasswordVerifyEndpoint.bind(resetController)
-	// });
+	fastify.post('/reset-verify', {
+		// TODO: ADD SCHEMA
+		// schema: authResetPasswordVerifySchema,
+		handler: opts.passwordResetController.ResetPasswordVerifyEndpoint.bind(opts.passwordResetController)
+	});
 
-	// fastify.post('/reset/update', {
-	// 	schema: authResetPasswordUpdateSchema,
-	// 	handler: resetController.ResetPasswordUpdateEndpoint.bind(resetController)
-	// });
+	fastify.post('/reset-update', {
+		// TODO: ADD SCHEMA
+		// schema: authResetPasswordUpdateSchema,
+		handler: opts.passwordResetController.ResetPasswordUpdateEndpoint.bind(opts.passwordResetController)
+	});
 
 	// fastify.delete('/revoke-all', authController.RevokeAllRoute.bind(opts.authController));
 

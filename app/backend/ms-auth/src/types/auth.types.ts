@@ -160,6 +160,18 @@ export class _2FAExpiredCode extends AuthError {
 	}
 }
 
+export class NoEmailIsAssociated extends AuthError {
+	constructor(message: string = 'No email is associated with this account', details: any = {}) {
+		super(message, 400, 'AUTH_NO_EMAIL_ASSOCIATED', details);
+	}
+}
+
+export class NoPhoneIsAssociated extends AuthError {
+	constructor(message: string = 'No phone number is associated with this account', details: any = {}) {
+		super(message, 400, 'AUTH_NO_PHONE_ASSOCIATED', details);
+	}
+}
+
 // PASSWORD RESET
 
 // RATE LIMIT

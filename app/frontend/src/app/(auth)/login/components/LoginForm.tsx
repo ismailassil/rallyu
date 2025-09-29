@@ -66,7 +66,12 @@ export default function LoginForm() {
 				touched={touched.password}
 				error={errors.password}
 				debounced={debounced.password}
-			/>
+			>
+				<p className='text-sm text-end hover:underline cursor-pointer'
+					onClick={() => router.push('/reset-password')}>
+					Forgot Password?
+				</p>
+			</FormField>
 			<button className={`h-11 mt-2 rounded-lg transition-all duration-200 ${
 					isSubmitting 
 					? 'bg-gray-700 cursor-not-allowed'

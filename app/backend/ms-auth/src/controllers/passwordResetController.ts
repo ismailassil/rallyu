@@ -9,19 +9,14 @@ class PasswordResetController {
 	) {}
 
 	async ResetPasswordSetupEndpoint(request: FastifyRequest, reply: FastifyReply) {
-		const { email } = request.body as IResetPasswordRequest;
-
-		if (!email)
-			reply.status(400).send({ success: true, data: {} });
-
 		try {
-			const success = await this.passwordResetService.setup(email);
-			if (success)
-				reply.code(200);
-			else
-				reply.code(404);
+			const { email } = request.body as IResetPasswordRequest;
+
+			await this.passwordResetService.setup(email);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			reply.code(status).send(body);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
@@ -30,19 +25,14 @@ class PasswordResetController {
 	}
 
 	async ResetPasswordVerifyEndpoint(request: FastifyRequest, reply: FastifyReply) {
-		const { email, code } = request.body as IResetPasswordVerifyRequest;
-
-		if (!email || !code)
-			reply.status(400).send({ success: true, data: {} });
-
 		try {
-			const success = await this.passwordResetService.verify(email, code);
-			if (success)
-				reply.code(200);
-			else
-				reply.code(404);
+			const { email, code } = request.body as IResetPasswordVerifyRequest;
 
+			await this.passwordResetService.verify(email, code);
+			
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			reply.code(status).send(body);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
@@ -51,19 +41,14 @@ class PasswordResetController {
 	}
 
 	async ResetPasswordUpdateEndpoint(request: FastifyRequest, reply: FastifyReply) {
-		const { email, code, password } = request.body as IResetPasswordUpdateRequest;
-
-		if (!email || !code || !password)
-			reply.status(400).send({ success: true, data: {} });
-
 		try {
-			const success = await this.passwordResetService.update(email, code, password);
-			if (success)
-				reply.code(200);
-			else
-				reply.code(404);
+			const { email, code, newPassword } = request.body as IResetPasswordUpdateRequest;
 
+			await this.passwordResetService.update(email, code, newPassword);
+			
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			reply.code(status).send(body);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 

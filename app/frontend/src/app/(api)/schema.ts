@@ -67,3 +67,22 @@ export const personalInfoSettingsSchema = z.object({
 		.min(3, "Bio must be at least 3 characters")
 		.max(50, "Bio must be at most 50 characters")
 });
+
+export const resetPasswordSchema = z.object({
+	email: z.string()
+		.nonempty("Email is required")
+		.email("Invalid email address"),
+
+	password: z.string()
+		.nonempty("Password is required")
+		.min(8, "Password must be at least 8 characters")
+		.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
+		.regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
+		.regex(/(?=.*\d)/, "Password must contain a digit"),
+
+	confirm_password: z.string()
+		.nonempty("Please confirm your password"),
+		}).refine((data) => data.password === data.confirm_password, {
+		message: "Passwords do not match",
+		path: ["confirm_password"],
+});

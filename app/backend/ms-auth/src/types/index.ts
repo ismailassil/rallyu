@@ -99,7 +99,7 @@ export interface IResetPasswordVerifyRequest {
 export interface IResetPasswordUpdateRequest {
 	email: string,
 	code: string,
-	password: string
+	newPassword: string
 }
 
 export interface IProfileRequest {

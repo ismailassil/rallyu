@@ -28,6 +28,9 @@ import StatsRepository from './repositories/statsRepository';
 import MatchesRepository from './repositories/matchesRepository';
 import WhatsAppService from './services/WhatsAppService';
 import MailingService from './services/MailingService';
+import PasswordResetController from './controllers/passwordResetController';
+import PasswordResetRepository from './repositories/passwordResetRepository';
+import PasswordResetService from './services/passwordResetService';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
@@ -67,6 +70,7 @@ async function buildApp(): Promise<FastifyInstance> {
 	const relationsRepository = new RelationsRepository();
 	const statsRepository = new StatsRepository();
 	const matchesRepository = new MatchesRepository();
+	const resetPasswordRepository = new PasswordResetRepository();
 
 	// INIT SERVICES
 	const whatsAppService = new WhatsAppService(fastify.log);
@@ -78,8 +82,10 @@ async function buildApp(): Promise<FastifyInstance> {
 	const userService = new UserService(userRepository, relationsService, statsService, matchesRepository);
 	const twoFactorService = new TwoFactorService(twoFactorRepository, userService, mailingService, whatsAppService);
 	const authService = new AuthService(authConfig, jwtUtils, userService, sessionService, twoFactorService, mailingService, whatsAppService);
+	const passwordResetService = new PasswordResetService(authConfig, userService, resetPasswordRepository, mailingService, whatsAppService);
 
 	// INIT CONTROLLERS
+	const passwordResetController = new PasswordResetController(passwordResetService);
 	const authController = new AuthController(authService, twoFactorService);
 	const twoFactorController = new TwoFactorController(twoFactorService);
 	const userController = new UserController(userService);
@@ -93,7 +99,7 @@ async function buildApp(): Promise<FastifyInstance> {
 		NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
 		userService: userService
 	});
-	await fastify.register(authRouter, { prefix: '/auth', authController, twoFactorController });
+	await fastify.register(authRouter, { prefix: '/auth', authController, twoFactorController, passwordResetController });
 	await fastify.register(userRouter, { prefix: '/users', userController, relationsController });
 
 	return fastify;
