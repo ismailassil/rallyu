@@ -74,7 +74,7 @@ async function buildApp(): Promise<FastifyInstance> {
 
 	// INIT SERVICES
 	const whatsAppService = new WhatsAppService(fastify.log);
-	await whatsAppService.isReady; // TODO: HANDLE ERRORS
+	// await whatsAppService.isReady; // TODO: HANDLE ERRORS
 	const mailingService = new MailingService(appConfig.mailing);
 	const sessionService = new SessionService(authConfig, jwtUtils, sessionsRepository);
 	const statsService = new StatsService(userRepository, statsRepository);

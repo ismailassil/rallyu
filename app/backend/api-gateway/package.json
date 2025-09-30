@@ -24,7 +24,8 @@
 		"fastify-plugin": "^5.0.1",
 		"nats": "^2.29.3",
 		"socket.io": "^4.8.1",
-		"tsc-alias": "^1.8.16"
+		"tsc-alias": "^1.8.16",
+		"typescript": "^5.9.2"
 	},
 	"devDependencies": {
 		"@types/node": "^22.17.1",

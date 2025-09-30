@@ -69,17 +69,24 @@ class WhatsAppService {
 		if (connection === 'close') {
 			const disconnectReason = (lastDisconnect.error)?.output?.statusCode;
 
-			// console.log('❌ Connection to WASocket closed due to: ', lastDisconnect.error);
-			this.logger.error({ err: lastDisconnect.error }, '[SMS] Connection to WASocket closed');
-
-			if (disconnectReason !== this.DisconnectReason.loggedOut) {
-				// console.log('🔄 Reconnecting to WASocket...');
-				this.logger.warn('[SMS] Reconnecting to WhatsApp...');
+			if (disconnectReason === this.DisconnectReason.restartRequired) {
+				// console.log('🔄 Connection to WASocket restarted!');
+				this.logger.warn('[SMS] WhatsApp connection restarted, reconnecting...');
 				await this.initWhatsappConnection();
-			} else {
-				// console.log('❌ Logged out. QR scan required.');
-				this.logger.error('[SMS] WhatsApp Logged out.');
+				return ;
 			}
+
+			// console.log('❌ Connection to WASocket closed due to: ', lastDisconnect.error);
+			// this.logger.error({ err: lastDisconnect.error }, '[SMS] Connection to WASocket closed');
+
+			// if (disconnectReason !== this.DisconnectReason.loggedOut) {
+			// 	// console.log('🔄 Reconnecting to WASocket...');
+			// 	this.logger.warn('[SMS] Reconnecting to WhatsApp...');
+			// 	await this.initWhatsappConnection();
+			// } else {
+			// 	// console.log('❌ Logged out. QR scan required.');
+			// 	this.logger.error('[SMS] WhatsApp Logged out.');
+			// }
 		} else if (connection === 'open') {
 			// console.log('✅ Connected to WASocket!');
 			this.logger.info('[SMS] WhatsApp service is up and running');
