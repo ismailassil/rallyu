@@ -1,6 +1,6 @@
 import { TokenExpiredError } from "jsonwebtoken";
 import { ErrorResponse, SuccessResponse } from "../types";
-import { AuthError, InvalidCredentialsError, PasswordLengthError, SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenInvalidError, TokenRequiredError, UserAlreadyExistsError, UserNotFoundError, UsernameLengthError, WeakPasswordError, _2FANotFound, _2FANotEnabled, _2FAAlreadyEnabled, _2FAInvalidCode } from "../types/auth.types";
+import { AuthError, InvalidCredentialsError, SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenInvalidError, TokenRequiredError, UserAlreadyExistsError, UserNotFoundError, _2FANotFound, _2FANotEnabled, _2FAAlreadyEnabled, _2FAInvalidCode } from "../types/auth.types";
 
 // export interface ErrorResponse {
 // 	success: boolean,

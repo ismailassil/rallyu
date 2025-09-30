@@ -66,7 +66,7 @@ class UserController {
 			const user_id = request.user?.sub;
 			const { username } = request.params as IProfileRequest;
 
-			const user = await this.userService.getUserPublicProfile(user_id!, username);
+			const user = await this.userService.getUserProfile(user_id!, username);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, user);
 

@@ -165,13 +165,20 @@ class UserRepository extends ARepository {
 	 * @param query - search query
 	 * @return An array of users matching the search criteria.
 	 */
-	async search(query: string) : Promise<User[]> {
+	async search(userID: number, query: string) : Promise<User[]> {
 		try {
 			const likeQuery = `%${query}%`;
 			const allResults = await db.all(
-				`SELECT * FROM users WHERE username LIKE ? OR email LIKE ? OR (first_name || ' ' || last_name) LIKE ?`,
-				[likeQuery, likeQuery]
+				`SELECT u.id, u.username, u.avatar_url
+						FROM users u 
+					LEFT JOIN relations r 
+						ON ((r.requester_user_id = u.id AND r.receiver_user_id = ?)
+							OR (r.requester_user_id = ? AND r.receiver_user_id = u.id))
+					WHERE (WHERE u.username LIKE ? OR u.email LIKE ? OR (u.first_name || ' ' || u.last_name) LIKE ?)
+						AND (r.relation_status != 'BLOCKED' OR r.relation_status IS NULL)`,
+				[userID, userID, likeQuery, likeQuery]
 			);
+			
 			return allResults as User[];
 		} catch (err: any) {
 			this.handleDatabaseError(err, 'searching users');

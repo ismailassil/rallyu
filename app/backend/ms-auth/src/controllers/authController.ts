@@ -22,11 +22,11 @@ class AuthController {
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(201, {});
 			
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		}
 	}
 	
@@ -49,7 +49,7 @@ class AuthController {
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
 
-			reply.code(status).setCookie(
+			return reply.code(status).setCookie(
 				'refreshToken', refreshToken ?? '', { // TODO: CHECK REFRESH TOKEN TYPE ASSERTION
 					path: '/',
 					httpOnly: true,
@@ -60,7 +60,8 @@ class AuthController {
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			if (!reply.sent)
+				return reply.code(status).send(body);
 		}
 	}
 
@@ -73,11 +74,11 @@ class AuthController {
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		}
 	}
 
@@ -90,7 +91,7 @@ class AuthController {
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
 
-			reply.code(status).setCookie(
+			return reply.code(status).setCookie(
 				'refreshToken', refreshToken ?? '', { // TODO: CHECK REFRESH TOKEN TYPE ASSERTION
 					path: '/',
 					httpOnly: true,
@@ -101,7 +102,7 @@ class AuthController {
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		}
 	}
 
@@ -117,7 +118,7 @@ class AuthController {
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 			
-			reply.code(status).setCookie(
+			return reply.code(status).setCookie(
 				'refreshToken', '', {
 					path: '/',
 					httpOnly: true,
@@ -129,7 +130,7 @@ class AuthController {
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		}
 	}
 	
@@ -146,7 +147,7 @@ class AuthController {
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
 
-			reply.code(status).setCookie(
+			return reply.code(status).setCookie(
 				'refreshToken', refreshToken, {
 					path: '/',
 					httpOnly: true,
@@ -157,7 +158,7 @@ class AuthController {
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).setCookie(
+			return reply.code(status).setCookie(
 				'refreshToken', '', {
 					path: '/',
 					httpOnly: true,
@@ -215,11 +216,11 @@ class AuthController {
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		}
 	}
 }

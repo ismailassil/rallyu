@@ -17,7 +17,7 @@ interface Match {
 interface MatchFilterOptions {
 	timeFilter?: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all';
 	gameTypeFilter?: 'PING PONG' | 'XO' | 'all';
-	paginationFilter?: { page: number, limit: number };
+	paginationFilter?: { page: number, limit: number } | undefined;
 }
 
 /**

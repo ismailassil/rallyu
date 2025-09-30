@@ -1,7 +1,8 @@
 import { db } from "../database";
 import MatchesRepository from "../repositories/matchesRepository";
-import StatsRepository from "../repositories/statsRepository";
-import UserRepository from "../repositories/userRepository";
+// import StatsRepository from "../repositories/statsRepository";
+import StatsRepository from "../repositories/refactor/stats.repository";
+import UserRepository from "../repositories/refactor/users.repository";
 import { InternalServerError, UserNotFoundError } from "../types/auth.types";
 
 class StatsService {
@@ -13,7 +14,7 @@ class StatsService {
 	) {}
 
 	async createUserRecords(userID: number) {
-		const existingUser = await this.userRepository.findById(userID);
+		const existingUser = await this.userRepository.findOne(userID);
 		if (!existingUser)
 			throw new UserNotFoundError();
 
@@ -21,7 +22,7 @@ class StatsService {
 	}
 
 	async getUserRecords(userID: number) : Promise<any | null> {
-		const existingUser = await this.userRepository.findById(userID);
+		const existingUser = await this.userRepository.findOne(userID);
 		if (!existingUser)
 			throw new UserNotFoundError();
 
@@ -33,9 +34,9 @@ class StatsService {
 	async getUserStats(
 		userID: number, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all'
+		gameTypeFilter: 'PING PONG' | 'XO' | 'all'
 	) {
-		const existingUser = await this.userRepository.findById(userID);
+		const existingUser = await this.userRepository.findOne(userID);
 		if (!existingUser)
 			throw new UserNotFoundError();
 
@@ -47,9 +48,9 @@ class StatsService {
 	async getUserAnalytics(
 		userID: number, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all'
+		gameTypeFilter: 'PING PONG' | 'XO' | 'all'
 	) {
-		const existingUser = await this.userRepository.findById(userID);
+		const existingUser = await this.userRepository.findOne(userID);
 		if (!existingUser)
 			throw new UserNotFoundError();
 
@@ -60,9 +61,9 @@ class StatsService {
 	async getUserAnalyticsByDay(
 		userID: number, 
 		daysCount: number = 7,
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all'
+		gameTypeFilter: 'PING PONG' | 'XO' | 'all'
 	) {
-		const existingUser = await this.userRepository.findById(userID);
+		const existingUser = await this.userRepository.findOne(userID);
 		if (!existingUser)
 			throw new UserNotFoundError();
 

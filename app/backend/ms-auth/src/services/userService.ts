@@ -1,12 +1,10 @@
 import { MultipartFile } from "@fastify/multipart";
-import RelationsRepository from "../repositories/relationsRepository";
-import UserRepository from "../repositories/userRepository";
+import UserRepository from "../repositories/refactor/users.repository";
 import { UserAlreadyExistsError, UserNotFoundError } from "../types/auth.types";
 import StatsService from "./statsService";
 import fs, { createWriteStream } from 'fs';
 import { pipeline } from "stream/promises";
-import { z } from 'zod';
-import MatchesRepository from "../repositories/matchesRepository";
+import MatchesRepository from "../repositories/refactor/matches.repository";
 import RelationsService from "./relationsService";
 
 class UserService {
@@ -20,21 +18,31 @@ class UserService {
 	/*----------------------------------------------- GETTERS -----------------------------------------------*/
 
 	async getUserById(userID: number) : Promise<any | null> {
-		return await this.userRepository.findById(userID);
-	}
-
-	async getUserByUsername(username: string) : Promise<any | null> {
-		return await this.userRepository.findByUsername(username);
-	}
-
-	async getUserByEmail(email: string) : Promise<any | null> {
-		return await this.userRepository.findByEmail(email);
-	}
-
-	async getUserPublicProfile(viewerID: number, targetUsername: string) {
-		const targetUser = await this.getUserByUsername(targetUsername);
-		if (!targetUser)
+		try {
+			return await this.userRepository.findOne(userID);
+		} catch (err) {
 			throw new UserNotFoundError();
+		}
+	}
+	
+	async getUserByUsername(username: string) : Promise<any | null> {
+		try {
+			return await this.userRepository.findByUsername(username);
+		} catch (err) {
+			throw new UserNotFoundError();
+		}
+	}
+	
+	async getUserByEmail(email: string) : Promise<any | null> {
+		try {
+			return await this.userRepository.findByEmail(email);
+		} catch (err) {
+			throw new UserNotFoundError();
+		}
+	}
+
+	async getUserProfile(viewerID: number, targetUsername: string) {
+		const targetUser = await this.getUserByUsername(targetUsername);
 		
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
@@ -42,11 +50,11 @@ class UserService {
 
 		const { password: _, ...userWithoutPassword } = targetUser;
 
-		const currentRelationship = await this.relationsService.getRelationBetweenTwoUsers(viewerID, targetUser.id);
+		const currentRelationship = await this.relationsService.getRelationStatus(viewerID, targetUser.id);
 		const userRecords = await this.statsService.getUserRecords(targetUser.id);
 		const userStats = await this.statsService.getUserStats(targetUser.id, 'all', 'all');
 		const { matches: userRecentMatches } = 
-			await this.matchesRepository.getMatchesByUser(targetUser.id, 'all', 'all', { page: 1, limit: 10 });
+			await this.matchesRepository.findAll(targetUser.id, { timeFilter: 'all', gameTypeFilter: 'all', paginationFilter: { page: 1, limit: 10 } });
 		const userRecentDetailedAnalytics: any[] = await this.statsService.getUserAnalyticsByDay(targetUser.id, 7, 'all');
 		const userRecentTimeSpent = userRecentDetailedAnalytics.map((item) => {
 			return {
@@ -69,19 +77,17 @@ class UserService {
 		viewerID: number, 
 		targetUsername: string, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all' = 'all',
+		gameTypeFilter: 'PING PONG' | 'XO' | 'all' = 'all',
 		paginationFilter?: { page: number, limit: number }
 	) {
 		const targetUser = await this.getUserByUsername(targetUsername);
-		if (!targetUser)
-			throw new UserNotFoundError();
 
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
 			throw new UserNotFoundError();
 
 		const userMatches = 
-			await this.matchesRepository.getMatchesByUser(targetUser.id, timeFilter, gameTypeFilter, paginationFilter);
+			await this.matchesRepository.findAll(targetUser.id, { timeFilter, gameTypeFilter, paginationFilter });
 		
 		return userMatches;
 	}
@@ -90,11 +96,9 @@ class UserService {
 		viewerID: number, 
 		targetUsername: string, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all' = 'all'
+		gameTypeFilter: 'PING PONG' | 'XO' | 'all' = 'all'
 	) {
 		const targetUser = await this.getUserByUsername(targetUsername);
-		if (!targetUser)
-			throw new UserNotFoundError();
 
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
@@ -108,11 +112,9 @@ class UserService {
 		viewerID: number, 
 		targetUsername: string, 
 		daysCount: number = 7,
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all' = 'all'
+		gameTypeFilter: 'PING PONG' | 'XO' | 'all' = 'all'
 	) {
 		const targetUser = await this.getUserByUsername(targetUsername);
-		if (!targetUser)
-			throw new UserNotFoundError();
 
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
@@ -137,23 +139,21 @@ class UserService {
 		password: string,
 		hashedPassword: string
 	) {
-		this.validateUserCreation(username, password, email, first_name, last_name);
+		// this.validateUserCreation(username, password, email, first_name, last_name);
 
 		if (await this.isUsernameTaken(username))
 			throw new UserAlreadyExistsError('Username');
 		if (await this.isEmailTaken(email))
 			throw new UserAlreadyExistsError('Email');
 
-		// CREATE A USER
 		const createdUserID = await this.userRepository.create(
-			first_name,
-			last_name,
-			email,
-			username,
-			hashedPassword
+			username, 
+			hashedPassword, 
+			email, 
+			first_name, 
+			last_name
 		);
 
-		// CREATE USER STATS
 		await this.statsService.createUserRecords(createdUserID);
 	}
 
@@ -162,12 +162,9 @@ class UserService {
 	/*----------------------------------------------- UPDATE -----------------------------------------------*/
 
 	async updateUser(userID: number, updates: any) {
-		const existingUser = await this.userRepository.findById(userID);
-		if (!existingUser)
-			throw new UserNotFoundError();
+		const targetUser = await this.getUserById(userID);
 
-		const changes = await this.userRepository.update(userID, updates);
-		return changes;
+		await this.userRepository.update(userID, updates);
 	}
 
 	// TODO: UPDATE AVATAR
@@ -176,7 +173,7 @@ class UserService {
 	/*----------------------------------------------- SEARCH -----------------------------------------------*/
 
 	async searchUserByUsername(requesterID: number, targetUsername: string) {
-		return await this.userRepository.searchByUsername(requesterID, targetUsername);
+		return await this.userRepository.search(requesterID, targetUsername);
 	}
 
 	/*----------------------------------------------- CHECKS -----------------------------------------------*/
@@ -191,51 +188,49 @@ class UserService {
 
 	/*----------------------------------------------- VALIDATION -----------------------------------------------*/
 
-	private validateUserCreation(username: string, password: string, email: string, first_name: string, last_name: string) {
-		const userCreationSchema = z.object({
-			first_name: z.string()
-				.min(2, "First name must be at least 2 characters")
-				.max(10, "First name must be at most 10 characters")
-				.regex(/^[A-Za-z]+$/, "First name must contain only letters"),
+	// private validateUserCreation(username: string, password: string, email: string, first_name: string, last_name: string) {
+	// 	const userCreationSchema = z.object({
+	// 		first_name: z.string()
+	// 			.min(2, "First name must be at least 2 characters")
+	// 			.max(10, "First name must be at most 10 characters")
+	// 			.regex(/^[A-Za-z]+$/, "First name must contain only letters"),
 			
-			last_name: z.string()
-				.min(2, "Last name must be at least 2 characters")
-				.max(10, "Last name must be at most 10 characters")
-				.regex(/^[A-Za-z]+$/, "Last name must contain only letters"),
+	// 		last_name: z.string()
+	// 			.min(2, "Last name must be at least 2 characters")
+	// 			.max(10, "Last name must be at most 10 characters")
+	// 			.regex(/^[A-Za-z]+$/, "Last name must contain only letters"),
 			
-			username: z.string()
-				.min(3, "Username must be at least 3 characters")
-				.max(50, "Username must be at least 50 characters")
-				.regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
+	// 		username: z.string()
+	// 			.min(3, "Username must be at least 3 characters")
+	// 			.max(50, "Username must be at least 50 characters")
+	// 			.regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
 		  
-			email: z.string()
-				.email("Invalid email address"),
+	// 		email: z.string()
+	// 			.email("Invalid email address"),
 		  
-			password: z.string()
-				.min(8, "Password must be at least 8 characters")
-				.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
-				.regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
-				.regex(/(?=.*\d)/, "Password must contain a digit")
-		});
+	// 		password: z.string()
+	// 			.min(8, "Password must be at least 8 characters")
+	// 			.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
+	// 			.regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
+	// 			.regex(/(?=.*\d)/, "Password must contain a digit")
+	// 	});
 
-		const validationResult = userCreationSchema.safeParse({ first_name, last_name, username, password, email });
-		if (!validationResult.success) {
-			const errors = validationResult.error.flatten();
-			throw new FormError(undefined, errors.fieldErrors);
-		}
-	}
+	// 	const validationResult = userCreationSchema.safeParse({ first_name, last_name, username, password, email });
+	// 	if (!validationResult.success) {
+	// 		const errors = validationResult.error.flatten();
+	// 		throw new FormError(undefined, errors.fieldErrors);
+	// 	}
+	// }
 
 	async updateAvatar(user_id: number, fileData: MultipartFile) {
-		const existingUser = await this.userRepository.findById(user_id);
-		if (!existingUser)
-			throw new UserNotFoundError();
+		const targetUser = await this.getUserById(user_id);
 
 		const allowedMimeTypes = ['images/jpg', 'image/jpeg', 'image/png'];
 		if (!allowedMimeTypes.includes(fileData.mimetype))
 			throw new Error('File type not allowed'); // need to change it to custom error class
 
 		const fileExtension = fileData.mimetype.split('/')[1];
-		const fileName = `${existingUser.username}.${fileExtension}`;
+		const fileName = `${targetUser.username}.${fileExtension}`;
 		const uploadDir = `./uploads/avatars`;
 		
 		if (!fs.existsSync(uploadDir))
@@ -245,7 +240,7 @@ class UserService {
 
 		await pipeline(fileData.file, createWriteStream(filepath));
 
-		await this.userRepository.updateAvatar(user_id, `/users/avatars/${fileName}`);
+		await this.userRepository.update(targetUser.id, { avatar_url: `/users/avatars/${fileName}` });
 
 		return `/users/avatars/${fileName}`;
 

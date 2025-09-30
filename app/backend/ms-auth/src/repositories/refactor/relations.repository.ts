@@ -222,19 +222,17 @@ class RelationsRepository extends ARepository {
 
 	/**
 	 * Update the status of a relation between two users.
-	 * @param requesterID - ID of the user who sent the request.
-	 * @param receiverID - ID of the user who received the request.
+	 * @param id - ID of the relation to update.
 	 * @param status - New status of the relation ('PENDING', 'ACCEPTED', 'BLOCKED').
 	 * @returns True if the relation was updated, otherwise false.
 	 */
-	async updateStatus(requesterID: number, receiverID: number, status: 'PENDING' | 'ACCEPTED' | 'BLOCKED') : Promise<boolean> {
+	async update(id: number, status: 'PENDING' | 'ACCEPTED' | 'BLOCKED') : Promise<boolean> {
 		try {
 			const runResult = await db.run(`
 				UPDATE relations
 				SET relation_status = ?, updated_at = CURRENT_TIMESTAMP
-				WHERE (requester_user_id = ? AND receiver_user_id = ?)
-				OR (requester_user_id = ? AND receiver_user_id = ?)
-			`, [status, requesterID, receiverID, receiverID, requesterID]);
+				WHERE id = ?
+			`, [status, id]);
 			return runResult.changes > 0;
 		} catch (err: any) {
 			this.handleDatabaseError(err, 'updating relation status');

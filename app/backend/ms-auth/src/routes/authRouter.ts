@@ -7,6 +7,7 @@ import TwoFactorController from "../controllers/twoFactorController";
 import PasswordResetController from "../controllers/passwordResetController";
 import { 
 	auth2FALoginChallengeSchema, 
+	auth2FALoginChallengeVerifyCodeSchema, 
 	auth2FASetupSchema, 
 	auth2FASetupVerifySchema, 
 	authChangePasswordSchema, 
@@ -85,7 +86,7 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	});
 
 	fastify.post('/login/2fa/verify', {
-		schema: auth2FALoginChallengeSchema,
+		schema: auth2FALoginChallengeVerifyCodeSchema,
 		...zodFormValidator(zodTwoFactorLoginChallengeVerifyCodeSchema),
 		handler: opts.authController.VerifyLoginChallenge2FACodeEndpoint.bind(opts.authController)
 	});
