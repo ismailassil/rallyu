@@ -1,12 +1,4 @@
-const userProfileParams = {
-	type: 'object',
-	properties: {
-		username: { type: 'string' }
-	},
-	required: ['username'],
-	additionalProperties: false
-}
-
+// update
 const userUpdateBody = {
 	type: 'object',
 	properties: {
@@ -20,50 +12,82 @@ const userUpdateBody = {
 	minProperties: 1
 }
 
+// availability
+const usernameAvailabilityQuery = {
+	type: 'object',
+	properties: {
+		username: { type: 'string' }
+	},
+	required: ['username'],
+	additionalProperties: false
+};
+
+const emailAvailabilityQuery = {
+	type: 'object',
+	properties: {
+		email: { type: 'string' }
+	},
+	required: ['email'],
+	additionalProperties: false
+};
+
+// relations
 const relationsRequestParams = {
 	type: 'object',
 	properties: {
-		user_id: { type: 'string' }
+		targetUserId: { type: 'number' }
 	},
-	required: ['user_id'],
+	required: ['targetUserId'],
 	additionalProperties: false
-}
+};
 
-const statsRequestParams = {
+// search user by username
+const userSearchByUsernameQuery = {
 	type: 'object',
 	properties: {
 		username: { type: 'string' }
 	},
 	required: ['username'],
 	additionalProperties: false
-}
+};
 
-const matchesRequestParams = {
-	type: 'object',
-	properties: {
-		username: { type: 'string' }
-	},
-	required: ['username'],
-	additionalProperties: false
-}
-
+// matches
 const matchesRequestQuery = {
 	type: 'object',
 	properties: {
-		page: { type: 'number' }
+		page: { type: 'number' },
+		limit: { type: 'number' }
 	},
-	required: ['page'],
+	required: ['page', 'limit'],
 	additionalProperties: false
-}
+};
 
-export const userProfileSchema = {
-	params: userProfileParams
-}
+// leaderboard
+const leaderboardQuery = {
+	type: 'object',
+	properties: {
+		page: { type: 'number' },
+		limit: { type: 'number' }
+	},
+	required: ['page', 'limit'],
+	additionalProperties: false
+};
 
-export const userMatchesSchema = {
-	params: userProfileParams,
-	querystring: matchesRequestQuery
-}
+export const leaderboardSchema = {
+	querystring: leaderboardQuery
+};
+
+export const userSearchByUsernameSchema = {
+	querystring: userSearchByUsernameQuery
+};
+
+export const usernameAvailabilitySchema = {
+	querystring: usernameAvailabilityQuery
+};
+
+export const emailAvailabilitySchema = {
+	querystring: emailAvailabilityQuery
+};
 
 export const userUpdateSchema = {
 	body: userUpdateBody
@@ -71,13 +95,8 @@ export const userUpdateSchema = {
 
 export const relationsRequestSchema = {
 	params: relationsRequestParams
-}
-
-export const statsRequestSchema = {
-	params: statsRequestParams
-}
+};
 
 export const matchesRequestSchema = {
-	params: matchesRequestParams,
 	querystring: matchesRequestQuery
-}
+};

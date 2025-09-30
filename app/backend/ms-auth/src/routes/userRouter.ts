@@ -1,15 +1,19 @@
 import { FastifyInstance } from "fastify";
 import UserController from "../controllers/userController";
 import RelationsController from "../controllers/relationsContoller";
-import RelationsRepository from "../repositories/relationsRepository";
-import { relationsRequestSchema, userMatchesSchema, userProfileSchema, userUpdateSchema } from "../schemas/users.schema";
 import Authenticate from "../middleware/Authenticate";
 import fastifyMultipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import path from "path";
-import UserRepository from "../repositories/userRepository";
-import UserService from "../services/userService";
-import RelationsService from "../services/relationsService";
+import { 
+	emailAvailabilitySchema, 
+	leaderboardSchema, 
+	matchesRequestSchema, 
+	relationsRequestSchema, 
+	userSearchByUsernameSchema, 
+	userUpdateSchema, 
+	usernameAvailabilitySchema 
+} from "../schemas/users.schema";
 
 async function userRouter(fastify: FastifyInstance, opts: { userController: UserController, relationsController: RelationsController }) {
 
@@ -32,19 +36,19 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 
 	
 	/*-------------------------------------------- AVAILABILITY --------------------------------------------*/
-
 	fastify.get('/username-available', {
+		schema: usernameAvailabilitySchema,
 		handler: opts.userController.usernameAvailable.bind(opts.userController)
 	});
 	fastify.get('/email-available', {
+		schema: emailAvailabilitySchema,
 		handler: opts.userController.emailAvailable.bind(opts.userController)
 	});
 
 
-	/*------------------------------------------------ USERS ------------------------------------------------*/
 
+	/*------------------------------------------------ USERS ------------------------------------------------*/
 	fastify.get('/:username', {
-		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.fetchUser.bind(opts.userController)
 	});
@@ -54,32 +58,28 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 		handler: opts.userController.updateUser.bind(opts.userController)
 	});
 	fastify.delete('/:username', {
-		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.deleteUser.bind(opts.userController)
 	});
 	
 	fastify.get('/leaderboard', {
-		// schema: userMatchesSchema,
+		schema: leaderboardSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.fetchRankLeaderboard.bind(opts.userController)
 	});
 	fastify.get('/:username/matches', {
-		// schema: userMatchesSchema,
+		schema: matchesRequestSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.fetchUserMatches.bind(opts.userController)
 	});
 	fastify.get('/:username/analytics', {
-		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.fetchUserAnalytics.bind(opts.userController)
 	});
 	fastify.get('/:username/analytics-by-day', {
-		schema: userProfileSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.fetchUserAnalyticsByDay.bind(opts.userController)
 	});
-
 
 	fastify.post('/:username/avatar', {
 		preHandler: fastify.authenticate,
@@ -87,13 +87,14 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 	});
 
 	fastify.get('/search-by-username', {
+		schema: userSearchByUsernameSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.searchUserByUsername.bind(opts.userController)
 	});
 
 
-	/*-------------------------------------------- USER RELATIONS --------------------------------------------*/
 
+	/*-------------------------------------------- USER RELATIONS --------------------------------------------*/
 	fastify.get('/friends', {
 		preHandler: fastify.authenticate,
 		handler: opts.relationsController.fetchFriends.bind(opts.relationsController)
@@ -111,39 +112,39 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 		handler: opts.relationsController.fetchOutgoingFriendRequests.bind(opts.relationsController)
 	});
 
-	fastify.post('/:user_id/friends/requests', {
-		preHandler: fastify.authenticate,
+	fastify.post('/:targetUserId/friends/requests', {
 		schema: relationsRequestSchema,
+		preHandler: fastify.authenticate,
 		handler: opts.relationsController.sendFriendRequest.bind(opts.relationsController)
 	});
-	fastify.delete('/:user_id/friends/requests', {
-		preHandler: fastify.authenticate,
+	fastify.delete('/:targetUserId/friends/requests', {
 		schema: relationsRequestSchema,
+		preHandler: fastify.authenticate,
 		handler: opts.relationsController.cancelFriendRequest.bind(opts.relationsController)
 	});
-	fastify.put('/:user_id/friends/accept', {
-		preHandler: fastify.authenticate,
+	fastify.put('/:targetUserId/friends/accept', {
 		schema: relationsRequestSchema,
+		preHandler: fastify.authenticate,
 		handler: opts.relationsController.acceptFriendRequest.bind(opts.relationsController)
 	});
-	fastify.put('/:user_id/friends/reject', {
-		preHandler: fastify.authenticate,
+	fastify.put('/:targetUserId/friends/reject', {
 		schema: relationsRequestSchema,
+		preHandler: fastify.authenticate,
 		handler: opts.relationsController.rejectFriendRequest.bind(opts.relationsController)
 	});
-	fastify.delete('/:user_id/friends', {
-		preHandler: fastify.authenticate,
+	fastify.delete('/:targetUserId/friends', {
 		schema: relationsRequestSchema,
+		preHandler: fastify.authenticate,
 		handler: opts.relationsController.unfriend.bind(opts.relationsController)
 	});
-	fastify.post('/:user_id/block', {
-		preHandler: fastify.authenticate,
+	fastify.post('/:targetUserId/block', {
 		schema: relationsRequestSchema,
+		preHandler: fastify.authenticate,
 		handler: opts.relationsController.blockUser.bind(opts.relationsController)
 	});
-	fastify.delete('/:user_id/block', {
-		preHandler: fastify.authenticate,
+	fastify.delete('/:targetUserId/block', {
 		schema: relationsRequestSchema,
+		preHandler: fastify.authenticate,
 		handler: opts.relationsController.unblockUser.bind(opts.relationsController)
 	});
 }

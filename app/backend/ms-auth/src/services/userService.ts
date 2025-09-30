@@ -1,7 +1,7 @@
 import { MultipartFile } from "@fastify/multipart";
 import RelationsRepository from "../repositories/relationsRepository";
 import UserRepository from "../repositories/userRepository";
-import { FormError, UserAlreadyExistsError, UserNotFoundError } from "../types/auth.types";
+import { UserAlreadyExistsError, UserNotFoundError } from "../types/auth.types";
 import StatsService from "./statsService";
 import fs, { createWriteStream } from 'fs';
 import { pipeline } from "stream/promises";
