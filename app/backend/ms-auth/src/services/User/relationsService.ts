@@ -1,7 +1,7 @@
 // import RelationsRepository from "../repositories/relationsRepository";
-import RelationsRepository from "../repositories/refactor/relations.repository";
-import UserRepository from "../repositories/refactor/users.repository";
-import { AlreadyFriendsError, CannotAcceptRequestError, CannotBlockError, CannotCancelRequestError, CannotRejectRequestError, CannotSendFriendRequestError, CannotUnfriendError, FriendRequestAlreadySentError, InternalServerError, NoPendingRequestError, UserNotFoundError, UsersNotFoundError } from "../types/auth.types";
+import RelationsRepository from "../../repositories/refactor/relations.repository";
+import UserRepository from "../../repositories/refactor/users.repository";
+import { AlreadyFriendsError, CannotAcceptRequestError, CannotBlockError, CannotCancelRequestError, CannotRejectRequestError, CannotSendFriendRequestError, CannotUnfriendError, FriendRequestAlreadySentError, InternalServerError, NoPendingRequestError, UserNotFoundError, UsersNotFoundError } from "../../types/auth.types";
 
 class RelationsService {
 	constructor(

@@ -1,19 +1,16 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import TwoFactorService from "../services/twoFactorService";
 import AuthResponseFactory from "./authResponseFactory";
+import TwoFactorMethodService from "../services/TwoFactorAuth/TwoFactorMethodService";
 
-
-// THIS CONTROLLER WILL ONLY CONTAIN ENDPOINTS 2FA METHODS SETUP
 class TwoFactorController {
 	constructor(
-		private twoFactorService: TwoFactorService
+		private twoFactorService: TwoFactorMethodService
 	) {}
 
 	/*----------------------------------- ENABLED METHODS -----------------------------------*/
 
 	async EnabledMethodsEndpoint(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			// TODO: ADD SCHEMA
 			const user_id = request.user?.sub as number;
 
 			const enabledMethods = await this.twoFactorService.getEnabledMethods(user_id);
@@ -34,13 +31,13 @@ class TwoFactorController {
 
 	async SetupInitEndpoint(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			// TODO: ADD SCHEMA
 			const user_id = request.user?.sub as number;
-			const { method } = request.params as { method: string };
+			const { method } = request.params as { method: 'TOTP' | 'SMS' | 'EMAIL' };
+			const methodNormalized = method.toUpperCase();
 
-			const totpSecrets = await this.twoFactorService.createPending2FAMethod(method, user_id);
+			const totpSecretsOrCode = await this.twoFactorService.createPending(methodNormalized as 'TOTP' | 'SMS' | 'EMAIL', user_id);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, totpSecrets);
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, methodNormalized === 'TOTP' ? { totpSecretsOrCode } : {});
 
 			reply.status(status).send(body);
 
@@ -53,12 +50,12 @@ class TwoFactorController {
 
 	async SetupVerifyEndpoint(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			// TODO: ADD SCHEMA
 			const user_id = request.user?.sub as number;
-			const { method } = request.params as { method: string };
+			const { method } = request.params as { method: 'TOTP' | 'SMS' | 'EMAIL' };
 			const { code } = request.body as { code: string };
+			const methodNormalized = method.toUpperCase();
 
-			await this.twoFactorService.enablePending2FAMethod(method, code, user_id);
+			await this.twoFactorService.enablePending(methodNormalized as 'TOTP' | 'SMS' | 'EMAIL', code, user_id);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
@@ -73,11 +70,11 @@ class TwoFactorController {
 
 	async DisableMethodEndpoint(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			// TODO: ADD SCHEMA
 			const user_id = request.user?.sub as number;
-			const { method } = request.params as { method: string };
+			const { method } = request.params as { method: 'TOTP' | 'SMS' | 'EMAIL' };
+			const methodNormalized = method.toUpperCase();
 
-			await this.twoFactorService.disableEnabledMethod(user_id, method);
+			await this.twoFactorService.disableEnabled(methodNormalized as 'TOTP' | 'SMS' | 'EMAIL', user_id);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 

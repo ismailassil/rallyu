@@ -1,18 +1,20 @@
 import bcrypt from 'bcrypt';
-import { JWT_REFRESH_PAYLOAD } from '../utils/auth/Auth'
-import { InternalServerError, InvalidCredentialsError, SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenExpiredError, TokenInvalidError, TokenRequiredError, UserAlreadyExistsError, UserNotFoundError, _2FAInvalidCode } from "../types/auth.types";
-import { ISessionFingerprint } from "../types";
+import { JWT_REFRESH_PAYLOAD } from '../../utils/auth/Auth'
+import { InternalServerError, InvalidCredentialsError, SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenExpiredError, TokenInvalidError, TokenRequiredError, UserAlreadyExistsError, UserNotFoundError, _2FAInvalidCode } from "../../types/auth.types";
+import { ISessionFingerprint } from "../../types";
 import { UAParser } from 'ua-parser-js';
 import axios from "axios";
 import 'dotenv/config';
 import { z } from 'zod';
-import TwoFactorService from "./twoFactorService";
-import UserService from "./userService";
+import TwoFactorService from "../TwoFactorAuth/twoFactorService";
+import UserService from "../User/userService";
 import SessionService from "./sessionService";
-import { AuthConfig } from "../config/auth";
-import JWTUtils from "../utils/auth/Auth";
-import MailingService from './MailingService';
-import WhatsAppService from './WhatsAppService';
+import { AuthConfig } from "../../config/auth";
+import JWTUtils from "../../utils/auth/Auth";
+import MailingService from '../Communication/MailingService';
+import WhatsAppService from '../Communication/WhatsAppService';
+import TwoFactorMethodService from '../TwoFactorAuth/TwoFactorMethodService';
+import TwoFactorChallengeService from '../TwoFactorAuth/TwoFactorChallengeService';
 
 // TODO
 	// VERIFY THE EXISTENCE OF ALL THOSE ENV VARS
@@ -36,7 +38,9 @@ class AuthService {
 		private jwtUtils: JWTUtils,
 		private userService: UserService,
 		private sessionService: SessionService,
-		private twoFactorService: TwoFactorService,
+		// private twoFactorService: TwoFactorService,
+		private twoFAMethodService: TwoFactorMethodService,
+		private twoFAChallengeService: TwoFactorChallengeService,
 		private mailingService: MailingService,
 		private smsService: WhatsAppService
 	) {}
@@ -59,17 +63,17 @@ class AuthService {
 
 		const existingUser = await this.userService.getUserByUsername(username);
 		const isValidPassword = 
-			await bcrypt.compare(password, existingUser ? existingUser.password : this.authConfig.bcryptTimingHash); // TODO: PASSWORD HASHER
+			await bcrypt.compare(password, existingUser ? existingUser.password : this.authConfig.bcryptTimingHash);
 		if (!existingUser || !isValidPassword)
 			throw new InvalidCredentialsError();
 
-		const enabled2FAMethods = await this.twoFactorService.getEnabledMethods(existingUser.id);
+		const enabled2FAMethods = await this.twoFAMethodService.getEnabledMethods(existingUser.id);
 		const _2FARequired = enabled2FAMethods.length > 0;
 		if (_2FARequired)
 			return {
 				_2FARequired: true, 
-				enabled2FAMethods,
-				loginChallengeID: await this.twoFactorService.create2FALoginChallenge(existingUser.id)
+				enabled2FAMethods, 
+				loginChallengeID: await this.twoFAChallengeService.createChallenge(existingUser.id)
 			};
 
 		// clean up expired refresh tokens
@@ -104,64 +108,22 @@ class AuthService {
 		return { user: userWithoutPassword, newAccessToken, newRefreshToken };
 	}
 
-	async sendLoginChallenge2FACode(loginChallengeID: number, method: string, userAgent: string, ip: string) {
-		await this.twoFactorService.select2FALoginChallengeMethod(method, loginChallengeID);
-
-		const loginChallenge = await this.twoFactorService.getPendingLoginSessionById(loginChallengeID);
-		if (loginChallenge.remaining_resends <= 0) {
-			await this.twoFactorService.deletePendingLoginChallenge(loginChallenge.id, loginChallenge.user_id);
-			throw new SessionExpiredError();
-		}
-
-		const targetUser = await this.userService.getUserById(loginChallenge.user_id);
-		if (!targetUser)
-			throw new UserNotFoundError();
-
-		switch (method) {
-			case 'email': {
-				if (targetUser.email)
-					await this.mailingService.sendEmail({
-						from: this.mailingService.config.mailingServiceUser,
-						to: targetUser.email,
-						subject: 'Your RALLYU verification code',
-						text: `Your verification code is: ${loginChallenge.code}`
-					});
-				else
-					throw new InvalidCredentialsError('No email associated with this account');
-				console.log(`Email sent to ${targetUser.email} with code: ${loginChallenge.code}`);
-				break;
-			}
-			case 'sms': {
-				if (targetUser.phone)
-					await this.smsService.sendMessage(targetUser.phone, `Your RALLYU verification code is: ${loginChallenge.code}`);
-				else
-					throw new InvalidCredentialsError('No phone number associated with this account');
-				console.log(`SMS sent to ${targetUser.phone} with code: ${loginChallenge.code}`);
-				break;
-			}
-			default:
-				throw new InternalServerError(); // TODO: ADD METHOD NOT SUPPORTED
-		}
+	async sendTwoFAChallengeCode(loginChallengeID: number, method: 'TOTP' | 'SMS' | 'EMAIL', userAgent: string, ip: string) {
+		await this.twoFAChallengeService.selectMethod(loginChallengeID, method);
 	}
 
-	async verifyLoginChallenge2FACode(loginChallengeID: number, method: string, code: string, userAgent: string, ip: string) {
+	async verifyTwoFAChallengeCode(loginChallengeID: number, code: string, userAgent: string, ip: string) {
 		const currentSessionFingerprint = this.getFingerprint(userAgent, ip); // TODO: REMOVE THIS
 
-		// TODO: LIMIT ATTEMPTS
-		const isValid = await this.twoFactorService.verify2FALoginChallengeCode(method, loginChallengeID, code);
-		if (!isValid)
-			throw new _2FAInvalidCode(method);
+		const isValid = await this.twoFAChallengeService.verifyChallenge(loginChallengeID, code);
 
-		const loginChallenge = await this.twoFactorService.getPendingLoginSessionById(loginChallengeID);
+		const targetChallenge = await this.twoFAChallengeService.getChallengeByID(loginChallengeID);
 
-		await this.twoFactorService.deletePendingLoginChallenge(loginChallengeID, loginChallenge.user_id);
+		const targetUser = await this.userService.getUserById(targetChallenge.user_id);
 
-		const existingUser = await this.userService.getUserById(loginChallenge.user_id);
-		// TODO: SHOULD WE CHECK FOR EXISTENCE?
+		const sessionTokens = await this.sessionService.createSession(targetUser.id, currentSessionFingerprint);
 
-		const sessionTokens = await this.sessionService.createSession(existingUser.id, currentSessionFingerprint);
-
-		const { password: _, ...userWithoutPassword } = existingUser;
+		const { password: _, ...userWithoutPassword } = targetUser;
 
 		return { user: userWithoutPassword, accessToken: sessionTokens.accessToken, refreshToken: sessionTokens.refreshToken };
 	}

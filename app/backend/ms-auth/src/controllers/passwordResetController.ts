@@ -1,4 +1,4 @@
-import PasswordResetService from "../services/passwordResetService";
+import PasswordResetService from "../services/Auth/passwordResetService";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { IResetPasswordRequest, IResetPasswordUpdateRequest, IResetPasswordVerifyRequest } from "../types";
 import AuthResponseFactory from "./authResponseFactory";

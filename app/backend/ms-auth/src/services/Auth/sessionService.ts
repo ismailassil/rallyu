@@ -1,9 +1,9 @@
-import AuthUtils from "../utils/auth/Auth";
-import { ISessionFingerprint } from "../types";
-import SessionRepository from "../repositories/sessionRepository";
-import JWTUtils, { JWT_REFRESH_PAYLOAD } from "../utils/auth/Auth";
-import { SessionExpiredError, SessionRevokedError, SessionNotFoundError } from "../types/auth.types";
-import { AuthConfig } from "../config/auth";
+import AuthUtils from "../../utils/auth/Auth";
+import { ISessionFingerprint } from "../../types";
+import SessionRepository from "../../repositories/sessionRepository";
+import JWTUtils, { JWT_REFRESH_PAYLOAD } from "../../utils/auth/Auth";
+import { SessionExpiredError, SessionRevokedError, SessionNotFoundError } from "../../types/auth.types";
+import { AuthConfig } from "../../config/auth";
 
 class SessionService {
 	constructor(

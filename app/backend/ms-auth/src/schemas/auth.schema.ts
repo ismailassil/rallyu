@@ -73,10 +73,13 @@ const auth2FALoginChallengeVerifyCodeBody = {
 // };
 
 // 2FA management
-const auth2FASetupBody = {
+const auth2FASetupParams = {
 	type: 'object',
 	properties: {
-		method: { type: 'string' }
+		method: { 
+			type: 'string',
+			enum: ['email', 'sms', 'totp']
+		}
 	},
 	required: ['method']
 };
@@ -86,7 +89,8 @@ const auth2FASetupVerifyBody = {
 	properties: {
 		code: { type: 'string' }
 	},
-	required: ['code']
+	required: ['code'],
+	additionalProperties: false
 };
 
 const auth2FADisableBody = {
@@ -172,16 +176,21 @@ export const authOAuthSchema = {
 }
 
 export const auth2FASetupSchema = {
-	body: auth2FASetupBody
-}
-
-export const auth2FASetupVerifySchema = {
-	body: auth2FASetupVerifyBody
+	params: auth2FASetupParams
 }
 
 export const auth2FADisableSchema = {
-	body: auth2FADisableBody
+	params: auth2FASetupParams
 }
+
+export const auth2FASetupVerifySchema = {
+	params: auth2FASetupParams,
+	body: auth2FASetupVerifyBody
+}
+
+// export const auth2FADisableSchema = {
+// 	body: auth2FADisableBody
+// }
 
 export const authResetPasswordSchema = {
 	body: authResetPasswordBody

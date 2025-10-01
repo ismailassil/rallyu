@@ -1,8 +1,8 @@
-import TwoFactorRepository from "../repositories/twoFactorRepository";
-import { InternalServerError, InvalidCredentialsError, SessionExpiredError, SessionNotFoundError, UserNotFoundError, _2FAAlreadyEnabled, _2FAExpiredCode, _2FAInvalidCode, _2FANotEnabled, _2FANotFound } from "../types/auth.types";
-import MailingService from "./MailingService";
-import WhatsAppService from "./WhatsAppService";
-import UserService from "./userService";
+import TwoFactorRepository from "../../repositories/twoFactorRepository";
+import { InternalServerError, InvalidCredentialsError, SessionExpiredError, SessionNotFoundError, UserNotFoundError, _2FAAlreadyEnabled, _2FAExpiredCode, _2FAInvalidCode, _2FANotEnabled, _2FANotFound } from "../../types/auth.types";
+import MailingService from "../Communication/MailingService";
+import WhatsAppService from "../Communication/WhatsAppService";
+import UserService from "../User/userService";
 
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');

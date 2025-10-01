@@ -6,6 +6,7 @@ import cookie from '@fastify/cookie';
 import TwoFactorController from "../controllers/twoFactorController";
 import PasswordResetController from "../controllers/passwordResetController";
 import { 
+	auth2FADisableSchema,
 	auth2FALoginChallengeSchema, 
 	auth2FALoginChallengeVerifyCodeSchema, 
 	auth2FASetupSchema, 
@@ -97,20 +98,19 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	});
 
 	fastify.delete('/2fa/enabled/:method', {
+		schema: auth2FADisableSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.twoFactorController.DisableMethodEndpoint.bind(opts.twoFactorController)
 	});
 
 	fastify.post('/2fa/:method/setup/init', {
 		schema: auth2FASetupSchema,
-		...zodFormValidator(zodTwoFactorSetupSchema),
 		preHandler: fastify.authenticate,
 		handler: opts.twoFactorController.SetupInitEndpoint.bind(opts.twoFactorController)
 	});
 	
 	fastify.post('/2fa/:method/setup/verify', {
 		schema: auth2FASetupVerifySchema,
-		...zodFormValidator(zodTwoFactorSetupVerifySchema),
 		preHandler: fastify.authenticate,
 		handler: opts.twoFactorController.SetupVerifyEndpoint.bind(opts.twoFactorController)
 	});

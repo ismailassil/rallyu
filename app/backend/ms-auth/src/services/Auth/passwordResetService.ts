@@ -1,10 +1,10 @@
-import PasswordResetRepository from "../repositories/passwordResetRepository";
+import PasswordResetRepository from "../../repositories/passwordResetRepository";
 import bcrypt from 'bcrypt';
-import { InvalidCredentialsError, NoEmailIsAssociated, UserNotFoundError } from "../types/auth.types";
-import MailingService from "./MailingService";
-import WhatsAppService from "./WhatsAppService";
-import { AuthConfig } from "../config/auth";
-import UserService from "./userService";
+import { InvalidCredentialsError, NoEmailIsAssociated, UserNotFoundError } from "../../types/auth.types";
+import MailingService from "../Communication/MailingService";
+import WhatsAppService from "../Communication/WhatsAppService";
+import { AuthConfig } from "../../config/auth";
+import UserService from "../User/userService";
 
 class PasswordResetService {
 	constructor(

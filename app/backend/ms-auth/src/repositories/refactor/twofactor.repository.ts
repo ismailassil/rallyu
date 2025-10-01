@@ -4,7 +4,7 @@ import ARepository from "./ARepository";
 interface EnabledTwoFactorMethod {
 	id: number;
 	method: string;
-	totp_secret: string;
+	totp_secret: string | null;
 	user_id: number;
 }
 

@@ -71,25 +71,25 @@ export const zodResetPasswordUpdateSchema = z.object({
 
 export const zodTwoFactorLoginChallengeSchema = z.object({
 	loginChallengeID: z.number({ invalid_type_error: "Login challenge ID must be a number" }),
-	method: z.enum(["sms", "email", "totp"], {
+	method: z.enum(["SMS", "EMAIL", "TOTP"], {
 		required_error: "Method is required",
-		invalid_type_error: "Method must be one of: sms, email, totp",
+		invalid_type_error: "Method must be one of: SMS, EMAIL, TOTP",
 	})
 });
 
 export const zodTwoFactorLoginChallengeVerifyCodeSchema = z.object({
 	loginChallengeID: z.number({ invalid_type_error: "Login challenge ID must be a number" }),
-	method: z.enum(["sms", "email", "totp"], {
+	method: z.enum(["SMS", "EMAIL", "TOTP"], {
 		required_error: "Method is required",
-		invalid_type_error: "Method must be one of: sms, email, totp",
+		invalid_type_error: "Method must be one of: SMS, EMAIL, TOTP",
 	}),
 	code: z.string().min(1, "Code is required")
 });
 
 export const zodTwoFactorSetupSchema = z.object({
-	method: z.enum(["sms", "email", "totp"], {
+	method: z.enum(["SMS", "EMAIL", "TOTP"], {
 		required_error: "Method is required",
-		invalid_type_error: "Method must be one of: sms, email, totp",
+		invalid_type_error: "Method must be one of: SMS, EMAIL, TOTP",
 	})
 });
 

@@ -73,6 +73,43 @@ export class SessionRevokedError extends AuthError {
 	}
 }
 
+// 2FA LOGIN CHALLENGE
+export class TwoFAChallengeNotFound extends AuthError {
+	constructor(message: string = 'Two Factor challenge not found', details: any = {}) {
+		super(message, 404, 'AUTH_2FA_CHALLENGE_NOT_FOUND', details);
+	}
+}
+
+export class TwoFAChallengeMethodNotSelected extends AuthError {
+	constructor(message: string = 'Two Factor challenge method not selected', details: any = {}) {
+		super(message, 400, 'AUTH_2FA_CHALLENGE_METHOD_NOT_SELECTED', details);
+	}
+}
+
+export class TwoFAChallengeExpired extends AuthError {
+	constructor(message: string = 'Two Factor challenge has expired', details: any = {}) {
+		super(message, 400, 'AUTH_2FA_CHALLENGE_EXPIRED', details);
+	}
+}
+
+export class TwoFAChallengeMaxAttemptsReached extends AuthError {
+	constructor(message: string = 'Two Factor challenge maximum attempts reached', details: any = {}) {
+		super(message, 400, 'AUTH_2FA_CHALLENGE_MAX_ATTEMPTS_REACHED', details);
+	}
+}
+
+export class TwoFAChallengeMaxResendsReached extends AuthError {
+	constructor(message: string = 'Two Factor challenge maximum resends reached', details: any = {}) {
+		super(message, 400, 'AUTH_2FA_CHALLENGE_MAX_RESENDS_REACHED', details);
+	}
+}
+
+export class TwoFAChallengeInvalidCode extends AuthError {
+	constructor(message: string = 'Two Factor challenge invalid code', details: any = {}) {
+		super(message, 400, 'AUTH_2FA_CHALLENGE_INVALID_CODE', details);
+	}
+}
+
 // AUTHENTICATION
 export class NoEmailIsAssociated extends AuthError {
 	constructor(message: string = 'No email is associated with this account', details: any = {}) {

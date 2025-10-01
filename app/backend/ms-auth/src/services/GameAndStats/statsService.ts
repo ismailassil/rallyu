@@ -1,9 +1,9 @@
-import { db } from "../database";
-import MatchesRepository from "../repositories/matchesRepository";
+import { db } from "../../database";
+import MatchesRepository from "../../repositories/matchesRepository";
 // import StatsRepository from "../repositories/statsRepository";
-import StatsRepository from "../repositories/refactor/stats.repository";
-import UserRepository from "../repositories/refactor/users.repository";
-import { InternalServerError, UserNotFoundError } from "../types/auth.types";
+import StatsRepository from "../../repositories/refactor/stats.repository";
+import UserRepository from "../../repositories/refactor/users.repository";
+import { InternalServerError, UserNotFoundError } from "../../types/auth.types";
 
 class StatsService {
 	

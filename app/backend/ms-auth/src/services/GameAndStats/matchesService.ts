@@ -1,4 +1,4 @@
-import MatchesRepository from "../repositories/matchesRepository";
+import MatchesRepository from "../../repositories/matchesRepository";
 
 class MatchesService {
 	constructor(

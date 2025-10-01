@@ -19,9 +19,10 @@ function zodFormValidationHandler(zodSchema: ZodSchema) {
 
 			request.body = zodResult.data; // assign the parsed and validated data back to request.body
 
-			done();
+			// done();
 		} catch (err) {
-			done(err as Error);
+			// done(err as Error);
+			throw err;
 		}
 	}
 }

@@ -1,16 +1,14 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import AuthService from "../services/authService";
+import AuthService from "../services/Auth/authService";
 import { ILoginRequest, IRegisterRequest } from "../types";
 import { TokenRequiredError } from "../types/auth.types";
-import TwoFactorService from "../services/twoFactorService";
+import TwoFactorService from "../services/TwoFactorAuth/twoFactorService";
 import AuthResponseFactory from "./authResponseFactory";
 
 
 class AuthController {
 	constructor(
-		private authService: AuthService,
-		private twoFactorService: TwoFactorService,
-		// private resetService: ResetPasswordService
+		private authService: AuthService
 	) {}
 
 	// REGISTER (NO-AUTO-LOGIN): REGISTERS USER IN DB
@@ -67,10 +65,10 @@ class AuthController {
 
 	async SendLoginChallenge2FACodeEndpoint(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { loginChallengeID, method } = request.body as { loginChallengeID: number, method: string };
+			const { loginChallengeID, method } = request.body as { loginChallengeID: number, method: 'TOTP' | 'SMS' | 'EMAIL' };
 			const userAgent = request.headers["user-agent"] || '';
 
-			await this.authService.sendLoginChallenge2FACode(loginChallengeID, method, userAgent, request.ip);
+			await this.authService.sendTwoFAChallengeCode(loginChallengeID, method, userAgent, request.ip);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
@@ -84,10 +82,10 @@ class AuthController {
 
 	async VerifyLoginChallenge2FACodeEndpoint(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { loginChallengeID, method, code } = request.body as { loginChallengeID: number, method: string, code: string };
+			const { loginChallengeID, code } = request.body as { loginChallengeID: number, code: string };
 			const userAgent = request.headers["user-agent"] || '';
 
-			const { user, refreshToken, accessToken } = await this.authService.verifyLoginChallenge2FACode(loginChallengeID, method, code, userAgent, request.ip);
+			const { user, refreshToken, accessToken } = await this.authService.verifyTwoFAChallengeCode(loginChallengeID, code, userAgent, request.ip);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
 
