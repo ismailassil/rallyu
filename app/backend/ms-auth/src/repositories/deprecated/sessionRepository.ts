@@ -1,6 +1,6 @@
-import { db } from "../database";
-import { ISessionFingerprint } from "../types";
-import { InternalServerError } from "../types/auth.types";
+import { db } from "../../database";
+import { ISessionFingerprint } from "../../types";
+import { InternalServerError } from "../../types/auth.types";
 
 class SessionRepository {
 	constructor() {

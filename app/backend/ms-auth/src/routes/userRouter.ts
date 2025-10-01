@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import UserController from "../controllers/userController";
-import RelationsController from "../controllers/relationsContoller";
+import UserController from "../controllers/UserController";
+import RelationsController from "../controllers/RelationsContoller";
 import Authenticate from "../middleware/Authenticate";
 import fastifyMultipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
@@ -38,11 +38,11 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 	/*-------------------------------------------- AVAILABILITY --------------------------------------------*/
 	fastify.get('/username-available', {
 		schema: usernameAvailabilitySchema,
-		handler: opts.userController.usernameAvailable.bind(opts.userController)
+		handler: opts.userController.usernameAvailableHandler.bind(opts.userController)
 	});
 	fastify.get('/email-available', {
 		schema: emailAvailabilitySchema,
-		handler: opts.userController.emailAvailable.bind(opts.userController)
+		handler: opts.userController.emailAvailableHandler.bind(opts.userController)
 	});
 
 
@@ -50,46 +50,46 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 	/*------------------------------------------------ USERS ------------------------------------------------*/
 	fastify.get('/:username', {
 		preHandler: fastify.authenticate,
-		handler: opts.userController.fetchUser.bind(opts.userController)
+		handler: opts.userController.fetchUserHandler.bind(opts.userController)
 	});
 	fastify.put('/:username', {
 		schema: userUpdateSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.userController.updateUser.bind(opts.userController)
+		handler: opts.userController.updateUserHandler.bind(opts.userController)
 	});
 	fastify.delete('/:username', {
 		preHandler: fastify.authenticate,
-		handler: opts.userController.deleteUser.bind(opts.userController)
+		handler: opts.userController.deleteUserHandler.bind(opts.userController)
 	});
 	
 	fastify.get('/leaderboard', {
 		schema: leaderboardSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.userController.fetchRankLeaderboard.bind(opts.userController)
+		handler: opts.userController.fetchRankLeaderboardHandler.bind(opts.userController)
 	});
 	fastify.get('/:username/matches', {
 		schema: matchesRequestSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.userController.fetchUserMatches.bind(opts.userController)
+		handler: opts.userController.fetchUserMatchesHandler.bind(opts.userController)
 	});
 	fastify.get('/:username/analytics', {
 		preHandler: fastify.authenticate,
-		handler: opts.userController.fetchUserAnalytics.bind(opts.userController)
+		handler: opts.userController.fetchUserAnalyticsHandler.bind(opts.userController)
 	});
 	fastify.get('/:username/analytics-by-day', {
 		preHandler: fastify.authenticate,
-		handler: opts.userController.fetchUserAnalyticsByDay.bind(opts.userController)
+		handler: opts.userController.fetchUserAnalyticsByDayHandler.bind(opts.userController)
 	});
 
 	fastify.post('/:username/avatar', {
 		preHandler: fastify.authenticate,
-		handler: opts.userController.uploadAvatar.bind(opts.userController)
+		handler: opts.userController.uploadAvatarHandler.bind(opts.userController)
 	});
 
 	fastify.get('/search-by-username', {
 		schema: userSearchByUsernameSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.userController.searchUserByUsername.bind(opts.userController)
+		handler: opts.userController.searchUserByUsernameHandler.bind(opts.userController)
 	});
 
 
@@ -97,55 +97,55 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 	/*-------------------------------------------- USER RELATIONS --------------------------------------------*/
 	fastify.get('/friends', {
 		preHandler: fastify.authenticate,
-		handler: opts.relationsController.fetchFriends.bind(opts.relationsController)
+		handler: opts.relationsController.fetchFriendsHandler.bind(opts.relationsController)
 	});
 	fastify.get('/blocked', {
 		preHandler: fastify.authenticate,
-		handler: opts.relationsController.fetchBlocked.bind(opts.relationsController)
+		handler: opts.relationsController.fetchBlockedHandler.bind(opts.relationsController)
 	});
 	fastify.get('/friends/requests/incoming', {
 		preHandler: fastify.authenticate,
-		handler: opts.relationsController.fetchIncomingFriendRequests.bind(opts.relationsController)
+		handler: opts.relationsController.fetchIncomingFriendRequestsHandler.bind(opts.relationsController)
 	});
 	fastify.get('/friends/requests/outgoing', {
 		preHandler: fastify.authenticate,
-		handler: opts.relationsController.fetchOutgoingFriendRequests.bind(opts.relationsController)
+		handler: opts.relationsController.fetchOutgoingFriendRequestsHandler.bind(opts.relationsController)
 	});
 
 	fastify.post('/:targetUserId/friends/requests', {
 		schema: relationsRequestSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.relationsController.sendFriendRequest.bind(opts.relationsController)
+		handler: opts.relationsController.sendFriendRequestHandler.bind(opts.relationsController)
 	});
 	fastify.delete('/:targetUserId/friends/requests', {
 		schema: relationsRequestSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.relationsController.cancelFriendRequest.bind(opts.relationsController)
+		handler: opts.relationsController.cancelFriendRequestHandler.bind(opts.relationsController)
 	});
 	fastify.put('/:targetUserId/friends/accept', {
 		schema: relationsRequestSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.relationsController.acceptFriendRequest.bind(opts.relationsController)
+		handler: opts.relationsController.acceptFriendRequestHandler.bind(opts.relationsController)
 	});
 	fastify.put('/:targetUserId/friends/reject', {
 		schema: relationsRequestSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.relationsController.rejectFriendRequest.bind(opts.relationsController)
+		handler: opts.relationsController.rejectFriendRequestHandler.bind(opts.relationsController)
 	});
 	fastify.delete('/:targetUserId/friends', {
 		schema: relationsRequestSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.relationsController.unfriend.bind(opts.relationsController)
+		handler: opts.relationsController.unfriendHandler.bind(opts.relationsController)
 	});
 	fastify.post('/:targetUserId/block', {
 		schema: relationsRequestSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.relationsController.blockUser.bind(opts.relationsController)
+		handler: opts.relationsController.blockUserHandler.bind(opts.relationsController)
 	});
 	fastify.delete('/:targetUserId/block', {
 		schema: relationsRequestSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.relationsController.unblockUser.bind(opts.relationsController)
+		handler: opts.relationsController.unblockUserHandler.bind(opts.relationsController)
 	});
 }
 

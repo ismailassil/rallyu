@@ -1,8 +1,8 @@
 import { db } from "../../database";
-import MatchesRepository from "../../repositories/matchesRepository";
+import MatchesRepository from "../../repositories/deprecated/matchesRepository";
 // import StatsRepository from "../repositories/statsRepository";
-import StatsRepository from "../../repositories/refactor/stats.repository";
-import UserRepository from "../../repositories/refactor/users.repository";
+import StatsRepository from "../../repositories/StatsRepository";
+import UserRepository from "../../repositories/UserRepository";
 import { InternalServerError, UserNotFoundError } from "../../types/auth.types";
 
 class StatsService {

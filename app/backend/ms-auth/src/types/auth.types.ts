@@ -171,6 +171,12 @@ export class _2FAExpiredCode extends AuthError {
 }
 
 // PASSWORD RESET
+export class PasswordResetNotFoundError extends AuthError {
+	constructor(message: string = 'Password reset request is not found', details: any = {}) {
+		super(message, 400, 'AUTH_PASSWORD_RESET_EXPIRED', details);
+	}
+}
+
 export class PasswordResetExpiredError extends AuthError {
 	constructor(message: string = 'Password reset request has expired', details: any = {}) {
 		super(message, 400, 'AUTH_PASSWORD_RESET_EXPIRED', details);

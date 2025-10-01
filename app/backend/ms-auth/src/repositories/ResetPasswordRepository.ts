@@ -1,5 +1,5 @@
 import ARepository from "./ARepository";
-import { db } from "../../database";
+import { db } from "../database";
 
 interface IResetPassword {
 	id: number;

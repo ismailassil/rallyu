@@ -1,4 +1,4 @@
-import { db } from "../../database";
+import { db } from "../database";
 import ARepository from "./ARepository";
 
 interface Session {

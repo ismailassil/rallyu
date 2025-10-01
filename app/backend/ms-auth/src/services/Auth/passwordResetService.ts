@@ -1,32 +1,41 @@
-import PasswordResetRepository from "../../repositories/passwordResetRepository";
+import ResetPasswordRepository from "../../repositories/ResetPasswordRepository";
 import bcrypt from 'bcrypt';
-import { InvalidCredentialsError, NoEmailIsAssociated, UserNotFoundError } from "../../types/auth.types";
+import { InvalidCredentialsError, NoEmailIsAssociated, PasswordResetExpiredError, PasswordResetInvalidCodeError, PasswordResetNotFoundError, UserNotFoundError } from "../../types/auth.types";
 import MailingService from "../Communication/MailingService";
 import WhatsAppService from "../Communication/WhatsAppService";
 import { AuthConfig } from "../../config/auth";
-import UserService from "../User/userService";
+import UserService from "../User/UserService";
+import { generateOTP, nowInSeconds, nowPlusSeconds } from "../TwoFactorAuth/utils";
+
+const passwordResetConfig = {
+	codeExpirySeconds: 5 * 60 // 5 minutes
+}
 
 class PasswordResetService {
 	constructor(
 		private authConfig: AuthConfig,
 		private userService: UserService,
-		private resetRepository: PasswordResetRepository,
+		private resetRepository: ResetPasswordRepository,
 		private mailingService: MailingService,
 		private smsService: WhatsAppService
 	) {}
 
 	async setup(email: string) {
-		const existingUser = await this.userService.getUserByEmail(email);
-		if (!existingUser)
+		const targetUser = await this.userService.getUserByEmail(email);
+		if (!targetUser || !targetUser.email)
 			throw new NoEmailIsAssociated();
 
-		await this.resetRepository.deleteAllByUserID(existingUser.id);
+		await this.resetRepository.deleteAllByUserID(targetUser.id);
 
-		const OTP = this.generateOTP();
+		const OTP = generateOTP();
 
-		await this.resetRepository.create(existingUser.id, OTP, this.nowPlusMinutes(5));
+		await this.resetRepository.create(
+			targetUser.id, 
+			OTP, 
+			nowPlusSeconds(passwordResetConfig.codeExpirySeconds)
+		);
 
-		await this.sendPasswordResetEmail(email, OTP);
+		await this.notifyUser(targetUser, OTP);
 	}
 
 	async verify(email: string, code: string) {
@@ -35,55 +44,44 @@ class PasswordResetService {
 			throw new NoEmailIsAssociated();
 
 		const resetPasswordRow = await this.resetRepository.findByUserID(existingUser.id);
-		if (!resetPasswordRow || this.nowInSeconds() > resetPasswordRow.expires_at)
-			throw new Error('Reset request expired or not found');
+		if (!resetPasswordRow)
+			throw new PasswordResetNotFoundError();
+		if (nowInSeconds() > resetPasswordRow.expires_at)
+			throw new PasswordResetExpiredError();
 		if (code !== resetPasswordRow.code)
-			throw new Error('Invalid code');
+			throw new PasswordResetInvalidCodeError();
 	}
 
 	async update(email: string, code: string, newPassword: string) {
-		const existingUser = await this.userService.getUserByEmail(email);
-		if (!existingUser)
+		const targetUser = await this.userService.getUserByEmail(email);
+		if (!targetUser)
 			throw new NoEmailIsAssociated();
 
-		const resetPasswordRow = await this.resetRepository.findByUserID(existingUser.id);
-
-		// NOTE: We allow updating password even if the reset request expired
-		if (!resetPasswordRow || this.nowInSeconds() > resetPasswordRow.expires_at)
-			throw new Error('Reset request expired or not found');
+		const resetPasswordRow = await this.resetRepository.findByUserID(targetUser.id);
+		if (!resetPasswordRow)
+			throw new PasswordResetNotFoundError();
+		if (nowInSeconds() > resetPasswordRow.expires_at)
+			throw new PasswordResetExpiredError();
 		if (code !== resetPasswordRow.code)
-			throw new Error('Invalid code');
+			throw new PasswordResetInvalidCodeError();
 
 		const newHashedPassword = await bcrypt.hash(newPassword!, this.authConfig.bcryptHashRounds);
 
-		await this.userService.updateUser(existingUser.id, { password: newHashedPassword });
+		await this.userService.updateUser(targetUser.id, { password: newHashedPassword });
 
-		await this.resetRepository.deleteAllByUserID(existingUser.id);
+		await this.resetRepository.deleteAllByUserID(targetUser.id);
 	}
 
-	private generateOTP() {
-		return ('' + Math.floor(100000 + Math.random() * 90000));
-	}
+	private async notifyUser(targetUser: any, OTP: string) {
+		if (!targetUser.email)
+			throw new NoEmailIsAssociated();
 
-	private async sendPasswordResetEmail(email: string, code: string) {
 		await this.mailingService.sendEmail({
 			from: this.mailingService.config.mailingServiceUser,
-			to: email,
+			to: targetUser.email,
 			subject: 'Password Reset Code',
-			text: `Your password reset code is: ${code}`
+			text: `Your password reset code is: ${OTP}`
 		});
-	}
-	
-	private async sendPasswordResetSMS(phone: string, code: string) {
-		await this.smsService.sendMessage(phone, `Your password reset code is: ${code}`);
-	}
-	
-	private nowPlusMinutes(minutes: number) {
-		return Math.floor((Date.now() / 1000) + minutes * 60);
-	}
-
-	private nowInSeconds() {
-		return Math.floor(Date.now() / 1000);
 	}
 }
 

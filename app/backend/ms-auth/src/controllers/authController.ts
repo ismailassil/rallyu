@@ -1,9 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import AuthService from "../services/Auth/authService";
+import AuthService from "../services/Auth/AuthService";
 import { ILoginRequest, IRegisterRequest } from "../types";
 import { TokenRequiredError } from "../types/auth.types";
-import TwoFactorService from "../services/TwoFactorAuth/twoFactorService";
-import AuthResponseFactory from "./authResponseFactory";
+import TwoFactorService from "../services/TwoFactorAuth/[DEPRECATED]TwoFactorService";
+import AuthResponseFactory from "./AuthResponseFactory";
 
 
 class AuthController {
@@ -11,8 +11,7 @@ class AuthController {
 		private authService: AuthService
 	) {}
 
-	// REGISTER (NO-AUTO-LOGIN): REGISTERS USER IN DB
-	async RegisterEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async registerHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { first_name, last_name, username, email, password } = request.body as IRegisterRequest;
 			
@@ -27,9 +26,8 @@ class AuthController {
 			return reply.code(status).send(body);
 		}
 	}
-	
-	// LOGIN: GENERATES ACCESS / REFRESH TOKENS
-	async LoginEndpoint(request: FastifyRequest, reply: FastifyReply) {
+
+	async loginHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { username, password } = request.body as ILoginRequest;
 			const userAgent = request.headers["user-agent"] || '';
@@ -63,7 +61,7 @@ class AuthController {
 		}
 	}
 
-	async SendLoginChallenge2FACodeEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async sendTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { loginChallengeID, method } = request.body as { loginChallengeID: number, method: 'TOTP' | 'SMS' | 'EMAIL' };
 			const userAgent = request.headers["user-agent"] || '';
@@ -80,7 +78,7 @@ class AuthController {
 		}
 	}
 
-	async VerifyLoginChallenge2FACodeEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async verifyTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { loginChallengeID, code } = request.body as { loginChallengeID: number, code: string };
 			const userAgent = request.headers["user-agent"] || '';
@@ -104,8 +102,7 @@ class AuthController {
 		}
 	}
 
-	// LOGOUT
-	async LogoutEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async logoutHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const userAgent = request.headers["user-agent"] || '';
 			const refresh_token = request.cookies?.['refreshToken']; // TODO: SHOULD BE IN FASTIFY SCHEMA
@@ -131,9 +128,8 @@ class AuthController {
 			return reply.code(status).send(body);
 		}
 	}
-	
-	// REFRESH: GENERATES ACCESS / REFRESH TOKENS
-	async RefreshEndpoint(request: FastifyRequest, reply: FastifyReply) {
+
+	async refreshHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const userAgent = request.headers["user-agent"] || '';
 			const oldRefreshToken = request.cookies?.['refreshToken']; // TODO: SHOULD BE IN FASTIFY SCHEMA
@@ -205,7 +201,7 @@ class AuthController {
 	// 	}
 	// }
 
-	async changePasswordEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async changePasswordHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
 			const { oldPassword, newPassword } = request.body as { oldPassword: string, newPassword: string };

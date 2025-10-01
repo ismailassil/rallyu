@@ -1,6 +1,6 @@
 import { generateOTP, generateTOTPSecrets, verifyOTP, verifyTOTP, nowPlusSeconds, nowInSeconds } from './utils';
-import TwoFactorRepository from '../../repositories/refactor/twofactor.repository';
-import UserService from '../User/userService';
+import TwoFactorRepository from '../../repositories/TwoFactorRepository';
+import UserService from '../User/UserService';
 import MailingService from '../Communication/MailingService';
 import WhatsAppService from '../Communication/WhatsAppService';
 import { NoEmailIsAssociated, NoPhoneIsAssociated, TwoFAChallengeExpired, TwoFAChallengeInvalidCode, TwoFAChallengeMaxAttemptsReached, TwoFAChallengeMaxResendsReached, TwoFAChallengeMethodNotSelected, TwoFAChallengeNotFound, _2FANotEnabled, _2FANotFound } from '../../types/auth.types';

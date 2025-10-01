@@ -1,20 +1,22 @@
 import bcrypt from 'bcrypt';
 import { JWT_REFRESH_PAYLOAD } from '../../utils/auth/Auth'
-import { InternalServerError, InvalidCredentialsError, SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenExpiredError, TokenInvalidError, TokenRequiredError, UserAlreadyExistsError, UserNotFoundError, _2FAInvalidCode } from "../../types/auth.types";
 import { ISessionFingerprint } from "../../types";
 import { UAParser } from 'ua-parser-js';
-import axios from "axios";
-import 'dotenv/config';
-import { z } from 'zod';
-import TwoFactorService from "../TwoFactorAuth/twoFactorService";
-import UserService from "../User/userService";
-import SessionService from "./sessionService";
+import UserService from "../User/UserService";
+import SessionService from "./SessionsService";
 import { AuthConfig } from "../../config/auth";
 import JWTUtils from "../../utils/auth/Auth";
 import MailingService from '../Communication/MailingService';
 import WhatsAppService from '../Communication/WhatsAppService';
 import TwoFactorMethodService from '../TwoFactorAuth/TwoFactorMethodService';
 import TwoFactorChallengeService from '../TwoFactorAuth/TwoFactorChallengeService';
+import { 
+	InvalidCredentialsError, 
+	TokenRequiredError, 
+	UserAlreadyExistsError, 
+	UserNotFoundError, 
+	_2FAInvalidCode 
+} from "../../types/auth.types";
 
 // TODO
 	// VERIFY THE EXISTENCE OF ALL THOSE ENV VARS
@@ -38,7 +40,6 @@ class AuthService {
 		private jwtUtils: JWTUtils,
 		private userService: UserService,
 		private sessionService: SessionService,
-		// private twoFactorService: TwoFactorService,
 		private twoFAMethodService: TwoFactorMethodService,
 		private twoFAChallengeService: TwoFactorChallengeService,
 		private mailingService: MailingService,

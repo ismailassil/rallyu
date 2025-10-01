@@ -1,5 +1,5 @@
 import { Database } from "sqlite3";
-import { DatabaseQueryError } from "../../types/auth.types";
+import { DatabaseQueryError } from "../types/auth.types";
 
 /**
  * Abstract repository class that provides base patterns for all repositories.

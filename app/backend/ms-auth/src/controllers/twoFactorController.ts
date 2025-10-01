@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import AuthResponseFactory from "./authResponseFactory";
+import AuthResponseFactory from "./AuthResponseFactory";
 import TwoFactorMethodService from "../services/TwoFactorAuth/TwoFactorMethodService";
 
 class TwoFactorController {
@@ -7,9 +7,7 @@ class TwoFactorController {
 		private twoFactorService: TwoFactorMethodService
 	) {}
 
-	/*----------------------------------- ENABLED METHODS -----------------------------------*/
-
-	async EnabledMethodsEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async fetchEnabledMethodsHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub as number;
 
@@ -26,10 +24,7 @@ class TwoFactorController {
 		}
 	}
 
-	
-	/*---------------------------------------- SETUP ----------------------------------------*/
-
-	async SetupInitEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async setupInitHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub as number;
 			const { method } = request.params as { method: 'TOTP' | 'SMS' | 'EMAIL' };
@@ -48,7 +43,7 @@ class TwoFactorController {
 		}
 	}
 
-	async SetupVerifyEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async setupVerifyHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub as number;
 			const { method } = request.params as { method: 'TOTP' | 'SMS' | 'EMAIL' };
@@ -68,7 +63,7 @@ class TwoFactorController {
 		}
 	}
 
-	async DisableMethodEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async disableMethodHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub as number;
 			const { method } = request.params as { method: 'TOTP' | 'SMS' | 'EMAIL' };

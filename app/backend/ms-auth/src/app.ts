@@ -5,36 +5,31 @@ import { db } from './database/index';
 import runMigrations from './database/migrations';
 import cors from '@fastify/cors';
 import userRouter from './routes/userRouter';
-import pinoPretty from 'pino-pretty';
-import natsPlugin from './plugins/natsPlugin';
 import { appConfig } from './config';
 import JWTUtils from './utils/auth/Auth';
-import UserRepository from './repositories/refactor/users.repository';
-import SessionRepository from './repositories/sessionRepository';
-// import TwoFactorRepository from './repositories/twoFactorRepository';
-import TwoFactorRepository from './repositories/refactor/twofactor.repository';
-import UserService from './services/User/userService';
-import RelationsRepository from './repositories/refactor/relations.repository';
-import SessionService from './services/Auth/sessionService';
+import UserRepository from './repositories/UserRepository';
+import TwoFactorRepository from './repositories/TwoFactorRepository';
+import UserService from './services/User/UserService';
+import RelationsRepository from './repositories/RelationsRepository';
+import SessionService from './services/Auth/SessionsService';
 import { authConfig } from './config/auth';
-import TwoFactorService from './services/TwoFactorAuth/twoFactorService';
-import AuthService from './services/Auth/authService';
-import AuthController from './controllers/authController';
-import TwoFactorController from './controllers/twoFactorController';
-import UserController from './controllers/userController';
-import RelationsController from './controllers/relationsContoller';
-import RelationsService from './services/User/relationsService';
-import StatsService from './services/GameAndStats/statsService';
-import StatsRepository from './repositories/refactor/stats.repository';
-import MatchesRepository from './repositories/refactor/matches.repository';
+import AuthService from './services/Auth/AuthService';
+import AuthController from './controllers/AuthController';
+import TwoFactorController from './controllers/TwoFactorController';
+import UserController from './controllers/UserController';
+import RelationsController from './controllers/RelationsContoller';
+import RelationsService from './services/User/RelationsService';
+import StatsService from './services/GameAndStats/StatsService';
+import StatsRepository from './repositories/StatsRepository';
+import MatchesRepository from './repositories/MatchesRepository';
 import WhatsAppService from './services/Communication/WhatsAppService';
 import MailingService from './services/Communication/MailingService';
-import PasswordResetController from './controllers/passwordResetController';
-import PasswordResetRepository from './repositories/passwordResetRepository';
-import PasswordResetService from './services/Auth/passwordResetService';
+import PasswordResetController from './controllers/PasswordResetController';
+import ResetPasswordRepository from './repositories/ResetPasswordRepository';
+import PasswordResetService from './services/Auth/PasswordResetService';
 import TwoFactorMethodService from './services/TwoFactorAuth/TwoFactorMethodService';
 import TwoFactorChallengeService from './services/TwoFactorAuth/TwoFactorChallengeService';
-import SessionsRepository from './repositories/refactor/sessions.repository';
+import SessionsRepository from './repositories/SessionsRepository';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
@@ -70,25 +65,23 @@ async function buildApp(): Promise<FastifyInstance> {
 	// INIT REPOSITORIES
 	const userRepository = new UserRepository();
 	const sessionsRepository = new SessionsRepository();
-	// const twoFactorRepository = new TwoFactorRepository();
 	const twoFactorRepository = new TwoFactorRepository();
 	const relationsRepository = new RelationsRepository();
 	const statsRepository = new StatsRepository();
 	const matchesRepository = new MatchesRepository();
-	const resetPasswordRepository = new PasswordResetRepository();
+	const resetPasswordRepository = new ResetPasswordRepository();
 
 	// INIT SERVICES
 	const whatsAppService = new WhatsAppService(fastify.log);
 	// await whatsAppService.isReady; // TODO: HANDLE ERRORS
 	const mailingService = new MailingService(appConfig.mailing);
-	const sessionService = new SessionService(authConfig, jwtUtils, sessionsRepository);
+	const sessionsService = new SessionService(authConfig, jwtUtils, sessionsRepository);
 	const statsService = new StatsService(userRepository, statsRepository);
 	const relationsService = new RelationsService(userRepository, relationsRepository);
 	const userService = new UserService(userRepository, relationsService, statsService, matchesRepository);
-	// const twoFactorService = new TwoFactorService(twoFactorRepository, userService, mailingService, whatsAppService);
 	const twoFAMethodService = new TwoFactorMethodService(twoFactorRepository, userService, mailingService, whatsAppService);
 	const twoFAChallengeService = new TwoFactorChallengeService(twoFactorRepository, userService, mailingService, whatsAppService);
-	const authService = new AuthService(authConfig, jwtUtils, userService, sessionService, twoFAMethodService, twoFAChallengeService, mailingService, whatsAppService);
+	const authService = new AuthService(authConfig, jwtUtils, userService, sessionsService, twoFAMethodService, twoFAChallengeService, mailingService, whatsAppService);
 	const passwordResetService = new PasswordResetService(authConfig, userService, resetPasswordRepository, mailingService, whatsAppService);
 
 	// INIT CONTROLLERS

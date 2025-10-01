@@ -1,10 +1,10 @@
 import { FastifyInstance } from "fastify";
-import AuthController from "../controllers/authController";
+import AuthController from "../controllers/AuthController";
 import Authenticate from "../middleware/Authenticate";
 import { zodFormValidator } from "../utils/validation/zodFormValidator";
 import cookie from '@fastify/cookie';
-import TwoFactorController from "../controllers/twoFactorController";
-import PasswordResetController from "../controllers/passwordResetController";
+import TwoFactorController from "../controllers/TwoFactorController";
+import PasswordResetController from "../controllers/PasswordResetController";
 import { 
 	auth2FADisableSchema,
 	auth2FALoginChallengeSchema, 
@@ -48,22 +48,22 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	fastify.post('/register', {
 		schema: authRegisterSchema,
 		...zodFormValidator(zodRegisterSchema),
-		handler: opts.authController.RegisterEndpoint.bind(opts.authController)
+		handler: opts.authController.registerHandler.bind(opts.authController)
 	});
 	
 	fastify.post('/login', {
 		schema: authLoginSchema,
 		...zodFormValidator(zodLoginSchema),
-		handler: opts.authController.LoginEndpoint.bind(opts.authController)
+		handler: opts.authController.loginHandler.bind(opts.authController)
 	});
 	
 	fastify.post('/logout', {
 		// preHandler: fastify.authenticate,
-		handler: opts.authController.LogoutEndpoint.bind(opts.authController)
+		handler: opts.authController.logoutHandler.bind(opts.authController)
 	});
 	
 	fastify.get('/refresh', {
-		handler: opts.authController.RefreshEndpoint.bind(opts.authController)
+		handler: opts.authController.refreshHandler.bind(opts.authController)
 	});
 
 
@@ -83,36 +83,36 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	fastify.post('/login/2fa/send', {
 		schema: auth2FALoginChallengeSchema,
 		...zodFormValidator(zodTwoFactorLoginChallengeSchema),
-		handler: opts.authController.SendLoginChallenge2FACodeEndpoint.bind(opts.authController)
+		handler: opts.authController.sendTwoFAChallengeHandler.bind(opts.authController)
 	});
 
 	fastify.post('/login/2fa/verify', {
 		schema: auth2FALoginChallengeVerifyCodeSchema,
 		...zodFormValidator(zodTwoFactorLoginChallengeVerifyCodeSchema),
-		handler: opts.authController.VerifyLoginChallenge2FACodeEndpoint.bind(opts.authController)
+		handler: opts.authController.verifyTwoFAChallengeHandler.bind(opts.authController)
 	});
 
 	fastify.get('/2fa/enabled', {
 		preHandler: fastify.authenticate,
-		handler: opts.twoFactorController.EnabledMethodsEndpoint.bind(opts.twoFactorController)
+		handler: opts.twoFactorController.fetchEnabledMethodsHandler.bind(opts.twoFactorController)
 	});
 
 	fastify.delete('/2fa/enabled/:method', {
 		schema: auth2FADisableSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.twoFactorController.DisableMethodEndpoint.bind(opts.twoFactorController)
+		handler: opts.twoFactorController.disableMethodHandler.bind(opts.twoFactorController)
 	});
 
 	fastify.post('/2fa/:method/setup/init', {
 		schema: auth2FASetupSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.twoFactorController.SetupInitEndpoint.bind(opts.twoFactorController)
+		handler: opts.twoFactorController.setupInitHandler.bind(opts.twoFactorController)
 	});
 	
 	fastify.post('/2fa/:method/setup/verify', {
 		schema: auth2FASetupVerifySchema,
 		preHandler: fastify.authenticate,
-		handler: opts.twoFactorController.SetupVerifyEndpoint.bind(opts.twoFactorController)
+		handler: opts.twoFactorController.setupVerifyHandler.bind(opts.twoFactorController)
 	});
 
 
@@ -122,25 +122,25 @@ async function authRouter(fastify: FastifyInstance, opts: {
 		schema: authChangePasswordSchema,
 		...zodFormValidator(zodChangePasswordSchema),
 		preHandler: fastify.authenticate,
-		handler: opts.authController.changePasswordEndpoint.bind(opts.authController)
+		handler: opts.authController.changePasswordHandler.bind(opts.authController)
 	});
 	
 	fastify.post('/reset-password', {
 		schema: authResetPasswordSchema,
 		...zodFormValidator(zodResetPasswordSchema),
-		handler: opts.passwordResetController.ResetPasswordSetupEndpoint.bind(opts.passwordResetController)
+		handler: opts.passwordResetController.resetPasswordSetupHandler.bind(opts.passwordResetController)
 	});
 	
 	fastify.post('/reset-verify', {
 		schema: authResetPasswordVerifySchema,
 		...zodFormValidator(zodResetPasswordVerifySchema),
-		handler: opts.passwordResetController.ResetPasswordVerifyEndpoint.bind(opts.passwordResetController)
+		handler: opts.passwordResetController.resetPasswordVerifyHandler.bind(opts.passwordResetController)
 	});
 	
 	fastify.post('/reset-update', {
 		schema: authResetPasswordUpdateSchema,
 		...zodFormValidator(zodResetPasswordUpdateSchema),
-		handler: opts.passwordResetController.ResetPasswordUpdateEndpoint.bind(opts.passwordResetController)
+		handler: opts.passwordResetController.resetPasswordUpdateHandler.bind(opts.passwordResetController)
 	});
 
 	// fastify.delete('/revoke-all', authController.RevokeAllRoute.bind(opts.authController));

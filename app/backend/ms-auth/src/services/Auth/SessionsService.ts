@@ -1,12 +1,11 @@
 import { ISessionFingerprint } from "../../types";
-import SessionRepository from "../../repositories/sessionRepository";
 import JWTUtils, { JWT_REFRESH_PAYLOAD } from "../../utils/auth/Auth";
 import { SessionExpiredError, SessionRevokedError, SessionNotFoundError, TokenExpiredError, TokenInvalidError } from "../../types/auth.types";
 import { AuthConfig } from "../../config/auth";
-import SessionsRepository from "../../repositories/refactor/sessions.repository";
+import SessionsRepository from "../../repositories/SessionsRepository";
 import { nowInSeconds } from "../TwoFactorAuth/utils";
 
-class SessionService {
+class SessionsService {
 	constructor(
 		private authConfig: AuthConfig,
 		private JWTUtils: JWTUtils,
@@ -133,4 +132,4 @@ class SessionService {
 	}
 }
 
-export default SessionService;
+export default SessionsService;
