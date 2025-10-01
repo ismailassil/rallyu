@@ -34,6 +34,7 @@ import PasswordResetRepository from './repositories/passwordResetRepository';
 import PasswordResetService from './services/Auth/passwordResetService';
 import TwoFactorMethodService from './services/TwoFactorAuth/TwoFactorMethodService';
 import TwoFactorChallengeService from './services/TwoFactorAuth/TwoFactorChallengeService';
+import SessionsRepository from './repositories/refactor/sessions.repository';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
@@ -68,7 +69,7 @@ async function buildApp(): Promise<FastifyInstance> {
 
 	// INIT REPOSITORIES
 	const userRepository = new UserRepository();
-	const sessionsRepository = new SessionRepository();
+	const sessionsRepository = new SessionsRepository();
 	// const twoFactorRepository = new TwoFactorRepository();
 	const twoFactorRepository = new TwoFactorRepository();
 	const relationsRepository = new RelationsRepository();

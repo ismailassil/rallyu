@@ -1,18 +1,19 @@
-import AuthUtils from "../../utils/auth/Auth";
 import { ISessionFingerprint } from "../../types";
 import SessionRepository from "../../repositories/sessionRepository";
 import JWTUtils, { JWT_REFRESH_PAYLOAD } from "../../utils/auth/Auth";
-import { SessionExpiredError, SessionRevokedError, SessionNotFoundError } from "../../types/auth.types";
+import { SessionExpiredError, SessionRevokedError, SessionNotFoundError, TokenExpiredError, TokenInvalidError } from "../../types/auth.types";
 import { AuthConfig } from "../../config/auth";
+import SessionsRepository from "../../repositories/refactor/sessions.repository";
+import { nowInSeconds } from "../TwoFactorAuth/utils";
 
 class SessionService {
 	constructor(
 		private authConfig: AuthConfig,
 		private JWTUtils: JWTUtils,
-		private sessionRepository: SessionRepository
+		private sessionRepository: SessionsRepository
 	) {}
 
-	public async createSession(userID: number, currentSessionFingerprint: ISessionFingerprint) {
+	async createSession(userID: number, currentSessionFingerprint: ISessionFingerprint) {
 		const { device_name, browser_version, ip_address }: ISessionFingerprint = currentSessionFingerprint;
 
 		// TODO: EXPIRY SHOULD BE GET FROM SESSION CONFIG
@@ -34,108 +35,102 @@ class SessionService {
 
 		return { accessToken, refreshToken };
 	}
-	
-	// BEFORE REFRESHING A SESSION: WE NEED TO CHECK JWT SIGNATURE AND THEN THE CONFIG CHECKS
-	public async refreshSession(refreshToken: string, newSessionFingerprint: ISessionFingerprint) {
+
+	async refreshSession(refreshToken: string, newSessionFingerprint: ISessionFingerprint) {
 		const { device_name, browser_version, ip_address }: ISessionFingerprint = newSessionFingerprint;
 
-		// CHECKS (JWT SIGNATURE + EXPIRY && SESSION STATE IN DB)
-		await this.validateSession(refreshToken, newSessionFingerprint);
-
-		const payload: JWT_REFRESH_PAYLOAD = this.JWTUtils.decodeJWT(refreshToken);
-
-		// TODO: EXPIRY SHOULD BE GET FROM SESSION CONFIG
-		const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await this.JWTUtils.generateTokenPair(
-			payload.sub,
-			'15m',
-			'7d',
-			payload.session_id,
-			payload.version + 1
-		);
-
-		await this.sessionRepository.update(
-			payload.session_id,
-			payload.sub,
-			{
-				version: payload.version + 1,
-				device_name: device_name,
-				browser_version: browser_version,
-				ip_address: ip_address
-			}
-		);
-
-		return { newAccessToken, newRefreshToken };
-	}
-
-	public async revokeSession(refreshToken: string, reason: string, newSessionFingerprint: ISessionFingerprint) {
-		const { device_name, browser_version, ip_address }: ISessionFingerprint = newSessionFingerprint; // TODO: DO WE NEED TO CHECK THIS?
-
-		// CHECKS (JWT SIGNATURE + EXPIRY && SESSION STATE IN DB)
-		await this.validateSession(refreshToken, newSessionFingerprint);
-
-		const payload: JWT_REFRESH_PAYLOAD = this.JWTUtils.decodeJWT(refreshToken);
-
-		await this.sessionRepository.update(
-			payload.session_id,
-			payload.sub,
-			{
-				is_revoked: true,
-				reason: reason
-			}
-		);
-	}
-	
-	// VALID SESSION = VALID JWT + PASSED ALL CONFIG CHECKS
-	// SHOULD THIS ACTION PERFORM ACTIONS?
-	// FOR JWT ERRORS: WE SHOULD NOT PERFORM ANY ACTIONS, BECAUSE THE JWT MAYBE FALSY AND WE MIGHT HARM SOMEONES SESSION BY REVOKING
-	// FOR CONFIG CHECK: WE SHOULD PERFORM ACTIONS
-	private async validateSession(refreshToken: string, newSessionFingerprint: ISessionFingerprint) {
-		let refreshTokenPayload;
 		try {
-			refreshTokenPayload = await this.JWTUtils.verifyRefreshToken(refreshToken);
+			const payload: JWT_REFRESH_PAYLOAD = 
+				await this.isValidSession(refreshToken, newSessionFingerprint);
+	
+			// TODO: EXPIRY SHOULD BE GET FROM SESSION CONFIG
+			const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await this.JWTUtils.generateTokenPair(
+				payload.sub,
+				'15m',
+				'7d',
+				payload.session_id,
+				payload.version + 1
+			);
+	
+			await this.sessionRepository.update(
+				payload.session_id,
+				{
+					version: payload.version + 1,
+					device_name: device_name,
+					browser_version: browser_version,
+					ip_address: ip_address
+				}
+			);
+	
+			return { newAccessToken, newRefreshToken };
 		} catch (err) {
-			await this.revokeSession(refreshToken, 'inactivity', newSessionFingerprint); // TODO: CHECK THE REASON
 			throw err;
 		}
+	}
+
+	async revokeSession(refreshToken: string, reason: string, newSessionFingerprint: ISessionFingerprint) {
+		try {
+			const payload: JWT_REFRESH_PAYLOAD = 
+				await this.isValidSession(refreshToken, newSessionFingerprint);
+			
+			await this.sessionRepository.revoke(payload.session_id, reason);
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	async revokeAllSessions(refreshToken: string, reason: string, newSessionFingerprint: ISessionFingerprint) {
+		try {
+			const payload: JWT_REFRESH_PAYLOAD = 
+				await this.isValidSession(refreshToken, newSessionFingerprint);
+			
+			await this.sessionRepository.revokeAllForUser(payload.sub, reason);
+		} catch (err) {
+			throw err;
+		}
+	}
+
+	/**
+	 * Validates a session based on the provided refresh token and session fingerprint.
+	 * A valid session means that the refresh token is valid (signature) and not expired.
+	 * This function does not perform any actions; it only checks and throws errors if validation fails.
+	 * It is the caller's responsibility to take actions if errors are thrown.
+	 * @param refreshToken - The refresh token to validate.
+	 * @param newSessionFingerprint - The fingerprint of the current session (device, browser, IP).
+	 * @throws {TokenExpiredError} If the refresh token has expired.
+	 * @throws {TokenInvalidError} If the refresh token is invalid.
+	 * @throws {SessionNotFoundError} If the session is not found.
+	 * @throws {SessionRevokedError} If the session has been revoked or fails security checks.
+	 * @throws {SessionExpiredError} If the session has expired.
+	 * @returns The decoded payload of the refresh token if the session is valid.
+	 */
+	private async isValidSession(refreshToken: string, newSessionFingerprint: ISessionFingerprint) {
+		const refreshTokenPayload = await this.JWTUtils.verifyRefreshToken(refreshToken);
 
 		const { device_name, browser_version, ip_address }: ISessionFingerprint = newSessionFingerprint;
-		const { session_id, version, sub: user_id }: JWT_REFRESH_PAYLOAD = refreshTokenPayload;
+		const { session_id, version, sub }: JWT_REFRESH_PAYLOAD = refreshTokenPayload;
 
-		const isFound = await this.sessionRepository.findOne(session_id, user_id);
-		console.log('New Session: ');
-		console.log(newSessionFingerprint);
-		console.log('DB Session: ');
-		console.log(isFound);
+		const isFound = await this.sessionRepository.findOne(session_id, sub);
 
-		if (isFound === null) // CLEANED
+		if (!isFound)
 			throw new SessionNotFoundError();
 
 		if (isFound.version !== version) 				// RE-USE
 			throw new SessionRevokedError('Session revoked for re-use');
 		if (isFound.is_revoked)							// EXPIRED
-			throw new SessionRevokedError('Session revoked for already revoked');
-		if ((Date.now() / 1000) > isFound.expires_at)	// EXPIRED
-			throw new SessionExpiredError('Session revoked for expiration');
+			throw new SessionRevokedError('Session already revoked');
+		if (nowInSeconds() > isFound.expires_at)		// EXPIRED
+			throw new SessionExpiredError();
 
 		if (!this.authConfig.allowIpChange && isFound.ip_address !== ip_address)					// IP CHANGE
-			throw new SessionRevokedError('Session revoked for ip change');
-		if (!this.authConfig.allowDeviceChange && isFound.device_name !== device_name)			// DEVICE CHANGE
+			throw new SessionRevokedError('Session revoked for IP change');
+		if (!this.authConfig.allowDeviceChange && isFound.device_name !== device_name)				// DEVICE CHANGE
 			throw new SessionRevokedError('Session revoked for device change');
-		if (!this.authConfig.allowBrowserChange && isFound.browser_version !== browser_version)	// BROWSER CHANGE
+		if (!this.authConfig.allowBrowserChange && isFound.browser_version !== browser_version)		// BROWSER CHANGE
 			throw new SessionRevokedError('Session revoked for browser change');
+
+		return this.JWTUtils.decodeJWT<JWT_REFRESH_PAYLOAD>(refreshToken);
 	}
-
-	// public async revokeAllSessions(refreshToken: string, reason: string) {
-	// 	const { sub: user_id }: JWT_REFRESH_PAYLOAD = this.JWTUtils.decodeJWT(refreshToken);
-
-	// 	await this.sessionRepository.updateAll(
-	// 		user_id,
-	// 		{
-	// 			is_revoked: true,
-	// 			reason: reason
-	// 		}
-	// 	);
-	// }
 }
 
 export default SessionService;

@@ -58,7 +58,7 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	});
 	
 	fastify.post('/logout', {
-		preHandler: fastify.authenticate,
+		// preHandler: fastify.authenticate,
 		handler: opts.authController.LogoutEndpoint.bind(opts.authController)
 	});
 	
