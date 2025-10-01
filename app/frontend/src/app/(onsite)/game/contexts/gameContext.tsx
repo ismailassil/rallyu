@@ -6,6 +6,9 @@ interface GameContextType {
   gameType: GameType;
   setGameType:  React.Dispatch<React.SetStateAction<GameType>>;
 
+  gameTime: number;
+  setGameTime: React.Dispatch<React.SetStateAction<number>>;
+
   connection: boolean;
   toggleConnection: () => void;
 
@@ -25,6 +28,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [gameType, setGameType] = useState<GameType>('pingpong');
   const [connection, setConnection] = useState(false);
   const [url, setUrl] = useState<string | null>(null);
+  const [gameTime, setGameTime] = useState<number>(0);
 
   const toggleConnection = () => {
     setConnection(prev => !prev);
@@ -38,7 +42,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         connection,
         toggleConnection,
         url,
-        setUrl
+        setUrl,
+        gameTime,
+        setGameTime
       }}
     >
       {children}

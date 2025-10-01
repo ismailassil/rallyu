@@ -94,7 +94,7 @@ class SocketProxy {
 	}
 }
 
-export const setupCommunications = (gameStateRef: React.RefObject<GameState>, proxy: SocketProxy): (() => void) => {
+export const setupCommunications = (gameStateRef: React.RefObject<GameState>, proxy: SocketProxy, setGameTime: React.Dispatch<React.SetStateAction<number>>): (() => void) => {
 	return proxy.subscribe((data: any): void => {
 		gameStateRef.current.gameStatus = data.type
 		switch (data.type) {
@@ -112,9 +112,14 @@ export const setupCommunications = (gameStateRef: React.RefObject<GameState>, pr
 			case 'gameover':
 				gameStateRef.current.serverBall = { x: 800, y: 600, width: 20, height: 20 };
 				proxy.disconnect();
+				setGameTime(0);
 				break;
 			case 'ready':
 				gameStateRef.current.index = data.i
+				setGameTime(3);
+				break;
+			case 'start':
+				setGameTime(90);
 				break;
 			case 'state':
 				gameStateRef.current.serverBall = data.state.b

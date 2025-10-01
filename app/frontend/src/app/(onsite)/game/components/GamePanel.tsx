@@ -24,7 +24,7 @@ function GamePanel() {
 	}, [])
 
 	return (
-		<div className="flex w-full gap-4 flex-col xl:flex-row">
+		<div className="flex w-full gap-4 flex-col 2xl:flex-row">
 			<AnimatePresence>
 				<div className="flex flex-col justify-center items-center w-full border border-white/15 bg-card rounded-md p-4 min-w-0 flex-3">
 					<GameField />
