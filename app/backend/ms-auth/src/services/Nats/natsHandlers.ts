@@ -1,6 +1,6 @@
 import { JSONCodec } from 'nats';
 import UserService from '../User/UserService';
-import UserRepository from '../../repositories/deprecated/userRepository';
+import UserRepository from '../../repositories/[DEPRECATED]/userRepository';
 import RelationsService from '../User/RelationsService';
 // import * as userService from './userService';
 

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import pino from 'pino';
+import { ServiceUnavailable } from '../../types/auth.types';
 const qrcodeinterminal = require('qrcode-terminal');
 
 class WhatsAppService {
@@ -74,6 +75,11 @@ class WhatsAppService {
 				this.logger.warn('[SMS] WhatsApp connection restarted, reconnecting...');
 				await this.initWhatsappConnection();
 				return ;
+			} else if (disconnectReason !== this.DisconnectReason.loggedOut) {
+				// console.log('⏲️ Connection to WASocket timed out, reconnecting...');
+				this.logger.warn('[SMS] WhatsApp connection logged out, reconnecting...');
+				await this.initWhatsappConnection();
+				return ;
 			}
 
 			// console.log('❌ Connection to WASocket closed due to: ', lastDisconnect.error);
@@ -127,7 +133,7 @@ class WhatsAppService {
 		if (!this.WASocket || !this.isReady) {
 			// console.log('❌ WASocket is not initialized yet!');
 			this.logger.error('[SMS] WhatsApp service is not running yet!');
-			return ;
+				throw new ServiceUnavailable('SMS service is not available at the moment');
 		}
 
 		const jid = `${receiverWANumber}@s.whatsapp.net`;

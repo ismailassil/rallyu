@@ -1,4 +1,4 @@
-import MatchesRepository from "../../repositories/deprecated/matchesRepository";
+import MatchesRepository from "../../repositories/[DEPRECATED]/matchesRepository";
 
 class MatchesService {
 	constructor(

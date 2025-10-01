@@ -16,8 +16,8 @@ export function secondsToMinutes(seconds: number) {
 	return Math.floor(seconds / 60);
 }
 
-export function simulateBackendCall(ms: number) {
-	const shouldFail = Math.random() < 0.5; 
+export function simulateBackendCall(ms: number, factor: number = 0) {
+	const shouldFail = Math.random() < factor;
 	
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {

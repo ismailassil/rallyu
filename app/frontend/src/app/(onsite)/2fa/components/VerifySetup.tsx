@@ -1,6 +1,6 @@
 import React from "react";
 import { RefObject } from "react";
-import { ArrowLeft, Loader, LoaderCircle } from "lucide-react";
+import { ArrowLeft, LoaderCircle } from "lucide-react";
 import { METHODS_META } from "./constants";
 import OTPCodeInput from "./OTPCodeInput";
 

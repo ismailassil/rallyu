@@ -127,6 +127,11 @@ export class InvalidCredentialsError extends AuthError {
 	}
 }
 
+export class ServiceUnavailable extends AuthError {
+	constructor(message: string = 'Authentication service is currently unavailable', details: any = {}) {
+		super(message, 503, 'AUTH_SERVICE_UNAVAILABLE', details);
+	}
+}
 
 export class InternalServerError extends AuthError {
 	constructor(message: string = 'An unexpected error occured', details: any = {}) {

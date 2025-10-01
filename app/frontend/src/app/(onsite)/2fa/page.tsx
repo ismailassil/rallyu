@@ -1,18 +1,17 @@
 'use client';
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { METHODS_META } from "./constants";
-import MethodsOverview from "./MethodsOverview";
+import { METHODS_META } from "./components/constants";
+import MethodsOverview from "./components/MethodsOverview";
 import { Loader, Check } from "lucide-react";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { APIError } from "@/app/(api)/APIClient";
 import { toastSuccess, toastError, toastLoading } from "@/app/components/CustomToast";
-import { Toaster, toast } from "sonner";
+import { Toaster } from "sonner";
 import MainCardWrapper from "../components/UI/MainCardWrapper";
 import { motion } from "framer-motion";
-import SetupTOTP from "./SetupTOTP";
-import VerifySetup from "./VerifySetup";
-import { simulateBackendCall } from "@/app/(api)/utils";
+import SetupTOTP from "./components/SetupTOTP";
+import VerifySetup from "./components/VerifySetup";
 
 
 enum STEP {
@@ -36,22 +35,19 @@ export default function TwoFAManagerPage() {
 	const inputRefs = useRef([]);
 
 	useEffect(() => {
-		
+		if (currentStep === STEP.DONE) return ;
 		fetchEnabledMethods();
-	}, []);
+	}, [currentStep]);
 	
 	async function fetchEnabledMethods() {
 		try {
 			setIsLoading(true);
-			toastLoading('Loading enabled methods...');
-			
 			const enabledMethods = await apiClient.mfaEnabledMethods();
 			setEnabledMethods(enabledMethods);
 		} catch (err) {
 			const apiErr = err as APIError;
 			toastError(apiErr.message);
 		} finally {
-			toastSuccess('Enabled methods loaded');
 			setIsLoading(false);
 		}
 	}
@@ -63,10 +59,10 @@ export default function TwoFAManagerPage() {
 			setIsLoading(true);
 			
 			const res = await apiClient.mfaSetupInit(method);
-			if (method === 'totp')
+			if (method === 'TOTP')
 				setTotpSecrets(res);
 			
-			if (method === 'totp')
+			if (method === 'TOTP')
 				setCurrentStep(STEP.SETUP_TOTP);
 			else
 				setCurrentStep(STEP.VERIFY_SETUP);
@@ -79,7 +75,7 @@ export default function TwoFAManagerPage() {
 	}
 
 	async function handleDisableMethod(method: string) {
-		setSelectedMethod(method);
+		// setSelectedMethod(method);
 
 		if (!confirm(`Are you sure you want to disable ${METHODS_META[method].title}?`)) {
 			return;
@@ -90,7 +86,6 @@ export default function TwoFAManagerPage() {
 			
 			await apiClient.mfaDisableMethod(method);
 			toastSuccess(`${METHODS_META[method].title} disabled successfully`);
-			await fetchEnabledMethods();
 		} catch (err) {
 			const apiErr = err as APIError;
 			toastError(apiErr.message);
@@ -104,9 +99,8 @@ export default function TwoFAManagerPage() {
 			const toVerify = code.join('');
 			setIsVerifyingCode(true);
 			
-			
 			await apiClient.mfaSetupVerify(selectedMethod, toVerify);
-			toastSuccess(`${METHODS_META[selectedMethod].title} setup successfully!`);
+			toastSuccess(`${METHODS_META[selectedMethod].title} enabled successfully!`);
 			
 			setCurrentStep(STEP.DONE);
 			setCode(['', '', '', '', '', '']);

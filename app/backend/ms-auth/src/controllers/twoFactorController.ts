@@ -32,7 +32,7 @@ class TwoFactorController {
 
 			const totpSecretsOrCode = await this.twoFactorService.createPending(methodNormalized as 'TOTP' | 'SMS' | 'EMAIL', user_id);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, methodNormalized === 'TOTP' ? { totpSecretsOrCode } : {});
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, methodNormalized === 'TOTP' ? totpSecretsOrCode : {});
 
 			reply.status(status).send(body);
 

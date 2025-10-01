@@ -1,4 +1,4 @@
-import TwoFactorRepository from "../../repositories/deprecated/twoFactorRepository";
+import TwoFactorRepository from "../../repositories/[DEPRECATED]/twoFactorRepository";
 import { InternalServerError, InvalidCredentialsError, SessionExpiredError, SessionNotFoundError, UserNotFoundError, _2FAAlreadyEnabled, _2FAExpiredCode, _2FAInvalidCode, _2FANotEnabled, _2FANotFound } from "../../types/auth.types";
 import MailingService from "../Communication/MailingService";
 import WhatsAppService from "../Communication/WhatsAppService";
