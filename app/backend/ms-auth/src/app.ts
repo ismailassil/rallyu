@@ -5,32 +5,31 @@ import { db } from './database/index';
 import runMigrations from './database/migrations';
 import cors from '@fastify/cors';
 import userRouter from './routes/userRouter';
-import pinoPretty from 'pino-pretty';
-import natsPlugin from './plugins/natsPlugin';
 import { appConfig } from './config';
 import JWTUtils from './utils/auth/Auth';
-import UserRepository from './repositories/userRepository';
-import SessionRepository from './repositories/sessionRepository';
-import TwoFactorRepository from './repositories/twoFactorRepository';
-import UserService from './services/userService';
-import RelationsRepository from './repositories/relationsRepository';
-import SessionService from './services/sessionService';
+import UserRepository from './repositories/UserRepository';
+import TwoFactorRepository from './repositories/TwoFactorRepository';
+import UserService from './services/User/UserService';
+import RelationsRepository from './repositories/RelationsRepository';
+import SessionService from './services/Auth/SessionsService';
 import { authConfig } from './config/auth';
-import TwoFactorService from './services/twoFactorService';
-import AuthService from './services/authService';
-import AuthController from './controllers/authController';
-import TwoFactorController from './controllers/twoFactorController';
-import UserController from './controllers/userController';
-import RelationsController from './controllers/relationsContoller';
-import RelationsService from './services/relationsService';
-import StatsService from './services/statsService';
-import StatsRepository from './repositories/statsRepository';
-import MatchesRepository from './repositories/matchesRepository';
-import WhatsAppService from './services/WhatsAppService';
-import MailingService from './services/MailingService';
-import PasswordResetController from './controllers/passwordResetController';
-import PasswordResetRepository from './repositories/passwordResetRepository';
-import PasswordResetService from './services/passwordResetService';
+import AuthService from './services/Auth/AuthService';
+import AuthController from './controllers/AuthController';
+import TwoFactorController from './controllers/TwoFactorController';
+import UserController from './controllers/UserController';
+import RelationsController from './controllers/RelationsContoller';
+import RelationsService from './services/User/RelationsService';
+import StatsService from './services/GameAndStats/StatsService';
+import StatsRepository from './repositories/StatsRepository';
+import MatchesRepository from './repositories/MatchesRepository';
+import WhatsAppService from './services/Communication/WhatsAppService';
+import MailingService from './services/Communication/MailingService';
+import PasswordResetController from './controllers/PasswordResetController';
+import ResetPasswordRepository from './repositories/ResetPasswordRepository';
+import PasswordResetService from './services/Auth/PasswordResetService';
+import TwoFactorMethodService from './services/TwoFactorAuth/TwoFactorMethodService';
+import TwoFactorChallengeService from './services/TwoFactorAuth/TwoFactorChallengeService';
+import SessionsRepository from './repositories/SessionsRepository';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
@@ -65,40 +64,41 @@ async function buildApp(): Promise<FastifyInstance> {
 
 	// INIT REPOSITORIES
 	const userRepository = new UserRepository();
-	const sessionsRepository = new SessionRepository();
+	const sessionsRepository = new SessionsRepository();
 	const twoFactorRepository = new TwoFactorRepository();
 	const relationsRepository = new RelationsRepository();
 	const statsRepository = new StatsRepository();
 	const matchesRepository = new MatchesRepository();
-	const resetPasswordRepository = new PasswordResetRepository();
+	const resetPasswordRepository = new ResetPasswordRepository();
 
 	// INIT SERVICES
 	const whatsAppService = new WhatsAppService(fastify.log);
 	// await whatsAppService.isReady; // TODO: HANDLE ERRORS
 	const mailingService = new MailingService(appConfig.mailing);
-	const sessionService = new SessionService(authConfig, jwtUtils, sessionsRepository);
+	const sessionsService = new SessionService(authConfig, jwtUtils, sessionsRepository);
 	const statsService = new StatsService(userRepository, statsRepository);
 	const relationsService = new RelationsService(userRepository, relationsRepository);
 	const userService = new UserService(userRepository, relationsService, statsService, matchesRepository);
-	const twoFactorService = new TwoFactorService(twoFactorRepository, userService, mailingService, whatsAppService);
-	const authService = new AuthService(authConfig, jwtUtils, userService, sessionService, twoFactorService, mailingService, whatsAppService);
+	const twoFAMethodService = new TwoFactorMethodService(twoFactorRepository, userService, mailingService, whatsAppService);
+	const twoFAChallengeService = new TwoFactorChallengeService(twoFactorRepository, userService, mailingService, whatsAppService);
+	const authService = new AuthService(authConfig, jwtUtils, userService, sessionsService, twoFAMethodService, twoFAChallengeService, mailingService, whatsAppService);
 	const passwordResetService = new PasswordResetService(authConfig, userService, resetPasswordRepository, mailingService, whatsAppService);
 
 	// INIT CONTROLLERS
 	const passwordResetController = new PasswordResetController(passwordResetService);
-	const authController = new AuthController(authService, twoFactorService);
-	const twoFactorController = new TwoFactorController(twoFactorService);
+	const authController = new AuthController(authService);
+	const twoFactorController = new TwoFactorController(twoFAMethodService);
 	const userController = new UserController(userService);
 	const relationsController= new RelationsController(relationsService);
 	
 
 	// REGISTER AUTH PLUGIN
-	await fastify.register(natsPlugin, {
-		NATS_URL: process.env["NATS_URL"] || "", 
-		NATS_USER: process.env["NATS_USER"] || "",
-		NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
-		userService: userService
-	});
+	// await fastify.register(natsPlugin, {
+	// 	NATS_URL: process.env["NATS_URL"] || "", 
+	// 	NATS_USER: process.env["NATS_USER"] || "",
+	// 	NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
+	// 	userService: userService
+	// });
 	await fastify.register(authRouter, { prefix: '/auth', authController, twoFactorController, passwordResetController });
 	await fastify.register(userRouter, { prefix: '/users', userController, relationsController });
 

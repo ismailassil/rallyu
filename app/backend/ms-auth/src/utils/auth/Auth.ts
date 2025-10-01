@@ -77,8 +77,10 @@ class JWTUtils {
 		} catch (err: any) {
 			if (err instanceof jwt.JsonWebTokenError)
 				throw new TokenInvalidError();
-			else
+			else if (err instanceof jwt.TokenExpiredError)
 				throw new TokenExpiredError('Access');
+			else
+				throw new TokenInvalidError();
 		}
 	}
 
@@ -89,8 +91,10 @@ class JWTUtils {
 		} catch (err: any) {
 			if (err instanceof jwt.JsonWebTokenError)
 				throw new TokenInvalidError();
-			else
+			else if (err instanceof jwt.TokenExpiredError)
 				throw new TokenExpiredError('Refresh');
+			else
+				throw new TokenInvalidError();
 		}
 	}
 

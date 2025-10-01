@@ -1,3 +1,6 @@
+/* ---------------- Body Schemas ---------------- */
+
+// Local Auth
 const authRegisterBody = {
 	type: 'object',
 	properties: {
@@ -21,6 +24,7 @@ const authLoginBody = {
 	additionalProperties: false
 };
 
+
 // const authLogoutBody = {
 // 	type: 'object',
 // 	properties: {
@@ -30,55 +34,82 @@ const authLoginBody = {
 // 	additionalProperties: false
 // }
 
-const authBearerHeader = {
+// 2FA login challenge
+const auth2FALoginChallengeBody = {
 	type: 'object',
 	properties: {
-		authorization: { type: 'string' } // refresh token to invalidate session / generate new one
+		loginChallengeID: { type: 'number' },
+		method: { type: 'string' }
 	},
-	required: ['authorization']
-}
+	required: ['loginChallengeID', 'method'],
+	additionalProperties: false
+};
 
-const authOAuthQueryString = {
+const auth2FALoginChallengeVerifyCodeBody = {
+	type: 'object',
+	properties: {
+		loginChallengeID: { type: 'number' },
+		method: { type: 'string' },
+		code: { type: 'string' }
+	},
+	required: ['loginChallengeID', 'method', 'code'],
+	additionalProperties: false
+};
+
+// const authBearerHeader = {
+// 	type: 'object',
+// 	properties: {
+// 		authorization: { type: 'string' }
+// 	},
+// 	required: ['authorization']
+// };
+
+// const authOAuthQueryString = {
+// 	type: 'object',
+// 	properties: {
+// 		code: { type: 'string' }
+// 	},
+// 	required: ['code']
+// };
+
+// 2FA management
+const auth2FASetupParams = {
+	type: 'object',
+	properties: {
+		method: { 
+			type: 'string',
+			enum: ['email', 'sms', 'totp']
+		}
+	},
+	required: ['method']
+};
+
+const auth2FASetupVerifyBody = {
 	type: 'object',
 	properties: {
 		code: { type: 'string' }
 	},
-	required: ['code']
-}
+	required: ['code'],
+	additionalProperties: false
+};
 
-// const auth2FASetupBody = {
-// 	type: 'object',
-// 	properties: {
-// 		method: { type: 'string' },
-// 		contact: { type: 'string' }
-// 	},
-// 	required: ['method', 'contact']
-// }
-
-const authMFAVerifyBody = {
+const auth2FADisableBody = {
 	type: 'object',
 	properties: {
-		code: { type: 'string' }
+		method: { type: 'string' },
+		password: { type: 'string' }
 	},
-	required: ['code']
-}
+	required: ['method', 'password']
+};
 
-// const auth2FADisableBody = {
-// 	type: 'object',
-// 	properties: {
-// 		method: { type: 'string' },
-// 		password: { type: 'string' }
-// 	},
-// 	required: ['method', 'password']
-// }
-
+// Password management
 const authResetPasswordBody = {
 	type: 'object',
 	properties: {
 		email: { type: 'string' }
 	},
 	required: ['email']
-}
+};
 
 const authResetPasswordVerifyBody = {
 	type: 'object',
@@ -87,7 +118,7 @@ const authResetPasswordVerifyBody = {
 		code: { type: 'string' }
 	},
 	required: ['email', 'code']
-}
+};
 
 const authResetPasswordUpdateBody = {
 	type: 'object',
@@ -97,7 +128,28 @@ const authResetPasswordUpdateBody = {
 		password: { type: 'string' }
 	},
 	required: ['email', 'code', 'password']
-}
+};
+
+const authChangePasswordBody = {
+	type: 'object',
+	properties: {
+		oldPassword: { type: 'string' },
+		newPassword: { type: 'string' }
+	},
+	required: ['oldPassword', 'newPassword']
+};
+
+
+
+/* ---------------- Querystring Schemas ---------------- */
+
+const authOAuthQueryString = {
+	type: 'object',
+	properties: {
+		code: { type: 'string' }
+	},
+	required: ['code']
+};
 
 export const authRegisterSchema = {
 	body: authRegisterBody
@@ -107,37 +159,38 @@ export const authLoginSchema = {
 	body: authLoginBody
 };
 
-export const authLogoutSchema = {
-	headers: authBearerHeader
-}
+export const auth2FALoginChallengeSchema = {
+	body: auth2FALoginChallengeBody
+};
 
-export const authRefreshSchema = {
-	// headers: authBearerHeader
-}
+export const auth2FALoginChallengeVerifyCodeSchema = {
+	body: auth2FALoginChallengeVerifyCodeBody
+};
+
+export const authChangePasswordSchema = {
+	body: authChangePasswordBody
+};
 
 export const authOAuthSchema = {
 	querystring: authOAuthQueryString
 }
 
-// export const auth2FASetupSchema = {
-// 	body: auth2FASetupBody
-// }
+export const auth2FASetupSchema = {
+	params: auth2FASetupParams
+}
 
-// export const auth2FAConfirmSchema = {
-// 	body: auth2FAConfirmBody
-// }
+export const auth2FADisableSchema = {
+	params: auth2FASetupParams
+}
 
-// export const auth2FAVerifySchema = {
-// 	body: auth2FAConfirmBody
-// }
+export const auth2FASetupVerifySchema = {
+	params: auth2FASetupParams,
+	body: auth2FASetupVerifyBody
+}
 
 // export const auth2FADisableSchema = {
 // 	body: auth2FADisableBody
 // }
-
-export const authMFAVerifySchema = {
-	body: authMFAVerifyBody
-}
 
 export const authResetPasswordSchema = {
 	body: authResetPasswordBody

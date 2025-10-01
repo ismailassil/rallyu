@@ -30,7 +30,7 @@ export default function LoginForm() {
 			const res = await login(formData.username, formData.password);
 			if (res._2FARequired) {
 				toastSuccess('Two Factor Authentication is required!');
-				router.push('/two-factorv3');
+				router.push('/two-factor');
 			} else
 				toastSuccess('Logged in successfully');
 		} catch (err: any) {
