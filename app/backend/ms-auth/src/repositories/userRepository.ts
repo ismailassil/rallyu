@@ -174,10 +174,12 @@ class UserRepository extends ARepository {
 					LEFT JOIN relations r 
 						ON ((r.requester_user_id = u.id AND r.receiver_user_id = ?)
 							OR (r.requester_user_id = ? AND r.receiver_user_id = u.id))
-					WHERE (WHERE u.username LIKE ? OR u.email LIKE ? OR (u.first_name || ' ' || u.last_name) LIKE ?)
+					WHERE (u.username LIKE ? OR u.email LIKE ? OR (u.first_name || ' ' || u.last_name) LIKE ?)
 						AND (r.relation_status != 'BLOCKED' OR r.relation_status IS NULL)`,
-				[userID, userID, likeQuery, likeQuery]
+				[userID, userID, likeQuery, likeQuery, likeQuery]
 			);
+
+			console.log('SEARCH RESULTS: ', allResults);
 			
 			return allResults as User[];
 		} catch (err: any) {
