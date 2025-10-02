@@ -1,5 +1,5 @@
 // import RelationsRepository from "../repositories/relationsRepository";
-import RelationsRepository from "../../repositories/RelationsRepository";
+import RelationsRepository from "../../repositories/relationsRepository";
 import UserRepository from "../../repositories/userRepository";
 import { AlreadyFriendsError, CannotAcceptRequestError, CannotBlockError, CannotCancelRequestError, CannotRejectRequestError, CannotSendFriendRequestError, CannotUnfriendError, FriendRequestAlreadySentError, InternalServerError, NoPendingRequestError, UserNotFoundError, UsersNotFoundError } from "../../types/auth.types";
 

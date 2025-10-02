@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import UserController from "../controllers/UserController";
-import RelationsController from "../controllers/RelationsContoller";
+import UserController from "../controllers/userController";
+import RelationsController from "../controllers/relationsContoller";
 import Authenticate from "../middleware/Authenticate";
 import fastifyMultipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';

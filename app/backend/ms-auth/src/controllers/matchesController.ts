@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import MatchesRepository from "../repositories/[DEPRECATED]/matchesRepository";
-import AuthResponseFactory from "./AuthResponseFactory";
+import AuthResponseFactory from "./authResponseFactory";
 
 class MatchesController {
 	private matchesRepository: MatchesRepository;
