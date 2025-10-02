@@ -9,6 +9,7 @@ import { toastError } from '@/app/components/CustomToast';
 import { APIError } from '@/app/(api)/APIClient';
 import { UserProfile } from '../../types';
 import { useRouter } from 'next/navigation';
+import { io } from 'socket.io-client';
 
 export default function UserProfilePage({ params } : { params: Promise<{ username: string }> }) {
 	const router = useRouter();

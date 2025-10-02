@@ -1,80 +1,81 @@
 import React, { useState } from "react";
 import FormField from "@/app/(auth)/components/Forms/FormField";
-import useForm from "../deprecatedhooks/useForm";
+import useForm from "@/app/hooks/useForm";
 import { toastError, toastLoading, toastSuccess } from "@/app/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { changePasswordSchema } from "@/app/(api)/schema";
 
 export default function ChangePasswordForm() {
-	// const [currentPassword, setCurrentPassword] = useState('');
-	// const [newPassword, setNewPassword] = useState('');
-	// const [confirmNewPassword, setConfirmNewPassword] = useState('');
-
 	const { apiClient } = useAuth();
-	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm({
-		'current-password': '',
-		'new-password': '',
-		'new-confirm-password': ''
-	});
+	const [formData, touched, errors, debounced, handleChange, validateAll, resetForm] = useForm(
+		changePasswordSchema, 
+		{
+			current_password: '',
+			new_password: '',
+			confirm_new_password: ''
+		},
+		{ debounceMs: 1200 }
+	);
 
-	async function handleSubmit(e: React.FormEvent) {
-		e.preventDefault();
+	// async function handleSubmit(e: React.FormEvent) {
+	// 	e.preventDefault();
 
-		const isValid = validateAll();
-		if (!isValid)
-			return ;
+	// 	const isValid = validateAll();
+	// 	if (!isValid)
+	// 		return ;
 
-		try {
-			toastLoading('Changing password...');
-			const res = await apiClient.changePassword({ old_password: formData['current-password'], new_password: formData['new-password']});
-			console.log('Update password response: ', res);
-			toastSuccess('Password changed successfully');
-		} catch (err) {
-			toastError('Someting went wrong, please try again');
-		}
-	}
+	// 	try {
+	// 		toastLoading('Changing password...');
+	// 		const res = await apiClient.changePassword({ old_password: formData['current-password'], new_password: formData['new-password']});
+	// 		console.log('Update password response: ', res);
+	// 		toastSuccess('Password changed successfully');
+	// 	} catch (err) {
+	// 		toastError('Someting went wrong, please try again');
+	// 	}
+	// }
 
 	return (
-		<div className='flex px-18 gap-8'>
-			<div className='flex flex-col gap-4 flex-2'>
-				<form id="settings-change-password-form" action="" onSubmit={handleSubmit}>
-					<FormField 
-						label='Current Password'
-						field='current-password'
-						inputPlaceholder='••••••••••••••••'
-						iconSrc='/icons/lock.svg'
-						inputValue={formData['current-password']}
-						debounced={debounced['current-password']}
-						touch={touched['current-password']}
-						error={errors["current-password"]}
-						onChange={handleChange}
-						hidden={true}
-					/>
-					<FormField
-						label="New Password"
-						field="new-password"
-						inputPlaceholder="••••••••••••••••"
-						iconSrc="/icons/lock.svg"
-						inputValue={formData["new-password"]}
-						debounced={debounced["new-password"]}
-						touch={touched["new-password"]}
-						error={errors["new-password"]}
-						onChange={handleChange}
-						hidden={true}
-					/>
-					<FormField
-						label="Confirm New Password"
-						field="new-confirm-password"
-						inputPlaceholder="••••••••••••••••"
-						iconSrc="/icons/lock.svg"
-						inputValue={formData["new-confirm-password"]}
-						debounced={debounced["new-confirm-password"]}
-						touch={touched["new-confirm-password"]}
-						error={errors["new-confirm-password"]}
-						onChange={handleChange}
-						hidden={true}
-					/>
-					<button type="submit">DEV - SUBMIT</button>
-				</form>
+		<div className="flex gap-12 px-14 max-lg:flex-col max-lg:gap-8 max-lg:px-10">
+			<div className="flex flex-col justify-between flex-2 gap-4">
+				<FormField 
+					className='field flex flex-col gap-0.5 box-border'
+					iconSrc='/icons/lock.svg'
+					label='Current Password'
+					field='current_password'
+					inputPlaceholder='••••••••••••••••'
+					inputValue={formData.current_password}
+					hidden={true}
+					onChange={handleChange}
+					touched={touched.current_password}
+					error={errors.current_password}
+					debounced={debounced.current_password}
+				/>
+				<FormField 
+					className='field flex flex-col gap-0.5 box-border'
+					iconSrc='/icons/lock.svg'
+					label='New Password'
+					field='new_password'
+					inputPlaceholder='••••••••••••••••'
+					inputValue={formData.new_password}
+					hidden={true}
+					onChange={handleChange}
+					touched={touched.new_password}
+					error={errors.new_password}
+					debounced={debounced.new_password}
+				/>
+				<FormField 
+					className='field flex flex-col gap-0.5 box-border'
+					iconSrc='/icons/lock.svg'
+					label='Confirm New Password'
+					field='confirm_new_password'
+					inputPlaceholder='••••••••••••••••'
+					inputValue={formData.confirm_new_password}
+					hidden={true}
+					onChange={handleChange}
+					touched={touched.confirm_new_password}
+					error={errors.confirm_new_password}
+					debounced={debounced.confirm_new_password}
+				/>
 			</div>
 			<div className='bg-gradient-to-br from-white/0 to-white/4 border-1 border-white/6 rounded-2xl px-8 py-6 flex-1'>
 				<h1 className="font-bold text-xl">Rules for passwords</h1>

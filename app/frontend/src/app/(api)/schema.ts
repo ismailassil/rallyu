@@ -68,6 +68,24 @@ export const personalInfoSettingsSchema = z.object({
 		.max(50, "Bio must be at most 50 characters")
 });
 
+export const changePasswordSchema = z.object({
+	current_password: z.string()
+		.nonempty("Current password is required"),
+
+	new_password: z.string()
+		.nonempty("New password is required")
+		.min(8, "New password must be at least 8 characters")
+		.regex(/(?=.*[a-z])/, "New password must contain a lowercase letter")
+		.regex(/(?=.*[A-Z])/, "New password must contain an uppercase letter")
+		.regex(/(?=.*\d)/, "New password must contain a digit"),
+
+	confirm_new_password: z.string()
+		.nonempty("Please confirm your new password"),
+	}).refine((data) => data.new_password === data.confirm_new_password, {
+		message: "New passwords do not match",
+		path: ["confirm_new_password"],
+});
+
 export const resetPasswordSchema = z.object({
 	email: z.string()
 		.nonempty("Email is required")

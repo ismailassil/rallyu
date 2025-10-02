@@ -1,9 +1,13 @@
+'use client';
 import Relations, { FriendshipStatus } from './Relations';
 import MainCardWrapper from '@/app/(onsite)/components/UI/MainCardWrapper';
 import Button from './Button';
 import { LocalUserPencilIcon } from './LocalIcon';
 import Avatar from './Avatar';
 import { useRouter } from 'next/navigation';
+import { useEffect, useId, useState } from 'react';
+import { io } from 'socket.io-client';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 
 type ProfileCardProps = {
 	userId: number,
@@ -20,6 +24,44 @@ type ProfileCardProps = {
 
 export default function ProfileCard({ userId, fullName, username, bio, avatar, friendshipStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
 	const router = useRouter();
+	const { loggedInUser, socket } = useAuth();
+	const [isOnline, setIsOnline] = useState(false);
+	const [showOnlineToggle, setShowOnlineToggle] = useState(false);
+
+	useEffect(() => {
+
+		socket.emit("is_user_online", { userId }, (err, response) => {
+			console.log('isOnline reponse: ', response.isOnline);
+			setIsOnline(response.isOnline);
+		});
+
+		socket.on('user_online', (data) => {
+			console.log('[SOCKET.IO] MESSAGE RECEIVED IN USER_ONLINE: ', data);
+
+			const { userId: userID } = data;
+
+			if (userId == userID) {
+				console.log(`[SOCKET.IO] USER ${userID} IS ONLINE`);
+				setIsOnline(true);
+			}
+		});
+
+		socket.on('user_offline', (data) => {
+			console.log('[SOCKET.IO] MESSAGE RECEIVED IN USER_OFFLINE: ', data);
+
+			const { userId: userID } = data;
+
+			if (userId == userID) {
+				console.log(`[SOCKET.IO] USER ${userID} IS OFFLINE`);
+				setIsOnline(false);
+			}
+		});
+
+		return () => {
+			socket.disconnect();
+		};
+	}, []);
+
 	return (
 		<MainCardWrapper className='flex flex-col items-center gap-8
 									p-10 min-h-[300px] max-h-[500px]
@@ -34,9 +76,12 @@ export default function ProfileCard({ userId, fullName, username, bio, avatar, f
 					<div className="flex-5 flex flex-col gap-4">
 						<div>
 							<h1 className='text-2xl lg:text-5xl text-accent font-extrabold'>
-								{fullName}
+								{fullName}{(<div className={`${isOnline ? 'bg-green-500 h-3 w-3 rounded-full' : 'bg-gray-500 h-3 w-3 rounded-full'}`}></div>)}
 							<p className='text-lg lg:text-2xl xl:text-3xl font-semibold text-white/50'>{`(${username})`}</p>
 							</h1>
+							<button>
+								Hide Online
+							</button>
 						</div>
 						<p className={`text-sm text-gray-400 lg:text-lg`}>
 							{bio}
@@ -49,8 +94,6 @@ export default function ProfileCard({ userId, fullName, username, bio, avatar, f
 					{/* Avatar */}
 					<Avatar 
 						avatar={avatar}
-						width={100}
-						height={100}
 						className='ring-4 hover:ring-3 aspect-square h-24 sm:h-36 lg:h-48 self-start sm:self-center
 						overflow-hidden rounded-full relative
 						ring-white/10 transition-all duration-500 hover:scale-105 hover:ring-white/30'
