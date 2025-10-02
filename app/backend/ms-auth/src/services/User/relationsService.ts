@@ -23,11 +23,11 @@ class RelationsService {
 	}
 
 	async getIncomingBlocks(userID: number) {
-		return await this.relationsRepository.findBlockedUsers(userID);
+		return await this.relationsRepository.findUsersWhoBlocked(userID);
 	}
 	
 	async getOutgoingBlocks(userID: number) {
-		return await this.relationsRepository.findUsersWhoBlocked(userID);
+		return await this.relationsRepository.findBlockedUsers(userID);
 	}
 
 	async getRelationStatus(userID: number, targetUserID: number) {
