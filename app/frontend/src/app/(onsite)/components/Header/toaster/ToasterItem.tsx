@@ -51,8 +51,6 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 				<div className="relative flex items-center gap-5 select-none">
 					<Avatar
 						avatar={image}
-						width={40}
-						height={40}
 						className="flex h-12 w-12 overflow-hidden rounded-full ring-1 ring-white/30"
 					/>
 					<div>

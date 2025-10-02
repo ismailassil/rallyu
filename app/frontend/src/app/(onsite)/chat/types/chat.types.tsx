@@ -3,9 +3,14 @@ export type LoggedUser = {
 	first_name: string,
 	last_name: string,
 	id: number,
-	relation_status: string,
+	// relation_status: string,
 	username: string,
 	last_message : MessageType
+
+
+	email: string,
+	bio: string,
+
 };
 
 

@@ -36,11 +36,19 @@ fastify.get('/chat/history', async (req, res) => {
 	}
 
 	try {
+		// const statement = fastify.db.prepare(
+		// 	`SELECT * FROM message 
+		// 	 WHERE senderId = ? OR receiverId = ?
+		// 	 ORDER BY created_at ASC`
+		// );
+
 		const statement = fastify.db.prepare(
 			`SELECT * FROM message 
 			 WHERE senderId = ? OR receiverId = ?
-			 ORDER BY created_at ASC`
+			 ORDER BY created_at DESC
+			 LIMIT 10`
 		);
+		
 
 		const result = statement.all(userId, userId);
 

@@ -7,7 +7,7 @@ import { MessageType } from '../types/chat.types';
 import { AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import FirstConversation from './FirstConversation';
-import ConversationHeader from  './ConversationHeader';
+import ConversationHeader from './ConversationHeader';
 
 /*
 	==== TO FIX ===
@@ -27,7 +27,7 @@ import ConversationHeader from  './ConversationHeader';
 
 const ConversationBody = () => {
 	const [message, setMessage] = useState("");
-	const { socket, BOSS,  messages, selectedUser } = useChat();
+	const { socket, BOSS, messages, selectedUser, apiClient, setMessages } = useChat();
 	const [filteredMessages, setfilteredMessages] = useState<MessageType[]>([]);
 	const messageRef = useRef<HTMLDivElement | null>(null);
 
@@ -84,6 +84,20 @@ const ConversationBody = () => {
 		}
 	};
 
+	const  handleLoadMore = () => {
+		useEffect(() => {
+			if (!BOSS?.id) return;
+	
+			apiClient.instance.get('/chat/history')
+				.then((response: any) => {
+					setMessages(response?.data)
+				})
+				.catch((error: any) => {
+					console.error("Error fetching chat history:", error);
+				});
+		}, []);
+	}
+
 	return (
 		<div className={` size-full border border-white/30 rounded-lg flex flex-col md:bg-white/4 `}>
 
@@ -105,9 +119,13 @@ const ConversationBody = () => {
 									<span className='text-xs text-white/50 self-end'>{moment.utc(msg.created_at).local().format('HH:mm')}</span>
 								</div>
 							</div>
+
 						</React.Fragment>
 					))}
 					<div ref={messageRef} />
+					<div className=' flex items-center justify-center'>
+						<button className=' w-fit text-xs text-white/50 border px-1.5 py-1 rounded-md hover:cursor-pointer' onClick={handleLoadMore}>Load more</button>
+					</div>
 				</div>
 			</div>) : (
 				<FirstConversation />
@@ -138,7 +156,7 @@ const ConversationBody = () => {
 						alt='send icon'
 						className='hover:cursor-pointer' onClick={sendData}
 					/>
-					
+
 				</div>
 			</div>
 		</div>

@@ -12,7 +12,7 @@ type ChatContextType = {
 	friends: any[] | null;
 	BOSS: LoggedUser | null;
 	socket: any;
-	api: any;
+	apiClient: any;
 	messages: MessageType[];
 	setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
 	selectedUser: LoggedUser | null;
@@ -40,7 +40,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	const [isLoadingFriends, setIsLoadingFriends] = useState(true)
 	const [messages, setMessages] = useState<MessageType[]>([])
 	const [selectedUser, setSelectedUser] = useState<LoggedUser | null>(null)
-	const { socket, api, user: BOSS } = useAuth()
+	const { socket, apiClient, loggedInUser: BOSS } = useAuth()
 
 	useEffect(() => {
 		async function getAllFriends() {
@@ -85,7 +85,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	useEffect(() => {
 		if (!BOSS?.id) return;
 
-		api.instance.get('/chat/history')
+		apiClient.instance.get('/chat/history')
 			.then((response: any) => {
 				setMessages(response?.data)
 			})
@@ -100,7 +100,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			setShowConversation,
 			isLoadingFriends,
 			setIsLoadingFriends,
-			api,
+			apiClient,
 			friends,
 			socket,
 			BOSS,

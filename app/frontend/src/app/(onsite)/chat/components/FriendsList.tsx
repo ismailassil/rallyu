@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { LoggedUser } from '../types/chat.types';
 import { useChat } from '../context/ChatContext';
 import moment from 'moment';
+import Avatar from '../../(profile)/users/components/Avatar';
 
 
 const FriendsList = () => {
@@ -100,12 +101,10 @@ const FriendsList = () => {
 								}}>
 									<div className={`flex gap-4 hover:cursor-pointer hover:bg-white/5 hover:rounded-lg p-2 ${selectedUser?.id === user?.id ? 'bg-white/15 rounded-lg' : 'bg-white/0'} w-full`}>
 										<div className=' size-[40] md:size-[50px] flex-shrink-0 overflow-hidden rounded-full border border-white/30'>
-											<Image
-												width={50}
-												height={50}
-												src={`http://localhost:4025/api${user?.avatar_url}`}
+											<Avatar
+												avatar={user?.avatar_url}
 												alt={`${user?.first_name + " " + user?.last_name} avatar`}
-												className='w-full h-full object-cover'
+												className='w-full h-full'
 											/>
 										</div>
 										<div className='flex flex-col w-full gap-1 justify-between p-0.5 min-w-0'>

@@ -35,8 +35,6 @@ function NotificationCard({ data, handler, handleChatUpdate }: Props) {
 				<div className="flex w-full gap-3">
 					<Avatar
 						avatar={avatar}
-						width={40}
-						height={40}
 						className={`flex aspect-square max-h-8 min-h-8 max-w-8 min-w-8 overflow-hidden rounded-full ring-yellow-400 ${status === "unread" && "ring-1"}`}
 					/>
 					<div>

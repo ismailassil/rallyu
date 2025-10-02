@@ -6,13 +6,11 @@ import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 interface AvatarProps {
 	avatar: string | null | undefined;
 	fallback?: string;
-	width: number;
-	height: number;
 	className?: string;
 	alt?: string;
 }
 
-export default function Avatar({ avatar, fallback = "/profile/image_1.jpg", width, height, className, alt } : AvatarProps)  {
+export default function Avatar({ avatar, fallback = "/profile/image_1.jpg", className, alt } : AvatarProps)  {
 	const { apiClient } = useAuth();
 	const [src, setSrc] = useState<string>(fallback);
 
@@ -47,8 +45,6 @@ export default function Avatar({ avatar, fallback = "/profile/image_1.jpg", widt
 				fill
 				src={src}
 				alt={alt || "Avatar"}
-				// width={width}
-				// height={height}
 				className='h-full w-full object-cover'
 				onError={() => {
 					console.log('Error loading image, using fallback.');

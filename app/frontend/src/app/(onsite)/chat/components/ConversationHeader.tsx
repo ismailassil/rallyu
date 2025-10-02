@@ -4,12 +4,13 @@ import Image from "next/image"
 import { ArrowCircleLeftIcon, DotsThreeVerticalIcon } from '@phosphor-icons/react';
 import { useChat } from '../context/ChatContext';
 import { useRouter } from 'next/navigation';
+import Avatar from '../../(profile)/users/components/Avatar';
 
 const ConversationHeader = () => {
 
 
 	const [option, setOption] = useState(false);
-	const { api, setShowConversation, setSelectedUser, selectedUser } = useChat();
+	const { apiClient, setShowConversation, setSelectedUser, selectedUser } = useChat();
 	const route = useRouter();
 
 	return (
@@ -21,12 +22,10 @@ const ConversationHeader = () => {
 			/>
 		</div>
 		<div className='relative w-12 h-12 flex-shrink-0 overflow-hidden rounded-full border border-white/30'>
-			<Image
-				fill
-				sizes='48px'
-				src={`http://localhost:4025/api/users${selectedUser?.avatar_path}`}
-				alt={`${selectedUser?.first_name + " " + selectedUser?.last_name} image`}
-				className='object-cover'
+			<Avatar 
+				avatar={selectedUser?.avatar_url} 
+				alt={`${selectedUser?.first_name + " " + selectedUser?.last_name} avatar`}
+				className='w-full h-full'
 			/>
 		</div>
 		<div className='flex flex-col justify-center'>
@@ -52,7 +51,7 @@ const ConversationHeader = () => {
 						<button className="w-full rounded-md py-2 bg-white/10 hover:bg-red-600 
 						transition duration-300 cursor-pointer"
 							onClick={async () => {
-								await api.blockUser(selectedUser?.id)
+								await apiClient.blockUser(selectedUser?.id)
 								setOption(false)
 								window.history.pushState(null, "", `/chat`) // ====> read more about this
 								setSelectedUser(null)
