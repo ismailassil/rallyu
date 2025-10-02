@@ -10,8 +10,10 @@ import {
 	leaderboardSchema, 
 	matchesRequestSchema, 
 	relationsRequestSchema, 
+	userIdSchema, 
 	userSearchByUsernameSchema, 
 	userUpdateSchema, 
+	userUsernameSchema, 
 	usernameAvailabilitySchema 
 } from "../schemas/users.schema";
 
@@ -48,16 +50,23 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 
 
 	/*------------------------------------------------ USERS ------------------------------------------------*/
-	fastify.get('/:username', {
+	fastify.get('/', {
+		schema: userUsernameSchema,
+		preHandler: fastify.authenticate,
+		handler: opts.userController.fetchUserByUsernameQueryHandler.bind(opts.userController)
+	});
+	fastify.get('/:id', {
+		schema: userIdSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.fetchUserHandler.bind(opts.userController)
 	});
-	fastify.put('/:username', {
+	fastify.put('/:id', {
 		schema: userUpdateSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.updateUserHandler.bind(opts.userController)
 	});
-	fastify.delete('/:username', {
+	fastify.delete('/:id', {
+		schema: userIdSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.deleteUserHandler.bind(opts.userController)
 	});
@@ -67,21 +76,24 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 		preHandler: fastify.authenticate,
 		handler: opts.userController.fetchRankLeaderboardHandler.bind(opts.userController)
 	});
-	fastify.get('/:username/matches', {
+	fastify.get('/:id/matches', {
 		schema: matchesRequestSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.fetchUserMatchesHandler.bind(opts.userController)
 	});
-	fastify.get('/:username/analytics', {
+	fastify.get('/:id/analytics', {
+		schema: userIdSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.fetchUserAnalyticsHandler.bind(opts.userController)
 	});
-	fastify.get('/:username/analytics-by-day', {
+	fastify.get('/:id/analytics-by-day', {
+		schema: userIdSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.fetchUserAnalyticsByDayHandler.bind(opts.userController)
 	});
 
-	fastify.post('/:username/avatar', {
+	fastify.post('/:id/avatar', {
+		schema: userIdSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.userController.uploadAvatarHandler.bind(opts.userController)
 	});

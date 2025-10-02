@@ -1,3 +1,22 @@
+// get user by id
+const userIdParams = {
+	type: 'object',
+	properties: {
+		id: { type: 'number' }
+	},
+	required: ['id'],
+	additionalProperties: false
+};
+
+// get user by username
+const userUsernameQuery = {
+	type: 'object',
+	properties: {
+		username: { type: 'string' }
+	},
+	additionalProperties: false
+}
+
 // update
 const userUpdateBody = {
 	type: 'object',
@@ -73,6 +92,14 @@ const leaderboardQuery = {
 	additionalProperties: false
 };
 
+export const userUsernameSchema = {
+	querystring: userUsernameQuery
+};
+
+export const userIdSchema = {
+	params: userIdParams
+};
+
 export const leaderboardSchema = {
 	querystring: leaderboardQuery
 };
@@ -90,6 +117,7 @@ export const emailAvailabilitySchema = {
 };
 
 export const userUpdateSchema = {
+	params: userIdParams,
 	body: userUpdateBody
 }
 
@@ -98,5 +126,6 @@ export const relationsRequestSchema = {
 };
 
 export const matchesRequestSchema = {
+	params: userIdParams,
 	querystring: matchesRequestQuery
 };

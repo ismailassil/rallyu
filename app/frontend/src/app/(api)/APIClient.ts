@@ -108,29 +108,33 @@ export class APIClient {
 
 	/*--------------------------------- Users Profiles ---------------------------------*/
 	
-	async fetchUser(username: string) {
-		const { data: res } = await this.client.get(`/users/${username}`);
-		// res.data.user = this.normalizeUser(res.data.user);
+	async fetchUser(id: number) {
+		const { data: res } = await this.client.get(`/users/${id}`);
 		return res.data;
 	}
 
-	async fetchUserMatchesPage(username: string, options: FetchMatchesOptions = {}) {
+	async fetchUserByUsername(username: string) {
+		const { data: res } = await this.client.get(`/users/?username=${username}`);
+		return res.data;
+	}
+
+	async fetchUserMatchesPage(id: number, options: FetchMatchesOptions = {}) {
 		const params = new URLSearchParams();
 
 		if (options.page) params.append("page", options.page.toString());
 		if (options.limit) params.append("limit", options.limit.toString());
 		if (options.gameType) params.append("gameTypeFilter", options.gameType);
 		if (options.time) params.append("timeFilter", options.time);
-		const { data: res } = await this.client.get(`/users/${username}/matches?${params.toString()}`);
+		const { data: res } = await this.client.get(`/users/${id}/matches?${params.toString()}`);
 		return res.data;
 	}
 
-	async fetchUserAnalytics(username: string) {
-		const { data: res } = await this.client.get(`/users/${username}/analytics`);
+	async fetchUserAnalytics(id: number) {
+		const { data: res } = await this.client.get(`/users/${id}/analytics`);
 		return res.data;
 	}
-	async fetchUserAnalyticsByDay(username: string) {
-		const { data: res } = await this.client.get(`/users/${username}/analytics-by-day`);
+	async fetchUserAnalyticsByDay(id: number) {
+		const { data: res } = await this.client.get(`/users/${id}/analytics-by-day`);
 		return res.data;
 	}
 	async fetchLeaderboard() {
@@ -157,15 +161,10 @@ export class APIClient {
 		return res.data;
 	}
 	
-	async updateUser(username: string, payload: { first_name?: string, last_name?: string, username?: string, email?: string, bio?: string }) {
-		const { data: res } = await this.client.put(`/users/${username}`, payload);
+	async updateUser(id: number, payload: { first_name?: string, last_name?: string, username?: string, email?: string, bio?: string }) {
+		const { data: res } = await this.client.put(`/users/${id}`, payload);
 		return res.data;
 	}
-
-	// async checkUsernameAvailable(username: string) {
-	// 	const { data: res } = await this.client.get(`/users/${username}/performance`);
-
-	// }
 
 	/*--------------------------------- Users Relations ---------------------------------*/
 

@@ -18,7 +18,7 @@ export default function UserStatsPage() {
 		async function fetchUserAnalytics() {
 			try {
 				setIsLoading(true);
-				const data = await apiClient.fetchUserAnalytics(loggedInUser!.username);
+				const data = await apiClient.fetchUserAnalytics(loggedInUser!.id);
 				setUserAnalytics(data);
 				setIsLoading(false);
 			} catch (err) {

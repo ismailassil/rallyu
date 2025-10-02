@@ -62,9 +62,26 @@ class UserController {
 	async fetchUserHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
-			const { username } = request.params as IProfileRequest;
+			const { id } = request.params as { id: number };
 
-			const user = await this.userService.getUserProfile(user_id!, username);
+			const user = await this.userService.getUserProfile(user_id!, id, undefined);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, user);
+
+			reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			reply.code(status).send(body);
+		}
+	}
+
+	async fetchUserByUsernameQueryHandler(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+			const { username } = request.query as { username: string };
+
+			const user = await this.userService.getUserProfile(user_id!, undefined, username);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, user);
 
@@ -79,9 +96,9 @@ class UserController {
 	async fetchUserAnalyticsHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
-			const { username } = request.params as IProfileRequest;
+			const { id } = request.params as { id: number };
 
-			const userAnalytics = await this.userService.getUserAnalytics(user_id!, username);
+			const userAnalytics = await this.userService.getUserAnalytics(user_id!, id);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userAnalytics);
 
@@ -95,9 +112,9 @@ class UserController {
 	async fetchUserAnalyticsByDayHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
-			const { username } = request.params as IProfileRequest;
+			const { id } = request.params as { id: number };
 
-			const userAnalyticsByDay = await this.userService.getUserAnalyticsByDay(user_id!, username);
+			const userAnalyticsByDay = await this.userService.getUserAnalyticsByDay(user_id!, id);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userAnalyticsByDay);
 
@@ -127,9 +144,9 @@ class UserController {
         	const timeFilterValidated = validTimeFilters.includes(timeFilter) ? timeFilter : undefined;
 
 			console.log('REQUEST QUERY: ', request.query);
-			const { username } = request.params as IProfileRequest;
+			const { id } = request.params as { id: number };
 
-			const userMatches = await this.userService.getUserMatches(user_id!, username, timeFilterValidated, gameFilterValidated, paginationFilterValidated);
+			const userMatches = await this.userService.getUserMatches(user_id!, id, timeFilterValidated, gameFilterValidated, paginationFilterValidated);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userMatches);
 
@@ -150,7 +167,7 @@ class UserController {
 			// PAGINATION FILTER
 			const paginationFilterValidated = (page && limit) ? { page: Number(page), limit: Number(limit) } : undefined;
 
-			const { username } = request.params as IProfileRequest;
+			const { id } = request.params as { id: number };
 
 			const userMatches = await this.userService.getRankLeaderboard(paginationFilterValidated);
 

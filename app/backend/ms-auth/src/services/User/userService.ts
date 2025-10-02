@@ -41,8 +41,15 @@ class UserService {
 		}
 	}
 
-	async getUserProfile(viewerID: number, targetUsername: string) {
-		const targetUser = await this.getUserByUsername(targetUsername);
+	async getUserProfile(viewerID: number, targetUserID?: number, targetUsername?: string) {
+		let targetUser = null;
+
+		if (targetUserID)
+			targetUser = await this.getUserById(targetUserID);
+		else if (targetUsername)
+			targetUser = await this.getUserByUsername(targetUsername);
+		else
+			throw new UserNotFoundError();
 		
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
@@ -75,12 +82,12 @@ class UserService {
 
 	async getUserMatches(
 		viewerID: number, 
-		targetUsername: string, 
+		targetID: number, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
 		gameTypeFilter: 'PING PONG' | 'XO' | 'all' = 'all',
 		paginationFilter?: { page: number, limit: number }
 	) {
-		const targetUser = await this.getUserByUsername(targetUsername);
+		const targetUser = await this.getUserById(targetID);
 
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
@@ -94,11 +101,11 @@ class UserService {
 
 	async getUserAnalytics(
 		viewerID: number, 
-		targetUsername: string, 
+		targetID: number, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
 		gameTypeFilter: 'PING PONG' | 'XO' | 'all' = 'all'
 	) {
-		const targetUser = await this.getUserByUsername(targetUsername);
+		const targetUser = await this.getUserById(targetID);
 
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
@@ -110,11 +117,11 @@ class UserService {
 	}
 	async getUserAnalyticsByDay(
 		viewerID: number, 
-		targetUsername: string, 
+		targetID: number, 
 		daysCount: number = 7,
 		gameTypeFilter: 'PING PONG' | 'XO' | 'all' = 'all'
 	) {
-		const targetUser = await this.getUserByUsername(targetUsername);
+		const targetUser = await this.getUserById(targetID);
 
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
