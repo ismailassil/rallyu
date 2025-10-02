@@ -198,7 +198,7 @@ const game = async (fastify, options) => {
 				room.gameTimerId = setTimeout(() => {
 					sendGameOverPacket(room);
 					closeRoom(room, 1003, 'Game Over');
-				}, 60000)
+				}, 90000);
 				room.startGame();
 			}
 

@@ -51,15 +51,13 @@ export default function IncomingFriendRequestsList() {
 			actions={[
 				{
 					icon: <Check size={22} className="hover:text-blue-400 transition-all duration-300" />,
-					onClick: handleDecline,
-					title: "Decline",
-					color: "red-400",
+					onClick: handleAccept,
+					title: "Accept",
 				},
 				{
 					icon: <X size={22} className="hover:text-red-400 transition-all duration-300" />,
-					onClick: handleAccept,
-					title: "Accept",
-					color: "green-400",
+					onClick: handleDecline,
+					title: "Decline"
 				},
 			]}
 		/>

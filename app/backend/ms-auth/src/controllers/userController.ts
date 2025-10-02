@@ -1,16 +1,14 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import UserService from "../services/userService";
-import UserRepository from "../repositories/userRepository";
+import UserService from "../services/User/UserService";
 import { IProfileRequest } from "../types";
-import { AuthError, UserNotFoundError } from "../types/auth.types";
-import AuthResponseFactory from "./authResponseFactory";
+import AuthResponseFactory from "./AuthResponseFactory";
 
 class UserController {
 	constructor(
 		private userService: UserService
 	) {}
 
-	async usernameAvailable(request: FastifyRequest, reply: FastifyReply) {
+	async usernameAvailableHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			// TODO: ADD SCHEMA
 			const { username } = request.query as { username: string };
@@ -26,7 +24,7 @@ class UserController {
 		}
 	}
 
-	async emailAvailable(request: FastifyRequest, reply: FastifyReply) {
+	async emailAvailableHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			// TODO: ADD SCHEMA
 			const { email } = request.query as { email: string };
@@ -42,7 +40,7 @@ class UserController {
 		}
 	}
 
-	async searchUserByUsername(request: FastifyRequest, reply: FastifyReply) {
+	async searchUserByUsernameHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			// TODO: ADD SCHEMA
 			const user_id = request.user?.sub;
@@ -61,12 +59,12 @@ class UserController {
 		}
 	}
 
-	async fetchUser(request: FastifyRequest, reply: FastifyReply) {
+	async fetchUserHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
-			const { username } = request.params as IProfileRequest;
+			const { id } = request.params as { id: number };
 
-			const user = await this.userService.getUserPublicProfile(user_id!, username);
+			const user = await this.userService.getUserProfile(user_id!, id, undefined);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, user);
 
@@ -78,12 +76,29 @@ class UserController {
 		}
 	}
 
-	async fetchUserAnalytics(request: FastifyRequest, reply: FastifyReply) {
+	async fetchUserByUsernameQueryHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
-			const { username } = request.params as IProfileRequest;
+			const { username } = request.query as { username: string };
 
-			const userAnalytics = await this.userService.getUserAnalytics(user_id!, username);
+			const user = await this.userService.getUserProfile(user_id!, undefined, username);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, user);
+
+			reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			reply.code(status).send(body);
+		}
+	}
+
+	async fetchUserAnalyticsHandler(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+			const { id } = request.params as { id: number };
+
+			const userAnalytics = await this.userService.getUserAnalytics(user_id!, id);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userAnalytics);
 
@@ -94,12 +109,12 @@ class UserController {
 			reply.code(status).send(body);
 		}
 	}
-	async fetchUserAnalyticsByDay(request: FastifyRequest, reply: FastifyReply) {
+	async fetchUserAnalyticsByDayHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
-			const { username } = request.params as IProfileRequest;
+			const { id } = request.params as { id: number };
 
-			const userAnalyticsByDay = await this.userService.getUserAnalyticsByDay(user_id!, username);
+			const userAnalyticsByDay = await this.userService.getUserAnalyticsByDay(user_id!, id);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userAnalyticsByDay);
 
@@ -111,7 +126,7 @@ class UserController {
 		}
 	}
 
-	async fetchUserMatches(request: FastifyRequest, reply: FastifyReply) {
+	async fetchUserMatchesHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
 
@@ -129,9 +144,9 @@ class UserController {
         	const timeFilterValidated = validTimeFilters.includes(timeFilter) ? timeFilter : undefined;
 
 			console.log('REQUEST QUERY: ', request.query);
-			const { username } = request.params as IProfileRequest;
+			const { id } = request.params as { id: number };
 
-			const userMatches = await this.userService.getUserMatches(user_id!, username, timeFilterValidated, gameFilterValidated, paginationFilterValidated);
+			const userMatches = await this.userService.getUserMatches(user_id!, id, timeFilterValidated, gameFilterValidated, paginationFilterValidated);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, userMatches);
 
@@ -143,7 +158,7 @@ class UserController {
 		}
 	}
 
-	async fetchRankLeaderboard(request: FastifyRequest, reply: FastifyReply) {
+	async fetchRankLeaderboardHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
 
@@ -152,7 +167,7 @@ class UserController {
 			// PAGINATION FILTER
 			const paginationFilterValidated = (page && limit) ? { page: Number(page), limit: Number(limit) } : undefined;
 
-			const { username } = request.params as IProfileRequest;
+			const { id } = request.params as { id: number };
 
 			const userMatches = await this.userService.getRankLeaderboard(paginationFilterValidated);
 
@@ -166,7 +181,7 @@ class UserController {
 		}
 	}
 
-	async updateUser(request: FastifyRequest, reply: FastifyReply) {
+	async updateUserHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
 			const updates = request.body;
@@ -187,11 +202,11 @@ class UserController {
 	}
 
 	// DELETE USER
-	async deleteUser(request: FastifyRequest, reply: FastifyReply) {
+	async deleteUserHandler(request: FastifyRequest, reply: FastifyReply) {
 
 	}
 
-	async uploadAvatar(request: FastifyRequest, reply: FastifyReply) {
+	async uploadAvatarHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
 			const fileData = await request.file();

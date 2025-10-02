@@ -1,5 +1,5 @@
 import { ArrowLeft, LoaderCircle } from "lucide-react";
-import OTPCodeInput from "@/app/(onsite)/2fa/OTPCodeInput";
+import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
 import { RefObject } from "react";
 
 interface CheckEmailProps {

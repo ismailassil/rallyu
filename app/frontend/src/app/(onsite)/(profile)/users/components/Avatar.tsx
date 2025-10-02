@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { simulateBackendCall } from "@/app/(api)/utils";
 
 interface AvatarProps {
 	avatar: string | null | undefined;
@@ -13,14 +14,17 @@ interface AvatarProps {
 export default function Avatar({ avatar, fallback = "/profile/image_1.jpg", className, alt } : AvatarProps)  {
 	const { apiClient } = useAuth();
 	const [src, setSrc] = useState<string>(fallback);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	useEffect(() => {
 		let blobUrl: string | null = null;
 
 		async function loadAvatar() { 
 			try {
+				setIsLoading(true);
 				if (avatar && avatar.startsWith('blob:')) {
 					setSrc(avatar);
+					setIsLoading(false);
 					return;
 				}
 
@@ -28,10 +32,13 @@ export default function Avatar({ avatar, fallback = "/profile/image_1.jpg", clas
 					const avatarBlob = await apiClient.getUserAvatarBlob(avatar);
 					blobUrl = URL.createObjectURL(avatarBlob);
 					setSrc(blobUrl);
+					setIsLoading(false);
 				}
 			} catch (err) {
 				console.error('Error loading avatar:', err);
 				setSrc(fallback);
+			} finally {
+				setIsLoading(false);
 			}
 		}
 		loadAvatar();
@@ -41,18 +48,25 @@ export default function Avatar({ avatar, fallback = "/profile/image_1.jpg", clas
 
 	return (
 		<div className={`rounded-full overflow-hidden relative ${className || ''}`}>
-			<Image
-				fill
-				src={src}
-				alt={alt || "Avatar"}
-				className='h-full w-full object-cover'
-				onError={() => {
-					console.log('Error loading image, using fallback.');
-					setSrc(fallback);
-				}}
-				draggable={false}
-				unoptimized={true}
-			/>
+			{isLoading && (
+				<div className="absolute inset-0 flex items-center justify-center bg-black">
+					<div className="loader h-full w-full"></div>
+				</div>
+			)}
+			{!isLoading && (
+				<Image
+					fill
+					src={src}
+					alt={alt || "Avatar"}
+					className='h-full w-full object-cover'
+					onError={() => {
+						console.log('Error loading image, using fallback.');
+						setSrc(fallback);
+					}}
+					draggable={false}
+					unoptimized={true}
+				/>
+			)}
 		</div>
 	);
 };

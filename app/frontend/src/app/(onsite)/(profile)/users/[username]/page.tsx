@@ -21,7 +21,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 		async function fetchUserProfile() {
 			try {
 				setIsLoading(true);
-				const data = await apiClient.fetchUser(username);
+				const data = await apiClient.fetchUserByUsername(username);
 				setUserProfile(data);
 			} catch (err) {
 				const apiErr = err as APIError;

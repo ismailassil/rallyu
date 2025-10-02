@@ -84,7 +84,7 @@ function GamesHistoryTable() {
   
 	const fetchMatches = async () => {
 	  try {
-		const res = await apiClient.fetchUserMatchesPage(loggedInUser!.username, {
+		const res = await apiClient.fetchUserMatchesPage(loggedInUser!.id, {
 		  page,
 		  limit,
 		  gameType: gameTypeFilter,

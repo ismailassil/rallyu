@@ -1,241 +1,62 @@
-import { db } from "../database"
-import { InternalServerError } from "../types/auth.types";
+import { db } from "../database";
+import ARepository from "./ARepository";
 
-class RelationsRepository {
-	constructor() {
+interface Relation {
+	id: number;
+	requester_user_id: number;
+	receiver_user_id: number;
+	relation_status: 'PENDING' | 'ACCEPTED' | 'BLOCKED';
+	created_at: number;
+	updated_at: number;
+}
 
-	}
+class RelationsRepository extends ARepository {
 
-	async clean() {
-		await db.run(`
-			DELETE FROM relations
-		`);
-	}
-	
-	async create(requester_id: number, receiver_id: number, relation_status: string) {
+	/**
+	 * Find a relation by its ID.
+	 * @param id - ID of the relation.
+	 * @returns The relation object if found, otherwise null.
+	 */
+	async findOne(id: number) : Promise<Relation | null> {
 		try {
-			const runResult = await db.run(
-				`INSERT INTO relations (requester_user_id, receiver_user_id, relation_status)
-					VALUES (?, ?, ?)`,
-			[requester_id, receiver_id, relation_status]);
-			return runResult.lastID;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async findById(id: number) {
-		try {
-			const relation = await db.get(
+			const getResult = await db.get(
 				`SELECT * FROM relations WHERE id = ?`,
-			[id]);
-			return relation ?? null;
+				[id]
+			);
+			return getResult ?? null;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'finding relation by ID');
 		}
+		return null;
 	}
 
-	async findTwoWaysByUsers(user_id_a: number, user_id_b: number) : Promise<any | null> {
+	/**
+	 * Find a relation between two users.
+	 * @param userAID - ID of the first user.
+	 * @param userBID - ID of the second user.
+	 * @returns The relation object if found, otherwise null.
+	 */
+	async findBetweenUsers(userAID: number, userBID: number) : Promise<Relation | null> {
 		try {
-			const relation = await db.get(
+			const getResult = await db.get(
 				`SELECT * FROM relations 
-					WHERE (requester_user_id = ? AND receiver_user_id = ?)
+					WHERE (requester_user_id = ? AND receiver_user_id = ?) 
 					OR (requester_user_id = ? AND receiver_user_id = ?)`,
-			[user_id_a, user_id_b, user_id_b, user_id_a]);
-			return relation ?? null;
+				[userAID, userBID, userBID, userAID]
+			);
+			return getResult ?? null;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'finding relation between users');
 		}
+		return null;
 	}
 
-	async findOneWayByUsers(requester_id: number, receiver_id: number) {
-		try {
-			const relation = await db.get(
-				`SELECT * FROM relations 
-					WHERE requester_user_id = ? AND receiver_user_id = ?`,
-			[requester_id, receiver_id]);
-			return relation ?? null;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	// INCOMING FRIEND REQUESTS
-	async findIncomingFriendRequests(user_id: number) {
-		try {
-			const incomingFriendRequests = await db.all(`
-				SELECT users.*, relations.relation_status
-					FROM relations
-				JOIN users ON relations.requester_user_id = users.id
-					WHERE receiver_user_id = ?
-					AND relation_status = 'PENDING'`,
-			[user_id]);
-			return incomingFriendRequests;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-	
-	// OUTGOING FRIEND REQUESTS
-	async findOutgoingFriendRequests(user_id: number) {
-		try {
-			const outgoingFriendRequests = await db.all(`
-				SELECT users.*, relations.relation_status
-					FROM relations
-				JOIN users ON relations.receiver_user_id = users.id
-					WHERE requester_user_id = ?
-					AND relation_status = 'PENDING'`,
-			[user_id]);
-			return outgoingFriendRequests;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-			
-	// BLOCKED USERS (WHO BLOCKED THIS USER)
-	async findIncomingBlocks(user_id: number) {
-		try {
-			const incomingBlocks = await db.all(`
-				SELECT users.*, relations.relation_status
-					FROM relations
-				JOIN users ON relations.requester_user_id = users.id
-					WHERE receiver_user_id = ?
-					AND relation_status = 'BLOCKED'`,
-			[user_id]);
-			return incomingBlocks;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	// BLOCKED USERS (WHO THIS USER BLOCKED)
-	async findOutgoingBlocks(user_id: number) {
-		try {
-			const outgoingBlocks = await db.all(`
-				SELECT users.*, relations.relation_status
-					FROM relations
-				JOIN users ON relations.receiver_user_id = users.id
-					WHERE requester_user_id = ?
-					AND relation_status = 'BLOCKED'`,
-			[user_id]);
-			return outgoingBlocks;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	// RELATION BETWEEN TWO USERS (BI-DIRECTION)
-	async findRelationStatusByUsers(user_id_a: number, user_id_b: number) : Promise<string> {
-		try {
-			const relationStatus = await db.get(`
-				SELECT relation_status
-					FROM relations
-				WHERE (requester_user_id = ? AND receiver_user_id = ?)
-				OR (requester_user_id = ? AND receiver_user_id = ?)
-			`, [user_id_a, user_id_b, user_id_b, user_id_a]);
-			return relationStatus ?? null;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-	
-	// CHECK BLOCK BETWEEN TWO USERS (BI-DIRECTION)
-	async findTwoWaysBlockBetweenUsers(user_id_a: number, user_id_b: number) {
-		try {
-			const relation = await db.get(`
-				SELECT *
-					FROM relations
-				WHERE ((requester_user_id = ? AND receiver_user_id = ?)
-				OR (requester_user_id = ? AND receiver_user_id = ?))
-				AND relation_status = 'BLOCKED'
-			`, [user_id_a, user_id_b, user_id_b, user_id_a]);
-			return relation ?? null;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	// CHECK BLOCK BETWEEN TWO USERS (UNI-DIRECTION)
-	async findOneWayBlockBetweenUsers(blocker_user_id: number, blocked_user_id: number) {
-		try {
-			const relation = await db.get(`
-				SELECT *
-					FROM relations
-				WHERE (requester_user_id = ? AND receiver_user_id = ?)
-				AND relation_status = 'BLOCKED'
-			`, [blocker_user_id, blocked_user_id]);
-			return relation ?? null;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async updateRelationStatus(id: number, status: string) : Promise<boolean> {
-		try {
-			const runResult = await db.run(`
-				UPDATE relations 
-				SET relation_status = ?, updated_at = CURRENT_TIMESTAMP
-				WHERE id = ?
-			`, [status, id]);
-			return runResult.changes > 0;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async deleteRelationById(id: number) {
-		try {
-			const runResult = await db.run(`
-				DELETE FROM relations
-				WHERE id = ?
-			`, [id]);
-			return runResult.changes > 0;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async deleteOneWayRelationByUsers(requester_id: number, receiver_id: number) {
-		try {
-			const runResult = await db.run(`
-				DELETE FROM relations
-				WHERE requester_user_id = ? AND receiver_user_id = ?
-			`, [requester_id, receiver_id]);
-			return runResult.changes > 0;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async deleteTwoWaysRelationByUsers(requester_id: number, receiver_id: number) {
-		try {
-			const runResult = await db.run(`
-				DELETE FROM relations
-				WHERE (requester_user_id = ? AND receiver_user_id = ?)
-				OR (requester_user_id = ? AND receiver_user_id = ?)
-			`, [requester_id, receiver_id, receiver_id, requester_id]);
-			return runResult.changes > 0;
-		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
-		}
-	}
-
-	async findAllFriends(user_id: number) {
+	/**
+	 * Find all friends of a user.
+	 * @param userID - ID of the user.
+	 * @returns An array of relations representing the user's friends.
+	 */
+	async findAllFriends(userID: number) {
 		try {
 			const allFriends = await db.all(`
 				SELECT 
@@ -245,7 +66,7 @@ class RelationsRepository {
 					users.last_name,
 					users.avatar_url,
 					relations.relation_status,
-					relations.updated_at
+					relations.updated_at as created_at
 				FROM relations
 				JOIN users ON (
 					(relations.requester_user_id = users.id AND relations.receiver_user_id = ?)
@@ -253,57 +74,204 @@ class RelationsRepository {
 					(relations.requester_user_id = ? AND relations.receiver_user_id = users.id)
 				)
 				WHERE relations.relation_status = 'ACCEPTED'
-			`, [user_id, user_id]);
+			`, [userID, userID]);
 			return allFriends;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'finding all friends of user');
 		}
+		return [];
 	}
 
-	async countFriends(user_id: number) {
+	/**
+	 * Find all incoming friend requests for a user.
+	 * @param userID - ID of the user.
+	 * @returns An array of relations representing incoming friend requests.
+	 */
+	async findIncomingFriendRequests(userID: number) {
 		try {
-			const getResult = await db.get(`
-				SELECT COUNT(*)
-					FROM relations
-				WHERE (requester_user_id = ? OR receiver_user_id = ?)
-					AND relation_status = 'ACCEPTED'
-			`, [user_id, user_id]);
-			return getResult ?? null;
+			const incomingFriendRequests = await db.all(`
+				SELECT 
+					users.id,
+					users.username,
+					users.first_name,
+					users.last_name,
+					users.avatar_url,
+					relations.relation_status,
+					relations.created_at
+				FROM relations
+				JOIN users ON relations.requester_user_id = users.id
+				WHERE relations.receiver_user_id = ?
+					AND relations.relation_status = 'PENDING'
+			`, [userID]);
+			return incomingFriendRequests;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'finding incoming friend requests for user');
 		}
+		return [];
 	}
 
-	async countIncomingFriendRequests(user_id: number) {
+	/**
+	 * Find all outgoing friend requests from a user.
+	 * @param userID - ID of the user.
+	 * @returns An array of relations representing outgoing friend requests.
+	 */
+	async findOutgoingFriendRequests(userID: number) {
 		try {
-			const getResult = await db.get(`
-				SELECT COUNT(*)
-					FROM relations
-				WHERE receiver_user_id = ?
-					AND relation_status = 'PENDING'
-			`, [user_id]);
-			return getResult ?? null;
+			const outgoingFriendRequests = await db.all(`
+				SELECT 
+					users.id,
+					users.username,
+					users.first_name,
+					users.last_name,
+					users.avatar_url,
+					relations.relation_status,
+					relations.created_at
+				FROM relations
+				JOIN users ON relations.receiver_user_id = users.id
+				WHERE relations.requester_user_id = ?
+					AND relations.relation_status = 'PENDING'
+			`, [userID]);
+			return outgoingFriendRequests;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'finding outgoing friend requests for user');
 		}
+		return [];
 	}
 
-	async countOutgoingFriendRequests(user_id: number) {
+	/**
+	 * Find all blocked users by a user.
+	 * @param userID - ID of the user.
+	 * @returns An array of relations representing blocked users.
+	 */
+	async findBlockedUsers(userID: number) {
 		try {
-			const getResult = await db.get(`
-				SELECT COUNT(*)
-					FROM relations
-				WHERE requester_user_id = ?
-					AND relation_status = 'PENDING'
-			`, [user_id]);
-			return getResult ?? null;
+			const outgoingBlocks = await db.all(`
+				SELECT 
+					users.id,
+					users.username,
+					users.first_name,
+					users.last_name,
+					users.avatar_url,
+					relations.relation_status,
+					relations.created_at
+				FROM relations
+				JOIN users ON relations.receiver_user_id = users.id
+				WHERE relations.requester_user_id = ?
+					AND relations.relation_status = 'BLOCKED'
+			`, [userID]);
+			return outgoingBlocks;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'finding blocked users by user');
 		}
+		return [];
+	}
+
+	/**
+	 * Find all users who have blocked a user.
+	 * @param userID - ID of the user.
+	 * @returns An array of relations representing users who have blocked the user.
+	 */
+	async findUsersWhoBlocked(userID: number) {
+		try {
+			const incomingBlocks = await db.all(`
+				SELECT 
+					users.id,
+					users.username,
+					users.first_name,
+					users.last_name,
+					users.avatar_url,
+					relations.relation_status,
+					relations.created_at
+				FROM relations
+				JOIN users ON relations.requester_user_id = users.id
+				WHERE relations.receiver_user_id = ?
+					AND relations.relation_status = 'BLOCKED'
+			`, [userID]);
+			return incomingBlocks;
+		} catch (err: any) {
+			this.handleDatabaseError(err, 'finding users who have blocked user');
+		}
+		return [];
+	}
+
+	/**
+	 * Create a new relation between two users.
+	 * @param requesterID - ID of the user sending the request.
+	 * @param receiverID - ID of the user receiving the request.
+	 * @param status - Status of the relation ('PENDING', 'ACCEPTED', 'BLOCKED').
+	 * @returns The ID of the newly created relation.
+	 */
+	async create(requesterID: number, receiverID: number, status: 'PENDING' | 'ACCEPTED' | 'BLOCKED') : Promise<number | null> {
+		try {
+			const runResult = await db.run(
+				`INSERT INTO relations (requester_user_id, receiver_user_id, relation_status) 
+					VALUES (?, ?, ?)`,
+				[requesterID, receiverID, status]
+			);
+			return runResult.lastID ?? null;
+		} catch (err: any) {
+			this.handleDatabaseError(err, 'creating new relation');
+		}
+		return null;
+	}
+
+	/**
+	 * Update the status of a relation between two users.
+	 * @param id - ID of the relation to update.
+	 * @param status - New status of the relation ('PENDING', 'ACCEPTED', 'BLOCKED').
+	 * @returns True if the relation was updated, otherwise false.
+	 */
+	async update(id: number, status: 'PENDING' | 'ACCEPTED' | 'BLOCKED') : Promise<boolean> {
+		try {
+			const runResult = await db.run(`
+				UPDATE relations
+				SET relation_status = ?, updated_at = (strftime('%s','now'))
+				WHERE id = ?
+			`, [status, id]);
+			return runResult.changes > 0;
+		} catch (err: any) {
+			this.handleDatabaseError(err, 'updating relation status');
+		}
+		return false;
+	}
+
+	/**
+	 * Delete a relation by its ID.
+	 * @param id - ID of the relation to delete.
+	 * @returns True if the relation was deleted, otherwise false.
+	 */
+	async delete(id: number) : Promise<boolean> {
+		try {
+			const runResult = await db.run(
+				`DELETE FROM relations WHERE id = ?`,
+				[id]
+			);
+			return runResult.changes > 0;
+		} catch (err: any) {
+			this.handleDatabaseError(err, 'deleting relation by ID');
+		}
+		return false;
+	}
+
+	/**
+	 * Delete a relation between two users.
+	 * @param userAID - ID of the first user.
+	 * @param userBID - ID of the second user.
+	 * @returns True if the relation was deleted, otherwise false.
+	 */
+	async deleteBetweenUsers(userAID: number, userBID: number) : Promise<boolean> {
+		try {
+			const runResult = await db.run(
+				`DELETE FROM relations 
+					WHERE (requester_user_id = ? AND receiver_user_id = ?) 
+					OR (requester_user_id = ? AND receiver_user_id = ?)`,
+				[userAID, userBID, userBID, userAID]
+			);
+			return runResult.changes > 0;
+		} catch (err: any) {
+			this.handleDatabaseError(err, 'deleting relation between users');
+		}
+		return false;
 	}
 }
 

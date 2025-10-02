@@ -1,20 +1,17 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import AuthService from "../services/authService";
+import AuthService from "../services/Auth/AuthService";
 import { ILoginRequest, IRegisterRequest } from "../types";
 import { TokenRequiredError } from "../types/auth.types";
-import TwoFactorService from "../services/twoFactorService";
-import AuthResponseFactory from "./authResponseFactory";
+import TwoFactorService from "../services/TwoFactorAuth/[DEPRECATED]TwoFactorService";
+import AuthResponseFactory from "./AuthResponseFactory";
 
 
 class AuthController {
 	constructor(
-		private authService: AuthService,
-		private twoFactorService: TwoFactorService,
-		// private resetService: ResetPasswordService
+		private authService: AuthService
 	) {}
 
-	// REGISTER (NO-AUTO-LOGIN): REGISTERS USER IN DB
-	async RegisterEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async registerHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { first_name, last_name, username, email, password } = request.body as IRegisterRequest;
 			
@@ -22,16 +19,15 @@ class AuthController {
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(201, {});
 			
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		}
 	}
-	
-	// LOGIN: GENERATES ACCESS / REFRESH TOKENS
-	async LoginEndpoint(request: FastifyRequest, reply: FastifyReply) {
+
+	async loginHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { username, password } = request.body as ILoginRequest;
 			const userAgent = request.headers["user-agent"] || '';
@@ -49,7 +45,7 @@ class AuthController {
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
 
-			reply.code(status).setCookie(
+			return reply.code(status).setCookie(
 				'refreshToken', refreshToken ?? '', { // TODO: CHECK REFRESH TOKEN TYPE ASSERTION
 					path: '/',
 					httpOnly: true,
@@ -60,37 +56,38 @@ class AuthController {
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			if (!reply.sent)
+				return reply.code(status).send(body);
 		}
 	}
 
-	async SendLoginChallenge2FACodeEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async sendTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { loginChallengeID, method } = request.body as { loginChallengeID: number, method: string };
+			const { loginChallengeID, method } = request.body as { loginChallengeID: number, method: 'TOTP' | 'SMS' | 'EMAIL' };
 			const userAgent = request.headers["user-agent"] || '';
 
-			await this.authService.sendLoginChallenge2FACode(loginChallengeID, method, userAgent, request.ip);
+			await this.authService.sendTwoFAChallengeCode(loginChallengeID, method, userAgent, request.ip);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		}
 	}
 
-	async VerifyLoginChallenge2FACodeEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async verifyTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { loginChallengeID, method, code } = request.body as { loginChallengeID: number, method: string, code: string };
+			const { loginChallengeID, code } = request.body as { loginChallengeID: number, code: string };
 			const userAgent = request.headers["user-agent"] || '';
 
-			const { user, refreshToken, accessToken } = await this.authService.verifyLoginChallenge2FACode(loginChallengeID, method, code, userAgent, request.ip);
+			const { user, refreshToken, accessToken } = await this.authService.verifyTwoFAChallengeCode(loginChallengeID, code, userAgent, request.ip);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
 
-			reply.code(status).setCookie(
+			return reply.code(status).setCookie(
 				'refreshToken', refreshToken ?? '', { // TODO: CHECK REFRESH TOKEN TYPE ASSERTION
 					path: '/',
 					httpOnly: true,
@@ -101,12 +98,11 @@ class AuthController {
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		}
 	}
 
-	// LOGOUT
-	async LogoutEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async logoutHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const userAgent = request.headers["user-agent"] || '';
 			const refresh_token = request.cookies?.['refreshToken']; // TODO: SHOULD BE IN FASTIFY SCHEMA
@@ -117,7 +113,7 @@ class AuthController {
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 			
-			reply.code(status).setCookie(
+			return reply.code(status).setCookie(
 				'refreshToken', '', {
 					path: '/',
 					httpOnly: true,
@@ -129,12 +125,11 @@ class AuthController {
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		}
 	}
-	
-	// REFRESH: GENERATES ACCESS / REFRESH TOKENS
-	async RefreshEndpoint(request: FastifyRequest, reply: FastifyReply) {
+
+	async refreshHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const userAgent = request.headers["user-agent"] || '';
 			const oldRefreshToken = request.cookies?.['refreshToken']; // TODO: SHOULD BE IN FASTIFY SCHEMA
@@ -146,7 +141,7 @@ class AuthController {
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
 
-			reply.code(status).setCookie(
+			return reply.code(status).setCookie(
 				'refreshToken', refreshToken, {
 					path: '/',
 					httpOnly: true,
@@ -157,7 +152,7 @@ class AuthController {
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).setCookie(
+			return reply.code(status).setCookie(
 				'refreshToken', '', {
 					path: '/',
 					httpOnly: true,
@@ -206,7 +201,7 @@ class AuthController {
 	// 	}
 	// }
 
-	async changePasswordEndpoint(request: FastifyRequest, reply: FastifyReply) {
+	async changePasswordHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
 			const { oldPassword, newPassword } = request.body as { oldPassword: string, newPassword: string };
@@ -215,11 +210,11 @@ class AuthController {
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		}
 	}
 }

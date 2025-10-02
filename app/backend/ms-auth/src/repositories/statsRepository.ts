@@ -1,26 +1,69 @@
-import { InternalServerError } from "../types/auth.types";
 import { db } from "../database";
+import ARepository from "./ARepository";
 
-class StatsRepository {
-	async create(userID: number) {
+interface UserStats {
+	id: number;
+	level: number;
+	total_xp: number;
+	current_streak: number;
+	longest_streak: number;
+	user_id: number;
+}
+
+interface MatchFilterOptions {
+	timeFilter?: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all';
+	gameTypeFilter?: 'PING PONG' | 'XO' | 'all';
+	paginationFilter?: { page: number, limit: number };
+}
+
+class StatsRepository extends ARepository {
+
+	/**
+	 * Create a new stats record for a user.
+	 * @param userID - ID of the user.
+	 * @returns The ID of the newly created stats record.
+	 */
+	async create(userID: number) : Promise<number> {
 		try {
 			const runResult = await db.run(
-				`INSERT INTO users_stats (user_id)
-					VALUES (?)`,
+				`INSERT INTO users_stats (user_id) VALUES (?)`,
 				[userID]
 			);
-			return runResult.lastID;
+			return runResult.lastID!;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'creating stats record');
 		}
+		return -1;
 	}
 
-	async getRankByXP(paginationFilter?: { page: number, limit: number }) {
+	/**
+	 * Find stats by user ID.
+	 * @param userID - ID of the user.
+	 * @returns The stats object if found, otherwise null.
+	 */
+	async findByUserID(userID: number) : Promise<UserStats | null> {
 		try {
-			const paginationCondition = paginationFilter ? 'LIMIT ? OFFSET ?' : '';
-			const params = paginationFilter ? [paginationFilter.limit, (paginationFilter.page - 1) * paginationFilter.limit] : [];
+			const getResult = await db.get(
+				`SELECT * FROM users_stats WHERE user_id = ?`,
+				[userID]
+			);
+			return getResult ?? null;
+		} catch (err: any) {
+			this.handleDatabaseError(err, 'finding stats by user ID');
+		}
+		return null;
+	}
 
+	/**
+	 * Get leaderboard of users based on total XP.
+	 * @param paginationFilter - Pagination options.
+	 * @returns Array of user stats ordered by total XP.
+	 */
+	async getRankByXP(paginationFilter?: { page: number, limit: number }) : Promise<any[]> {
+		const paginationCondition = paginationFilter ? 'LIMIT ? OFFSET ?' : '';
+		const params = paginationFilter ? [paginationFilter.limit, (paginationFilter.page - 1) * paginationFilter.limit] : [];
+
+		try {
 			const rankByXP = await db.all(`
 				SELECT 
 					ROW_NUMBER() OVER (ORDER BY s.total_xp DESC, u.id ASC) AS rank,
@@ -37,16 +80,19 @@ class StatsRepository {
 
 			return rankByXP;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'getting rank by XP');
 		}
+		return [];
 	}
 
-	async getUserRecords(
-		user_id: number
-	) {
+	/**
+	 * Get user records (rank, level, total XP, current streak, longest streak).
+	 * @param userID - ID of the user.
+	 * @returns User records object if found, otherwise null.
+	 */
+	async getUserRecords(userID: number) : Promise<any | null> {
 		try {
-			const records = await db.get(`
+			const userRecords = await db.get(`
 				WITH ranked_users AS (
 					SELECT
 						ROW_NUMBER() OVER (ORDER BY total_xp DESC) as rank,
@@ -65,56 +111,70 @@ class StatsRepository {
 					longest_streak
 				FROM ranked_users
 				WHERE user_id = ?
-			`, [user_id]);
+			`, [userID]);
 
-			return records;
+			return userRecords ?? null;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'getting user records');
 		}
+		return null;
 	}
 
+	/**
+	 * Get user stats.
+	 * @param userID - ID of the user.
+	 * @param timeFilter - Time filter for matches ('0d', '1d', '7d', '30d', '90d', '1y', 'all').
+	 * @param gameTypeFilter - Game type filter ('PING PONG', 'XO', 'all').
+	 * @returns Stats object containing matches, wins, losses, draws, win_rate, duration.
+	 */
 	async getUserStats(
-		user_id: number,
+		userID: number, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all'
-	) {
+		gameTypeFilter: 'PING PONG' | 'XO' | 'all'
+	) : Promise<any> {
 
 		try {
-			const CTE = this.buildUserMatchesCTE(user_id, timeFilter, gameTypeFilter);
-
-			const stats = await db.get(`
+			const CTE = this.buildUserMatchesCTE(userID, { timeFilter, gameTypeFilter });
+	
+			const userStats = await db.get(`
 				${CTE.sql}
 				SELECT
 					COUNT(*) AS matches,
-
+	
 					COALESCE(SUM(CASE WHEN outcome = 'W' THEN 1 ELSE 0 END), 0) AS wins,
 					COALESCE(SUM(CASE WHEN outcome = 'L' THEN 1 ELSE 0 END), 0) AS losses,
 					COALESCE(SUM(CASE WHEN outcome = 'D' THEN 1 ELSE 0 END), 0) AS draws,
-
+	
 					CASE
 						WHEN COUNT(*) = 0 THEN 0
 						ELSE ROUND(100.00 * COALESCE(SUM(CASE WHEN outcome = 'W' THEN 1 ELSE 0 END), 0) / COUNT(*), 2)
 					END AS win_rate,
-
+	
 					COALESCE(SUM(duration), 0) AS duration
 				FROM user_matches
 			`, CTE.params);
-
-			return stats;
+	
+			return userStats ?? null;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'getting user stats');
 		}
+		return null;
 	}
 
+	/**
+	 * Get detailed user analytics grouped by day.
+	 * @param userID - ID of the user.
+	 * @param gameTypeFilter - Game type filter ('PING PONG', 'XO', 'all').
+	 * @param lastAvailableDaysCount - Number of last days to include in the analytics.
+	 * @returns Array of detailed analytics objects grouped by day.
+	 */
 	async getUserDetailedAnalyticsGroupedByDay(
-		user_id: number,
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all',
+		userID: number,
+		gameTypeFilter: 'PING PONG' | 'XO' | 'all',
 		lastAvailableDaysCount: number
 	) {
 		try {
-			const CTE = this.buildUserMatchesCTE(user_id, 'all', gameTypeFilter);
+			const CTE = this.buildUserMatchesCTE(userID, { timeFilter: 'all', gameTypeFilter });
 
 			const detailedStatsGroupedByDay = await db.all(`
 				${CTE.sql}
@@ -166,19 +226,25 @@ class StatsRepository {
 
 			return detailedStatsGroupedByDay;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'getting user detailed analytics grouped by day');
 		}
+		return [];
 	}
 
+	/**
+	 * Get detailed user analytics.
+	 * @param userID - ID of the user.
+	 * @param timeFilter - Time filter for matches ('0d', '1d', '7d', '30d', '90d', '1y', 'all').
+	 * @param gameTypeFilter - Game type filter ('PING PONG', 'XO', 'all').
+	 * @returns Detailed analytics object including totals, scores, durations, and opponent stats.
+	 */
 	async getUserDetailedAnalytics(
-		user_id: number,
+		userID: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all'
+		gameTypeFilter: 'PING PONG' | 'XO' | 'all'
 	) {
-
 		try {
-			const CTE = this.buildUserMatchesCTE(user_id, timeFilter, gameTypeFilter);
+			const CTE = this.buildUserMatchesCTE(userID, { timeFilter, gameTypeFilter });
 
 			const detailedStats = await db.get(`
 				${CTE.sql}
@@ -335,10 +401,11 @@ class StatsRepository {
 				}
 			};
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'getting user detailed analytics');
 		}
+		return null;
 	}
+
 
 	private TIMEPERIODS = {
 		'0d': '',
@@ -349,12 +416,9 @@ class StatsRepository {
 		'1y': '-1 year'
 	}
 
-	buildUserMatchesCTE(
-		user_id: number,
-		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all',
-		paginationFilter?: { page: number, limit: number }
-	) : { sql: string, params: any[] } {
+	buildUserMatchesCTE(userID: number, filters: MatchFilterOptions) : { sql: string, params: any[] } {
+		const { timeFilter = 'all', gameTypeFilter = 'all', paginationFilter } = filters;
+
 		const timeCondition = 
 			timeFilter === 'all' ? '' :
 			timeFilter === '0d' ? `AND date(m.finished_at) = date('now')` : `AND date(m.finished_at) >= date('now', ?)`;
@@ -366,8 +430,8 @@ class StatsRepository {
 			paginationFilter ? 'LIMIT ? OFFSET ?' : '';
 		
 		const params: any[] = [
-			user_id, user_id, user_id, user_id, user_id,
-			user_id, user_id, user_id, user_id, user_id
+			userID, userID, userID, userID, userID,
+			userID, userID, userID, userID, userID
 		];
 
 		if (timeFilter !== 'all' && timeFilter !== '0d')
@@ -390,10 +454,12 @@ class StatsRepository {
 					m.finished_at,
 					u_self.id AS user_id,
 					u_self.username AS user_username,
+					u_self.avatar_url AS user_avatar_url,
 					CASE WHEN m.player_home_id = ? THEN m.player_home_score ELSE m.player_away_score END AS user_score,
 					CASE WHEN m.player_home_id = ? THEN m.player_away_score ELSE m.player_home_score END AS opp_score,
 					u_opp.id AS opponent_id,
 					u_opp.username AS opponent_username,
+					u_opp.avatar_url AS opponent_avatar_url,
 					(strftime('%s', m.finished_at) - strftime('%s', m.started_at)) AS duration,
 					CASE
 						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score) 

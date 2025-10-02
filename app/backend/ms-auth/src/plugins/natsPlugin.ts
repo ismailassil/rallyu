@@ -1,8 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import { connect, JSONCodec } from 'nats';
-import { handleUserRequests } from '../services/natsHandlers';
+import { handleUserRequests } from '../services/Nats/natsHandlers';
 import fastifyPlugin from 'fastify-plugin';
-import UserService from '../services/userService';
+import UserService from '../services/User/UserService';
 
 interface NatsOpts {
 	NATS_URL: string;

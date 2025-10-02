@@ -22,7 +22,7 @@ export default function Game() {
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 1, delay: 0.2 }}
 						className="max-w-500 hide-scrollbar flex h-full w-full
-						 gap-3 overflow-y-scroll p-4 pl-3 md:gap-5 lg:flex-row"
+						 gap-3 overflow-y-scroll p-4 pl-3 md:gap-5"
 					>
 						<GameProvider>
 							<GamePanel />

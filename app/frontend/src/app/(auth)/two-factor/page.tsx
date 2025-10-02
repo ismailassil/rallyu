@@ -1,94 +1,168 @@
-"use client";
+'use client';
+import { motion } from 'framer-motion';
+import { Toaster } from 'sonner';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import MethodsOverview from './components/MethodsOverview';
+import VerifyCode from './components/VerifyCode';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
+import { simulateBackendCall } from '@/app/(api)/utils';
+import { APIError } from '@/app/(api)/APIClient';
+import { toastError, toastSuccess } from '@/app/components/CustomToast';
 
-import Form from "next/form";
-import Link from "next/link";
-// import ibm from "@/app/fonts/ibm";
-import { useRef, useState } from "react";
+enum STEP {
+	OVERVIEW = 'OVERVIEW',
+	VERIFY_CODE = 'VERIFY_CODE'
+}
 
-const numberInputStyling =
-	"w-full h-20 text-xl text-center mt-[7px] min-h-20 max-w-[15%] min-w-[14%] outline-none bg-bg border-bbg flex items-center justify-center \
-		gap-[7px] border-2 rounded-lg hover:ring-4 hover:ring-bbg hover:bg-hbbg focus:ring-bbg focus:ring-4 no-caret";
+function getTwoFAChallengeSession() {
+	try {
+		const idRaw = sessionStorage.getItem('loginChallengeID');
+		const methodsRaw = sessionStorage.getItem('enabledMethods');
+		console.log('SESSION RAW: ', idRaw, methodsRaw);
+	
+		if (!idRaw || !methodsRaw) return null;
 
-export default function Auth() {
-	const [inputs, setInputs] = useState(Array(6).fill(""));
-	const buttonRef = useRef<HTMLButtonElement>(null);
+		const loginChallengeID = JSON.parse(idRaw);
+		const enabledMethods = JSON.parse(methodsRaw);
+		const allowed = ['TOTP', 'SMS', 'EMAIL'] as const;
 
-	function handleChange(index: number, value: string) {
-		const updatedInputs = [...inputs];
-		updatedInputs[index] = value;
-		setInputs(updatedInputs);
+		if (
+			typeof loginChallengeID !== 'number' || !Number.isInteger(loginChallengeID) || loginChallengeID <= 0
+			|| !Array.isArray(enabledMethods) || enabledMethods.length === 0 || !enabledMethods.every(m => allowed.includes(m))
+		) {
+			sessionStorage.removeItem('loginChallengeID');
+			sessionStorage.removeItem('enabledMethods');
+			return null;
+		}
 
-		if (value && index < 5) {
-			const nextInput = document.getElementById(`input-${index + 1}`);
-			if (nextInput) {
-				nextInput.focus();
-			}
-		} else {
-			buttonRef.current?.focus();
+		const uniqueSet = new Set(enabledMethods);
+		if (uniqueSet.size !== enabledMethods.length || uniqueSet.size === 0) {
+			sessionStorage.removeItem('loginChallengeID');
+			sessionStorage.removeItem('enabledMethods');
+			return null;
+		}
+
+		return { loginChallengeID, enabledMethods };
+	} catch {
+		sessionStorage.removeItem('loginChallengeID');
+		sessionStorage.removeItem('enabledMethods');
+		return null;
+	}
+}
+
+export default function TwoFaChallengePage() {
+	const router = useRouter();
+	const { send2FACode, verify2FACode } = useAuth();
+	const [currentStep, setCurrentStep] = useState<STEP>(STEP.OVERVIEW);
+	const [selectedMethod, setSelectedMethod] = useState('');
+	const [code, setCode] = useState(['', '', '', '', '', '']);
+	const [isSendingCode, setIsSendingCode] = useState(false);
+	const [isVerifyingCode, setIsVerifyingCode] = useState(false);
+	const inputRefs = useRef([]);
+
+	const session = getTwoFAChallengeSession();
+	useEffect(() => {
+		if (!session) {
+			toastError('Please sign in again.');
+			router.replace('/login');
+		}
+	}, [session, router]);
+	if (!session)
+		return null;
+
+	async function handleSelectMethod(method: string) {
+		try {
+			setSelectedMethod(method);
+			setIsSendingCode(true);
+
+			await simulateBackendCall(2000);
+			await send2FACode(session!.loginChallengeID, method);
+
+			if (method !== 'TOTP')
+				toastSuccess('Code sent');
+
+			setCurrentStep(STEP.VERIFY_CODE);
+		} catch (err) {
+			const apiErr = err as APIError;
+			toastError(apiErr.message);
+
+			if (apiErr.code !== 'AUTH_2FA_CHALLENGE_INVALID_CODE')
+				router.replace('/login');
+		} finally {
+			setIsSendingCode(false);
 		}
 	}
-	const api = "l";
+
+	async function handleVerifyCode() {
+		try {
+			setIsVerifyingCode(true);
+
+			await simulateBackendCall(2000);
+			await verify2FACode(session!.loginChallengeID, selectedMethod, code.join(''));
+
+			toastSuccess('Two Factor Authentication successful');
+
+			router.replace('/dashboard');
+		} catch (err) {
+			const apiErr = err as APIError;
+			toastError(apiErr.message);
+			setCode(['', '', '', '', '', '']);
+
+			if (apiErr.code !== 'AUTH_2FA_CHALLENGE_INVALID_CODE')
+				router.replace('/login');
+		} finally {
+			setIsVerifyingCode(false);
+		}
+	}
+
+	function renderCurrentStep() {
+		switch (currentStep) {
+			case STEP.OVERVIEW:
+				return (
+					<MethodsOverview
+						methods={session!.enabledMethods}
+						selectedMethod={selectedMethod}
+						isSendingCode={isSendingCode}
+						onSelectMethod={handleSelectMethod}
+					/>
+				);
+			case STEP.VERIFY_CODE:
+				return (
+					<VerifyCode 
+						methods={session!.enabledMethods}
+						selectedMethod={selectedMethod}
+						code={code}
+						setCode={setCode}
+						inputRefs={inputRefs}
+						isResendingCode={isSendingCode}
+						isVerifyingCode={isVerifyingCode}
+						onVerifyClick={handleVerifyCode}
+						onResendClick={handleSelectMethod}
+						onGoBack={() => setCurrentStep(STEP.OVERVIEW)}
+					/>
+				);
+			default:
+				return null;
+		}
+	}
+
 
 	return (
-		<main className="pt-30 flex h-screen w-full items-center justify-center pb-10">
-			<div className="flex h-full w-full items-center justify-center overflow-auto">
-				<div className="flex h-full w-[550px] items-center pb-20 pl-10 pr-10 pt-20">
-					<div className="text-wrap text-center">
-						<h1 className={`flex justify-center text-4xl mb-3 font-bold`}>Authentication</h1>
-						<p className="text-md mb-12 flex justify-center">
-							Enter the code generated by your Authentication App
-						</p>
-						<Form action={api}>
-							<div className="flex flex-wrap justify-center gap-[7px]">
-								{inputs.map((inputValue, index) => (
-									<input
-										key={index}
-										id={`input-${index}`}
-										type="number"
-										value={inputValue}
-										className={numberInputStyling}
-										onChange={(e) => handleChange(index, e.target.value)}
-										maxLength={1}
-										placeholder="*"
-										required
-									/>
-								))}
-							</div>
-							<div className="mt-[19px] flex justify-center">
-								<p>
-									Didn&apos;t get the code?{" "}
-									<Link
-										href="/signup"
-										className="text-main hover:text-blue-400 hover:underline"
-									>
-										Resend code
-									</Link>
-								</p>
-							</div>
-							<button
-								ref={buttonRef}
-								type="submit"
-								className="h-13 bg-main hover:ring-3 hover:ring-main-ring-hover hover:bg-main-hover active:bg-main-active active:ring-main-ring-active
-							mt-[44px] flex w-full items-center justify-center
-							rounded-lg hover:cursor-pointer"
-							>
-								Verify account
-							</button>
-						</Form>
-						<div className="mt-[19px] flex justify-center">
-							<p>
-								Can’t access your Authentication app?{" "}
-								<Link
-									href="/signup"
-									className="text-main hover:text-blue-400 hover:underline"
-								>
-									Contact Support
-								</Link>
-							</p>
-						</div>
-					</div>
+		<>
+			<Toaster position='bottom-right' visibleToasts={1} />
+			<motion.main
+				initial={{ opacity: 0, y: -50 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 1, delay: 0.5 }}
+				className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
+			>
+			<div className="h-full w-full custom-scrollbar font-funnel-display">
+				<div className="h-full w-full flex justify-center items-center overflow-auto px-4 py-16">
+					{renderCurrentStep()}
 				</div>
 			</div>
-		</main>
+			</motion.main>
+		</>
 	);
 }

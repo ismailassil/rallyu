@@ -84,7 +84,7 @@ export default function GeneralSettingsTab() {
 		if (Object.keys(payload).length === 0 || !validateAll())
 			return ;
 
-		await apiClient.updateUser(loggedInUser!.username, payload);
+		await apiClient.updateUser(loggedInUser!.id, payload);
 		updateLoggedInUserState(payload); // AuthContext
 	}
 

@@ -1,95 +1,166 @@
 import { db } from "../database";
-import { InternalServerError } from "../types/auth.types";
+import ARepository from "./ARepository";
 
-class MatchesRepository {
+interface Match {
+	id: number;
+	player_home_score: number;
+	player_away_score: number;
+	game_type: string;
+	started_at: number;
+	finished_at: number;
+	player_home_id: number;
+	player_away_id: number;
+	created_at: number;
+	updated_at: number;
+}
 
-	async create(
-		player_home_score: number,
-		player_away_score: number,
-		game_type: string,
-		player_home_id: number,
-		player_away_id: number,
-		started?: string,
-		finished?: string
-	) : Promise<number> {
-		const startedVal = started ?? new Date().toISOString();
-		const finishedVal = finished ?? new Date().toISOString();
+interface MatchFilterOptions {
+	timeFilter?: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all';
+	gameTypeFilter?: 'PING PONG' | 'XO' | 'all';
+	paginationFilter?: { page: number, limit: number } | undefined;
+}
 
+/**
+ * Repository for matches table database operations.
+ * @extends ARepository
+ */
+
+class MatchesRepository extends ARepository {
+
+	/**
+	 * Find a match by its ID.
+	 * @param id - ID of the match.
+	 * @returns The match object if found, otherwise null.
+	 */
+	async findOne(id: number) : Promise<Match | null> {
+		try {
+			const getResult = await db.get(
+				`SELECT * FROM matches WHERE id = ?`,
+				[id]
+			);
+			return getResult ?? null;
+		} catch (err: any) {
+			console.error('SQLite Error: ', err);
+			throw new Error('Internal Server Error');
+		}
+	}
+
+	/**
+	 * Create a new match record.
+	 * @param player_home_score - Score of the home player.
+	 * @param player_away_score - Score of the away player.
+	 * @param game_type - Type of the game ('PING PONG', 'XO').
+	 * @param player_home_id - ID of the home player.
+	 * @param player_away_id - ID of the away player.
+	 * @param started - Start time of the match.
+	 * @param finished - Finish time of the match.
+	 * @returns The ID of the newly created match.
+	 */
+	async create(player_home_score: number, player_away_score: number, game_type: string, player_home_id: number, player_away_id: number, started_at: number, finished_at: number) : Promise<number> {
 		try {
 			const runResult = await db.run(
 				`INSERT INTO matches 
 				(player_home_score, player_away_score, game_type, started_at, finished_at, player_home_id, player_away_id) 
 				VALUES (?, ?, ?, ?, ?, ?, ?)`,
-				[player_home_score, player_away_score, game_type, startedVal, finishedVal, player_home_id, player_away_id]
+				[player_home_score, player_away_score, game_type, started_at, finished_at, player_home_id, player_away_id]
 			);
 			return runResult.lastID;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'creating match');
 		}
+		return -1;
 	}
 
-	async findById(match_id: number) {
+	/**
+	 * Update an existing match record.
+	 * @param id - ID of the match to update.
+	 * @param updates - Object containing fields to update.
+	 * @return True if the update was successful, otherwise false.
+	 */
+	async update(id: number, updates: Partial<Match>) : Promise<boolean> {
 		try {
-			const result = await db.get(
-				`SELECT * FROM matches WHERE id = ?`,
-				[match_id]
+			const fields = Object.keys(updates);
+			if (fields.length === 0) return false;
+
+			const setClause = fields.map(field => `${field} = ?`).join(', ');
+			const values = fields.map(field => (updates as any)[field]);
+			values.push(id);
+
+			const runResult = await db.run(
+				`UPDATE matches SET ${setClause}, updated_at = (strftime('%s','now')) WHERE id = ?`,
+				values
 			);
-			return result ?? null;
+
+			return runResult.changes > 0;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'updating match');
 		}
+		return false;
 	}
 
-	async getMatchesByUser(
-		user_id: number,
-		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all' = 'all',
-		paginationFilter?: { page: number, limit: number }
-	) : Promise<any> {
+	/**
+	 * Delete a match by its ID.
+	 * @param id - ID of the match to delete.
+	 * @return The number of rows affected.
+	 */
+	async delete(id: number) : Promise<number> {
 		try {
-			const countCTE = this.buildUserMatchesCTE(user_id, timeFilter, gameTypeFilter);
+			const runResult = await db.run(
+				`DELETE FROM matches WHERE id = ?`,
+				[id]
+			);
+			return runResult.changes;
+		} catch (err: any) {
+			this.handleDatabaseError(err, 'deleting match');
+		}
+		return 0;
+	}
+
+	/**
+	 * Get matches involving a specific user with optional filters and pagination.
+	 * @param userID - ID of the user.
+	 * @param timeFilter - Time filter for matches ('0d', '1d', '7d', '30d', '90d', '1y', 'all').
+	 * @param gameTypeFilter - Game type filter ('PING PONG', 'XO', 'all').
+	 * @param paginationFilter - Pagination options ({ page: number, limit: number }).
+	 * @returns An object containing array of matches and pagination metadata.
+	 */
+	async findAll(userID: number, filters: MatchFilterOptions) : Promise<{ matches: Match[], pagination: { total: number, page: number, limit: number, totalPages: number } }> {
+		try {
+			const { timeFilter = 'all', gameTypeFilter = 'all', paginationFilter } = filters;
+
+			const countCTE = this.buildUserMatchesCTE(userID, filters);
 			const countResult = await db.get(`
 				${countCTE.sql}
 				SELECT COUNT(*) as total_count FROM user_matches
 			`, countCTE.params);
 
-			const CTE = this.buildUserMatchesCTE(user_id, timeFilter, gameTypeFilter, paginationFilter);
-
-			console.info('Running the following SQL: ', `
-				${CTE.sql}
-				SELECT * FROM user_matches
-			`, 'with params: ', CTE.params);
+			const CTE = this.buildUserMatchesCTE(userID, filters);
 
 			const matchesResults = await db.all(`
 				${CTE.sql}
 				SELECT * FROM user_matches
 			`, CTE.params);
 
-			// pagination meta data
-			let pagination = null;
-			if (paginationFilter) {
-				const { page, limit } = paginationFilter;
-				const totalPages = Math.ceil(countResult.total_count / limit);
+			const totalMatches = countResult?.total_count ?? 0;
+			const page = paginationFilter?.page ?? 1;
+			const limit = paginationFilter?.limit ?? totalMatches;
+			const totalPages = Math.ceil(totalMatches / limit) || 1;
 
-				pagination = {
-					current_page: page,
-					per_page: limit,
-					total: countResult.total_count,
-					total_pages: totalPages,
-					has_next: page < totalPages,
-					has_prev: page > 1,
-					next_page: page < totalPages ? page + 1 : null,
-					prev_page: page > 1 ? page - 1 : null
+			return {
+				matches: matchesResults as Match[],
+				pagination: {
+					total: totalMatches,
+					page,
+					limit,
+					totalPages
 				}
-			}
-			return pagination ? { matches: matchesResults, pagination } : matchesResults;
+			};
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new InternalServerError();
+			this.handleDatabaseError(err, 'retrieving matches for user');
 		}
+		return { matches: [], pagination: { total: 0, page: 1, limit: 0, totalPages: 0 } };
 	}
+
 
 	private TIMEPERIODS = {
 		'0d': '',
@@ -100,12 +171,9 @@ class MatchesRepository {
 		'1y': '-1 year'
 	}
 
-	buildUserMatchesCTE(
-		user_id: number,
-		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all',
-		paginationFilter?: { page: number, limit: number }
-	) : { sql: string, params: any[] } {
+	buildUserMatchesCTE(userID: number, filters: MatchFilterOptions) : { sql: string, params: any[] } {
+		const { timeFilter = 'all', gameTypeFilter = 'all', paginationFilter } = filters;
+
 		const timeCondition = 
 			timeFilter === 'all' ? '' :
 			timeFilter === '0d' ? `AND date(m.finished_at) = date('now')` : `AND date(m.finished_at) >= date('now', ?)`;
@@ -117,8 +185,8 @@ class MatchesRepository {
 			paginationFilter ? 'LIMIT ? OFFSET ?' : '';
 		
 		const params: any[] = [
-			user_id, user_id, user_id, user_id, user_id,
-			user_id, user_id, user_id, user_id, user_id
+			userID, userID, userID, userID, userID,
+			userID, userID, userID, userID, userID
 		];
 
 		if (timeFilter !== 'all' && timeFilter !== '0d')
@@ -172,44 +240,5 @@ class MatchesRepository {
 		return { sql: SQL, params };
 	}
 }
-
-function colorizeParam(param: any): string {
-	if (typeof param === "number") return `\x1b[33m${param}\x1b[0m`; // yellow for numbers
-	if (typeof param === "string") return `\x1b[32m'${param}'\x1b[0m`; // green for strings
-	if (param === null) return `\x1b[31mNULL\x1b[0m`; // red for null
-	return `\x1b[35m${param}\x1b[0m`; // magenta fallback
-}
-
-function interpolateSQL(sql: string, params: any[]): string {
-	let i = 0;
-	return sql.replace(/\?/g, () => {
-		if (i >= params.length) return "?"; // extra ?
-		return colorizeParam(params[i++]);
-	});
-}
-
-async function test() {
-	await db.connect('../database/database.db');
-
-	const matchesRepo = new MatchesRepository();
-	// const { sql, params } = matchesRepo.buildUserMatchesCTE(1337, 'all', 'XO', { page: 1, limit: 7 });
-
-	// const interpolated = interpolateSQL(sql, params);
-
-	// console.log("SQL (with params colored):\n", interpolated);
-	// console.log("\nRaw params array:", params);
-
-	// const matches = await matchesRepo.getMatchesByUser(1337, '7d', 'all');
-	// const stats = await matchesRepo.getUserStats(8, 'all', 'all');
-	// const detailedStats = await matchesRepo.getUserDetailedStats(8, 'all', 'all');
-	// const trendsGroupedByDay = await matchesRepo.getUserDetailedAnalyticsGroupedByDay(8, 'PING PONG', 7);
-
-	// console.log('Matches:', matches);
-	// console.log('Stats:', stats);
-	// console.log('DetailesStats:', detailedStats);
-	// console.log('TrendsGroupedByDay:', trendsGroupedByDay);
-}
-
-// test();
 
 export default MatchesRepository;

@@ -13,41 +13,7 @@ export abstract class AuthError extends Error {
 	}
 }
 
-// FORM (REGISTER)
-export class FormError extends AuthError {
-	constructor(message: string = 'Invalid form values', details: any = {}) {
-		super(message, 400, 'AUTH_FORM_INVALID', details);
-	}
-}
-
-export class FormFieldMissing extends AuthError {
-	public readonly field: string;
-
-	constructor(field: string, details: any = {}) {
-		super(`${field} is required`, 400, `AUTH_${field.toUpperCase()}_REQUIRED`, details);
-		this.field = field;
-	}
-}
-
-export class UsernameLengthError extends AuthError {
-	constructor(message: string = 'Username must be between 4-20 characters') {
-		super(message, 400, 'AUTH_USERNAME_LENGTH');
-	}
-}
-
-export class PasswordLengthError extends AuthError {
-	constructor(message: string = 'Password must be at least 8 characters') {
-		super(message, 400, 'AUTH_PASS_LENGTH');
-	}
-}
-
-export class WeakPasswordError extends AuthError {
-	constructor(message: string = 'Password must contain at least one uppercase letter, one lowercase letter, and one number') {
-		super(message, 400, 'AUTH_WEAK_PASSWORD');
-	}
-}
-
-// USER REGISTRATION
+// USERS
 export class UserAlreadyExistsError extends AuthError {
 	constructor(conflict: string) {
 		const msg = `${conflict} already taken`;
@@ -55,12 +21,18 @@ export class UserAlreadyExistsError extends AuthError {
 		super(msg, 409, code);
 	}
 }
-
-export class UserNotFoundError extends AuthError { // haven't used it yet
+export class UserNotFoundError extends AuthError {
 	constructor(message: string = 'User not found') {
 		super(message, 404, 'AUTH_USER_NOT_FOUND');
 	}
 }
+export class UsersNotFoundError extends AuthError {
+	// where we don't want to reveal which specific user doesn't exist (relations)
+	constructor(message: string = 'One or both users do not exist') {
+		super(message, 404, 'AUTH_USERS_NOT_FOUND');
+	}
+}
+
 
 // TOKENS
 export class TokenRequiredError extends AuthError {
@@ -101,30 +73,73 @@ export class SessionRevokedError extends AuthError {
 	}
 }
 
+// 2FA LOGIN CHALLENGE
+export class TwoFAChallengeNotFound extends AuthError {
+	constructor(message: string = 'Two Factor challenge not found', details: any = {}) {
+		super(message, 404, 'AUTH_2FA_CHALLENGE_NOT_FOUND', details);
+	}
+}
+
+export class TwoFAChallengeMethodNotSelected extends AuthError {
+	constructor(message: string = 'Two Factor challenge method not selected', details: any = {}) {
+		super(message, 400, 'AUTH_2FA_CHALLENGE_METHOD_NOT_SELECTED', details);
+	}
+}
+
+export class TwoFAChallengeExpired extends AuthError {
+	constructor(message: string = 'Two Factor challenge has expired', details: any = {}) {
+		super(message, 400, 'AUTH_2FA_CHALLENGE_EXPIRED', details);
+	}
+}
+
+export class TwoFAChallengeMaxAttemptsReached extends AuthError {
+	constructor(message: string = 'Two Factor challenge maximum attempts reached', details: any = {}) {
+		super(message, 400, 'AUTH_2FA_CHALLENGE_MAX_ATTEMPTS_REACHED', details);
+	}
+}
+
+export class TwoFAChallengeMaxResendsReached extends AuthError {
+	constructor(message: string = 'Two Factor challenge maximum resends reached', details: any = {}) {
+		super(message, 400, 'AUTH_2FA_CHALLENGE_MAX_RESENDS_REACHED', details);
+	}
+}
+
+export class TwoFAChallengeInvalidCode extends AuthError {
+	constructor(message: string = 'Two Factor challenge invalid code', details: any = {}) {
+		super(message, 400, 'AUTH_2FA_CHALLENGE_INVALID_CODE', details);
+	}
+}
+
 // AUTHENTICATION
+export class NoEmailIsAssociated extends AuthError {
+	constructor(message: string = 'No email is associated with this account', details: any = {}) {
+		super(message, 400, 'AUTH_NO_EMAIL_ASSOCIATED', details);
+	}
+}
+export class NoPhoneIsAssociated extends AuthError {
+	constructor(message: string = 'No phone number is associated with this account', details: any = {}) {
+		super(message, 400, 'AUTH_NO_PHONE_ASSOCIATED', details);
+	}
+}
 export class InvalidCredentialsError extends AuthError {
 	constructor(message: string = 'Invalid username or password', details: any = {}) {
 		super(message, 401, 'AUTH_INVALID_CREDENTIALS', details);
 	}
 }
-// account locked, disabled, banned, verified
+
+export class ServiceUnavailable extends AuthError {
+	constructor(message: string = 'Authentication service is currently unavailable', details: any = {}) {
+		super(message, 503, 'AUTH_SERVICE_UNAVAILABLE', details);
+	}
+}
+
 export class InternalServerError extends AuthError {
 	constructor(message: string = 'An unexpected error occured', details: any = {}) {
 		super(message, 500, 'AUTH_INTERNAL_ERROR', details);
 	}
 }
 
-// AUTHORIZATION
-	// RBAC
-
 // 2FA
-// export class _2FARequired extends AuthError {
-// 	constructor(method: string, message: string = '2FA is required', details: any = {}) {
-// 		message = `2FA via ${method} not found`;
-// 		super(message, 404, `AUTH_2FA_${method.toUpperCase()}_NOT_FOUND`, details);
-// 	}
-// }
-
 export class _2FANotFound extends AuthError {
 	constructor(method: string, message: string = '2FA not found', details: any = {}) {
 		message = `2FA via ${method} not found`;
@@ -160,19 +175,143 @@ export class _2FAExpiredCode extends AuthError {
 	}
 }
 
-export class NoEmailIsAssociated extends AuthError {
-	constructor(message: string = 'No email is associated with this account', details: any = {}) {
-		super(message, 400, 'AUTH_NO_EMAIL_ASSOCIATED', details);
-	}
-}
-
-export class NoPhoneIsAssociated extends AuthError {
-	constructor(message: string = 'No phone number is associated with this account', details: any = {}) {
-		super(message, 400, 'AUTH_NO_PHONE_ASSOCIATED', details);
-	}
-}
-
 // PASSWORD RESET
+export class PasswordResetNotFoundError extends AuthError {
+	constructor(message: string = 'Password reset request is not found', details: any = {}) {
+		super(message, 400, 'AUTH_PASSWORD_RESET_EXPIRED', details);
+	}
+}
+
+export class PasswordResetExpiredError extends AuthError {
+	constructor(message: string = 'Password reset request has expired', details: any = {}) {
+		super(message, 400, 'AUTH_PASSWORD_RESET_EXPIRED', details);
+	}
+}
+
+export class PasswordResetInvalidCodeError extends AuthError {
+	constructor(message: string = 'Invalid password reset code', details: any = {}) {
+		super(message, 400, 'AUTH_PASSWORD_RESET_INVALID_CODE', details);
+	}
+}
 
 // RATE LIMIT
+export class RateLimitError extends AuthError {
+	constructor(message: string = 'Rate limit exceeded', details: any = {}) {
+		super(message, 429, 'AUTH_RATE_LIMIT_EXCEEDED', details);
+	}
+}
 
+// VALIDATION
+export class ValidationError extends AuthError {
+	constructor(message: string = 'Validation failed', details: any = {}) {
+		super(message, 400, 'AUTH_VALIDATION_ERROR', details);
+	}
+}
+
+// METHOD NOT ALLOWED
+export class MethodNotSupportedError extends AuthError {
+	constructor(method: string, message: string = 'Method not supported', details: any = {}) {
+		super(`Method ${method} is not supported`, 400, 'AUTH_METHOD_NOT_SUPPORTED', details);
+	}
+}
+
+// RESOURCE NOT FOUND (GENERAL)
+export class ResourceNotFoundError extends AuthError {
+	constructor(resource: string, message: string = 'Resource not found', details: any = {}) {
+		super(message, 404, `AUTH_${resource.toUpperCase()}_NOT_FOUND`, details);
+	}
+}
+
+// FORBIDDEN ACCESS
+export class ForbiddenError extends AuthError {
+	constructor(message: string = 'Access forbidden', details: any = {}) {
+		super(message, 403, 'AUTH_FORBIDDEN', details);
+	}
+}
+
+// BAD REQUEST
+export class BadRequestError extends AuthError {
+	constructor(message: string = 'Bad request', details: any = {}) {
+		super(message, 400, 'AUTH_BAD_REQUEST', details);
+	}
+}
+
+// DATABASE ERRORS
+export class DatabaseConnectionError extends AuthError {
+	constructor(message: string = 'Database connection error', details: any = {}) {
+		super(message, 500, 'AUTH_DATABASE_CONNECTION_ERROR', details);
+	}
+}
+
+export class DatabaseQueryError extends AuthError {
+	constructor(message: string = 'Database query error', details: any = {}) {
+		super(message, 500, 'AUTH_DATABASE_QUERY_ERROR', details);
+	}
+}
+
+export class ResourceConflictError extends AuthError {
+	constructor(resource: string, message: string = 'Resource conflict', details: any = {}) {
+		super(message, 409, `AUTH_${resource.toUpperCase()}_CONFLICT`, details);
+	}
+}
+
+// RELATIONS ERRORS
+export class CannotSendFriendRequestError extends AuthError {
+	constructor(message: string = 'Unable to send friend request', details: any = {}) {
+		super(message, 400, 'AUTH_CANNOT_SEND_FRIEND_REQUEST', details);
+	}
+}
+
+export class FriendRequestAlreadySentError extends AuthError {
+	constructor(message: string = 'Friend request already sent', details: any = {}) {
+		super(message, 400, 'AUTH_FRIEND_REQUEST_ALREADY_SENT', details);
+	}
+}
+
+export class AlreadyFriendsError extends AuthError {
+	constructor(message: string = 'Users are already friends', details: any = {}) {
+		super(message, 400, 'AUTH_ALREADY_FRIENDS', details);
+	}
+}
+
+export class NoPendingRequestError extends AuthError {
+	constructor(message: string = 'No pending request', details: any = {}) {
+		super(message, 400, 'AUTH_NO_PENDING_REQUEST', details);
+	}
+}
+
+export class CannotCancelRequestError extends AuthError {
+	constructor(message: string = 'Cannot cancel request', details: any = {}) {
+		super(message, 400, 'AUTH_CANNOT_CANCEL_REQUEST', details);
+	}
+}
+
+export class CannotAcceptRequestError extends AuthError {
+	constructor(message: string = 'Cannot accept request', details: any = {}) {
+		super(message, 400, 'AUTH_CANNOT_ACCEPT_REQUEST', details);
+	}
+}
+
+export class CannotRejectRequestError extends AuthError {
+	constructor(message: string = 'Cannot reject request', details: any = {}) {
+		super(message, 400, 'AUTH_CANNOT_REJECT_REQUEST', details);
+	}
+}
+
+export class CannotBlockError extends AuthError {
+	constructor(message: string = 'Unable to block user', details: any = {}) {
+		super(message, 400, 'AUTH_CANNOT_BLOCK', details);
+	}
+}
+
+export class CannotUnblockError extends AuthError {
+	constructor(message: string = 'Unable to unblock user', details: any = {}) {
+		super(message, 400, 'AUTH_CANNOT_UNBLOCK', details);
+	}
+}
+
+export class CannotUnfriendError extends AuthError {
+	constructor(message: string = 'Unable to unfriend user', details: any = {}) {
+		super(message, 400, 'AUTH_CANNOT_UNFRIEND', details);
+	}
+}

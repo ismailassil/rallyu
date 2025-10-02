@@ -113,8 +113,8 @@ export default function SnapshotCard() {
 	useEffect(() => {
 		async function fetchUserAnalytics() {
 			try {
-				const analytics = await apiClient.fetchUserAnalytics(loggedInUser!.username);
-				const profile = await apiClient.fetchUser(loggedInUser!.username);
+				const analytics = await apiClient.fetchUserAnalytics(loggedInUser!.id);
+				const profile = await apiClient.fetchUser(loggedInUser!.id);
 				console.log('fetched user analytics: ', analytics);
 				console.log('fetched user profile: ', profile);
 				setUserAnalytics(analytics);
