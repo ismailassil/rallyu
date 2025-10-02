@@ -1,11 +1,11 @@
 import { MultipartFile } from "@fastify/multipart";
-import UserRepository from "../../repositories/UserRepository";
+import UserRepository from "../../repositories/userRepository";
 import { UserAlreadyExistsError, UserNotFoundError } from "../../types/auth.types";
-import StatsService from "../GameAndStats/StatsService";
+import StatsService from "../GameAndStats/statsService";
 import fs, { createWriteStream } from 'fs';
 import { pipeline } from "stream/promises";
-import MatchesRepository from "../../repositories/MatchesRepository";
-import RelationsService from "./RelationsService";
+import MatchesRepository from "../../repositories/matchesRepository";
+import RelationsService from "./relationsService";
 
 class UserService {
 	constructor(

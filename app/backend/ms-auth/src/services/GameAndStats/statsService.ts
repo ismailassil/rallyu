@@ -1,8 +1,8 @@
 import { db } from "../../database";
 import MatchesRepository from "../../repositories/[DEPRECATED]/matchesRepository";
 // import StatsRepository from "../repositories/statsRepository";
-import StatsRepository from "../../repositories/StatsRepository";
-import UserRepository from "../../repositories/UserRepository";
+import StatsRepository from "../../repositories/statsRepository";
+import UserRepository from "../../repositories/userRepository";
 import { InternalServerError, UserNotFoundError } from "../../types/auth.types";
 
 class StatsService {

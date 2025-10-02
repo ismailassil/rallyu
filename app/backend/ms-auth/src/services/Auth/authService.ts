@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { JWT_REFRESH_PAYLOAD } from '../../utils/auth/Auth'
 import { ISessionFingerprint } from "../../types";
 import { UAParser } from 'ua-parser-js';
-import UserService from "../User/UserService";
+import UserService from "../User/userService";
 import SessionService from "./SessionsService";
 import { AuthConfig } from "../../config/auth";
 import JWTUtils from "../../utils/auth/Auth";

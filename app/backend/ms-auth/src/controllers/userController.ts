@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import UserService from "../services/User/UserService";
+import UserService from "../services/User/userService";
 import { IProfileRequest } from "../types";
 import AuthResponseFactory from "./AuthResponseFactory";
 

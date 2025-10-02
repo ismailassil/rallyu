@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import RelationsService from "../services/User/RelationsService";
+import RelationsService from "../services/User/relationsService";
 import { IRelationsRequest } from "../types";
 import { JSONCodec } from "nats";
 
