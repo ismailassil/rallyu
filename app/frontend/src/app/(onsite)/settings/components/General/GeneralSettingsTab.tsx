@@ -74,7 +74,7 @@ export default function GeneralSettingsTab() {
 		const form = new FormData();
 		form.append('file', avatarFile);
 
-		await apiClient.uploadUserAvatar(form);
+		await apiClient.uploadUserAvatar(loggedInUser!.id, form);
 		setAvatarFile(null);
 	}
 

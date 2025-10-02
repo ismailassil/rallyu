@@ -154,8 +154,8 @@ export class APIClient {
 		return data;
 	}
 	
-	async uploadUserAvatar(profilePicture: FormData) {
-		const { data: res } = await this.client.post(`/users/TODO/avatar`, profilePicture, {
+	async uploadUserAvatar(id: number, profilePicture: FormData) {
+		const { data: res } = await this.client.post(`/users/${id}/avatar`, profilePicture, {
 			headers: { 'Content-Type': 'multipart/form-data' }
 		});
 		return res.data;
