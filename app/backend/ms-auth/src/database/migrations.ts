@@ -24,8 +24,8 @@ const MIGRATIONS = [
 				auth_provider TEXT DEFAULT 'local',
 				role TEXT DEFAULT 'user',
 
-				created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-				updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+				created_at INTEGER DEFAULT (strftime('%s','now')),
+				updated_at INTEGER DEFAULT (strftime('%s','now'))
 			)
 		`
 	},
@@ -44,10 +44,10 @@ const MIGRATIONS = [
 				browser_version TEXT NOT NULL,
 				ip_address TEXT NOT NULL,
 
-				created_at DATETIME NOT NULL,
-				expires_at DATETIME NOT NULL,
+				created_at INTEGER NOT NULL,
+				expires_at INTEGER NOT NULL,
 
-				updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+				updated_at INTEGER DEFAULT (strftime('%s','now')),
 
 				user_id INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id)
@@ -79,7 +79,7 @@ const MIGRATIONS = [
 				method TEXT NOT NULL,
 				temp_value TEXT,
 
-				expires_at DATETIME,
+				expires_at INTEGER,
 
 				user_id INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id)
@@ -96,7 +96,7 @@ const MIGRATIONS = [
 				method TEXT NOT NULL, -- email, sms,
 				code TEXT,
 
-				expires_at DATETIME,
+				expires_at INTEGER,
 
 				user_id INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id)
@@ -121,8 +121,8 @@ const MIGRATIONS = [
 																								-- UNFRIEND   => DELETE
 																								-- BLOCK      => BLOCKED
 				
-				created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-				updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+				created_at INTEGER DEFAULT (strftime('%s','now')),
+				updated_at INTEGER DEFAULT (strftime('%s','now')),
 				
 				FOREIGN KEY (requester_user_id) REFERENCES users(id), -- ON DELETE CASCADE?
 				FOREIGN KEY (receiver_user_id) REFERENCES users(id),   -- ON DELETE CASCADE?
@@ -139,7 +139,7 @@ const MIGRATIONS = [
 				
 				code TEXT,
 
-				expires_at DATETIME,
+				expires_at INTEGER,
 				
 				user_id INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id)
@@ -174,8 +174,8 @@ const MIGRATIONS = [
 				player_away_score INTEGER NOT NULL,
 
 				game_type TEXT NOT NULL, -- (CHECK PING PONG OR TICTACTOE)
-				started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-				finished_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+				started_at INTEGER DEFAULT (strftime('%s','now')),
+				finished_at INTEGER DEFAULT (strftime('%s','now')),
 
 				player_home_id INTEGER NOT NULL,
 				player_away_id INTEGER NOT NULL,
@@ -196,7 +196,7 @@ const MIGRATIONS = [
 				remaining_attempts INTEGER,
 				remaining_resends INTEGER,
 
-				expires_at DATETIME,
+				expires_at INTEGER,
 
 				user_id INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id)
@@ -217,9 +217,9 @@ const MIGRATIONS = [
 // 			ip_address TEXT DEFAULT NULL,
 // 			user_agent TEXT DEFAULT NULL,
 // 			is_revoked BOOLEAN DEFAULT FALSE,
-// 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-// 			expires_at DATETIME NOT NULL,
-// 			last_used DATETIME DEFAULT CURRENT_TIMESTAMP,
+// 			created_at INTEGER DEFAULT (strftime('%s','now')),
+// 			expires_at INTEGER NOT NULL,
+// 			last_used INTEGER DEFAULT (strftime('%s','now')),
 
 // 			user_id INTEGER NOT NULL,
 // 			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

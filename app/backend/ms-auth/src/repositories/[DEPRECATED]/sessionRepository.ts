@@ -123,7 +123,7 @@ class SessionRepository {
 			return false;
 		}
 
-		keys.push(`updated_at = CURRENT_TIMESTAMP`);
+		keys.push(`updated_at = (strftime('%s','now'))`);
 		values.push(session_id);
 		values.push(user_id);
 
@@ -189,7 +189,7 @@ class SessionRepository {
 			return false;
 		}
 
-		keys.push(`updated_at = CURRENT_TIMESTAMP`);
+		keys.push(`updated_at = (strftime('%s','now'))`);
 		values.push(user_id);
 
 		const runResult = await db.run(

@@ -11,17 +11,17 @@ export default function FriendsList() {
 
 	useEffect(() => {
 		async function fetchFriends() {
-		  try {
-			setIsLoading(true);
-			const data = await apiClient.getAllFriends();
-			const mappedFriends = mapAPIUserItemtoUserItem(data);
-			setFriends(mappedFriends);
-		  } catch (err) {
-			alert('Error fetching friends');
-			alert(err);
-		  } finally {
-			setIsLoading(false);
-		  }
+			try {
+				setIsLoading(true);
+				const data = await apiClient.getAllFriends();
+				const mappedFriends = mapAPIUserItemtoUserItem(data);
+				setFriends(mappedFriends);
+			} catch (err) {
+				alert('Error fetching friends');
+				alert(err);
+			} finally {
+				setIsLoading(false);
+			}
 		}
 		fetchFriends();
 	}, []);
@@ -46,8 +46,7 @@ export default function FriendsList() {
 				{
 					icon: <X size={22} className="hover:text-red-400 transition-all duration-300" />,
 					onClick: handleUnfriend,
-					title: 'Unfriend',
-					color: 'red-400'
+					title: 'Unfriend'
 				},
 			]}
 		/>

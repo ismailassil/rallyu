@@ -250,7 +250,7 @@ export default function Users() {
 					title="Outgoing Friend Requests"
 					subtitle="View and cancel all the pending friend requests you've sent"
 					isFoldable={true}
-					defaultExpanded={false}
+					defaultExpanded={true}
 				>
 					<OutgoingFriendRequestsList />
 				</SettingsCard>
@@ -259,7 +259,7 @@ export default function Users() {
 					title="Incoming Friend Requests"
 					subtitle="View and decline all the pending friend requests you've received"
 					isFoldable={true}
-					defaultExpanded={false}
+					defaultExpanded={true}
 				>
 					<IncomingFriendRequestsList />
 				</SettingsCard>
@@ -268,15 +268,10 @@ export default function Users() {
 					title="Blocked Users"
 					subtitle="View and unblock all the users you have blocked"
 					isFoldable={true}
-					defaultExpanded={false}
+					defaultExpanded={true}
 				>
 					<BlockedList />
 				</SettingsCard>
-
-				{/* <div className="flex flex-col gap-5 px-18 mt-8 mb-4">
-					<h1>Language</h1>
-					<h1>Notifications</h1>
-				</div> */}
 			</div>
 		</motion.div>
 	);

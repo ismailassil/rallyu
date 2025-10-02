@@ -65,16 +65,16 @@ class RelationsController {
 
 	async sendFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { user_id: target_id } = request.params as IRelationsRequest;
+			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 
-			await this.relationsService.sendFriendRequest(user_id!, parseInt(target_id));
+			await this.relationsService.sendFriendRequest(user_id!, targetUserId);
 
 			const subject = 'notification.dispatch';
 			const jsonC = JSONCodec();
 			const payload = jsonC.encode({
 				senderId: user_id,
-				receiverId: target_id,
+				receiverId: targetUserId,
 				type: 'friend_request'
 			});
 			await request.server.js.publish(subject, payload);
@@ -89,15 +89,15 @@ class RelationsController {
 
 	async cancelFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { user_id: target_id } = request.params as IRelationsRequest;
+			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 
-			await this.relationsService.cancelFriendRequest(user_id!, parseInt(target_id));
+			await this.relationsService.cancelFriendRequest(user_id!, targetUserId);
 
 			// UPDATE THE NOTIFICATION
 			const jsCodec = JSONCodec();
 			const data = jsCodec.encode({
-				senderId: parseInt(target_id),
+				senderId: targetUserId,
 				receiverId: user_id,
 				status: 'dismissed',
 				type: 'friend_request',
@@ -115,15 +115,15 @@ class RelationsController {
 
 	async acceptFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { user_id: target_id } = request.params as IRelationsRequest;
+			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 
-			await this.relationsService.acceptFriendRequest(parseInt(target_id), user_id!);
+			await this.relationsService.acceptFriendRequest(targetUserId, user_id!);
 
 			// UPDATE THE NOTIFICATION
 			const jsCodec = JSONCodec();
 			const data = jsCodec.encode({
-				senderId: parseInt(target_id),
+				senderId: targetUserId,
 				receiverId: user_id,
 				status:'read',
 				type:'friend_request',
@@ -134,7 +134,7 @@ class RelationsController {
 			// NOTIFY THE OTHER USER ABOUT IT
 			const payload = jsCodec.encode({
 				senderId: user_id,
-				receiverId: parseInt(target_id),
+				receiverId: targetUserId,
 				type: 'status',
 				message: "has accepted your invitation",
 			});
@@ -150,15 +150,15 @@ class RelationsController {
 	
 	async rejectFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { user_id: target_id } = request.params as IRelationsRequest;
+			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 			
-			await this.relationsService.rejectFriendRequest(parseInt(target_id), user_id!);
+			await this.relationsService.rejectFriendRequest(targetUserId, user_id!);
 			
 			// UPDATE THE NOTIFICATION
 			const jsCodec = JSONCodec();
 			const data = jsCodec.encode({
-				senderId: parseInt(target_id),
+				senderId: targetUserId,
 				receiverId: user_id,
 				status:'read',
 				type:'friend_request',
@@ -176,10 +176,10 @@ class RelationsController {
 
 	async blockUserHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { user_id: target_id } = request.params as IRelationsRequest;
+			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 
-			await this.relationsService.blockUser(user_id!, parseInt(target_id));
+			await this.relationsService.blockUser(user_id!, targetUserId);
 
 			reply.status(200).send({ success: true, data: {} });
 		} catch (err: any) {
@@ -191,10 +191,10 @@ class RelationsController {
 
 	async unblockUserHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { user_id: target_id } = request.params as IRelationsRequest;
+			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 
-			await this.relationsService.unblockUser(user_id!, parseInt(target_id));
+			await this.relationsService.unblockUser(user_id!, targetUserId);
 
 			reply.status(200).send({ success: true, data: {} });
 		} catch (err: any) {
@@ -206,10 +206,10 @@ class RelationsController {
 
 	async unfriendHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { user_id: target_id } = request.params as IRelationsRequest;
+			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 
-			await this.relationsService.unfriend(user_id!, parseInt(target_id));
+			await this.relationsService.unfriend(user_id!, targetUserId);
 
 			reply.status(200).send({ success: true, data: {} });
 		} catch (err: any) {

@@ -46,8 +46,7 @@ export default function BlockedList() {
 				{
 					icon: <X size={22} className="hover:text-red-400 transition-all duration-300" />,
 					onClick: handleUnblock,
-					title: 'Unblock',
-					color: 'red-400'
+					title: 'Unblock'
 				},
 			]}
 		/>

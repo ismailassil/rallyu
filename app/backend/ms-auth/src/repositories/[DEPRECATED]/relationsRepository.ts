@@ -185,7 +185,7 @@ class RelationsRepository {
 		try {
 			const runResult = await db.run(`
 				UPDATE relations 
-				SET relation_status = ?, updated_at = CURRENT_TIMESTAMP
+				SET relation_status = ?, updated_at = (strftime('%s','now'))
 				WHERE id = ?
 			`, [status, id]);
 			return runResult.changes > 0;

@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { Clock } from 'lucide-react';
 import funnelDisplay from '@/app/fonts/FunnelDisplay';
 import Link from 'next/link';
+import { relativeTimeAgoFromNow } from '@/app/(api)/utils';
+import Avatar from '@/app/(onsite)/(profile)/users/components/Avatar';
 
 export interface APIUserItem {
 	id: number;
@@ -10,7 +12,7 @@ export interface APIUserItem {
 	last_name: string;
 	username: string;
 	avatar_url: string;
-	updated_at: string;
+	created_at: number;
 }
 
 export interface UserItem {
@@ -38,8 +40,8 @@ export function mapAPIUserItemtoUserItem(users: APIUserItem[]) {
 		id: usr.id,
 		username: usr.username,
 		fullName: usr.first_name + ' ' + usr.last_name,
-		avatar: `http://localhost:4025/api${usr.avatar_url}`,
-		since: usr.updated_at
+		avatar: usr.avatar_url,
+		since: relativeTimeAgoFromNow(usr.created_at)
 	}));
 
 	return mappedUsers;
@@ -64,13 +66,9 @@ export default function UserList({ users, actions = [] } : UserListProps) {
 					<Link href={`/users/${username}`} className='w-full'>
 					<div className="flex gap-3 items-center">
 						<div className="rounded-full h-10 w-10 ring-1 ring-white/10">
-							<Image
-								src={avatar}
-								alt="Profile Image"
-								width={96}
-								height={96}
-								className="h-full w-full object-cover rounded-full"
-								quality={100}
+							<Avatar
+								avatar={avatar}
+								className='h-full w-full'
 							/>
 						</div>
 						<div>

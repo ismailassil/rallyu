@@ -120,7 +120,7 @@ class SessionsRepository extends ARepository {
 			values.push(sessionID);
 
 			const runResult = await db.run(
-				`UPDATE refresh_tokens SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE session_id = ?`,
+				`UPDATE refresh_tokens SET ${setClause}, updated_at = (strftime('%s','now')) WHERE session_id = ?`,
 				values
 			);
 			return runResult.changes > 0;
@@ -175,7 +175,7 @@ class SessionsRepository extends ARepository {
 	async revoke(sessionID: string, reason: string) : Promise<boolean> {
 		try {
 			const runResult = await db.run(
-				`UPDATE refresh_tokens SET is_revoked = true, reason = ?, updated_at = CURRENT_TIMESTAMP WHERE session_id = ?`,
+				`UPDATE refresh_tokens SET is_revoked = true, reason = ?, updated_at = (strftime('%s','now')) WHERE session_id = ?`,
 				[reason, sessionID]
 			);
 			return runResult.changes > 0;
@@ -194,7 +194,7 @@ class SessionsRepository extends ARepository {
 	async revokeAllForUser(userID: number, reason: string) : Promise<number> {
 		try {
 			const runResult = await db.run(
-				`UPDATE refresh_tokens SET is_revoked = true, reason = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ? AND is_revoked = false`,
+				`UPDATE refresh_tokens SET is_revoked = true, reason = ?, updated_at = (strftime('%s','now')) WHERE user_id = ? AND is_revoked = false`,
 				[reason, userID]
 			);
 			return runResult.changes;

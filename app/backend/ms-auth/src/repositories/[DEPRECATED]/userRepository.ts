@@ -125,7 +125,7 @@ class UserRepository {
 		if (keys.length === 0)
 			return false;
 
-		keys.push(`updated_at = CURRENT_TIMESTAMP`);
+		keys.push(`updated_at = (strftime('%s','now'))`);
 		values.push(id);
 
 		try {

@@ -66,8 +66,7 @@ class RelationsRepository extends ARepository {
 					users.last_name,
 					users.avatar_url,
 					relations.relation_status,
-					relations.created_at,
-					relations.updated_at
+					relations.updated_at as created_at
 				FROM relations
 				JOIN users ON (
 					(relations.requester_user_id = users.id AND relations.receiver_user_id = ?)
@@ -98,8 +97,7 @@ class RelationsRepository extends ARepository {
 					users.last_name,
 					users.avatar_url,
 					relations.relation_status,
-					relations.created_at,
-					relations.updated_at
+					relations.created_at
 				FROM relations
 				JOIN users ON relations.requester_user_id = users.id
 				WHERE relations.receiver_user_id = ?
@@ -127,8 +125,7 @@ class RelationsRepository extends ARepository {
 					users.last_name,
 					users.avatar_url,
 					relations.relation_status,
-					relations.created_at,
-					relations.updated_at
+					relations.created_at
 				FROM relations
 				JOIN users ON relations.receiver_user_id = users.id
 				WHERE relations.requester_user_id = ?
@@ -156,8 +153,7 @@ class RelationsRepository extends ARepository {
 					users.last_name,
 					users.avatar_url,
 					relations.relation_status,
-					relations.created_at,
-					relations.updated_at
+					relations.created_at
 				FROM relations
 				JOIN users ON relations.receiver_user_id = users.id
 				WHERE relations.requester_user_id = ?
@@ -185,8 +181,7 @@ class RelationsRepository extends ARepository {
 					users.last_name,
 					users.avatar_url,
 					relations.relation_status,
-					relations.created_at,
-					relations.updated_at
+					relations.created_at
 				FROM relations
 				JOIN users ON relations.requester_user_id = users.id
 				WHERE relations.receiver_user_id = ?
@@ -230,7 +225,7 @@ class RelationsRepository extends ARepository {
 		try {
 			const runResult = await db.run(`
 				UPDATE relations
-				SET relation_status = ?, updated_at = CURRENT_TIMESTAMP
+				SET relation_status = ?, updated_at = (strftime('%s','now'))
 				WHERE id = ?
 			`, [status, id]);
 			return runResult.changes > 0;

@@ -87,7 +87,7 @@ class MatchesRepository extends ARepository {
 			values.push(id);
 
 			const runResult = await db.run(
-				`UPDATE matches SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+				`UPDATE matches SET ${setClause}, updated_at = (strftime('%s','now')) WHERE id = ?`,
 				values
 			);
 

@@ -42,8 +42,7 @@ export default function OutgoingFriendRequestsList() {
 				{
 					icon: <X size={22} className="hover:text-red-400 transition-all duration-300" />,
 					onClick: handleCancel,
-					title: "Cancel",
-					color: "red-400",
+					title: "Cancel"
 				},
 			]}
 		/>
