@@ -1,12 +1,16 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import SettingsCard from "../SettingsCard";
-import { XIcon, Fingerprint, Smartphone, Mail, Check, Laptop, MapPin, Clock, Trash2, Monitor } from "lucide-react";
-import funnelDisplay from "@/app/fonts/FunnelDisplay";
-import MFASetup from "../../../(deprecated2fa)/page";
+import { XIcon, Fingerprint, Smartphone, Mail, Check, Laptop, MapPin, Clock, Trash2, Monitor, LoaderCircle } from "lucide-react";
 import ChangePasswordForm from "./ChangePasswordForm";
 import TwoFactorAuth from "./TwoFactorAuth";
 import { useRouter } from "next/navigation";
+import { string } from "zod";
+import { changePasswordSchema } from "@/app/(api)/schema";
+import useForm from "@/app/hooks/useForm";
+import { toastError, toastSuccess } from "@/app/components/CustomToast";
+import { useState } from "react";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 
 // const mfaData = [
 // 	{ method: 'totp', name: 'Authenticator App', icon: <Fingerprint  className='group-hover:text-blue-400 transition-all duration-900 h-14 w-14' />, contact: 'Google Authenticator, Authy, or similar apps', enabled: true },
@@ -169,6 +173,36 @@ import { useRouter } from "next/navigation";
 
 export default function Security() {
 	const router = useRouter();
+	const { apiClient } = useAuth();
+	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+	const [formData, touched, errors, debounced, handleChange, validateAll, resetForm] = useForm(
+		changePasswordSchema,
+		{ current_password: '', new_password: '', confirm_new_password: '' },
+		{ debounceMs: 1200 }
+	);
+
+	const showSaveChanges = (Object.keys(touched).length === 3 && Object.keys(errors).length === 0);
+
+
+	async function handleSubmit() {
+		const isValid = validateAll();
+		if (!isValid)
+			return ;
+
+		console.log('Form Data to submit: ', formData);
+
+		try {
+			setIsSubmitting(true);
+			await apiClient.changePassword({ oldPassword: formData.current_password, newPassword: formData.new_password});
+			toastSuccess('Changes saved successfully');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (err: any) {
+			toastError(err.message || 'Something went wrong, please try again later');
+		} finally {
+			setIsSubmitting(false);
+			resetForm();
+		}
+	}
 
 	return (
 		<motion.div
@@ -192,10 +226,19 @@ export default function Security() {
 					title="Change Password"
 					subtitle="Modify your current password"
 					isForm={true}
-					// formId='settings-change-password-form'
+					actionIcon={isSubmitting ? <LoaderCircle size={16} className='animate-spin' /> : undefined}
 					formSubmitLabel='Save Changes'
+					onSubmit={handleSubmit}
+					isButtonHidden={!showSaveChanges}
+					isButtonDisabled={isSubmitting}
 				>
-					<ChangePasswordForm />
+					<ChangePasswordForm 
+						formData={formData}
+						touched={touched}
+						errors={errors}
+						debounced={debounced}
+						onChange={handleChange}
+					/>
 				</SettingsCard>
 				{/* <SettingsCard 
 					title="Browsers and devices"

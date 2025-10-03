@@ -1,22 +1,25 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import FormField from "@/app/(auth)/components/Forms/FormField";
 import useForm from "@/app/hooks/useForm";
 import { toastError, toastLoading, toastSuccess } from "@/app/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { changePasswordSchema } from "@/app/(api)/schema";
 
-export default function ChangePasswordForm() {
-	const { apiClient } = useAuth();
-	const [formData, touched, errors, debounced, handleChange, validateAll, resetForm] = useForm(
-		changePasswordSchema, 
-		{
-			current_password: '',
-			new_password: '',
-			confirm_new_password: ''
-		},
-		{ debounceMs: 1200 }
-	);
+interface ChangePasswordFormProps {
+	formData: Record<string, string>;
+	touched: Record<string, boolean>;
+	errors: Record<string, string>;
+	debounced: Record<string, boolean>;
+	onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+}
 
+export default function ChangePasswordForm({ 
+	formData,
+	touched,
+	errors,
+	debounced,
+	onChange
+} : ChangePasswordFormProps) {
 	// async function handleSubmit(e: React.FormEvent) {
 	// 	e.preventDefault();
 
@@ -35,8 +38,8 @@ export default function ChangePasswordForm() {
 	// }
 
 	return (
-		<div className="flex gap-12 px-14 max-lg:flex-col max-lg:gap-8 max-lg:px-10">
-			<div className="flex flex-col justify-between flex-2 gap-4">
+		<div className="flex gap-12 px-14 py-6 max-lg:flex-col max-lg:gap-8 max-lg:px-10">
+			<div className="flex flex-col flex-2 gap-4">
 				<FormField 
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/lock.svg'
@@ -45,7 +48,7 @@ export default function ChangePasswordForm() {
 					inputPlaceholder='••••••••••••••••'
 					inputValue={formData.current_password}
 					hidden={true}
-					onChange={handleChange}
+					onChange={onChange}
 					touched={touched.current_password}
 					error={errors.current_password}
 					debounced={debounced.current_password}
@@ -58,7 +61,7 @@ export default function ChangePasswordForm() {
 					inputPlaceholder='••••••••••••••••'
 					inputValue={formData.new_password}
 					hidden={true}
-					onChange={handleChange}
+					onChange={onChange}
 					touched={touched.new_password}
 					error={errors.new_password}
 					debounced={debounced.new_password}
@@ -71,7 +74,7 @@ export default function ChangePasswordForm() {
 					inputPlaceholder='••••••••••••••••'
 					inputValue={formData.confirm_new_password}
 					hidden={true}
-					onChange={handleChange}
+					onChange={onChange}
 					touched={touched.confirm_new_password}
 					error={errors.confirm_new_password}
 					debounced={debounced.confirm_new_password}

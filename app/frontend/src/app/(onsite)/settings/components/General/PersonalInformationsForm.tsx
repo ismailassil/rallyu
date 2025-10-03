@@ -24,7 +24,7 @@ export default function PersonalInformationsForm({
 	const { loggedInUser } = useAuth();
 	return (
 		<div className="flex flex-col gap-4">
-			<form id='settings-personal-info-form' action="" className='flex flex-col gap-5'>
+			<div className='flex flex-col gap-5'>
 				<FormField
 					className='field flex flex-col gap-0.5 min-w-0 flex-1'
 					iconSrc='/icons/firstname.svg'
@@ -103,7 +103,7 @@ export default function PersonalInformationsForm({
 					error={errors.bio}
 					debounced={debounced.bio}
 				/>
-			</form>
+			</div>
 			<LanguageSwitcher />
 		</div>
 	);

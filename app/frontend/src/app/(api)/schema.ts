@@ -81,9 +81,14 @@ export const changePasswordSchema = z.object({
 
 	confirm_new_password: z.string()
 		.nonempty("Please confirm your new password"),
-	}).refine((data) => data.new_password === data.confirm_new_password, {
+	})
+	.refine((data) => data.new_password === data.confirm_new_password, {
 		message: "New passwords do not match",
 		path: ["confirm_new_password"],
+	})
+	.refine((data) => data.new_password !== data.current_password, {
+		message: "New password cannot be the same as the current password",
+		path: ["new_password"],
 });
 
 export const resetPasswordSchema = z.object({
@@ -100,7 +105,7 @@ export const resetPasswordSchema = z.object({
 
 	confirm_password: z.string()
 		.nonempty("Please confirm your password"),
-		}).refine((data) => data.password === data.confirm_password, {
-		message: "Passwords do not match",
-		path: ["confirm_password"],
+	}).refine((data) => data.password === data.confirm_password, {
+	message: "Passwords do not match",
+	path: ["confirm_password"],
 });

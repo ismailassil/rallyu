@@ -70,8 +70,6 @@ export default function ProfilePreview({ values, avatarFile, avatarBlobPreview, 
 					</label>
 					<Avatar
 						avatar={avatarBlobPreview || loggedInUser!.avatar_url}
-						width={100}
-						height={100}
 						className='h-27 w-27 ring-4 ring-white/10 relative'
 					/>
 				</div>
