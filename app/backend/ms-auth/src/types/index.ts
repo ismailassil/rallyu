@@ -137,6 +137,8 @@ declare module 'fastify' {
 	}
 	interface FastifyRequest {
 		user: JWT_ACCESS_PAYLOAD | null,
+		refreshToken: string | null,
+		fingerprint: ISessionFingerprint | null,
 		// cookies: {
 		// 	[cookieName: string]: string
 		// }
@@ -145,8 +147,8 @@ declare module 'fastify' {
 }
 
 export interface ISessionFingerprint {
-	device_name: string,
-	browser_version: string,
+	device: string,
+	browser: string,
 	ip_address: string
 }
 

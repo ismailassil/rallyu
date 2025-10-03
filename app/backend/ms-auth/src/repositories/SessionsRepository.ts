@@ -2,12 +2,12 @@ import { db } from "../database";
 import ARepository from "./ARepository";
 
 interface Session {
-	session_id: number;
+	session_id: string;
 	version: number;
 	is_revoked: boolean;
 	reason: string | null;
-	device_name: string;
-	browser_version: string;
+	device: string;
+	browser: string;
 	ip_address: string;
 	created_at: number;
 	expires_at: number;
@@ -26,7 +26,7 @@ class SessionsRepository extends ARepository {
 	async findOne(sessionID: string, userID: number) : Promise<Session | null> {
 		try {
 			const getResult = await db.get(
-				`SELECT * FROM refresh_tokens WHERE session_id = ? AND user_id = ?`,
+				`SELECT * FROM sessions WHERE session_id = ? AND user_id = ?`,
 				[sessionID, userID]
 			);
 			return getResult ?? null;
@@ -41,13 +41,13 @@ class SessionsRepository extends ARepository {
 	 * @param userID - ID of the user.
 	 * @returns An array of active sessions.
 	 */
-	async findAllActive(userID: number) {
+	async findAllActive(userID: number) : Promise<Session[]> {
 		try {
 			const allResult = await db.all(
-				`SELECT * FROM refresh_tokens WHERE is_revoked = false AND user_id = ?`,
+				`SELECT * FROM sessions WHERE is_revoked = false AND user_id = ? ORDER BY updated_at DESC`,
 				[userID]
 			);
-			return allResult;
+			return allResult as Session[];
 		} catch (err: any) {
 			this.handleDatabaseError(err, 'finding all active sessions for user');
 		}
@@ -62,7 +62,7 @@ class SessionsRepository extends ARepository {
 	async findAllRevoked(userID: number) {
 		try {
 			const allResult = await db.all(
-				`SELECT * FROM refresh_tokens WHERE is_revoked = true AND user_id = ?`,
+				`SELECT * FROM sessions WHERE is_revoked = true AND user_id = ? ORDER BY updated_at DESC`,
 				[userID]
 			);
 			return allResult;
@@ -75,8 +75,8 @@ class SessionsRepository extends ARepository {
 	/**
 	 * Create a new session.
 	 * @param sessionID - ID of the session.
-	 * @param deviceName - Name of the device.
-	 * @param browserVersion - Version of the browser.
+	 * @param device - Type of the device.
+	 * @param browser - Browser.
 	 * @param ipAddress - IP address of the user.
 	 * @param createdAt - Timestamp when the session was created.
 	 * @param expiresAt - Timestamp when the session expires.
@@ -85,8 +85,8 @@ class SessionsRepository extends ARepository {
 	 */
 	async create(
 		sessionID: string,
-		deviceName: string,
-		browserVersion: string,
+		device: string,
+		browser: string,
 		ipAddress: string,
 		createdAt: number,
 		expiresAt: number,
@@ -94,8 +94,8 @@ class SessionsRepository extends ARepository {
 	) : Promise<number | null> {
 		try {
 			const runResult = await db.run(
-				`INSERT INTO refresh_tokens (session_id, created_at, expires_at, device_name, browser_version, ip_address, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-				[sessionID, createdAt, expiresAt, deviceName, browserVersion, ipAddress, userID]
+				`INSERT INTO sessions (session_id, created_at, expires_at, device, browser, ip_address, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+				[sessionID, createdAt, expiresAt, device, browser, ipAddress, userID]
 			);
 			return runResult.lastID;
 		} catch (err: any) {
@@ -120,7 +120,7 @@ class SessionsRepository extends ARepository {
 			values.push(sessionID);
 
 			const runResult = await db.run(
-				`UPDATE refresh_tokens SET ${setClause}, updated_at = (strftime('%s','now')) WHERE session_id = ?`,
+				`UPDATE sessions SET ${setClause}, updated_at = (strftime('%s','now')) WHERE session_id = ?`,
 				values
 			);
 			return runResult.changes > 0;
@@ -138,7 +138,7 @@ class SessionsRepository extends ARepository {
 	async delete(sessionID: string) : Promise<boolean> {
 		try {
 			const runResult = await db.run(
-				`DELETE FROM refresh_tokens WHERE session_id = ?`,
+				`DELETE FROM sessions WHERE session_id = ?`,
 				[sessionID]
 			);
 			return runResult.changes > 0;
@@ -156,7 +156,7 @@ class SessionsRepository extends ARepository {
 	async deleteAllForUser(userID: number) : Promise<number> {
 		try {
 			const runResult = await db.run(
-				`DELETE FROM refresh_tokens WHERE user_id = ?`,
+				`DELETE FROM sessions WHERE user_id = ?`,
 				[userID]
 			);
 			return runResult.changes;
@@ -175,7 +175,7 @@ class SessionsRepository extends ARepository {
 	async revoke(sessionID: string, reason: string) : Promise<boolean> {
 		try {
 			const runResult = await db.run(
-				`UPDATE refresh_tokens SET is_revoked = true, reason = ?, updated_at = (strftime('%s','now')) WHERE session_id = ?`,
+				`UPDATE sessions SET is_revoked = true, reason = ?, updated_at = (strftime('%s','now')) WHERE session_id = ?`,
 				[reason, sessionID]
 			);
 			return runResult.changes > 0;
@@ -191,15 +191,83 @@ class SessionsRepository extends ARepository {
 	 * @param reason - Reason for revocation.
 	 * @returns The number of sessions revoked.
 	 */
-	async revokeAllForUser(userID: number, reason: string) : Promise<number> {
+	async revokeAllForUser(userID: number, reason: string, excludeSessionID?: string) : Promise<number> {
 		try {
+			const params = excludeSessionID ? [reason, userID, excludeSessionID] : [reason, userID];
+
 			const runResult = await db.run(
-				`UPDATE refresh_tokens SET is_revoked = true, reason = ?, updated_at = (strftime('%s','now')) WHERE user_id = ? AND is_revoked = false`,
-				[reason, userID]
+				`UPDATE sessions SET is_revoked = true, reason = ?, updated_at = (strftime('%s','now')) WHERE user_id = ? AND is_revoked = false ${excludeSessionID ? 'AND session_id != ?' : ''}`,
+				params
 			);
 			return runResult.changes;
 		} catch (err: any) {
 			this.handleDatabaseError(err, 'revoking all sessions for user');
+		}
+		return 0;
+	}
+
+	/**
+	 * Delete the oldest session for a user.
+	 * @param userID - ID of the user.
+	 * @returns True if a session was deleted, otherwise false.
+	 */
+	async deleteOldestForUser(userID: number) : Promise<boolean> {
+		try {
+			const runResult = await db.run(
+				`DELETE FROM sessions WHERE session_id = (
+					SELECT session_id FROM sessions 
+					WHERE user_id = ? 
+					ORDER BY updated_at ASC 
+					LIMIT 1
+				)`,
+				[userID]
+			);
+			return runResult.changes > 0;
+		} catch (err: any) {
+			this.handleDatabaseError(err, 'deleting oldest session for user');
+		}
+		return false;
+	}
+
+	/**
+	 * Delete all expired sessions.
+	 * @returns The number of sessions deleted.
+	 */
+	async deleteExpired() : Promise<number> {
+		try {
+			const runResult = await db.run(
+				`DELETE FROM sessions WHERE expires_at <= strftime('%s','now')`,
+				[]
+			);
+			return runResult.changes;
+		} catch (err: any) {
+			this.handleDatabaseError(err, 'deleting expired sessions');
+		}
+		return 0;
+	}
+
+	async findOldestActiveSession(userID: number) : Promise<Session | null> {
+		try {
+			const getResult = await db.get(
+				`SELECT * FROM sessions WHERE is_revoked = false AND user_id = ? ORDER BY updated_at ASC LIMIT 1`,
+				[userID]
+			);
+			return getResult ?? null;
+		} catch (err: any) {
+			this.handleDatabaseError(err, 'finding oldest active session for user');
+		}
+		return null;
+	}
+
+	async countActiveSessions(userID: number) : Promise<number> {
+		try {
+			const getResult = await db.get(
+				`SELECT COUNT(*) as count FROM sessions WHERE is_revoked = false AND user_id = ?`,
+				[userID]
+			);
+			return getResult?.count ?? 0;
+		} catch (err: any) {
+			this.handleDatabaseError(err, 'counting active sessions for user');
 		}
 		return 0;
 	}

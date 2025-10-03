@@ -78,7 +78,7 @@ const auth2FASetupParams = {
 	properties: {
 		method: { 
 			type: 'string',
-			enum: ['email', 'sms', 'totp']
+			enum: ['EMAIL', 'SMS', 'TOTP']
 		}
 	},
 	required: ['method']

@@ -48,7 +48,7 @@ function AuthAppSetup({ onSubmit, onGoBack } : { onSubmit: () => void, onGoBack:
 
 	async function sideEffect() {
 		try {
-			const res = await apiClient.mfaSetupInit('totp');
+			const res = await apiClient.mfaSetupInit('TOTP');
 			console.log(res);
 			setSecrets(res);
 		} catch (err) {
@@ -103,7 +103,7 @@ function EmailSetup({ onSubmit, onGoBack } : { onSubmit: (contact: string) => vo
 		}
 
 		try {
-			const res = await apiClient.mfaSetupInit('email');
+			const res = await apiClient.mfaSetupInit('EMAIL');
 			console.log(res);
 			onSubmit(email);
 		} catch (err) {

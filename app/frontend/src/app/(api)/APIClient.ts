@@ -311,6 +311,22 @@ export class APIClient {
 		return data;
 	}
 
+	/*---------------------------------- Session Management ----------------------------------*/
+	async fetchActiveSessions() {
+		const { data: res } = await this.client.get('/auth/sessions');
+		return res.data;
+	}
+
+	async revokeSession(session_id: string) {
+		const { data: res } = await this.client.delete(`/auth/sessions/${session_id}`);
+		return res.data;
+	}
+
+	async revokeAllOtherSessions() {
+		const { data: res } = await this.client.delete('/auth/sessions');
+		return res.data;
+	}
+
 	/*--------------------------------- Password Management ---------------------------------*/
 
 	async changePassword(payload: {
