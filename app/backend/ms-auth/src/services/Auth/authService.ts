@@ -243,7 +243,7 @@ class AuthService {
 		const isValidPassword = 
 			await bcrypt.compare(oldPassword, existingUser.password);
 		if (!isValidPassword)
-			throw new InvalidCredentialsError();
+			throw new InvalidCredentialsError('Invalid password');
 		
 		const newHashedPassword = await bcrypt.hash(newPassword!, this.authConfig.bcryptHashRounds);
 
