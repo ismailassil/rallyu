@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 function GamePanel() {
 	const { apiClient, loggedInUser } = useAuth();
-	const { setUrl } = useGame();
+	const { setUrl, setOpponentId } = useGame();
 
 	useEffect(() => {
 		(async () => {
@@ -16,7 +16,9 @@ function GamePanel() {
 					return;
 				const res = await apiClient.fetchPlayerStatus(loggedInUser.id);
 
+				console.log("result: " ,res);
 				setUrl(`/game/room/${res.roomId}?user=${loggedInUser.id}`);
+				setOpponentId(res.opponentId)
 			} catch (err) {
 				console.log(`Game Service: ${err}`);
 			}

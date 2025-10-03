@@ -7,7 +7,8 @@ const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS
 const game = async (fastify, options) => {
 	const ROOM_EXPIRATION_TIME = 10000; // 10 sec
     const GAME_START_DELAY = 3000; // 3 sec
-    const GAME_UPDATE_INTERVAL = 16.67; // 60fps
+    const GAME_UPDATE_INTERVAL = 16.67; // 60hz
+    const GAME_TIME = 93000; // 90 seconds
 
 
 	fastify.decorate('json', (socket, obj) => {
@@ -106,6 +107,7 @@ const game = async (fastify, options) => {
 
 	class Room {
 		constructor(id) {
+			this.startTime = null;
 			this.id = id;
 			this.players = []
 			this.running = false;
@@ -131,6 +133,7 @@ const game = async (fastify, options) => {
 		}
 
 		startGame() {
+			this.startTime = Date.now();
 			this.running = true;
 			this.timeoutId = setupPackets(this);
 
@@ -190,15 +193,16 @@ const game = async (fastify, options) => {
 				fastify.json(player.socket, {
 					type: 'reconnected',
 					score: room.state.score,
-					i: index
-					//timer
+					i: index,
+					time: Math.round((GAME_TIME - (Date.now() - room.startTime)) / 1000)
 				});
 			} else if (room.players.every(p => p.connected)) {
 				clearTimeout(room.expirationTimer);
 				room.gameTimerId = setTimeout(() => {
 					sendGameOverPacket(room);
+					// send Game data to ezzuz
 					closeRoom(room, 1003, 'Game Over');
-				}, 90000);
+				}, GAME_TIME);
 				room.startGame();
 			}
 
@@ -218,7 +222,12 @@ const game = async (fastify, options) => {
 				message: 'user not currently on an active game.'
 			})
 		}
-		return { roomId: session };
+		const opponentId = rooms.get(session)?.players?.find(player => player.id !== user)?.id;
+	
+		return {
+			roomId: session,
+			opponentId
+		};
 	})
 
 	fastify.post('/create-room', (req, res) => {

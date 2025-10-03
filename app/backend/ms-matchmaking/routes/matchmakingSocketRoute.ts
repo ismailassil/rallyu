@@ -32,7 +32,10 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
                     const data = await res.json();
     
                     keys.forEach(key => {
-                        matchQueue.get(key)?.send(JSON.stringify(data))
+                        matchQueue.get(key)?.send(JSON.stringify({
+                            roomId: data.roomId,
+                            opponentId: keys.find(k => k != key)
+                        }));
                     });
                     keys.forEach(key => matchQueue.delete(key));
                 } catch (err) {

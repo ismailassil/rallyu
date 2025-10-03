@@ -4,9 +4,10 @@ import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 
 const QueueToggleButton = () => {
 	const [isSearching, setIsSearching] = useState(false);
+	const [inGame, setInGame] = useState(false);
 	const [queueTime, setQueueTime] = useState(0);
 	const { loggedInUser, apiClient } = useAuth();
-	const { setUrl } = useGame();
+	const { setUrl, setOpponentId } = useGame();
 	const wsRef = useRef<WebSocket | null>(null);
 
 
@@ -31,6 +32,8 @@ const QueueToggleButton = () => {
 				try {
 					const data = JSON.parse(event.data);
 					setUrl(`/game/room/${data.roomId}?user=${loggedInUser.id}`);
+					setOpponentId(data.opponentId);
+					setInGame(true);
 					ws.close();
 				} catch (err) {
 					console.error("Invalid JSON from server: ", err);
@@ -45,7 +48,8 @@ const QueueToggleButton = () => {
 	}, [isSearching]);
 
 	const handleToggleQueue = () => {
-		setIsSearching(!isSearching);
+		if (!inGame)
+			setIsSearching(!isSearching);
 	};
 
 	const formatTime = (seconds: number) => {
@@ -60,7 +64,7 @@ const QueueToggleButton = () => {
 	};
 
 	const getButtonStyles = () => {
-		const baseStyles = "w-full mt-auto relative px-8 py-3 rounded-xl font-semibold text-base transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none w-80 shadow-lg";
+		const baseStyles = "w-full mt-auto relative px-8 py-3 rounded-xl font-semibold text-base transition-all duration-300 transform cursor-pointer hover:scale-[1.02] active:scale-[0.98] focus:outline-none w-80 shadow-lg";
 		if (isSearching) {
 				return `${baseStyles} bg-black/50 text-gray-200 text-sm border-2 border-gray-500/30  hover:bg-gray-600/10`;
 		}

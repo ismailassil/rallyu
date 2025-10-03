@@ -1,15 +1,10 @@
 import { APIClient } from '@/app/(api)/APIClient';
 import type { GameState, MessageCallBack } from "../types/GameTypes"
 
-const MAX_RETRIES = 3;
-
 class SocketProxy {
 	private static instance: SocketProxy;
 	private socket: WebSocket | null = null;
 	private subscribers: MessageCallBack[] = [];
-	private url: string | null = null;
-	private retryAttemts: number = 0;
-	private destroyed: boolean = true;
 
 	private constructor() {};
 
@@ -36,11 +31,15 @@ class SocketProxy {
 		}
 	}
 
-	public connect(url: string, api: APIClient): (() => void) {
-		this.url = url;
+	public connect(
+		url: string,
+		api: APIClient,
+		setGameStarted: React.Dispatch<React.SetStateAction<boolean>>,
+		setGameTime: React.Dispatch<React.SetStateAction<number>>
+	): (() => void) {
 		this.socket = api.connectWebSocket(url);
 		this.socket.onopen = (): void => {
-			this.destroyed = false;
+			setGameStarted(true);
 			console.log('Connected to Pong Server');
 		}
 
@@ -50,19 +49,10 @@ class SocketProxy {
 
 		this.socket.onclose = (event: CloseEvent): void => {
 			console.log("Disconnected from Pong Websocket");
-			if (event.code > 1000) {
-				console.log(event.reason);
-				return;
-			}
-
-			if (this.retryAttemts >= MAX_RETRIES) {
-				console.warn("Max retry attemts reached.");
-				return;
-			}
-
-			console.log("Reconnecting...");
-			setTimeout(() => this.reconnect(api), 5000); // reconnect after 5 seconds
-			this.retryAttemts++;
+			setGameStarted(false);
+			setGameTime(0);
+			console.log(event.reason);
+			return;
 		}
 
 		this.socket.onerror = (error: Event): void => {
@@ -71,14 +61,7 @@ class SocketProxy {
 		return this.disconnect.bind(this);
 	}
 
-	private reconnect(api: APIClient): void {
-		if (this.url && !this.destroyed)
-			this.connect(this.url, api);
-	}
-
 	public disconnect(): void {
-		this.destroyed = true;
-		this.url = null;
 		this.socket?.close(1000, "Normal");
 		this.socket = null;
 	}
@@ -94,7 +77,11 @@ class SocketProxy {
 	}
 }
 
-export const setupCommunications = (gameStateRef: React.RefObject<GameState>, proxy: SocketProxy, setGameTime: React.Dispatch<React.SetStateAction<number>>): (() => void) => {
+export const setupCommunications = (
+	gameStateRef: React.RefObject<GameState>,
+	proxy: SocketProxy,
+	setGameTime: React.Dispatch<React.SetStateAction<number>>
+): (() => void) => {
 	return proxy.subscribe((data: any): void => {
 		gameStateRef.current.gameStatus = data.type
 		switch (data.type) {
@@ -108,6 +95,7 @@ export const setupCommunications = (gameStateRef: React.RefObject<GameState>, pr
 				gameStateRef.current.index = data.i;
 				gameStateRef.current.players[0].score = data.score[0]
 				gameStateRef.current.players[1].score = data.score[1]
+				setGameTime(data.time);
 				break;
 			case 'gameover':
 				gameStateRef.current.serverBall = { x: 800, y: 600, width: 20, height: 20 };

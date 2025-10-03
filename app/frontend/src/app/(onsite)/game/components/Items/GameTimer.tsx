@@ -23,7 +23,7 @@ const GameTimer = () => {
 	};
 
     return (
-        <div className={`flex ${ibm.className} flex-row justify-center items-center font-bold text-4xl tracking-widest gap-6 shadow-xl border border-neutral-700/50 bg-neutral-900/50 rounded-lg p-2 w-[180px] h-[80px] min-w-0`}>
+        <div className={`flex ${ibm.className} justify-center items-center font-bold text-3xl text-center tracking-widest gap-6 shadow-xl border border-neutral-700/50 bg-neutral-900/50 rounded-full p-2 w-[160px] h-[70px] min-w-0`}>
             {formatTime(gameTime)}
         </div>
     );

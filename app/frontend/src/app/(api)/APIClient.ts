@@ -336,10 +336,10 @@ export class APIClient {
 		return res.data;
 	}
 
-	// async fetchPlayerStatus(user_id: number) {
-	// 	const res = await this.client.get(`/game/user/${user_id}`);
-	// 	return res.data;
-	// }
+	async fetchPlayerStatus(user_id: number) {
+		const res = await this.client.get(`/game/user/${user_id}`);
+		return res.data;
+	}
 
 	connectWebSocket(path: string) {
 		const url = `ws://localhost:4025/api${path}`; // TODO Change to dynamic

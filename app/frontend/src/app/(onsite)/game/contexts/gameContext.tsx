@@ -9,8 +9,11 @@ interface GameContextType {
   gameTime: number;
   setGameTime: React.Dispatch<React.SetStateAction<number>>;
 
-  connection: boolean;
-  toggleConnection: () => void;
+  opponentId: number;
+  setOpponentId: React.Dispatch<React.SetStateAction<number>>;
+
+  gameStarted: boolean;
+  setGameStarted: React.Dispatch<React.SetStateAction<boolean>>;
 
   url: string | null;
   setUrl: React.Dispatch<React.SetStateAction<string | null>>;
@@ -26,25 +29,24 @@ export const useGame = () => {
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [gameType, setGameType] = useState<GameType>('pingpong');
-  const [connection, setConnection] = useState(false);
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [url, setUrl] = useState<string | null>(null);
   const [gameTime, setGameTime] = useState<number>(0);
-
-  const toggleConnection = () => {
-    setConnection(prev => !prev);
-  };
+  const [opponentId, setOpponentId] = useState<number>(0);
 
   return (
     <GameContext.Provider
       value={{
         gameType,
         setGameType,
-        connection,
-        toggleConnection,
+        gameStarted,
+        setGameStarted,
         url,
         setUrl,
         gameTime,
-        setGameTime
+        setGameTime,
+        opponentId,
+        setOpponentId
       }}
     >
       {children}
