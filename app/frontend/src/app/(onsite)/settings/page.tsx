@@ -43,7 +43,7 @@ function TabSelector({ activeTab, onSelect } : { activeTab: string, onSelect: (t
 }
 
 export default function SettingsPage() {
-	const [activeTab, setActiveTab] = useState('General');
+	const [activeTab, setActiveTab] = useState('Security');
 
 	function renderActiveTab() {
 		switch (activeTab) {

@@ -174,35 +174,32 @@ import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 export default function Security() {
 	const router = useRouter();
 	const { apiClient } = useAuth();
-	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-	const [formData, touched, errors, debounced, handleChange, validateAll, resetForm] = useForm(
-		changePasswordSchema,
-		{ current_password: '', new_password: '', confirm_new_password: '' },
-		{ debounceMs: 1200 }
-	);
+	const changePasswordFormId = 'change-password-form';
+	const [buttonDisabled, setButtonDisabled] = useState(false);
+	const [buttonHidden, setButtonHidden] = useState(true);
 
-	const showSaveChanges = (Object.keys(touched).length === 3 && Object.keys(errors).length === 0);
+	// async function handleSubmit() {
+	// 	const isValid = validateAll();
+	// 	if (!isValid)
+	// 		return ;
 
+	// 	console.log('Form Data to submit: ', formData);
 
-	async function handleSubmit() {
-		const isValid = validateAll();
-		if (!isValid)
-			return ;
+	// 	try {
+	// 		setIsSubmitting(true);
+	// 		await apiClient.changePassword({ oldPassword: formData.current_password, newPassword: formData.new_password});
+	// 		toastSuccess('Changes saved successfully');
+	// 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// 	} catch (err: any) {
+	// 		toastError(err.message || 'Something went wrong, please try again later');
+	// 	} finally {
+	// 		setIsSubmitting(false);
+	// 		resetForm();
+	// 	}
+	// }
 
-		console.log('Form Data to submit: ', formData);
-
-		try {
-			setIsSubmitting(true);
-			await apiClient.changePassword({ oldPassword: formData.current_password, newPassword: formData.new_password});
-			toastSuccess('Changes saved successfully');
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		} catch (err: any) {
-			toastError(err.message || 'Something went wrong, please try again later');
-		} finally {
-			setIsSubmitting(false);
-			resetForm();
-		}
-	}
+	console.log('Button Disabled: ', buttonDisabled);
+	console.log('Button Hidden: ', buttonHidden);
 
 	return (
 		<motion.div
@@ -216,7 +213,6 @@ export default function Security() {
 				<SettingsCard 
 					title="Two-factor Authentication"
 					subtitle="Add an extra layer of security to your account by choosing your preferred verification method"
-					isAction={true}
 					actionLabel='Manage 2FA'
 					actionIcon={<Fingerprint size={16} />}
 					onAction={() => router.push('/2fa')}
@@ -225,19 +221,15 @@ export default function Security() {
 				<SettingsCard 
 					title="Change Password"
 					subtitle="Modify your current password"
-					isForm={true}
-					actionIcon={isSubmitting ? <LoaderCircle size={16} className='animate-spin' /> : undefined}
-					formSubmitLabel='Save Changes'
-					onSubmit={handleSubmit}
-					isButtonHidden={!showSaveChanges}
-					isButtonDisabled={isSubmitting}
+					actionIcon={buttonDisabled ? <LoaderCircle size={16} className='animate-spin' /> : <Check size={16} />}
+					formId={changePasswordFormId}
+					isButtonDisabled={buttonDisabled}
+					isButtonHidden={buttonHidden}
 				>
 					<ChangePasswordForm 
-						formData={formData}
-						touched={touched}
-						errors={errors}
-						debounced={debounced}
-						onChange={handleChange}
+						formId={changePasswordFormId}
+						setButtonDisabled={setButtonDisabled}
+						setButtonHidden={setButtonHidden}
 					/>
 				</SettingsCard>
 				{/* <SettingsCard 

@@ -39,8 +39,7 @@ export default function GeneralSettingsTab() {
 
 	const [formData, touched, errors, debounced, handleChange, validateAll, resetForm] = useForm(
 		personalInfoSettingsSchema,
-		{ first_name: loggedInUser!.first_name, last_name: loggedInUser!.last_name, username: loggedInUser!.username, email: loggedInUser!.email, bio: loggedInUser!.bio },
-		{ debounceMs: { username: 1200, email: 1200 } } // debounce username and email validation by 1000ms
+		{ first_name: loggedInUser!.first_name, last_name: loggedInUser!.last_name, username: loggedInUser!.username, email: loggedInUser!.email, bio: loggedInUser!.bio }
 	);
 	const [fieldsAvailable, setFieldsAvailable] = useState({
 		username: true, 
@@ -138,10 +137,8 @@ export default function GeneralSettingsTab() {
 				<SettingsCard
 					title="Personal Informations"
 					subtitle="Update your account profile information and email address"
-					isForm={true}
 					actionIcon={isSubmitting ? <LoaderCircle size={16} className='animate-spin' /> : undefined}
-					formSubmitLabel='Save Changes'
-					onSubmit={handleSubmit}
+					onAction={handleSubmit}
 					isButtonHidden={!showSaveChanges}
 					isButtonDisabled={isSubmitting}
 				>
