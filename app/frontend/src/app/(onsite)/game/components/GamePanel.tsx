@@ -28,7 +28,7 @@ function GamePanel() {
 	return (
 		<div className="flex w-full gap-4 flex-col 2xl:flex-row">
 			<AnimatePresence>
-				<div className={`flex flex-col justify-center items-center w-full border border-white/15 bg-card rounded-md p-4 min-w-0 transition-all duration-500 ease-in-out ${!gameStarted ? 'flex-3' : 'flex-1'} `}>
+				<div className={`flex flex-col justify-center items-center w-full rounded-md p-4 min-w-0 transition-all duration-500 ease-in-out ${!gameStarted ? 'flex-3' : 'flex-1'} `}>
 					<GameField />
 				</div>
 			</AnimatePresence>

@@ -4,7 +4,6 @@ import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 
 const QueueToggleButton = () => {
 	const [isSearching, setIsSearching] = useState(false);
-	const [inGame, setInGame] = useState(false);
 	const [queueTime, setQueueTime] = useState(0);
 	const { loggedInUser, apiClient } = useAuth();
 	const { setUrl, setOpponentId } = useGame();
@@ -32,7 +31,7 @@ const QueueToggleButton = () => {
 					const data = JSON.parse(event.data);
 					setUrl(`/game/room/${data.roomId}?user=${loggedInUser.id}`);
 					setOpponentId(data.opponentId);
-					setInGame(true);
+					setIsSearching(false);
 					ws.close();
 				} catch (err) {
 					console.error("Invalid JSON from server: ", err);
@@ -47,8 +46,7 @@ const QueueToggleButton = () => {
 	}, [isSearching]);
 
 	const handleToggleQueue = () => {
-		if (!inGame)
-			setIsSearching(!isSearching);
+		setIsSearching(!isSearching);
 	};
 
 	const formatTime = (seconds: number) => {
