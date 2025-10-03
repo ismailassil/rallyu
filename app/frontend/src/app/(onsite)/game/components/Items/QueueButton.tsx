@@ -10,7 +10,6 @@ const QueueToggleButton = () => {
 	const { setUrl, setOpponentId } = useGame();
 	const wsRef = useRef<WebSocket | null>(null);
 
-
 	useEffect(() => {
 		let interval: NodeJS.Timeout;
 		if (!loggedInUser)

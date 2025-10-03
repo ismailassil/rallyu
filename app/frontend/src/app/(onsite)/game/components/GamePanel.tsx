@@ -3,11 +3,11 @@ import LobbyCard from "./Items/LobbyCard";
 import GameField from "./Items/GameField";
 import { useGame } from "../contexts/gameContext";
 import { useAuth } from "../../contexts/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function GamePanel() {
 	const { apiClient, loggedInUser } = useAuth();
-	const { setUrl, setOpponentId } = useGame();
+	const { setUrl, setOpponentId, gameStarted } = useGame();
 
 	useEffect(() => {
 		(async () => {
@@ -28,12 +28,18 @@ function GamePanel() {
 	return (
 		<div className="flex w-full gap-4 flex-col 2xl:flex-row">
 			<AnimatePresence>
-				<div className="flex flex-col justify-center items-center w-full border border-white/15 bg-card rounded-md p-4 min-w-0 flex-3">
+				<div className={`flex flex-col justify-center items-center w-full border border-white/15 bg-card rounded-md p-4 min-w-0 transition-all duration-500 ease-in-out ${!gameStarted ? 'flex-3' : 'flex-1'} `}>
 					<GameField />
 				</div>
 			</AnimatePresence>
 			<AnimatePresence>
-				<div className="flex flex-col hide-scrollbar lg:max-h-full bg-card border border-white/15 rounded-md w-full overflow-hidden flex-1 min-w-[300px]">
+				<div className={`flex  flex-col hide-scrollbar lg:max-h-full bg-card border border-white/15 rounded-md w-full overflow-hidden
+						transition-all duration-500 ease-in-out
+					${!gameStarted
+						? 'flex-1 opacity-100'
+						: 'flex-0 opacity-0 scale-x-0 translate-x-full'
+					}
+					w-full`}>
 					<LobbyCard /> {/* switch between lobby and chat*/}
 				</div>
 			</AnimatePresence>

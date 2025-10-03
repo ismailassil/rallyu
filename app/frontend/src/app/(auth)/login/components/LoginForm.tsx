@@ -72,7 +72,7 @@ export default function LoginForm() {
 					Forgot Password?
 				</p>
 			</FormField>
-			<button className={`h-11 mt-2 rounded-lg transition-all duration-200 ${
+			<button className={`h-11 mt-2 rounded-lg transition-all duration-200 cursor-pointer ${
 					isSubmitting 
 					? 'bg-gray-700 cursor-not-allowed'
 					: 'bg-blue-600 hover:bg-blue-700 hover:shadow-2xl active:scale-98'
@@ -80,7 +80,7 @@ export default function LoginForm() {
 					type='submit'
 					disabled={isSubmitting}
 				>
-					Sign Up
+					Sign In
 			</button>
 		</form>
 	);
