@@ -54,10 +54,6 @@ export default function SettingsPage() {
 			default: return null;
 		}
 	}
-
-	setTimeout(() => {
-		toastLoading('DEV - Page still under development.');
-	}, 2000);
 	
 	return (
 		<motion.main

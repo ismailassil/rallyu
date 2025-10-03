@@ -122,44 +122,44 @@ import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 // 	{ id: 4, browser: "Chrome", device: "iPhone 13", os: "iOS", createdSince: "14 minutes", location: "Marrakech, Morocco", type: "mobile" }
 // ];
 
-// function DeviceIcon({ type }) {
-// 	if (type === "mobile") return <Smartphone className="h-12 w-12" />;
-// 	if (type === "desktop") return <Monitor className="h-12 w-12" />;
-// 	return <Laptop className="h-12 w-12" />;
-// }
+function DeviceIcon({ type }) {
+	if (type === "mobile") return <Smartphone className="h-12 w-12" />;
+	if (type === "desktop") return <Monitor className="h-12 w-12" />;
+	return <Laptop className="h-12 w-12" />;
+}
 
-// function SessionCard({ session }) {
-// 	return (
-// 		<li className="bg-white/4 rounded-2xl border border-white/10 px-6 py-3 flex items-center justify-between">
-// 			<div className="flex gap-3 items-center w-48 mr-24">
-// 				<DeviceIcon type={session.type} />
-// 				<div className="w-32">
-// 					<h2 className="font-bold text-white text-lg truncate">{session.device}</h2>
-// 					<p className="font-light text-sm text-white/75">{session.browser} - {session.os}</p>
-// 				</div>
-// 			</div>
+function SessionCard({ session }) {
+	return (
+		<li className="bg-white/4 rounded-2xl border border-white/10 px-6 py-3 flex items-center justify-between">
+			<div className="flex gap-3 items-center w-48 mr-24">
+				<DeviceIcon type={session.type} />
+				<div className="w-32">
+					<h2 className="font-bold text-white text-lg truncate">{session.device}</h2>
+					<p className="font-light text-sm text-white/75">{session.browser} - {session.os}</p>
+				</div>
+			</div>
 
-// 			<div className="flex gap-12 items-center w-48 mr-24">
-// 				<div className="flex gap-1.5 items-center">
-// 					<MapPin className="h-4 w-4 text-white/75" />
-// 					<p className="font-light text-sm text-white/75">{session.location}</p>
-// 				</div>
-// 			</div>
-// 			<div className="flex gap-12 items-center w-48">
-// 				<div className="flex gap-1.5 items-center">
-// 					<Clock className="h-3 w-3 text-white/75" />
-// 					<p className="font-light text-sm text-white/75">{session.createdSince} ago</p>
-// 				</div>
-// 			</div>
+			<div className="flex gap-12 items-center w-48 mr-24">
+				<div className="flex gap-1.5 items-center">
+					<MapPin className="h-4 w-4 text-white/75" />
+					<p className="font-light text-sm text-white/75">{session.location}</p>
+				</div>
+			</div>
+			<div className="flex gap-12 items-center w-48">
+				<div className="flex gap-1.5 items-center">
+					<Clock className="h-3 w-3 text-white/75" />
+					<p className="font-light text-sm text-white/75">{session.createdSince} ago</p>
+				</div>
+			</div>
 
-// 			<button
-// 				className="hover:text-red-400 cursor-pointer transition-all duration-500"
-// 			>
-// 				<Trash2 className="h-6 w-6" />
-// 			</button>
-// 		</li>
-// 	);
-// }
+			<button
+				className="hover:text-red-400 cursor-pointer transition-all duration-500"
+			>
+				<Trash2 className="h-6 w-6" />
+			</button>
+		</li>
+	);
+}
   
 // function Devices() {
 // 	return (
@@ -232,19 +232,30 @@ export default function Security() {
 						setButtonHidden={setButtonHidden}
 					/>
 				</SettingsCard>
-				{/* <SettingsCard 
+				<SettingsCard 
 					title="Browsers and devices"
 					subtitle="These browsers and devices are currently signed in to you account. Remove any unauthorized devices"
 				>
-					<Devices />
+					<SessionCard 
+						session={{ id: 1, browser: "Brave", device: "MacBook Pro", os: "Mac OS X", createdSince: "1 day", location: "Khouribga, Morocco", type: "laptop" }}
+					/>
+					<SessionCard 
+						session={{ id: 1, browser: "Brave", device: "MacBook Pro", os: "Mac OS X", createdSince: "1 day", location: "Khouribga, Morocco", type: "laptop" }}
+					/>
+					<SessionCard 
+						session={{ id: 1, browser: "Brave", device: "MacBook Pro", os: "Mac OS X", createdSince: "1 day", location: "Khouribga, Morocco", type: "laptop" }}
+					/>
 				</SettingsCard>
 				<SettingsCard 
 					title="Delete Account"
 					subtitle="This will permanently delete your account and all associated data. This action is irreversible"
-					isAction={true}
+					actionLabel='Delete Account'
+					isButtonHidden={false}
+					isButtonDisabled={false}
+					onAction={() => router.push('/delete-account')}
 				>
-					<Devices />
-				</SettingsCard> */}
+					
+				</SettingsCard>
 			</div>
 		</motion.div>
 	);

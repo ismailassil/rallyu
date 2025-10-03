@@ -320,17 +320,21 @@ class AuthService {
 
 		const ua = parser.getResult();
 
-		let deviceName = [ ua.device.vendor || '', ua.device.model || '', ua.os.name || '', ua.os.version || ''].filter(Boolean).join(' ').trim();
-		let browserVersion = [ ua.browser.name || '', ua.browser.major || '' ].filter(Boolean).join(' ').trim();
+		const device = parser.getDevice();
+		const browser = parser.getBrowser();
+		const os = parser.getOS();
 
-		if (!deviceName)
-			deviceName = 'Unknown Device';
-		if (!browserVersion)
-			browserVersion = 'Unknown Browser';
+		// let deviceName = [ ua.device.vendor || '', ua.device.model || '', ua.os.name || '', ua.os.version || ''].filter(Boolean).join(' ').trim();
+		// let browserVersion = [ ua.browser.name || '', ua.browser.major || '' ].filter(Boolean).join(' ').trim();
+
+		// if (!deviceName)
+		// 	deviceName = 'Unknown Device';
+		// if (!browserVersion)
+		// 	browserVersion = 'Unknown Browser';
 
 		const fingerprint: ISessionFingerprint = {
-			device_name: deviceName,
-			browser_version: browserVersion,
+			device_name: device.type?.toString() || 'Desktop',
+			browser_version: `${browser.name?.toString() || 'Unknown Browser'} on ${os.name?.toString() || 'Unknown OS'}`,
 			ip_address: ip
 		}
 
