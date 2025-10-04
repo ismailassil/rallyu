@@ -3,7 +3,7 @@ import Image from "next/image";
 import LoginForm from "./components/LoginForm";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import AuthPageWrapper from "../components/UI/AuthPageWrapper";
+import AuthPageWrapper from "../components/shared/ui/AuthPageWrapper";
 
 export default function LoginPage() {
 	const router = useRouter();

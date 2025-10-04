@@ -3,7 +3,7 @@ import { ArrowLeft, LogIn } from "lucide-react";
 import { RefObject } from "react";
 import { METHODS_META } from "./constants";
 import LoadingButton from "./LoadingButton";
-import FormButton from "../../components/UI/FormButton";
+import FormButton from "../../components/shared/ui/FormButton";
 
 interface VerifyCodeProps {
 	methods: string[];

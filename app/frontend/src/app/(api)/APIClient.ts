@@ -1,12 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance } from 'axios';
-
-interface FetchMatchesOptions {
-	page?: number;
-	limit?: number;
-	gameType?: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all';
-	time?: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all';
-}
+import { UserService } from './services/UserService';
+import { AuthService } from './services/AuthService';
+import { MfaService } from './services/MfaService';
 
 export type APIError = {
 	code: string;
@@ -19,12 +15,22 @@ export class APIClient {
 	private accessToken: string = '';
 	private isRefreshing: boolean = false;
 	private failedQueue: any[] = [];
+	
+	// Service instances
+	public user: UserService;
+	public auth: AuthService;
+	public mfa: MfaService;
 
 	constructor(baseURL: string) {
 		this.client = axios.create({
 			baseURL,
 			withCredentials: true,
 		});
+
+		// Initialize services
+		this.user = new UserService(this.client);
+		this.auth = new AuthService(this.client);
+		this.mfa = new MfaService(this.client);
 
 		this.client.interceptors.request.use(config => {
 			console.log('in interceptor, accessToken: ', this.accessToken);
@@ -106,196 +112,155 @@ export class APIClient {
 		return this.client;
 	}
 
+	// Proxy methods to maintain backward compatibility
 	/*--------------------------------- Users Profiles ---------------------------------*/
 	
 	async fetchUser(id: number) {
-		const { data: res } = await this.client.get(`/users/${id}`);
-		return res.data;
+		return this.user.fetchUser(id);
 	}
 
 	async fetchUserByUsername(username: string) {
-		const { data: res } = await this.client.get(`/users/?username=${username}`);
-		return res.data;
+		return this.user.fetchUserByUsername(username);
 	}
 
-	async fetchUserMatchesPage(id: number, options: FetchMatchesOptions = {}) {
-		const params = new URLSearchParams();
-
-		if (options.page) params.append("page", options.page.toString());
-		if (options.limit) params.append("limit", options.limit.toString());
-		if (options.gameType) params.append("gameTypeFilter", options.gameType);
-		if (options.time) params.append("timeFilter", options.time);
-		const { data: res } = await this.client.get(`/users/${id}/matches?${params.toString()}`);
-		return res.data;
+	async fetchUserMatchesPage(id: number, options?: any) {
+		return this.user.fetchUserMatchesPage(id, options);
 	}
 
 	async fetchUserAnalytics(id: number) {
-		const { data: res } = await this.client.get(`/users/${id}/analytics`);
-		return res.data;
+		return this.user.fetchUserAnalytics(id);
 	}
+	
 	async fetchUserAnalyticsByDay(id: number) {
-		const { data: res } = await this.client.get(`/users/${id}/analytics-by-day`);
-		return res.data;
+		return this.user.fetchUserAnalyticsByDay(id);
 	}
+	
 	async fetchLeaderboard() {
-		const { data: res } = await this.client.get(`/users/leaderboard?page=1&limit=10`);
-		return res.data;
+		return this.user.fetchLeaderboard();
 	}
 
 	async searchUsersByUsername(username: string) {
-		const { data: res } = await this.client.get(`/users/search-by-username?username=${username}`);
-		return res.data;
+		return this.user.searchUsersByUsername(username);
 	}
 
 	async getUserAvatarBlob(url: string) {
-		const { data } = await this.client.get(`${url}`, {
-			responseType: 'blob'
-		});
-		return data;
+		return this.user.getUserAvatarBlob(url);
 	}
 	
 	async uploadUserAvatar(profilePicture: FormData) {
-		const { data: res } = await this.client.post(`/users/TODO/avatar`, profilePicture, {
-			headers: { 'Content-Type': 'multipart/form-data' }
-		});
-		return res.data;
+		return this.user.uploadUserAvatar(profilePicture);
 	}
 	
 	async updateUser(id: number, payload: { first_name?: string, last_name?: string, username?: string, email?: string, bio?: string }) {
-		const { data: res } = await this.client.put(`/users/${id}`, payload);
-		return res.data;
+		return this.user.updateUser(id, payload);
 	}
 
 	/*--------------------------------- Users Relations ---------------------------------*/
 
-	async getAllFriends(){
-		const { data: res } = await this.client.get(`/users/friends`);
-		return res.data;
+	async getAllFriends() {
+		return this.user.getAllFriends();
 	}
-	async getAllBlocked(){
-		const { data: res } = await this.client.get(`/users/blocked`);
-		return res.data;
+	
+	async getAllBlocked() {
+		return this.user.getAllBlocked();
 	}
-	async getAllIncomingFriendRequests(){
-		const { data: res } = await this.client.get(`/users/friends/requests/incoming`);
-		return res.data;
+	
+	async getAllIncomingFriendRequests() {
+		return this.user.getAllIncomingFriendRequests();
 	}
-	async getAllOutgoingFriendRequests(){
-		const { data: res } = await this.client.get(`/users/friends/requests/outgoing`);
-		return res.data;
+	
+	async getAllOutgoingFriendRequests() {
+		return this.user.getAllOutgoingFriendRequests();
 	}
 
 	async sendFriendRequest(user_id: number) {
-		const { data: res } = await this.client.post(`/users/${user_id}/friends/requests`);
-		return res.data;
+		return this.user.sendFriendRequest(user_id);
 	}
 
 	async cancelFriendRequest(user_id: number) {
-		const { data: res } = await this.client.delete(`/users/${user_id}/friends/requests`);
-		return res.data;
+		return this.user.cancelFriendRequest(user_id);
 	}
 
 	async acceptFriendRequest(user_id: number) {
-		const { data: res } = await this.client.put(`/users/${user_id}/friends/accept`);
-		return res.data;
+		return this.user.acceptFriendRequest(user_id);
 	}
 
 	async rejectFriendRequest(user_id: number) {
-		const { data: res } = await this.client.put(`/users/${user_id}/friends/reject`);
-		return res.data;
+		return this.user.rejectFriendRequest(user_id);
 	}
 
 	async blockUser(user_id: number) {
-		const { data: res } = await this.client.post(`/users/${user_id}/block`);
-		return res.data;
+		return this.user.blockUser(user_id);
 	}
 
 	async unblockUser(user_id: number) {
-		const { data: res } = await this.client.delete(`/users/${user_id}/block`);
-		return res.data;
+		return this.user.unblockUser(user_id);
 	}
 
 	async unfriend(user_id: number) {
-		const { data: res } = await this.client.delete(`/users/${user_id}/friends`);
-		return res.data;
+		return this.user.unfriend(user_id);
 	}
 
 	/*-------------------------------------- 2FA --------------------------------------*/
 
 	async mfaEnabledMethods() {
-		const { data: res } = await this.client.get('/auth/2fa/enabled');
-		return res.data;
+		return this.mfa.mfaEnabledMethods();
 	}
 	
 	async mfaDisableMethod(method: string) {
-		const { data: res } = await this.client.delete(`/auth/2fa/enabled/${method}`);
-		return res.data;
+		return this.mfa.mfaDisableMethod(method);
 	}
 
 	async mfaSetupInit(method: string) {
-		const { data: res } = await this.client.post(`/auth/2fa/${method}/setup/init`);
-		return res.data;
+		return this.mfa.mfaSetupInit(method);
 	}
+	
 	async mfaSetupVerify(method: string, code: string) {
-		const { data: res } = await this.client.post(`/auth/2fa/${method}/setup/verify`, { code });
-		return res.data;
+		return this.mfa.mfaSetupVerify(method, code);
 	}
 
 	/*--------------------------------- Authentication ---------------------------------*/
 
 	async isUsernameAvailable(username: string) {
-		const { data: res } = await this.client.get(`/users/username-available?username=${username}`);
-		return res.data;
+		return this.auth.isUsernameAvailable(username);
 	}
 
 	async isEmailAvailable(email: string) {
-		const { data: res } = await this.client.get(`/users/email-available?email=${email}`);
-		return res.data;
+		return this.auth.isEmailAvailable(email);
 	}
 
 	async login(payload: { username: string, password: string }) {
-		console.log('APIClient::login();');
-		const { data: res } = await this.client.post('/auth/login', payload);
-		console.log('login: ', res);
-
-		if (res.data._2FARequired)
-			return res.data;
-
-		this.setAccessToken(res.data.accessToken);
-
-		return { user: res.data.user, accessToken: res.data.accessToken };
+		const result = await this.auth.login(payload);
+		if (result._2FARequired) {
+			return result;
+		}
+		this.setAccessToken(result.accessToken);
+		return result;
 	}
 
-
 	async send2FACode(payload: { loginChallengeID: number, method: string }) {
-		const { data: res } = await this.client.post('/auth/login/2fa/send', payload);
-		return res.data;
+		return this.auth.send2FACode(payload);
 	}
 
 	async verify2FACode(payload: { loginChallengeID: number, method: string, code: string }) : Promise<{
 		user: any;
 		accessToken: any;
 	}> {
-		const { data: res } = await this.client.post('/auth/login/2fa/verify', payload);
-
-		this.setAccessToken(res.data.accessToken);
-
-		return { user: res.data.user, accessToken: res.data.accessToken };
+		const result = await this.auth.verify2FACode(payload);
+		this.setAccessToken(result.accessToken);
+		return result;
 	}
 
 	async logout() {
 		console.log('APIClient::logout();');
-		await this.client.post('/auth/logout');
+		await this.auth.logout();
 		this.setAccessToken('');
 	}
 
 	async refreshToken() {
-		console.log('APIClient::refreshToken();');
-		const { data: res } = await this.client.get('/auth/refresh');
-		console.log('refreshToken: ', res);
-		this.setAccessToken(res.data.accessToken);
-
-		return { user: res.data.user, accessToken: res.data.accessToken };
+		const result = await this.auth.refreshToken();
+		this.setAccessToken(result.accessToken);
+		return result;
 	}
 	
 	async register(payload: { 
@@ -305,26 +270,20 @@ export class APIClient {
 		email: string, 
 		password: string 
 	}) {
-		console.log('APIClient::register();');
-		const { data } = await this.client.post('/auth/register', payload);
-		console.log('register: ', data);
-		return data;
+		return this.auth.register(payload);
 	}
 
 	/*---------------------------------- Session Management ----------------------------------*/
 	async fetchActiveSessions() {
-		const { data: res } = await this.client.get('/auth/sessions');
-		return res.data;
+		return this.auth.fetchActiveSessions();
 	}
 
 	async revokeSession(session_id: string) {
-		const { data: res } = await this.client.delete(`/auth/sessions/${session_id}`);
-		return res.data;
+		return this.auth.revokeSession(session_id);
 	}
 
 	async revokeAllOtherSessions() {
-		const { data: res } = await this.client.delete('/auth/sessions');
-		return res.data;
+		return this.auth.revokeAllOtherSessions();
 	}
 
 	/*--------------------------------- Password Management ---------------------------------*/
@@ -333,28 +292,23 @@ export class APIClient {
 		oldPassword: string,
 		newPassword: string
 	}) {
-		const { data: res } = await this.client.post(`/auth/change-password`, payload);
-		return res.data;
+		return this.auth.changePassword(payload);
 	}
 
 	async requestPasswordReset(email: string) {
-		const { data: res } = await this.client.post(`/auth/reset-password`, { email });
-		return res.data;
+		return this.auth.requestPasswordReset(email);
 	}
 
 	async verifyPasswordResetCode(payload: { email: string, code: string }) {
-		const { data: res } = await this.client.post(`/auth/reset-verify`, payload);
-		return res.data;
+		return this.auth.verifyPasswordResetCode(payload);
 	}
 
 	async resetPassword(payload: { email: string, code: string, newPassword: string }) {
-		const { data: res } = await this.client.post(`/auth/reset-update`, payload);
-		return res.data;
+		return this.auth.resetPassword(payload);
 	}
 
 	// async fetchPlayerStatus(user_id: number) {
-	// 	const res = await this.client.get(`/game/user/${user_id}`);
-	// 	return res.data;
+	// 	return this.client.get(`/game/user/${user_id}`).then(res => res.data);
 	// }
 
 	connectWebSocket(path: string) {

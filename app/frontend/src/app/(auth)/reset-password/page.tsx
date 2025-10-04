@@ -9,7 +9,7 @@ import { resetPasswordSchema } from "@/app/(api)/schema";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
 import { APIError } from "@/app/(api)/APIClient";
-import AuthPageWrapper from "../components/UI/AuthPageWrapper";
+import AuthPageWrapper from "../components/shared/ui/AuthPageWrapper";
 
 enum STEP {
 	FORGOT_PASSWORD = 'FORGOT',

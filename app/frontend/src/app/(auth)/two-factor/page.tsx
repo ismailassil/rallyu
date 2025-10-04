@@ -7,7 +7,7 @@ import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { simulateBackendCall } from '@/app/(api)/utils';
 import { APIError } from '@/app/(api)/APIClient';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
-import AuthPageWrapper from '../components/UI/AuthPageWrapper';
+import AuthPageWrapper from '../components/shared/ui/AuthPageWrapper';
 
 enum STEP {
 	OVERVIEW = 'OVERVIEW',

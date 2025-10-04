@@ -2,7 +2,7 @@
 import Image from "next/image";
 import SignUpForm from "./components/SignUpForm";
 import { useRouter } from "next/navigation";
-import AuthPageWrapper from "../components/UI/AuthPageWrapper";
+import AuthPageWrapper from "../components/shared/ui/AuthPageWrapper";
 
 export default function SignUpPage() {
 	const router = useRouter();

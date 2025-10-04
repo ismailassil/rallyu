@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRouter } from "next/navigation";
-import FormField from "../../components/Forms/FormField";
-import FormButton from "../../components/UI/FormButton";
+import FormField from "../../components/shared/form/FormField";
+import FormButton from "../../components/shared/ui/FormButton";
 import { RotateCw } from "lucide-react";
 
 // async function changePassword(email: string, code: string, password: string) : Promise<void> {

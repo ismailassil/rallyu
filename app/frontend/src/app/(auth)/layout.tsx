@@ -1,7 +1,7 @@
 'use client';
-import Header from "./components/UI/Header";
+import Header from "./components/shared/ui/Header";
 import "@/app/globals.css";
-import PublicRoute from "./components/AuthGuards/PublicRoute";
+import PublicRoute from "./components/shared/guards/PublicRoute";
 import { AnimatePresence } from "framer-motion";
 
 export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode; }>) {

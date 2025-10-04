@@ -1,8 +1,8 @@
 'use client';
 import { ArrowLeft, RotateCw } from "lucide-react";
-import FormField from "../../components/Forms/FormField";
+import FormField from "../../components/shared/form/FormField";
 import { useRouter } from "next/navigation";
-import FormButton from "../../components/UI/FormButton";
+import FormButton from "../../components/shared/ui/FormButton";
 
 export function ForgotPassword({ email, error, onSubmit, onChange, onGoBack } : { email: string, error: string, onSubmit: () => void, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, onGoBack: () => void }) {
 	const router = useRouter();

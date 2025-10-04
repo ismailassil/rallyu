@@ -3,14 +3,14 @@
 import React, { useCallback } from 'react';
 import { useState } from 'react';
 import useForm from '@/app/hooks/useForm';
-import FormField from '../../components/Forms/FormField';
+import FormField from '../../components/shared/form/FormField';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import { signupFormSchema } from '@/app/(api)/schema';
-import PasswordStrength from '../../components/Forms/PasswordStrength';
-import FormFieldAvailability from '../../components/Forms/FormFieldAvailability';
-import FormButton from '../../components/UI/FormButton';
+import PasswordStrength from '../../components/shared/form/PasswordStrength';
+import FormFieldAvailability from '../../components/shared/form/FormFieldAvailability';
+import FormButton from '../../components/shared/ui/FormButton';
 import { Loader, Loader2, LoaderPinwheel, LogIn } from 'lucide-react';
 
 export default function SignUpForm() {

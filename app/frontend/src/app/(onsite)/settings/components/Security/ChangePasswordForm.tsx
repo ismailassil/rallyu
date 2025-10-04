@@ -1,5 +1,5 @@
 // import React, { ChangeEvent, useEffect, useState } from "react";
-// import FormField from "@/app/(auth)/components/Forms/FormField";
+// import FormField from "@/app/(auth)/components/shared/form/FormField";
 // import useForm from "@/app/hooks/useForm";
 // import { toastError, toastLoading, toastSuccess } from "@/app/components/CustomToast";
 // import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
@@ -114,7 +114,7 @@
 // }
 
 import React, { ChangeEvent, useEffect, useState } from "react";
-import FormField from "@/app/(auth)/components/Forms/FormField";
+import FormField from "@/app/(auth)/components/shared/form/FormField";
 import useForm from "@/app/hooks/useForm";
 import { toastError, toastLoading, toastSuccess } from "@/app/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";

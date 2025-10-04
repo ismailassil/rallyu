@@ -5,10 +5,10 @@ import { useState } from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
-import FormField from '../../components/Forms/FormField';
+import FormField from '../../components/shared/form/FormField';
 import useForm from '@/app/hooks/useForm';
 import { loginFormSchema } from '@/app/(api)/schema';
-import FormButton from '../../components/UI/FormButton';
+import FormButton from '../../components/shared/ui/FormButton';
 import { LogIn } from 'lucide-react';
 
 export default function LoginForm() {
@@ -85,7 +85,7 @@ export default function LoginForm() {
 					Sign Up
 			</button> */}
 			<FormButton
-				text='Sign Up'
+				text='Sign In'
 				icon={<LogIn size={16} />}
 				type='submit'
 				isSubmitting={isSubmitting}

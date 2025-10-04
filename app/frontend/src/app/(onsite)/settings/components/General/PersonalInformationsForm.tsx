@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
-import FormField from '@/app/(auth)/components/Forms/FormField';
+import FormField from '@/app/(auth)/components/shared/form/FormField';
 import LanguageSwitcher from '../items/LanguageSwitcher';
-import FormFieldAvailability from '@/app/(auth)/components/Forms/FormFieldAvailability';
+import FormFieldAvailability from '@/app/(auth)/components/shared/form/FormFieldAvailability';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 
 interface PersonalInformationsFormProps {

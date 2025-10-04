@@ -1,7 +1,7 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
 import { RefObject } from "react";
-import FormButton from "../../components/UI/FormButton";
+import FormButton from "../../components/shared/ui/FormButton";
 
 interface CheckEmailProps {
 	code: string[];
