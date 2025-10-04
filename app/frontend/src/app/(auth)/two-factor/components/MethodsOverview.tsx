@@ -11,7 +11,7 @@ interface MethodsOverviewProps {
 
 export default function MethodsOverview({ methods, selectedMethod, isSendingCode, onSelectMethod }: MethodsOverviewProps) {
 	return (
-		<div className="max-w-[575px] flex flex-col items-center gap-14">
+		<>
 			{/* Header */}
 			<div className='flex flex-col'>
 				<Fingerprint size={64} className="bg-blue-500 rounded-full p-2 self-center mb-6"/>
@@ -43,6 +43,6 @@ export default function MethodsOverview({ methods, selectedMethod, isSendingCode
 					);
 				})}
 			</div>
-		</div>
+		</>
 	);
 }

@@ -1,6 +1,7 @@
-import { ArrowLeft, LoaderCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
 import { RefObject } from "react";
+import FormButton from "../../components/UI/FormButton";
 
 interface CheckEmailProps {
 	code: string[];
@@ -15,7 +16,7 @@ interface CheckEmailProps {
 
 export function CheckEmail({ code, setCode, inputRefs, isResendingCode, isVerifyingCode, onVerify, onResend, onGoBack } : CheckEmailProps) {
 	return (
-		<div className="w-full max-w-[460px] select-none">
+		<>
 			{/* Header + Go Back */}
 			<div className="flex gap-4 items-center mb-8">
 				<button 
@@ -39,7 +40,7 @@ export function CheckEmail({ code, setCode, inputRefs, isResendingCode, isVerify
 					isVerifyingCode={isVerifyingCode}
 				/>
 				
-				<button
+				{/* <button
 					onClick={onVerify}
 					disabled={isResendingCode || isVerifyingCode || !code.every(digit => digit !== '')}
 					className={`h-11 rounded-lg transition-all duration-500 ${
@@ -56,7 +57,12 @@ export function CheckEmail({ code, setCode, inputRefs, isResendingCode, isVerify
 					) : (
 						<span>Complete Setup</span>
 					)}
-				</button>
+				</button> */}
+				<FormButton
+					text='Continue'
+					icon={<ArrowRight size={16} />}
+					type='submit'
+				/>
 
 				<p className='self-center'>
 					Didn&#39;t receive the code? 
@@ -76,6 +82,6 @@ export function CheckEmail({ code, setCode, inputRefs, isResendingCode, isVerify
 					</span>
 				</p>
 			</div>
-		</div>
+		</>
 	);
 }

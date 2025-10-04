@@ -4,13 +4,12 @@ import { useRouter } from "next/navigation";
 import { ForgotPassword } from "./components/ForgotPassword";
 import { CheckEmail } from "./components/CheckEmail";
 import { SetNewPassword } from "./components/SetNewPassword";
-import { Toaster } from "sonner";
-import { motion } from "framer-motion";
 import useForm from "@/app/hooks/useForm";
-import { resetPasswordSchema, signupFormSchema } from "@/app/(api)/schema";
+import { resetPasswordSchema } from "@/app/(api)/schema";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
 import { APIError } from "@/app/(api)/APIClient";
+import AuthPageWrapper from "../components/UI/AuthPageWrapper";
 
 enum STEP {
 	FORGOT_PASSWORD = 'FORGOT',
@@ -132,26 +131,10 @@ export default function ResetPasswordPage() {
 	}
 
 	return (
-		<>
-			<Toaster position='bottom-right' visibleToasts={1} />
-			<motion.div
-				key={'reset-password-page'}
-				initial={{ opacity: 0, x: -5 }}
-				animate={{ opacity: 1, x: 0 }}
-				exit={{ opacity: 0, x: -5 }}
-				transition={{ duration: 0.8, delay: 0 }}
-			>
-				<main className="pt-30 flex h-[100vh] w-full pb-10">
-					<div className="flex h-full w-full justify-center overflow-auto">
-						<div className="mine flex h-full w-[650px] items-start justify-center pb-20 pl-10 pr-10 pt-20 lg:items-center">
-							<div className='rounded-[0px] max-w-[550px] w-full p-9 sm:p-18
-										flex flex-col gap-5'>
-								{renderCurrentStep()}
-							</div>
-						</div>
-					</div>
-				</main>
-			</motion.div>
-		</>
+		<AuthPageWrapper wrapperKey="reset-password-page-wrapper">
+			<div className='w-full max-w-lg p-11 flex flex-col gap-5'>
+				{renderCurrentStep()}
+			</div>
+		</AuthPageWrapper>
 	);
 }

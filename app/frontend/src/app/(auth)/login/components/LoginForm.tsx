@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import FormField from '../../components/Forms/FormField';
 import useForm from '@/app/hooks/useForm';
 import { loginFormSchema } from '@/app/(api)/schema';
+import FormButton from '../../components/UI/FormButton';
+import { LogIn } from 'lucide-react';
 
 export default function LoginForm() {
 	const { login } = useAuth();
@@ -72,7 +74,7 @@ export default function LoginForm() {
 					Forgot Password?
 				</p>
 			</FormField>
-			<button className={`h-11 mt-2 rounded-lg transition-all duration-200 ${
+			{/* <button className={`h-11 mt-2 rounded-lg transition-all duration-200 ${
 					isSubmitting 
 					? 'bg-gray-700 cursor-not-allowed'
 					: 'bg-blue-600 hover:bg-blue-700 hover:shadow-2xl active:scale-98'
@@ -81,7 +83,13 @@ export default function LoginForm() {
 					disabled={isSubmitting}
 				>
 					Sign Up
-			</button>
+			</button> */}
+			<FormButton
+				text='Sign Up'
+				icon={<LogIn size={16} />}
+				type='submit'
+				isSubmitting={isSubmitting}
+			/>
 		</form>
 	);
 }

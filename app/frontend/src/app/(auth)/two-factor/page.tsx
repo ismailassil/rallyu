@@ -1,6 +1,4 @@
 'use client';
-import { motion } from 'framer-motion';
-import { Toaster } from 'sonner';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import MethodsOverview from './components/MethodsOverview';
@@ -9,6 +7,7 @@ import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { simulateBackendCall } from '@/app/(api)/utils';
 import { APIError } from '@/app/(api)/APIClient';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
+import AuthPageWrapper from '../components/UI/AuthPageWrapper';
 
 enum STEP {
 	OVERVIEW = 'OVERVIEW',
@@ -116,6 +115,7 @@ export default function TwoFaChallengePage() {
 		}
 	}
 
+
 	function renderCurrentStep() {
 		switch (currentStep) {
 			case STEP.OVERVIEW:
@@ -149,20 +149,10 @@ export default function TwoFaChallengePage() {
 
 
 	return (
-		<>
-			<Toaster position='bottom-right' visibleToasts={1} />
-			<motion.main
-				initial={{ opacity: 0, y: -50 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 1, delay: 0.5 }}
-				className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
-			>
-			<div className="h-full w-full custom-scrollbar font-funnel-display">
-				<div className="h-full w-full flex justify-center items-center overflow-auto px-4 py-16">
+		<AuthPageWrapper wrapperKey="two-fa-challenge-page-wrapper">
+			<div className="w-full max-w-2xl p-11 flex flex-col gap-5">
 					{renderCurrentStep()}
-				</div>
 			</div>
-			</motion.main>
-		</>
+		</AuthPageWrapper>
 	);
 }

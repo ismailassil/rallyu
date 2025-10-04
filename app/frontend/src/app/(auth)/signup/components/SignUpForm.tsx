@@ -10,6 +10,8 @@ import { useRouter } from 'next/navigation';
 import { signupFormSchema } from '@/app/(api)/schema';
 import PasswordStrength from '../../components/Forms/PasswordStrength';
 import FormFieldAvailability from '../../components/Forms/FormFieldAvailability';
+import FormButton from '../../components/UI/FormButton';
+import { Loader, Loader2, LoaderPinwheel, LogIn } from 'lucide-react';
 
 export default function SignUpForm() {
 	const router = useRouter();
@@ -143,7 +145,7 @@ export default function SignUpForm() {
 			>
 				{touched.password && formData.password && <PasswordStrength value={formData.password} />}
 			</FormField>
-			<button className={`h-11 mt-2 rounded-lg transition-all duration-200 ${
+			{/* <button className={`h-11 mt-2 rounded-lg transition-all duration-200 ${
 					isSubmitting 
 					? 'bg-gray-700 cursor-not-allowed'
 					: 'bg-blue-600 hover:bg-blue-700 hover:shadow-2xl active:scale-98'
@@ -152,7 +154,13 @@ export default function SignUpForm() {
 					disabled={isSubmitting}
 				>
 					Sign Up
-			</button>
+			</button> */}
+			<FormButton
+				text='Sign Up'
+				icon={<LogIn size={16} />}
+				type='submit'
+				isSubmitting={isSubmitting}
+			/>
 		</form>
 	);
 }

@@ -6,8 +6,6 @@ import Users from './components/Users/Users';
 import Security from "./components/Security/Security";
 import { useState } from "react";
 import { Cog, UsersIcon, Gamepad2, Fingerprint } from "lucide-react";
-import { Toaster } from "sonner";
-import { toastLoading } from "@/app/components/CustomToast";
 
 type Tab = {
 	label: string;
@@ -63,7 +61,6 @@ export default function SettingsPage() {
 			transition={{ duration: 1, delay: 0.5 }}
 			className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
 		>
-			<Toaster position='bottom-right' visibleToasts={1} />
 			<div className="bg-white/4 border border-white/10  w-full rounded-2xl backdrop-blur-2xl py-8 mb-8">
 				<header className="relative shrink-0 overflow-hidden">
 					<h1

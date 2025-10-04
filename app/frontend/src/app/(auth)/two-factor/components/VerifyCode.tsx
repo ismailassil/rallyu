@@ -1,8 +1,9 @@
 import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LogIn } from "lucide-react";
 import { RefObject } from "react";
 import { METHODS_META } from "./constants";
 import LoadingButton from "./LoadingButton";
+import FormButton from "../../components/UI/FormButton";
 
 interface VerifyCodeProps {
 	methods: string[];
@@ -32,7 +33,7 @@ export default function VerifyCode({ methods, selectedMethod, code, setCode, inp
 	};
 
 	return (
-		<div className="w-full max-w-[430px] flex flex-col items-center gap-12">
+		<>
 			{/* Header + Go Back */}
 			<div className="flex gap-4 items-center w-full">
 				<button 
@@ -55,12 +56,17 @@ export default function VerifyCode({ methods, selectedMethod, code, setCode, inp
 					isResendingCode={isResendingCode}
 					isVerifyingCode={isVerifyingCode}
 				/>
-				<LoadingButton
+				{/* <LoadingButton
 					onClick={onVerifyClick}
 					text="Verify Code"
 					loadingText="Verifying..."
 					disabled={isResendingCode || isVerifyingCode || !code.every(digit => digit !== '')}
 					loading={isVerifyingCode}
+				/> */}
+				<FormButton
+					text='Verify Code'
+					icon={<LogIn size={16} />}
+					type='button'
 				/>
 				<p className='self-center'>Didn&#39;t get the code? <span onClick={() => onResendClick(selectedMethod)} className={`font-semibold ${
 					(isResendingCode || isVerifyingCode) ? 'text-gray-500 cursor-not-allowed pointer-events-none' : 'text-blue-500 hover:underline cursor-pointer'
@@ -68,6 +74,6 @@ export default function VerifyCode({ methods, selectedMethod, code, setCode, inp
 			</div>
 
 			{methods.length > 1 && <p className='self-center text-center'>{METHOD_HELP2[selectedMethod]}<br></br><a onClick={onGoBack} className="font-semibold text-blue-500 hover:underline cursor-pointer">Try other verification methods</a></p>}
-		</div>
+		</>
 	);
 }

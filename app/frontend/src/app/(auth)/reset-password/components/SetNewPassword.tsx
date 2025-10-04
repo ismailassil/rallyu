@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import FormField from "../../components/Forms/FormField";
+import FormButton from "../../components/UI/FormButton";
+import { RotateCw } from "lucide-react";
 
 // async function changePassword(email: string, code: string, password: string) : Promise<void> {
 // 	const response = await fetch(`http://localhost:4025/api/auth/reset/update`, {
@@ -78,7 +79,6 @@ export function SetNewPassword({ formData, errors, debounced, touched, onChange,
 			{/* <p className='self-center'>Remember your password? <a href='/signup' className='font-semibold text-blue-500 hover:underline'>Sign in</a></p> */}
 
 
-				<div className="w-full max-w-[410px] flex flex-col gap-6 select-none">
 					{/* Header + Go Back */}
 					<div className="flex gap-4 items-center mb-4">
 						{/* <button 
@@ -117,16 +117,19 @@ export function SetNewPassword({ formData, errors, debounced, touched, onChange,
 						error={errors.confirm_password}
 						debounced={debounced.confirm_password}
 					/>
-					<button
+					{/* <button
 						onClick={onSubmit}
 						className={`h-11 rounded-lg transition-all duration-500 
 						bg-blue-600 hover:bg-blue-700 cursor-pointer`}
 					>
 						<span>Reset Password</span>
-					</button>
+					</button> */}
+					<FormButton
+						text='Reset Password'
+						icon={<RotateCw size={16} />}
+						type='submit'
+					/>
 					<p className='self-center'>Remember your password? <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>Sign in</span></p>
-				</div>
 		</>
-
 	);
 }
