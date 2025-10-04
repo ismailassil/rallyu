@@ -3,7 +3,7 @@ import LobbyCard from "./Items/LobbyCard";
 import GameField from "./Items/GameField";
 import { useGame } from "../contexts/gameContext";
 import { useAuth } from "../../contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 function GamePanel() {
 	const { apiClient, loggedInUser } = useAuth();
@@ -28,7 +28,7 @@ function GamePanel() {
 	return (
 		<div className="flex w-full gap-4 flex-col 2xl:flex-row">
 			<AnimatePresence>
-				<div className={`flex flex-col justify-center items-center w-full rounded-md p-4 min-w-0 transition-all duration-500 ease-in-out ${!gameStarted ? 'flex-3' : 'flex-1'} `}>
+				<div className={`flex flex-col justify-center items-center w-full rounded-md bg-card border border-white/15 p-4 min-w-0 transition-all duration-500 ease-in-out ${!gameStarted ? 'flex-3' : 'flex-1'} `}>
 					<GameField />
 				</div>
 			</AnimatePresence>

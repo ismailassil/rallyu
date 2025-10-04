@@ -1,5 +1,6 @@
 import { WebSocket } from "@fastify/websocket";
 import { FastifyInstance, FastifyRequest } from "fastify";
+import { RawData } from "ws"; // type
 
 const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
 // const matchQueue: { id: number, socket: WebSocket }[] = [];
@@ -14,7 +15,9 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
                 console.log(key);
             });
             if (matchQueue.size >= 2) {
-                const keys = Array.from(matchQueue.keys()).slice(0, 2);
+                const matchedPlayers = [...matchQueue.entries()].slice(0, 2);
+                const IDs = matchedPlayers.map(([key, val]) => key);
+                IDs.forEach(ID => matchQueue.delete(ID));
 
                 try {
                     const res = await fetch('http://ms-game:5010/game/create-room', {
@@ -23,7 +26,7 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${MS_MATCHMAKING_API_KEY}`
                         },
-                        body: JSON.stringify({ playersIds : keys })
+                        body: JSON.stringify({ playersIds : IDs })
                     })
                     
                     if (!res.ok)
@@ -31,14 +34,18 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
 
                     const data = await res.json();
     
-                    keys.forEach(key => {
-                        matchQueue.get(key)?.send(JSON.stringify({
+                    matchedPlayers.forEach(([key, val]) => {
+                        val.send(JSON.stringify({
                             roomId: data.roomId,
-                            opponentId: keys.find(k => k != key)
+                            opponentId: IDs.find(ID => ID != key)
                         }));
                     });
-                    keys.forEach(key => matchQueue.delete(key));
-                } catch (err) {
+                } catch (err: any) {
+                    matchedPlayers.forEach(([key, val]) => {
+                        val.close(1001, JSON.stringify({
+                            message: err.message
+                        }));
+                    });
                     console.error('Failed to create Room: ', err);
                 }
             }
@@ -51,16 +58,14 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
 		console.log("==========[/join] NEW CONNECTION");
 
         try {
-            connection.on('message', (message) => {
+            connection.on('message', (message: RawData) => {
                 const data = message.toString('utf-8');
                 const dataObj = JSON.parse(data);
     
-                console.log(dataObj);
                 matchQueue.set(dataObj.id, connection);
             })
     
             connection.on('close', () => {
-                console.log("Connection closed!");
                 for (const [key, value] of matchQueue.entries()) {
                     if (value == connection) {
                         matchQueue.delete(key);

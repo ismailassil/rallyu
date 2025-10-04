@@ -244,6 +244,13 @@ const game = async (fastify, options) => {
 				message: 'players ids not provided.'
 			})
 		}
+
+		if (userSessions.get(playersIds[0]) || userSessions.get(playersIds[1])) {
+			return res.code(403).send({
+				message: 'player already in game'
+			})
+		}
+
 		const roomId = uuidv4();
 		const room = new Room(roomId);
 		room.players = [new Player(roomId, playersIds[0]), new Player(roomId, playersIds[1])];
