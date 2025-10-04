@@ -26,7 +26,7 @@ const QueueToggleButton = () => {
 				ws.send(JSON.stringify({ id: loggedInUser.id }));
 			};
 			
-			ws.onmessage = (event: MessageEvent) => { // message will be 
+			ws.onmessage = (event: MessageEvent) => { // message will be { roomId, opponentId }
 				try {
 					const data = JSON.parse(event.data);
 					setUrl(`/game/room/${data.roomId}?user=${loggedInUser.id}`);
@@ -35,6 +35,14 @@ const QueueToggleButton = () => {
 					ws.close();
 				} catch (err) {
 					console.error("Invalid JSON from server: ", err);
+				}
+			}
+
+			ws.onclose = (event: CloseEvent) => {
+				if (event.code === 1001) {
+					console.log(event.reason);
+					setIsSearching(false);
+					// display error card to user on web page
 				}
 			}
 		} else if (wsRef.current) {

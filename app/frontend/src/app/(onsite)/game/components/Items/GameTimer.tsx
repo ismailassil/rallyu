@@ -1,5 +1,3 @@
-import ibm from "@/app/fonts/ibm";
-import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import { useGame } from "../../contexts/gameContext";
 
