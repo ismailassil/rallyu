@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRouter } from "next/navigation";
-import FormField from "../../components/shared/form/FormField";
+import InputField from "../../components/shared/form/InputField";
 import FormButton from "../../components/shared/ui/FormButton";
 import { RotateCw } from "lucide-react";
+import { FormProvider } from "../../components/shared/form/FormContext";
 
 // async function changePassword(email: string, code: string, password: string) : Promise<void> {
 // 	const response = await fetch(`http://localhost:4025/api/auth/reset/update`, {
@@ -91,44 +92,43 @@ export function SetNewPassword({ formData, errors, debounced, touched, onChange,
 							<p className='text-gray-300 text-sm sm:text-balance'>Please enter and confirm your new password</p>
 						</div>
 					</div>
-					<FormField 
-						className='field flex flex-col gap-0.5 box-border'
-						iconSrc='/icons/lock.svg'
-						label='Password'
-						field='password'
-						inputPlaceholder='••••••••••••••••'
-						inputValue={formData.password}
-						hidden={true}
-						onChange={onChange}
-						touched={touched.password}
-						error={errors.password}
-						debounced={debounced.password}
-					/>
-					<FormField 
-						className='field flex flex-col gap-0.5 box-border'
-						iconSrc='/icons/lock.svg'
-						label='Confirm Password'
-						field='confirm_password'
-						inputPlaceholder='••••••••••••••••'
-						inputValue={formData.confirm_password}
-						hidden={true}
-						onChange={onChange}
-						touched={touched.confirm_password}
-						error={errors.confirm_password}
-						debounced={debounced.confirm_password}
-					/>
-					{/* <button
-						onClick={onSubmit}
-						className={`h-11 rounded-lg transition-all duration-500 
-						bg-blue-600 hover:bg-blue-700 cursor-pointer`}
+					<FormProvider
+						formData={formData}
+						touched={touched}
+						errors={errors}
+						debounced={debounced}
+						handleChange={onChange}
+						validateAll={() => true} // Placeholder, as this form doesn't use the full form validation
 					>
-						<span>Reset Password</span>
-					</button> */}
-					<FormButton
-						text='Reset Password'
-						icon={<RotateCw size={16} />}
-						type='submit'
-					/>
+						<InputField 
+							className='field flex flex-col gap-0.5 box-border'
+							iconSrc='/icons/lock.svg'
+							label='Password'
+							field='password'
+							inputPlaceholder='••••••••••••••••'
+							inputHidden={true}
+						/>
+						<InputField 
+							className='field flex flex-col gap-0.5 box-border'
+							iconSrc='/icons/lock.svg'
+							label='Confirm Password'
+							field='confirm_password'
+							inputPlaceholder='••••••••••••••••'
+							inputHidden={true}
+						/>
+						{/* <button
+							onClick={onSubmit}
+							className={`h-11 rounded-lg transition-all duration-500 
+							bg-blue-600 hover:bg-blue-700 cursor-pointer`}
+						>
+							<span>Reset Password</span>
+						</button> */}
+						<FormButton
+							text='Reset Password'
+							icon={<RotateCw size={16} />}
+							type='submit'
+						/>
+					</FormProvider>
 					<p className='self-center'>Remember your password? <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>Sign in</span></p>
 		</>
 	);

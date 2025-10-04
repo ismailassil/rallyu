@@ -1,8 +1,9 @@
 import React, { ChangeEvent } from 'react';
-import FormField from '@/app/(auth)/components/shared/form/FormField';
+import InputField from '@/app/(auth)/components/shared/form/InputField';
 import LanguageSwitcher from '../items/LanguageSwitcher';
 import FormFieldAvailability from '@/app/(auth)/components/shared/form/FormFieldAvailability';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
+import { FormProvider } from '@/app/(auth)/components/shared/form/FormContext';
 
 interface PersonalInformationsFormProps {
 	formData: Record<string, string>;
@@ -23,88 +24,72 @@ export default function PersonalInformationsForm({
 } : PersonalInformationsFormProps) {
 	const { loggedInUser } = useAuth();
 	return (
-		<div className="flex flex-col gap-4">
-			<div className='flex flex-col gap-5'>
-				<FormField
-					className='field flex flex-col gap-0.5 min-w-0 flex-1'
-					iconSrc='/icons/firstname.svg'
-					label='First Name'
-					field='first_name'
-					inputPlaceholder={formData.first_name}
-					inputValue={formData.first_name}
-					onChange={onChange}
-					touched={touched.first_name}
-					error={errors.first_name}
-					debounced={debounced.first_name}
-				/>
-				<FormField
-					className='field flex flex-col gap-0.5 min-w-0 flex-1'
-					iconSrc='/icons/lastname.svg'
-					label='Last Name'
-					field='last_name'
-					inputPlaceholder={formData.last_name}
-					inputValue={formData.last_name}
-					onChange={onChange}
-					touched={touched.last_name}
-					error={errors.last_name}
-					debounced={debounced.last_name}
-				/>
-				<FormField
-					className='field flex flex-col gap-0.5 box-border'
-					iconSrc='/icons/at.svg'
-					label='Username'
-					field='username'
-					inputPlaceholder={formData.username}
-					inputValue={formData.username}
-					onChange={onChange}
-					touched={touched.username}
-					error={errors.username}
-					debounced={debounced.username}
-				>
-					{(formData.username !== loggedInUser?.username) && debounced.username && touched.username && !errors.username && formData.username && formData.username.length >= 3 && (
-						<FormFieldAvailability 
-							label='Username'
-							name='username'
-							value={formData.username}
-							setFieldAvailable={setFieldAvailable}
-						/>
-					)}
-				</FormField>
-				<FormField
-					className='field flex flex-col gap-0.5 box-border'
-					iconSrc='/icons/mail.svg'
-					label='Email'
-					field='email'
-					inputPlaceholder={formData.email}
-					inputValue={formData.email}
-					onChange={onChange}
-					touched={touched.email}
-					error={errors.email}
-					debounced={debounced.email}
-				>
-					{(formData.email !== loggedInUser?.email) && debounced.email && touched.email && !errors.email && formData.email && formData.email.length >= 3 && (
-						<FormFieldAvailability 
-							label='Email'
-							name='email'
-							value={formData.email}
-							setFieldAvailable={setFieldAvailable}
-						/>
-					)}
-				</FormField>
-				<FormField
-					className='field flex flex-col gap-0.5 box-border'
-					iconSrc='/icons/note.svg'
-					label='Bio'
-					field='bio'
-					inputPlaceholder={formData.bio}
-					inputValue={formData.bio}
-					onChange={onChange}
-					touched={touched.bio}
-					error={errors.bio}
-					debounced={debounced.bio}
-				/>
+		<FormProvider
+			formData={formData}
+			touched={touched}
+			errors={errors}
+			debounced={debounced}
+			handleChange={onChange}
+			validateAll={() => true} // Placeholder for this form
+		>
+			<div className="flex flex-col gap-4">
+				<div className='flex flex-col gap-5'>
+					<InputField
+						className='field flex flex-col gap-0.5 min-w-0 flex-1'
+						iconSrc='/icons/firstname.svg'
+						label='First Name'
+						field='first_name'
+						inputPlaceholder={formData.first_name}
+					/>
+					<InputField
+						className='field flex flex-col gap-0.5 min-w-0 flex-1'
+						iconSrc='/icons/lastname.svg'
+						label='Last Name'
+						field='last_name'
+						inputPlaceholder={formData.last_name}
+					/>
+					<InputField
+						className='field flex flex-col gap-0.5 box-border'
+						iconSrc='/icons/at.svg'
+						label='Username'
+						field='username'
+						inputPlaceholder={formData.username}
+					>
+						{(formData.username !== loggedInUser?.username) && debounced.username && touched.username && !errors.username && formData.username && formData.username.length >= 3 && (
+							<FormFieldAvailability 
+								label='Username'
+								name='username'
+								value={formData.username}
+								setFieldAvailable={setFieldAvailable}
+							/>
+						)}
+					</InputField>
+					<InputField
+						className='field flex flex-col gap-0.5 box-border'
+						iconSrc='/icons/mail.svg'
+						label='Email'
+						field='email'
+						inputPlaceholder={formData.email}
+					>
+						{(formData.email !== loggedInUser?.email) && debounced.email && touched.email && !errors.email && formData.email && formData.email.length >= 3 && (
+							<FormFieldAvailability 
+								label='Email'
+								name='email'
+								value={formData.email}
+								setFieldAvailable={setFieldAvailable}
+							/>
+						)}
+					</InputField>
+					<InputField
+						className='field flex flex-col gap-0.5 box-border'
+						iconSrc='/icons/note.svg'
+						label='Bio'
+						field='bio'
+						inputPlaceholder={formData.bio}
+					/>
+				</div>
+				<LanguageSwitcher />
 			</div>
-			<LanguageSwitcher />
-		</div>
+		</FormProvider>
 	);
 }

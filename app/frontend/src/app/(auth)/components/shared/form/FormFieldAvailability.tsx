@@ -17,7 +17,7 @@ function getFieldStatusDisplay(label: string, fieldStatus: FieldStatus) {
 		case 'CHECKING':
 			return { message: 'Checking availability...', icon: <LoaderCircle className="animate-spin" size={14}/>, color: 'text-blue-400'};
 		case 'AVAILABLE':
-			return { message: `${label} is available!`, icon: <CheckCircle2 size={14}/>, color: 'text-green-400'};
+			return { message: `${label} is available!`, icon: <LoaderCircle className="animate-spin" size={14}/>, color: 'text-green-400'};
 		case 'TAKEN':
 			return { message: `${label} is already taken!`, icon: <AlertCircle size={14} className="shrink-0"/>, color: 'text-red-400'};
 		case 'ERROR':

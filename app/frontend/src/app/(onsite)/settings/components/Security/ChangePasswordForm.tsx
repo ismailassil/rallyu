@@ -114,12 +114,14 @@
 // }
 
 import React, { ChangeEvent, useEffect, useState } from "react";
-import FormField from "@/app/(auth)/components/shared/form/FormField";
+import InputField from "@/app/(auth)/components/shared/form/InputField";
+import { FormProvider } from "@/app/(auth)/components/shared/form/FormContext";
 import useForm from "@/app/hooks/useForm";
 import { toastError, toastLoading, toastSuccess } from "@/app/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { changePasswordSchema } from "@/app/(api)/schema";
 import { simulateBackendCall } from "@/app/(api)/utils";
+import FormButton from "@/app/(auth)/components/shared/ui/FormButton";
 
 interface ChangePasswordFormProps {
 	formId: string;
@@ -170,51 +172,45 @@ export default function ChangePasswordForm({ formId, setButtonDisabled, setButto
 		<div className="flex flex-col lg:flex-row gap-8 px-8 lg:px-14">
 			{/* Form Section */}
 			<div className="order-2 lg:order-1 lg:flex-1">
-				<form 
-					id={formId}
-					onSubmit={handleSubmit}
-					className="flex flex-col gap-5"
+				<FormProvider
+					formData={formData}
+					touched={touched}
+					errors={errors}
+					debounced={debounced}
+					handleChange={handleChange}
+					validateAll={validateAll}
 				>
-					<FormField 
-						className='field flex flex-col gap-0.5 box-border'
-						iconSrc='/icons/lock.svg'
-						label='Current Password'
-						field='current_password'
-						inputPlaceholder='••••••••••••••••'
-						inputValue={formData.current_password}
-						hidden={true}
-						onChange={handleChange}
-						touched={touched.current_password}
-						error={errors.current_password}
-						debounced={debounced.current_password}
-					/>
-					<FormField 
-						className='field flex flex-col gap-0.5 box-border'
-						iconSrc='/icons/lock.svg'
-						label='New Password'
-						field='new_password'
-						inputPlaceholder='••••••••••••••••'
-						inputValue={formData.new_password}
-						hidden={true}
-						onChange={handleChange}
-						touched={touched.new_password}
-						error={errors.new_password}
-						debounced={debounced.new_password}
-					/>
-					<FormField 
-						className='field flex flex-col gap-0.5 box-border'
-						iconSrc='/icons/lock.svg'
-						label='Confirm New Password'
-						field='confirm_new_password'
-						inputPlaceholder='••••••••••••••••'
-						inputValue={formData.confirm_new_password}
-						hidden={true}
-						onChange={handleChange}
-						touched={touched.confirm_new_password}
-						error={errors.confirm_new_password}
-						debounced={debounced.confirm_new_password}
-					/>
-				</form>
+					<form 
+						id={formId}
+						onSubmit={handleSubmit}
+						className="flex flex-col gap-5"
+					>
+						<InputField 
+							className='field flex flex-col gap-0.5 box-border'
+							iconSrc='/icons/lock.svg'
+							label='Current Password'
+							field='current_password'
+							inputPlaceholder='••••••••••••••••'
+							inputHidden={true}
+						/>
+						<InputField 
+							className='field flex flex-col gap-0.5 box-border'
+							iconSrc='/icons/lock.svg'
+							label='New Password'
+							field='new_password'
+							inputPlaceholder='••••••••••••••••'
+							inputHidden={true}
+						/>
+						<InputField 
+							className='field flex flex-col gap-0.5 box-border'
+							iconSrc='/icons/lock.svg'
+							label='Confirm New Password'
+							field='confirm_new_password'
+							inputPlaceholder='••••••••••••••••'
+							inputHidden={true}
+						/>
+					</form>
+				</FormProvider>
 			</div>
 
 			{/* Rules Section */}

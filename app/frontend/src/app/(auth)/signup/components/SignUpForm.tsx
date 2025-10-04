@@ -1,45 +1,39 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import React, { useCallback } from 'react';
-import { useState } from 'react';
-import useForm from '@/app/hooks/useForm';
-import FormField from '../../components/shared/form/FormField';
+import React, { useState, useCallback } from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
+import InputField from '../../components/shared/form/InputField';
+import useForm from '@/app/hooks/useForm';
 import { signupFormSchema } from '@/app/(api)/schema';
-import PasswordStrength from '../../components/shared/form/PasswordStrength';
+import PasswordStrengthIndicator from '../../components/shared/form/PasswordStrengthIndicator';
 import FormFieldAvailability from '../../components/shared/form/FormFieldAvailability';
 import FormButton from '../../components/shared/ui/FormButton';
-import { Loader, Loader2, LoaderPinwheel, LogIn } from 'lucide-react';
+import { LogIn } from 'lucide-react';
+import { FormProvider } from '../../components/shared/form/FormContext';
+import useUsernameEmailAvailability from '@/app/hooks/useUsernameEmailAvailability';
+import AvailabilityIndicator from '../../components/shared/form/AvailabilityIndicator';
 
 export default function SignUpForm() {
 	const router = useRouter();
 	const { register } = useAuth();
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-	const [fieldsAvailable, setFieldsAvailable] = useState({
-		username: false,
-		email: false
-	});
 
-	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm(
+	const [formData, touched, errors, debounced, handleChange, validateAll, resetForm] = useForm(
 		signupFormSchema,
 		{ first_name: '', last_name: '', username: '', email: '', password: '' },
-		{ debounceMs: { email: 1200, username: 1200, password: 1200 } }
+		{ debounceMs: { email: 4000, username: 4000, password: 4000 } }
 	);
 
-	const updateFieldAvailable = useCallback((name: string, available: boolean) => {
-		setFieldsAvailable(prev => ({ ...prev, [name]: available }));
-	}, []);
+	const usernameStatus = useUsernameEmailAvailability('username', formData.username, !!errors.username || !debounced.username);
+	const emailStatus = useUsernameEmailAvailability('email', formData.email, !!errors.email || !debounced.email);
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 
 		const isValid = validateAll();
 		if (!isValid)
-			return ;
-
-		if (!fieldsAvailable.username || !fieldsAvailable.email)
 			return ;
 
 		setIsSubmitting(true);
@@ -61,106 +55,71 @@ export default function SignUpForm() {
 	}
 
 	return (
-		<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-			<div className='flex flex-col gap-5 sm:flex-row sm:gap-2'>
-				<FormField 
-					className='field flex flex-col gap-0.5 min-w-0 flex-1'
-					iconSrc='/icons/firstname.svg'
-					label='First Name'
-					field='first_name'
-					inputPlaceholder='Achraf'
-					inputValue={formData.first_name}
-					onChange={handleChange}
-					touched={touched.first_name}
-					error={errors.first_name}
-					debounced={debounced.first_name}
-				/>
-				<FormField 
-					className='field flex flex-col gap-0.5 min-w-0 flex-1'
-					iconSrc='/icons/lastname.svg'
-					label='Last Name'
-					field='last_name'
-					inputPlaceholder='Demnati'
-					inputValue={formData.last_name}
-					onChange={handleChange}
-					touched={touched.last_name}
-					error={errors.last_name}
-					debounced={debounced.last_name}
-				/>
-			</div>
-			<FormField 
-				className='field flex flex-col gap-0.5 box-border'
-				iconSrc='/icons/at.svg'
-				label='Username'
-				field='username'
-				inputPlaceholder='xezzuz'
-				inputValue={formData.username}
-				onChange={handleChange}
-				touched={touched.username}
-				error={errors.username}
-				debounced={debounced.username}
-			>
-				{debounced.username && touched.username && !errors.username && formData.username && formData.username.length >= 3 && (
-					<FormFieldAvailability 
-						label='Username'
-						name='username'
-						value={formData.username}
-						setFieldAvailable={updateFieldAvailable}
+		<FormProvider
+			formData={formData}
+			touched={touched}
+			errors={errors}
+			debounced={debounced}
+			handleChange={handleChange}
+			validateAll={validateAll}
+			resetForm={resetForm}
+		>
+			<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+				<div className='flex flex-col gap-5 sm:flex-row sm:gap-2'>
+					<InputField 
+						className='field flex flex-col gap-0.5 min-w-0 flex-1'
+						iconSrc='/icons/firstname.svg'
+						label='First Name'
+						field='first_name'
+						inputPlaceholder='Achraf'
 					/>
-				)}
-			</FormField>
-			<FormField 
-				className='field flex flex-col gap-0.5 box-border'
-				iconSrc='/icons/mail.svg'
-				label='Email'
-				field='email'
-				inputPlaceholder='iassil@1337.student.ma'
-				inputValue={formData.email}
-				onChange={handleChange}
-				touched={touched.email}
-				error={errors.email}
-				debounced={debounced.email}
-			>
-				{debounced.email && touched.email && !errors.email && formData.email && formData.email.length >= 3 && (
-					<FormFieldAvailability 
-						label='Email'
-						name='email'
-						value={formData.email}
-						setFieldAvailable={updateFieldAvailable}
+					<InputField 
+						className='field flex flex-col gap-0.5 min-w-0 flex-1'
+						iconSrc='/icons/lastname.svg'
+						label='Last Name'
+						field='last_name'
+						inputPlaceholder='Demnati'
 					/>
-				)}
-			</FormField>
-			<FormField 
-				className='field flex flex-col gap-0.5 box-border'
-				iconSrc='/icons/lock.svg'
-				label='Password'
-				field='password'
-				inputPlaceholder='••••••••••••••••'
-				inputValue={formData.password}
-				hidden={true}
-				onChange={handleChange}
-				touched={touched.password}
-				error={errors.password}
-				debounced={debounced.password}
-			>
-				{touched.password && formData.password && <PasswordStrength value={formData.password} />}
-			</FormField>
-			{/* <button className={`h-11 mt-2 rounded-lg transition-all duration-200 ${
-					isSubmitting 
-					? 'bg-gray-700 cursor-not-allowed'
-					: 'bg-blue-600 hover:bg-blue-700 hover:shadow-2xl active:scale-98'
-				}`} 
-					type='submit'
-					disabled={isSubmitting}
+				</div>
+				<InputField 
+					className='field flex flex-col gap-0.5 box-border'
+					iconSrc='/icons/at.svg'
+					label='Username'
+					field='username'
+					inputPlaceholder='xezzuz'
 				>
-					Sign Up
-			</button> */}
-			<FormButton
-				text='Sign Up'
-				icon={<LogIn size={16} />}
-				type='submit'
-				isSubmitting={isSubmitting}
-			/>
-		</form>
+					{formData.username && formData.username.length >= 3 && !errors.username && debounced.username && (
+						<AvailabilityIndicator label='Username' status={usernameStatus} />
+					)}
+				</InputField>
+				<InputField 
+					className='field flex flex-col gap-0.5 box-border'
+					iconSrc='/icons/mail.svg'
+					label='Email'
+					field='email'
+					inputPlaceholder='iassil@1337.student.ma'
+				>
+					{formData.email && formData.email.length >= 3 && !errors.email && debounced.email && (
+						<AvailabilityIndicator label='Email' status={emailStatus} />
+					)}
+				</InputField>
+				<InputField 
+					className='field flex flex-col gap-0.5 box-border'
+					iconSrc='/icons/lock.svg'
+					label='Password'
+					field='password'
+					inputPlaceholder='••••••••••••••••'
+					inputHidden={true}
+				>
+					{formData.password && <PasswordStrengthIndicator value={formData.password} />}
+				</InputField>
+				<FormButton
+					text='Sign Up'
+					icon={<LogIn size={16} />}
+					type='submit'
+					isSubmitting={isSubmitting}
+				/>
+			</form>
+		</FormProvider>
 	);
 }
