@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ForgotPassword } from "./components/ForgotPassword";
-import { CheckEmail } from "./components/CheckEmail";
+import { VerifyCode } from "./components/VerifyCode";
 import { SetNewPassword } from "./components/SetNewPassword";
 import useForm from "@/app/hooks/useForm";
 import { resetPasswordSchema } from "@/app/(api)/schema";
@@ -10,11 +10,12 @@ import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
 import { APIError } from "@/app/(api)/APIClient";
 import AuthPageWrapper from "../components/shared/ui/AuthPageWrapper";
+import { FormProvider } from "../components/shared/form/FormContext";
 
 enum STEP {
-	FORGOT_PASSWORD = 'FORGOT',
-	CHECK_EMAIL = 'CHECK-EMAIL',
-	SUBMIT_NEW_PASSWORD = 'SUBMIT-NEW-PASSWORD'
+	FORGOT_PASSWORD = 'FORGOT-PASSWORD',
+	VERIFY_CODE = 'VERIFY-CODE',
+	SET_NEW_PASSWORD = 'SET-NEW-PASSWORD'
 }
 
 export default function ResetPasswordPage() {
@@ -24,25 +25,30 @@ export default function ResetPasswordPage() {
 	const [code, setCode] = useState(['', '', '', '', '', '']);
 	const [isLoading, setIsLoading] = useState(false);
 	const inputRefs = useRef([]);
-	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm(
-		resetPasswordSchema,
-		{ email: '', password: '', confirm_password: '' },
-		{ debounceMs: { email: 1200, username: 1200, password: 1200 } }
+	const [
+		formData, 
+		touched, 
+		errors, 
+		debounced, 
+		handleChange, 
+		validateAll, 
+		resetForm
+	] = useForm(
+	resetPasswordSchema,
+	{ email: '', password: '', confirm_password: '' },
+	{ debounceMs: { email: 1200, username: 1200, password: 1200 } }
 	);
 
 	async function handleRequestPasswordReset() {
-		validateAll();
-
-		if (formData.email === '')
-			return ;
-		if (errors.email)
+		const isValid = validateAll();
+		if (!isValid && errors.email)
 			return ;
 
 		try {
 			setIsLoading(true);
 			await apiClient.requestPasswordReset(formData.email);
 			toastSuccess('Code sent!');
-			setStep(STEP.CHECK_EMAIL);
+			setStep(STEP.VERIFY_CODE);
 		} catch (err) {
 			const apiErr = err as APIError;
 			toastError(apiErr.message);
@@ -57,7 +63,7 @@ export default function ResetPasswordPage() {
 			const codeStr = code.join('');
 			await apiClient.verifyPasswordResetCode({ email: formData.email, code: codeStr });
 			toastSuccess('Code verified!');
-			setStep(STEP.SUBMIT_NEW_PASSWORD);
+			setStep(STEP.SET_NEW_PASSWORD);
 		} catch (err) {
 			const apiErr = err as APIError;
 			toastError(apiErr.message);
@@ -94,16 +100,13 @@ export default function ResetPasswordPage() {
 			case STEP.FORGOT_PASSWORD:
 				return (
 					<ForgotPassword 
-						email={formData.email} 
-						error={errors.email} 
 						onSubmit={handleRequestPasswordReset}
-						onChange={handleChange} 
 						onGoBack={() => router.push('/login')} 
 					/>
 				);
-			case STEP.CHECK_EMAIL:
+			case STEP.VERIFY_CODE:
 				return (
-					<CheckEmail 
+					<VerifyCode 
 						code={code} 
 						setCode={setCode} 
 						inputRefs={inputRefs} 
@@ -114,7 +117,7 @@ export default function ResetPasswordPage() {
 						onGoBack={() => setStep(STEP.FORGOT_PASSWORD)}
 					/>
 				);
-			case STEP.SUBMIT_NEW_PASSWORD:
+			case STEP.SET_NEW_PASSWORD:
 				return (
 					<SetNewPassword 
 						formData={formData} 
@@ -133,7 +136,17 @@ export default function ResetPasswordPage() {
 	return (
 		<AuthPageWrapper wrapperKey="reset-password-page-wrapper">
 			<div className='w-full max-w-lg p-11 flex flex-col gap-5'>
-				{renderCurrentStep()}
+				<FormProvider
+					formData={formData} 
+					errors={errors} 
+					debounced={debounced} 
+					touched={touched} 
+					handleChange={handleChange}
+					validateAll={validateAll}
+					resetForm={resetForm}
+				>
+					{renderCurrentStep()}
+				</FormProvider>
 			</div>
 		</AuthPageWrapper>
 	);

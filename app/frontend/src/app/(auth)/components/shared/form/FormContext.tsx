@@ -28,7 +28,7 @@ export type FormProviderProps = {
 export function FormProvider({ children, ...contextValue }: FormProviderProps) {
 	return (
 		<FormContext.Provider value={contextValue}>
-		{children}
+			{children}
 		</FormContext.Provider>
 	);
 }

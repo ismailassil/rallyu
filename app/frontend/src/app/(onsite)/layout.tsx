@@ -14,7 +14,6 @@ export default function OnsiteLayout({
 }>) {
 	return (
 		<ProtectedRoute>
-			<h1 className="fixed top-0 left-60">OnsiteLayout</h1>
 			<HeaderProvider>
 				<NotificationProvider>
 					<Header />

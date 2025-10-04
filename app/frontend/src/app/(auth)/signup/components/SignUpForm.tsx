@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
@@ -8,17 +8,17 @@ import InputField from '../../components/shared/form/InputField';
 import useForm from '@/app/hooks/useForm';
 import { signupFormSchema } from '@/app/(api)/schema';
 import PasswordStrengthIndicator from '../../components/shared/form/PasswordStrengthIndicator';
-import FormFieldAvailability from '../../components/shared/form/FormFieldAvailability';
 import FormButton from '../../components/shared/ui/FormButton';
 import { LogIn } from 'lucide-react';
 import { FormProvider } from '../../components/shared/form/FormContext';
 import useUsernameEmailAvailability from '@/app/hooks/useUsernameEmailAvailability';
 import AvailabilityIndicator from '../../components/shared/form/AvailabilityIndicator';
+import useAPICall from '@/app/hooks/useAPICall';
 
 export default function SignUpForm() {
 	const router = useRouter();
 	const { register } = useAuth();
-	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+	const { isLoading, executeAPICall } = useAPICall();
 
 	const [formData, touched, errors, debounced, handleChange, validateAll, resetForm] = useForm(
 		signupFormSchema,
@@ -36,21 +36,18 @@ export default function SignUpForm() {
 		if (!isValid)
 			return ;
 
-		setIsSubmitting(true);
 		try {
-			await register(
+			await executeAPICall(() => register(
 				formData.first_name,
 				formData.last_name,
 				formData.username,
 				formData.email,
 				formData.password
-			);
+			));
 			toastSuccess('Account created successfully...');
-			router.replace('/login');
+			router.push('/login');
 		} catch (err: any) {
-			toastError(err.message || 'Something went wrong, please try again later');
-		} finally {
-			setIsSubmitting(false);
+			toastError(err.message);
 		}
 	}
 
@@ -88,9 +85,7 @@ export default function SignUpForm() {
 					field='username'
 					inputPlaceholder='xezzuz'
 				>
-					{formData.username && formData.username.length >= 3 && !errors.username && debounced.username && (
-						<AvailabilityIndicator label='Username' status={usernameStatus} />
-					)}
+					{formData.username && formData.username.length >= 3 && !errors.username && debounced.username && ( <AvailabilityIndicator label='Username' status={usernameStatus} /> )}
 				</InputField>
 				<InputField 
 					className='field flex flex-col gap-0.5 box-border'
@@ -99,9 +94,7 @@ export default function SignUpForm() {
 					field='email'
 					inputPlaceholder='iassil@1337.student.ma'
 				>
-					{formData.email && formData.email.length >= 3 && !errors.email && debounced.email && (
-						<AvailabilityIndicator label='Email' status={emailStatus} />
-					)}
+					{formData.email && formData.email.length >= 3 && !errors.email && debounced.email && ( <AvailabilityIndicator label='Email' status={emailStatus} /> )}
 				</InputField>
 				<InputField 
 					className='field flex flex-col gap-0.5 box-border'
@@ -117,7 +110,7 @@ export default function SignUpForm() {
 					text='Sign Up'
 					icon={<LogIn size={16} />}
 					type='submit'
-					isSubmitting={isSubmitting}
+					isSubmitting={isLoading}
 				/>
 			</form>
 		</FormProvider>

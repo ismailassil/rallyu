@@ -1,54 +1,34 @@
 'use client';
-import { use, useEffect, useState } from 'react';
+import { use, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ProfileCard from '../components/ProfileCard';
 import PerformanceCard from '../components/PerformaceCard';
 import GamesHistoryCard from '../components/GamesHistoryCard';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toastError } from '@/app/components/CustomToast';
-import { APIError } from '@/app/(api)/APIClient';
-import { UserProfile } from '../../types';
 import { useRouter } from 'next/navigation';
-import { io } from 'socket.io-client';
+import useAPIQuery from '@/app/hooks/useAPIQuery';
+import { LoadingPage } from '@/app/(auth)/components/shared/ui/LoadingComponents';
 
 export default function UserProfilePage({ params } : { params: Promise<{ username: string }> }) {
 	const router = useRouter();
 	const { username } = use(params);
 	const { apiClient } = useAuth();
-	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-	const [isLoading, setIsLoading] = useState(true);
+	const { isLoading, data: userProfile, error } = useAPIQuery(
+		() => apiClient.user.fetchUserByUsername(username),
+		[username]
+	);
 
 	useEffect(() => {
-		async function fetchUserProfile() {
-			try {
-				setIsLoading(true);
-				const data = await apiClient.fetchUserByUsername(username);
-				setUserProfile(data);
-			} catch (err) {
-				const apiErr = err as APIError;
-				if (apiErr.code.includes('USER_NOT_FOUND'))
-					router.replace('/404');
-				toastError(apiErr.message);
-				console.log(err);
-			} finally {
-				setIsLoading(false);
-			}
-		}
-
-		fetchUserProfile();
-	}, [username, apiClient, router]);
-
-	useEffect(() => {
-		if (!isLoading && !userProfile) {
+		console.log('running useeffect in user profile');
+		if (error?.message)
+			toastError(error.message);
+		if (error?.code.includes('USER_NOT_FOUND'))
 			router.replace('/404');
-		}
-	}, [isLoading, userProfile, router]);
-	
-	if (isLoading)
-		return null;
-		// return <AuthLoadingSpinner />;
-	if (!userProfile)
-		return null;
+	}, [error, router]);
+
+	if (isLoading || error || !userProfile)
+		return <LoadingPage />;
 
 	return (
 		<motion.main

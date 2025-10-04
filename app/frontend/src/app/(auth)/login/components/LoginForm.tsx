@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
@@ -10,14 +10,15 @@ import { loginFormSchema } from '@/app/(api)/schema';
 import FormButton from '../../components/shared/ui/FormButton';
 import { LogIn } from 'lucide-react';
 import { FormProvider } from '../../components/shared/form/FormContext';
+import useAPICall from '@/app/hooks/useAPICall';
 
 export default function LoginForm() {
 	const { login } = useAuth();
 	const router = useRouter();
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const { isLoading, executeAPICall } = useAPICall();
 	const [formData, touched, errors, debounced, handleChange, validateAll, resetForm] = useForm(
 		loginFormSchema,
-		{ username: '', password: '' } // Removed email from initial values since login doesn't use it
+		{ username: '', password: '' }
 	);
 
 	async function handleSubmit(e: React.FormEvent) {
@@ -26,19 +27,15 @@ export default function LoginForm() {
 		const isValid = validateAll();
 		if (!isValid)
 			return ;
-		
-		setIsSubmitting(true);
+
 		try {
-			const res = await login(formData.username, formData.password);
-			if (res._2FARequired) {
+			const res = await executeAPICall(() => login(formData.username, formData.password));
+			if (res._2FARequired)
 				toastSuccess('Two Factor Authentication is required!');
-				router.push('/two-factor');
-			} else
+			else
 				toastSuccess('Logged in successfully');
 		} catch (err: any) {
 			toastError(err.message || 'Something went wrong, please try again later');
-		} finally {
-			setIsSubmitting(false);
 		}
 	}
 
@@ -77,7 +74,7 @@ export default function LoginForm() {
 					text='Sign In'
 					icon={<LogIn size={16} />}
 					type='submit'
-					isSubmitting={isSubmitting}
+					isSubmitting={isLoading}
 				/>
 			</form>
 		</FormProvider>

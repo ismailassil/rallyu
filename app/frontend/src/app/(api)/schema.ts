@@ -92,9 +92,7 @@ export const changePasswordSchema = z.object({
 });
 
 export const resetPasswordSchema = z.object({
-	email: z.string()
-		.nonempty("Email is required")
-		.email("Invalid email address"),
+	email: z.email(),
 
 	password: z.string()
 		.nonempty("Password is required")

@@ -12,7 +12,7 @@ export default function AvailabilityIndicator({ label, status } : { label: 'User
 			case 'checking':
 				return { message: 'Checking availability...', icon: <LoaderCircle className="animate-spin" size={14}/>, colorClass: 'text-blue-400' };
 			case 'available':
-				return { message: `${label} is available!`, icon: <CheckCircle2 className="animate-spin" size={14}/>, colorClass: 'text-green-400' };
+				return { message: `${label} is available!`, icon: <CheckCircle2 className="shrink-0" size={14}/>, colorClass: 'text-green-400' };
 			case 'unavailable':
 				return { message: `${label} is already taken!`, icon: <AlertCircle size={14} className="shrink-0"/>, colorClass: 'text-red-400' };
 			case 'error':
