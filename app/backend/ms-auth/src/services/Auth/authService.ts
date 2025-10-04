@@ -60,9 +60,16 @@ class AuthService {
 	}
 
 	async LogIn(username: string, password: string, sessionFingerprint: ISessionFingerprint) {
-		const existingUser = await this.userService.getUserByUsername(username);
+		let existingUser = null;
+		try {
+			existingUser = await this.userService.getUserByUsername(username);
+		} catch (err) {
+			throw new InvalidCredentialsError();
+		}
+		
 		const isValidPassword = 
 			await bcrypt.compare(password, existingUser ? existingUser.password : this.authConfig.bcryptTimingHash);
+
 		if (!existingUser || !isValidPassword)
 			throw new InvalidCredentialsError();
 
