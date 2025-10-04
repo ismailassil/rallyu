@@ -4,15 +4,6 @@ import TournamentController from "../controllers/TournamentController";
 const tournamentRoutes = function(app: FastifyInstance, options, done: HookHandlerDoneFunction) {
     app.get(
 		"/:tournamentId",
-		{
-			schema: {
-				params: {
-					type: 'object',
-					properties: { tournamentId: { type: "number" } },
-      				required: ['tournamentId']
-				}
-			}
-		},
 		TournamentController.getTournament
 	);
 

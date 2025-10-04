@@ -8,24 +8,25 @@ import {Codec, JetStreamClient, NatsConnection} from "nats"
 import natsPlugin from "./plugin/natsPlugin";
 import tournamentRoutes from "./routes/tournamentRoutes";
 
+
+const app = fastify(serverConfig);
+
+dotenv.config({ path: '../../api-gateway/.env' });
+
 declare module "fastify" {
 	interface FastifyInstance {
 		tournamentModel: TournamentModel,
 		tournamentMatchesModel: TournamentMatchesModel,
 		js: JetStreamClient,
 		nc: NatsConnection,
-		jsonCodec: Codec<unknown>
+		jsonCodec: Codec<any>
 	}
 }
 
-const app = fastify(serverConfig);
-
-dotenv.config({ path: '../../api-gateway/.env' });
-
 app.register(natsPlugin, {
-	NATSURL: process.env.NATS_URL ?? "",
-	NATSUSER: process.env.NATS_USER ?? "",
-	NATSPASS: process.env.NATS_PASSWORD ?? ""
+	NATSURL: process.env.NATS_URL ?? "nats://nats:4222",
+	NATSUSER: process.env.NATS_USER ?? "rallyu",
+	NATSPASS: process.env.NATS_PASSWORD ?? "Blh9jF59ZJ6wMj1PYNkX34Y1T"
 }).after((err) => app.log.error(err));
 
 app.register(connectDatabase).after((err) => app.log.error(err));

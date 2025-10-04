@@ -64,8 +64,6 @@ const Brackets = function (props) {
 				const res = await apiClient.instance.get(`/v1/tournament/${slug}`);
 
 				const data = res.data;
-
-				console.log(data.data);
 				
 				setTournament(data.data);
 				isPlayerJoined(data.data);
@@ -113,7 +111,7 @@ const Brackets = function (props) {
 	};
 
 	const isPlayerJoined = (data) => {
-		for (let i = 0; data.matches.length - 1; i++) {
+		for (let i = 0; i < data.matches.length - 1; i++) {
 			// I need user id 1
 			if (data.matches[i].player_1 === loggedInUser?.id) {
 				if (data.matches[i].player_1_ready)

@@ -50,7 +50,7 @@ class TournamentController {
 			});
 
 		} catch (err: unknown) {
-			return rep.code(500).send({
+			return rep.code(501).send({
 				status: false,
 				message: "Something went wrong",
 			});
