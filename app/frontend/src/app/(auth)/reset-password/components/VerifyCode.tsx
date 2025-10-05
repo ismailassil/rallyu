@@ -57,8 +57,12 @@ export function VerifyCode({ onNext, onGoBack } : VerifyCodeProps) {
 	}
 
 	async function handleResend() {
-		if (!formData.email)
+		validateAll();
+		const errors = getValidationErrors();
+		if (errors?.email) {
 			router.refresh();
+			return ;
+		}
 
 		setIsResending(true);
 		try {

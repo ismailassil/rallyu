@@ -1,15 +1,54 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { METHODS_META } from './constants';
 import { Fingerprint, LoaderCircle, ChevronRight } from 'lucide-react';
+import { toastError, toastSuccess } from '@/app/components/CustomToast';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
+import useAPICall from '@/app/hooks/useAPICall';
 
 interface MethodsOverviewProps {
-	methods: string[];
-	selectedMethod: string;
-	isSendingCode: boolean;
-	onSelectMethod: (method: string) => void;
+	method: 'TOTP' | 'SMS' | 'EMAIL' | null
+	loginSessionMeta: { loginChallengeID: number, enabledMethods: string[] }
+	onMethod: (m: 'TOTP' | 'SMS' | 'EMAIL') => void;
+	onNext: () => void;
 }
 
-export default function MethodsOverview({ methods, selectedMethod, isSendingCode, onSelectMethod }: MethodsOverviewProps) {
+export default function MethodsOverview({ method, loginSessionMeta, onMethod, onNext }: MethodsOverviewProps) {
+	const router = useRouter();
+
+	const {
+		send2FACode
+	} = useAuth();
+
+	const { 
+		isLoading, 
+		executeAPICall 
+	} = useAPICall();
+
+	async function handleSubmit(m: 'TOTP' | 'SMS' | 'EMAIL') {
+		onMethod(m);
+
+		if (!['TOTP', 'SMS', 'EMAIL'].includes(m)) {
+			toastError('Please sign in again.');
+			router.replace('/login');
+			return ;
+		}
+
+		try {
+			await executeAPICall(() => send2FACode(
+				loginSessionMeta.loginChallengeID, 
+				m
+			));
+			if (m !== 'TOTP')
+				toastSuccess('Code sent!');	
+			onNext();
+		} catch (err: any) {
+			toastError(err.message);
+			router.replace('/login');
+		}
+	}
+
 	return (
 		<>
 			{/* Header */}
@@ -21,13 +60,13 @@ export default function MethodsOverview({ methods, selectedMethod, isSendingCode
 
 			{/* Methods List */}
 			<div className='flex flex-col gap-4 w-full'>
-				{methods.map(m => {
+				{loginSessionMeta.enabledMethods.map(m => {
 					return (
 						<button 
 							key={m} 
-							onClick={() => onSelectMethod(m)}
-							disabled={isSendingCode}
-							className={`single-two-fa-card ${isSendingCode ? 'cursor-not-allowed pointer-events-none brightness-75' : 'cursor-pointer'}`}
+							onClick={() => handleSubmit(m as 'TOTP' | 'SMS' | 'EMAIL')}
+							disabled={isLoading}
+							className={`single-two-fa-card ${isLoading ? 'cursor-not-allowed pointer-events-none brightness-75' : 'cursor-pointer'}`}
 						>
 							<div className='w-full flex justify-between items-center gap-16'>
 								<div className='flex gap-4 items-center'>
@@ -37,7 +76,7 @@ export default function MethodsOverview({ methods, selectedMethod, isSendingCode
 										<p className='font-light text-sm lg:text-base text-white/75'>{METHODS_META[m].description}</p>
 									</div>
 								</div>
-								{(isSendingCode && selectedMethod === m) ? <LoaderCircle size={36} className='ml-auto animate-spin'/> : <ChevronRight size={36} className='ml-auto'/>}
+								{(isLoading && method === m) ? <LoaderCircle size={36} className='ml-auto animate-spin'/> : <ChevronRight size={36} className='ml-auto'/>}
 							</div>
 						</button>
 					);

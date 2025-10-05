@@ -111,3 +111,9 @@ export const resetPasswordSchema = z.object({
 	message: "Passwords do not match",
 	path: ["confirm_password"],
 });
+
+export const loginChallengeSchema = z.object({
+	code: z.string()
+		.nonempty("Code is required")
+		.regex(/^\d{6}$/, "Code must be a 6-digit number"),
+});

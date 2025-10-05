@@ -16,7 +16,7 @@ export default function LoginForm() {
 	const { login } = useAuth();
 	const router = useRouter();
 	const { isLoading, executeAPICall } = useAPICall();
-	const [formData, touched, errors, debounced, handleChange, validateAll, resetForm] = useForm(
+	const [formData, touched, errors, debounced, handleChange, validateAll, getValidationErrors, resetForm] = useForm(
 		loginFormSchema,
 		{ username: '', password: '' }
 	);
@@ -29,9 +29,11 @@ export default function LoginForm() {
 			return ;
 
 		try {
-			const res = await executeAPICall(() => login(formData.username, formData.password));
-			if (res._2FARequired)
+			const result = await executeAPICall(() => login(formData.username, formData.password));
+			if (result._2FARequired) {
 				toastSuccess('Two Factor Authentication is required!');
+				router.push('/two-factor');
+			}
 			else
 				toastSuccess('Logged in successfully');
 		} catch (err: any) {
@@ -47,6 +49,7 @@ export default function LoginForm() {
 			debounced={debounced}
 			handleChange={handleChange}
 			validateAll={validateAll}
+			getValidationErrors={getValidationErrors}
 			resetForm={resetForm}
 		>
 			<form className='flex flex-col gap-4' onSubmit={handleSubmit}>

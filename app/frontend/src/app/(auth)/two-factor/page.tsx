@@ -1,12 +1,9 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import MethodsOverview from './components/MethodsOverview';
 import VerifyCode from './components/VerifyCode';
-import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { simulateBackendCall } from '@/app/(api)/utils';
-import { APIError } from '@/app/(api)/APIClient';
-import { toastError, toastSuccess } from '@/app/components/CustomToast';
+import { toastError } from '@/app/components/CustomToast';
 import AuthPageWrapper from '../components/shared/ui/AuthPageWrapper';
 
 enum STEP {
@@ -18,7 +15,6 @@ function getTwoFAChallengeSession() {
 	try {
 		const idRaw = sessionStorage.getItem('loginChallengeID');
 		const methodsRaw = sessionStorage.getItem('enabledMethods');
-		console.log('SESSION RAW: ', idRaw, methodsRaw);
 	
 		if (!idRaw || !methodsRaw) return null;
 
@@ -42,7 +38,7 @@ function getTwoFAChallengeSession() {
 			return null;
 		}
 
-		return { loginChallengeID, enabledMethods };
+		return { loginChallengeID, enabledMethods } as { loginChallengeID: number, enabledMethods: string[] };
 	} catch {
 		sessionStorage.removeItem('loginChallengeID');
 		sessionStorage.removeItem('enabledMethods');
@@ -52,94 +48,39 @@ function getTwoFAChallengeSession() {
 
 export default function TwoFaChallengePage() {
 	const router = useRouter();
-	const { send2FACode, verify2FACode } = useAuth();
-	const [currentStep, setCurrentStep] = useState<STEP>(STEP.OVERVIEW);
-	const [selectedMethod, setSelectedMethod] = useState('');
-	const [code, setCode] = useState(['', '', '', '', '', '']);
-	const [isSendingCode, setIsSendingCode] = useState(false);
-	const [isVerifyingCode, setIsVerifyingCode] = useState(false);
-	const inputRefs = useRef([]);
+	const [step, setStep] = useState<STEP>(STEP.OVERVIEW);
+	const [method, setMethod] = useState<'TOTP' | 'SMS' | 'EMAIL' | null>(null);
+	const [session] = useState(() => getTwoFAChallengeSession());
 
-	const session = getTwoFAChallengeSession();
 	useEffect(() => {
+		console.log('running session useEffect');
 		if (!session) {
 			toastError('Please sign in again.');
 			router.replace('/login');
 		}
-	}, [session, router]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 	if (!session)
 		return null;
 
-	async function handleSelectMethod(method: string) {
-		try {
-			setSelectedMethod(method);
-			setIsSendingCode(true);
-
-			await simulateBackendCall(2000);
-			await send2FACode(session!.loginChallengeID, method);
-
-			if (method !== 'TOTP')
-				toastSuccess('Code sent');
-
-			setCurrentStep(STEP.VERIFY_CODE);
-		} catch (err) {
-			const apiErr = err as APIError;
-			toastError(apiErr.message);
-
-			if (apiErr.code !== 'AUTH_2FA_CHALLENGE_INVALID_CODE')
-				router.replace('/login');
-		} finally {
-			setIsSendingCode(false);
-		}
-	}
-
-	async function handleVerifyCode() {
-		try {
-			setIsVerifyingCode(true);
-
-			await simulateBackendCall(2000);
-			await verify2FACode(session!.loginChallengeID, selectedMethod, code.join(''));
-
-			toastSuccess('Two Factor Authentication successful');
-
-			router.replace('/dashboard');
-		} catch (err) {
-			const apiErr = err as APIError;
-			toastError(apiErr.message);
-			setCode(['', '', '', '', '', '']);
-
-			if (apiErr.code !== 'AUTH_2FA_CHALLENGE_INVALID_CODE')
-				router.replace('/login');
-		} finally {
-			setIsVerifyingCode(false);
-		}
-	}
-
-
 	function renderCurrentStep() {
-		switch (currentStep) {
+		switch (step) {
 			case STEP.OVERVIEW:
 				return (
 					<MethodsOverview
-						methods={session!.enabledMethods}
-						selectedMethod={selectedMethod}
-						isSendingCode={isSendingCode}
-						onSelectMethod={handleSelectMethod}
+						method={method}
+						loginSessionMeta={session!}
+						onMethod={(m) => setMethod(m)}
+						onNext={() => setStep(STEP.VERIFY_CODE)}
 					/>
 				);
 			case STEP.VERIFY_CODE:
 				return (
 					<VerifyCode 
-						methods={session!.enabledMethods}
-						selectedMethod={selectedMethod}
-						code={code}
-						setCode={setCode}
-						inputRefs={inputRefs}
-						isResendingCode={isSendingCode}
-						isVerifyingCode={isVerifyingCode}
-						onVerifyClick={handleVerifyCode}
-						onResendClick={handleSelectMethod}
-						onGoBack={() => setCurrentStep(STEP.OVERVIEW)}
+						method={method!}
+						loginSessionMeta={session!}
+						onNext={() => router.replace('/dashboard')}
+						onGoBack={() => setStep(STEP.OVERVIEW)}
 					/>
 				);
 			default:
@@ -150,7 +91,7 @@ export default function TwoFaChallengePage() {
 
 	return (
 		<AuthPageWrapper wrapperKey="two-fa-challenge-page-wrapper">
-			<div className="w-full max-w-2xl p-11 flex flex-col gap-5">
+			<div className='w-full max-w-lg p-11 flex flex-col gap-5'>
 					{renderCurrentStep()}
 			</div>
 		</AuthPageWrapper>

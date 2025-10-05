@@ -17,3 +17,15 @@ export const METHODS_META: Record<string, { title: string; description: string, 
 		icon: <Mail size={54}  className='group-hover:text-yellow-300 transition-all duration-900' /> 
 	}
 };
+
+export const METHODS_HELP: Record<string, string> = {
+	TOTP: 'Enter the 6-digit code from your authenticator app',
+	SMS: `We've sent a 6-digit code via SMS`,
+	EMAIL: `We've sent a 6-digit code to your Email`,
+};
+
+export const METHODS_HELP2: Record<string, string> = {
+	TOTP: 'Cannot access your Authenticator App?',
+	SMS: `Cannot access your Phone?`,
+	EMAIL: `Cannot access your Email?`,
+};
