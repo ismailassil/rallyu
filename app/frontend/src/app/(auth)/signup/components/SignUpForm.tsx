@@ -11,7 +11,6 @@ import PasswordStrengthIndicator from '../../components/shared/form/PasswordStre
 import FormButton from '../../components/shared/ui/FormButton';
 import { LogIn } from 'lucide-react';
 import { FormProvider } from '../../components/shared/form/FormContext';
-import useUsernameEmailAvailability from '@/app/hooks/useUsernameEmailAvailability';
 import AvailabilityIndicator from '../../components/shared/form/AvailabilityIndicator';
 import useAPICall from '@/app/hooks/useAPICall';
 
@@ -20,10 +19,19 @@ export default function SignUpForm() {
 	const { register } = useAuth();
 	const { isLoading, executeAPICall } = useAPICall();
 
-	const [formData, touched, errors, debounced, handleChange, validateAll, resetForm] = useForm(
+	const [
+		formData, 
+		touched, 
+		errors, 
+		debounced, 
+		handleChange, 
+		validateAll, 
+		getValidationErrors,
+		resetForm
+	] = useForm(
 		signupFormSchema,
 		{ first_name: '', last_name: '', username: '', email: '', password: '' },
-		{ debounceMs: { email: 4000, username: 4000, password: 4000 } }
+		{ debounceMs: { email: 1200, username: 1200, password: 1200 } }
 	);
 
 	const usernameStatus = useUsernameEmailAvailability('username', formData.username, !!errors.username || !debounced.username);
@@ -59,6 +67,7 @@ export default function SignUpForm() {
 			debounced={debounced}
 			handleChange={handleChange}
 			validateAll={validateAll}
+			getValidationErrors={getValidationErrors}
 			resetForm={resetForm}
 		>
 			<form className='flex flex-col gap-4' onSubmit={handleSubmit}>

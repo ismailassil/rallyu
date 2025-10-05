@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useCallback } from 'react';
+import React, { useState, ChangeEvent, useCallback, useEffect } from 'react';
 import SettingsCard from '../SettingsCard';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -8,6 +8,10 @@ import useForm from '@/app/hooks/useForm';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import { LoaderCircle } from 'lucide-react';
 import { personalInfoSettingsSchema } from '@/app/(api)/schema';
+import { FormProvider } from '@/app/(auth)/components/shared/form/FormContext';
+import useAPICall from '@/app/hooks/useAPICall';
+import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
+import useCanSave from '@/app/hooks/useCanSave';
 
 export interface FormDataState {
 	first_name: string;
@@ -18,13 +22,13 @@ export interface FormDataState {
 	avatar_url: string;
 }
 
-export interface FormData {
-	fname: string;
-	lname: string;
-	username: string;
-	email: string;
-	bio: string;
-}
+// export interface FormData {
+// 	fname: string;
+// 	lname: string;
+// 	username: string;
+// 	email: string;
+// 	bio: string;
+// }
 
 /*
 	In this tab the user can only update: First Name, Last Name, Username, Email, Bio, Avatar
@@ -37,31 +41,65 @@ export default function GeneralSettingsTab() {
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-	const [formData, touched, errors, debounced, handleChange, validateAll, resetForm] = useForm(
+	const {
+		executeAPICall
+	} = useAPICall();
+
+	const [
+		formData, 
+		touched, 
+		errors, 
+		debounced, 
+		handleChange, 
+		validateAll, 
+		getValidationErrors,
+		resetForm
+	] = useForm(
 		personalInfoSettingsSchema,
-		{ first_name: loggedInUser!.first_name, last_name: loggedInUser!.last_name, username: loggedInUser!.username, email: loggedInUser!.email, bio: loggedInUser!.bio }
+		{ first_name: loggedInUser!.first_name, last_name: loggedInUser!.last_name, username: loggedInUser!.username, email: loggedInUser!.email, bio: loggedInUser!.bio },
+		{ debounceMs: { email: 1200, username: 1200 } }
 	);
-	const [fieldsAvailable, setFieldsAvailable] = useState({
-		username: true, 
-		email: true
-	});
 
-	const updateFieldAvailable = useCallback((name: string, available: boolean) => {
-		setFieldsAvailable(prev => ({ ...prev, [name]: available }));
-	}, []);
+	const usernameStatus = useAvailabilityCheck('username', formData.username, loggedInUser!.username, debounced.username, errors.username);
+	const emailStatus = useAvailabilityCheck('email', formData.email, loggedInUser!.email, debounced.email, errors.email);
+	const canSave = useCanSave(formData, debounced, errors, avatarFile, usernameStatus, emailStatus, loggedInUser!, getValidationErrors);
 
-	const showSaveChanges = ((Object.keys(getUpdatedFormPayload()).length > 0 || avatarFile !== null) && Object.keys(errors).length === 0 && fieldsAvailable.username && fieldsAvailable.email);
+
+	// function fnShowSaveChanges() : boolean {
+	// 	// if we changed something
+	// 	if (Object.keys(getUpdatedFormPayload()).length === 0 && avatarFile === null)
+	// 		return false;
+
+	// 	// check if all changed fields are debounced
+	// 	for (const key in getUpdatedFormPayload()) {
+	// 		if (!debounced[key as keyof typeof debounced]) {
+	// 			return false;
+	// 		}
+	// 	}
+
+	// 	if (getValidationErrors())
+	// 		return false;
+
+	// 	if (usernameStatus !== 'available' && usernameStatus !== 'idle')
+	// 		return false;
+	// 	if (emailStatus !== 'available' && emailStatus !== 'idle')
+	// 		return false;
+
+	// 	return true;
+	// }
 
 	function handleAvatarFileChange(e: ChangeEvent<HTMLInputElement>) {
 		const selectedFile = e.target.files?.[0];
-		if (!selectedFile) return;
+		if (!selectedFile)
+			return ;
 		setAvatarPreview(URL.createObjectURL(selectedFile));
 		setAvatarFile(selectedFile);
 	}
 
 	function handleAvatarFileRemove() {
 		const fileInput = document.getElementById('profile-upload') as HTMLInputElement;
-		if (fileInput) fileInput.value = '';
+		if (fileInput)
+			fileInput.value = '';
 		setAvatarFile(null);
 		setAvatarPreview(null);
 	}
@@ -78,9 +116,11 @@ export default function GeneralSettingsTab() {
 	}
 
 	async function updateUserInfo() {
+		validateAll();
 		const payload = getUpdatedFormPayload();
+		const errors = getValidationErrors();
 
-		if (Object.keys(payload).length === 0 || !validateAll())
+		if (Object.keys(payload).length === 0 || errors)
 			return ;
 
 		await apiClient.updateUser(loggedInUser!.id, payload);
@@ -88,14 +128,14 @@ export default function GeneralSettingsTab() {
 	}
 
 	function getUpdatedFormPayload() {
-		const payload: Partial<FormData> = {};
+		const payload: Partial<FormDataState> = {};
 
 		for (const key in formData) {
 			const oldValue = loggedInUser![key as keyof typeof loggedInUser];
-			const newValue = formData[key as keyof FormData];
+			const newValue = formData[key as keyof FormDataState];
 
 			if (newValue !== '' && newValue !== oldValue) {
-				payload[key as keyof FormData] = newValue;
+				payload[key as keyof FormDataState] = newValue;
 			}
 		}
 
@@ -105,9 +145,6 @@ export default function GeneralSettingsTab() {
 	async function handleSubmit() {
 		const isValid = validateAll();
 		if (!isValid)
-			return ;
-
-		if (!fieldsAvailable.username || !fieldsAvailable.email)
 			return ;
 
 		try {
@@ -139,25 +176,31 @@ export default function GeneralSettingsTab() {
 					subtitle="Update your account profile information and email address"
 					actionIcon={isSubmitting ? <LoaderCircle size={16} className='animate-spin' /> : undefined}
 					onAction={handleSubmit}
-					isButtonHidden={!showSaveChanges}
+					isButtonHidden={!canSave}
 					isButtonDisabled={isSubmitting}
 				>
 					<div className="flex flex-col gap-8 px-18">
-						<ProfilePreview 
-							values={formData}
-							avatarFile={avatarFile}
-							avatarBlobPreview={avatarPreview}
-							onAddAvatarFile={handleAvatarFileChange}
-							onRemoveAvatarFile={handleAvatarFileRemove}
-						/>
-						<PersonalInformationsForm
+						<FormProvider
 							formData={formData}
 							touched={touched}
 							errors={errors}
 							debounced={debounced}
-							onChange={handleChange}
-							setFieldAvailable={updateFieldAvailable}
-						/>
+							handleChange={handleChange}
+							validateAll={validateAll}
+							getValidationErrors={getValidationErrors}
+							resetForm={resetForm}
+						>
+							<ProfilePreview 
+								avatarFile={avatarFile}
+								avatarBlobPreview={avatarPreview}
+								onAddAvatarFile={handleAvatarFileChange}
+								onRemoveAvatarFile={handleAvatarFileRemove}
+							/>
+							<PersonalInformationsForm
+								usernameStatus={usernameStatus}
+								emailStatus={emailStatus}
+							/>
+						</FormProvider>
 					</div>
 				</SettingsCard>
 			</div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AvailabilityStatus } from '@/app/hooks/useUsernameEmailAvailability';
+import { AvailabilityStatus } from '@/app/hooks/useAvailabilityCheck';
 import { AlertCircle, CheckCircle2, LoaderCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
