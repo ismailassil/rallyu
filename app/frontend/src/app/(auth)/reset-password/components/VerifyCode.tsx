@@ -2,14 +2,13 @@
 'use client';
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
-import { ChangeEvent, RefObject, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import FormButton from "../../components/shared/ui/FormButton";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import useAPICall from "@/app/hooks/useAPICall";
 import { useFormContext } from "../../components/shared/form/FormContext";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
-import InputField from "../../components/shared/form/InputField";
 import InputFieldError from "../../components/shared/form/InputFieldError";
 import { AnimatePresence } from "framer-motion";
 
@@ -32,13 +31,10 @@ export function VerifyCode({ onNext, onGoBack } : VerifyCodeProps) {
 
 	const {
 		formData, 
-		touched, 
 		errors, 
-		debounced, 
 		handleChange, 
 		validateAll,
 		getValidationErrors,
-		resetForm
 	} = useFormContext();
 
 	const [isResending, setIsResending] = useState<boolean>(false);
@@ -50,10 +46,6 @@ export function VerifyCode({ onNext, onGoBack } : VerifyCodeProps) {
 		const errors = getValidationErrors();
 		if (errors?.code)
 			return ;
-
-		// const codeStr = code.join('');
-		// if (codeStr.length !== 6)
-		// 	return ;
 
 		try {
 			await executeAPICall(() => apiClient.verifyPasswordResetCode({ email: formData.email, code: formData.code }));
@@ -70,7 +62,7 @@ export function VerifyCode({ onNext, onGoBack } : VerifyCodeProps) {
 
 		setIsResending(true);
 		try {
-			const result = await executeAPICall(() => apiClient.requestPasswordReset(
+			await executeAPICall(() => apiClient.requestPasswordReset(
 				formData.email
 			));
 			toastSuccess('Code sent!');
@@ -113,40 +105,7 @@ export function VerifyCode({ onNext, onGoBack } : VerifyCodeProps) {
 					inputRefs={inputRefs}
 					isDisabled={isLoading}
 				><AnimatePresence>{errors.code && <InputFieldError error={errors.code} />}</AnimatePresence></OTPCodeInput>
-				{/* <InputField
-					className='hidden'
-					iconSrc='/icons/lock.svg'
-					label=''
-					field='code'
-					inputPlaceholder='iassil@1337.student.ma'
-				/> */}
-				{/* <input 
-					id='code'
-					name='code'
-					placeholder="hidden input to update form code"
-					value={code.join('')}
-					onChange={(e) => console.log('something happened in input: ', e.target.name, e.target.value) }
-				/> */}
-				
-				
-				{/* <button
-					onClick={onVerify}
-					disabled={isResendingCode || isVerifyingCode || !code.every(digit => digit !== '')}
-					className={`h-11 rounded-lg transition-all duration-500 ${
-						(code.every(digit => digit !== '') && !isVerifyingCode && !isResendingCode) 
-							? 'bg-blue-600 hover:bg-blue-700 cursor-pointer' 
-							: 'bg-gray-500 cursor-not-allowed'
-					}`}
-				>
-					{isVerifyingCode ? (
-						<div className="flex justify-center items-center gap-2">
-							<LoaderCircle className="w-4 h-4 animate-spin" />
-							<span>Verifying...</span>
-						</div>
-					) : (
-						<span>Complete Setup</span>
-					)}
-				</button> */}
+
 				<FormButton
 					text='Continue'
 					icon={<ArrowRight size={16} />}

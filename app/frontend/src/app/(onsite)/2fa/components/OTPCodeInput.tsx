@@ -13,7 +13,7 @@ export default function OTPCodeInput({ code, setCode, inputRefs, isDisabled, chi
 	useEffect(() => {
 		if (inputRefs.current?.[0])
 			inputRefs.current?.[0]?.focus();
-	}, []);
+	}, [inputRefs]);
 
 	function handleChange(i: number, value: string) {
 		if (!/^\d*$/.test(value)) return;

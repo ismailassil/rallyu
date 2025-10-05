@@ -1,14 +1,11 @@
 'use client';
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ForgotPassword } from "./components/ForgotPassword";
 import { VerifyCode } from "./components/VerifyCode";
 import { SetNewPassword } from "./components/SetNewPassword";
 import useForm from "@/app/hooks/useForm";
 import { resetPasswordSchema } from "@/app/(api)/schema";
-import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { toastError, toastSuccess } from "@/app/components/CustomToast";
-import { APIError } from "@/app/(api)/APIClient";
 import AuthPageWrapper from "../components/shared/ui/AuthPageWrapper";
 import { FormProvider } from "../components/shared/form/FormContext";
 
@@ -20,11 +17,7 @@ enum STEP {
 
 export default function ResetPasswordPage() {
 	const router = useRouter();
-	const { apiClient } = useAuth();
 	const [step, setStep] = useState<STEP>(STEP.FORGOT_PASSWORD);
-	const [code, setCode] = useState(['', '', '', '', '', '']);
-	const [isLoading, setIsLoading] = useState(false);
-	const inputRefs = useRef([]);
 	const [
 		formData, 
 		touched, 
@@ -39,60 +32,6 @@ export default function ResetPasswordPage() {
 	{ email: '', code: '', password: '', confirm_password: '' },
 	{ debounceMs: { email: 1200, code: 1200, password: 1200, confirm_password: 1200 } }
 	);
-
-	async function handleRequestPasswordReset() {
-		const isValid = validateAll();
-		if (!isValid && errors.email)
-			return ;
-
-		try {
-			setIsLoading(true);
-			await apiClient.requestPasswordReset(formData.email);
-			toastSuccess('Code sent!');
-			setStep(STEP.VERIFY_CODE);
-		} catch (err) {
-			const apiErr = err as APIError;
-			toastError(apiErr.message);
-		} finally {
-			setIsLoading(false);
-		}
-	}
-
-	async function handleVerifyCode() {
-		try {
-			setIsLoading(true);
-			const codeStr = code.join('');
-			await apiClient.verifyPasswordResetCode({ email: formData.email, code: codeStr });
-			toastSuccess('Code verified!');
-			setStep(STEP.SET_NEW_PASSWORD);
-		} catch (err) {
-			const apiErr = err as APIError;
-			toastError(apiErr.message);
-		} finally {
-			setIsLoading(false);
-		}
-	}
-
-	async function handleSetNewPassword() {
-		validateAll();
-
-		if (formData.password === '' || formData.confirm_password === '')
-			return ;
-		if (errors.password || errors.confirm_password)
-			return ;
-
-		try {
-			setIsLoading(true);
-			await apiClient.resetPassword({ email: formData.email, code: code.join(''), newPassword: formData.password });
-			toastSuccess('Password updated successfully!');
-			router.replace('/login');
-		} catch (err) {
-			const apiErr = err as APIError;
-			toastError(apiErr.message);
-		} finally {
-			setIsLoading(false);
-		}
-	}
 
 	function renderCurrentStep() {
 		switch (step) {
