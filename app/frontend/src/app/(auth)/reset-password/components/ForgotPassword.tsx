@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { ArrowLeft, RotateCw } from "lucide-react";
 import FormField from "../../components/shared/form/FormField";
@@ -8,6 +9,7 @@ import { useFormContext } from "../../components/shared/form/FormContext";
 import InputField from "../../components/shared/form/InputField";
 import useAPICall from "@/app/hooks/useAPICall";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { toastError, toastSuccess } from "@/app/components/CustomToast";
 
 // export function ForgotPassword({ email, error, onSubmit, onChange, onGoBack } : { email: string, error: string, onSubmit: () => void, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, onGoBack: () => void }) {
 // 	const router = useRouter();
@@ -48,7 +50,7 @@ import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 // 	);
 // }
 
-export function ForgotPassword({ onSubmit, onGoBack } : { onSubmit: () => void, onGoBack: () => void }) {
+export function ForgotPassword({ onNext, onGoBack } : { onNext: () => void, onGoBack: () => void }) {
 	const router = useRouter();
 
 	const {
@@ -67,24 +69,27 @@ export function ForgotPassword({ onSubmit, onGoBack } : { onSubmit: () => void, 
 		debounced, 
 		handleChange, 
 		validateAll,
+		getValidationErrors,
 		resetForm
 	} = useFormContext();
 
 	// to continue
-	// async function requestPasswordReset() {
-	// 	const isValid = validateAll();
-	// 	if (!isValid && errors.email)
-	// 		return ;
+	async function handleSubmit() {
+		validateAll();
+		const errors = getValidationErrors();
+		if (errors?.email)
+			return ;
 
-	// 	try {
-	// 		const result = await executeAPICall(() => apiClient.requestPasswordReset(
-	// 			formData.email
-	// 		));
-
-	// 	} catch (err) {
-
-	// 	}
-	// }
+		try {
+			const result = await executeAPICall(() => apiClient.requestPasswordReset(
+				formData.email
+			));
+			toastSuccess('Code sent!');
+			onNext();
+		} catch (err: any) {
+			toastError(err.message);
+		}
+	}
 
 	return (
 		<>
@@ -107,12 +112,12 @@ export function ForgotPassword({ onSubmit, onGoBack } : { onSubmit: () => void, 
 				label=''
 				field='email'
 				inputPlaceholder='iassil@1337.student.ma'
-				
 			/>
 			<FormButton
 				text='Reset Password'
 				icon={<RotateCw size={16} />}
-				onClick={onSubmit}
+				onClick={handleSubmit}
+				isSubmitting={isLoading}
 			/>
 			<p className='self-center'>Remember your password? <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>Sign in</span></p>
 		</>

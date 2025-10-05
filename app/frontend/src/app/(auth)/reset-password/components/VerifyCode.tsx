@@ -1,20 +1,86 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use client';
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
-import { RefObject } from "react";
+import { ChangeEvent, RefObject, useRef, useState } from "react";
 import FormButton from "../../components/shared/ui/FormButton";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import useAPICall from "@/app/hooks/useAPICall";
+import { useFormContext } from "../../components/shared/form/FormContext";
+import { toastError, toastSuccess } from "@/app/components/CustomToast";
+import InputField from "../../components/shared/form/InputField";
+import InputFieldError from "../../components/shared/form/InputFieldError";
+import { AnimatePresence } from "framer-motion";
 
 interface VerifyCodeProps {
-	code: string[];
-	setCode: (newCode: string[]) => void;
-	inputRefs: RefObject<(HTMLInputElement | null)[]>;
-	isResendingCode: boolean;
-	isVerifyingCode: boolean;
-	onVerify: () => void;
-	onResend: () => void;
+	onNext: () => void;
 	onGoBack: () => void;
 }
 
-export function VerifyCode({ code, setCode, inputRefs, isResendingCode, isVerifyingCode, onVerify, onResend, onGoBack } : VerifyCodeProps) {
+export function VerifyCode({ onNext, onGoBack } : VerifyCodeProps) {
+	const router = useRouter();
+
+	const {
+		apiClient
+	} = useAuth();
+
+	const { 
+		isLoading, 
+		executeAPICall 
+	} = useAPICall();
+
+	const {
+		formData, 
+		touched, 
+		errors, 
+		debounced, 
+		handleChange, 
+		validateAll,
+		getValidationErrors,
+		resetForm
+	} = useFormContext();
+
+	const [isResending, setIsResending] = useState<boolean>(false);
+	const [code, setCode] = useState(['', '', '', '', '', '']);
+	const inputRefs = useRef([]);
+
+	async function handleSubmit() {
+		validateAll();
+		const errors = getValidationErrors();
+		if (errors?.code)
+			return ;
+
+		// const codeStr = code.join('');
+		// if (codeStr.length !== 6)
+		// 	return ;
+
+		try {
+			await executeAPICall(() => apiClient.verifyPasswordResetCode({ email: formData.email, code: formData.code }));
+			toastSuccess('Code verified!');
+			onNext();
+		} catch (err: any) {
+			toastError(err.message);
+		}
+	}
+
+	async function handleResend() {
+		if (!formData.email)
+			router.refresh();
+
+		setIsResending(true);
+		try {
+			const result = await executeAPICall(() => apiClient.requestPasswordReset(
+				formData.email
+			));
+			toastSuccess('Code sent!');
+		} catch (err: any) {
+			toastError(err.message);
+		} finally {
+			setIsResending(false);
+		}
+	}
+
 	return (
 		<>
 			{/* Header + Go Back */}
@@ -34,11 +100,34 @@ export function VerifyCode({ code, setCode, inputRefs, isResendingCode, isVerify
 			<div className="flex flex-col gap-6">
 				<OTPCodeInput 
 					code={code}
-					setCode={setCode}
+					setCode={(newCode) => {
+						setCode(newCode);
+						const fakeChangeEvent = {
+							target: {
+								name: 'code',
+								value: newCode.join('')
+							}
+						} as React.ChangeEvent<HTMLInputElement>;
+						handleChange(fakeChangeEvent);
+					}}
 					inputRefs={inputRefs}
-					isResendingCode={isResendingCode}
-					isVerifyingCode={isVerifyingCode}
-				/>
+					isDisabled={isLoading}
+				><AnimatePresence>{errors.code && <InputFieldError error={errors.code} />}</AnimatePresence></OTPCodeInput>
+				{/* <InputField
+					className='hidden'
+					iconSrc='/icons/lock.svg'
+					label=''
+					field='code'
+					inputPlaceholder='iassil@1337.student.ma'
+				/> */}
+				{/* <input 
+					id='code'
+					name='code'
+					placeholder="hidden input to update form code"
+					value={code.join('')}
+					onChange={(e) => console.log('something happened in input: ', e.target.name, e.target.value) }
+				/> */}
+				
 				
 				{/* <button
 					onClick={onVerify}
@@ -61,20 +150,18 @@ export function VerifyCode({ code, setCode, inputRefs, isResendingCode, isVerify
 				<FormButton
 					text='Continue'
 					icon={<ArrowRight size={16} />}
-					type='submit'
+					onClick={handleSubmit}
+					isSubmitting={isLoading && !isResending}
+					disabled={isResending}
 				/>
 
 				<p className='self-center'>
 					Didn&#39;t receive the code? 
 					<span 
-						onClick={
-							(isResendingCode || isVerifyingCode)
-							? undefined
-							: onResend
-						}
+						onClick={handleResend}
 						className={`font-semibold ml-1 ${
-							(isResendingCode || isVerifyingCode) 
-								? 'text-gray-500 cursor-not-allowed' 
+							(isLoading) 
+								? 'text-gray-500 cursor-not-allowed pointer-events-none' 
 								: 'text-blue-500 hover:underline cursor-pointer'
 						}`}
 					>

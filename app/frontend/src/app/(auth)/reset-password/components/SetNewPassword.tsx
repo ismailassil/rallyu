@@ -3,29 +3,33 @@ import { useRouter } from "next/navigation";
 import InputField from "../../components/shared/form/InputField";
 import FormButton from "../../components/shared/ui/FormButton";
 import { RotateCw } from "lucide-react";
-import { FormProvider } from "../../components/shared/form/FormContext";
+import { useFormContext } from "../../components/shared/form/FormContext";
+import useAPICall from "@/app/hooks/useAPICall";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { toastError, toastSuccess } from "@/app/components/CustomToast";
 
-// async function changePassword(email: string, code: string, password: string) : Promise<void> {
-// 	const response = await fetch(`http://localhost:4025/api/auth/reset/update`, {
-// 		method: 'POST',
-// 		headers: {
-// 			'Content-Type': `application/json`
-// 		},
-// 		body: JSON.stringify({
-// 			email,
-// 			code,
-// 			password
-// 		})
-// 	});
-
-// 	console.log('response status: ', response.status);
-
-// 	if (response.status !== 200)
-// 		throw new Error('Invalid code');
-// }
-
-export function SetNewPassword({ formData, errors, debounced, touched, onChange, onSubmit } : { formData: any, errors: any, debounced: any, touched: any, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, onSubmit: () => void }) {
+export function SetNewPassword({ onNext } : { onNext: () => void }) {
 	const router = useRouter();
+
+	const {
+		apiClient
+	} = useAuth();
+
+	const { 
+		isLoading, 
+		executeAPICall 
+	} = useAPICall();
+
+	const {
+		formData, 
+		touched, 
+		errors, 
+		debounced, 
+		handleChange, 
+		validateAll,
+		getValidationErrors,
+		resetForm
+	} = useFormContext();
 	// const [password, setPassword] = useState('');
 	// const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -51,6 +55,25 @@ export function SetNewPassword({ formData, errors, debounced, touched, onChange,
 	// 		console.log('error catched: ', err.message);
 	// 	}
 	// }
+
+	async function handleSubmit() {
+		validateAll();
+		const errors = getValidationErrors();
+		if (errors?.password || errors?.confirm_password)
+			return ;
+
+		try {
+			const result = await executeAPICall(() => apiClient.resetPassword({
+				email: formData.email,
+				code: formData.code,
+				newPassword: formData.password
+			}));
+			toastSuccess('Password updated successfully!');
+			onNext();
+		} catch (err: any) {
+			toastError(err.message);
+		}
+	}
 
 	return (
 		<>
@@ -80,56 +103,50 @@ export function SetNewPassword({ formData, errors, debounced, touched, onChange,
 			{/* <p className='self-center'>Remember your password? <a href='/signup' className='font-semibold text-blue-500 hover:underline'>Sign in</a></p> */}
 
 
-					{/* Header + Go Back */}
-					<div className="flex gap-4 items-center mb-4">
-						{/* <button 
-							onClick={onGoBack}
-							className="bg-blue-500/25 rounded-2xl p-2 hover:bg-blue-500/90 transition-all duration-300 cursor-pointer">
-							<ArrowLeft size={40} />
-						</button> */}
-						<div>
-							<h1 className='font-semibold text-lg sm:text-3xl inline-block'>Create a New Password</h1>
-							<p className='text-gray-300 text-sm sm:text-balance'>Please enter and confirm your new password</p>
-						</div>
-					</div>
-					<FormProvider
-						formData={formData}
-						touched={touched}
-						errors={errors}
-						debounced={debounced}
-						handleChange={onChange}
-						validateAll={() => true} // Placeholder, as this form doesn't use the full form validation
-					>
-						<InputField 
-							className='field flex flex-col gap-0.5 box-border'
-							iconSrc='/icons/lock.svg'
-							label='Password'
-							field='password'
-							inputPlaceholder='••••••••••••••••'
-							inputHidden={true}
-						/>
-						<InputField 
-							className='field flex flex-col gap-0.5 box-border'
-							iconSrc='/icons/lock.svg'
-							label='Confirm Password'
-							field='confirm_password'
-							inputPlaceholder='••••••••••••••••'
-							inputHidden={true}
-						/>
-						{/* <button
-							onClick={onSubmit}
-							className={`h-11 rounded-lg transition-all duration-500 
-							bg-blue-600 hover:bg-blue-700 cursor-pointer`}
-						>
-							<span>Reset Password</span>
-						</button> */}
-						<FormButton
-							text='Reset Password'
-							icon={<RotateCw size={16} />}
-							type='submit'
-						/>
-					</FormProvider>
-					<p className='self-center'>Remember your password? <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>Sign in</span></p>
+			{/* Header + Go Back */}
+			<div className="flex gap-4 items-center mb-4">
+				{/* <button 
+					onClick={onGoBack}
+					className="bg-blue-500/25 rounded-2xl p-2 hover:bg-blue-500/90 transition-all duration-300 cursor-pointer">
+					<ArrowLeft size={40} />
+				</button> */}
+				<div>
+					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>Create a New Password</h1>
+					<p className='text-gray-300 text-sm sm:text-balance'>Please enter and confirm your new password</p>
+				</div>
+			</div>
+
+			<InputField 
+				className='field flex flex-col gap-0.5 box-border'
+				iconSrc='/icons/lock.svg'
+				label='Password'
+				field='password'
+				inputPlaceholder='••••••••••••••••'
+				inputHidden={true}
+			/>
+			<InputField 
+				className='field flex flex-col gap-0.5 box-border'
+				iconSrc='/icons/lock.svg'
+				label='Confirm Password'
+				field='confirm_password'
+				inputPlaceholder='••••••••••••••••'
+				inputHidden={true}
+			/>
+			{/* <button
+				onClick={onSubmit}
+				className={`h-11 rounded-lg transition-all duration-500 
+				bg-blue-600 hover:bg-blue-700 cursor-pointer`}
+			>
+				<span>Reset Password</span>
+			</button> */}
+			<FormButton
+				text='Reset Password'
+				icon={<RotateCw size={16} />}
+				onClick={handleSubmit}
+				isSubmitting={isLoading}
+			/>
+
+			<p className='self-center'>Remember your password? <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>Sign in</span></p>
 		</>
 	);
 }

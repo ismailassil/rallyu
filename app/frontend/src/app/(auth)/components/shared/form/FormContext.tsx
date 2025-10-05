@@ -8,6 +8,7 @@ type FormContextType = {
 	debounced: Record<string, boolean>;
 	handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	validateAll: () => boolean;
+	getValidationErrors: () => Record<string, string> | null,
 	resetForm?: (newValues?: Record<string, string>) => void;
 };
 

@@ -94,6 +94,10 @@ export const changePasswordSchema = z.object({
 export const resetPasswordSchema = z.object({
 	email: z.email(),
 
+	code: z.string()
+		.nonempty("Code is required")
+		.regex(/^\d{6}$/, "Code must be a 6-digit number"),
+
 	password: z.string()
 		.nonempty("Password is required")
 		.min(8, "Password must be at least 8 characters")

@@ -8,6 +8,7 @@ type UseFormReturn = readonly [
   debounced: Record<string, boolean>,
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
   validateAll: () => boolean,
+  getValidationErrors: () => Record<string, string> | null,
   resetForm: (newValues?: Record<string, string>) => void
 ];
 
@@ -135,16 +136,25 @@ function validateAllFields(zodSchema: z.ZodSchema, values: Record<string, string
 }
 
 // validate a single field using zod schema
-function validateField(zodSchema: z.ZodSchema, fieldName: string, fieldValue: string) : string {
+function validateField(
+  zodSchema: z.ZodSchema, 
+  fieldName: string, 
+  fieldValue: string, 
+  staleValues: Record<string, string>
+) : string {
   try {
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    const fieldSchema = (zodSchema as any).shape?.[fieldName];
-    console.log('fieldSchema:', fieldSchema);
-    if (fieldSchema)
-      fieldSchema.parse(fieldValue);
+    // const fieldSchema = (zodSchema as any).shape?.[fieldName];
+    // console.log('fieldSchema:', fieldSchema);
+    // if (fieldSchema)
+    //   fieldSchema.parse(fieldValue);
+    zodSchema.parse({ ...staleValues, [fieldName]: fieldValue });
   } catch (err) {
-    if (err instanceof z.ZodError)
-      return err.issues[0]?.message || 'Invalid value';
+    if (err instanceof z.ZodError) {
+      const fieldError = err.issues.find(issue => issue.path[0] === fieldName);
+      return fieldError ? fieldError.message : '';
+    }
+      // return err.issues[0]?.message || 'Invalid value';
     return 'Invalid value';
   }
   return '';
@@ -176,7 +186,7 @@ function useForm(
     const debounceDelay = typeof debounceMs === 'number' ? debounceMs : (debounceMs[name] || 600);
     
     debounceTimeout.current[name] = setTimeout(() => {
-      const err = validateField(zodSchema, name, value);
+      const err = validateField(zodSchema, name, value, state.values);
       console.log('ValidateField Current Error:', name, value, err);
       // if (err)
       dispatch({ type: 'SET_ERROR', name, err });
@@ -196,8 +206,17 @@ function useForm(
   //  });
   //  return Object.keys(errors).length === 0;
   // }
+
+  function getValidationErrors() : Record<string, string> | null {
+    const currentErrors = validateAllFields(zodSchema, state.values);
+
+    return Object.keys(currentErrors).length === 0 ? null : currentErrors;
+  }
+
   function validateAll() : boolean {
     const currentErrors = validateAllFields(zodSchema, state.values);
+
+    console.log('ValidateAll Current Values:', state.values);
 
     console.log('ValidateAll Current Errors:', currentErrors);
 
@@ -217,6 +236,7 @@ function useForm(
     state.debounced,
     handleChange,
     validateAll,
+    getValidationErrors,
     resetForm
   ] as const;
 }

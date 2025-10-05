@@ -32,11 +32,12 @@ export default function ResetPasswordPage() {
 		debounced, 
 		handleChange, 
 		validateAll, 
+		getValidationErrors,
 		resetForm
 	] = useForm(
 	resetPasswordSchema,
-	{ email: '', password: '', confirm_password: '' },
-	{ debounceMs: { email: 1200, username: 1200, password: 1200 } }
+	{ email: '', code: '', password: '', confirm_password: '' },
+	{ debounceMs: { email: 1200, code: 1200, password: 1200, confirm_password: 1200 } }
 	);
 
 	async function handleRequestPasswordReset() {
@@ -93,39 +94,32 @@ export default function ResetPasswordPage() {
 		}
 	}
 
-
-
 	function renderCurrentStep() {
 		switch (step) {
 			case STEP.FORGOT_PASSWORD:
 				return (
 					<ForgotPassword 
-						onSubmit={handleRequestPasswordReset}
+						onNext={() => {
+							resetForm({ email: formData.email, code: '', password: '', confirm_password: '' });
+							setStep(STEP.VERIFY_CODE);
+						}}
 						onGoBack={() => router.push('/login')} 
 					/>
 				);
 			case STEP.VERIFY_CODE:
 				return (
 					<VerifyCode 
-						code={code} 
-						setCode={setCode} 
-						inputRefs={inputRefs} 
-						isResendingCode={isLoading}
-						isVerifyingCode={isLoading}
-						onVerify={handleVerifyCode}
-						onResend={handleRequestPasswordReset}
+						onNext={() => {
+							resetForm({ email: formData.email, code: formData.code, password: '', confirm_password: '' });
+							setStep(STEP.SET_NEW_PASSWORD);
+						}}
 						onGoBack={() => setStep(STEP.FORGOT_PASSWORD)}
 					/>
 				);
 			case STEP.SET_NEW_PASSWORD:
 				return (
 					<SetNewPassword 
-						formData={formData} 
-						errors={errors} 
-						debounced={debounced} 
-						touched={touched} 
-						onChange={handleChange}
-						onSubmit={handleSetNewPassword}
+						onNext={() => router.push('/login')}
 					/>
 				);
 			default:
@@ -143,6 +137,7 @@ export default function ResetPasswordPage() {
 					touched={touched} 
 					handleChange={handleChange}
 					validateAll={validateAll}
+					getValidationErrors={getValidationErrors}
 					resetForm={resetForm}
 				>
 					{renderCurrentStep()}

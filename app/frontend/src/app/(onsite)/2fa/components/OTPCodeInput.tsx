@@ -5,11 +5,11 @@ interface CodeInputProps {
 	code: string[];
 	setCode: (newCode: string[]) => void;
 	inputRefs: RefObject<(HTMLInputElement | null)[]>;
-	isResendingCode: boolean;
-	isVerifyingCode: boolean;
+	isDisabled: boolean;
+	children?: React.ReactNode;
 }
 
-export default function OTPCodeInput({ code, setCode, inputRefs, isResendingCode, isVerifyingCode } : CodeInputProps) {
+export default function OTPCodeInput({ code, setCode, inputRefs, isDisabled, children } : CodeInputProps) {
 	useEffect(() => {
 		if (inputRefs.current?.[0])
 			inputRefs.current?.[0]?.focus();
@@ -45,21 +45,26 @@ export default function OTPCodeInput({ code, setCode, inputRefs, isResendingCode
 	}
 
 	return (
-		<div className="flex flex-row justify-between gap-2 h-18 sm:h-20">
-			{code.map((c, i) => {
-				return (
-					<input 
-						key={i}
-						ref={(el) => { inputRefs.current[i] = el; }}
-						value={code[i]}
-						onChange={(e) => handleChange(i, e.target.value)}
-						onKeyDown={(e) => handleKeyPress(i, e)}
-						onPaste={(e) => handlePaste(e)}
-						disabled={isResendingCode || isVerifyingCode}
-						className="bg-white/8 border-2 border-white/10 flex-1 h-full w-[24px] text-3xl text-center font-bold rounded-xl focus:bg-white/20 focus:border-white/20 focus:outline-none focus-within:scale-103 transition-all duration-300 caret-transparent"
-					/>
-				);
-			})}
+		<div className="flex flex-col gap-2">
+			<div className="flex flex-row justify-between gap-2 h-18 sm:h-20">
+				{code.map((c, i) => {
+					return (
+						<input 
+							key={i}
+							ref={(el) => { inputRefs.current[i] = el; }}
+							value={code[i]}
+							onChange={(e) => handleChange(i, e.target.value)}
+							onKeyDown={(e) => handleKeyPress(i, e)}
+							onPaste={(e) => handlePaste(e)}
+							disabled={isDisabled}
+							className="bg-white/8 border-2 border-white/10 flex-1 h-full w-[24px] text-3xl text-center font-bold rounded-xl focus:bg-white/20 focus:border-white/20 focus:outline-none focus-within:scale-103 transition-all duration-300 caret-transparent"
+						/>
+					);
+				})}
+			</div>
+			<div>
+				{children}
+			</div>
 		</div>
 	);
 }
