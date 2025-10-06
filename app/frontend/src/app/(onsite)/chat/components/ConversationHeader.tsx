@@ -5,13 +5,17 @@ import { ArrowCircleLeftIcon, DotsThreeVerticalIcon } from '@phosphor-icons/reac
 import { useChat } from '../context/ChatContext';
 import { useRouter } from 'next/navigation';
 import Avatar from '../../(profile)/users/components/Avatar';
+import useRequestBattleFriend from '@/app/hooks/useRequestBattleFriend';
+import { useAuth } from '../../contexts/AuthContext';
+import { motion } from "framer-motion"
 
 const ConversationHeader = () => {
-
-
 	const [option, setOption] = useState(false);
 	const { apiClient, setShowConversation, setSelectedUser, selectedUser } = useChat();
 	const route = useRouter();
+	const { isBusy } = useAuth();
+	const [timer, setTimer] = useState<boolean>(false);
+	const requestBattleFriend = useRequestBattleFriend();
 
 	return (
 		<div className='flex justify-start gap-4 p-4 pl-6 border-b border-b-white/30'>
@@ -46,8 +50,21 @@ const ConversationHeader = () => {
 			{option && (
 				<>
 					<div className="absolute right-2.5 top-10 w-32 rounded-xl border border-white/20 backdrop-blur-md bg-white/10 p-3 space-y-2 z-50">
-						<button className="w-full rounded-md py-2 bg-white/10 hover:bg-green-600
-						 transition duration-300 cursor-pointer">Play</button>
+						<button className={`relative overflow-hidden w-full rounded-md py-2 bg-white/10 hover:bg-green-600
+						 transition duration-300 ${ isBusy ? "opacity-50 cursor-auto" : "cursor-pointer" }`}
+						 	onClick={(event) => { setTimer(true); requestBattleFriend(event); }}
+						>
+							Play
+							{
+								timer &&
+								<motion.div
+									className="bg-accent w-full h-1 absolute bottom-0 left-0"
+									animate={{ width: 0 }}
+									transition={{ duration: 10.5 }}
+									onAnimationComplete={ () => setTimer(false) }
+								></motion.div>
+							}
+						</button>
 						<button className="w-full rounded-md py-2 bg-white/10 hover:bg-red-600 
 						transition duration-300 cursor-pointer"
 							onClick={async () => {

@@ -1,6 +1,10 @@
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import useRequestBattleFriend from "@/app/hooks/useRequestBattleFriend";
 import { Sword } from "@phosphor-icons/react";
 import { Swords } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 interface friendProps {
 	fullname: string;
@@ -9,10 +13,14 @@ interface friendProps {
 }
 
 export default function BattleFriend({ fullname, isOnline = false, img }: friendProps) {
+	const { isBusy } = useAuth();
+	const [timer, setTimer] = useState<boolean>(false);
+	const requestBattleFriend = useRequestBattleFriend();
+	
 	if (fullname && fullname.trim().length > 12) fullname = fullname.trim().substring(0, 12) + "...";
 	return (
 		<div
-			className="border-1 border-br-card hover:bg-hbg hover:border-hbbg hover:scale-101 min-h-16
+			className="relative border-1 border-br-card hover:bg-hbg hover:border-hbbg hover:scale-101 min-h-16
 				flex max-h-16 w-full cursor-pointer items-center
 				justify-between overflow-hidden rounded-lg bg-black/10 p-2 px-3 transition-transform duration-200"
 		>
@@ -37,8 +45,9 @@ export default function BattleFriend({ fullname, isOnline = false, img }: friend
 
 			{/* Buttons */}
 			<div
-				className="hover:bg-card flex h-10 w-10 cursor-pointer items-center justify-center
-					rounded-full ring-1 ring-white/40 transition-all duration-300 hover:scale-105 hover:ring-2"
+				className={`hover:bg-card flex h-10 w-10 ${!isBusy ? "cursor-pointer" : "opacity-50 cursor-auto"} items-center justify-center
+					rounded-full ring-1 ring-white/40 transition-all duration-300 hover:scale-105 hover:ring-2`}
+				onClick={(e) => { setTimer(true); requestBattleFriend(e); }}
 			>
 				<Swords size={24} />
 				{/* <Image
@@ -56,6 +65,15 @@ export default function BattleFriend({ fullname, isOnline = false, img }: friend
 					alt="Enter Button Logo"
 				/> */}
 			</div>
+			{
+				timer &&
+				<motion.div
+					className="bg-accent w-full h-1 absolute bottom-0 left-0"
+					animate={{ width: 0 }}
+					transition={{ duration: 10.5 }}
+					onAnimationComplete={ () => setTimer(false) }
+				></motion.div>
+			}
 		</div>
 	);
 }
