@@ -18,7 +18,6 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
 	return (
 		<>
-			<h1 className="fixed top-0 left-90">{'<ProtectedRoute />'}</h1>
 			{ children }
 		</>
 	);

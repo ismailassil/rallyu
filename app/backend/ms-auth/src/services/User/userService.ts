@@ -19,7 +19,11 @@ class UserService {
 
 	async getUserById(userID: number) : Promise<any | null> {
 		try {
-			return await this.userRepository.findOne(userID);
+			const targetUser = await this.userRepository.findOne(userID);
+			console.log('target user from getter userService: ', targetUser);
+			if (!targetUser)
+				throw new UserNotFoundError();
+			return targetUser;
 		} catch (err) {
 			throw new UserNotFoundError();
 		}
@@ -27,7 +31,11 @@ class UserService {
 	
 	async getUserByUsername(username: string) : Promise<any | null> {
 		try {
-			return await this.userRepository.findByUsername(username);
+			const targetUser = await this.userRepository.findByUsername(username);
+			console.log('target user from getter userService: ', targetUser);
+			if (!targetUser)
+				throw new UserNotFoundError();
+			return targetUser;
 		} catch (err) {
 			throw new UserNotFoundError();
 		}
@@ -35,7 +43,11 @@ class UserService {
 	
 	async getUserByEmail(email: string) : Promise<any | null> {
 		try {
-			return await this.userRepository.findByEmail(email);
+			const targetUser = await this.userRepository.findByEmail(email);
+			console.log('target user from getter userService: ', targetUser);
+			if (!targetUser)
+				throw new UserNotFoundError();
+			return targetUser;
 		} catch (err) {
 			throw new UserNotFoundError();
 		}
@@ -43,13 +55,18 @@ class UserService {
 
 	async getUserProfile(viewerID: number, targetUserID?: number, targetUsername?: string) {
 		let targetUser = null;
-
+		
+		console.log('==============> targetUserID: ', targetUserID);
+		console.log('==============> targetUsername: ', targetUsername);
 		if (targetUserID)
 			targetUser = await this.getUserById(targetUserID);
 		else if (targetUsername)
 			targetUser = await this.getUserByUsername(targetUsername);
 		else
 			throw new UserNotFoundError();
+
+		console.log('==============> targetUser: ', targetUser);
+		console.log('==============> viewerID: ', viewerID);
 		
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)

@@ -1,16 +1,18 @@
 'use client';
-import Header from "./components/UI/Header";
+import Header from "./components/shared/ui/Header";
 import "@/app/globals.css";
-import { Toaster } from "sonner";
-import PublicRoute from "./components/AuthGuards/PublicRoute";
+import PublicRoute from "./components/shared/guards/PublicRoute";
+import { AnimatePresence } from "framer-motion";
 
 export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
 	return (
 		<PublicRoute>
-			<Toaster position='bottom-right' visibleToasts={1} />
-			<h1>AuthLayout</h1>
-			<Header />
-			{children}
+			<div className="absolute inset-0 h-screen w-screen overflow-auto font-funnel-display">
+				<Header />
+				<AnimatePresence>
+					{children}
+				</AnimatePresence>
+			</div>
 		</PublicRoute>
 	);
 }

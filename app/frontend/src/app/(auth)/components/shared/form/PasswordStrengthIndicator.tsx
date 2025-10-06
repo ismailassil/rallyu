@@ -1,4 +1,4 @@
-import SlideInOut from "./SlideInOut";
+import { motion } from "framer-motion";
 
 function getPasswordStrength(password: string) : PasswordStrengthDisplay {
 	let strength = 0;
@@ -27,18 +27,24 @@ type PasswordStrengthDisplay = {
 	textcolor: string;
 }
 
-export default function PasswordStrength({ value }: PasswordStrengthProps) {
+export default function PasswordStrengthIndicator({ value }: PasswordStrengthProps) {
 
 	const passwordStrength = getPasswordStrength(value);
 
 	return (
-		<SlideInOut>
+		<motion.div
+			key={'field-error'}
+			initial={{ opacity: 0, height: 0 }}
+			animate={{ opacity: 1, height: "auto" }}
+			exit={{ opacity: 0, height: 0 }}
+			transition={{ duration: 0.4, ease: "easeOut" }}
+		>
 			<div className="mt-1 flex items-center gap-2 w-[99%] self-center">
 				<div className="h-1 bg-white/20 w-full rounded">
 					<div className={`h-1 ${passwordStrength.bgcolor} rounded ${passwordStrength.width} transition-all duration-300`}></div>
 				</div>
 				<span className={`${passwordStrength.textcolor} font-bold text-sm`}>{passwordStrength.text}</span>
 			</div>
-		</SlideInOut>
+		</motion.div>
 	);
 }

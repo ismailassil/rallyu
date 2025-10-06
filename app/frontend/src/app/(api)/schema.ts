@@ -68,10 +68,35 @@ export const personalInfoSettingsSchema = z.object({
 		.max(50, "Bio must be at most 50 characters")
 });
 
+export const changePasswordSchema = z.object({
+	current_password: z.string()
+		.nonempty("Current password is required"),
+
+	new_password: z.string()
+		.nonempty("New password is required")
+		.min(8, "New password must be at least 8 characters")
+		.regex(/(?=.*[a-z])/, "New password must contain a lowercase letter")
+		.regex(/(?=.*[A-Z])/, "New password must contain an uppercase letter")
+		.regex(/(?=.*\d)/, "New password must contain a digit"),
+
+	confirm_new_password: z.string()
+		.nonempty("Please confirm your new password"),
+	})
+	.refine((data) => data.new_password === data.confirm_new_password, {
+		message: "New passwords do not match",
+		path: ["confirm_new_password"],
+	})
+	.refine((data) => data.new_password !== data.current_password, {
+		message: "New password cannot be the same as the current password",
+		path: ["new_password"],
+});
+
 export const resetPasswordSchema = z.object({
-	email: z.string()
-		.nonempty("Email is required")
-		.email("Invalid email address"),
+	email: z.email(),
+
+	code: z.string()
+		.nonempty("Code is required")
+		.regex(/^\d{6}$/, "Code must be a 6-digit number"),
 
 	password: z.string()
 		.nonempty("Password is required")
@@ -82,7 +107,13 @@ export const resetPasswordSchema = z.object({
 
 	confirm_password: z.string()
 		.nonempty("Please confirm your password"),
-		}).refine((data) => data.password === data.confirm_password, {
-		message: "Passwords do not match",
-		path: ["confirm_password"],
+	}).refine((data) => data.password === data.confirm_password, {
+	message: "Passwords do not match",
+	path: ["confirm_password"],
+});
+
+export const loginChallengeSchema = z.object({
+	code: z.string()
+		.nonempty("Code is required")
+		.regex(/^\d{6}$/, "Code must be a 6-digit number"),
 });

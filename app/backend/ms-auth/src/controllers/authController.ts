@@ -8,7 +8,8 @@ import AuthResponseFactory from "./authResponseFactory";
 
 class AuthController {
 	constructor(
-		private authService: AuthService
+		private authService: AuthService,
+		private sessionsService: SessionsService
 	) {}
 
 	async registerHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -30,9 +31,8 @@ class AuthController {
 	async loginHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { username, password } = request.body as ILoginRequest;
-			const userAgent = request.headers["user-agent"] || '';
 
-			const loginResult = await this.authService.LogIn(username, password, userAgent, request.ip);
+			const loginResult = await this.authService.LogIn(username, password, request.fingerprint!);
 			if (loginResult._2FARequired) {
 				const { _2FARequired, enabled2FAMethods, loginChallengeID } = loginResult;
 				
@@ -64,9 +64,8 @@ class AuthController {
 	async sendTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { loginChallengeID, method } = request.body as { loginChallengeID: number, method: 'TOTP' | 'SMS' | 'EMAIL' };
-			const userAgent = request.headers["user-agent"] || '';
 
-			await this.authService.sendTwoFAChallengeCode(loginChallengeID, method, userAgent, request.ip);
+			await this.authService.sendTwoFAChallengeCode(loginChallengeID, method, request.fingerprint!);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
@@ -81,9 +80,8 @@ class AuthController {
 	async verifyTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { loginChallengeID, code } = request.body as { loginChallengeID: number, code: string };
-			const userAgent = request.headers["user-agent"] || '';
 
-			const { user, refreshToken, accessToken } = await this.authService.verifyTwoFAChallengeCode(loginChallengeID, code, userAgent, request.ip);
+			const { user, refreshToken, accessToken } = await this.authService.verifyTwoFAChallengeCode(loginChallengeID, code, request.fingerprint!);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
 
@@ -104,12 +102,11 @@ class AuthController {
 
 	async logoutHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const userAgent = request.headers["user-agent"] || '';
-			const refresh_token = request.cookies?.['refreshToken']; // TODO: SHOULD BE IN FASTIFY SCHEMA
+			const refresh_token = request.cookies?.['refreshToken'];
 			if (!refresh_token)
 				throw new TokenRequiredError();
 			
-			await this.authService.LogOut(refresh_token!, userAgent, request.ip);
+			await this.authService.LogOut(refresh_token!);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 			
@@ -131,13 +128,12 @@ class AuthController {
 
 	async refreshHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const userAgent = request.headers["user-agent"] || '';
-			const oldRefreshToken = request.cookies?.['refreshToken']; // TODO: SHOULD BE IN FASTIFY SCHEMA
+			const oldRefreshToken = request.cookies?.['refreshToken'];
 			if (!oldRefreshToken)
 				throw new TokenRequiredError();
 			
 			const { user, newAccessToken: accessToken, newRefreshToken: refreshToken } 
-				= await this.authService.Refresh(oldRefreshToken!, userAgent, request.ip);
+				= await this.authService.Refresh(oldRefreshToken!, request.fingerprint!);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
 
@@ -200,6 +196,57 @@ class AuthController {
 	// 		reply.code(status).send(body);
 	// 	}
 	// }
+
+	async getActiveSessionsHandler(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+			const refresh_token = request.cookies?.['refreshToken'];
+
+			const sessions = await this.sessionsService.getActiveSessions(user_id!, refresh_token || undefined);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, sessions);
+
+			return reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
+		}
+	}
+
+	async revokeSessionHandler(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+			const { id } = request.params as { id: string };
+
+			await this.sessionsService.revokeSession(id, `Revoked by session owner`, user_id!);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			return reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
+		}
+	}
+
+	async revokeAllSessionsHandler(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub;
+			const refresh_token = request.cookies?.['refreshToken'];
+
+			await this.sessionsService.revokeAllSessions(`Revoked by session owner (Mass Revokation)`, user_id!, refresh_token || undefined);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			return reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
+		}
+	}
 
 	async changePasswordHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {

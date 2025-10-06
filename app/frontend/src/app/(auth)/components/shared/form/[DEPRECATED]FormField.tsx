@@ -1,8 +1,6 @@
 'use client';
 import { useState } from "react";
-import FormFieldAvailability from "./FormFieldAvailability";
-import FormFieldError from "./FormFieldError";
-import PasswordStrength from "./PasswordStrength";
+import FormFieldError from "./InputFieldError";
 import Image from "next/image";
 import { AnimatePresence } from "framer-motion";
 

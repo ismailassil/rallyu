@@ -18,7 +18,6 @@ export default function PublicRoute({ children }: { children: React.ReactNode })
 
 	return (
 		<>
-			<h1 className="fixed top-0 left-90">{'<PublicRoute />'}</h1>
 			{ children }
 		</>
 	);

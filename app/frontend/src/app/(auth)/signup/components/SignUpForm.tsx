@@ -1,34 +1,42 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import React, { useCallback } from 'react';
-import { useState } from 'react';
-import useForm from '@/app/hooks/useForm';
-import FormField from '../../components/Forms/FormField';
+import React from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
+import InputField from '../../components/shared/form/InputField';
+import useForm from '@/app/hooks/useForm';
 import { signupFormSchema } from '@/app/(api)/schema';
-import PasswordStrength from '../../components/Forms/PasswordStrength';
-import FormFieldAvailability from '../../components/Forms/FormFieldAvailability';
+import PasswordStrengthIndicator from '../../components/shared/form/PasswordStrengthIndicator';
+import FormButton from '../../components/shared/ui/FormButton';
+import { LogIn } from 'lucide-react';
+import { FormProvider } from '../../components/shared/form/FormContext';
+import AvailabilityIndicator from '../../components/shared/form/AvailabilityIndicator';
+import useAPICall from '@/app/hooks/useAPICall';
+import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
 
 export default function SignUpForm() {
 	const router = useRouter();
 	const { register } = useAuth();
-	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-	const [fieldsAvailable, setFieldsAvailable] = useState({
-		username: false,
-		email: false
-	});
+	const { isLoading, executeAPICall } = useAPICall();
 
-	const [formData, touched, errors, debounced, handleChange, validateAll] = useForm(
+	const [
+		formData, 
+		touched, 
+		errors, 
+		debounced, 
+		handleChange, 
+		validateAll, 
+		getValidationErrors,
+		resetForm
+	] = useForm(
 		signupFormSchema,
 		{ first_name: '', last_name: '', username: '', email: '', password: '' },
 		{ debounceMs: { email: 1200, username: 1200, password: 1200 } }
 	);
 
-	const updateFieldAvailable = useCallback((name: string, available: boolean) => {
-		setFieldsAvailable(prev => ({ ...prev, [name]: available }));
-	}, []);
+	const usernameStatus = useAvailabilityCheck('username', formData.username, null, debounced.username, errors.username);
+	const emailStatus = useAvailabilityCheck('email', formData.email, null, debounced.email, errors.email);
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
@@ -37,122 +45,84 @@ export default function SignUpForm() {
 		if (!isValid)
 			return ;
 
-		if (!fieldsAvailable.username || !fieldsAvailable.email)
-			return ;
-
-		setIsSubmitting(true);
 		try {
-			await register(
+			await executeAPICall(() => register(
 				formData.first_name,
 				formData.last_name,
 				formData.username,
 				formData.email,
 				formData.password
-			);
+			));
 			toastSuccess('Account created successfully...');
-			router.replace('/login');
+			router.push('/login');
 		} catch (err: any) {
-			toastError(err.message || 'Something went wrong, please try again later');
-		} finally {
-			setIsSubmitting(false);
+			toastError(err.message);
 		}
 	}
 
 	return (
-		<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-			<div className='flex flex-col gap-5 sm:flex-row sm:gap-2'>
-				<FormField 
-					className='field flex flex-col gap-0.5 min-w-0 flex-1'
-					iconSrc='/icons/firstname.svg'
-					label='First Name'
-					field='first_name'
-					inputPlaceholder='Achraf'
-					inputValue={formData.first_name}
-					onChange={handleChange}
-					touched={touched.first_name}
-					error={errors.first_name}
-					debounced={debounced.first_name}
-				/>
-				<FormField 
-					className='field flex flex-col gap-0.5 min-w-0 flex-1'
-					iconSrc='/icons/lastname.svg'
-					label='Last Name'
-					field='last_name'
-					inputPlaceholder='Demnati'
-					inputValue={formData.last_name}
-					onChange={handleChange}
-					touched={touched.last_name}
-					error={errors.last_name}
-					debounced={debounced.last_name}
-				/>
-			</div>
-			<FormField 
-				className='field flex flex-col gap-0.5 box-border'
-				iconSrc='/icons/at.svg'
-				label='Username'
-				field='username'
-				inputPlaceholder='xezzuz'
-				inputValue={formData.username}
-				onChange={handleChange}
-				touched={touched.username}
-				error={errors.username}
-				debounced={debounced.username}
-			>
-				{debounced.username && touched.username && !errors.username && formData.username && formData.username.length >= 3 && (
-					<FormFieldAvailability 
-						label='Username'
-						name='username'
-						value={formData.username}
-						setFieldAvailable={updateFieldAvailable}
+		<FormProvider
+			formData={formData}
+			touched={touched}
+			errors={errors}
+			debounced={debounced}
+			handleChange={handleChange}
+			validateAll={validateAll}
+			getValidationErrors={getValidationErrors}
+			resetForm={resetForm}
+		>
+			<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+				<div className='flex flex-col gap-5 sm:flex-row sm:gap-2'>
+					<InputField 
+						className='field flex flex-col gap-0.5 min-w-0 flex-1'
+						iconSrc='/icons/firstname.svg'
+						label='First Name'
+						field='first_name'
+						inputPlaceholder='Achraf'
 					/>
-				)}
-			</FormField>
-			<FormField 
-				className='field flex flex-col gap-0.5 box-border'
-				iconSrc='/icons/mail.svg'
-				label='Email'
-				field='email'
-				inputPlaceholder='iassil@1337.student.ma'
-				inputValue={formData.email}
-				onChange={handleChange}
-				touched={touched.email}
-				error={errors.email}
-				debounced={debounced.email}
-			>
-				{debounced.email && touched.email && !errors.email && formData.email && formData.email.length >= 3 && (
-					<FormFieldAvailability 
-						label='Email'
-						name='email'
-						value={formData.email}
-						setFieldAvailable={updateFieldAvailable}
+					<InputField 
+						className='field flex flex-col gap-0.5 min-w-0 flex-1'
+						iconSrc='/icons/lastname.svg'
+						label='Last Name'
+						field='last_name'
+						inputPlaceholder='Demnati'
 					/>
-				)}
-			</FormField>
-			<FormField 
-				className='field flex flex-col gap-0.5 box-border'
-				iconSrc='/icons/lock.svg'
-				label='Password'
-				field='password'
-				inputPlaceholder='••••••••••••••••'
-				inputValue={formData.password}
-				hidden={true}
-				onChange={handleChange}
-				touched={touched.password}
-				error={errors.password}
-				debounced={debounced.password}
-			>
-				{touched.password && formData.password && <PasswordStrength value={formData.password} />}
-			</FormField>
-			<button className={`h-11 mt-2 rounded-lg transition-all duration-200 ${
-					isSubmitting 
-					? 'bg-gray-700 cursor-not-allowed'
-					: 'bg-blue-600 hover:bg-blue-700 hover:shadow-2xl active:scale-98'
-				}`} 
-					type='submit'
-					disabled={isSubmitting}
+				</div>
+				<InputField 
+					className='field flex flex-col gap-0.5 box-border'
+					iconSrc='/icons/at.svg'
+					label='Username'
+					field='username'
+					inputPlaceholder='xezzuz'
 				>
-					Sign Up
-			</button>
-		</form>
+					{debounced.username && !errors.username && <AvailabilityIndicator key="username-availability" label='Username' status={usernameStatus} />}
+				</InputField>
+				<InputField 
+					className='field flex flex-col gap-0.5 box-border'
+					iconSrc='/icons/mail.svg'
+					label='Email'
+					field='email'
+					inputPlaceholder='iassil@1337.student.ma'
+				>
+					{debounced.username && !errors.username && <AvailabilityIndicator key="email-availability" label='Email' status={emailStatus} />}
+				</InputField>
+				<InputField 
+					className='field flex flex-col gap-0.5 box-border'
+					iconSrc='/icons/lock.svg'
+					label='Password'
+					field='password'
+					inputPlaceholder='••••••••••••••••'
+					inputHidden={true}
+				>
+					{formData.password && <PasswordStrengthIndicator key="password-strength" value={formData.password} />}
+				</InputField>
+				<FormButton
+					text='Sign Up'
+					icon={<LogIn size={16} />}
+					type='submit'
+					isSubmitting={isLoading}
+				/>
+			</form>
+		</FormProvider>
 	);
 }

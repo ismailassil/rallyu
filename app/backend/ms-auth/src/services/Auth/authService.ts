@@ -59,12 +59,17 @@ class AuthService {
 		await this.userService.createUser(first_name, last_name, username, email, password, hashedPassword);
 	}
 
-	async LogIn(username: string, password: string, userAgent: string, ip: string) {
-		const currentSessionFingerprint = this.getFingerprint(userAgent, ip); // TODO: REMOVE THIS
-
-		const existingUser = await this.userService.getUserByUsername(username);
+	async LogIn(username: string, password: string, sessionFingerprint: ISessionFingerprint) {
+		let existingUser = null;
+		try {
+			existingUser = await this.userService.getUserByUsername(username);
+		} catch (err) {
+			throw new InvalidCredentialsError();
+		}
+		
 		const isValidPassword = 
 			await bcrypt.compare(password, existingUser ? existingUser.password : this.authConfig.bcryptTimingHash);
+
 		if (!existingUser || !isValidPassword)
 			throw new InvalidCredentialsError();
 
@@ -77,52 +82,45 @@ class AuthService {
 				loginChallengeID: await this.twoFAChallengeService.createChallenge(existingUser.id)
 			};
 
-		// clean up expired refresh tokens
-		// force max concurrent sessions
-
-		const sessionTokens = await this.sessionService.createSession(existingUser.id, currentSessionFingerprint);
+		const sessionTokens = await this.sessionService.createSession(existingUser.id, sessionFingerprint);
 
 		const { password: _, ...userWithoutPassword } = existingUser;
 
 		return { user: userWithoutPassword, accessToken: sessionTokens.accessToken, refreshToken: sessionTokens.refreshToken };
 	}
 
-	async LogOut(refreshToken: string, userAgent: string, ip: string) : Promise<void> {
-		const currentSessionFingerprint = this.getFingerprint(userAgent, ip);
+	async LogOut(refreshToken: string) : Promise<void> {
+		const payload: JWT_REFRESH_PAYLOAD = this.jwtUtils.decodeJWT(refreshToken);
 
-		await this.sessionService.revokeSession(refreshToken, 'logout', currentSessionFingerprint);
+		await this.sessionService.revokeSession(payload.session_id, 'Logout requested by user', payload.sub, refreshToken);
 	}
 
-	async Refresh(refreshToken: string, userAgent: string, ip: string) {
-		const currentSessionFingerprint = this.getFingerprint(userAgent, ip);
-
+	async Refresh(refreshToken: string, sessionFingerprint: ISessionFingerprint) {
 		const refreshTokenPayload: JWT_REFRESH_PAYLOAD = this.jwtUtils.decodeJWT(refreshToken);
 		const existingUser = await this.userService.getUserById(refreshTokenPayload.sub);
 		if (!existingUser)
 			throw new UserNotFoundError();
 		
 		const { newAccessToken, newRefreshToken } 
-			= await this.sessionService.refreshSession(refreshToken, currentSessionFingerprint);
+			= await this.sessionService.refreshSession(refreshToken, sessionFingerprint);
 
 		const { password: _, ...userWithoutPassword } = existingUser;
 
 		return { user: userWithoutPassword, newAccessToken, newRefreshToken };
 	}
 
-	async sendTwoFAChallengeCode(loginChallengeID: number, method: 'TOTP' | 'SMS' | 'EMAIL', userAgent: string, ip: string) {
+	async sendTwoFAChallengeCode(loginChallengeID: number, method: 'TOTP' | 'SMS' | 'EMAIL', sessionFingerprint: ISessionFingerprint) {
 		await this.twoFAChallengeService.selectMethod(loginChallengeID, method);
 	}
 
-	async verifyTwoFAChallengeCode(loginChallengeID: number, code: string, userAgent: string, ip: string) {
-		const currentSessionFingerprint = this.getFingerprint(userAgent, ip); // TODO: REMOVE THIS
-
+	async verifyTwoFAChallengeCode(loginChallengeID: number, code: string, sessionFingerprint: ISessionFingerprint) {
 		const isValid = await this.twoFAChallengeService.verifyChallenge(loginChallengeID, code);
 
 		const targetChallenge = await this.twoFAChallengeService.getChallengeByID(loginChallengeID);
 
 		const targetUser = await this.userService.getUserById(targetChallenge.user_id);
 
-		const sessionTokens = await this.sessionService.createSession(targetUser.id, currentSessionFingerprint);
+		const sessionTokens = await this.sessionService.createSession(targetUser.id, sessionFingerprint);
 
 		const { password: _, ...userWithoutPassword } = targetUser;
 
@@ -243,7 +241,7 @@ class AuthService {
 		const isValidPassword = 
 			await bcrypt.compare(oldPassword, existingUser.password);
 		if (!isValidPassword)
-			throw new InvalidCredentialsError();
+			throw new InvalidCredentialsError('Invalid password');
 		
 		const newHashedPassword = await bcrypt.hash(newPassword!, this.authConfig.bcryptHashRounds);
 
@@ -314,28 +312,6 @@ class AuthService {
 		return bearerToken;
 	}
 
-	// TODO: MOVE TO MIDDLEWARE
-	private getFingerprint(userAgent: string, ip: string) : ISessionFingerprint {
-		const parser = new UAParser(userAgent);
-
-		const ua = parser.getResult();
-
-		let deviceName = [ ua.device.vendor || '', ua.device.model || '', ua.os.name || '', ua.os.version || ''].filter(Boolean).join(' ').trim();
-		let browserVersion = [ ua.browser.name || '', ua.browser.major || '' ].filter(Boolean).join(' ').trim();
-
-		if (!deviceName)
-			deviceName = 'Unknown Device';
-		if (!browserVersion)
-			browserVersion = 'Unknown Browser';
-
-		const fingerprint: ISessionFingerprint = {
-			device_name: deviceName,
-			browser_version: browserVersion,
-			ip_address: ip
-		}
-
-		return fingerprint;
-	}
 
 	// TO CHECK
 	// private async getGoogleOAuthTokens(code: string): Promise<any> {

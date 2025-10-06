@@ -6,8 +6,7 @@ import MethodsOverview from "./components/MethodsOverview";
 import { Loader, Check } from "lucide-react";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { APIError } from "@/app/(api)/APIClient";
-import { toastSuccess, toastError, toastLoading } from "@/app/components/CustomToast";
-import { Toaster } from "sonner";
+import { toastSuccess, toastError } from "@/app/components/CustomToast";
 import MainCardWrapper from "../components/UI/MainCardWrapper";
 import { motion } from "framer-motion";
 import SetupTOTP from "./components/SetupTOTP";
@@ -141,7 +140,6 @@ export default function TwoFAManagerPage() {
 	if (enabledMethods === null) {
 		return (
 			<>
-				<Toaster position='bottom-right' visibleToasts={1} />
 				<main className="pt-30 flex h-[100vh] w-full pb-10">
 					<div className="flex h-full w-full justify-center items-center">
 						<Loader size={24} className="animate-spin" />
@@ -211,7 +209,6 @@ export default function TwoFAManagerPage() {
 
 	return (
 		<>
-			<Toaster position='bottom-right' visibleToasts={1} />
 			<motion.main
 				initial={{ opacity: 0, y: -50 }}
 				animate={{ opacity: 1, y: 0 }}

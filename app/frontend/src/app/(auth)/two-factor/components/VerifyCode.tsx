@@ -1,38 +1,92 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
-import { ArrowLeft } from "lucide-react";
-import { RefObject } from "react";
-import { METHODS_META } from "./constants";
-import LoadingButton from "./LoadingButton";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useRef, useState } from "react";
+import { METHODS_HELP, METHODS_HELP2, METHODS_META } from "./constants";
+import FormButton from "../../components/shared/ui/FormButton";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import useAPICall from "@/app/hooks/useAPICall";
+import { useRouter } from "next/navigation";
+import { AnimatePresence } from "framer-motion";
+import InputFieldError from "../../components/shared/form/InputFieldError";
+import { toastError, toastSuccess } from "@/app/components/CustomToast";
 
 interface VerifyCodeProps {
-	methods: string[];
-	selectedMethod: string;
-	code: string[];
-	setCode: (newCode: string[]) => void;
-	inputRefs: RefObject<(HTMLInputElement | null)[]>;
-	isResendingCode: boolean;
-	isVerifyingCode: boolean;
-	onVerifyClick: () => void;
-	onResendClick: (method: string) => void;
+	method: 'TOTP' | 'SMS' | 'EMAIL';
+	loginSessionMeta: { loginChallengeID: number, enabledMethods: string[] };
+	onNext: () => void;
 	onGoBack: () => void;
 }
 
-export default function VerifyCode({ methods, selectedMethod, code, setCode, inputRefs, isResendingCode, isVerifyingCode, onVerifyClick, onResendClick, onGoBack } : VerifyCodeProps) {
+export default function VerifyCode({ method, loginSessionMeta, onNext, onGoBack } : VerifyCodeProps) {
+	const router = useRouter();
 
-	const METHOD_HELP: Record<string, string> = {
-		TOTP: 'Enter the 6-digit code from your authenticator app',
-		SMS: `We've sent a 6-digit code via SMS`,
-		EMAIL: `We've sent a 6-digit code to your Email`,
-	};
+	const {
+		send2FACode,
+		verify2FACode
+	} = useAuth();
 
-	const METHOD_HELP2: Record<string, string> = {
-		TOTP: 'Cannot access your Authenticator App?',
-		SMS: `Cannot access your Phone?`,
-		EMAIL: `Cannot access your Email?`,
-	};
+	const { 
+		isLoading, 
+		executeAPICall 
+	} = useAPICall();
+
+	const [isResending, setIsResending] = useState<boolean>(false);
+	const [code, setCode] = useState(['', '', '', '', '', '']);
+	const [error, setError] = useState('');
+	const inputRefs = useRef([]);
+
+	async function handleSubmit() {
+		if (!['TOTP', 'SMS', 'EMAIL'].includes(method)) {
+			toastError('Please sign in again.');
+			router.replace('/login');
+			return ;
+		}
+
+		if (!code.join('')) {
+			setError('Code is required');
+			return ;
+		} else if (code.join('').length !== 6) {
+			setError('Code must be a 6-digit number');
+			return ;
+		}
+
+		try {
+			await executeAPICall(() => verify2FACode(
+				loginSessionMeta.loginChallengeID,
+				method,
+				code.join('')
+			));
+			toastSuccess('Two Factor Authentication successful');
+			onNext();
+		} catch (err: any) {
+			toastError(err.message);
+		}
+	}
+
+	async function handleResend() {
+		if (!['TOTP', 'SMS', 'EMAIL'].includes(method)) {
+			toastError('Please sign in again.');
+			router.replace('/login');
+			return ;
+		}
+
+		setIsResending(true);
+		try {
+			await executeAPICall(() => send2FACode(
+				loginSessionMeta.loginChallengeID,
+				method
+			));
+			toastSuccess('Code sent!');
+		} catch (err: any) {
+			toastError(err.message);
+		} finally {
+			setIsResending(false);
+		}
+	}
 
 	return (
-		<div className="w-full max-w-[430px] flex flex-col items-center gap-12">
+		<>
 			{/* Header + Go Back */}
 			<div className="flex gap-4 items-center w-full">
 				<button 
@@ -41,8 +95,8 @@ export default function VerifyCode({ methods, selectedMethod, code, setCode, inp
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{METHODS_META[selectedMethod].title}</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>{METHOD_HELP[selectedMethod]}</p>
+					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{METHODS_META[method].title}</h1>
+					<p className='text-gray-300 text-sm sm:text-balance'>{METHODS_HELP[method]}</p>
 				</div>
 			</div>
 
@@ -50,24 +104,41 @@ export default function VerifyCode({ methods, selectedMethod, code, setCode, inp
 			<div className="w-full flex flex-col gap-4">
 				<OTPCodeInput 
 					code={code}
-					setCode={setCode}
+					setCode={(newCode) => {
+						setCode(newCode);
+						if (!newCode.join(''))
+							setError('Code is required');
+						else if (newCode.join('').length !== 6)
+							setError('Code must be a 6-digit number');
+					}}
 					inputRefs={inputRefs}
-					isResendingCode={isResendingCode}
-					isVerifyingCode={isVerifyingCode}
+					isDisabled={isLoading}
+				><AnimatePresence>{error && <InputFieldError error={error} />}</AnimatePresence></OTPCodeInput>
+
+				<FormButton
+					text='Continue'
+					icon={<ArrowRight size={16} />}
+					onClick={handleSubmit}
+					isSubmitting={isLoading && !isResending}
+					disabled={isResending}
 				/>
-				<LoadingButton
-					onClick={onVerifyClick}
-					text="Verify Code"
-					loadingText="Verifying..."
-					disabled={isResendingCode || isVerifyingCode || !code.every(digit => digit !== '')}
-					loading={isVerifyingCode}
-				/>
-				<p className='self-center'>Didn&#39;t get the code? <span onClick={() => onResendClick(selectedMethod)} className={`font-semibold ${
-					(isResendingCode || isVerifyingCode) ? 'text-gray-500 cursor-not-allowed pointer-events-none' : 'text-blue-500 hover:underline cursor-pointer'
-				}`}>Resend code</span></p>
+
+				<p className='self-center'>
+					Didn&#39;t receive the code? 
+					<span 
+						onClick={handleResend}
+						className={`font-semibold ml-1 ${
+							(isLoading) 
+								? 'text-gray-500 cursor-not-allowed pointer-events-none' 
+								: 'text-blue-500 hover:underline cursor-pointer'
+						}`}
+					>
+						Resend code
+					</span>
+				</p>
 			</div>
 
-			{methods.length > 1 && <p className='self-center text-center'>{METHOD_HELP2[selectedMethod]}<br></br><a onClick={onGoBack} className="font-semibold text-blue-500 hover:underline cursor-pointer">Try other verification methods</a></p>}
-		</div>
+			{loginSessionMeta.enabledMethods.length > 1 && <p className='self-center text-center'>{METHODS_HELP2[method]}<br></br><a onClick={onGoBack} className="font-semibold text-blue-500 hover:underline cursor-pointer">Try other verification methods</a></p>}
+		</>
 	);
 }

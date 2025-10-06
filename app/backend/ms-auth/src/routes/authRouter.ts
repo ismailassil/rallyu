@@ -31,6 +31,7 @@ import {
 	zodTwoFactorSetupSchema, 
 	zodTwoFactorSetupVerifySchema
 } from "../schemas/zod/auth.zod.schema";
+import { UAParser } from "ua-parser-js";
 
 async function authRouter(fastify: FastifyInstance, opts: {
 	authController: AuthController,
@@ -40,6 +41,30 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	fastify.decorate('authenticate', Authenticate); // auth middleware for protected routes
 	fastify.decorate('requireAuth', { preHandler: fastify.authenticate }); // preHandler hook
 	fastify.decorateRequest('user', null);
+	fastify.decorateRequest('refreshToken', null);
+	fastify.decorateRequest('fingerprint', null);
+	fastify.addHook('preHandler', async (request, reply) => {
+		const parser = new UAParser(request.headers['user-agent'] || '');
+
+		const device = parser.getDevice();
+		const browser = parser.getBrowser();
+		const os = parser.getOS();
+
+		request.fingerprint = {
+			device: device.type?.toString() || 'Desktop',
+			browser: `${browser.name?.toString() || 'Unknown Browser'} on ${os.name?.toString() || 'Unknown OS'}`,
+			ip_address: request.ip
+		}
+		console.log('Request Fingerprint: ', request.fingerprint);
+
+		if (request.cookies && request.cookies?.['refreshToken']) {
+			request.refreshToken = request.cookies?.['refreshToken'];
+		} else
+			request.refreshToken = null;
+		
+		console.log('refreshToken from cookies: ', request.refreshToken);
+	});
+
 	fastify.register(cookie);
 
 
@@ -146,6 +171,18 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	// fastify.delete('/revoke-all', authController.RevokeAllRoute.bind(opts.authController));
 
 	// SESSION / DEVICE MANAGEMENT
+	fastify.get('/sessions', {
+		preHandler: fastify.authenticate,
+		handler: opts.authController.getActiveSessionsHandler.bind(opts.authController)
+	});
+	fastify.delete('/sessions/:id', {
+		preHandler: fastify.authenticate,
+		handler: opts.authController.revokeSessionHandler.bind(opts.authController)
+	});
+	fastify.delete('/sessions', {
+		preHandler: fastify.authenticate,
+		handler: opts.authController.revokeAllSessionsHandler.bind(opts.authController)
+	});
 	// GET /auth/sessions — List active sessions/devices
 	// DELETE /auth/sessions/:id — Revoke a specific session
 	// DELETE /auth/sessions — Revoke all sessions except current

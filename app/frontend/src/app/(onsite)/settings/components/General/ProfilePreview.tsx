@@ -3,9 +3,9 @@ import funnelDisplay from '@/app/fonts/FunnelDisplay';
 import { Upload, X } from 'lucide-react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import Avatar from '@/app/(onsite)/(profile)/users/components/Avatar';
+import { useFormContext } from '@/app/(auth)/components/shared/form/FormContext';
 
 interface ProfilePreviewProps {
-	values: Record<string, string>;
 	avatarFile: File | null;
 	avatarBlobPreview: string | null;
 	onAddAvatarFile: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -51,8 +51,12 @@ function Button({ children, actionIcon, onClick, disabled = false, asLabel = fal
 	);
 }
 
-export default function ProfilePreview({ values, avatarFile, avatarBlobPreview, onAddAvatarFile, onRemoveAvatarFile } : ProfilePreviewProps) {
+export default function ProfilePreview({ avatarFile, avatarBlobPreview, onAddAvatarFile, onRemoveAvatarFile } : ProfilePreviewProps) {
 	const { loggedInUser } = useAuth();
+
+	const {
+		formData
+	} = useFormContext();
 
 	return (
 		<div className="bg-white/2 border border-white/8
@@ -75,16 +79,16 @@ export default function ProfilePreview({ values, avatarFile, avatarBlobPreview, 
 				</div>
 				<div>
 					<h1 className="font-bold text-xl text-white/90 capitalize">
-						{values.first_name || loggedInUser!.first_name} {values.last_name || loggedInUser!.last_name}
+						{formData.first_name || loggedInUser!.first_name} {formData.last_name || loggedInUser!.last_name}
 					</h1>
 					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
-						@{values.username || loggedInUser!.username}
+						@{formData.username || loggedInUser!.username}
 					</p>
 					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
-						{values.email || loggedInUser!.email}
+						{formData.email || loggedInUser!.email}
 					</p>
 					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
-						{values.bio || loggedInUser!.bio}
+						{formData.bio || loggedInUser!.bio}
 					</p>
 				</div>
 			</div>
