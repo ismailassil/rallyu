@@ -1,4 +1,3 @@
-import Image from "next/image";
 import moment from "moment";
 import { motion } from "framer-motion";
 import { USER_NOTIFICATION } from "../types/notifications.types";
@@ -19,7 +18,9 @@ interface Props {
 function NotificationCard({ data, handler, handleChatUpdate }: Props) {
 	const { id, senderUsername, senderId, content, type, updatedAt, status, avatar, state } = data;
 	const t = useTranslations("headers.notification.box");
-	const textDescriptionRef = t('description.' + type);
+	console.log(type);
+	console.log(data);
+	const textDescriptionRef = t("description." + type) + (type === "status" ? data.content : "");
 	const dateRef = moment.utc(updatedAt).local().fromNow();
 	const { handleAccept, handleDecline } = useNotification();
 

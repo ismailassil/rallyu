@@ -18,7 +18,7 @@ function GamePanel() {
 
 				console.log("result: " ,res);
 				setUrl(`/game/room/${res.roomId}?user=${loggedInUser.id}`);
-				setOpponentId(res.opponentId)
+				setOpponentId(res.opponentId);
 			} catch (err) {
 				console.log(`Game Service: ${err}`);
 			}

@@ -62,7 +62,7 @@ function shouldIgnorePath(path: string): boolean {
 	const usernameAvailablePath = '/api/users/username-available';
 	const emailAvailablePath = '/api/users/email-available';
 	const resetPath = 'api/auth/reset';
-	const searchTEMP = '/api/users/search';
+	const searchTEMP = '/api/users/search'; // TODO - Need to be removed
 
 	return (
 		allRoutes.includes(path) ||

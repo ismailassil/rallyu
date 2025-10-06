@@ -317,8 +317,8 @@ export default function SnapshotCard() {
 							<div className="flex flex-col justify-center items-center w-full h-full gap-2 grow-1">
 								<Image
 									src={'/meme/thinking.gif'}
-									width={360}
-									height={360}
+									width={300}
+									height={300}
 									alt="No data available"
 									className="rounded-2xl blur-[1.25px] hover:blur-none transition-all duration-500 hover:scale-102 cursor-grab"
 									draggable={false}
