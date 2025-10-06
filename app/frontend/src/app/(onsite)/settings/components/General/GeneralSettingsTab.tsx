@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useCallback, useEffect } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import SettingsCard from '../SettingsCard';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -9,7 +9,7 @@ import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import { LoaderCircle } from 'lucide-react';
 import { personalInfoSettingsSchema } from '@/app/(api)/schema';
 import { FormProvider } from '@/app/(auth)/components/shared/form/FormContext';
-import useAPICall from '@/app/hooks/useAPICall';
+// import useAPICall from '@/app/hooks/useAPICall';
 import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
 import useCanSave from '@/app/hooks/useCanSave';
 
@@ -22,14 +22,6 @@ export interface FormDataState {
 	avatar_url: string;
 }
 
-// export interface FormData {
-// 	fname: string;
-// 	lname: string;
-// 	username: string;
-// 	email: string;
-// 	bio: string;
-// }
-
 /*
 	In this tab the user can only update: First Name, Last Name, Username, Email, Bio, Avatar
 	Password change is in Security tab
@@ -41,9 +33,9 @@ export default function GeneralSettingsTab() {
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-	const {
-		executeAPICall
-	} = useAPICall();
+	// const {
+	// 	executeAPICall
+	// } = useAPICall();
 
 	const [
 		formData, 
@@ -63,30 +55,6 @@ export default function GeneralSettingsTab() {
 	const usernameStatus = useAvailabilityCheck('username', formData.username, loggedInUser!.username, debounced.username, errors.username);
 	const emailStatus = useAvailabilityCheck('email', formData.email, loggedInUser!.email, debounced.email, errors.email);
 	const canSave = useCanSave(formData, debounced, errors, avatarFile, usernameStatus, emailStatus, loggedInUser!, getValidationErrors);
-
-
-	// function fnShowSaveChanges() : boolean {
-	// 	// if we changed something
-	// 	if (Object.keys(getUpdatedFormPayload()).length === 0 && avatarFile === null)
-	// 		return false;
-
-	// 	// check if all changed fields are debounced
-	// 	for (const key in getUpdatedFormPayload()) {
-	// 		if (!debounced[key as keyof typeof debounced]) {
-	// 			return false;
-	// 		}
-	// 	}
-
-	// 	if (getValidationErrors())
-	// 		return false;
-
-	// 	if (usernameStatus !== 'available' && usernameStatus !== 'idle')
-	// 		return false;
-	// 	if (emailStatus !== 'available' && emailStatus !== 'idle')
-	// 		return false;
-
-	// 	return true;
-	// }
 
 	function handleAvatarFileChange(e: ChangeEvent<HTMLInputElement>) {
 		const selectedFile = e.target.files?.[0];
@@ -111,7 +79,7 @@ export default function GeneralSettingsTab() {
 		const form = new FormData();
 		form.append('file', avatarFile);
 
-		await apiClient.uploadUserAvatar(form);
+		await apiClient.updateUserAvatar(loggedInUser!.id, form);
 		setAvatarFile(null);
 	}
 

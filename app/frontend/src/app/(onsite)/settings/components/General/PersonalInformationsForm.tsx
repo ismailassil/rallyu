@@ -3,7 +3,6 @@ import InputField from '@/app/(auth)/components/shared/form/InputField';
 import LanguageSwitcher from '../items/LanguageSwitcher';
 import { useFormContext } from '@/app/(auth)/components/shared/form/FormContext';
 import AvailabilityIndicator from '@/app/(auth)/components/shared/form/AvailabilityIndicator';
-import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { AvailabilityStatus } from '@/app/hooks/useAvailabilityCheck';
 
 interface PersonalInformationsFormProps {
@@ -13,11 +12,6 @@ interface PersonalInformationsFormProps {
 
 export default function PersonalInformationsForm({ usernameStatus, emailStatus } : PersonalInformationsFormProps) {
 	const {
-		loggedInUser
-	} = useAuth();
-
-	const {
-		formData,
 		errors,
 		debounced
 	} = useFormContext();
@@ -46,7 +40,7 @@ export default function PersonalInformationsForm({ usernameStatus, emailStatus }
 					field='username'
 					inputPlaceholder='xezzuz'
 				>
-					{debounced.username && !errors.username && <AvailabilityIndicator label='Username' status={usernameStatus} />}
+					{debounced.username && !errors.username && <AvailabilityIndicator key="username-availability" label='Username' status={usernameStatus} />}
 				</InputField>
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'
@@ -55,7 +49,7 @@ export default function PersonalInformationsForm({ usernameStatus, emailStatus }
 					field='email'
 					inputPlaceholder='iassil@1337.student.ma'
 				>
-					{debounced.username && !errors.username && <AvailabilityIndicator label='Email' status={emailStatus} />}
+					{debounced.email && !errors.email && <AvailabilityIndicator key="email-availability" label='Email' status={emailStatus} />}
 				</InputField>
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'

@@ -28,7 +28,7 @@ export default function AvailabilityIndicator({ label, status } : { label: 'User
 
 	return (
 		<motion.div
-			key={'field-availability'}
+			key='field-availability'
 			initial={{ opacity: 0, height: 0 }}
 			animate={{ opacity: 1, height: "auto" }}
 			exit={{ opacity: 0, height: 0 }}

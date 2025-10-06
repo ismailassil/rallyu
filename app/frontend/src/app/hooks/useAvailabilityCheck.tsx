@@ -7,7 +7,7 @@ export type AvailabilityStatus = 'idle' | 'checking' | 'available' | 'unavailabl
 export default function useAvailabilityCheck(
 	fieldName: 'username' | 'email',
 	currentValue: string,
-	loggedInUserValue: string,
+	loggedInUserValue: string | null,
 	debounced: boolean,
 	error: string | undefined
 ) {
@@ -34,7 +34,7 @@ export default function useAvailabilityCheck(
 
 		if (debounced && !error)
 			checkAvailability();
-	}, [currentValue, debounced, error, loggedInUserValue, apiClient, executeAPICall]);
+	}, [currentValue, debounced, error, loggedInUserValue, apiClient, executeAPICall, fieldName]);
 
 	return status;
 }

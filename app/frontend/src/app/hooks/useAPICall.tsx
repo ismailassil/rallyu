@@ -19,6 +19,7 @@ export default function useAPICall() {
 		} catch (err: any) {
 			const errorMessage = err?.message || 'Something went wrong';
 			setError(errorMessage);
+			err.message = errorMessage;
 			throw err;
 		} finally {
 			setIsLoading(false);

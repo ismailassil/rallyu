@@ -1,4 +1,3 @@
-import React from "react";
 import { AvailabilityStatus } from "./useAvailabilityCheck";
 import { getUpdatedFormPayload } from "../(onsite)/settings/components/General/utils";
 import { LoggedInUser } from "../(onsite)/contexts/auth.context.types";

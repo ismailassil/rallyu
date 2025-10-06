@@ -1,158 +1,11 @@
-// import { useState, useEffect } from 'react';
-// import { Monitor, Smartphone, Tablet, MapPin, Clock, Trash2, RotateCcw, Laptop, LogOut } from 'lucide-react';
-// import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-// import { relativeTimeAgoFromNow } from '@/app/(api)/utils';
-
-// export interface Session {
-// 	session_id: string;
-// 	version: number;
-// 	is_revoked: 0 | 1;
-// 	reason: string | null;
-// 	device: 'Desktop' | 'Mobile' | 'Tablet' | string;
-// 	browser: string;
-// 	ip_address: string;
-// 	created_at: number;
-// 	expires_at: number;
-// 	updated_at: number;
-// 	user_id: number;
-// 	is_current: boolean;
-// }
-
-// function DeviceIcon({ type }: { type: string }) {
-// 	// console.log(type);
-// 	if (type === 'mobile')
-// 		return <div><Smartphone className="h-11 w-11" /></div>;
-// 	if (type === 'tablet')
-// 		return <div><Tablet className="h-11 w-11" /></div>;
-// 	return <div><Monitor className="h-11 w-11" /></div>;
-// }
-
-// function SessionCard({ session, onRevoke }: { session: Session; onRevoke: (id: string) => void }) {
-// 	const isCurrent = session.is_current;
-// 	const lastActive = relativeTimeAgoFromNow(session.updated_at);
-
-// 	return (
-// 		<li className="bg-white/4 rounded-2xl border border-white/10 px-6 py-4 flex items-center justify-between">
-// 			<div className="flex gap-4 items-center w-48 mr-24">
-// 				<DeviceIcon type={session.device} />
-// 				<div className="w-full">
-// 					<div className="flex items-center gap-2">
-// 						<h2 className="font-bold text-white text-lg truncate capitalize">{session.device}</h2>
-// 						{isCurrent && (
-// 							<span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">
-// 								Current
-// 							</span>
-// 						)}
-// 					</div>
-// 					<p className="font-light text-sm text-white/75 truncate">{session.browser}</p>
-// 				</div>
-// 			</div>
-
-// 			<div className="flex gap-12 items-center w-48 mr-24">
-// 				<div className="flex gap-1.5 items-center">
-// 					<MapPin className="h-4 w-4 text-white/75" />
-// 					<p className="font-light text-sm text-white/75 truncate">{session.ip_address}</p>
-// 				</div>
-// 			</div>
-
-// 			<div className="flex gap-12 items-center w-48">
-// 				<div className="flex gap-1.5 items-center">
-// 					<Clock className="h-3 w-3 text-white/75" />
-// 					<p className="font-light text-sm text-white/75">{lastActive}</p>
-// 				</div>
-// 			</div>
-
-// 			<button
-// 				onClick={() => onRevoke(session.session_id)}
-// 				disabled={isCurrent}
-// 				className={`cursor-pointer transition-all duration-200 ${
-// 				isCurrent
-// 					? 'text-gray-500 cursor-not-allowed'
-// 					: 'text-white hover:text-red-400'
-// 				}`}
-// 				title={isCurrent ? 'Cannot revoke current session' : 'Revoke session'}
-// 			>
-// 				<LogOut className="h-6 w-6" />
-// 			</button>
-// 		</li>
-// 	);
-// }
-
-// export default function Sessions() {
-// 	const { apiClient } = useAuth();
-// 	const [sessions, setSessions] = useState<Session[]>([]);
-// 	const [loading, setLoading] = useState(true);
-// 	const [error, setError] = useState<string | null>(null);
-
-// 	const fetchSessions = async () => {
-// 		try {
-// 			setLoading(true);
-// 			const data = await apiClient.fetchActiveSessions();
-// 			setSessions(data);
-// 			setError(null);
-// 		} catch (err) {
-// 			console.error('Failed to fetch sessions:', err);
-// 			setError('Failed to load active sessions.');
-// 		} finally {
-// 			setLoading(false);
-// 		}
-// 	};
-
-// 	const handleRevokeSession = async (sessionId: string) => {
-// 		try {
-// 			await apiClient.revokeSession(sessionId);
-// 			setSessions((prev) => prev.filter((s) => s.session_id !== sessionId));
-// 		} catch (err) {
-// 			console.error('Failed to revoke session:', err);
-// 			setError('Failed to revoke session.');
-// 		}
-// 	};
-
-// 	useEffect(() => {
-// 		fetchSessions();
-// 	}, []);
-
-// 	if (loading) {
-// 		return (
-// 			<div className="flex flex-col gap-6 px-14 py-6 max-lg:px-10">
-// 				<p className="text-white/75">Loading active sessions...</p>
-// 			</div>
-// 		);
-// 	}
-
-// 	if (error) {
-// 		return (
-// 			<div className="flex flex-col gap-6 px-14 py-6 max-lg:px-10">
-// 				<p className="text-red-400">{error}</p>
-// 				<button
-// 				onClick={fetchSessions}
-// 				className="text-blue-400 hover:text-blue-300 underline"
-// 				>
-// 				Retry
-// 				</button>
-// 			</div>
-// 		);
-// 	}
-
-// 	return (
-// 		<div className="flex flex-col gap-6 px-14 py-6 max-lg:px-10 font-funnel-display">
-// 			<ul className="flex flex-col gap-4">
-// 				{sessions.map((session) => (
-// 					<SessionCard
-// 						key={session.session_id}
-// 						session={session}
-// 						onRevoke={handleRevokeSession}
-// 					/>
-// 				))}
-// 			</ul>
-// 		</div>
-// 	);
-// }
-
 import { useState, useEffect } from 'react';
-import { Monitor, Smartphone, Tablet, MapPin, Clock, Trash2, RotateCcw, Laptop, LogOut } from 'lucide-react';
+import { Monitor, Smartphone, Tablet, MapPin, Clock, LogOut } from 'lucide-react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { relativeTimeAgoFromNow } from '@/app/(api)/utils';
+import { toastError, toastSuccess } from '@/app/components/CustomToast';
+import LoadingComponent, { EmptyComponent } from '@/app/(auth)/components/shared/ui/LoadingComponents';
+import useAPICall from '@/app/hooks/useAPICall';
+import { motion } from 'framer-motion';
 
 export interface Session {
 	session_id: string;
@@ -278,64 +131,69 @@ function SessionCard({ session, onRevoke }: { session: Session; onRevoke: (id: s
 }
 
 export default function Sessions() {
-	const { apiClient } = useAuth();
+	const {
+		apiClient
+	} = useAuth();
+	const {
+		executeAPICall
+	} = useAPICall();
+	
 	const [sessions, setSessions] = useState<Session[]>([]);
-	const [loading, setLoading] = useState(true);
+	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const fetchSessions = async () => {
-		try {
-			setLoading(true);
-			const data = await apiClient.fetchActiveSessions();
-			setSessions(data);
-			setError(null);
-		} catch (err) {
-			console.error('Failed to fetch sessions:', err);
-			setError('Failed to load active sessions.');
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	const handleRevokeSession = async (sessionId: string) => {
+	async function handleRevokeSession(sessionId: string) {
 		try {
 			await apiClient.revokeSession(sessionId);
 			setSessions((prev) => prev.filter((s) => s.session_id !== sessionId));
-		} catch (err) {
-			console.error('Failed to revoke session:', err);
-			setError('Failed to revoke session.');
+			toastSuccess('Session revoked');
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (err: any) {
+			toastError(err.message);
 		}
 	};
 
 	useEffect(() => {
-		fetchSessions();
-	}, []);
+		async function fetchActiveSessions() {
+			try {
+				setIsLoading(true);
+				const data = await executeAPICall(() => apiClient.fetchActiveSessions());
+				// const data = await apiClient.fetchActiveSessions();
+				setSessions(data);
+				setError(null);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			} catch (err: any) {
+				toastError(err.message);
+				setError('Failed to load active sessions.');
+			} finally {
+				setIsLoading(false);
+			}
+		};
 
-	if (loading) {
-		return (
-			<div className="flex flex-col gap-6 px-14 py-6 max-lg:px-10">
-				<p className="text-white/75">Loading active sessions...</p>
-			</div>
-		);
-	}
+		fetchActiveSessions();
+	}, [apiClient, executeAPICall]);
 
-	if (error) {
-		return (
-			<div className="flex flex-col gap-6 px-14 py-6 max-lg:px-10">
-				<p className="text-red-400">{error}</p>
-				<button
-				onClick={fetchSessions}
-				className="text-blue-400 hover:text-blue-300 underline"
-				>
-				Retry
-				</button>
-			</div>
-		);
-	}
+	if (isLoading)
+		return <LoadingComponent />;
+
+	if (error)
+		return <EmptyComponent content={error} />;
+
+	if (!sessions)
+		return null;
+
+	if (sessions.length === 0)
+		return <EmptyComponent content='No active sessions found.' />;
 
 	return (
 		<div className="flex flex-col gap-6 px-14 py-6 max-lg:px-10 font-funnel-display">
-			<ul className="flex flex-col gap-4">
+			<motion.ul
+				initial={{ opacity: 0, height: 0 }}
+				animate={{ opacity: 1, height: "auto" }}
+				exit={{ opacity: 0, height: 0 }}
+				transition={{ duration: 0.4, ease: "easeOut" }}
+				className="flex flex-col gap-4"
+			>
 				{sessions.map((session) => (
 					<SessionCard
 						key={session.session_id}
@@ -343,7 +201,7 @@ export default function Sessions() {
 						onRevoke={handleRevokeSession}
 					/>
 				))}
-			</ul>
+			</motion.ul>
 		</div>
 	);
 }

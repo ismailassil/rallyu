@@ -13,6 +13,7 @@ import { LogIn } from 'lucide-react';
 import { FormProvider } from '../../components/shared/form/FormContext';
 import AvailabilityIndicator from '../../components/shared/form/AvailabilityIndicator';
 import useAPICall from '@/app/hooks/useAPICall';
+import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
 
 export default function SignUpForm() {
 	const router = useRouter();
@@ -34,8 +35,8 @@ export default function SignUpForm() {
 		{ debounceMs: { email: 1200, username: 1200, password: 1200 } }
 	);
 
-	const usernameStatus = useUsernameEmailAvailability('username', formData.username, !!errors.username || !debounced.username);
-	const emailStatus = useUsernameEmailAvailability('email', formData.email, !!errors.email || !debounced.email);
+	const usernameStatus = useAvailabilityCheck('username', formData.username, null, debounced.username, errors.username);
+	const emailStatus = useAvailabilityCheck('email', formData.email, null, debounced.email, errors.email);
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
@@ -94,7 +95,7 @@ export default function SignUpForm() {
 					field='username'
 					inputPlaceholder='xezzuz'
 				>
-					{formData.username && formData.username.length >= 3 && !errors.username && debounced.username && ( <AvailabilityIndicator label='Username' status={usernameStatus} /> )}
+					{debounced.username && !errors.username && <AvailabilityIndicator key="username-availability" label='Username' status={usernameStatus} />}
 				</InputField>
 				<InputField 
 					className='field flex flex-col gap-0.5 box-border'
@@ -103,7 +104,7 @@ export default function SignUpForm() {
 					field='email'
 					inputPlaceholder='iassil@1337.student.ma'
 				>
-					{formData.email && formData.email.length >= 3 && !errors.email && debounced.email && ( <AvailabilityIndicator label='Email' status={emailStatus} /> )}
+					{debounced.username && !errors.username && <AvailabilityIndicator key="email-availability" label='Email' status={emailStatus} />}
 				</InputField>
 				<InputField 
 					className='field flex flex-col gap-0.5 box-border'
@@ -113,7 +114,7 @@ export default function SignUpForm() {
 					inputPlaceholder='••••••••••••••••'
 					inputHidden={true}
 				>
-					{formData.password && <PasswordStrengthIndicator value={formData.password} />}
+					{formData.password && <PasswordStrengthIndicator key="password-strength" value={formData.password} />}
 				</InputField>
 				<FormButton
 					text='Sign Up'

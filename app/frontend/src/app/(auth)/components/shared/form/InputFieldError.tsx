@@ -8,7 +8,7 @@ type InputFieldErrorProps = {
 export default function InputFieldError({ error } : InputFieldErrorProps) {
 	return (
 		<motion.div
-			key={'field-error'}
+			key='field-error'
 			initial={{ opacity: 0, height: 0 }}
 			animate={{ opacity: 1, height: "auto" }}
 			exit={{ opacity: 0, height: 0 }}

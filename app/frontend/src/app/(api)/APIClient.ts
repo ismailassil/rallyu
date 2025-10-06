@@ -147,8 +147,8 @@ export class APIClient {
 		return this.user.getUserAvatarBlob(url);
 	}
 	
-	async uploadUserAvatar(profilePicture: FormData) {
-		return this.user.uploadUserAvatar(profilePicture);
+	async updateUserAvatar(id: number, avatarFile: FormData) {
+		return this.user.updateUserAvatar(id, avatarFile);
 	}
 	
 	async updateUser(id: number, payload: { first_name?: string, last_name?: string, username?: string, email?: string, bio?: string }) {

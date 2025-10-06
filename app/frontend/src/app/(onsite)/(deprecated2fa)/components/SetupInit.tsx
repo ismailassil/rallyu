@@ -205,9 +205,6 @@ function PhoneSetup({ onSubmit, onGoBack } : { onSubmit: (contact: string) => vo
 						/>
 					</div>
 				</div>
-				{/* <AnimatePresence>
-					{error && <FormFieldError error={error} />}
-				</AnimatePresence> */}
 				<button 
 					className='h-11 w-fit self-end pl-4 pr-2 bg-blue-600 hover:bg-blue-700 rounded-lg mt-2 flex justify-center items-center gap-2'
 					type='submit'

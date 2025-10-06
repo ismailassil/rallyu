@@ -60,8 +60,8 @@ export class UserService {
 		return data;
 	}
 	
-	async uploadUserAvatar(profilePicture: FormData) {
-		const { data: res } = await this.client.post(`/users/TODO/avatar`, profilePicture, {
+	async updateUserAvatar(id: number, avatarFile: FormData) {
+		const { data: res } = await this.client.post(`/users/${id}/avatar`, avatarFile, {
 			headers: { 'Content-Type': 'multipart/form-data' }
 		});
 		return res.data;

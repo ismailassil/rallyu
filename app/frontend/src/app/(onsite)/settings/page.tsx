@@ -2,15 +2,10 @@
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import { AnimatePresence, motion } from "framer-motion";
 import General from "./components/General/GeneralSettingsTab";
-import Users from './components/Users/Users';
+import Users from './components/Users/UsersSettingsTab';
 import Security from "./components/Security/Security";
 import { useState } from "react";
-import { Cog, UsersIcon, Gamepad2, Fingerprint } from "lucide-react";
-
-type Tab = {
-	label: string;
-	icon: React.ReactNode;
-}
+import { Cog, UsersIcon, Fingerprint } from "lucide-react";
 
 const TABS = [
 	{ label: 'General', icon: <Cog size={18} /> },
@@ -64,7 +59,7 @@ export default function SettingsPage() {
 			<div className="bg-white/4 border border-white/10  w-full rounded-2xl backdrop-blur-2xl py-8 mb-8">
 				<header className="relative shrink-0 overflow-hidden">
 					<h1
-					className={`${funnelDisplay.className} font-bold pb-0.5 px-13 select-none text-4xl capitalize relative left-0 hover:left-4 transition-all duration-500`}
+						className={`${funnelDisplay.className} font-bold pb-0.5 px-13 select-none text-4xl capitalize relative left-0 hover:left-4 transition-all duration-500`}
 					>
 						Settings
 					</h1>
