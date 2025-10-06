@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useGame } from '../../contexts/gameContext';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 const QueueToggleButton = () => {
 	const [isSearching, setIsSearching] = useState(false);

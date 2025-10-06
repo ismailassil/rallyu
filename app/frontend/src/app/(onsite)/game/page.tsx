@@ -11,18 +11,14 @@ export default function Game() {
 				initial={{ opacity: 0, y: -50 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 1, delay: 0.5 }}
-				className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
+				className="h-[100vh] pt-30 pr-6 pb-24 pl-6 sm:pb-6 sm:pl-30"
 			>
-				<article
-					className="bg-card border-br-card flex h-full w-full justify-center
-							rounded-2xl border-2"
-				>
+				<article className="bg-card border-br-card flex h-full w-full justify-center rounded-2xl border-2">
 					<motion.div
 						initial={{ opacity: 0, y: -50 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 1, delay: 0.2 }}
-						className="max-w-500 hide-scrollbar flex h-full w-full
-						 gap-3 overflow-y-scroll p-4 pl-3 md:gap-5"
+						className="hide-scrollbar flex h-full w-full max-w-500 gap-3 overflow-y-scroll p-4 pl-3 md:gap-5"
 					>
 						<GameProvider>
 							<GamePanel />

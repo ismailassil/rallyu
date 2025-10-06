@@ -8,7 +8,8 @@ const game = async (fastify, options) => {
 	const ROOM_EXPIRATION_TIME = 10000; // 10 sec
     const GAME_START_DELAY = 3000; // 3 sec
     const GAME_UPDATE_INTERVAL = 16.67; // 60hz
-    const GAME_TIME = 93000; // 90 seconds
+    // const GAME_TIME = 93000; // 90 seconds
+    const GAME_TIME = 10000; // 10 seconds
 
 
 	fastify.decorate('json', (socket, obj) => {

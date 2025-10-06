@@ -1,20 +1,21 @@
-import { useGame } from "../../contexts/gameContext"
-import Pong from "../pong/Pong"
+import { useGame } from "../../contexts/gameContext";
+import Pong from "../pong/Pong";
+import TicTacToe from "../tictactoe/TicTacToe";
 import VersusCard from "./VersusCard";
 
 const GameField = () => {
-    const { gameType } = useGame();
+	const { gameType } = useGame();
 
-    return (
-        <div className="flex flex-col justify-center items-center w-full flex-1 min-h-0">
-            {/* <PlayerCard img="" name="" side="left"/> */}
-            <VersusCard />
-            {/* here we should flip between pong and tictactoe */}
-            <div className="flex-1 flex items-center justify-center min-h-0 w-full">
-                <Pong />
-            </div>        
-        </div>
-    )
-}
+	return (
+		<div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center">
+			{/* <PlayerCard img="" name="" side="left"/> */}
+			<VersusCard />
+			{/* here we should flip between pong and tictactoe */}
+			<div className="flex min-h-0 w-full flex-1 items-center justify-center">
+				{gameType === "pingpong" ? <Pong /> : <TicTacToe />}
+			</div>
+		</div>
+	);
+};
 
-export default GameField
+export default GameField;
