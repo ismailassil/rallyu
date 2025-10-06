@@ -4,6 +4,7 @@ import { ILoginRequest, IRegisterRequest } from "../types";
 import { TokenRequiredError } from "../types/auth.types";
 import TwoFactorService from "../services/TwoFactorAuth/[DEPRECATED]TwoFactorService";
 import AuthResponseFactory from "./authResponseFactory";
+import SessionsService from "../services/Auth/SessionsService";
 
 
 class AuthController {
