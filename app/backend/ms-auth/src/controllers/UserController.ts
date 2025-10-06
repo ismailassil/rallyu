@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import UserService from "../services/User/userService";
+import UserService from "../services/User/UserService";
 import { IProfileRequest } from "../types";
-import AuthResponseFactory from "./authResponseFactory";
+import AuthResponseFactory from "./AuthResponseFactory";
 
 class UserController {
 	constructor(

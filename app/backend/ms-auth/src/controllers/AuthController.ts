@@ -1,9 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import AuthService from "../services/Auth/authService";
+import AuthService from "../services/Auth/AuthService";
 import { ILoginRequest, IRegisterRequest } from "../types";
 import { TokenRequiredError } from "../types/auth.types";
 import TwoFactorService from "../services/TwoFactorAuth/[DEPRECATED]TwoFactorService";
-import AuthResponseFactory from "./authResponseFactory";
+import AuthResponseFactory from "./AuthResponseFactory";
 import SessionsService from "../services/Auth/SessionsService";
 
 

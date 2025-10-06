@@ -4,7 +4,7 @@ import { InvalidCredentialsError, NoEmailIsAssociated, PasswordResetExpiredError
 import MailingService from "../Communication/MailingService";
 import WhatsAppService from "../Communication/WhatsAppService";
 import { AuthConfig } from "../../config/auth";
-import UserService from "../User/userService";
+import UserService from "../User/UserService";
 import { generateOTP, nowInSeconds, nowPlusSeconds } from "../TwoFactorAuth/utils";
 
 const passwordResetConfig = {

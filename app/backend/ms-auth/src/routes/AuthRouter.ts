@@ -1,10 +1,10 @@
 import { FastifyInstance } from "fastify";
-import AuthController from "../controllers/authController";
+import AuthController from "../controllers/AuthController";
 import Authenticate from "../middleware/Authenticate";
 import { zodFormValidator } from "../utils/validation/zodFormValidator";
 import cookie from '@fastify/cookie';
-import TwoFactorController from "../controllers/twoFactorController";
-import PasswordResetController from "../controllers/passwordResetController";
+import TwoFactorController from "../controllers/TwoFactorController";
+import PasswordResetController from "../controllers/PasswordResetController";
 import { 
 	auth2FADisableSchema,
 	auth2FALoginChallengeSchema, 

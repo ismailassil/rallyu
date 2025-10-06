@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import AuthResponseFactory from "./authResponseFactory";
+import AuthResponseFactory from "./AuthResponseFactory";
 import TwoFactorMethodService from "../services/TwoFactorAuth/TwoFactorMethodService";
 
 class TwoFactorController {

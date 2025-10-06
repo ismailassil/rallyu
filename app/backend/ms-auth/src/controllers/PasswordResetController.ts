@@ -1,7 +1,7 @@
-import PasswordResetService from "../services/Auth/passwordResetService";
+import PasswordResetService from "../services/Auth/PasswordResetService";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { IResetPasswordRequest, IResetPasswordUpdateRequest, IResetPasswordVerifyRequest } from "../types";
-import AuthResponseFactory from "./authResponseFactory";
+import AuthResponseFactory from "./AuthResponseFactory";
 
 class PasswordResetController {
 	constructor(
