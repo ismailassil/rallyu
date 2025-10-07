@@ -1,107 +1,108 @@
-import funnelDisplay from '@/app/fonts/FunnelDisplay';
 import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
 import MainCardWrapper from '../../components/UI/MainCardWrapper';
 
-function Button({ children, actionIcon, onClick, hidden = false, disabled = false  } : { children: ReactNode, actionIcon: React.ReactNode, onClick?: () => void, hidden?: boolean, disabled?: boolean }) {
+type ActionButtonProps = {
+	children: ReactNode;
+	actionIcon?: React.ReactNode;
+	onClick?: () => void;
+	hidden?: boolean;
+	disabled?: boolean;
+	type?: 'button' | 'submit';
+	formId?: string;
+};
+
+export const ActionButton = ({
+	children,
+	actionIcon,
+	onClick,
+	hidden = false,
+	disabled = false,
+	type = 'button',
+	formId,
+}: ActionButtonProps) => {
+	const baseClasses = 'flex gap-2 justify-center items-center px-5 py-1.5 rounded-full h-10 select-none font-funnel-display font-medium transition-all duration-500 ease-in-out';
+	const hiddenClasses = hidden ? 'opacity-0 pointer-events-none scale-99 translate-y-0.5' : '';
+	const disabledClasses = !hidden && disabled ? 'opacity-50 pointer-events-none' : 'hover:bg-white hover:text-black cursor-pointer';
+	const combinedClasses = `${baseClasses} bg-white/6 border border-white/8 ${hiddenClasses} ${disabledClasses}`;
+
 	return (
-		<button
-			onClick={onClick}
-			className={`flex gap-2 justify-center items-center px-5 py-1.5 rounded-full h-10 select-none
-					bg-white/6 border border-white/8 transition-all duration-500 ease-in-out
-					font-funnel-display font-medium
-						${hidden ? 'opacity-0 pointer-events-none scale-99 translate-y-0.5' : ''}
-						${disabled ? 'opacity-50 pointer-events-none' : 'hover:bg-white hover:text-black cursor-pointer'}
-					`}
-		>
+		<button type={type} form={formId} onClick={onClick} className={combinedClasses} disabled={disabled}>
 			{actionIcon}
 			{children}
 		</button>
 	);
-}
+};
 
-export default function SettingsCard({ 
+type SettingsCardProps = {
+	children?: ReactNode;
+	title: string;
+	subtitle: string;
+	actionLabel?: string;
+	actionIcon?: React.ReactNode;
+	onAction?: () => void;
+	isButtonHidden?: boolean;
+	isButtonDisabled?: boolean;
+	isFoldable?: boolean;
+	defaultExpanded?: boolean;
+	formId?: string;
+};
+
+export default function SettingsCard({
 	children,
 	title,
 	subtitle,
-	isAction = false,
-	actionLabel = 'Action',
+	actionLabel = 'Save Changes',
 	actionIcon = <Check size={16} />,
 	onAction,
-	isForm = false, 
-	formSubmitLabel = 'Submit',
 	isButtonHidden = false,
 	isButtonDisabled = false,
-	// formId,
-	onSubmit,
-	isRadio = false, 
-	isFoldable = false, 
-	defaultExpanded = true 
-  } : { 
-	children?: ReactNode, 
-	title: string, 
-	subtitle: string, 
-	isAction?: boolean,
-	actionLabel?: string,
-	actionIcon?: React.ReactNode,
-	onAction?: () => void,
-	isForm?: boolean,
-	formSubmitLabel?: string,
-	isButtonHidden?: boolean,
-	isButtonDisabled?: boolean,
-	// formId?: string,
-	onSubmit?: () => void,
-	isRadio?: boolean,
-	isFoldable?: boolean,
-	defaultExpanded?: boolean 
-  }) {
+	isFoldable = false,
+	defaultExpanded = true,
+	formId,
+}: SettingsCardProps) {
 	const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
-	const toggleExpanded = () => {
-		setIsExpanded(!isExpanded);
-	};
+	const toggleExpanded = () => setIsExpanded(prev => !prev);
 
 	return (
 		<MainCardWrapper>
 			{/* Header */}
 			<div className="py-8">
-				<div className='flex justify-between items-center pr-18'>
+				<div className="flex justify-between items-center pr-18">
 					<div className="flex-1">
 						<header className="relative shrink-0 overflow-hidden">
 							<h1
-							className={`${funnelDisplay.className} font-semibold pb-0.5 px-10 select-none text-2xl capitalize relative left-0 hover:left-4 transition-all duration-500`}
+								className='font-funnel-display font-semibold pb-0.5 px-10 select-none text-2xl capitalize relative left-0 hover:left-4 transition-all duration-500'
 							>
-							{title}
+								{title}
 							</h1>
 							<div className="w-14 h-2 absolute left-0 top-[55%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E0E0E0] transition-all duration-200 group-hover:scale-105" />
 						</header>
 						<p className="px-11 text-white/65 text-sm">{subtitle}</p>
 					</div>
-					
+
+					{/* Fixed Action Button and Fold */}
 					<div className="flex items-start gap-3">
-						{isForm && onSubmit &&
-							<Button actionIcon={actionIcon} onClick={onSubmit} disabled={isButtonDisabled} hidden={isButtonHidden}>{formSubmitLabel}</Button>
-						}
-						{isAction && (
-							<div className={`border-1 border-white/10 rounded-full px-3.5 py-1.5 ${funnelDisplay.className} font-medium backdrop-blur-xs h-10
-											hover:bg-white hover:text-black transition-all duration-500 cursor-pointer`}>
-								<div className="flex items-center gap-2 justify-center cursor-pointer">
-									{actionIcon}
-									<button className='cursor-pointer' onClick={onAction}>{actionLabel}</button>
-								</div>
-							</div>
+						{(onAction || formId) && (
+							<ActionButton
+								actionIcon={actionIcon}
+								onClick={onAction}
+								hidden={isButtonHidden}
+								disabled={isButtonDisabled}
+								type={formId ? 'submit' : 'button'}
+								formId={formId}
+							>
+								{actionLabel}
+							</ActionButton>
 						)}
-						
+
 						{isFoldable && (
 							<button
-							onClick={toggleExpanded}
-							className="border border-white/10 rounded-full p-2 hover:bg-white/5 transition-all duration-500 backdrop-blur-xs cursor-pointer"
+								onClick={toggleExpanded}
+								className="border border-white/10 rounded-full p-2 hover:bg-white/5 transition-all duration-500 backdrop-blur-xs cursor-pointer"
 							>
-							{isExpanded ? (
-								<ChevronUp size={20} className="text-white/70" />
-							) : (
-								<ChevronDown size={20} className="text-white/70" />
-							)}
+								{isExpanded ? <ChevronUp size={20} className="text-white/70" /> : <ChevronDown size={20} className="text-white/70" />}
 							</button>
 						)}
 					</div>
@@ -110,19 +111,14 @@ export default function SettingsCard({
 
 			{/* Content */}
 			{children && (
-				<div 
-				className={`overflow-hidden transition-all duration-600 ease-in-out ${ 
-					isFoldable 
-					? (isExpanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0')
-					: 'max-h-none opacity-100'
-				}`}
+				<div
+					className={`overflow-hidden transition-all duration-600 ease-in-out ${
+						isFoldable ? (isExpanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0') : 'max-h-none opacity-100'
+					}`}
 				>
-					<div className="pb-8">
-						{children}
-					</div>
+					<div className="pb-8">{children}</div>
 				</div>
 			)}
-
 		</MainCardWrapper>
 	);
 }

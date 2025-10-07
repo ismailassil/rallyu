@@ -48,7 +48,7 @@ function AuthAppSetup({ onSubmit, onGoBack } : { onSubmit: () => void, onGoBack:
 
 	async function sideEffect() {
 		try {
-			const res = await apiClient.mfaSetupInit('totp');
+			const res = await apiClient.mfaSetupInit('TOTP');
 			console.log(res);
 			setSecrets(res);
 		} catch (err) {
@@ -103,7 +103,7 @@ function EmailSetup({ onSubmit, onGoBack } : { onSubmit: (contact: string) => vo
 		}
 
 		try {
-			const res = await apiClient.mfaSetupInit('email');
+			const res = await apiClient.mfaSetupInit('EMAIL');
 			console.log(res);
 			onSubmit(email);
 		} catch (err) {
@@ -205,9 +205,6 @@ function PhoneSetup({ onSubmit, onGoBack } : { onSubmit: (contact: string) => vo
 						/>
 					</div>
 				</div>
-				{/* <AnimatePresence>
-					{error && <FormFieldError error={error} />}
-				</AnimatePresence> */}
 				<button 
 					className='h-11 w-fit self-end pl-4 pr-2 bg-blue-600 hover:bg-blue-700 rounded-lg mt-2 flex justify-center items-center gap-2'
 					type='submit'

@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest, preHandlerHookHandler } from "fastify";
 import Authenticate from "../middleware/Authenticate";
-import authRouter from "../routes/authRouter";
+import authRouter from "../routes/AuthRouter";
 
 // PLUGIN THAT ADDS AuthN + AuthZ TO FASTIFY APP
 // DECORATE FASTIFY INSTANCE / REQUEST / RESPONSE

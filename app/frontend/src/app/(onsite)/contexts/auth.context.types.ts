@@ -18,6 +18,8 @@ export type AuthContextType = {
 	updateLoggedInUserState: (payload: Partial<LoggedInUser>) => void;
 	isLoading: boolean;
 	isAuthenticated: boolean;
+	isBusy: boolean;
+	setIsBusy: React.Dispatch<React.SetStateAction<boolean>>;
 
 	register: (first_name: string, last_name: string, username: string, email: string, password: string) => Promise<void>;
 	login: (username: string, password: string) => Promise<any>;

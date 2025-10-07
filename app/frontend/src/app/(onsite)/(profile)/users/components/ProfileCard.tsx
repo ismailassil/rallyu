@@ -1,9 +1,11 @@
+'use client';
 import Relations, { FriendshipStatus } from './Relations';
 import MainCardWrapper from '@/app/(onsite)/components/UI/MainCardWrapper';
 import Button from './Button';
 import { LocalUserPencilIcon } from './LocalIcon';
 import Avatar from './Avatar';
 import { useRouter } from 'next/navigation';
+// import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 
 type ProfileCardProps = {
 	userId: number,
@@ -20,6 +22,44 @@ type ProfileCardProps = {
 
 export default function ProfileCard({ userId, fullName, username, bio, avatar, friendshipStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
 	const router = useRouter();
+	// const { loggedInUser, socket } = useAuth();
+	// const [isOnline, setIsOnline] = useState(false);
+	// const [showOnlineToggle, setShowOnlineToggle] = useState(false);
+
+	// useEffect(() => {
+
+	// 	socket.emit("is_user_online", { userId }, (err, response) => {
+	// 		console.log('isOnline reponse: ', response.isOnline);
+	// 		setIsOnline(response.isOnline);
+	// 	});
+
+	// 	socket.on('user_online', (data) => {
+	// 		console.log('[SOCKET.IO] MESSAGE RECEIVED IN USER_ONLINE: ', data);
+
+	// 		const { userId: userID } = data;
+
+	// 		if (userId == userID) {
+	// 			console.log(`[SOCKET.IO] USER ${userID} IS ONLINE`);
+	// 			setIsOnline(true);
+	// 		}
+	// 	});
+
+	// 	socket.on('user_offline', (data) => {
+	// 		console.log('[SOCKET.IO] MESSAGE RECEIVED IN USER_OFFLINE: ', data);
+
+	// 		const { userId: userID } = data;
+
+	// 		if (userId == userID) {
+	// 			console.log(`[SOCKET.IO] USER ${userID} IS OFFLINE`);
+	// 			setIsOnline(false);
+	// 		}
+	// 	});
+
+	// 	return () => {
+	// 		socket.disconnect();
+	// 	};
+	// }, []);
+
 	return (
 		<MainCardWrapper className='flex flex-col items-center gap-8
 									p-10 min-h-[300px] max-h-[500px]
@@ -34,8 +74,9 @@ export default function ProfileCard({ userId, fullName, username, bio, avatar, f
 					<div className="flex-5 flex flex-col gap-4">
 						<div>
 							<h1 className='text-2xl lg:text-5xl text-accent font-extrabold'>
+								{/* {fullName}{(<div className={`${isOnline ? 'bg-green-500 h-3 w-3 rounded-full' : 'bg-gray-500 h-3 w-3 rounded-full'}`}></div>)} */}
 								{fullName}
-							<p className='text-lg lg:text-2xl xl:text-3xl font-semibold text-white/50'>{`(${username})`}</p>
+								<p className='text-lg lg:text-2xl xl:text-3xl font-semibold text-white/50'>{`(${username})`}</p>
 							</h1>
 						</div>
 						<p className={`text-sm text-gray-400 lg:text-lg`}>

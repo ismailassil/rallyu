@@ -24,6 +24,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	const [loggedInUser, setLoggedInUser] = useState<LoggedInUser | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const [isBusy, setIsBusy] = useState<boolean>(false);
 
 	// THIS USE EFFECT WILL ONLY RUN ON PAGE FIRSTLOAD/REFRESH
 	useEffect(() => {
@@ -132,6 +133,8 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		updateLoggedInUserState,
 		isLoading,
 		isAuthenticated,
+		isBusy,
+		setIsBusy,
 
 		// ACTIONS
 		register,
@@ -145,7 +148,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	return (
 		<AuthContext.Provider value={value}>
-			<h1 className='fixed top-0 left-30'>AuthProvider</h1>
+			{/* <h1 className='fixed top-0 left-30'>AuthProvider</h1> */}
 			{children}
 		</AuthContext.Provider>
 	);

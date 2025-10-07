@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 const QueueToggleButton = () => {
 	const [isSearching, setIsSearching] = useState(false);
 	const [queueTime, setQueueTime] = useState(0);
-	const { loggedInUser, apiClient } = useAuth();
+	const { loggedInUser, apiClient, isBusy, setIsBusy } = useAuth();
 	const { setUrl, setOpponentId } = useGame();
 	const wsRef = useRef<WebSocket | null>(null);
 
@@ -33,6 +33,7 @@ const QueueToggleButton = () => {
 					setUrl(`/game/room/${data.roomId}?user=${loggedInUser.id}`);
 					setOpponentId(data.opponentId);
 					setIsSearching(false);
+					setIsBusy(false);
 					ws.close();
 				} catch (err) {
 					console.error("Invalid JSON from server: ", err);
@@ -43,6 +44,7 @@ const QueueToggleButton = () => {
 				if (event.code === 1001) {
 					console.log(event.reason);
 					setIsSearching(false);
+					setIsBusy(false);
 					// display error card to user on web page
 				}
 			}
@@ -51,10 +53,18 @@ const QueueToggleButton = () => {
 			wsRef.current = null;
 			setQueueTime(0);
 		}
-		return () => clearInterval(interval);
+		return () => {
+			if (isBusy)
+				setIsBusy(false);
+			clearInterval(interval);
+		};
 	}, [isSearching]);
 
 	const handleToggleQueue = () => {
+		if (isBusy)
+			return ;
+
+		setIsBusy(true);
 		setIsSearching(!isSearching);
 	};
 
@@ -70,11 +80,11 @@ const QueueToggleButton = () => {
 	};
 
 	const getButtonStyles = () => {
-		const baseStyles = "w-full mt-auto relative px-8 py-3 rounded-xl font-semibold text-base transition-all duration-300 transform cursor-pointer hover:scale-[1.02] active:scale-[0.98] focus:outline-none w-80 shadow-lg";
+		const baseStyles = `w-full mt-auto relative px-8 py-3 rounded-xl font-semibold text-base transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none w-80 shadow-lg`;
 		if (isSearching) {
-				return `${baseStyles} bg-black/50 text-gray-200 text-sm border-2 border-gray-500/30  hover:bg-gray-600/10`;
+				return `${baseStyles} bg-black/50 text-gray-200 text-sm border-2 border-gray-500/30  hover:bg-gray-600/10 cursor-pointer`;
 		}
-		return `${baseStyles} bg-white backdrop-blur-sm text-black text-sm border-2 border-gray-400/50 hover:border-gray-300/70 focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50`;
+		return `${baseStyles} bg-white ${isBusy ? "opacity-50 cursor-auto" : "cursor-pointer"} backdrop-blur-sm text-black text-sm border-2 border-gray-400/50 hover:border-gray-300/70 focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50`;
 	};
 
 	return (

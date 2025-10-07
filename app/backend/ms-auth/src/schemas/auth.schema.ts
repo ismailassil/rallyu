@@ -78,7 +78,7 @@ const auth2FASetupParams = {
 	properties: {
 		method: { 
 			type: 'string',
-			enum: ['email', 'sms', 'totp']
+			enum: ['EMAIL', 'SMS', 'TOTP']
 		}
 	},
 	required: ['method']
@@ -125,9 +125,9 @@ const authResetPasswordUpdateBody = {
 	properties: {
 		email: { type: 'string' },
 		code: { type: 'string' },
-		password: { type: 'string' }
+		newPassword: { type: 'string' }
 	},
-	required: ['email', 'code', 'password']
+	required: ['email', 'code', 'newPassword']
 };
 
 const authChangePasswordBody = {

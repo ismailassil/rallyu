@@ -3,6 +3,7 @@ const { updateState, getVelocity, angles } = require('./physics')
 const WebSocket = require('ws');
 
 const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
+const MS_AUTH_PORT = process.env.MS_AUTH_PORT || '5005'
 
 const game = async (fastify, options) => {
 	const ROOM_EXPIRATION_TIME = 10000; // 10 sec
@@ -134,7 +135,7 @@ const game = async (fastify, options) => {
 		}
 
 		startGame() {
-			this.startTime = Date.now();
+			this.startTime = Math.floor(Date.now() / 1000);
 			this.running = true;
 			this.timeoutId = setupPackets(this);
 
@@ -199,10 +200,23 @@ const game = async (fastify, options) => {
 				});
 			} else if (room.players.every(p => p.connected)) {
 				clearTimeout(room.expirationTimer);
-				room.gameTimerId = setTimeout(() => {
+				room.gameTimerId = setTimeout(async () => {
 					sendGameOverPacket(room);
-					// send Game data to ezzuz
 					closeRoom(room, 1003, 'Game Over');
+					// await axios.post(`http://ms-auth:${MS_AUTH_PORT}/users/match`, {
+					// 	players: [
+					// 		{ 
+					// 			ID: room.players[0].id, 
+					// 			score: room.state.score[0]
+					// 		},
+					// 		{
+					// 			ID: room.players[1].id, 
+					// 			score: room.state.score[1]
+					// 		}
+					// 	],
+					// 	gameStartedAt: room.startTime,
+					// 	gameFinishedAt: Math.floor(Date.now() / 1000)
+					// });
 				}, GAME_TIME);
 				room.startGame();
 			}
@@ -231,11 +245,39 @@ const game = async (fastify, options) => {
 		};
 	})
 
+	fastify.get('/user/:roomid/state', (req, res) => {
+		const roomid = req.params.roomid;
+		const room = rooms.get(roomid);
+		if (!room) {
+			return res.code(404).send({
+				message: 'no active rooms with the specified ID currently active'
+			})
+		}
+		const state = {
+			ball: room.state.ball,
+			players: [
+				{
+					ID: room.players[0].id,
+					score: room.state.score[0],
+					coords: room.state.players[0]
+				},
+				{
+					ID: room.players[1].id,
+					score: room.state.score[1],
+					coords: room.state.players[1]
+				}
+			]
+		}
+
+		return res.send(state);
+	})
+
 	fastify.post('/create-room', (req, res) => {
 		const auth = req.headers.authorization.startsWith('Bearer ')
             ? req.headers.authorization.slice(7)
             : req.headers.authorization;
 
+		// add auth check with jwt here
 		if (auth !== MS_MATCHMAKING_API_KEY)
 			return res.code(401);
 

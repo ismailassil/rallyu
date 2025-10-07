@@ -31,20 +31,20 @@ const MIGRATIONS = [
 	},
 	{
 		id: 2,
-		name: 'create-refresh-tokens-table',
+		name: 'create-sessions-table',
 		sql: `
-			CREATE TABLE IF NOT EXISTS refresh_tokens (
+			CREATE TABLE IF NOT EXISTS sessions (
 				session_id TEXT PRIMARY KEY,
 
 				version INTEGER DEFAULT 1,
 				is_revoked BOOLEAN DEFAULT FALSE,
 				reason TEXT,
 
-				device_name TEXT NOT NULL,
-				browser_version TEXT NOT NULL,
+				device TEXT NOT NULL,
+				browser TEXT NOT NULL,
 				ip_address TEXT NOT NULL,
 
-				created_at INTEGER NOT NULL,
+				created_at INTEGER DEFAULT (strftime('%s','now')),
 				expires_at INTEGER NOT NULL,
 
 				updated_at INTEGER DEFAULT (strftime('%s','now')),

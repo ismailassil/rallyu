@@ -1,7 +1,7 @@
 import { JSONCodec } from 'nats';
-import UserService from '../User/userService';
+import UserService from '../User/UserService';
 import UserRepository from '../../repositories/[DEPRECATED]/userRepository';
-import RelationsService from '../User/relationsService';
+import RelationsService from '../User/RelationsService';
 // import * as userService from './userService';
 
 export async function handleUserRequests(msg: any, userService: UserService) {
