@@ -3,6 +3,7 @@ import { useContext, createContext, useState, ReactNode, useEffect, useCallback 
 import React from 'react';
 import { useAuth } from "../../contexts/AuthContext";
 import { LoggedUser, MessageType } from "../types/chat.types";
+import { AxiosError } from "axios";
 
 type ChatContextType = {
 	showConversation: boolean;
@@ -17,7 +18,7 @@ type ChatContextType = {
 	setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
 	selectedUser: LoggedUser | null;
 	setSelectedUser: React.Dispatch<React.SetStateAction<LoggedUser | null>>;
-
+	handleSendGame: (id: number) => Promise<void>;
 }
 
 const ChatContext = createContext<ChatContextType | null>(null)
@@ -94,6 +95,14 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			});
 	}, []);
 
+	const handleSendGame = async (id: number) => {
+		if (id === undefined) return;
+		socket.emit("notification_start_game", {
+			senderId: BOSS?.id,
+			receiverId: id,
+		});
+	};
+
 	return (
 		<ChatContext.Provider value={{
 			showConversation,
@@ -108,6 +117,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			setMessages,
 			selectedUser,
 			setSelectedUser,
+			handleSendGame,
 		}}>
 			{children}
 		</ChatContext.Provider>

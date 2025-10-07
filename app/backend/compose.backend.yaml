@@ -35,6 +35,15 @@ services:
       interval: 5s
       timeout: 10s
       retries: 10
+    develop:
+      watch:
+        - path: ./api-gateway
+          action: sync+restart
+          target: /app
+          ignore:
+            - node_modules/
+        - path: ./api-gateway/package.json
+          action: rebuild
 
   ms-auth:
     build:
@@ -68,6 +77,15 @@ services:
       - backend
     env_file:
       - .env
+    develop:
+      watch:
+        - path: ./ms-notif
+          action: sync+restart
+          target: /app
+          ignore:
+            - node_modules/
+        - path: ./ms-notif/package.json
+          action: rebuild
 
   ms-chat:
     build:

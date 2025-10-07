@@ -41,7 +41,7 @@
           "friend_request": "sent you a friend request!",
           "chat": "sent you a message.",
           "tournament": "invited you to start a tournament!",
-          "status": ""
+          "status": "{type, select, decline_game {declined your challenge} other {}}"
         }
       },
       "footer": {
@@ -55,6 +55,6 @@
     "decline": "Decline",
     "reply": "Reply",
     "clear": "clear",
-    "join": "Join {type, select, Game {game}, Tournament {tournament}}"
+    "join": "Join {type, select, game {Game} tournament {Tournament} other {game}}"
   }
 }

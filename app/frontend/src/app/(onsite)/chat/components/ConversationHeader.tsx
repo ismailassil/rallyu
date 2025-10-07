@@ -10,7 +10,7 @@ const ConversationHeader = () => {
 
 
 	const [option, setOption] = useState(false);
-	const { apiClient, setShowConversation, setSelectedUser, selectedUser } = useChat();
+	const { apiClient, setShowConversation, setSelectedUser, selectedUser, handleSendGame } = useChat();
 	const route = useRouter();
 
 	return (
@@ -47,7 +47,7 @@ const ConversationHeader = () => {
 				<>
 					<div className="absolute right-2.5 top-10 w-32 rounded-xl border border-white/20 backdrop-blur-md bg-white/10 p-3 space-y-2 z-50">
 						<button className="w-full rounded-md py-2 bg-white/10 hover:bg-green-600
-						 transition duration-300 cursor-pointer">Play</button>
+						 transition duration-300 cursor-pointer" onClick={() => handleSendGame(selectedUser?.id as number)}>Play</button>
 						<button className="w-full rounded-md py-2 bg-white/10 hover:bg-red-600 
 						transition duration-300 cursor-pointer"
 							onClick={async () => {

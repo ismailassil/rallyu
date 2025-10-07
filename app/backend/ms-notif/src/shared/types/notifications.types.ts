@@ -109,3 +109,18 @@ export interface UPDATE_ON_TYPE_PAYLOAD {
 	userId: number;
 	data: UPDATE_ON_TYPE_DATA;
 }
+
+export interface USER_INFO {
+	userId: number;
+	userSocket?: string | undefined;
+}
+
+export interface UPDATE_GAME_PAYLOAD {
+	sender: USER_INFO;
+	receiver: USER_INFO;
+	status: NOTIFICATION_STATUS;
+	type: NOTIFICATION_TYPE;
+	stateAction?: "accept" | "decline";
+	message?: string;
+	actionUrl?: string;
+}

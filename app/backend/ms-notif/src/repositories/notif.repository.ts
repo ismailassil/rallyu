@@ -174,6 +174,26 @@ class NotifRepository {
 		}
 	}
 
+	async getNotifById(id: number): Promise<RAW_NOTIFICATION> {
+		try {
+			const stmt = fastify.database.prepare(`
+				SELECT * FROM messages
+				WHERE id = ?
+			`);
+
+			const row = stmt.get([id]);
+
+			if (!row) {
+				throw new Error("No message found");
+			}
+
+			return row;
+		} catch (error) {
+			fastify.log.error("DB ERROR: " + error);
+			throw error;
+		}
+	}
+
 	async getNotifIdByActionURL(actionUrl: string): Promise<{ id: number }> {
 		try {
 			const stmt = fastify.database.prepare(`

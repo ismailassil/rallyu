@@ -18,9 +18,11 @@ interface Props {
 function NotificationCard({ data, handler, handleChatUpdate }: Props) {
 	const { id, senderUsername, senderId, content, type, updatedAt, status, avatar, state } = data;
 	const t = useTranslations("headers.notification.box");
-	console.log(type);
-	console.log(data);
-	const textDescriptionRef = t("description." + type) + (type === "status" ? data.content : "");
+	const textDescriptionRef =
+		type !== "status"
+			? t("description." + type)
+			: t("description.status", { type: data.content }) +
+				(data.content !== "decline_game" ? data.content : "");
 	const dateRef = moment.utc(updatedAt).local().fromNow();
 	const { handleAccept, handleDecline } = useNotification();
 

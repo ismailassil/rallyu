@@ -4,7 +4,6 @@ import GameField from "./Items/GameField";
 import { useGame } from "../contexts/gameContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 function GamePanel() {
 	const { apiClient, loggedInUser } = useAuth();

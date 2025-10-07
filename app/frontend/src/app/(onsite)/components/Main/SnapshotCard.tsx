@@ -163,7 +163,7 @@ export default function SnapshotCard() {
 	const durationStatToShow = durationsArray[index];
 	const matchToShow = userProfile ? userProfile.userRecentMatches[index] || userProfile.userRecentMatches[0] : null;
 
-	console.log('debug: ', {recordStatToShow, totalStatToShow, scoreStatToShow, durationStatToShow});
+	// console.log('debug: ', {recordStatToShow, totalStatToShow, scoreStatToShow, durationStatToShow});
 	
 	if (!userAnalytics) return <div>Loading...</div>;
 

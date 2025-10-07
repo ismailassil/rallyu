@@ -20,6 +20,7 @@ import { handleNotify } from '../handlers/notify.js';
 import { handleUpdateNotifAction } from '../handlers/update_action.js';
 import handleChatMsg from '../handlers/chat_events.js';
 import { handleUpdateNotifOnType } from '../handlers/update_on_type.js';
+import { handleUpdateNotifGame } from '@/handlers/update_game.js';
 
 class NatsService {
 	private nc!: NatsConnection;
@@ -153,6 +154,8 @@ class NatsService {
 			await handleUpdateNotifAction(m);
 		} else if (m.subject.includes("update_on_type")) {
 			await handleUpdateNotifOnType(m);
+		} else if (m.subject.includes("update_game")) {
+			await handleUpdateNotifGame(m);
 		}
 	}
 

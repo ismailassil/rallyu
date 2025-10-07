@@ -11,3 +11,7 @@ export interface UPDATE_NOTIFICATION {
 export interface IFetchQuery {
 	page: number;
 }
+
+export interface NOTIFY_GAME_BODY {
+	receiver_id: number;
+}

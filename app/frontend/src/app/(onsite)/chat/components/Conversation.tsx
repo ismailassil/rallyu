@@ -114,7 +114,7 @@ const ConversationBody = () => {
 							<span className='text-xs text-white/50 m-auto'>{setDate(msg.created_at, filteredMessages[index - 1]?.created_at)}</span>
 							<div
 								className={`flex ${msg.senderId === BOSS?.id ? 'justify-end' : 'justify-start'}`}>
-								<div className={`max-w-[75%] border-white/30 border px-1.5 min-w-0 flex flex-col rounded-lg  break-words ${msg.senderId === BOSS?.id ? 'bg-blue-600/20 rounded-br-sm' : 'bg-white/10 rounded-bl-sm'}`}>
+								<div className={`max-w-[75%] border-white/30 border px-3 py-1.5 min-w-0 flex flex-col rounded-lg  break-words ${msg.senderId === BOSS?.id ? 'bg-blue-600/20 rounded-br-sm' : 'bg-white/10 rounded-bl-sm'}`}>
 									<span>{msg.text}</span>
 									<span className='text-xs text-white/50 self-end'>{moment.utc(msg.created_at).local().format('HH:mm')}</span>
 								</div>

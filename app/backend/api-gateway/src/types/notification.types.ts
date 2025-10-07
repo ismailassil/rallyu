@@ -64,3 +64,29 @@ export interface USER_NOTIFICATION {
 export type NOTIFICATION_STATUS = "read" | "unread" | "dismissed";
 
 export type NOTIFICATION_TYPE = "chat" | "game" | "friend_request" | "tournament";
+
+/************************************************************** */
+/*********************** UPDATE GAME EVENT **********************/
+/************************************************************** */
+export interface USER_INFO {
+	userId: number;
+	userSocket?: string | undefined;
+}
+
+export interface UPDATE_GAME_DATA {
+	senderId: number;
+	receiverId: number;
+	stateAction?: "accept" | "decline";
+	status: NOTIFICATION_STATUS,
+	actionUrl?: string;
+}
+
+export interface UPDATE_GAME_PAYLOAD {
+	sender: USER_INFO;
+	receiver: USER_INFO;
+	status: NOTIFICATION_STATUS;
+	type: NOTIFICATION_TYPE;
+	stateAction?: "accept" | "decline";
+	message?: string;
+	actionUrl?: string;
+}

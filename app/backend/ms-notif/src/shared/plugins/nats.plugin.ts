@@ -5,6 +5,7 @@ import type { NatsOpts } from "../types/nats.types.js";
 import type {
 	NOTIFY_USER_PAYLOAD,
 	UPDATE_ACTION_PAYLOAD,
+	UPDATE_GAME_PAYLOAD,
 	UPDATE_ON_TYPE_PAYLOAD,
 	UPDATE_STATUS_PAYLOAD,
 } from "../types/notifications.types.js";
@@ -40,7 +41,8 @@ export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) =>
 			 * 		`notification.dispatch`
 			 * 		`notification.update_action`
 			 * 		`notification.update_status`
-			 * 		`notification_update_on_type`
+			 * 		`notification.update_on_type`
+			 * 		`notification.update_game`
 			 *
 			 *************************************/
 
@@ -59,6 +61,12 @@ export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) =>
 				} else if (m.subject.endsWith("update_on_type")) {
 					const payload = jc.decode(m.data) as UPDATE_ON_TYPE_PAYLOAD;
 					await notifServices.updateOnType(payload);
+				} else if (m.subject.endsWith('start_game')) {
+					const payload = jc.decode(m.data) as UPDATE_GAME_PAYLOAD;
+					await notifServices.startGame(payload);
+				} else if (m.subject.endsWith('update_game')) {
+					const payload = jc.decode(m.data) as UPDATE_GAME_PAYLOAD;
+					await notifServices.updateGame(payload);
 				}
 			} catch (err) {
 				fastify.log.error("[NATS] " + (err as Error).message);

@@ -54,7 +54,11 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 	const [notifLength, setNotifLength] = useState<number>(0);
 
 	const { isNotif, isBottom, isProfile, isSearch } = useHeaderContext();
-	const { apiClient, socket } = useAuth();
+	const {
+		apiClient,
+		socket,
+		loggedInUser
+	} = useAuth();
 	const router = useRouter();
 
 	const isNotifRef = useRef<boolean>(isNotif);
@@ -175,14 +179,13 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				if (type === "friend_request") {
 					await apiClient.acceptFriendRequest(senderId);
 				} else if (type === "game") {
-					const payload: UPDATE_NOTIFICATION_DATA = {
-						notificationId: data.id,
-						updateAll: false,
+					const payload = {
+						senderId: data.senderId,
+						receiverId: loggedInUser?.id,
+						stateAction: "accept",
 						status: "read",
-						state: "finished",
 					};
-					socket.emit("notification_update_action", payload);
-					router.push(actionUrl || "/game");
+					socket.emit("notification_update_game", payload);
 				} else if (type === "tournament") {
 					const payload: UPDATE_NOTIFICATION_DATA = {
 						notificationId: data.id,
@@ -197,6 +200,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				console.error(err);
 			}
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[apiClient, handleRemove, router, socket]
 	);
 
@@ -211,6 +215,14 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				if (type === "friend_request") {
 					await apiClient.rejectFriendRequest(senderId);
 				} else if (type === "game") {
+					const payload = {
+						senderId: data.senderId,
+						receiverId: loggedInUser?.id,
+						stateAction: "decline",
+						status: "dismissed",
+						actionUrl: data.actionUrl
+					};
+					socket.emit("notification_update_game", payload);
 				} else if (type === "tournament") {
 					const payload: UPDATE_NOTIFICATION_DATA = {
 						notificationId: data.id,
@@ -224,6 +236,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				console.error(err);
 			}
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[apiClient, handleRemove, socket]
 	);
 

@@ -1,7 +1,7 @@
+import type NotifSerives from '@/services/notif.services.ts';
 import 'fastify';
 import { NatsConnection, JSONCodec } from 'nats';
 import { Database } from 'sqlite3';
-import NotifSerives from '@/services/notif.services';
 
 declare module 'fastify' {
 	interface FastifyInstance {
@@ -9,5 +9,6 @@ declare module 'fastify' {
 		database: Database;
 		nats: NatsConnection;
 		jc: JSONCodec;
+		gameUsers: Map<number, NodeJS.Timeout>;
 	}
 }

@@ -16,7 +16,7 @@ const GameOrTournament = ({ handleAccept, handleDecline, type }: Props) => {
 
 	return (
 		<div className="ml-10 flex gap-2">
-			<FilledButton onClick={handleAccept}>{t("join", { type: type })}</FilledButton>
+			<FilledButton onClick={handleAccept}>{t("join", { type })}</FilledButton>
 			<OutlineButton onClick={handleDecline}>
 				<XIcon size={16} />
 			</OutlineButton>

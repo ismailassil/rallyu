@@ -29,7 +29,7 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 		// upstream: `http://host.docker.internal:${NOTIF_PORT}`,
 		prefix: '/api/notif',
 		rewritePrefix: '/notif',
-		httpMethods: ['GET', 'PUT'],
+		httpMethods: ['GET', 'POST'],
 	};
 
 	const chatProxyOptions = {

@@ -26,6 +26,7 @@ interface ServerToClientEvents {
 	notification_notify: (data: USER_NOTIFICATION) => void;
 	chat_receive_msg: (data: ChatPayload) => void;
 	chat_update_msg: (data: ChatPayload) => void;
+	notification_game_init: (data: string) => void;
 }
 
 export interface socketioOpts {
