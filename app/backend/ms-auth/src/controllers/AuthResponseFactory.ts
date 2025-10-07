@@ -20,6 +20,7 @@ class AuthResponseFactory {
 			code: (error as AuthError).errorCode,
 			details: (error as AuthError).details
 		});
+		console.error(error);
 
 		switch(true) {
 			case error instanceof AuthError:

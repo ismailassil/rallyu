@@ -17,6 +17,9 @@ import {
 	UserNotFoundError, 
 	_2FAInvalidCode 
 } from "../../types/auth.types";
+import axios from 'axios';
+import { oauthConfig } from '../../config/oauth';
+import { email } from 'zod/v4';
 
 // TODO
 	// VERIFY THE EXISTENCE OF ALL THOSE ENV VARS
@@ -230,6 +233,193 @@ class AuthService {
 	// 		throw new Error('OAuth Intra failed');
 	// 	}
 	// }
+
+	async loginIntra42(authorizationCode: string, sessionFingerprint: ISessionFingerprint) {
+		const intra42User = await this.exchangeAuthCodeIntra42(authorizationCode);
+		
+		let existingUser = null;
+		try {
+			existingUser = await this.userService.getUserByEmail(intra42User.email);
+			console.log("Google Login: User found: ", existingUser);
+			if (existingUser.auth_provider !== '42')
+				throw new UserAlreadyExistsError('Email');
+		} catch (err) {
+			console.log("Google Login: User not found - Creating a new user: ", existingUser);
+			// IF USER DOESN'T EXISTS - CREATE ONE
+			if (err instanceof UserNotFoundError) {
+				await this.userService.createUser(
+					intra42User.first_name,
+					intra42User.last_name,
+					intra42User.username,
+					intra42User.email,
+					null,
+					null,
+					intra42User.avatar_url,
+					intra42User.auth_provider
+				);
+
+				existingUser = await this.userService.getUserByEmail(intra42User.email);
+			} else {
+				throw err;
+			}
+		}
+
+		const sessionTokens = await this.sessionService.createSession(existingUser.id, sessionFingerprint);
+
+		const { password: _, ...userWithoutPassword } = existingUser;
+
+		return { user: userWithoutPassword, accessToken: sessionTokens.accessToken, refreshToken: sessionTokens.refreshToken };
+	}
+
+	private async exchangeAuthCodeIntra42(authorizationCode: string) {
+		try {
+			const { data: exchangeResult } = await axios.post(oauthConfig.intra42.exchange_uri, 
+				null,
+				{
+					params: {
+						code: authorizationCode,
+						client_id: oauthConfig.intra42.client_id,
+						client_secret: oauthConfig.intra42.client_secret,
+						redirect_uri: oauthConfig.intra42.redirect_uri,
+						grant_type: 'authorization_code'
+					}
+				}
+			);
+
+			if (!exchangeResult.access_token)
+				throw new Error('Cannot find access_token');
+
+			return await this.parseIntra42OAuthAccessToken(exchangeResult.access_token);
+		} catch (err) {
+			console.error('Google token exchange failed');
+			throw err;
+		}
+	}
+
+	private async parseIntra42OAuthAccessToken(accessToken: string) {
+		const { data: intra42User } = await axios.get(oauthConfig.intra42.api_uri,
+			{
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
+			}
+		);
+
+		console.log('Intra42User: ', intra42User);
+
+		return {
+			id: intra42User.id,
+			email: intra42User.email,
+			username: intra42User.login + '42',
+			first_name: intra42User.first_name || intra42User.usual_full_name.split(' ')[0] || 'Ismail',
+			last_name: intra42User.last_name || intra42User.usual_full_name.split(' ')[1] || 'Ismail',
+			avatar_url: intra42User.image.link,
+			auth_provider: '42'
+		};
+	}
+
+	async loginGoogleOAuth(authorizationCode: string, sessionFingerprint: ISessionFingerprint) {
+		const googleUser = await this.exchangeAuthCodeGoogle(authorizationCode);
+		
+		let existingUser = null;
+		try {
+			existingUser = await this.userService.getUserByEmail(googleUser.email);
+			console.log("Google Login: User found: ", existingUser);
+			if (existingUser.auth_provider !== 'Google')
+				throw new UserAlreadyExistsError('Email');
+		} catch (err) {
+			console.log("Google Login: User not found - Creating a new user: ", existingUser);
+			// IF USER DOESN'T EXISTS - CREATE ONE
+			if (err instanceof UserNotFoundError) {
+				await this.userService.createUser(
+					googleUser.first_name,
+					googleUser.last_name,
+					googleUser.username,
+					googleUser.email,
+					null,
+					null,
+					googleUser.avatar_url,
+					googleUser.auth_provider
+				);
+
+				existingUser = await this.userService.getUserByEmail(googleUser.email);
+			} else {
+				throw err;
+			}
+		}
+
+		const sessionTokens = await this.sessionService.createSession(existingUser.id, sessionFingerprint);
+
+		const { password: _, ...userWithoutPassword } = existingUser;
+
+		return { user: userWithoutPassword, accessToken: sessionTokens.accessToken, refreshToken: sessionTokens.refreshToken };
+	}
+
+	async exchangeAuthCodeGoogle(authorizationCode: string) {
+		try {
+			// const { data: exchangeResult } = await axios.post(oauthConfig.google.exchange_uri,
+			// 	new URLSearchParams({
+			// 		code: authorizationCode,
+			// 		client_id: oauthConfig.google.client_id,
+			// 		client_secret: oauthConfig.google.client_secret,
+			// 		redirect_uri: oauthConfig.google.redirect_uri,
+			// 		grant_type: 'authorization_code',
+			// 	}),
+			// 	{
+			// 		headers: {
+			// 			'Content-Type': 'application/x-www-form-urlencoded',
+			// 		},
+			// 	}
+			// );
+			const { data: exchangeResult } = await axios.post(oauthConfig.google.exchange_uri,
+				null,
+				 {
+					params: {
+						code: authorizationCode,
+						client_id: oauthConfig.google.client_id,
+						client_secret: oauthConfig.google.client_secret,
+						redirect_uri: oauthConfig.google.redirect_uri,
+						grant_type: 'authorization_code',
+					}
+				}
+			);
+	
+			if (!exchangeResult.id_token)
+				throw new Error("Cannot find id_token");
+		
+			return await this.parseGoogleOAuthIDToken(exchangeResult.id_token);
+		} catch (err) {
+			console.error("Google token exchange failed");
+			throw err;
+		}
+	}
+
+	private async parseGoogleOAuthIDToken(IDToken: string) {
+		const payload: any = this.jwtUtils.decodeJWT(IDToken);
+		
+		return {
+			id: payload.sub,
+			email: payload.email,
+			username: payload.email.split('@')[0] + '-google',
+			first_name: payload.given_name || payload.name.split(' ')[0] || 'Ismail',
+			last_name: payload.family_name || payload.name.split(' ')[1] || 'Demnati',
+			avatar_url: payload.picture,
+			auth_provider: 'Google'
+		};
+	}
+
+	private async generateUniqueUsername(baseUsername: string, uniqueFallback: string) {
+		let uniqueUsername = baseUsername;
+		let counter = 1;
+
+		while (counter < 1000 && await this.userService.isUsernameTaken(uniqueUsername)) {
+			uniqueUsername = `${baseUsername}${counter++}`;
+		}
+
+		if (counter === 1000)
+			return uniqueFallback;
+		return uniqueUsername;
+	}
 
 	async changePassword(user_id: number, oldPassword: string, newPassword: string) {
 		// this.validateChangePasswordForm(oldPassword, newPassword);

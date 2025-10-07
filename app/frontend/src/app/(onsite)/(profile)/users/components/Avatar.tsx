@@ -19,32 +19,46 @@ export default function Avatar({ avatar, fallback = "/profile/image_1.jpg", clas
 	useEffect(() => {
 		let blobUrl: string | null = null;
 
-		async function loadAvatar() { 
+		async function loadAvatar() {
 			try {
 				setIsLoading(true);
-				if (avatar && avatar.startsWith('blob:')) {
+
+				// If it's already a blob URL
+				if (avatar && avatar.startsWith("blob:")) {
 					setSrc(avatar);
-					setIsLoading(false);
 					return;
 				}
 
+				// External URL (e.g., Google)
+				if (avatar && (avatar.startsWith("http://") || avatar.startsWith("https://"))) {
+					setSrc(avatar);
+					return;
+				}
+
+				// Local avatar served from your server
 				if (avatar) {
 					const avatarBlob = await apiClient.getUserAvatarBlob(avatar);
 					blobUrl = URL.createObjectURL(avatarBlob);
 					setSrc(blobUrl);
-					setIsLoading(false);
+				} else {
+					setSrc(fallback);
 				}
 			} catch (err) {
-				console.error('Error loading avatar:', err);
+				console.error("Error loading avatar:", err);
 				setSrc(fallback);
 			} finally {
 				setIsLoading(false);
 			}
 		}
+
 		loadAvatar();
+
+		return () => {
+			if (blobUrl) URL.revokeObjectURL(blobUrl); // cleanup
+		};
 	}, [avatar, apiClient, fallback]);
 
-	// console.log('Avatar component rendering with src:', src);
+	console.log('Avatar component rendering with src:', src);
 
 	return (
 		<div className={`rounded-full overflow-hidden relative ${className || ''}`}>

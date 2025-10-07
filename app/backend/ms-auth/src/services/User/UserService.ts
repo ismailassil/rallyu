@@ -160,8 +160,12 @@ class UserService {
 		last_name: string, 
 		username: string, 
 		email: string, 
-		password: string,
-		hashedPassword: string
+		password: string | null,
+		hashedPassword: string | null,
+		avatar_url?: string,
+		auth_provider?: string,
+		role?: string,
+		bio?: string
 	) {
 		// this.validateUserCreation(username, password, email, first_name, last_name);
 
@@ -175,7 +179,11 @@ class UserService {
 			hashedPassword, 
 			email, 
 			first_name, 
-			last_name
+			last_name,
+			avatar_url,
+			auth_provider,
+			role,
+			bio
 		);
 
 		await this.statsService.createUserRecords(createdUserID);

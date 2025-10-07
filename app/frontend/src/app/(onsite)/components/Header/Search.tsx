@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useHeaderContext } from "./context/HeaderContext";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../contexts/AuthContext";
+import Avatar from "../../(profile)/users/components/Avatar";
 
 interface SearchByUsernameResult {
 	id: number,
@@ -156,7 +157,11 @@ export default function Search() {
 														border-b-br-card pl-10 hover:bg-hbg/30 hover:cursor-pointer
 														"
 												>
-													<Image src={`http://localhost:4025/api${elem.avatar_url}`} alt="Command Logo" width={42} height={42} className="rounded-full border-2 border-white/20"/>
+													<Avatar 
+														avatar={elem.avatar_url}
+														className="rounded-full h-10 w-10 border-2 border-white/20"
+													/>
+													{/* <Image src={`http://localhost:4025/api${elem.avatar_url}`} alt="Command Logo" width={42} height={42} className="rounded-full border-2 border-white/20"/> */}
 													<p>{elem.username}</p>
 												</a>
 										);
