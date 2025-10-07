@@ -51,8 +51,8 @@ const ConversationHeader = () => {
 				<>
 					<div className="absolute right-2.5 top-10 w-32 rounded-xl border border-white/20 backdrop-blur-md bg-white/10 p-3 space-y-2 z-50">
 						<button className={`relative overflow-hidden w-full rounded-md py-2 bg-white/10 hover:bg-green-600
-						 transition duration-300 ${ isBusy ? "opacity-50 cursor-auto" : "cursor-pointer" onClick={() => handleSendGame(selectedUser?.id as number)} }`}
-						 	onClick={(event) => { setTimer(true); requestBattleFriend(event); }}
+						 transition duration-300 ${ isBusy ? "opacity-50 cursor-auto" : "cursor-pointer"}`}
+						 	onClick={(event) => { setTimer(true); requestBattleFriend(event); handleSendGame(selectedUser?.id as number); }}
 						>
 							Play
 							{
@@ -62,7 +62,7 @@ const ConversationHeader = () => {
 									animate={{ width: 0 }}
 									transition={{ duration: 10.5 }}
 									onAnimationComplete={ () => setTimer(false) }
-								></motion.div>
+								/>
 							}
 						</button>
 						<button className="w-full rounded-md py-2 bg-white/10 hover:bg-red-600 
