@@ -136,7 +136,7 @@ class UserController {
 			const paginationFilterValidated = (page && limit) ? { page: Number(page), limit: Number(limit) } : undefined;
 
 			// TIME FILTER
-			const validGameTypes = ['PING PONG', 'XO', 'TICTACTOE', 'all'];
+			const validGameTypes = ['PONG', 'XO', 'all'];
 			const gameFilterValidated = validGameTypes.includes(gameTypeFilter) ? gameTypeFilter : undefined;
 
 			// GAMETYPE FILTER

@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useHeaderContext } from "./context/HeaderContext";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../contexts/AuthContext";
-import Avatar from "../../(profile)/users/components/Avatar";
+import Avatar from "../../users/components/Avatar";
 
 interface SearchByUsernameResult {
 	id: number,

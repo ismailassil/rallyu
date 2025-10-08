@@ -77,7 +77,7 @@ class StatsRepository {
 	async getUserStats(
 		user_id: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all'
+		gameTypeFilter: 'PONG' | 'XO' | 'all'
 	) {
 
 		try {
@@ -110,7 +110,7 @@ class StatsRepository {
 
 	async getUserDetailedAnalyticsGroupedByDay(
 		user_id: number,
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all',
+		gameTypeFilter: 'PONG' | 'XO' | 'all',
 		lastAvailableDaysCount: number
 	) {
 		try {
@@ -174,7 +174,7 @@ class StatsRepository {
 	async getUserDetailedAnalytics(
 		user_id: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all'
+		gameTypeFilter: 'PONG' | 'XO' | 'all'
 	) {
 
 		try {
@@ -352,7 +352,7 @@ class StatsRepository {
 	buildUserMatchesCTE(
 		user_id: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all',
+		gameTypeFilter: 'PONG' | 'XO' | 'all',
 		paginationFilter?: { page: number, limit: number }
 	) : { sql: string, params: any[] } {
 		const timeCondition = 

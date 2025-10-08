@@ -57,7 +57,7 @@ export default function MethodsOverview({ methods, isLoading, selectedMethod, on
 			</div>
 
 			{/* Recommendation */}
-			<div className='bg-blue-500/6 px-6 py-4 rounded-2xl backdrop-blur-2xl border-1 border-white/8 text-lg text-blue-400'>
+			<div className='bg-blue-500/6 px-6 py-4 rounded-2xl border-1 border-white/8 md:text-lg text-blue-400'>
 				<p><span className='font-bold'>Recommendation: </span>Authenticator apps provide the highest security and work without internet connection.</p>
 			</div>
 		</div>

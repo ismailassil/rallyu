@@ -61,7 +61,7 @@ export default function SideBar() {
 			initial={{ opacity: 0, x: -50 }}
 			animate={{ opacity: 1, x: 0 }}
 			transition={{ duration: 1, delay: 0.5 }}
-			className="h-22 sm:mt-30 sm:translate-x-none bg-card border-br-card fixed bottom-0
+			className="main-card-wrapper h-22 sm:mt-30 sm:translate-x-none bg-card border-br-card fixed bottom-0
 				left-0 flex w-full flex-row
 				items-center justify-center gap-10 overflow-clip border-t-2 sm:bottom-auto
 				sm:left-auto sm:ml-6 sm:h-[calc(100vh-143px)] sm:w-20 sm:transform-none
@@ -71,10 +71,11 @@ export default function SideBar() {
 				<button
 					title={link.title}
 					key={link.id}
-					className={`relative flex
-					h-[33px] w-[33px]
-					items-center justify-center transition-transform duration-200 hover:cursor-pointer sm:h-[33px] sm:w-[33px]
-					${link.id === activeButton ? "hover:scale-105" : "hover:scale-120"}
+					className={`
+						relative flex
+						h-[33px] w-[33px]
+						items-center justify-center transition-transform duration-200 hover:cursor-pointer sm:h-[33px] sm:w-[33px]
+						${link.id === activeButton ? "hover:scale-105" : "hover:scale-120"}
 					`}
 					onClick={() => {
 						router.push(link.path);
@@ -94,7 +95,7 @@ export default function SideBar() {
 							${
 								activeButton === link.id
 									? "scale-180 sm:scale-300 bg-hbbg rounded-full"
-									: "hover:bg-hbg hover:scale-150 hover:rounded-md"
+									: "hover:bg-hbg hover:scale-150 hover:rounded-full"
 							}`}
 					></div>
 				</button>

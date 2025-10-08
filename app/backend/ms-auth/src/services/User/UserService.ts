@@ -101,7 +101,7 @@ class UserService {
 		viewerID: number, 
 		targetID: number, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'all' = 'all',
+		gameTypeFilter: 'PONG' | 'XO' | 'all' = 'all',
 		paginationFilter?: { page: number, limit: number }
 	) {
 		const targetUser = await this.getUserById(targetID);
@@ -120,7 +120,7 @@ class UserService {
 		viewerID: number, 
 		targetID: number, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'all' = 'all'
+		gameTypeFilter: 'PONG' | 'XO' | 'all' = 'all'
 	) {
 		const targetUser = await this.getUserById(targetID);
 
@@ -136,7 +136,7 @@ class UserService {
 		viewerID: number, 
 		targetID: number, 
 		daysCount: number = 7,
-		gameTypeFilter: 'PING PONG' | 'XO' | 'all' = 'all'
+		gameTypeFilter: 'PONG' | 'XO' | 'all' = 'all'
 	) {
 		const targetUser = await this.getUserById(targetID);
 

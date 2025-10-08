@@ -75,9 +75,11 @@ const matchesRequestQuery = {
 	type: 'object',
 	properties: {
 		page: { type: 'number' },
-		limit: { type: 'number' }
+		limit: { type: 'number' },
+		gameTypeFilter: { type: 'string' },
+		timeFilter: { type: 'string' }
 	},
-	required: ['page', 'limit'],
+	required: ['page', 'limit', 'gameTypeFilter', 'timeFilter'],
 	additionalProperties: false
 };
 

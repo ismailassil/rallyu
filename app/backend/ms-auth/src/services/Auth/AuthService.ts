@@ -73,7 +73,7 @@ class AuthService {
 		const isValidPassword = 
 			await bcrypt.compare(password, existingUser ? existingUser.password : this.authConfig.bcryptTimingHash);
 
-		if (!existingUser || !isValidPassword)
+		if (!existingUser || !isValidPassword || existingUser.auth_provider !== 'local')
 			throw new InvalidCredentialsError();
 
 		const enabled2FAMethods = await this.twoFAMethodService.getEnabledMethods(existingUser.id);
