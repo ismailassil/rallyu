@@ -146,7 +146,7 @@ export default function GeneralSettingsTab() {
 			onAction={handleSubmit}
 			isButtonHidden={!canSave}
 			isButtonDisabled={isSubmitting}
-			className='h-full'
+			className='h-full overflow-auto hide-scrollbar'
 		>
 			<div className="flex flex-col gap-8">
 				<FormProvider
