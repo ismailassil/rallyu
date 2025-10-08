@@ -1,5 +1,5 @@
 import { CastleTurretIcon, CrownSimpleIcon } from '@phosphor-icons/react';
-import Avatar from '../../(profile)/users/components/Avatar';
+import Avatar from '../../users/components/Avatar';
 import { CrownIcon } from 'lucide-react';
 
 interface LeaderboardProps {

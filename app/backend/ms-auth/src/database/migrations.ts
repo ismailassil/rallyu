@@ -173,7 +173,7 @@ const MIGRATIONS = [
 				player_home_score INTEGER NOT NULL,
 				player_away_score INTEGER NOT NULL,
 
-				game_type TEXT NOT NULL, -- (CHECK PING PONG OR TICTACTOE)
+				game_type TEXT NOT NULL, -- (CHECK PONG OR XO)
 				started_at INTEGER DEFAULT (strftime('%s','now')),
 				finished_at INTEGER DEFAULT (strftime('%s','now')),
 

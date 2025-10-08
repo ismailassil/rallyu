@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import LandingPageFooter from './components/LandingPageFooter';
 import unicaOne from './fonts/unicaOne';
+import PublicRoute from './(auth)/components/shared/guards/PublicRoute';
 
 const Page = function () {
 	const router = useRouter();
@@ -31,7 +32,7 @@ const Page = function () {
 	}, [image]);
 
 	return (
-		<>
+		<PublicRoute>
 			<LandingPageHeader />
 			<div className="w-full h-[calc(100vh-124px)] mt-20 px-12 flex flex-col items-center">
 				<div className="max-w-250 flex flex-col justify-between gap-5 h-full">
@@ -101,7 +102,7 @@ const Page = function () {
 					<LandingPageFooter />
 				</div>
 			</div>
-		</>
+		</PublicRoute>
 	);
 };
 

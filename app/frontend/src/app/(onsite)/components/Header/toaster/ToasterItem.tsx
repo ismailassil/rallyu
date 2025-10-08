@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { TOAST_PAYLOAD, ToastTypesDetails } from "./Toast.types";
 import { useNotification } from "../notification/context/NotificationContext";
 import { useTranslations } from "next-intl";
-import Avatar from "@/app/(onsite)/(profile)/users/components/Avatar";
+import Avatar from "@/app/(onsite)/users/components/Avatar";
 
 interface Props {
 	data: TOAST_PAYLOAD;

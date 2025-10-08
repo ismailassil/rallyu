@@ -34,7 +34,7 @@ class StatsService {
 	async getUserStats(
 		userID: number, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'all'
+		gameTypeFilter: 'PONG' | 'XO' | 'all'
 	) {
 		const existingUser = await this.userRepository.findOne(userID);
 		if (!existingUser)
@@ -48,7 +48,7 @@ class StatsService {
 	async getUserAnalytics(
 		userID: number, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'all'
+		gameTypeFilter: 'PONG' | 'XO' | 'all'
 	) {
 		const existingUser = await this.userRepository.findOne(userID);
 		if (!existingUser)
@@ -61,7 +61,7 @@ class StatsService {
 	async getUserAnalyticsByDay(
 		userID: number, 
 		daysCount: number = 7,
-		gameTypeFilter: 'PING PONG' | 'XO' | 'all'
+		gameTypeFilter: 'PONG' | 'XO' | 'all'
 	) {
 		const existingUser = await this.userRepository.findOne(userID);
 		if (!existingUser)

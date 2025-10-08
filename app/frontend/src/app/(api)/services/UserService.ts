@@ -3,7 +3,7 @@ import { AxiosInstance } from 'axios';
 interface FetchMatchesOptions {
 	page?: number;
 	limit?: number;
-	gameType?: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all';
+	gameType?: 'PONG' | 'XO' | 'all';
 	time?: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all';
 }
 

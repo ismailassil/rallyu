@@ -19,7 +19,18 @@ const envSchema = z.object({
 	MAILING_SERVICE_PROVIDER: z.string(),
 	MAILING_SERVICE_USER: z.string(),
 	MAILING_SERVICE_PASS: z.string(),
-	SQLITE3_DB_PATH: z.string()
+	SQLITE3_DB_PATH: z.string(),
+	GOOGLE_OAUTH_CLIENT_ID: z.string(),
+	GOOGLE_OAUTH_CLIENT_SECRET: z.string(),
+	GOOGLE_OAUTH_AUTH_URI: z.string(),
+	GOOGLE_OAUTH_REDIRECT_URI: z.string(),
+	GOOGLE_OAUTH_EXCHANGE_URI: z.string(),
+	INTRA42_OAUTH_CLIENT_ID: z.string(),
+	INTRA42_OAUTH_CLIENT_SECRET: z.string(),
+	INTRA42_OAUTH_AUTH_URI: z.string(),
+	INTRA42_OAUTH_REDIRECT_URI: z.string(),
+	INTRA42_OAUTH_EXCHANGE_URI: z.string(),
+	INTRA42_API_URI: z.string()
 });
 
 export type Env = z.infer<typeof envSchema>;

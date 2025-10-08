@@ -1,5 +1,5 @@
 import { AvailabilityStatus } from "./useAvailabilityCheck";
-import { getUpdatedFormPayload } from "../(onsite)/settings/components/General/utils";
+import { getUpdatedFormPayload } from "../(onsite)/settings/components/Tabs/General/utils";
 import { LoggedInUser } from "../(onsite)/contexts/auth.context.types";
 
 export default function useCanSave(

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { LoggedUser } from '../types/chat.types';
 import { useChat } from '../context/ChatContext';
 import moment from 'moment';
-import Avatar from '../../(profile)/users/components/Avatar';
+import Avatar from '../../users/components/Avatar';
 
 
 const FriendsList = () => {

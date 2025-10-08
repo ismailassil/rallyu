@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import AuthController from "../controllers/AuthController";
 import Authenticate from "../middleware/Authenticate";
 import { zodFormValidator } from "../utils/validation/zodFormValidator";
@@ -32,6 +32,7 @@ import {
 	zodTwoFactorSetupVerifySchema
 } from "../schemas/zod/auth.zod.schema";
 import { UAParser } from "ua-parser-js";
+import { oauthConfig } from "../config/oauth";
 
 async function authRouter(fastify: FastifyInstance, opts: {
 	authController: AuthController,
@@ -93,14 +94,44 @@ async function authRouter(fastify: FastifyInstance, opts: {
 
 
 	/*---------------------------------------- OAuth ----------------------------------------*/
-	// fastify.get('/google/callback', {
-	// 	schema: authOAuthSchema,
-	// 	handler: opts.authController.GoogleOAuthEndpoint.bind(opts.authController)
-	// });
-	// fastify.get('/42/callback', {
-	// 	schema: authOAuthSchema,
-	// 	handler: opts.authController.IntraOAuthEndpoint.bind(opts.authController)
-	// });
+	fastify.get('/google', (request: FastifyRequest, reply: FastifyReply) => {
+		const scope = ['openid', 'profile', 'email'];
+
+		const googleOAuthConsentURL = oauthConfig.google.auth_uri + '?' +
+		new URLSearchParams({
+			client_id: oauthConfig.google.client_id,
+			redirect_uri: oauthConfig.google.redirect_uri,
+			response_type: 'code',
+			scope: scope.join(' '),
+			access_type: 'offline',
+			prompt: 'consent'
+		});
+
+		console.log('googleOAuthConsentURL: ', googleOAuthConsentURL);
+		reply.redirect(googleOAuthConsentURL);
+	});
+
+	fastify.get('/google/callback', {
+		handler: opts.authController.googleOAuthCallbackHandler.bind(opts.authController)
+	});
+
+	fastify.get('/42', (request: FastifyRequest, reply: FastifyReply) => {
+		const scope = 'public';
+
+		const intra42OAuthConsentURL = oauthConfig.intra42.auth_uri + '?' +
+		new URLSearchParams({
+			client_id: oauthConfig.intra42.client_id,
+			redirect_uri: oauthConfig.intra42.redirect_uri,
+			response_type: 'code',
+			scope: scope
+		});
+
+		reply.redirect(intra42OAuthConsentURL);
+	});
+
+	fastify.get('/42/callback', {
+		handler: opts.authController.intra42OAuthCallbackHandler.bind(opts.authController)
+	});
 
 
 

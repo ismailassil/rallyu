@@ -101,7 +101,7 @@ class UserService {
 		viewerID: number, 
 		targetID: number, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'all' = 'all',
+		gameTypeFilter: 'PONG' | 'XO' | 'all' = 'all',
 		paginationFilter?: { page: number, limit: number }
 	) {
 		const targetUser = await this.getUserById(targetID);
@@ -120,7 +120,7 @@ class UserService {
 		viewerID: number, 
 		targetID: number, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'all' = 'all'
+		gameTypeFilter: 'PONG' | 'XO' | 'all' = 'all'
 	) {
 		const targetUser = await this.getUserById(targetID);
 
@@ -136,7 +136,7 @@ class UserService {
 		viewerID: number, 
 		targetID: number, 
 		daysCount: number = 7,
-		gameTypeFilter: 'PING PONG' | 'XO' | 'all' = 'all'
+		gameTypeFilter: 'PONG' | 'XO' | 'all' = 'all'
 	) {
 		const targetUser = await this.getUserById(targetID);
 
@@ -160,8 +160,12 @@ class UserService {
 		last_name: string, 
 		username: string, 
 		email: string, 
-		password: string,
-		hashedPassword: string
+		password: string | null,
+		hashedPassword: string | null,
+		avatar_url?: string,
+		auth_provider?: string,
+		role?: string,
+		bio?: string
 	) {
 		// this.validateUserCreation(username, password, email, first_name, last_name);
 
@@ -175,7 +179,11 @@ class UserService {
 			hashedPassword, 
 			email, 
 			first_name, 
-			last_name
+			last_name,
+			avatar_url,
+			auth_provider,
+			role,
+			bio
 		);
 
 		await this.statsService.createUserRecords(createdUserID);

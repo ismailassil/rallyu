@@ -4,7 +4,7 @@ import Image from "next/image"
 import { ArrowCircleLeftIcon, DotsThreeVerticalIcon } from '@phosphor-icons/react';
 import { useChat } from '../context/ChatContext';
 import { useRouter } from 'next/navigation';
-import Avatar from '../../(profile)/users/components/Avatar';
+import Avatar from '../../users/components/Avatar';
 import useRequestBattleFriend from '@/app/hooks/useRequestBattleFriend';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion } from "framer-motion"
