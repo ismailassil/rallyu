@@ -62,6 +62,15 @@ services:
       - backend
     env_file:
       - .env
+    develop:
+      watch:
+        - path: ./ms-auth
+          action: sync
+          target: /app
+          ignore:
+            - node_modules/
+        - path: ./ms-auth/package.json
+          action: rebuild
 
   ms-notif:
     build:

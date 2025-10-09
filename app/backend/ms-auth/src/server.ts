@@ -14,6 +14,11 @@ async function main() {
 	// 	text: 'This is a test email sent from the Rally authentication server.'
 	// });
 	
+
+
+
+
+	
 	fastify.get('/', (request: FastifyRequest, reply: FastifyReply) => {
 		reply.code(200).send('pong');
 	});

@@ -2,7 +2,7 @@
 import Image from "next/image";
 import SignUpForm from "./components/SignUpForm";
 import { useRouter } from "next/navigation";
-import AuthPageWrapper from "../components/shared/ui/AuthPageWrapper";
+import AuthPageWrapper from "../components/UI/AuthPageWrapper";
 
 async function handleGoogleLogin() {
 	window.location.href = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}:${process.env.NEXT_PUBLIC_API_GATEWAY_PORT}/api/auth/google`;

@@ -3,7 +3,7 @@ import { Monitor, Smartphone, Tablet, MapPin, Clock, LogOut } from 'lucide-react
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { relativeTimeAgoFromNow } from '@/app/(api)/utils';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
-import LoadingComponent, { EmptyComponent } from '@/app/(auth)/components/shared/ui/LoadingComponents';
+import LoadingComponent, { EmptyComponent } from '@/app/(auth)/components/UI/LoadingComponents';
 import useAPICall from '@/app/hooks/useAPICall';
 import { motion } from 'framer-motion';
 

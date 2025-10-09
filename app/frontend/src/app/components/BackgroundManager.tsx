@@ -30,11 +30,6 @@ export default function BackgroundManager() {
 					/>
 				)}
 			</AnimatePresence>
-			{/* {isLoading && (
-				<div className="absolute inset-0 flex items-center justify-center backdrop-blur-3xl transition-all duration-1000">
-					<Loader width={16} height={16} className='animate-spin' />
-				</div>
-			)} */}
 			<AnimatePresence>
 				{isLoading && (
 					<motion.div

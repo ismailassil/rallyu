@@ -2,9 +2,9 @@ import React from 'react';
 import { ChartCard, StatDetailedCard } from '../Cards/Cards';
 import { UserAnalytics, UserAnalyticsByDay } from '../../types';
 import MainCardWrapper from '@/app/(onsite)/components/UI/MainCardWrapper';
-import CustomAreaChart from '@/app/(onsite)/charts/components/CustomAreaChart';
+import CustomAreaChart from '@/app/(onsite)/performance/components/Charts/CustomAreaChart';
 import { secondsToHMS } from '@/app/(api)/utils';
-import CustomBarChart from '@/app/(onsite)/charts/components/CustomBarChart';
+import CustomBarChart from '@/app/(onsite)/performance/components/Charts/CustomBarChart';
 
 export default function TimeAnalysis({ userAnalytics, userAnalyticsByDay } : { userAnalytics: UserAnalytics, userAnalyticsByDay: UserAnalyticsByDay[] }) {
 	const { totals, durations } = userAnalytics;

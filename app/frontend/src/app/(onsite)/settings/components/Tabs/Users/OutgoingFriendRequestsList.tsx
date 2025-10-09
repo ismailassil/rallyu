@@ -4,7 +4,7 @@ import UserList, { UserItem } from "./UserList";
 import { X } from "lucide-react";
 import useAPICall from "@/app/hooks/useAPICall";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
-import LoadingComponent, { EmptyComponent } from "@/app/(auth)/components/shared/ui/LoadingComponents";
+import LoadingComponent, { EmptyComponent } from "@/app/(auth)/components/UI/LoadingComponents";
 
 export default function OutgoingFriendRequestsList() {
 	const {

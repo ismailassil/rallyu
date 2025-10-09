@@ -2,9 +2,9 @@
 'use client';
 import { ArrowLeft, RotateCw } from "lucide-react";
 import { useRouter } from "next/navigation";
-import FormButton from "../../components/shared/ui/FormButton";
-import { useFormContext } from "../../components/shared/form/FormContext";
-import InputField from "../../components/shared/form/InputField";
+import FormButton from "../../components/UI/FormButton";
+import { useFormContext } from "../../components/Form/FormContext";
+import InputField from "../../components/Form/InputField";
 import useAPICall from "@/app/hooks/useAPICall";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";

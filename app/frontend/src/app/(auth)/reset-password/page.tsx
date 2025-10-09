@@ -6,8 +6,8 @@ import { VerifyCode } from "./components/VerifyCode";
 import { SetNewPassword } from "./components/SetNewPassword";
 import useForm from "@/app/hooks/useForm";
 import { resetPasswordSchema } from "@/app/(api)/schema";
-import AuthPageWrapper from "../components/shared/ui/AuthPageWrapper";
-import { FormProvider } from "../components/shared/form/FormContext";
+import AuthPageWrapper from "../components/UI/AuthPageWrapper";
+import { FormProvider } from "../components/Form/FormContext";
 
 enum STEP {
 	FORGOT_PASSWORD = 'FORGOT-PASSWORD',

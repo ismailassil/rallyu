@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import InputField from "@/app/(auth)/components/shared/form/InputField";
-import { FormProvider } from "@/app/(auth)/components/shared/form/FormContext";
+import InputField from "@/app/(auth)/components/Form/InputField";
+import { FormProvider } from "@/app/(auth)/components/Form/FormContext";
 import useForm from "@/app/hooks/useForm";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";

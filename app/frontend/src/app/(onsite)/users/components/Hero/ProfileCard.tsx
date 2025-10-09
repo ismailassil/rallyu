@@ -3,7 +3,7 @@ import Relations, { FriendshipStatus } from './Relations';
 import MainCardWrapper from '@/app/(onsite)/components/UI/MainCardWrapper';
 import Button from './Button';
 import { LocalUserPencilIcon } from './LocalIcon';
-import Avatar from './Avatar';
+import Avatar from '../Avatar';
 import { useRouter } from 'next/navigation';
 import { TrendingUp } from 'lucide-react';
 // import { useAuth } from '@/app/(onsite)/contexts/AuthContext';

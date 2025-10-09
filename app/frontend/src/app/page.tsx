@@ -1,14 +1,14 @@
 'use client';
 
 import Image from 'next/image';
-import Card from './components/Card';
-import rallyuFeatures from './components/CardContent';
+import Card from './components/LandingPageCard';
+import rallyuFeatures from './components/LandingPageCardContent';
 import LandingPageHeader from './components/LandingPageHeader';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import LandingPageFooter from './components/LandingPageFooter';
 import unicaOne from './fonts/unicaOne';
-import PublicRoute from './(auth)/components/shared/guards/PublicRoute';
+import PublicRoute from './(auth)/components/Guards/PublicRoute';
 
 const Page = function () {
 	const router = useRouter();

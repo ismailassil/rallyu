@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import GameCard from "../../components/Main/GameCard";
+import GameCard from "./GameCard";
 
 const DashboardGameCards = () => {
 	const t = useTranslations("dashboard.game");

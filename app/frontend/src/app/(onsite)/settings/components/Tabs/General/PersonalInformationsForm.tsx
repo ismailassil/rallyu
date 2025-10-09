@@ -1,8 +1,8 @@
 import React from 'react';
-import InputField from '@/app/(auth)/components/shared/form/InputField';
+import InputField from '@/app/(auth)/components/Form/InputField';
 import LanguageSwitcher from '../../items/LanguageSwitcher';
-import { useFormContext } from '@/app/(auth)/components/shared/form/FormContext';
-import AvailabilityIndicator from '@/app/(auth)/components/shared/form/AvailabilityIndicator';
+import { useFormContext } from '@/app/(auth)/components/Form/FormContext';
+import AvailabilityIndicator from '@/app/(auth)/components/Form/AvailabilityIndicator';
 import { AvailabilityStatus } from '@/app/hooks/useAvailabilityCheck';
 
 interface PersonalInformationsFormProps {

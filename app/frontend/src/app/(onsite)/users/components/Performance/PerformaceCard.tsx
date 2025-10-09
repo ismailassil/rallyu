@@ -1,7 +1,7 @@
 import CountUp from "react-countup";
 import MainCardWithHeader from "@/app/(onsite)/components/UI/MainCardWithHeader";
-import ChartCardWrapper from "../../charts/components/ChartCardWrapper";
-import CustomAreaChart from "../../charts/components/CustomAreaChart";
+import ChartCardWrapper from "../../../performance/components/Charts/ChartCardWrapper";
+import CustomAreaChart from "../../../performance/components/Charts/CustomAreaChart";
 import { secondsToHMS } from "@/app/(api)/utils";
 
 type PerformanceCardProps = {

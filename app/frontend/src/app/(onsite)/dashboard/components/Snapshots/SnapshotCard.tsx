@@ -1,15 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import CountUp from 'react-countup';
-import { useAuth } from '../../contexts/AuthContext';
-import Chart from '../../users/components/Chart';
-import MainCardWithHeader from '../UI/MainCardWithHeader';
-import GameCard from '../../users/components/GameCard';
+import { useAuth } from '../../../contexts/AuthContext';
+import MainCardWithHeader from '../../../components/UI/MainCardWithHeader';
+import GameCard from '../../../users/components/GamesHistory/GameCard';
 import { secondsToHMS, secondsToMinutes } from '@/app/(api)/utils';
-import ChartCardWrapper from '../../charts/components/ChartCardWrapper';
+import ChartCardWrapper from '../../../performance/components/Charts/ChartCardWrapper';
 import { useTranslations } from 'next-intl';
-import CustomAreaChart from '../../charts/components/CustomAreaChart';
+import CustomAreaChart from '../../../performance/components/Charts/CustomAreaChart';
 
 const PREFIX = {
 	total_xp: "Total XP",

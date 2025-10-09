@@ -1,11 +1,11 @@
 "use client";
-import UserInfo from "../components/Main/UserInfo";
+import UserInfo from "./components/Hero/UserInfo";
 import FriendsPanel from "../components/Main/FriendsPanel";
 import { motion } from "framer-motion";
-import DashboardGameCards from "./components/DashboardGameCards";
+import DashboardGameCards from "./components/GamesCards/DashboardGameCards";
 import { useAuth } from "../contexts/AuthContext";
-import LeaderboardCard from '../components/Main/LeaderBoardCard';
-import SnapshotCard from '../components/Main/SnapshotCard';
+import LeaderboardCard from './components/Leaderboard/LeaderBoardCard';
+import SnapshotCard from './components/Snapshots/SnapshotCard';
 import FriendsCard from "../components/Main/FriendsCard";
 
 export default function Dashboard() {

@@ -3,7 +3,7 @@ import funnelDisplay from '@/app/fonts/FunnelDisplay';
 import { Upload, X } from 'lucide-react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import Avatar from '@/app/(onsite)/users/components/Avatar';
-import { useFormContext } from '@/app/(auth)/components/shared/form/FormContext';
+import { useFormContext } from '@/app/(auth)/components/Form/FormContext';
 
 interface ProfilePreviewProps {
 	avatarFile: File | null;
