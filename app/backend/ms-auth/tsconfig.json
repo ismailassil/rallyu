@@ -4,7 +4,7 @@
 	  "esModuleInterop": true,
 	  "skipLibCheck": true,
 	  "target": "es2022",
-	  "allowJs": true,
+	  "allowJs": false,
 	  "resolveJsonModule": true,
 	  "moduleDetection": "force",
 	  "isolatedModules": true,
@@ -25,13 +25,13 @@
       "noUnusedParameters": false,
 	  
 	  
-      "checkJs": true,
+      "checkJs": false,
       "forceConsistentCasingInFileNames": true,
   
 	  /* If transpiling with TypeScript: */
 	  "module": "NodeNext",
 	  "rootDir": "src",
-	  "outDir": "dist",
+	  "outDir": "build",
 	  "sourceMap": true,
   
 	  /* If your code doesn't run in the DOM: */
