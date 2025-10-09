@@ -5,7 +5,7 @@
 all: help
 
 up:
-	@docker-compose up --build -d
+	@docker-compose up --build --watch
 
 down:
 	@docker-compose down
