@@ -1,5 +1,6 @@
 import { env } from "./env";
 import { mailingConfig, MailingConfig } from "./mailing";
+import { oauthConfig, OAuthConfig } from "./oauth";
 
 export type AuthConfig = {
 	accessSecret: string;
@@ -12,6 +13,7 @@ export type AuthConfig = {
 	allowIpChange: boolean;
 	allowBrowserChange: boolean;
 	allowDeviceChange: boolean;
+	oauthConfig: OAuthConfig;
 	mailingConfig: MailingConfig;
 }
 
@@ -26,5 +28,6 @@ export const authConfig: AuthConfig = {
 	allowIpChange: env.ALLOW_IP_CHANGE,
 	allowBrowserChange: env.ALLOW_BROWSER_CHANGE,
 	allowDeviceChange: env.ALLOW_DEVICE_CHANGE,
+	oauthConfig: oauthConfig,
 	mailingConfig: mailingConfig
 }

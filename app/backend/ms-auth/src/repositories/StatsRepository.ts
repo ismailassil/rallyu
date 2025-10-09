@@ -12,7 +12,7 @@ interface UserStats {
 
 interface MatchFilterOptions {
 	timeFilter?: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all';
-	gameTypeFilter?: 'PING PONG' | 'XO' | 'all';
+	gameTypeFilter?: 'PONG' | 'XO' | 'all';
 	paginationFilter?: { page: number, limit: number };
 }
 
@@ -124,13 +124,13 @@ class StatsRepository extends ARepository {
 	 * Get user stats.
 	 * @param userID - ID of the user.
 	 * @param timeFilter - Time filter for matches ('0d', '1d', '7d', '30d', '90d', '1y', 'all').
-	 * @param gameTypeFilter - Game type filter ('PING PONG', 'XO', 'all').
+	 * @param gameTypeFilter - Game type filter ('PONG', 'XO', 'all').
 	 * @returns Stats object containing matches, wins, losses, draws, win_rate, duration.
 	 */
 	async getUserStats(
 		userID: number, 
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'all'
+		gameTypeFilter: 'PONG' | 'XO' | 'all'
 	) : Promise<any> {
 
 		try {
@@ -164,13 +164,13 @@ class StatsRepository extends ARepository {
 	/**
 	 * Get detailed user analytics grouped by day.
 	 * @param userID - ID of the user.
-	 * @param gameTypeFilter - Game type filter ('PING PONG', 'XO', 'all').
+	 * @param gameTypeFilter - Game type filter ('PONG', 'XO', 'all').
 	 * @param lastAvailableDaysCount - Number of last days to include in the analytics.
 	 * @returns Array of detailed analytics objects grouped by day.
 	 */
 	async getUserDetailedAnalyticsGroupedByDay(
 		userID: number,
-		gameTypeFilter: 'PING PONG' | 'XO' | 'all',
+		gameTypeFilter: 'PONG' | 'XO' | 'all',
 		lastAvailableDaysCount: number
 	) {
 		try {
@@ -179,7 +179,7 @@ class StatsRepository extends ARepository {
 			const detailedStatsGroupedByDay = await db.all(`
 				${CTE.sql}
 				SELECT 
-					date(finished_at) as day,
+					date(finished_at, 'unixepoch') as day,
 
 					COUNT(*) AS matches,
 
@@ -220,7 +220,7 @@ class StatsRepository extends ARepository {
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN duration ELSE NULL END), 0), 2) AS avg_user_draw_duration
 				FROM user_matches
 				GROUP BY day
-				ORDER BY day DESC
+				ORDER BY day ASC
 				LIMIT ${lastAvailableDaysCount}
 			`, CTE.params);
 
@@ -235,13 +235,13 @@ class StatsRepository extends ARepository {
 	 * Get detailed user analytics.
 	 * @param userID - ID of the user.
 	 * @param timeFilter - Time filter for matches ('0d', '1d', '7d', '30d', '90d', '1y', 'all').
-	 * @param gameTypeFilter - Game type filter ('PING PONG', 'XO', 'all').
+	 * @param gameTypeFilter - Game type filter ('PONG', 'XO', 'all').
 	 * @returns Detailed analytics object including totals, scores, durations, and opponent stats.
 	 */
 	async getUserDetailedAnalytics(
 		userID: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'all'
+		gameTypeFilter: 'PONG' | 'XO' | 'all'
 	) {
 		try {
 			const CTE = this.buildUserMatchesCTE(userID, { timeFilter, gameTypeFilter });
@@ -305,6 +305,7 @@ class StatsRepository extends ARepository {
 				ORDER BY matches DESC
 				LIMIT 1
 			`, CTE.params);
+			console.log("mostFreq: ", mostFrequentOpponent);
 
 			const mostWinsOpponent = await db.get(`
 				${CTE.sql}
@@ -391,13 +392,13 @@ class StatsRepository extends ARepository {
 					avg_user_draw_duration: detailedStats.avg_user_draw_duration,
 				},
 				opponents: {
-					uniqueOpponents,
-					mostFrequentOpponent,
-					mostWinsOpponent,
-					mostLossesOpponent,
-					mostDrawsOpponent,
-					mostScoredAgainstOpponent,
-					mostConcededToOpponent,
+					uniqueOpponents: uniqueOpponents ?? 0,
+					mostFrequentOpponent: mostFrequentOpponent ?? { opponent_id: null, opponent_username: null, matches: 0 },
+					mostWinsOpponent: mostWinsOpponent ?? { opponent_id: null, opponent_username: null, wins: 0 },
+					mostLossesOpponent: mostLossesOpponent ?? { opponent_id: null, opponent_username: null, losses: 0 },
+					mostDrawsOpponent: mostDrawsOpponent ?? { opponent_id: null, opponent_username: null, draws: 0 },
+					mostScoredAgainstOpponent: mostScoredAgainstOpponent ?? { opponent_id: null, opponent_username: null, scored: 0 },
+					mostConcededToOpponent: mostConcededToOpponent ?? { opponent_id: null, opponent_username: null, conceded: 0 },
 				}
 			};
 		} catch (err: any) {
@@ -421,7 +422,7 @@ class StatsRepository extends ARepository {
 
 		const timeCondition = 
 			timeFilter === 'all' ? '' :
-			timeFilter === '0d' ? `AND date(m.finished_at) = date('now')` : `AND date(m.finished_at) >= date('now', ?)`;
+			timeFilter === '0d' ? `AND date(m.finished_at, 'unixepoch') = date('now')` : `AND date(m.finished_at, 'unixepoch') >= date('now', ?)`;
 
 		const gameTypeCondition = 
 			gameTypeFilter === 'all' ? '' : `AND game_type = ?`;
@@ -460,7 +461,7 @@ class StatsRepository extends ARepository {
 					u_opp.id AS opponent_id,
 					u_opp.username AS opponent_username,
 					u_opp.avatar_url AS opponent_avatar_url,
-					(strftime('%s', m.finished_at) - strftime('%s', m.started_at)) AS duration,
+					(m.finished_at - m.started_at) AS duration,
 					CASE
 						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score) 
 						OR (m.player_away_id = ? AND m.player_away_score > m.player_home_score) THEN 'W'

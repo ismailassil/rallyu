@@ -16,7 +16,7 @@ interface Match {
 
 interface MatchFilterOptions {
 	timeFilter?: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all';
-	gameTypeFilter?: 'PING PONG' | 'XO' | 'all';
+	gameTypeFilter?: 'PONG' | 'XO' | 'all';
 	paginationFilter?: { page: number, limit: number } | undefined;
 }
 
@@ -49,7 +49,7 @@ class MatchesRepository extends ARepository {
 	 * Create a new match record.
 	 * @param player_home_score - Score of the home player.
 	 * @param player_away_score - Score of the away player.
-	 * @param game_type - Type of the game ('PING PONG', 'XO').
+	 * @param game_type - Type of the game ('PONG', 'XO').
 	 * @param player_home_id - ID of the home player.
 	 * @param player_away_id - ID of the away player.
 	 * @param started - Start time of the match.
@@ -120,7 +120,7 @@ class MatchesRepository extends ARepository {
 	 * Get matches involving a specific user with optional filters and pagination.
 	 * @param userID - ID of the user.
 	 * @param timeFilter - Time filter for matches ('0d', '1d', '7d', '30d', '90d', '1y', 'all').
-	 * @param gameTypeFilter - Game type filter ('PING PONG', 'XO', 'all').
+	 * @param gameTypeFilter - Game type filter ('PONG', 'XO', 'all').
 	 * @param paginationFilter - Pagination options ({ page: number, limit: number }).
 	 * @returns An object containing array of matches and pagination metadata.
 	 */
@@ -128,7 +128,7 @@ class MatchesRepository extends ARepository {
 		try {
 			const { timeFilter = 'all', gameTypeFilter = 'all', paginationFilter } = filters;
 
-			const countCTE = this.buildUserMatchesCTE(userID, filters);
+			const countCTE = this.buildUserMatchesCTE(userID, { timeFilter, gameTypeFilter });
 			const countResult = await db.get(`
 				${countCTE.sql}
 				SELECT COUNT(*) as total_count FROM user_matches
@@ -176,7 +176,7 @@ class MatchesRepository extends ARepository {
 
 		const timeCondition = 
 			timeFilter === 'all' ? '' :
-			timeFilter === '0d' ? `AND date(m.finished_at) = date('now')` : `AND date(m.finished_at) >= date('now', ?)`;
+			timeFilter === '0d' ? `AND date(m.finished_at, 'unixepoch') = date('now')` : `AND date(m.finished_at, 'unixepoch') >= date('now', ?)`;
 
 		const gameTypeCondition = 
 			gameTypeFilter === 'all' ? '' : `AND game_type = ?`;
@@ -215,7 +215,7 @@ class MatchesRepository extends ARepository {
 					u_opp.id AS opponent_id,
 					u_opp.username AS opponent_username,
 					u_opp.avatar_url AS opponent_avatar_url,
-					(strftime('%s', m.finished_at) - strftime('%s', m.started_at)) AS duration,
+					(m.finished_at - m.started_at) AS duration,
 					CASE
 						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score) 
 						OR (m.player_away_id = ? AND m.player_away_score > m.player_home_score) THEN 'W'

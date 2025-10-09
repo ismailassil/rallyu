@@ -140,7 +140,12 @@ class WhatsAppService {
 
 		this.logger.info({ jid }, '[SMS] Sending WhatsApp message');
 
-		await this.WASocket.sendMessage(jid, { text: message });
+		try {
+			await this.WASocket.sendMessage(jid, { text: message });
+		} catch (err) {
+			this.logger.error('[SMS] WhatsApp service error!', err);
+				throw new ServiceUnavailable('SMS service is not available at the moment');
+		}
 
 		this.logger.info({ jid }, '[SMS] WhatsApp message sent');
 	}

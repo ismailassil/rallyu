@@ -1,17 +1,16 @@
 'use client';
 import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import { AnimatePresence, motion } from "framer-motion";
-import General from "./components/General/GeneralSettingsTab";
-import Users from './components/Users/UsersSettingsTab';
-import Security from "./components/Security/Security";
+import General from "./components/Tabs/General/GeneralSettingsTab";
+import Users from './components/Tabs/Users/UsersSettingsTab';
+import Security from "./components/Tabs/Security/SecuritySettingsTab";
 import { useState } from "react";
 import { Cog, UsersIcon, Fingerprint } from "lucide-react";
 
 const TABS = [
 	{ label: 'General', icon: <Cog size={18} /> },
 	{ label: 'Users', icon: <UsersIcon size={18} /> },
-	{ label: 'Security', icon: <Fingerprint size={18} /> },
-	// { key: 'Game', label: 'Game', icon: <Gamepad2 size={18} /> },
+	{ label: 'Security', icon: <Fingerprint size={18} /> }
 ];
 
 function TabSelector({ activeTab, onSelect } : { activeTab: string, onSelect: (tab: string) => void }) {
@@ -36,14 +35,13 @@ function TabSelector({ activeTab, onSelect } : { activeTab: string, onSelect: (t
 }
 
 export default function SettingsPage() {
-	const [activeTab, setActiveTab] = useState('Security');
+	const [activeTab, setActiveTab] = useState('General');
 
 	function renderActiveTab() {
 		switch (activeTab) {
 			case 'General': return <General />;
 			case 'Users': return <Users />;
 			case 'Security': return <Security />;
-			// case 'Game': return <Game />;
 			default: return null;
 		}
 	}
@@ -54,34 +52,32 @@ export default function SettingsPage() {
 			animate={{ opacity: 1, y: 0 }}
 			exit={{ opacity: 1, y: 50 }}
 			transition={{ duration: 1, delay: 0.5 }}
-			className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
+			className="pt-30 sm:pl-30 h-screen w-screen pb-24 pl-6 pr-6 sm:pb-6 overflow-hidden font-funnel-display"
 		>
-			<div className="bg-white/4 border border-white/10  w-full rounded-2xl backdrop-blur-2xl py-8 mb-8">
-				<header className="relative shrink-0 overflow-hidden">
-					<h1
-						className={`${funnelDisplay.className} font-bold pb-0.5 px-13 select-none text-4xl capitalize relative left-0 hover:left-4 transition-all duration-500`}
-					>
-						Settings
-					</h1>
-					<div className="w-18 h-5 absolute left-0 top-[55%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E0E0E0] transition-all duration-200 group-hover:scale-105" />
-				</header>
-				<p className="px-14 text-white/65 text-lg">Manage your account preferences and security settings</p>
-			</div>
-			
-			<TabSelector activeTab={activeTab} onSelect={setActiveTab} />
+			<div className="sm:h-[calc(100vh-9rem)] h-[calc(100vh-14rem)] overflow-hidden">
+				{/* HEADER + TABS */}
+				<div>
+					<div className="bg-white/4 border border-white/10 w-full rounded-2xl py-4 sm:py-8 mb-8">
+						<header className="relative shrink-0 overflow-hidden">
+							<h1
+								className='font-bold pb-0.5 px-13 select-none text-2xl lg:text-4xl capitalize relative left-0 hover:left-4 transition-all duration-500'
+							>
+								Settings
+							</h1>
+							<div className="w-18 h-5 absolute left-0 top-[55%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E0E0E0] transition-all duration-200 group-hover:scale-105" />
+						</header>
+						<p className="px-14 text-white/65 text-sm lg:text-lg">Manage your account preferences and security settings</p>
+					</div>
+					
+					<TabSelector activeTab={activeTab} onSelect={setActiveTab} />
+				</div>
 
-			<div>
-				<AnimatePresence>
-					<motion.div
-						initial={{ opacity: 0, x: 50 }}
-						animate={{ opacity: 1, x: 0 }}
-						exit={{ opacity: 0, x: -50 }}
-						transition={{ duration: 1 }}
-						className="overflow-hidden"
-					>
-						{renderActiveTab()}
-					</motion.div>
-				</AnimatePresence>
+				{/* PAGE MAIN CONTENT */}
+				<div className="h-[calc(100vh-26rem)] sm:h-[calc(100vh-22.7rem)] overflow-y-auto hide-scrollbar rounded-2xl">
+					<AnimatePresence>
+							{renderActiveTab()}
+					</AnimatePresence>
+				</div>
 			</div>
 		</motion.main>
 	);

@@ -1,4 +1,3 @@
-import { on } from "events";
 
 export function secondsToHMS(seconds: number) {
 	seconds = Number(seconds);

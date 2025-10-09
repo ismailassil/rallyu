@@ -45,7 +45,7 @@ class MatchesRepository {
 	async getMatchesByUser(
 		user_id: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all' = 'all',
+		gameTypeFilter: 'PONG' | 'XO' | 'all' = 'all',
 		paginationFilter?: { page: number, limit: number }
 	) : Promise<any> {
 		try {
@@ -103,7 +103,7 @@ class MatchesRepository {
 	buildUserMatchesCTE(
 		user_id: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all',
+		gameTypeFilter: 'PONG' | 'XO' | 'all',
 		paginationFilter?: { page: number, limit: number }
 	) : { sql: string, params: any[] } {
 		const timeCondition = 
@@ -141,12 +141,10 @@ class MatchesRepository {
 					m.finished_at,
 					u_self.id AS user_id,
 					u_self.username AS user_username,
-					u_self.avatar_url AS user_avatar_url,
 					CASE WHEN m.player_home_id = ? THEN m.player_home_score ELSE m.player_away_score END AS user_score,
 					CASE WHEN m.player_home_id = ? THEN m.player_away_score ELSE m.player_home_score END AS opp_score,
 					u_opp.id AS opponent_id,
 					u_opp.username AS opponent_username,
-					u_opp.avatar_url AS opponent_avatar_url,
 					(strftime('%s', m.finished_at) - strftime('%s', m.started_at)) AS duration,
 					CASE
 						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score) 
@@ -202,7 +200,7 @@ async function test() {
 	// const matches = await matchesRepo.getMatchesByUser(1337, '7d', 'all');
 	// const stats = await matchesRepo.getUserStats(8, 'all', 'all');
 	// const detailedStats = await matchesRepo.getUserDetailedStats(8, 'all', 'all');
-	// const trendsGroupedByDay = await matchesRepo.getUserDetailedAnalyticsGroupedByDay(8, 'PING PONG', 7);
+	// const trendsGroupedByDay = await matchesRepo.getUserDetailedAnalyticsGroupedByDay(8, 'PONG', 7);
 
 	// console.log('Matches:', matches);
 	// console.log('Stats:', stats);

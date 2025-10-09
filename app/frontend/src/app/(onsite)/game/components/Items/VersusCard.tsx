@@ -1,4 +1,4 @@
-import Avatar from "@/app/(onsite)/(profile)/users/components/Avatar";
+import Avatar from "@/app/(onsite)/users/components/Avatar";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import inter from "@/app/fonts/inter";
 import { AnimatePresence } from "framer-motion";

@@ -30,7 +30,7 @@ class MatchesService {
 	async getUserMatches(
 		userID: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
-		gameTypeFilter: 'PING PONG' | 'XO' | 'TICTACTOE' | 'all',
+		gameTypeFilter: 'PONG' | 'XO' | 'all',
 		paginationFilter?: { page: number, limit: number }
 	) {
 		return await this.matchesRepository.getMatchesByUser(userID, timeFilter, gameTypeFilter, paginationFilter);

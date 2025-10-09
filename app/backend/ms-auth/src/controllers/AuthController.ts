@@ -5,6 +5,7 @@ import { TokenRequiredError } from "../types/auth.types";
 import TwoFactorService from "../services/TwoFactorAuth/[DEPRECATED]TwoFactorService";
 import AuthResponseFactory from "./AuthResponseFactory";
 import SessionsService from "../services/Auth/SessionsService";
+import { env } from "process";
 
 
 class AuthController {
@@ -47,7 +48,7 @@ class AuthController {
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
 
 			return reply.code(status).setCookie(
-				'refreshToken', refreshToken ?? '', { // TODO: CHECK REFRESH TOKEN TYPE ASSERTION
+				'refreshToken', refreshToken!, {
 					path: '/',
 					httpOnly: true,
 					secure: false,
@@ -161,23 +162,54 @@ class AuthController {
 		}
 	}
 
-	// async GoogleOAuthEndpoint(request: FastifyRequest, reply: FastifyReply) {
-	// 	const { code } = request.query as IOAuthLoginRequest;
+	async googleOAuthCallbackHandler(request: FastifyRequest, reply: FastifyReply) {
+		const { code } = request.query as { code: string }; // TODO: ADD SCHEMA
 
-	// 	const userAgent = request.headers["user-agent"] || '';
+		console.log('google oauth code: ', code);
 
-	// 	try {
-	// 		const { accessToken, refreshToken} = await this.authService.GoogleLogIn(code, userAgent, request.ip);
+		try {
+			const { user, accessToken, refreshToken } = await this.authService.loginGoogleOAuth(code, request.fingerprint!);
 
-	// 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
-	// 		reply.redirect(`http://localhost:3000/login?access_token=${accessToken}&refresh_token=${refreshToken}`);
-	// 	} catch (err: any) {
-	// 		const { status, body } = AuthResponseFactory.getErrorResponse(err);
+			return reply.setCookie(
+				'refreshToken', refreshToken, {
+					path: '/',
+					httpOnly: true,
+					secure: false,
+					sameSite: 'lax'
+				}
+			).redirect(`${process.env['FRONTEND_URL']}:${process.env['FRONTEND_PORT']}`);
+			// reply.redirect(`http://localhost:3000/login?access_token=${accessToken}&refresh_token=${refreshToken}`);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-	// 		reply.code(status).send(body);
-	// 	}
-	// }
+			reply.code(status).send(body);
+		}
+	}
+
+	async intra42OAuthCallbackHandler(request: FastifyRequest, reply: FastifyReply) {
+		const { code } = request.query as { code: string }; // TODO: ADD SCHEMA
+
+		try {
+			const { user, accessToken, refreshToken } = await this.authService.loginIntra42(code, request.fingerprint!);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			return reply.setCookie(
+				'refreshToken', refreshToken, {
+					path: '/',
+					httpOnly: true,
+					secure: false,
+					sameSite: 'lax'
+				}
+			).redirect(`${process.env['FRONTEND_URL']}:${process.env['FRONTEND_PORT']}`);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			reply.code(status).send(body);
+		}
+	}
 
 	// async IntraOAuthEndpoint(request: FastifyRequest, reply: FastifyReply) {
 	// 	const { code } = request.query as IOAuthLoginRequest;

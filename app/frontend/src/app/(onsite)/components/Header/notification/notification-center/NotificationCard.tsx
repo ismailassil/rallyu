@@ -7,7 +7,7 @@ import GameOrTournament from "../items/GameOrTournament";
 import { XIcon } from "@phosphor-icons/react";
 import { useNotification } from "../context/NotificationContext";
 import { useTranslations } from "next-intl";
-import Avatar from "@/app/(onsite)/(profile)/users/components/Avatar";
+import Avatar from "@/app/(onsite)/users/components/Avatar";
 
 interface Props {
 	data: USER_NOTIFICATION;
