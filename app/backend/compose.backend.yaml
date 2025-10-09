@@ -103,6 +103,13 @@ services:
       - backend
     env_file:
       - .env
+    develop:
+      watch:
+        - path: ./ms-chat
+          action: sync+restart
+          target: /app
+          ignore:
+            - node_modules/
 
   ms-tournament:
     build:

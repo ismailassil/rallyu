@@ -85,17 +85,7 @@ const ConversationBody = () => {
 	};
 
 	const  handleLoadMore = () => {
-		useEffect(() => {
-			if (!BOSS?.id) return;
-	
-			apiClient.instance.get('/chat/history')
-				.then((response: any) => {
-					setMessages(response?.data)
-				})
-				.catch((error: any) => {
-					console.error("Error fetching chat history:", error);
-				});
-		}, []);
+		
 	}
 
 	return (
@@ -123,9 +113,9 @@ const ConversationBody = () => {
 						</React.Fragment>
 					))}
 					<div ref={messageRef} />
-					<div className=' flex items-center justify-center'>
+					{/* <div className=' flex items-center justify-center'>
 						<button className=' w-fit text-xs text-white/50 border px-1.5 py-1 rounded-md hover:cursor-pointer' onClick={handleLoadMore}>Load more</button>
-					</div>
+					</div> */}
 				</div>
 			</div>) : (
 				<FirstConversation />
