@@ -1,4 +1,4 @@
-import LeaderboardItem, { AnimatedLeaderboardItem } from './LeaderBoardItem';
+import LeaderboardItem from './LeaderBoardItem';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import MainCardWithHeader from '../UI/MainCardWithHeader';

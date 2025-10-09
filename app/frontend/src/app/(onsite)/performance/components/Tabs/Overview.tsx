@@ -2,30 +2,23 @@
 import React from 'react';
 import { Clock, Target, TrendingUp, Trophy } from 'lucide-react';
 import { ChartCard, StatCard, StatDetailedCard } from '../Cards/Cards';
-import Chart from '../Charts/Chart';
 import { UserAnalytics, UserAnalyticsByDay } from '../../types';
-import ChartPie from '../Charts/ChartPie';
 import MainCardWrapper from '@/app/(onsite)/components/UI/MainCardWrapper';
 import { motion } from 'framer-motion';
+import CustomAreaChart from '@/app/(onsite)/charts/components/CustomAreaChart';
+import CustomPieChart from '@/app/(onsite)/charts/components/CustomPieChart';
 
 export default function Overview({ userAnalytics, userAnalyticsByDay } : { userAnalytics: UserAnalytics, userAnalyticsByDay: UserAnalyticsByDay[] }) {
-	const { totals, scores, durations, opponents } = userAnalytics;
+	const { totals, scores, durations } = userAnalytics;
 
 	const winLossDist = totals.matches === 0 ? [] : [
-		{ type: 'Wins', percent: Number(((totals.wins / totals.matches) * 100).toFixed(2)) },
-		{ type: 'Losses', percent: Number(((totals.losses / totals.matches) * 100).toFixed(2)) },
-		{ type: 'Draws', percent: Number(((totals.draws / totals.matches) * 100).toFixed(2)) }
-	];
-	const youVsOppTotalScore = totals.matches === 0 ? [] : [
-		{ name: 'You', score: scores.total_user_score },
-		{ name: 'Opponents', score: scores.total_opp_score }
+		{ name: 'Wins', value: Number(((totals.wins / totals.matches) * 100).toFixed(2)) },
+		{ name: 'Losses', value: Number(((totals.losses / totals.matches) * 100).toFixed(2)) },
+		{ name: 'Draws', value: Number(((totals.draws / totals.matches) * 100).toFixed(2)) }
 	];
 
-	const winRateTrend =  totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, winRate: d.win_rate }));
-	const avgScoreTrend = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, avgScore: d.avg_user_score }));
-
-	const oppAvgScoreTrend = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, avgScore: d.avg_opp_score }));
-	const oppScoreTrend = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, score: d.total_opp_score }));
+	const winRateTrend =  totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, value: d.win_rate }));
+	const avgScoreTrend = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, value: d.avg_user_score }));
 
 	return (
 		<motion.div
@@ -81,22 +74,31 @@ export default function Overview({ userAnalytics, userAnalyticsByDay } : { userA
 				</section>
 
 				{/* CHARTS */}
-				<section className='grid gap-4 grid-cols-1 lg:grid-cols-3 h-300 lg:h-120'>
-						<ChartCard 
-							title='Win Rate Trends'
-							subtitle='Win rate over the last week'
-							chart={<Chart data={winRateTrend} dataKey="winRate" unit="% Wins" />}
-						/>
-						<ChartCard 
-							title='Wins / Losses'
-							subtitle='Wins / Losses distribution over time'
-							chart={<ChartPie data={winLossDist} nameKey="type" dataKey="percent" unit="%" />}
-						/>
-						<ChartCard 
-							title='Average Score Trends'
-							subtitle='Average score over the last week'
-							chart={<Chart data={avgScoreTrend} dataKey="avgScore" unit="points" />}
-						/>
+				<section className='grid gap-4 grid-cols-1 lg:grid-cols-3 h-360 lg:h-120'>
+						<ChartCard
+							chartTitle='Win Rate Trends'
+							chartSubtitle='Win rate over the last week'
+							className='h-full'
+							isEmpty={winRateTrend.length === 0}
+						>
+							<CustomAreaChart data={winRateTrend} dataKeyX='date' dataKeyY='value' tooltipFormatter={(v) => v + '%'}/>
+						</ChartCard>
+						<ChartCard
+							chartTitle='Wins / Losses'
+							chartSubtitle='Wins / Losses distribution over time'
+							className='h-full'
+							isEmpty={winLossDist.length === 0}
+						>
+							<CustomPieChart data={winLossDist}  nameKey='name' dataKey='value' tooltipFormatter={(v) => v + '%'}/>
+						</ChartCard>
+						<ChartCard
+							chartTitle='Average Score Trends'
+							chartSubtitle='Average score over the last week'
+							className='h-full'
+							isEmpty={avgScoreTrend.length === 0}
+						>
+							<CustomAreaChart data={avgScoreTrend} dataKeyX='date' dataKeyY='value' tooltipFormatter={(v) => v + (v > 1 ? ' Points' : ' Point')}/>
+						</ChartCard>
 				</section>
 
 				{/* SECOND CARDS */}
