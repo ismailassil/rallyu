@@ -1,15 +1,16 @@
 import React from 'react';
 import { ChartCard, StatDetailedCard } from '../Cards/Cards';
-import Chart from '../Charts/Chart';
 import { UserAnalytics, UserAnalyticsByDay } from '../../types';
-import ChartBar from '../Charts/ChartBar';
 import MainCardWrapper from '@/app/(onsite)/components/UI/MainCardWrapper';
+import CustomAreaChart from '@/app/(onsite)/charts/components/CustomAreaChart';
+import { secondsToHMS } from '@/app/(api)/utils';
+import CustomBarChart from '@/app/(onsite)/charts/components/CustomBarChart';
 
 export default function TimeAnalysis({ userAnalytics, userAnalyticsByDay } : { userAnalytics: UserAnalytics, userAnalyticsByDay: UserAnalyticsByDay[] }) {
-	const { totals, scores, durations, opponents } = userAnalytics;
+	const { totals, durations } = userAnalytics;
 
-	const gamesPerDay = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, games: d.matches }));
-	const timeSpent = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, timeSpent: (d.total_duration / 3600) }));
+	const gamesPerDay = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, value: d.matches }));
+	const timeSpent = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, value: d.total_duration }));
 
 	return (
 		<MainCardWrapper className='font-funnel-display pb-4 sm:pb-8'>
@@ -22,17 +23,27 @@ export default function TimeAnalysis({ userAnalytics, userAnalyticsByDay } : { u
 
 			{/* YOUR TIME STATISTICS */}
 			<div className='px-4 sm:px-10 flex flex-col gap-4'>
-				<section className='grid gap-4 grid-cols-1 lg:grid-cols-3 h-300 lg:h-90'>
-					<ChartCard 
-						title='Time Spent'
-						subtitle='Daily playtime over the last week'
-						chart={<Chart data={timeSpent} dataKey="timeSpent" unit="hours" />}
-					/>
-					<ChartCard 
-						title='Games Per Day'
-						subtitle='Daily games over the last week'
-						chart={<ChartBar data={gamesPerDay} nameKey='date' dataKey="games" unit="games" />}
-					/>
+				<section className='grid gap-4 grid-cols-1 lg:grid-cols-3 h-200 lg:h-120'>
+
+					{/* CHARTS */}
+					<ChartCard
+						chartTitle='Time Spent'
+						chartSubtitle='Daily playtime over the last week'
+						className='h-full'
+						isEmpty={timeSpent.length === 0}
+					>
+						<CustomAreaChart data={timeSpent} dataKeyX='date' dataKeyY='value' tooltipFormatter={secondsToHMS} />
+					</ChartCard>
+					<ChartCard
+						chartTitle='Games Per Day'
+						chartSubtitle='Daily games over the last week'
+						className='h-full'
+						isEmpty={gamesPerDay.length === 0}
+					>
+						<CustomBarChart data={gamesPerDay} nameKey='name' dataKey='value' tooltipFormatter={(v) => v + (v > 1 ? ' Games' : ' Game')} />
+					</ChartCard>
+					
+					{/* CARDS */}
 					<div className='flex flex-col gap-4'>
 						<StatDetailedCard
 							title="Match Durations"

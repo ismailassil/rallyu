@@ -36,8 +36,6 @@ function ChartBar<TValueKey extends string, TNameKey extends string>({
 		<div className="absolute -bottom-[5px] -left-2 w-full">
 			<ResponsiveContainer width="104%" height={230}>
 				<BarChart data={data}>
-					{/* <XAxis dataKey={nameKey} /> */}
-					{/* <YAxis /> */}
 					<Tooltip
 						content={({ active, payload }: TooltipProps<number, string>) =>
 							active && payload && payload.length ? (

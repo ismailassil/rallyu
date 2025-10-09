@@ -7,8 +7,9 @@ import Chart from '../../users/components/Chart';
 import MainCardWithHeader from '../UI/MainCardWithHeader';
 import GameCard from '../../users/components/GameCard';
 import { secondsToHMS, secondsToMinutes } from '@/app/(api)/utils';
-import ChartCardWrapper from '../UI/ChartCardWrapper';
+import ChartCardWrapper from '../../charts/components/ChartCardWrapper';
 import { useTranslations } from 'next-intl';
+import CustomAreaChart from '../../charts/components/CustomAreaChart';
 
 const PREFIX = {
 	total_xp: "Total XP",
@@ -144,7 +145,7 @@ export default function SnapshotCard() {
 	const totalsArray = userAnalytics ? flattenData(userAnalytics.totals || {}) : [];
 	const scoresArray = userAnalytics ? flattenData(userAnalytics.scores || {}) : [];
 	const durationsArray = userAnalytics ? flattenData(userAnalytics.durations || {}) : [];
-	const timeSpentToShow = userProfile ? userProfile.userRecentTimeSpent.map((item) => ({ date: item.day, timeSpent: item.total_duration / 60 })) : {};
+	const timeSpentToShow = userProfile ? userProfile.userRecentTimeSpent.map((item) => ({ date: item.day, value: item.total_duration })) : {};
 	
 	useEffect(() => {
 		if (recordsArray.length === 0) return;
@@ -311,24 +312,12 @@ export default function SnapshotCard() {
 						</AnimatePresence>
 					</div>
 
-					<ChartCardWrapper>
-						<p className="text-xl text-white/60 font-bold">Time Spent on Platform</p>
-						{timeSpentToShow.length === 0 ? 
-							<div className="flex flex-col justify-center items-center w-full h-full gap-2 grow-1">
-								<Image
-									src={'/meme/thinking.gif'}
-									width={300}
-									height={300}
-									alt="No data available"
-									className="rounded-2xl blur-[1.25px] hover:blur-none transition-all duration-500 hover:scale-102 cursor-grab"
-									draggable={false}
-								>
-								</Image>
-								<h1 className="text-white/60">No data available</h1>
-							</div>
-							:
-							<Chart data={timeSpentToShow} dataKey='timeSpent' unit='Minutes'/>
-						}
+					<ChartCardWrapper
+						chartTitle='Time Spent in the Platform'
+						className='h-110'
+						isEmpty={timeSpentToShow.length === 0}
+					>
+						<CustomAreaChart data={timeSpentToShow} dataKeyX='date' dataKeyY='value' tooltipFormatter={secondsToHMS} />
 					</ChartCardWrapper>
 				</div>
 			</div>

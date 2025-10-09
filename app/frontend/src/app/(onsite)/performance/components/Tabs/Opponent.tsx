@@ -2,30 +2,22 @@
 import React from 'react';
 import { Clock, Target, TrendingUp, Trophy } from 'lucide-react';
 import { ChartCard, StatCard, StatDetailedCard } from '../Cards/Cards';
-import Chart from '../Charts/Chart';
 import { UserAnalytics, UserAnalyticsByDay } from '../../types';
-import ChartBar from '../Charts/ChartBar';
 import MainCardWrapper from '@/app/(onsite)/components/UI/MainCardWrapper';
 import { motion } from 'framer-motion';
+import CustomAreaChart from '@/app/(onsite)/charts/components/CustomAreaChart';
+import CustomBarChart from '@/app/(onsite)/charts/components/CustomBarChart';
 
 export default function Opponent({ userAnalytics, userAnalyticsByDay } : { userAnalytics: UserAnalytics, userAnalyticsByDay: UserAnalyticsByDay[] }) {
-	const { totals, scores, durations, opponents } = userAnalytics;
+	const { totals, scores, opponents } = userAnalytics;
 
-	const winLossDist = totals.matches === 0 ? [] : [
-		{ type: 'Wins', percent: Number(((totals.wins / totals.matches) * 100).toFixed(2)) },
-		{ type: 'Losses', percent: Number(((totals.losses / totals.matches) * 100).toFixed(2)) },
-		{ type: 'Draws', percent: Number(((totals.draws / totals.matches) * 100).toFixed(2)) }
-	];
 	const youVsOppTotalScore = totals.matches === 0 ? [] : [
-		{ name: 'You', score: scores.total_user_score },
-		{ name: 'Opponents', score: scores.total_opp_score }
+		{ name: 'You', value: scores.total_user_score },
+		{ name: 'Opponents', value: scores.total_opp_score }
 	];
 
-	const winRateTrend =  totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, winRate: d.win_rate }));
-	const avgScoreTrend = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, avgScore: d.avg_user_score }));
-
-	const oppAvgScoreTrend = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, avgScore: d.avg_opp_score }));
-	const oppScoreTrend = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, score: d.total_opp_score }));
+	const oppAvgScoreTrend = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, value: d.avg_opp_score }));
+	const oppScoreTrend = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, value: d.total_opp_score }));
 
 	return (
 		<motion.div
@@ -77,30 +69,31 @@ export default function Opponent({ userAnalytics, userAnalyticsByDay } : { userA
 				</section>
 
 				{/* CHARTS */}
-				<section className='grid gap-4 grid-cols-1 lg:grid-cols-3 h-300 lg:h-120'>
-						<ChartCard 
-							title='Opponents Score Trends'
-							subtitle='Score of your opponents over the last week'
-							chart={<Chart data={oppScoreTrend} dataKey="score" unit="points" />}
-						/>
+				<section className='grid gap-4 grid-cols-1 lg:grid-cols-3 h-360 lg:h-120'>
 						<ChartCard
-							title="You vs Opponent Total Scores"
-							subtitle="Points comparison"
-							chart={
-								<ChartBar
-									data={youVsOppTotalScore}
-									nameKey="name"
-									dataKey="score"
-									unit="pts"
-								/>
-							}
-						/>
-						<ChartCard 
-							title='Opponents Average Score Trends'
-							subtitle='Average score of your opponents over the last week'
-							chart={<Chart data={oppAvgScoreTrend} dataKey="avgScore" unit="points" />}
-						/>
-						
+							chartTitle='Opponents Score Trends'
+							chartSubtitle='Score of your opponents over the last week'
+							className='h-full'
+							isEmpty={oppScoreTrend.length === 0}
+						>
+							<CustomAreaChart data={oppScoreTrend} dataKeyX='date' dataKeyY='value' tooltipFormatter={(v) => v + (v > 1 ? ' Points' : ' Point')}/>
+						</ChartCard>
+						<ChartCard
+							chartTitle='Opponents Score Trends'
+							chartSubtitle='Score of your opponents over the last week'
+							className='h-full'
+							isEmpty={youVsOppTotalScore.length === 0}
+						>
+							<CustomBarChart data={youVsOppTotalScore} nameKey='name' dataKey='value' tooltipFormatter={(v) => v + (v > 1 ? ' Points' : ' Point')} />
+						</ChartCard>
+						<ChartCard
+							chartTitle='Opponents Average Score Trends'
+							chartSubtitle='Average score of your opponents over the last week'
+							className='h-full'
+							isEmpty={oppAvgScoreTrend.length === 0}
+						>
+							<CustomAreaChart data={oppAvgScoreTrend} dataKeyX='date' dataKeyY='value' tooltipFormatter={(v) => v + (v > 1 ? ' Points' : ' Point')}/>
+						</ChartCard>
 				</section>
 
 				{/* SECOND CARDS */}

@@ -1,8 +1,8 @@
 import CountUp from "react-countup";
-import Chart from "./Chart";
-import Image from "next/image";
 import MainCardWithHeader from "@/app/(onsite)/components/UI/MainCardWithHeader";
-import ChartCardWrapper from "@/app/(onsite)/components/UI/ChartCardWrapper";
+import ChartCardWrapper from "../../charts/components/ChartCardWrapper";
+import CustomAreaChart from "../../charts/components/CustomAreaChart";
+import { secondsToHMS } from "@/app/(api)/utils";
 
 type PerformanceCardProps = {
 	totalXP: number,
@@ -15,7 +15,7 @@ type PerformanceCardProps = {
 }
 
 export default function PerformanceCard({ totalXP, totalMatches, longestStreak, wins, losses, draws, timeSpent } : PerformanceCardProps) {
-	const timeSpentToShow = timeSpent.map((item) => ({ date: item.day, timeSpent: item.total_duration / 60 }));
+	const timeSpentToShow = timeSpent.map((item) => ({ date: item.day, value: item.total_duration }));
 
 	return (
 		<MainCardWithHeader headerName='Performance' color='notwhite' className='font-funnel-display flex-3'>
@@ -98,24 +98,12 @@ export default function PerformanceCard({ totalXP, totalMatches, longestStreak, 
 					</div>
 				</div>
 
-				<ChartCardWrapper>
-					<p className="text-xl text-white/60 font-bold">Time Spent on Platform</p>
-					{timeSpentToShow.length === 0 ? 
-						<div className="flex flex-col justify-center items-center w-full h-full gap-2 grow-1">
-							<Image
-								src={'/meme/thinking.gif'}
-								width={360}
-								height={360}
-								alt="No data available"
-								className="rounded-2xl blur-[1.25px] hover:blur-none transition-all duration-500 hover:scale-102 cursor-grab"
-								draggable={false}
-							>
-							</Image>
-							<h1 className="text-white/60">No data available</h1>
-						</div>
-						:
-						<Chart data={timeSpentToShow} dataKey='timeSpent' unit='Minutes'/>
-					}
+				<ChartCardWrapper
+					chartTitle='Time Spent in the Platform'
+					className='h-101'
+					isEmpty={timeSpentToShow.length === 0}
+				>
+					<CustomAreaChart data={timeSpentToShow} dataKeyX='date' dataKeyY='value' tooltipFormatter={secondsToHMS} />
 				</ChartCardWrapper>
 			</div>
 		</MainCardWithHeader>
