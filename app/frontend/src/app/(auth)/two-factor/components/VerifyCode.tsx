@@ -3,12 +3,12 @@ import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useRef, useState } from "react";
 import { METHODS_HELP, METHODS_HELP2, METHODS_META } from "./constants";
-import FormButton from "../../components/shared/ui/FormButton";
+import FormButton from "../../components/UI/FormButton";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import useAPICall from "@/app/hooks/useAPICall";
 import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
-import InputFieldError from "../../components/shared/form/InputFieldError";
+import InputFieldError from "../../components/Form/InputFieldError";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
 
 interface VerifyCodeProps {

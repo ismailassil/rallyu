@@ -1,13 +1,13 @@
 'use client';
 import { use, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import ProfileCard from '../components/ProfileCard';
-import PerformanceCard from '../components/PerformaceCard';
-import GamesHistoryCard from '../components/GamesHistoryCard';
+import ProfileCard from '../components/Hero/ProfileCard';
+import PerformanceCard from '../components/Performance/PerformaceCard';
+import GamesHistoryCard from '../components/GamesHistory/GamesHistoryCard';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toastError } from '@/app/components/CustomToast';
 import { useRouter } from 'next/navigation';
-import { EmptyComponent, LoadingPage } from '@/app/(auth)/components/shared/ui/LoadingComponents';
+import { EmptyComponent, LoadingPage } from '@/app/(auth)/components/UI/LoadingComponents';
 import useAPICall from '@/app/hooks/useAPICall';
 
 export default function UserProfilePage({ params } : { params: Promise<{ username: string }> }) {

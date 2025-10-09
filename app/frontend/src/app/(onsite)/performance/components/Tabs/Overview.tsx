@@ -5,8 +5,8 @@ import { ChartCard, StatCard, StatDetailedCard } from '../Cards/Cards';
 import { UserAnalytics, UserAnalyticsByDay } from '../../types';
 import MainCardWrapper from '@/app/(onsite)/components/UI/MainCardWrapper';
 import { motion } from 'framer-motion';
-import CustomAreaChart from '@/app/(onsite)/charts/components/CustomAreaChart';
-import CustomPieChart from '@/app/(onsite)/charts/components/CustomPieChart';
+import CustomAreaChart from '@/app/(onsite)/performance/components/Charts/CustomAreaChart';
+import CustomPieChart from '@/app/(onsite)/performance/components/Charts/CustomPieChart';
 
 export default function Overview({ userAnalytics, userAnalyticsByDay } : { userAnalytics: UserAnalytics, userAnalyticsByDay: UserAnalyticsByDay[] }) {
 	const { totals, scores, durations } = userAnalytics;

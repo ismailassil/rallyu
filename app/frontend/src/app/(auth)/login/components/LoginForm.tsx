@@ -4,12 +4,12 @@ import React from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
-import InputField from '../../components/shared/form/InputField';
+import InputField from '../../components/Form/InputField';
 import useForm from '@/app/hooks/useForm';
 import { loginFormSchema } from '@/app/(api)/schema';
-import FormButton from '../../components/shared/ui/FormButton';
+import FormButton from '../../components/UI/FormButton';
 import { LogIn } from 'lucide-react';
-import { FormProvider } from '../../components/shared/form/FormContext';
+import { FormProvider } from '../../components/Form/FormContext';
 import useAPICall from '@/app/hooks/useAPICall';
 
 export default function LoginForm() {

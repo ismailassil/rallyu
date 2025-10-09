@@ -60,7 +60,7 @@ export default function SideBar() {
 		<motion.nav
 			initial={{ opacity: 0, x: -50 }}
 			animate={{ opacity: 1, x: 0 }}
-			transition={{ duration: 1, delay: 0.5 }}
+			transition={{ duration: 1 }}
 			className="main-card-wrapper h-22 sm:mt-30 sm:translate-x-none bg-card border-br-card fixed bottom-0
 				left-0 flex w-full flex-row
 				items-center justify-center gap-10 overflow-clip border-t-2 sm:bottom-auto

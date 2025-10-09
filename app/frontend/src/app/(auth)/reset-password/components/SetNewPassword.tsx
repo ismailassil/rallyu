@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRouter } from "next/navigation";
-import InputField from "../../components/shared/form/InputField";
-import FormButton from "../../components/shared/ui/FormButton";
+import InputField from "../../components/Form/InputField";
+import FormButton from "../../components/UI/FormButton";
 import { RotateCw } from "lucide-react";
-import { useFormContext } from "../../components/shared/form/FormContext";
+import { useFormContext } from "../../components/Form/FormContext";
 import useAPICall from "@/app/hooks/useAPICall";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";

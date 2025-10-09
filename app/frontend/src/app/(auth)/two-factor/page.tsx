@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import MethodsOverview from './components/MethodsOverview';
 import VerifyCode from './components/VerifyCode';
 import { toastError } from '@/app/components/CustomToast';
-import AuthPageWrapper from '../components/shared/ui/AuthPageWrapper';
+import AuthPageWrapper from '../components/UI/AuthPageWrapper';
 
 enum STEP {
 	OVERVIEW = 'OVERVIEW',

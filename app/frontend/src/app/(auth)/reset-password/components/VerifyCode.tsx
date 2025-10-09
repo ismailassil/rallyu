@@ -3,13 +3,13 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
 import { useRef, useState } from "react";
-import FormButton from "../../components/shared/ui/FormButton";
+import FormButton from "../../components/UI/FormButton";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import useAPICall from "@/app/hooks/useAPICall";
-import { useFormContext } from "../../components/shared/form/FormContext";
+import { useFormContext } from "../../components/Form/FormContext";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
-import InputFieldError from "../../components/shared/form/InputFieldError";
+import InputFieldError from "../../components/Form/InputFieldError";
 import { AnimatePresence } from "framer-motion";
 
 interface VerifyCodeProps {
