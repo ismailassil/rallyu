@@ -25,7 +25,7 @@ services:
                 - NGINX_METRICS_PASSWORD=${NGINX_METRICS_PASSWORD}
         image: rallyu/nginx:v1.0
         volumes:
-            - ./nginx/logs/access.log:/var/log/nginx/access.log
+            - ./nginx/logs/:/var/log/nginx/
             - certs:/certs/
         container_name: nginx
         restart: always

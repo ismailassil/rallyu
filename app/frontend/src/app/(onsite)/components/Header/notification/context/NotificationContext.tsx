@@ -129,7 +129,8 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 
 	const handleGameInit = useCallback((gameId: string) => {
 		// TODO - FIX THIS WITH MMAILA
-	}, []);
+		router.push("/game/" + gameId);
+	}, [router]);
 
 	useEffect(() => {
 		socket.on("notification_notify", handleNotify);

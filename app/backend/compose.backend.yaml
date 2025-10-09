@@ -38,7 +38,7 @@ services:
     develop:
       watch:
         - path: ./api-gateway
-          action: sync+restart
+          action: sync
           target: /app
           ignore:
             - node_modules/
@@ -62,6 +62,15 @@ services:
       - backend
     env_file:
       - .env
+    develop:
+      watch:
+        - path: ./ms-auth
+          action: sync
+          target: /app
+          ignore:
+            - node_modules/
+        - path: ./ms-auth/package.json
+          action: rebuild
 
   ms-notif:
     build:
@@ -80,7 +89,7 @@ services:
     develop:
       watch:
         - path: ./ms-notif
-          action: sync+restart
+          action: sync
           target: /app
           ignore:
             - node_modules/
@@ -106,7 +115,7 @@ services:
     develop:
       watch:
         - path: ./ms-chat
-          action: sync+restart
+          action: sync
           target: /app
           ignore:
             - node_modules/
@@ -123,6 +132,15 @@ services:
     restart: always
     networks:
       - backend
+    develop:
+      watch:
+        - path: ./ms-tournament
+          action: sync
+          target: /app
+          ignore:
+            - node_modules/
+        - path: ./ms-tournament/package.json
+          action: rebuild
 
   ms-matchmaking:
     build:
@@ -136,6 +154,15 @@ services:
     restart: always
     networks:
       - backend
+    develop:
+      watch:
+        - path: ./ms-matchmaking
+          action: sync
+          target: /app
+          ignore:
+            - node_modules/
+        - path: ./ms-matchmaking/package.json
+          action: rebuild
 
   ms-game:
     build:
@@ -149,6 +176,15 @@ services:
     restart: always
     networks:
       - backend
+    develop:
+      watch:
+        - path: ./ms-game
+          action: sync
+          target: /app
+          ignore:
+            - node_modules/
+        - path: ./ms-game/package.json
+          action: rebuild
 
   redis:
     image: redis:alpine3.22
