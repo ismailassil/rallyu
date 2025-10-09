@@ -62,31 +62,10 @@ export default function PerformancePage() {
 		}
 
 		fetchUserAnalytics();
-	}, []);
+	}, [apiClient, loggedInUser]);
 
 	if (isLoading || !userAnalytics || !userAnalyticsByDay)
 		return null;
-
-	const { totals, scores, durations, opponents } = userAnalytics;
-
-	const winLossDist = totals.matches === 0 ? [] : [
-		{ type: 'Wins', percent: Number(((totals.wins / totals.matches) * 100).toFixed(2)) },
-		{ type: 'Losses', percent: Number(((totals.losses / totals.matches) * 100).toFixed(2)) },
-		{ type: 'Draws', percent: Number(((totals.draws / totals.matches) * 100).toFixed(2)) }
-	];
-	const youVsOppTotalScore = totals.matches === 0 ? [] : [
-		{ name: 'You', score: scores.total_user_score },
-		{ name: 'Opponents', score: scores.total_opp_score }
-	];
-
-	const winRateTrend =  totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, winRate: d.win_rate }));
-	const avgScoreTrend = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, avgScore: d.avg_user_score }));
-
-	const oppAvgScoreTrend = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, avgScore: d.avg_opp_score }));
-	const oppScoreTrend = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, score: d.total_opp_score }));
-
-	const gamesPerDay = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, games: d.matches }));
-	const timeSpent = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, timeSpent: (d.total_duration / 3600).toFixed(1) }));
 
 	function renderActiveTab() {
 		switch (activeTab) {
@@ -99,14 +78,13 @@ export default function PerformancePage() {
 
 	return (
 		<motion.main
-			initial={{ opacity: 0, y: -50 }}
-			animate={{ opacity: 1, y: 0 }}
-			exit={{ opacity: 1, y: 50 }}
-			transition={{ duration: 1, delay: 0.5 }}
+			initial={{ opacity: 0, x: -20 }}
+			animate={{ opacity: 1, x: 0 }}
+			transition={{ duration: 0.5 }}
 			className="pt-30 sm:pl-30 h-screen w-screen pb-24 pl-6 pr-6 sm:pb-6 overflow-hidden font-funnel-display"
 		>
 			<div className="sm:h-[calc(100vh-9rem)] h-[calc(100vh-14rem)] overflow-hidden">
-			{/* HEADER + TABS */}
+				{/* HEADER + TABS */}
 				<div>
 					<div className="bg-white/4 border border-white/10 w-full rounded-2xl py-4 sm:py-8 mb-8">
 						<header className="relative shrink-0 overflow-hidden">

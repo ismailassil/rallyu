@@ -6,15 +6,16 @@ import DashboardGameCards from "./components/DashboardGameCards";
 import { useAuth } from "../contexts/AuthContext";
 import LeaderboardCard from '../components/Main/LeaderBoardCard';
 import SnapshotCard from '../components/Main/SnapshotCard';
+import FriendsCard from "../components/Main/FriendsCard";
 
 export default function Dashboard() {
 	const { loggedInUser } = useAuth();
 
 	return (
 		<motion.main
-			initial={{ opacity: 0, y: -50 }}
-			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 1, delay: 0.5 }}
+			initial={{ opacity: 0, x: -20 }}
+			animate={{ opacity: 1, x: 0 }}
+			transition={{ duration: 0.5 }}
 			className="h-[100vh] pt-30 pr-6 pb-24 pl-6 sm:pb-6 sm:pl-30"
 		>
 			<div className="flex gap-4 size-full">
@@ -30,7 +31,8 @@ export default function Dashboard() {
 						</div>
 					</section>
 				</article>
-				<FriendsPanel />
+				<FriendsCard />
+				{/* <FriendsPanel /> */}
 			</div>
 		</motion.main>
 	);

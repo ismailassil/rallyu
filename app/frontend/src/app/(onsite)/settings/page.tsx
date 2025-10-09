@@ -48,10 +48,9 @@ export default function SettingsPage() {
 	
 	return (
 		<motion.main
-			initial={{ opacity: 0, y: -50 }}
-			animate={{ opacity: 1, y: 0 }}
-			exit={{ opacity: 1, y: 50 }}
-			transition={{ duration: 1, delay: 0.5 }}
+			initial={{ opacity: 0, x: -20 }}
+			animate={{ opacity: 1, x: 0 }}
+			transition={{ duration: 0.5 }}
 			className="pt-30 sm:pl-30 h-screen w-screen pb-24 pl-6 pr-6 sm:pb-6 overflow-hidden font-funnel-display"
 		>
 			<div className="sm:h-[calc(100vh-9rem)] h-[calc(100vh-14rem)] overflow-hidden">

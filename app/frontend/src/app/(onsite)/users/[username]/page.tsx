@@ -53,9 +53,9 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 
 	return (
 		<motion.main
-			initial={{ opacity: 0, y: -50 }}
-			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 1, delay: 0.5 }}
+			initial={{ opacity: 0, x: -20 }}
+			animate={{ opacity: 1, x: 0 }}
+			transition={{ duration: 0.5 }}
 			className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
 		>
 			<div className="flex h-full w-full gap-6 rounded-lg">
