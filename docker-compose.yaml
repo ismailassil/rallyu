@@ -9,12 +9,12 @@ networks:
 services:
     nginx:
         depends_on: # add depends_on all the servers's container
-            kibana:
-                condition: service_healthy
-            grafana:
-                condition: service_healthy
-            # frontend:
+            # kibana:
             #     condition: service_healthy
+            # grafana:
+            #     condition: service_healthy
+            frontend:
+                condition: service_healthy
             api-gateway:
                 condition: service_healthy
         build:
@@ -45,5 +45,5 @@ services:
 
 include:
     - ./app/compose.app.yaml
-    - ./logging/compose.logging.yaml
-    - ./monitoring/compose.monitoring.yaml
+    # - ./logging/compose.logging.yaml
+    # - ./monitoring/compose.monitoring.yaml

@@ -21,7 +21,7 @@ services:
       - 4025:4025
     networks:
       - backend
-      # - web-app
+      - web-app
     env_file:
       - ./api-gateway/.env
       - .env
@@ -195,6 +195,6 @@ services:
     restart: always
     networks:
       - backend
-      # - web-app
+      - web-app
     volumes:
       - ./nats_ui_config/config.json:/srv/config.json

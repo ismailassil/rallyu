@@ -1,6 +1,0 @@
-POST http://localhost:3000/api/v1/matchmaking/join
-Content-Type: application/json
-
-{
-    "id": 1
-}

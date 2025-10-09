@@ -6,8 +6,9 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { AuthContextType, LoggedInUser } from './auth.context.types';
 
 const AuthContext = createContext<AuthContextType | null>(null);
-const apiClient = new APIClient('http://localhost:4025/api');
-const socket = new SocketClient();
+// const apiClient = new APIClient('http://localhost:4025/api');
+let apiClient: APIClient;
+let socket: SocketClient;
 
 export function useAuth() : AuthContextType {
 	const ctx = useContext(AuthContext);
@@ -25,7 +26,14 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	const [isLoading, setIsLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [isBusy, setIsBusy] = useState<boolean>(false);
-
+	
+	useEffect(() => {
+		if (typeof window !== 'undefined') {
+			apiClient = new APIClient(`${window.location.origin}/api`);
+			socket = new SocketClient(window.location.origin);
+		}
+	}, []);
+	
 	// THIS USE EFFECT WILL ONLY RUN ON PAGE FIRSTLOAD/REFRESH
 	useEffect(() => {
 		console.log('AuthProvider useEffect - Checking authentication status...');

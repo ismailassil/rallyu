@@ -21,8 +21,10 @@ class SocketIOService {
 		this.options = opts;
 
 		this.io = new Server(fastify.server, {
+			path: "/socketio-api",
 			cors: {
-				origin: `http://localhost:${this.options.FRONT_PORT}`,
+				// origin: `http://localhost:${this.options.FRONT_PORT}`,
+				origin: "*",
 				methods: ["GET", "POST"],
 				credentials: true,
 			},

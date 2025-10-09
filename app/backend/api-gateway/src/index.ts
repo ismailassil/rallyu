@@ -21,7 +21,8 @@ const FRONT_PORT = process.env.FRONT_PORT ?? "";
 await fastify.register(cors, {
 	// TODO: Should be specified to the frontend
 	// origin: [`http://frontend:${FRONT_PORT}`],
-	origin: [`http://localhost:${FRONT_PORT}`],
+	// origin: [`http://localhost:${FRONT_PORT}`],
+	origin: [`*`],
 	allowedHeaders: ["Content-Type", "Authorization"],
 	methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
 	credentials: true,

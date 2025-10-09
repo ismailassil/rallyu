@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useHeaderContext } from "./context/HeaderContext";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../contexts/AuthContext";
+import Link from "next/link";
 
 interface SearchByUsernameResult {
 	id: number,
@@ -13,7 +14,6 @@ interface SearchByUsernameResult {
 }
 
 export default function Search() {
-	const router = useRouter();
 	const { apiClient } = useAuth();
 	const [search, setSearch] = useState<string>("");
 	const div1Ref = useRef<HTMLDivElement>(null);
@@ -148,7 +148,7 @@ export default function Search() {
 								<ul>
 									{results.map((elem) => {
 										return (
-												<a
+												<Link
 													href={`/users/${elem.username}`}
 													onClick={() => setIsSearch(false)}
 													key={elem.username}
@@ -158,7 +158,7 @@ export default function Search() {
 												>
 													<Image src={`http://localhost:4025/api${elem.avatar_url}`} alt="Command Logo" width={42} height={42} className="rounded-full border-2 border-white/20"/>
 													<p>{elem.username}</p>
-												</a>
+												</Link>
 										);
 									})}
 								</ul>

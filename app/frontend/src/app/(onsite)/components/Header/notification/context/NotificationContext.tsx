@@ -127,15 +127,21 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		});
 	}, []);
 
+	const handleGameInit = useCallback((gameId: string) => {
+		// TODO - FIX THIS WITH MMAILA
+	}, []);
+
 	useEffect(() => {
 		socket.on("notification_notify", handleNotify);
 		socket.on("notification_update_action", handleUpdate);
-
+		socket.on("notification_game_init", handleGameInit);
+		
 		return () => {
 			socket.off("notification_notify", handleNotify);
 			socket.off("notification_update_action", handleUpdate);
+			socket.off("notification_game_init", handleGameInit);
 		};
-	}, [handleNotify, handleUpdate, socket]);
+	}, [handleNotify, handleUpdate, socket, handleGameInit]);
 
 	useEffect(() => {
 		if (!isBottom && pageRef.current > 0) return;
