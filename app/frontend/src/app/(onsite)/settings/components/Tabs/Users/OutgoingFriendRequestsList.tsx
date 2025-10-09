@@ -40,7 +40,7 @@ export default function OutgoingFriendRequestsList() {
 
 	async function handleCancel(id: number) {
 		try {
-			await apiClient.unfriend(id);
+			await apiClient.cancelFriendRequest(id);
 			setOutgoing(prev => prev.filter(item => item.id !== id));
 			toastSuccess('Canceled');
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any

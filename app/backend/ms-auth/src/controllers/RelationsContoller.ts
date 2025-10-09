@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import RelationsService from "../services/User/RelationsService";
 import { IRelationsRequest } from "../types";
 import { JSONCodec } from "nats";
+import AuthResponseFactory from "./AuthResponseFactory";
 
 class RelationsController {
 	constructor(
@@ -14,11 +15,13 @@ class RelationsController {
 
 			const allFriends = await this.relationsService.getFriends(user_id!);
 
-			reply.status(201).send({ success: true, data: allFriends });
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, allFriends);
+
+			return reply.status(status).send(body);
 		} catch (err: any) {
-			console.error(err);
-			const { statusCode, errorCode } = err;
-			reply.status(statusCode).send({ success: false, error: errorCode });
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
 		}
 	}
 
@@ -28,11 +31,13 @@ class RelationsController {
 
 			const allBlocked = await this.relationsService.getOutgoingBlocks(user_id!);
 
-			reply.status(201).send({ success: true, data: allBlocked });
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, allBlocked);
+
+			return reply.status(status).send(body);
 		} catch (err: any) {
-			console.error(err);
-			const { statusCode, errorCode } = err;
-			reply.status(statusCode).send({ success: false, error: errorCode });
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
 		}
 	}
 
@@ -42,11 +47,13 @@ class RelationsController {
 
 			const allIncoming = await this.relationsService.getIncomingFriendRequests(user_id!);
 
-			reply.status(201).send({ success: true, data: allIncoming });
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, allIncoming);
+
+			return reply.status(status).send(body);
 		} catch (err: any) {
-			console.error(err);
-			const { statusCode, errorCode } = err;
-			reply.status(statusCode).send({ success: false, error: errorCode });
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
 		}
 	}
 	async fetchOutgoingFriendRequestsHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -55,11 +62,13 @@ class RelationsController {
 
 			const allOutgoing = await this.relationsService.getOutgoingFriendRequests(user_id!);
 
-			reply.status(201).send({ success: true, data: allOutgoing });
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, allOutgoing);
+
+			return reply.status(status).send(body);
 		} catch (err: any) {
-			console.error(err);
-			const { statusCode, errorCode } = err;
-			reply.status(statusCode).send({ success: false, error: errorCode });
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
 		}
 	}
 
@@ -79,11 +88,13 @@ class RelationsController {
 			});
 			await request.server.js.publish(subject, payload);
 
-			reply.status(201).send({ success: true, data: {} });
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			return reply.status(status).send(body);
 		} catch (err: any) {
-			console.error(err);
-			const { statusCode, errorCode } = err;
-			reply.status(statusCode).send({ success: false, error: errorCode });
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
 		}
 	}
 
@@ -105,11 +116,13 @@ class RelationsController {
 			});
 			request.server.nc.publish("notification.update_status", data);
 
-			reply.status(204).send({ success: true, data: {} });
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			return reply.status(status).send(body);
 		} catch (err: any) {
-			console.error(err);
-			const { statusCode, errorCode } = err;
-			reply.status(statusCode).send({ success: false, error: errorCode });
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
 		}
 	}
 
@@ -140,11 +153,13 @@ class RelationsController {
 			});
 			request.server.nc.publish("notification.dispatch", payload);
 
-			reply.status(200).send({ success: true, data: {} });
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			return reply.status(status).send(body);
 		} catch (err: any) {
-			console.error(err);
-			const { statusCode, errorCode } = err;
-			reply.status(statusCode).send({ success: false, error: errorCode });
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
 		}
 	}
 	
@@ -166,11 +181,13 @@ class RelationsController {
 			});
 			request.server.nc.publish("notification.update_status", data);
 
-			reply.status(204).send({ success: true, data: {} });
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			return reply.status(status).send(body);
 		} catch (err: any) {
-			console.error(err);
-			const { statusCode, errorCode } = err;
-			reply.status(statusCode).send({ success: false, error: errorCode });
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
 		}
 	}
 
@@ -181,11 +198,13 @@ class RelationsController {
 
 			await this.relationsService.blockUser(user_id!, targetUserId);
 
-			reply.status(200).send({ success: true, data: {} });
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			return reply.status(status).send(body);
 		} catch (err: any) {
-			console.error(err);
-			const { statusCode, errorCode } = err;
-			reply.status(statusCode).send({ success: false, error: errorCode });
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
 		}
 	}
 
@@ -196,11 +215,13 @@ class RelationsController {
 
 			await this.relationsService.unblockUser(user_id!, targetUserId);
 
-			reply.status(200).send({ success: true, data: {} });
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			return reply.status(status).send(body);
 		} catch (err: any) {
-			console.error(err);
-			const { statusCode, errorCode } = err;
-			reply.status(statusCode).send({ success: false, error: errorCode });
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
 		}
 	}
 
@@ -211,11 +232,13 @@ class RelationsController {
 
 			await this.relationsService.unfriend(user_id!, targetUserId);
 
-			reply.status(200).send({ success: true, data: {} });
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			return reply.status(status).send(body);
 		} catch (err: any) {
-			console.error(err);
-			const { statusCode, errorCode } = err;
-			reply.status(statusCode).send({ success: false, error: errorCode });
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
 		}
 	}
 }

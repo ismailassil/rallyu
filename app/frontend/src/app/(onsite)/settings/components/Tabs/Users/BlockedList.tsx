@@ -41,7 +41,7 @@ export default function BlockedList() {
 
 	async function handleUnblock(id: number) {
 		try {
-			await apiClient.unfriend(id);
+			await apiClient.unblockUser(id);
 			setBlocked(prev => prev.filter(item => item.id !== id));
 			toastSuccess('Unblocked');
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any

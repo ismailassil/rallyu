@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import Button from './Button';
 import { LocalUserMinusIcon, LocalUserPlusIcon, LocalUserXIcon } from './LocalIcon';
+import { toastError, toastSuccess } from '@/app/components/CustomToast';
 
-export type FriendshipStatus = 'NONE' | 'OUTGOING' | 'INCOMING' | 'FRIENDS' | null;
+export type FriendshipStatus = 'NONE' | 'OUTGOING' | 'INCOMING' | 'FRIENDS' | 'BLOCKED' | null;
 
 export default function Relations({ userId, currentStatus } : { userId: number, currentStatus: FriendshipStatus }) {
 	const [friendshipStatus, setFriendshipStatus] = useState<FriendshipStatus>(currentStatus);
@@ -16,19 +17,21 @@ export default function Relations({ userId, currentStatus } : { userId: number, 
 		try {
 			await action();
 			setFriendshipStatus(next);
-			alert(message);
-		} catch {
-			alert('Something wrong happened!');
+			toastSuccess(message);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (err: any) {
+			toastError(err.message);
 		}
 	}
 
 	const ACTIONS = {
-		add: () => executeAction(() => apiClient.sendFriendRequest(userId), 'OUTGOING', 'Request Sent!'),
-		accept: () => executeAction(() => apiClient.acceptFriendRequest(userId), 'FRIENDS', 'Request Accepted!'),
-		cancel: () => executeAction(() => apiClient.cancelFriendRequest(userId), 'NONE', 'Request Canceled!'),
-		reject: () => executeAction(() => apiClient.rejectFriendRequest(userId), 'NONE', 'Request Rejected!'),
-		unfriend: () => executeAction(() => apiClient.unfriend(userId), 'NONE', 'Unfriended!'),
-		block: () => executeAction(() => apiClient.blockUser(userId), 'NONE', 'Blocked!'),
+		add: () => executeAction(() => apiClient.sendFriendRequest(userId), 'OUTGOING', 'Sent'),
+		accept: () => executeAction(() => apiClient.acceptFriendRequest(userId), 'FRIENDS', 'Accepted'),
+		cancel: () => executeAction(() => apiClient.cancelFriendRequest(userId), 'NONE', 'Canceled'),
+		reject: () => executeAction(() => apiClient.rejectFriendRequest(userId), 'NONE', 'Rejected'),
+		unfriend: () => executeAction(() => apiClient.unfriend(userId), 'NONE', 'Unfriended'),
+		block: () => executeAction(() => apiClient.blockUser(userId), 'BLOCKED', 'Blocked'),
+		unblock: () => executeAction(() => apiClient.unblockUser(userId), 'NONE', 'Unblocked'),
 	};
 
 	const BUTTONS = {
@@ -39,12 +42,15 @@ export default function Relations({ userId, currentStatus } : { userId: number, 
 			<Button key="reject" text="Decline" icon={LocalUserMinusIcon} onClick={ACTIONS.reject} />,
 		],
 		FRIENDS: [<Button key="unfriend" text="Unfriend" icon={LocalUserMinusIcon} onClick={ACTIONS.unfriend} />],
+		BLOCKED: [<Button key="unblock" text="Unblock" icon={LocalUserXIcon} onClick={ACTIONS.unblock} />]
 	};
 
 	return (
 		<div className="flex gap-3">
 			{BUTTONS[friendshipStatus]}
-			<Button text="Block" icon={LocalUserXIcon} onClick={ACTIONS.block} />
+			{friendshipStatus !== 'BLOCKED' && (
+				<Button text="Block" icon={LocalUserXIcon} onClick={ACTIONS.block} />
+			)}
 		</div>
 	);
 }

@@ -84,12 +84,16 @@ export default function ProfileCard({ userId, fullName, username, bio, avatar, f
 							{bio}
 						</p>
 						{/* RELATIONS BUTTONS */}
-						{friendshipStatus && <Relations userId={userId} currentStatus={friendshipStatus as FriendshipStatus} />}
 						{/* EDIT PROFILE/VIEW PERFORMANCE BUTTON */}
-						{!friendshipStatus && <div className='flex flex-col sm:flex-row gap-3'>
-							<Button key="view-stats" text="View Performance" lucide_icon={<TrendingUp size={16} />} onClick={() => router.push('/performance')} />
-							<Button key="edit-profile" text="Edit Profile" icon={LocalUserPencilIcon} onClick={() => router.push('/settings')} />
-						</div>}
+						{friendshipStatus ? (
+							<Relations userId={userId} currentStatus={friendshipStatus as FriendshipStatus} />
+						) : (
+							<div className='flex flex-col sm:flex-row gap-3'>
+								<Button key="edit-profile" text="Edit Profile" icon={LocalUserPencilIcon} onClick={() => router.push('/settings')} />
+								<Button key="view-stats" text="View Performance" lucide_icon={<TrendingUp size={16} />} onClick={() => router.push('/performance')} />
+							</div>
+						)
+						}
 					</div>
 					{/* Avatar */}
 					<Avatar 

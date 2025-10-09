@@ -40,7 +40,7 @@ export default function IncomingFriendRequestsList() {
 
 	async function handleDecline(id: number) {
 		try {
-			await apiClient.unfriend(id);
+			await apiClient.rejectFriendRequest(id);
 			setIncoming(prev => prev.filter(item => item.id !== id));
 			toastSuccess('Rejected');
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,7 +51,7 @@ export default function IncomingFriendRequestsList() {
 
 	async function handleAccept(id: number) {
 		try {
-			await apiClient.unfriend(id);
+			await apiClient.acceptFriendRequest(id);
 			setIncoming(prev => prev.filter(item => item.id !== id));
 			toastSuccess('Accepted');
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
