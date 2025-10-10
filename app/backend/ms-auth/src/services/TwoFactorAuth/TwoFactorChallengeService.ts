@@ -3,7 +3,7 @@ import TwoFactorRepository from '../../repositories/TwoFactorRepository';
 import UserService from '../User/UserService';
 import MailingService from '../Communication/MailingService';
 import WhatsAppService from '../Communication/WhatsAppService';
-import { NoEmailIsAssociated, NoPhoneIsAssociated, TwoFAChallengeExpired, TwoFAChallengeInvalidCode, TwoFAChallengeMaxAttemptsReached, TwoFAChallengeMaxResendsReached, TwoFAChallengeMethodNotSelected, TwoFAChallengeNotFound, _2FANotEnabled, _2FANotFound } from '../../types/auth.types';
+import { NoEmailIsAssociated, NoPhoneIsAssociated, TwoFAChallengeExpired, TwoFAChallengeInvalidCode, TwoFAChallengeMaxAttemptsReached, TwoFAChallengeMaxResendsReached, TwoFAChallengeMethodNotSelected, TwoFAChallengeNotFound, UserNotFoundError, _2FANotEnabled, _2FANotFound } from '../../types/auth.types';
 import { mailingConfig } from '../../config/mailing';
 
 const twoFAConfig = {
@@ -30,6 +30,8 @@ class TwoFactorChallengeService {
 
 	async createChallenge(userID: number) {
 		const targetUser = await this.userService.getUserById(userID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const enabledMethods = await this.twoFactorRepository.findEnabledMethodsByUserID(userID);
 		if (enabledMethods.length === 0)
@@ -53,6 +55,8 @@ class TwoFactorChallengeService {
 			throw new TwoFAChallengeNotFound();
 
 		const targetUser = await this.userService.getUserById(targetChallenge.user_id);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const isEnabled = await this.twoFactorRepository.findEnabledMethodByType(targetChallenge.user_id, method);
 		if (!isEnabled)
@@ -83,6 +87,8 @@ class TwoFactorChallengeService {
 			throw new TwoFAChallengeMethodNotSelected();
 		
 		const targetUser = await this.userService.getUserById(targetChallenge.user_id);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const isEnabled = await this.twoFactorRepository.findEnabledMethodByType(targetChallenge.user_id, targetChallenge.method);
 		if (!isEnabled)

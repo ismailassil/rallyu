@@ -3,7 +3,7 @@ import TwoFactorRepository from '../../repositories/TwoFactorRepository';
 import UserService from '../User/UserService';
 import MailingService from '../Communication/MailingService';
 import WhatsAppService from '../Communication/WhatsAppService';
-import { NoEmailIsAssociated, NoPhoneIsAssociated, _2FAAlreadyEnabled, _2FAExpiredCode, _2FAInvalidCode, _2FANotFound } from '../../types/auth.types';
+import { NoEmailIsAssociated, NoPhoneIsAssociated, UserNotFoundError, _2FAAlreadyEnabled, _2FAExpiredCode, _2FAInvalidCode, _2FANotFound } from '../../types/auth.types';
 import { mailingConfig } from '../../config/mailing';
 
 const twoFAConfig = {
@@ -21,12 +21,16 @@ class TwoFactorMethodService {
 
 	async getEnabledMethods(userID: number) {
 		const targetUser = await this.userService.getUserById(userID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		return (await this.twoFactorRepository.findEnabledMethodsByUserID(userID)).map(m => m.method);
 	}
 
 	private async createEnabled(method: 'TOTP' | 'SMS' | 'EMAIL', totp_secret: string | null, userID: number) {
 		const targetUser = await this.userService.getUserById(userID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const isAlreadyEnabled = await this.twoFactorRepository.findEnabledMethodByType(userID, method);
 		if (isAlreadyEnabled)
@@ -43,6 +47,8 @@ class TwoFactorMethodService {
 
 	async createPending(method: 'TOTP' | 'SMS' | 'EMAIL', userID: number) {
 		const targetUser = await this.userService.getUserById(userID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const isAlreadyEnabled = await this.twoFactorRepository.findEnabledMethodByType(userID, method);
 		if (isAlreadyEnabled)
@@ -67,6 +73,8 @@ class TwoFactorMethodService {
 
 	async enablePending(method: 'TOTP' | 'SMS' | 'EMAIL', code: string, userID: number) {
 		const targetUser = await this.userService.getUserById(userID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const pendingMethod = await this.twoFactorRepository.findPendingMethodByType(userID, method);
 		if (!pendingMethod)

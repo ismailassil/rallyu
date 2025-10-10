@@ -21,7 +21,7 @@ const MIGRATIONS = [
 				avatar_url TEXT DEFAULT '/users/avatars/default.png',
 
 				-- EXTRA
-				auth_provider TEXT DEFAULT 'local',
+				auth_provider TEXT DEFAULT 'Local',
 				role TEXT DEFAULT 'user',
 
 				created_at INTEGER DEFAULT (strftime('%s','now')),
@@ -203,6 +203,25 @@ const MIGRATIONS = [
 			)
 		`
 	},
+	// {
+	// 	id: 11,
+	// 	name: 'create-auth-challenges-table',
+	// 	sql: `
+	// 		CREATE TABLE IF NOT EXISTS pending_2fa_login (
+	// 			id INTEGER PRIMARY KEY AUTOINCREMENT, -- 2FA ID
+				
+	// 			method TEXT, -- email, sms, totp,
+	// 			code TEXT,
+	// 			remaining_attempts INTEGER,
+	// 			remaining_resends INTEGER,
+
+	// 			expires_at INTEGER,
+
+	// 			user_id INTEGER NOT NULL,
+	// 			FOREIGN KEY (user_id) REFERENCES users(id)
+	// 		)
+	// 	`
+	// },
 ];
 
 // {

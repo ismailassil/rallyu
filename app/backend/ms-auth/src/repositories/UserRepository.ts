@@ -10,6 +10,7 @@ interface User {
 	last_name: string;
 	avatar_url: string;
 	auth_provider: string;
+	auth_provider_id: string | null;
 	role: string;
 	bio: string;
 	created_at: string;
@@ -77,6 +78,19 @@ class UserRepository extends ARepository {
 		return null;
 	}
 
+	async findByAuthProvider(authProvider: string, authProviderID: string) {
+		try {
+			const getResult = await db.get(
+				`SELECT * FROM users WHERE auth_provider = ? AND auth_provider_id = ?`,
+				[authProvider, authProviderID]
+			);
+			return getResult ?? null;
+		} catch (err: any) {
+			this.handleDatabaseError(err, 'finding user by auth provider');
+		}
+		return null;
+	}
+
 	/**
 	 * Create a new user.
 	 * @param username - user's username
@@ -97,16 +111,17 @@ class UserRepository extends ARepository {
 		first_name: string,
 		last_name: string,
 		avatar_url: string = '/users/avatars/default.png',
-		auth_provider: string = 'local',
+		auth_provider: string = 'Local',
+		auth_provider_id: string | null = null,
 		role: string = 'user',
 		bio: string = 'DFK',
 	) : Promise<number> {
 		
 		try {
 			const runResult = await db.run(
-				`INSERT INTO users (username, password, email, first_name, last_name, avatar_url, auth_provider, role, bio) 
-					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-				[username, password, email, first_name, last_name, avatar_url, auth_provider, role, bio]
+				`INSERT INTO users (username, password, email, first_name, last_name, avatar_url, auth_provider, auth_provider_id, role, bio) 
+					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+				[username, password, email, first_name, last_name, avatar_url, auth_provider, auth_provider_id, role, bio]
 			);
 
 			return runResult.lastID;

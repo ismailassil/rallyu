@@ -121,12 +121,22 @@ export class NoPhoneIsAssociated extends AuthError {
 		super(message, 400, 'AUTH_NO_PHONE_ASSOCIATED', details);
 	}
 }
+export class InvalidAuthProviderError extends AuthError {
+	constructor(auth_provider: string, message: string = 'Invalid auth provider method', details: any = {}) {
+		if (auth_provider === 'Local')
+			message = `This account is registered with a password. Please log in with password.`;
+		else
+			message = `This account is registered with ${auth_provider}`;
+		super(message, 401, 'AUTH_INVALID_AUTH_PROVIDER', details);
+	}
+}
 export class InvalidCredentialsError extends AuthError {
 	constructor(message: string = 'Invalid username or password', details: any = {}) {
 		super(message, 401, 'AUTH_INVALID_CREDENTIALS', details);
 	}
 }
 
+// SERVER
 export class ServiceUnavailable extends AuthError {
 	constructor(message: string = 'Authentication service is currently unavailable', details: any = {}) {
 		super(message, 503, 'AUTH_SERVICE_UNAVAILABLE', details);

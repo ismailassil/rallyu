@@ -7,13 +7,13 @@ export async function handleUserRequests(msg: any, userService: UserService) {
 
 	switch (msg.subject) {
 		case 'user.username': {
-			const { username } = await userService.getUserById(data.user_id);
-			msg.respond(jsonC.encode({ username }));
+			const targetUser = await userService.getUserById(data.user_id);
+			msg.respond(jsonC.encode({ username: targetUser ? targetUser.username : null }));
 			break ;
 		}
 		case 'user.avatar': {
-			const { avatar_url } = await userService.getUserById(data.user_id);
-			msg.respond(jsonC.encode({ avatar_url }));
+			const { targetUser } = await userService.getUserById(data.user_id);
+			msg.respond(jsonC.encode({ avatar_url: targetUser ? targetUser.avatar_url : null }));
 			break ;
 		}
 		default:

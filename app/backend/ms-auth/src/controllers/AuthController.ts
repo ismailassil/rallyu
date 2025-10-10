@@ -179,7 +179,7 @@ class AuthController {
 					secure: false,
 					sameSite: 'lax'
 				}
-			).redirect(`${process.env['FRONTEND_URL']}:${process.env['FRONTEND_PORT']}`);
+			).redirect(`${process.env['FRONTEND_URL']}`);
 			// reply.redirect(`http://localhost:3000/login?access_token=${accessToken}&refresh_token=${refreshToken}`);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
@@ -203,7 +203,7 @@ class AuthController {
 					secure: false,
 					sameSite: 'lax'
 				}
-			).redirect(`${process.env['FRONTEND_URL']}:${process.env['FRONTEND_PORT']}`);
+			).redirect(`${process.env['FRONTEND_URL']}`);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 

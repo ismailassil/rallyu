@@ -21,14 +21,7 @@ class PasswordResetService {
 	) {}
 
 	async setup(email: string) {
-		let targetUser = null;
-
-		try {
-			targetUser = await this.userService.getUserByEmail(email);
-		} catch (err) {
-			throw new NoEmailIsAssociated();
-		}
-
+		const targetUser = await this.userService.getUserByEmail(email);
 		if (!targetUser || !targetUser.email)
 			throw new NoEmailIsAssociated();
 
@@ -46,15 +39,8 @@ class PasswordResetService {
 	}
 
 	async verify(email: string, code: string) {
-		let targetUser = null;
-
-		try {
-			targetUser = await this.userService.getUserByEmail(email);
-		} catch (err) {
-			throw new NoEmailIsAssociated();
-		}
-
-		if (!targetUser)
+		const targetUser = await this.userService.getUserByEmail(email);
+		if (!targetUser || !targetUser.email)
 			throw new NoEmailIsAssociated();
 
 		const resetPasswordRow = await this.resetRepository.findByUserID(targetUser.id);
@@ -67,15 +53,8 @@ class PasswordResetService {
 	}
 
 	async update(email: string, code: string, newPassword: string) {
-		let targetUser = null;
-
-		try {
-			targetUser = await this.userService.getUserByEmail(email);
-		} catch (err) {
-			throw new NoEmailIsAssociated();
-		}
-		
-		if (!targetUser)
+		const targetUser = await this.userService.getUserByEmail(email);
+		if (!targetUser || !targetUser.email)
 			throw new NoEmailIsAssociated();
 
 		const resetPasswordRow = await this.resetRepository.findByUserID(targetUser.id);

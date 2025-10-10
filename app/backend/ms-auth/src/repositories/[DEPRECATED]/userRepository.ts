@@ -12,7 +12,7 @@ class UserRepository {
 		username: string,
 		password?: string,
 		avatar_url: string = '/users/avatars/default.png',
-		auth_provider: string = 'local',
+		auth_provider: string = 'Local',
 		role: string = 'user',
 		bio: string = 'DFK',
 	) : Promise<number> {

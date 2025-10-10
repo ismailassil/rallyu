@@ -18,39 +18,19 @@ class UserService {
 	/*----------------------------------------------- GETTERS -----------------------------------------------*/
 
 	async getUserById(userID: number) : Promise<any | null> {
-		try {
-			const targetUser = await this.userRepository.findOne(userID);
-			console.log('target user from getter userService: ', targetUser);
-			if (!targetUser)
-				throw new UserNotFoundError();
-			return targetUser;
-		} catch (err) {
-			throw new UserNotFoundError();
-		}
+		return await this.userRepository.findOne(userID);
 	}
 	
 	async getUserByUsername(username: string) : Promise<any | null> {
-		try {
-			const targetUser = await this.userRepository.findByUsername(username);
-			console.log('target user from getter userService: ', targetUser);
-			if (!targetUser)
-				throw new UserNotFoundError();
-			return targetUser;
-		} catch (err) {
-			throw new UserNotFoundError();
-		}
+		return await this.userRepository.findByUsername(username);
 	}
 	
 	async getUserByEmail(email: string) : Promise<any | null> {
-		try {
-			const targetUser = await this.userRepository.findByEmail(email);
-			console.log('target user from getter userService: ', targetUser);
-			if (!targetUser)
-				throw new UserNotFoundError();
-			return targetUser;
-		} catch (err) {
-			throw new UserNotFoundError();
-		}
+		return await this.userRepository.findByEmail(email);
+	}
+
+	async getUserByAuthProvider(authProvider: string, authProviderID: string) {
+		return await this.userRepository.findByAuthProvider(authProvider, authProviderID);
 	}
 
 	async getUserProfile(viewerID: number, targetUserID?: number, targetUsername?: string) {
@@ -62,7 +42,8 @@ class UserService {
 			targetUser = await this.getUserById(targetUserID);
 		else if (targetUsername)
 			targetUser = await this.getUserByUsername(targetUsername);
-		else
+
+		if (!targetUser)
 			throw new UserNotFoundError();
 
 		console.log('==============> targetUser: ', targetUser);
@@ -105,6 +86,8 @@ class UserService {
 		paginationFilter?: { page: number, limit: number }
 	) {
 		const targetUser = await this.getUserById(targetID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
@@ -123,6 +106,8 @@ class UserService {
 		gameTypeFilter: 'PONG' | 'XO' | 'all' = 'all'
 	) {
 		const targetUser = await this.getUserById(targetID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
@@ -139,6 +124,8 @@ class UserService {
 		gameTypeFilter: 'PONG' | 'XO' | 'all' = 'all'
 	) {
 		const targetUser = await this.getUserById(targetID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
@@ -164,11 +151,10 @@ class UserService {
 		hashedPassword: string | null,
 		avatar_url?: string,
 		auth_provider?: string,
+		auth_provider_id?: string,
 		role?: string,
 		bio?: string
 	) {
-		// this.validateUserCreation(username, password, email, first_name, last_name);
-
 		if (await this.isUsernameTaken(username))
 			throw new UserAlreadyExistsError('Username');
 		if (await this.isEmailTaken(email))
@@ -182,19 +168,23 @@ class UserService {
 			last_name,
 			avatar_url,
 			auth_provider,
+			auth_provider_id,
 			role,
 			bio
 		);
 
 		await this.statsService.createUserRecords(createdUserID);
+
+		return createdUserID;
 	}
 
-	// TODO: IMPLEMENT createUserFromOAuth
 
 	/*----------------------------------------------- UPDATE -----------------------------------------------*/
 
 	async updateUser(userID: number, updates: any) {
 		const targetUser = await this.getUserById(userID);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		await this.userRepository.update(userID, updates);
 	}
@@ -202,6 +192,7 @@ class UserService {
 	// TODO: UPDATE AVATAR
 
 	/*----------------------------------------------- DELETE -----------------------------------------------*/
+
 	/*----------------------------------------------- SEARCH -----------------------------------------------*/
 
 	async searchUserByUsername(requesterID: number, targetUsername: string) {
@@ -218,44 +209,10 @@ class UserService {
 		return await this.userRepository.findByUsername(username) != null;
 	}
 
-	/*----------------------------------------------- VALIDATION -----------------------------------------------*/
-
-	// private validateUserCreation(username: string, password: string, email: string, first_name: string, last_name: string) {
-	// 	const userCreationSchema = z.object({
-	// 		first_name: z.string()
-	// 			.min(2, "First name must be at least 2 characters")
-	// 			.max(10, "First name must be at most 10 characters")
-	// 			.regex(/^[A-Za-z]+$/, "First name must contain only letters"),
-			
-	// 		last_name: z.string()
-	// 			.min(2, "Last name must be at least 2 characters")
-	// 			.max(10, "Last name must be at most 10 characters")
-	// 			.regex(/^[A-Za-z]+$/, "Last name must contain only letters"),
-			
-	// 		username: z.string()
-	// 			.min(3, "Username must be at least 3 characters")
-	// 			.max(50, "Username must be at least 50 characters")
-	// 			.regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
-		  
-	// 		email: z.string()
-	// 			.email("Invalid email address"),
-		  
-	// 		password: z.string()
-	// 			.min(8, "Password must be at least 8 characters")
-	// 			.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
-	// 			.regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
-	// 			.regex(/(?=.*\d)/, "Password must contain a digit")
-	// 	});
-
-	// 	const validationResult = userCreationSchema.safeParse({ first_name, last_name, username, password, email });
-	// 	if (!validationResult.success) {
-	// 		const errors = validationResult.error.flatten();
-	// 		throw new FormError(undefined, errors.fieldErrors);
-	// 	}
-	// }
-
 	async updateAvatar(user_id: number, fileData: MultipartFile) {
 		const targetUser = await this.getUserById(user_id);
+		if (!targetUser)
+			throw new UserNotFoundError();
 
 		const allowedMimeTypes = ['images/jpg', 'image/jpeg', 'image/png'];
 		if (!allowedMimeTypes.includes(fileData.mimetype))
@@ -289,21 +246,6 @@ class UserService {
 
 		// 	throw err;
 		// }
-	}
-
-	private extractPublicUserInfo(privateUserInfo: any) {
-		const publicUserInfo = {
-			id: privateUserInfo.id,
-			first_name: privateUserInfo.first_name,
-			last_name: privateUserInfo.last_name,
-			email: privateUserInfo.email,
-			username: privateUserInfo.username,
-			bio: privateUserInfo.bio,
-			avatar_url: privateUserInfo.avatar_url,
-			role: privateUserInfo.role
-		}
-
-		return publicUserInfo;
 	}
 }
 
