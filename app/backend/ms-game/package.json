@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf dist && cd .. && npm run build && mv dist ./server",
-    "start": "node index.js",
-    "dev": "node --watch index.js",
+    "start": "ts-node src/index.ts",
+    "dev": "ts-node-dev src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -26,7 +25,10 @@
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^24.1.0",
-    "@types/ws": "^8.18.1"
+    "@types/node": "^24.7.0",
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.18.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }

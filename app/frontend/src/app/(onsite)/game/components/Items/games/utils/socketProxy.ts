@@ -1,5 +1,6 @@
 import { APIClient } from '@/app/(api)/APIClient';
-import type { GameState, MessageCallBack } from "../types/GameTypes"
+
+type MessageCallBack = (message: any) => void;
 
 class SocketProxy {
 	private static instance: SocketProxy;
@@ -75,50 +76,6 @@ class SocketProxy {
 	public isConnected(): boolean {
 		return this.socket?.readyState === WebSocket.OPEN;
 	}
-}
-
-export const setupCommunications = (
-	gameStateRef: React.RefObject<GameState>,
-	proxy: SocketProxy,
-	setGameTime: React.Dispatch<React.SetStateAction<number>>
-): (() => void) => {
-	return proxy.subscribe((data: any): void => {
-		gameStateRef.current.gameStatus = data.type
-		switch (data.type) {
-			case 'opp_left':
-				gameStateRef.current.opponentDC = true;
-				break;
-			case 'opp_joined':
-				gameStateRef.current.opponentDC = false;
-				break;
-			case 'reconnected':
-				gameStateRef.current.index = data.i;
-				gameStateRef.current.players[0].score = data.score[0]
-				gameStateRef.current.players[1].score = data.score[1]
-				setGameTime(data.time);
-				break;
-			case 'gameover':
-				gameStateRef.current.serverBall = { x: 800, y: 600, width: 20, height: 20 };
-				proxy.disconnect();
-				setGameTime(0);
-				break;
-			case 'ready':
-				gameStateRef.current.index = data.i
-				setGameTime(3);
-				break;
-			case 'start':
-				setGameTime(90);
-				break;
-			case 'state':
-				gameStateRef.current.serverBall = data.state.b
-				if (gameStateRef.current.index === 1)
-					gameStateRef.current.serverBall.x = 1600 - gameStateRef.current.serverBall.x;
-				gameStateRef.current.serverPlayerY = data.state.p
-				gameStateRef.current.players[0].score = data.state.s[0]
-				gameStateRef.current.players[1].score = data.state.s[1]
-				break;
-		}
-	})
 }
 
 export default SocketProxy

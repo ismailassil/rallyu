@@ -7,7 +7,7 @@ const QueueToggleButton = () => {
 	const [isSearching, setIsSearching] = useState(false);
 	const [queueTime, setQueueTime] = useState(0);
 	const { loggedInUser, apiClient, isBusy, setIsBusy } = useAuth();
-	const { setUrl, setOpponentId } = useGame();
+	const { gameType, setUrl, setOpponentId } = useGame();
 	const wsRef = useRef<WebSocket | null>(null);
 
 	useEffect(() => {
@@ -19,7 +19,7 @@ const QueueToggleButton = () => {
 				setQueueTime(t => t + 1);
 			}, 1000);
 
-			const ws = apiClient.connectWebSocket("/v1/matchmaking/join");
+			const ws = apiClient.connectWebSocket(`/v1/matchmaking/${gameType}/join`);
 			wsRef.current = ws;
 	
 			ws.onopen = () => {

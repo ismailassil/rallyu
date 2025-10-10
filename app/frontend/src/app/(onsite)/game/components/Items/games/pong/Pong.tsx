@@ -1,10 +1,9 @@
 import { useRef, useEffect } from "react"
-import SocketProxy from "./game/client"
+import SocketProxy from "../utils/socketProxy"
 import { initGame } from "./game/gameloop";
 import type { GameState } from "./types/GameTypes"
-import { setupCommunications } from "./game/client";
-import { useGame } from "../../contexts/gameContext";
-import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { setupCommunications } from "./game/comms";
+import { useGame } from "../../../../contexts/gameContext";
 
 export const CANVAS_WIDTH = 1600;
 export const CANVAS_HEIGHT = 1200;
@@ -31,30 +30,14 @@ const initGameState = (): GameState => {
 	})
 }
 
-const Pong = () => {
-	const { apiClient } = useAuth();
-	const { url, setGameTime, setGameStarted } = useGame();
-	const socketProxy = useRef<SocketProxy>(SocketProxy.getInstance());
+const Pong = ({ socketProxy }: { socketProxy: SocketProxy }) => {
+	const { setGameTime } = useGame();
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const gameStateRef = useRef<GameState>(initGameState());
 
 	useEffect(() => {
-		try {
-			if (!url) {
-				return ;
-			}
-			gameStateRef.current.gameStatus = 'connecting';
-			const disconnect = socketProxy.current.connect(url, apiClient, setGameStarted, setGameTime);
-			return disconnect;
-		}
-		catch (err) {
-			console.error('Unable to connect to game server: ', err);
-		}
-	}, [url])
-
-	useEffect(() => {
-		const stopGame = initGame(gameStateRef, canvasRef.current!, socketProxy.current);
-		const unsubscribe = setupCommunications(gameStateRef, socketProxy.current, setGameTime);
+		const stopGame = initGame(gameStateRef, canvasRef.current!, socketProxy);
+		const unsubscribe = setupCommunications(gameStateRef, socketProxy, setGameTime);
 
 		return () => {
 			unsubscribe();

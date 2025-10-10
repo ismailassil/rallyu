@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import LobbyCard from "./Items/LobbyCard";
-import GameField from "./Items/GameField";
+import GameField from "./Items/games/GameField";
 import { useGame } from "../contexts/gameContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { useEffect } from "react";

@@ -1,14 +1,16 @@
+import { BallState, Coords, PingPongGameState } from "../types/types";
+
 const maxBounceAngle = 0.785398 // RAD / 45 degrees
 const PADDLE_WIDTH = 15
 const PADDLE_HEIGHT = 100
 const BALL_RADIUS = 10
-const angles = [2.61799, 3.66519, 3.14159 ,0, 0.523599, 5.75959];
+export const angles = [2.61799, 3.66519, 3.14159 ,0, 0.523599, 5.75959];
 
-const clamp = (value, min, max) => {
+const clamp = (value: number, min: number, max: number) => {
 	return (Math.min(max, Math.max(min, value)))
 }
 
-const bounceBall = (ball, paddle) => {
+const bounceBall = (ball: BallState, paddle: Coords) => {
 	const relativeY = ball.y - paddle.y
 	const normalized = relativeY / (PADDLE_HEIGHT / 2.0) // range -1.0, 1.0
 	ball.angle = ball.dir === 'right'
@@ -19,14 +21,14 @@ const bounceBall = (ball, paddle) => {
 	ball.dir = ball.dir === 'right' ? 'left' : 'right'
 }
 
-const getVelocity = (angle, speed) => {
+export const getVelocity = (angle: number, speed: number) => {
 	return ({
-		dx: Math.cos(angle) * speed,
-		dy: Math.sin(angle) * speed
+		x: Math.cos(angle) * speed,
+		y: Math.sin(angle) * speed
 	})
 }
 
-const paddleCollision = (ball, paddle) => {
+const paddleCollision = (ball: Coords, paddle: Coords) => {
 	const dx = Math.abs(ball.x - paddle.x)
 	const dy = Math.abs(ball.y - paddle.y)
 
@@ -36,28 +38,29 @@ const paddleCollision = (ball, paddle) => {
 	)
 }
 
-const resetBall = (dir) => {
+const resetBall = (dir: 'left' | 'right') => {
 	const side = dir === "left" ? 0 : angles.length / 2;
 	const initialAngle = angles[side + Math.floor(Math.random() * (angles.length / 2))];
 
 	return ({
 		x: 800,
 		y: 600,
+		dir,
 		speed: 14,
 		angle: initialAngle,
 		velocity: getVelocity(initialAngle, 14)
 	})
 }
 
-const updateBall = (ball) => {
+const updateBall = (ball: BallState) => {
 	return ({
-		x: ball.x + ball.velocity.dx,
-		y: ball.y + ball.velocity.dy,
+		x: ball.x + ball.velocity.x,
+		y: ball.y + ball.velocity.y,
 	})
 }
 
-const updateState = (gameState) => {
-	const newBall = updateBall(gameState.ball)
+export const updateState = (gameState: PingPongGameState) => {
+	const newBall: Coords = updateBall(gameState.ball)
 
 	// check bounce off left paddle
 	if (newBall.x < gameState.players[0].x + 5 && paddleCollision(newBall, gameState.players[0])) {
@@ -75,7 +78,7 @@ const updateState = (gameState) => {
 	if (newBall.y - BALL_RADIUS < 0) {
 		gameState.ball.y = BALL_RADIUS
 		gameState.ball.angle *= -1
-		gameState.ball.velocity.dy *= -1
+		gameState.ball.velocity.y *= -1
 		return
 	}
 
@@ -83,7 +86,7 @@ const updateState = (gameState) => {
 	if (newBall.y + BALL_RADIUS > 1200) {
 		gameState.ball.y = 1200 - BALL_RADIUS
 		gameState.ball.angle *= -1
-		gameState.ball.velocity.dy *= -1
+		gameState.ball.velocity.y *= -1
 		return
 	}
 

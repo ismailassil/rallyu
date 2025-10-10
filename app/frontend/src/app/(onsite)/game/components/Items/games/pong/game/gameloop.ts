@@ -1,6 +1,6 @@
 import { GameState } from "../types/GameTypes"
-import SocketProxy from "./client";
-import { setupInputHandlers } from "./input"
+import SocketProxy from "../../utils/socketProxy";
+import { setupInputHandlers } from "./comms"
 import render from "./renderer"
 
 let animationFrameId: number;
@@ -30,8 +30,6 @@ export const initGame = (gameStateRef : React.RefObject<GameState>, canvas : HTM
 		console.error('Failed to get context from canvas.');
 		return ;
 	}
-	// canvas.style.maxWidth = '100%';
-	// canvas.style.height = 'auto';
 	const cleanUpInput = setupInputHandlers(canvas, gameStateRef.current, proxy);
 
 	// setInterval(() => {

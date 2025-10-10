@@ -34,7 +34,7 @@ class GameService {
 	private timerInterval!: NodeJS.Timeout | undefined;
 	private totalRounds: number = 3;
 	private currentRound: number = 1;
-	private currentSymbol: symbolType = 'cross';
+	private currentSymbol: symbolType = 'X';
 	private score = { pl1: 0, pl2: 0 };
 
 	constructor(
@@ -49,7 +49,7 @@ class GameService {
 		this.totalRounds = rounds;
 		this.currentRound = 1;
 		this.score = { pl1: 0, pl2: 0 };
-		this.currentSymbol = 'cross';
+		this.currentSymbol = 'X';
 
 		this.resetBoard();
 	}
@@ -62,7 +62,6 @@ class GameService {
 	}
 
 	public play(index: number): GameResult {
-		this.clearTimer();
 		if (this.isGameOver()) {
 			return this.createGameOverResult();
 		}
@@ -142,7 +141,7 @@ class GameService {
 		this.currentRound++;
 		this.resetBoard();
 		this.switchStartingPlayer();
-		this.currentSymbol = 'cross';
+		this.currentSymbol = 'X';
 	}
 
 	private handleRoundEnd(result: 'win' | 'draw'): GameResult {
@@ -191,7 +190,7 @@ class GameService {
 
 	private switchTurn(): void {
 		this.clearTimer();
-		this.currentSymbol = this.currentSymbol === 'cross' ? 'circle' : 'cross';
+		this.currentSymbol = this.currentSymbol === 'X' ? 'O' : 'X';
 		this.currentPlayer = this.currentPlayer === 'pl1' ? 'pl2' : 'pl1';
 	}
 

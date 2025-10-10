@@ -1,5 +1,3 @@
-export type MessageCallBack = (message: any) => void;
-
 export interface Rect {
 	x: number,
 	y: number,
@@ -21,7 +19,7 @@ export interface GameState {
 			score: number
 		}
 	],
-	gameStatus: string, // 'connecting', 'waiting', 'ready', 'playing', 'scored', 'gameover'
+	gameStatus: string, // 'waiting', 'ready', 'playing', 'scored', 'gameover'
 	opponentDC: boolean,
 	lastUpdateTime: number,
 	index: number | undefined
