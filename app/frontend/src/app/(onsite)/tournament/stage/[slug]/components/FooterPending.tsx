@@ -19,7 +19,7 @@ const FooterPending = function (
     const joinTournamentHandler = async (e) => {
         e.preventDefault();
         try {
-            await apiClient.instance.patch(`/v1/tournament/match/join/${slug}`, { id: user?.id });
+            await apiClient.instance.patch(`/v1/tournament/match/join/${slug}`, { id: loggedInUser?.id });
 
             toastSuccess("Joined the tournament successfully");
             setJoined(true);
@@ -32,7 +32,7 @@ const FooterPending = function (
     const leaveTournamentHandler = async (e) => {
         e.preventDefault();
         try {
-            await apiClient.instance.patch(`/v1/tournament/match/leave/${slug}`, { id: user?.id });
+            await apiClient.instance.patch(`/v1/tournament/match/leave/${slug}`, { id: loggedInUser?.id });
 
             toastSuccess("Left the tournament successfully");
             setJoined(false);

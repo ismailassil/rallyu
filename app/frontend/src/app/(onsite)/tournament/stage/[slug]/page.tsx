@@ -56,6 +56,7 @@ const Brackets = function (props) {
 	const [joined, setJoined] = useState<boolean>(false);
 	const [ready, setReady] = useState<boolean>(false);
 	const [error, setError] = useState({ status: false, message: "" });
+	const router = useRouter();
 
 	useEffect(() => {
 		const loadData = async function () {
@@ -64,9 +65,11 @@ const Brackets = function (props) {
 				const res = await apiClient.instance.get(`/v1/tournament/${slug}`);
 
 				const data = res.data;
-				
-				setTournament(data.data);
-				isPlayerJoined(data.data);
+
+				if (Object.keys(data.data).length > 0) {	
+					setTournament(data.data);
+					isPlayerJoined(data.data);
+				}
 				setError({ status: false, message: "" });
 			} catch (err) {
 				setError({ status: true, message: "Tournament service might not be available at the moment" });
@@ -75,40 +78,6 @@ const Brackets = function (props) {
 
 		loadData();
 	}, [slug]);
-
-	const joinTournamentHandler = async (e) => {
-		try {
-			const res = await apiClient.instance.patch(`/v1/tournament/match/join/${slug}`, { id: loggedInUser?.id });
-			
-			console.log(res.data);
-			setJoined(true);
-		} catch (err: unknown) {
-			console.error(err);
-		}
-	};
-
-	const leaveTournamentHandler = async (e) => {
-		try {
-			e.preventDefault();
-			const res = await apiClient.instance.patch(`/v1/tournament/match/leave/${slug}`, { id: loggedInUser?.id });
-
-			console.log(res);
-
-			setJoined(false);
-		} catch (err: unknown) {
-			console.log(err);
-		}
-	};
-
-	const winnerStyle = (matchNumber, player, type) => {
-		const style: string = type === "name" ? "grow" : "font-black";
-
-		if (!tournament.matches[matchNumber].winner) return style.concat("");
-
-		if (!tournament.matches[matchNumber].winner === player) return style.concat(" text-blue-400");
-
-		return style.concat(" opacity-50");
-	};
 
 	const isPlayerJoined = (data) => {
 		for (let i = 0; i < data.matches.length - 1; i++) {
@@ -208,9 +177,9 @@ const Brackets = function (props) {
 											<FooterGoing
 												readyProp={ready}
 												joined={joined}
-												startTime={!joined ? null : getStartTime(tournament.matches, user?.id)}
-												waiting={amIwaiting(tournament.matches[2], user?.id)}
-												matchId={currentUserMatch(tournament.matches, user.id)}
+												startTime={!joined ? null : getStartTime(tournament.matches, loggedInUser?.id)}
+												waiting={amIwaiting(tournament.matches[2], loggedInUser?.id)}
+												matchId={currentUserMatch(tournament.matches, loggedInUser?.id)}
 											/>
 									}
 								</>

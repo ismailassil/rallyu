@@ -44,6 +44,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 				game,
 				access,
 				date,
+				hostIn,
 				host_id: loggedInUser?.id,
 			});
 

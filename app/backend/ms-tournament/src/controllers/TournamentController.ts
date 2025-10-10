@@ -99,14 +99,14 @@ class TournamentController {
 				access: number;
 				game: number;
 				date: string;
-				in: boolean;
+				hostIn: boolean;
 				host_id?: number;
 			};
 		}>,
 		rep: FastifyReply
 	) {
 		try {
-			const { title, game, access, date, in: hostIn, host_id } = req.body;
+			const { title, game, access, date, hostIn, host_id } = req.body;
 			const now = Date.now();
 			const dateTime = new Date(date).getTime();
 
@@ -122,6 +122,12 @@ class TournamentController {
 				host_id,
 				hostIn
 			});
+
+			console.log("=====================================")
+			console.log("=====================================")
+			console.log(req.body)
+			console.log("=====================================")
+			console.log("=====================================")
 
 			await req.server.tournamentMatchesModel.createTournamentMatches(newTournament.id, hostIn, host_id as number);
 

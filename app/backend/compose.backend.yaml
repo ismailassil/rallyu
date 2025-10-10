@@ -134,12 +134,12 @@ services:
       - backend
     develop:
       watch:
-        - path: ./ms-tournament
+        - path: ./ms-tournament/src/
           action: sync
-          target: /app
+          target: /app/src
           ignore:
             - node_modules/
-        - path: ./ms-tournament/package.json
+        - path: ./ms-tournament/src/package.json
           action: rebuild
 
   ms-matchmaking:

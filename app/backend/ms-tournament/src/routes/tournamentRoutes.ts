@@ -22,7 +22,8 @@ const tournamentRoutes = function(app: FastifyInstance, options, done: HookHandl
 						access: { type: "integer", enum: [0, 1] },
 						game: { type: "integer", enum: [0, 1] },
 						date: { type: "string" },
-						host_id: { type: "integer" }
+						host_id: { type: "integer" },
+						in: { type: "boolean" }
 					}
 				}
 			}
