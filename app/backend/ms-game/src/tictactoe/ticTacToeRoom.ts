@@ -41,9 +41,7 @@ export class TicTacToePlayer implements Player {
         this.socket.on('message', (message: ws.RawData) => {
             try {
                 const data = JSON.parse(message.toString());
-                if (room.) {
-                    room.state
-                }
+				// here
             } catch (e: any) {
                 console.log('JSON parse error:', e.message);
             }

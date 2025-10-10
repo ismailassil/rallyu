@@ -25,25 +25,36 @@ function GamePanel() {
 	}, [])
 
 	return (
-		<div className="flex w-full gap-4 flex-col 2xl:flex-row">
-			<AnimatePresence>
-				<div className={`flex flex-col justify-center items-center w-full rounded-md bg-card border border-white/15 p-4 min-w-0 transition-all duration-500 ease-in-out ${!gameStarted ? '2xl:flex-3 flex-5' : 'flex-1'} `}>
-					<GameField />
+		<div className="flex flex-row w-full h-full gap-4">
+			<div className="flex flex-3 w-full h-full gap-4 flex-col">
+				<div className="border border-br-card bg-card transition-all duration-200 hover:scale-[100.3%] rounded-xl w-full h-full">
+
 				</div>
-			</AnimatePresence>
-			<AnimatePresence>
-				<div className={`flex  flex-col hide-scrollbar lg:max-h-full bg-card border border-white/15 rounded-md w-full overflow-hidden
-						transition-all duration-500 ease-in-out
-					${!gameStarted
-						? '2xl:flex-1 flex-4 opacity-100'
-						: 'flex-0 opacity-0 scale-x-0 translate-x-full'
-					}
-					w-full`}>
-					<LobbyCard /> {/* switch between lobby and chat*/}
+				<div className="border border-br-card bg-card transition-all duration-200 hover:scale-[100.3%] rounded-xl w-full h-full">
+
 				</div>
-			</AnimatePresence>
+			</div>
+			<div className="flex-1 border hidden lg:flex border-br-card bg-card rounded-xl h-full w-full">
+
+			</div>
 		</div>
 	);
 }
+			// <AnimatePresence>
+			// 	<div className={`flex flex-col justify-center items-center w-full rounded-md bg-card border border-white/15 p-4 min-w-0 transition-all duration-500 ease-in-out ${!gameStarted ? '2xl:flex-3 flex-5' : 'flex-1'} `}>
+			// 		<GameField />
+			// 	</div>
+			// </AnimatePresence>
+			// <AnimatePresence>
+			// 	<div className={`flex  flex-col hide-scrollbar lg:max-h-full bg-card border border-white/15 rounded-md w-full overflow-hidden
+			// 			transition-all duration-500 ease-in-out
+			// 		${!gameStarted
+			// 			? '2xl:flex-1 flex-4 opacity-100'
+			// 			: 'flex-0 opacity-0 scale-x-0 translate-x-full'
+			// 		}
+			// 		w-full`}>
+			// 		<LobbyCard /> {/* switch between lobby and chat*/}
+			// 	</div>
+			// </AnimatePresence>
 
 export default GamePanel;

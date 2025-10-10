@@ -1,6 +1,7 @@
 import { WebSocket } from "@fastify/websocket";
 import { FastifyInstance, FastifyRequest } from "fastify";
 import { RawData } from "ws"; // type
+import { matchMakingRouteSchema } from "./schema.js";
 
 const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
 // const matchQueue: { id: number, socket: WebSocket }[] = [];
@@ -52,17 +53,20 @@ const processQueue = async (queue: Map<number, WebSocket>, mode: string) => {
 
 const matchmakingSocketRoutes = async function (app: FastifyInstance) {
 
-    app.get("/tictactoe/join", { websocket: true }, (connection: WebSocket, req: FastifyRequest) => {
+    app.get("/:gameType/join", { websocket: true, schema: matchMakingRouteSchema }, (connection: WebSocket, req: FastifyRequest) => {
+        const { gameType } = req.params as { gameType: string };
+        const queue = gameType === 'pingpong' ? pingpongQueue : tictactoeQueue;
+
         connection.on('message', (message: RawData) => {
             try {
                 const data = message.toString('utf-8');
                 const dataObj = JSON.parse(data);
     
-                tictactoeQueue.set(dataObj.id, connection);
-                if (tictactoeQueue.size >= 2)
+                queue.set(dataObj.id, connection);
+                if (queue.size >= 2)
                 {
                     setImmediate(() => {
-                        processQueue(tictactoeQueue, 'tictactoe');
+                        processQueue(queue, gameType);
                     })
                 }
             } catch (err) {
@@ -74,40 +78,9 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
         })
 
         connection.on('close', () => {
-            for (const [key, value] of tictactoeQueue.entries()) {
+            for (const [key, value] of queue.entries()) {
                 if (value == connection) {
-                    tictactoeQueue.delete(key);
-                    break ;
-                }
-            }
-        });
-    })
-
-    app.get("/pingpong/join", { websocket: true }, (connection: WebSocket, req: FastifyRequest) => {
-        connection.on('message', (message: RawData) => {
-            try {
-                const data = message.toString('utf-8');
-                const dataObj = JSON.parse(data);
-    
-                pingpongQueue.set(dataObj.id, connection);
-                if (pingpongQueue.size >= 2)
-                {
-                    setImmediate(() => {
-                        processQueue(pingpongQueue, 'pingpong');
-                    })
-                }
-            } catch (err) {
-                console.error('Error processing message:', err);
-                if (connection.readyState === WebSocket.OPEN) {
-                    connection.close(1001, `Invalid JSON: ${err}`);
-                }
-            }
-        })
-
-        connection.on('close', () => {
-            for (const [key, value] of pingpongQueue.entries()) {
-                if (value == connection) {
-                    pingpongQueue.delete(key);
+                    queue.delete(key);
                     break ;
                 }
             }

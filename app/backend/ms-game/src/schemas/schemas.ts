@@ -27,7 +27,10 @@ export const createRoomSchema = {
     body: {
         type: 'object',
         properties: {
-            playersIds: { type: ['number', 'number'] },
+            playersIds: {
+                type: 'array',
+                items: { type: 'number' }
+            },
             gameType: {
                 type: 'string',
                 enum: ['pingpong', 'tictactoe']
