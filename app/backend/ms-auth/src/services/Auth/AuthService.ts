@@ -13,13 +13,15 @@ import {
 	InvalidAuthProviderError,
 	InvalidCredentialsError, 
 	TokenRequiredError, 
+	TwoFAChallengeExpired, 
 	UserAlreadyExistsError, 
 	UserNotFoundError, 
 	_2FAInvalidCode 
 } from "../../types/auth.types";
 import axios, { create } from 'axios';
 import { oauthConfig } from '../../config/oauth';
-import { randomBytes } from 'crypto';
+import { UUID, randomBytes } from 'crypto';
+import { AuthChallengeMethod } from '../../repositories/AuthChallengesRepository';
 
 class AuthService {
 	constructor(
@@ -68,7 +70,7 @@ class AuthService {
 			return {
 				_2FARequired: true, 
 				enabled2FAMethods, 
-				loginChallengeID: await this.twoFAChallengeService.createChallenge(existingUser.id)
+				token: await this.twoFAChallengeService.createChallenge(existingUser.id)
 			};
 
 		const sessionTokens = await this.sessionService.createSession(existingUser.id, sessionFingerprint);
@@ -99,16 +101,18 @@ class AuthService {
 		return { user: userWithoutPassword, newAccessToken, newRefreshToken };
 	}
 
-	async sendTwoFAChallengeCode(loginChallengeID: number, method: 'TOTP' | 'SMS' | 'EMAIL', sessionFingerprint: ISessionFingerprint) {
-		await this.twoFAChallengeService.selectMethod(loginChallengeID, method);
+	async sendTwoFAChallengeCode(token: UUID, method: AuthChallengeMethod, sessionFingerprint: ISessionFingerprint) {
+		await this.twoFAChallengeService.selectMethod(token, method);
 	}
 
-	async verifyTwoFAChallengeCode(loginChallengeID: number, code: string, sessionFingerprint: ISessionFingerprint) {
-		const isValid = await this.twoFAChallengeService.verifyChallenge(loginChallengeID, code);
+	async verifyTwoFAChallengeCode(token: UUID, code: string, sessionFingerprint: ISessionFingerprint) {
+		await this.twoFAChallengeService.verifyChallenge(token, code);
 
-		const targetChallenge = await this.twoFAChallengeService.getChallengeByID(loginChallengeID);
+		const targetChall = await this.twoFAChallengeService.getChallengeByToken(token);
+		if (!targetChall)
+			throw new TwoFAChallengeExpired();
 
-		const targetUser = await this.userService.getUserById(targetChallenge.user_id);
+		const targetUser = await this.userService.getUserById(targetChall.user_id);
 		if (!targetUser)
 			throw new UserNotFoundError();
 

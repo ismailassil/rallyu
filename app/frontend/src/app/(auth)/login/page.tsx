@@ -9,7 +9,7 @@ export default function LoginPage() {
 	const router = useRouter();
 
 	useEffect(() => {
-		sessionStorage.removeItem('loginChallengeID');
+		sessionStorage.removeItem('token');
 		sessionStorage.removeItem('enabledMethods');
 	}, []);
 

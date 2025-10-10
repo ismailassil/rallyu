@@ -27,12 +27,12 @@ export class AuthService {
 		return { user: res.data.user, accessToken: res.data.accessToken };
 	}
 
-	async send2FACode(payload: { loginChallengeID: number, method: string }) {
+	async send2FACode(payload: { token: string, method: string }) {
 		const { data: res } = await this.client.post('/auth/login/2fa/send', payload);
 		return res.data;
 	}
 
-	async verify2FACode(payload: { loginChallengeID: number, method: string, code: string }) : Promise<{
+	async verify2FACode(payload: { token: string, code: string }) : Promise<{
 		user: any;
 		accessToken: any;
 	}> {

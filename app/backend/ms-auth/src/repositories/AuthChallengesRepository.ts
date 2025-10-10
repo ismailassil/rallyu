@@ -5,11 +5,11 @@ import ARepository from "./ARepository";
 export interface AuthChallenge {
 	id: number;
 	challenge_type: AuthChallengeType;
-	method?: AuthChallengeMethod;
+	method: AuthChallengeMethod | null;
 	status: AuthChallengeStatus;
 	token: UUID;
-	target?: string;
-	secret: string;
+	target: string | null;
+	secret: string | null;
 	expires_at: number;
 	created_at: number;
 	user_id: number;
@@ -83,6 +83,8 @@ class AuthChallengesRepository extends ARepository {
 				SQLQuery += ' AND method = ?';
 				params.push(method);
 			}
+			SQLQuery += ' AND status = ?';
+			params.push(status);
 
 			const getResult = await db.get(
 				`SELECT * FROM auth_challenges WHERE ${SQLQuery}`,
@@ -111,15 +113,15 @@ class AuthChallengesRepository extends ARepository {
 		challenge_type: AuthChallengeType,
 		method: AuthChallengeMethod | null,
 		token: UUID,
-		target: string,
-		secret: string,
+		target: string | null,
+		secret: string | null,
 		expires_at: number,
 		user_id: number
 	) : Promise<number> {
 		
 		try {
 			const runResult = await db.run(
-				`INSERT INTO auth_challenge (challenge_type, method, token, target, secret, expires_at, user_id) 
+				`INSERT INTO auth_challenges (challenge_type, method, token, target, secret, expires_at, user_id) 
 					VALUES (?, ?, ?, ?, ?, ?, ?)`,
 				[challenge_type, method, token, target, secret, expires_at, user_id]
 			);

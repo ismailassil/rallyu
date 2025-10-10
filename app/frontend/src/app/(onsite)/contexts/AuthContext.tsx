@@ -61,7 +61,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			// setIsLoading(true);
 			const res = await apiClient.login({ username, password });
 			if (res._2FARequired) {
-				sessionStorage.setItem('loginChallengeID', JSON.stringify(res.loginChallengeID));
+				sessionStorage.setItem('token', JSON.stringify(res.token));
 				sessionStorage.setItem('enabledMethods', JSON.stringify(res.enabled2FAMethods));
 				return res;
 			}
@@ -82,18 +82,18 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		}
 	}
 
-	async function send2FACode(loginChallengeID: number, method: string) {
-		return apiClient.send2FACode({ loginChallengeID, method });
+	async function send2FACode(token: string, method: string) {
+		return apiClient.send2FACode({ token, method });
 	}
 	
-	async function verify2FACode(loginChallengeID: number, method: string, code: string) {
+	async function verify2FACode(token: string, code: string) {
 		try {
-			const { user, accessToken } = await apiClient.verify2FACode({ loginChallengeID, method, code });
+			const { user, accessToken } = await apiClient.verify2FACode({ token, code });
 			
 			setLoggedInUser(user);
 			setIsAuthenticated(true);
 
-			sessionStorage.removeItem('loginChallengeID');
+			sessionStorage.removeItem('token');
 			sessionStorage.removeItem('enabledMethods');
 	
 			socket.connect(accessToken);

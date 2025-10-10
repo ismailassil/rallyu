@@ -238,11 +238,11 @@ export class APIClient {
 		return result;
 	}
 
-	async send2FACode(payload: { loginChallengeID: number, method: string }) {
+	async send2FACode(payload: { token: string, method: string }) {
 		return this.auth.send2FACode(payload);
 	}
 
-	async verify2FACode(payload: { loginChallengeID: number, method: string, code: string }) : Promise<{
+	async verify2FACode(payload: { token: string, code: string }) : Promise<{
 		user: any;
 		accessToken: any;
 	}> {

@@ -9,7 +9,7 @@ import useAPICall from '@/app/hooks/useAPICall';
 
 interface MethodsOverviewProps {
 	method: 'TOTP' | 'SMS' | 'EMAIL' | null
-	loginSessionMeta: { loginChallengeID: number, enabledMethods: string[] }
+	loginSessionMeta: { token: string, enabledMethods: string[] }
 	onMethod: (m: 'TOTP' | 'SMS' | 'EMAIL') => void;
 	onNext: () => void;
 }
@@ -37,7 +37,7 @@ export default function MethodsOverview({ method, loginSessionMeta, onMethod, on
 
 		try {
 			await executeAPICall(() => send2FACode(
-				loginSessionMeta.loginChallengeID, 
+				loginSessionMeta.token, 
 				m
 			));
 			if (m !== 'TOTP')

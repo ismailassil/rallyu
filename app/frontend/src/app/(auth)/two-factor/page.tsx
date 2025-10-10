@@ -13,34 +13,39 @@ enum STEP {
 
 function getTwoFAChallengeSession() {
 	try {
-		const idRaw = sessionStorage.getItem('loginChallengeID');
+		const idRaw = sessionStorage.getItem('token');
 		const methodsRaw = sessionStorage.getItem('enabledMethods');
-	
+
 		if (!idRaw || !methodsRaw) return null;
 
-		const loginChallengeID = JSON.parse(idRaw);
+		const token = JSON.parse(idRaw);
 		const enabledMethods = JSON.parse(methodsRaw);
 		const allowed = ['TOTP', 'SMS', 'EMAIL'] as const;
 
+		// const uuidRegex =
+		// 	/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+		// || !uuidRegex.test(token)
+
 		if (
-			typeof loginChallengeID !== 'number' || !Number.isInteger(loginChallengeID) || loginChallengeID <= 0
-			|| !Array.isArray(enabledMethods) || enabledMethods.length === 0 || !enabledMethods.every(m => allowed.includes(m))
+			typeof token !== 'string'
+			|| !Array.isArray(enabledMethods) || enabledMethods.length === 0
+			|| !enabledMethods.every(m => allowed.includes(m))
 		) {
-			sessionStorage.removeItem('loginChallengeID');
+			sessionStorage.removeItem('token');
 			sessionStorage.removeItem('enabledMethods');
 			return null;
 		}
 
 		const uniqueSet = new Set(enabledMethods);
 		if (uniqueSet.size !== enabledMethods.length || uniqueSet.size === 0) {
-			sessionStorage.removeItem('loginChallengeID');
+			sessionStorage.removeItem('token');
 			sessionStorage.removeItem('enabledMethods');
 			return null;
 		}
 
-		return { loginChallengeID, enabledMethods } as { loginChallengeID: number, enabledMethods: string[] };
+		return { token, enabledMethods } as { token: string, enabledMethods: string[] };
 	} catch {
-		sessionStorage.removeItem('loginChallengeID');
+		sessionStorage.removeItem('token');
 		sessionStorage.removeItem('enabledMethods');
 		return null;
 	}

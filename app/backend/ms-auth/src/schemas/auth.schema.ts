@@ -38,21 +38,23 @@ const authLoginBody = {
 const auth2FALoginChallengeBody = {
 	type: 'object',
 	properties: {
-		loginChallengeID: { type: 'number' },
-		method: { type: 'string' }
+		token: { type: 'string' },
+		method: { 
+			type: 'string',
+			enum: ['EMAIL', 'SMS', 'TOTP']
+		}
 	},
-	required: ['loginChallengeID', 'method'],
+	required: ['token', 'method'],
 	additionalProperties: false
 };
 
 const auth2FALoginChallengeVerifyCodeBody = {
 	type: 'object',
 	properties: {
-		loginChallengeID: { type: 'number' },
-		method: { type: 'string' },
+		token: { type: 'string' },
 		code: { type: 'string' }
 	},
-	required: ['loginChallengeID', 'method', 'code'],
+	required: ['token', 'code'],
 	additionalProperties: false
 };
 
@@ -108,26 +110,28 @@ const authResetPasswordBody = {
 	properties: {
 		email: { type: 'string' }
 	},
-	required: ['email']
+	required: ['email'],
+	additionalProperties: false
 };
 
 const authResetPasswordVerifyBody = {
 	type: 'object',
 	properties: {
-		email: { type: 'string' },
+		token: { type: 'string' },
 		code: { type: 'string' }
 	},
-	required: ['email', 'code']
+	required: ['token', 'code'],
+	additionalProperties: false
 };
 
 const authResetPasswordUpdateBody = {
 	type: 'object',
 	properties: {
-		email: { type: 'string' },
-		code: { type: 'string' },
+		token: { type: 'string' },
 		newPassword: { type: 'string' }
 	},
-	required: ['email', 'code', 'newPassword']
+	required: ['token', 'newPassword'],
+	additionalProperties: false
 };
 
 const authChangePasswordBody = {
@@ -136,7 +140,8 @@ const authChangePasswordBody = {
 		oldPassword: { type: 'string' },
 		newPassword: { type: 'string' }
 	},
-	required: ['oldPassword', 'newPassword']
+	required: ['oldPassword', 'newPassword'],
+	additionalProperties: false
 };
 
 

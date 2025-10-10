@@ -13,7 +13,7 @@ import { toastError, toastSuccess } from "@/app/components/CustomToast";
 
 interface VerifyCodeProps {
 	method: 'TOTP' | 'SMS' | 'EMAIL';
-	loginSessionMeta: { loginChallengeID: number, enabledMethods: string[] };
+	loginSessionMeta: { token: string, enabledMethods: string[] };
 	onNext: () => void;
 	onGoBack: () => void;
 }
@@ -53,8 +53,7 @@ export default function VerifyCode({ method, loginSessionMeta, onNext, onGoBack 
 
 		try {
 			await executeAPICall(() => verify2FACode(
-				loginSessionMeta.loginChallengeID,
-				method,
+				loginSessionMeta.token,
 				code.join('')
 			));
 			toastSuccess('Two Factor Authentication successful');
@@ -74,7 +73,7 @@ export default function VerifyCode({ method, loginSessionMeta, onNext, onGoBack 
 		setIsResending(true);
 		try {
 			await executeAPICall(() => send2FACode(
-				loginSessionMeta.loginChallengeID,
+				loginSessionMeta.token,
 				method
 			));
 			toastSuccess('Code sent!');

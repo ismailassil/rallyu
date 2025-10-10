@@ -1,4 +1,5 @@
-import { randomInt } from "crypto";
+import { randomInt } from "node:crypto";
+const { v4: uuidv4 } = require('uuid');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 
@@ -12,6 +13,10 @@ export async function generateTOTPSecrets() : Promise<{ secret_base32: string, s
 
 export function generateOTP() {
 	return String(randomInt(100000, 1000000));
+}
+
+export function generateUUID() {
+	return uuidv4();
 }
 
 export function verifyTOTP(secret_base32: string, code: string) : boolean {
