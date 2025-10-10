@@ -8,10 +8,10 @@ export default function SignUpPage() {
 	const router = useRouter();
 
 	async function handleGoogleLogin() {
-		window.location.href = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/api/auth/google`;
+		window.location.href = `${window.location.origin}/api/auth/google`;
 	}
 	async function handleIntra42Login() {
-		window.location.href = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/api/auth/42`;
+		window.location.href = `${window.location.origin}/api/auth/42`;
 	}
 	
 	return (

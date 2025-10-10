@@ -190,7 +190,7 @@ class AuthService {
 			email: intra42User.email,
 			username: await this.generateUniqueUsername(intra42User.login),
 			first_name: intra42User.first_name || intra42User.usual_full_name.split(' ')[0] || 'Ismail',
-			last_name: intra42User.last_name || intra42User.usual_full_name.split(' ')[1] || 'Ismail',
+			last_name: intra42User.last_name || intra42User.usual_full_name.split(' ')[1] || 'Demnati',
 			avatar_url: intra42User.image.link,
 			auth_provider: '42'
 		};
