@@ -4,15 +4,16 @@ import SignUpForm from "./components/SignUpForm";
 import { useRouter } from "next/navigation";
 import AuthPageWrapper from "../components/UI/AuthPageWrapper";
 
-async function handleGoogleLogin() {
-	window.location.href = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}:${process.env.NEXT_PUBLIC_API_GATEWAY_PORT}/api/auth/google`;
-}
-async function handleIntra42Login() {
-	window.location.href = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}:${process.env.NEXT_PUBLIC_API_GATEWAY_PORT}/api/auth/42`;
-}
-
 export default function SignUpPage() {
 	const router = useRouter();
+
+	async function handleGoogleLogin() {
+		window.location.href = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/api/auth/google`;
+	}
+	async function handleIntra42Login() {
+		window.location.href = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/api/auth/42`;
+	}
+	
 	return (
 		<AuthPageWrapper wrapperKey="signup-page-wrapper">
 			<div className='w-full max-w-lg p-11 flex flex-col gap-5'>
