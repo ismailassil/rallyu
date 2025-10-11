@@ -3,28 +3,45 @@ import { useRouter } from "next/navigation";
 import InputField from "../../components/Form/InputField";
 import FormButton from "../../components/UI/FormButton";
 import { RotateCw } from "lucide-react";
-import { useFormContext } from "../../components/Form/FormContext";
 import useAPICall from "@/app/hooks/useAPICall";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
+import { confirmPasswordSchema } from "@/app/(api)/schema";
+import useForm from "@/app/hooks/useForm";
+import { FormProvider } from "../../components/Form/FormContext";
 
-export function SetNewPassword({ onNext } : { onNext: () => void }) {
+export function SetNewPassword({ token, onNext } : { token: string, onNext: () => void }) {
 	const router = useRouter();
+
+	const [
+		formData,
+		touched,
+		errors,
+		debounced,
+		handleChange,
+		validateAll,
+		getValidationErrors,
+		resetForm
+	] = useForm(
+		confirmPasswordSchema,
+		{ password: '', confirm_password: '' },
+		{ debounceMs: { password: 1200, confirm_password: 1200 } }
+	);
 
 	const {
 		apiClient
 	} = useAuth();
 
-	const { 
-		isLoading, 
-		executeAPICall 
+	const {
+		isLoading,
+		executeAPICall
 	} = useAPICall();
 
-	const {
-		formData, 
-		validateAll,
-		getValidationErrors,
-	} = useFormContext();
+	// const {
+	// 	formData,
+	// 	validateAll,
+	// 	getValidationErrors,
+	// } = useFormContext();
 
 	async function handleSubmit() {
 		validateAll();
@@ -33,11 +50,10 @@ export function SetNewPassword({ onNext } : { onNext: () => void }) {
 			return ;
 
 		try {
-			await executeAPICall(() => apiClient.resetPassword({
-				email: formData.email,
-				code: formData.code,
-				newPassword: formData.password
-			}));
+			await executeAPICall(() => apiClient.resetPassword(
+				token,
+				formData.password
+			));
 			toastSuccess('Password updated successfully!');
 			onNext();
 		} catch (err: any) {
@@ -55,7 +71,17 @@ export function SetNewPassword({ onNext } : { onNext: () => void }) {
 				</div>
 			</div>
 
-			<InputField 
+			<FormProvider
+				formData={formData}
+				errors={errors}
+				debounced={debounced}
+				touched={touched}
+				handleChange={handleChange}
+				validateAll={validateAll}
+				getValidationErrors={getValidationErrors}
+				resetForm={resetForm}
+			>
+			<InputField
 				className='field flex flex-col gap-0.5 box-border'
 				iconSrc='/icons/lock.svg'
 				label='Password'
@@ -63,7 +89,7 @@ export function SetNewPassword({ onNext } : { onNext: () => void }) {
 				inputPlaceholder='••••••••••••••••'
 				inputHidden={true}
 			/>
-			<InputField 
+			<InputField
 				className='field flex flex-col gap-0.5 box-border'
 				iconSrc='/icons/lock.svg'
 				label='Confirm Password'
@@ -71,6 +97,7 @@ export function SetNewPassword({ onNext } : { onNext: () => void }) {
 				inputPlaceholder='••••••••••••••••'
 				inputHidden={true}
 			/>
+			</FormProvider>
 			<FormButton
 				text='Reset Password'
 				icon={<RotateCw size={16} />}

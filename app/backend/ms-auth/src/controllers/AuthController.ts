@@ -6,6 +6,9 @@ import TwoFactorService from "../services/TwoFactorAuth/[DEPRECATED]TwoFactorSer
 import AuthResponseFactory from "./AuthResponseFactory";
 import SessionsService from "../services/Auth/SessionsService";
 import { env } from "process";
+import z from "zod";
+import { UUID } from "crypto";
+import { zodTwoFALoginChallengeBodySchema, zodVerifyChallengeBodySchema } from "../schemas/zod/auth.zod.schema";
 
 
 class AuthController {
@@ -36,9 +39,9 @@ class AuthController {
 
 			const loginResult = await this.authService.LogIn(username, password, request.fingerprint!);
 			if (loginResult._2FARequired) {
-				const { _2FARequired, enabled2FAMethods, loginChallengeID } = loginResult;
+				const { _2FARequired, enabled2FAMethods, token } = loginResult;
 				
-				const { status, body } = AuthResponseFactory.getSuccessResponse(200, { _2FARequired, enabled2FAMethods, loginChallengeID });
+				const { status, body } = AuthResponseFactory.getSuccessResponse(200, { _2FARequired, enabled2FAMethods, token });
 
 				return reply.code(status).send(body);
 			}
@@ -65,9 +68,13 @@ class AuthController {
 
 	async sendTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { loginChallengeID, method } = request.body as { loginChallengeID: number, method: 'TOTP' | 'SMS' | 'EMAIL' };
+			const { token, method } = request.body as z.infer<typeof zodTwoFALoginChallengeBodySchema>;
 
-			await this.authService.sendTwoFAChallengeCode(loginChallengeID, method, request.fingerprint!);
+			await this.authService.sendTwoFAChallengeCode(
+				token as UUID, 
+				method, 
+				request.fingerprint!
+			);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
@@ -81,14 +88,18 @@ class AuthController {
 
 	async verifyTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { loginChallengeID, code } = request.body as { loginChallengeID: number, code: string };
+			const { token, code } = request.body as z.infer<typeof zodVerifyChallengeBodySchema>;
 
-			const { user, refreshToken, accessToken } = await this.authService.verifyTwoFAChallengeCode(loginChallengeID, code, request.fingerprint!);
+			const { user, refreshToken, accessToken } = await this.authService.verifyTwoFAChallengeCode(
+				token as UUID, 
+				code, 
+				request.fingerprint!
+			);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
 
 			return reply.code(status).setCookie(
-				'refreshToken', refreshToken ?? '', { // TODO: CHECK REFRESH TOKEN TYPE ASSERTION
+				'refreshToken', refreshToken, {
 					path: '/',
 					httpOnly: true,
 					secure: false,

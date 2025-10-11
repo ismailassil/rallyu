@@ -1,7 +1,10 @@
 import PasswordResetService from "../services/Auth/PasswordResetService";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { IResetPasswordRequest, IResetPasswordUpdateRequest, IResetPasswordVerifyRequest } from "../types";
+import { z } from 'zod';
 import AuthResponseFactory from "./AuthResponseFactory";
+import { UUID } from "crypto";
+import { zodResetPasswordSchema, zodResetPasswordUpdateSchema, zodResetPasswordVerifySchema } from "../schemas/zod/auth.zod.schema";
 
 class PasswordResetController {
 	constructor(
@@ -10,49 +13,53 @@ class PasswordResetController {
 
 	async resetPasswordSetupHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { email } = request.body as IResetPasswordRequest;
+			const { email } = request.body as z.infer<typeof zodResetPasswordSchema>;
 
-			await this.passwordResetService.setup(email);
+			
+			const token = await this.passwordResetService.setup(email);
+			
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+			
 
-			reply.code(status).send(body);
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { token });
+
+			return reply.code(status).send(body);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		}
 	}
 
 	async resetPasswordVerifyHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { email, code } = request.body as IResetPasswordVerifyRequest;
+			const { token, code } = request.body as z.infer<typeof zodResetPasswordVerifySchema>;
 
-			await this.passwordResetService.verify(email, code);
+			await this.passwordResetService.verify(token as UUID, code);
 			
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		}
 	}
 
 	async resetPasswordUpdateHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { email, code, newPassword } = request.body as IResetPasswordUpdateRequest;
+			const { token, newPassword } = request.body as z.infer<typeof zodResetPasswordUpdateSchema>;
 
-			await this.passwordResetService.update(email, code, newPassword);
+			await this.passwordResetService.update(token as UUID, newPassword);
 			
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			reply.code(status).send(body);
+			return reply.code(status).send(body);
 		}
 	}
 }

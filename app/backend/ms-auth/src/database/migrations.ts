@@ -203,25 +203,29 @@ const MIGRATIONS = [
 			)
 		`
 	},
-	// {
-	// 	id: 11,
-	// 	name: 'create-auth-challenges-table',
-	// 	sql: `
-	// 		CREATE TABLE IF NOT EXISTS pending_2fa_login (
-	// 			id INTEGER PRIMARY KEY AUTOINCREMENT, -- 2FA ID
+	{
+		id: 11,
+		name: 'create-auth-challenges-table',
+		sql: `
+			CREATE TABLE IF NOT EXISTS auth_challenges (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				user_id INTEGER NOT NULL,
+				challenge_type TEXT NOT NULL CHECK (
+					challenge_type IN ('2fa_setup', '2fa_login', 'password_reset')
+				),
+				method TEXT CHECK (method IN ('SMS', 'EMAIL', 'TOTP')),
+				status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'VERIFIED', 'COMPLETED', 'EXPIRED', 'FAILED')),
 				
-	// 			method TEXT, -- email, sms, totp,
-	// 			code TEXT,
-	// 			remaining_attempts INTEGER,
-	// 			remaining_resends INTEGER,
-
-	// 			expires_at INTEGER,
-
-	// 			user_id INTEGER NOT NULL,
-	// 			FOREIGN KEY (user_id) REFERENCES users(id)
-	// 		)
-	// 	`
-	// },
+				token TEXT NOT NULL UNIQUE,      -- frontend state
+				target TEXT,                     -- email or phone number
+				secret TEXT,            		-- OTP or TOTP Secret
+				
+				created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+				updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+				expires_at INTEGER NOT NULL
+			);
+		`
+	},
 ];
 
 // {

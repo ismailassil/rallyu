@@ -51,13 +51,12 @@ export const zodResetPasswordSchema = z.object({
 });
 
 export const zodResetPasswordVerifySchema = z.object({
-	email: z.string().email("Invalid email address"),
+	token: z.string().min(1, "Token is required"),
 	code: z.string().min(1, "Code is required")
 });
 
 export const zodResetPasswordUpdateSchema = z.object({
-	email: z.string().email("Invalid email address"),
-	code: z.string().min(1, "Code is required"),
+	token: z.string().min(1, "Token is required"),
 	newPassword: z.string()
 		.min(8, "Password must be at least 8 characters")
 		.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
@@ -69,30 +68,27 @@ export const zodResetPasswordUpdateSchema = z.object({
 
 /* Two-Factor Authentication Schemas */
 
-export const zodTwoFactorLoginChallengeSchema = z.object({
-	loginChallengeID: z.number({ invalid_type_error: "Login challenge ID must be a number" }),
+export const zodTwoFALoginChallengeBodySchema = z.object({
+	token: z.string().min(1, "Token is required"),
 	method: z.enum(["SMS", "EMAIL", "TOTP"], {
 		required_error: "Method is required",
 		invalid_type_error: "Method must be one of: SMS, EMAIL, TOTP",
 	})
 });
 
-export const zodTwoFactorLoginChallengeVerifyCodeSchema = z.object({
-	loginChallengeID: z.number({ invalid_type_error: "Login challenge ID must be a number" }),
-	method: z.enum(["SMS", "EMAIL", "TOTP"], {
-		required_error: "Method is required",
-		invalid_type_error: "Method must be one of: SMS, EMAIL, TOTP",
-	}),
-	code: z.string().min(1, "Code is required")
-});
+// export const zodTwoFactorLoginChallengeVerifyCodeSchema = z.object({
+// 	token: z.string().min(1, "Token is required"),
+// 	code: z.string().min(1, "Code is required")
+// });
 
-export const zodTwoFactorSetupSchema = z.object({
-	method: z.enum(["SMS", "EMAIL", "TOTP"], {
-		required_error: "Method is required",
-		invalid_type_error: "Method must be one of: SMS, EMAIL, TOTP",
-	})
-});
+// export const zodTwoFASetupSchema = z.object({
+// 	method: z.enum(["SMS", "EMAIL", "TOTP"], {
+// 		required_error: "Method is required",
+// 		invalid_type_error: "Method must be one of: SMS, EMAIL, TOTP",
+// 	})
+// });
 
-export const zodTwoFactorSetupVerifySchema = z.object({
+export const zodVerifyChallengeBodySchema = z.object({
+	token: z.string().min(1, "Token is required"),
 	code: z.string().min(1, "Code is required")
 });

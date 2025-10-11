@@ -74,6 +74,17 @@ export class SessionRevokedError extends AuthError {
 }
 
 // 2FA LOGIN CHALLENGE
+export class TwoFANotEnabledError extends AuthError {
+	constructor(message: string = 'Two Factor Authentication is not enabled', details: any = {}) {
+		super(message, 404, 'AUTH_2FA_NOT_ENABLED', details);
+	}
+}
+export class TwoFAAlreadyEnabled extends AuthError {
+	constructor(method: string, message: string = '2FA already enabled', details: any = {}) {
+		message = `2FA via ${method} is already enabled`;
+		super(message, 404, `AUTH_2FA_ALREADY_ENABLED`, details);
+	}
+}
 export class TwoFAChallengeNotFound extends AuthError {
 	constructor(message: string = 'Two Factor challenge not found', details: any = {}) {
 		super(message, 404, 'AUTH_2FA_CHALLENGE_NOT_FOUND', details);
@@ -121,6 +132,18 @@ export class NoPhoneIsAssociated extends AuthError {
 		super(message, 400, 'AUTH_NO_PHONE_ASSOCIATED', details);
 	}
 }
+
+export class InvalidCodeError extends AuthError {
+	constructor(message: string = 'Invalid Code', details: any = {}) {
+		super(message, 400, 'AUTH_INVALID_CODE', details);
+	}
+}
+export class ExpiredCodeError extends AuthError {
+	constructor(message: string = 'Code expired', details: any = {}) {
+		super(message, 400, 'AUTH_CODE_EXPIRED', details);
+	}
+}
+
 export class InvalidAuthProviderError extends AuthError {
 	constructor(auth_provider: string, message: string = 'Invalid auth provider method', details: any = {}) {
 		if (auth_provider === 'Local')
@@ -130,6 +153,7 @@ export class InvalidAuthProviderError extends AuthError {
 		super(message, 401, 'AUTH_INVALID_AUTH_PROVIDER', details);
 	}
 }
+
 export class InvalidCredentialsError extends AuthError {
 	constructor(message: string = 'Invalid username or password', details: any = {}) {
 		super(message, 401, 'AUTH_INVALID_CREDENTIALS', details);

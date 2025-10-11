@@ -13,34 +13,39 @@ enum STEP {
 
 function getTwoFAChallengeSession() {
 	try {
-		const idRaw = sessionStorage.getItem('loginChallengeID');
+		const idRaw = sessionStorage.getItem('token');
 		const methodsRaw = sessionStorage.getItem('enabledMethods');
-	
+
 		if (!idRaw || !methodsRaw) return null;
 
-		const loginChallengeID = JSON.parse(idRaw);
+		const token = JSON.parse(idRaw);
 		const enabledMethods = JSON.parse(methodsRaw);
 		const allowed = ['TOTP', 'SMS', 'EMAIL'] as const;
 
+		// const uuidRegex =
+		// 	/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+		// || !uuidRegex.test(token)
+
 		if (
-			typeof loginChallengeID !== 'number' || !Number.isInteger(loginChallengeID) || loginChallengeID <= 0
-			|| !Array.isArray(enabledMethods) || enabledMethods.length === 0 || !enabledMethods.every(m => allowed.includes(m))
+			typeof token !== 'string'
+			|| !Array.isArray(enabledMethods) || enabledMethods.length === 0
+			|| !enabledMethods.every(m => allowed.includes(m))
 		) {
-			sessionStorage.removeItem('loginChallengeID');
+			sessionStorage.removeItem('token');
 			sessionStorage.removeItem('enabledMethods');
 			return null;
 		}
 
 		const uniqueSet = new Set(enabledMethods);
 		if (uniqueSet.size !== enabledMethods.length || uniqueSet.size === 0) {
-			sessionStorage.removeItem('loginChallengeID');
+			sessionStorage.removeItem('token');
 			sessionStorage.removeItem('enabledMethods');
 			return null;
 		}
 
-		return { loginChallengeID, enabledMethods } as { loginChallengeID: number, enabledMethods: string[] };
+		return { token, enabledMethods } as { token: string, enabledMethods: string[] };
 	} catch {
-		sessionStorage.removeItem('loginChallengeID');
+		sessionStorage.removeItem('token');
 		sessionStorage.removeItem('enabledMethods');
 		return null;
 	}
@@ -67,21 +72,25 @@ export default function TwoFaChallengePage() {
 		switch (step) {
 			case STEP.OVERVIEW:
 				return (
-					<MethodsOverview
-						method={method}
-						loginSessionMeta={session!}
-						onMethod={(m) => setMethod(m)}
-						onNext={() => setStep(STEP.VERIFY_CODE)}
-					/>
+					<div className='w-full max-w-2xl p-11 flex flex-col gap-5'>
+						<MethodsOverview
+							method={method}
+							loginSessionMeta={session!}
+							onMethod={(m) => setMethod(m)}
+							onNext={() => setStep(STEP.VERIFY_CODE)}
+						/>
+					</div>
 				);
 			case STEP.VERIFY_CODE:
 				return (
-					<VerifyCode 
-						method={method!}
-						loginSessionMeta={session!}
-						onNext={() => router.replace('/dashboard')}
-						onGoBack={() => setStep(STEP.OVERVIEW)}
-					/>
+					<div className='w-full max-w-lg p-11 flex flex-col gap-5'>
+						<VerifyCode
+							method={method!}
+							loginSessionMeta={session!}
+							onNext={() => router.replace('/dashboard')}
+							onGoBack={() => setStep(STEP.OVERVIEW)}
+						/>
+					</div>
 				);
 			default:
 				return null;
@@ -91,9 +100,9 @@ export default function TwoFaChallengePage() {
 
 	return (
 		<AuthPageWrapper wrapperKey="two-fa-challenge-page-wrapper">
-			<div className='w-full max-w-lg p-11 flex flex-col gap-5'>
+			{/* <div className='w-full max-w-xl p-11 flex flex-col gap-5'> */}
 					{renderCurrentStep()}
-			</div>
+			{/* </div> */}
 		</AuthPageWrapper>
 	);
 }

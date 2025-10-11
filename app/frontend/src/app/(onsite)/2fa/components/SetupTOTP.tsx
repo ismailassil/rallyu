@@ -1,7 +1,8 @@
 import React from "react";
 import { RefObject } from "react";
-import { ArrowLeft, LoaderCircle, QrCode } from "lucide-react";
+import { ArrowLeft, ArrowRight, LoaderCircle, QrCode } from "lucide-react";
 import OTPCodeInput from "./OTPCodeInput";
+import FormButton from "@/app/(auth)/components/UI/FormButton";
 
 interface SetupTOTPProps {
 	totpSecrets: { secret_base32: string, secret_qrcode_url: string } | null;
@@ -15,16 +16,16 @@ interface SetupTOTPProps {
 
 export default function SetupTOTP({ totpSecrets, code, setCode, inputRefs, isVerifyingCode, onVerify, onGoBack }: SetupTOTPProps) {
 	return (
-		<div className="w-full max-w-[460px] select-none">
+		<div className="w-full max-w-lg p-11 flex flex-col gap-5 select-none">
 			{/* Header + Go Back */}
-			<div className="flex gap-4 items-center mb-8">
-				<button 
+			<div className="flex gap-4 items-center mb-2">
+				<button
 					onClick={onGoBack}
 					className="bg-blue-500/25 rounded-2xl p-2 hover:bg-blue-500/90 transition-all duration-300 cursor-pointer">
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>Setup Authenticator App</h1>
+					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>Authenticator App</h1>
 					<p className='text-gray-300 text-sm sm:text-balance'>Scan the QR code with your authenticator app</p>
 				</div>
 			</div>
@@ -42,7 +43,7 @@ export default function SetupTOTP({ totpSecrets, code, setCode, inputRefs, isVer
 							<QrCode size={64} className="text-gray-600" />
 						</div>
 					)}
-					
+
 					<div className="text-center">
 						<p className="text-sm text-gray-300 mb-2">Can&#39;t scan? Enter this code manually:</p>
 						<code className="bg-gray-800 px-3 py-1 rounded text-xs sm:text-sm font-mono select-text truncate">
@@ -50,23 +51,23 @@ export default function SetupTOTP({ totpSecrets, code, setCode, inputRefs, isVer
 						</code>
 					</div>
 				</div>
-				
+
 				{/* OTP Input + Verify Button */}
-				<div className="flex flex-col gap-5 mt-8">
+				<div className="flex flex-col gap-3 mt-8">
 					<p className="text-center text-gray-200 text-sm sm:text-base">Enter the 6-digit code from your authenticator app</p>
-					<OTPCodeInput 
+					<OTPCodeInput
 						code={code}
 						setCode={setCode}
 						inputRefs={inputRefs}
 						isResendingCode={false}
 						isVerifyingCode={isVerifyingCode}
 					/>
-					<button
+					{/* <button
 						onClick={onVerify}
 						disabled={isVerifyingCode || !code.every(digit => digit !== '')}
 						className={`h-11 rounded-lg transition-all duration-500 ${
-							(code.every(digit => digit !== '') && !isVerifyingCode) 
-								? 'bg-blue-600 hover:bg-blue-700 cursor-pointer' 
+							(code.every(digit => digit !== '') && !isVerifyingCode)
+								? 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
 								: 'bg-gray-500 cursor-not-allowed pointer-events-none'
 						}`}
 					>
@@ -78,7 +79,14 @@ export default function SetupTOTP({ totpSecrets, code, setCode, inputRefs, isVer
 						) : (
 							<span>Complete Setup</span>
 						)}
-					</button>
+					</button> */}
+					<FormButton
+						text='Continue'
+						icon={<ArrowRight size={16} />}
+						onClick={onVerify}
+						isSubmitting={isVerifyingCode}
+						disabled={isVerifyingCode || !code.every(digit => digit !== '')}
+					/>
 				</div>
 			</div>
 		</div>

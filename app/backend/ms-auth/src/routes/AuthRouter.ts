@@ -10,7 +10,7 @@ import {
 	auth2FALoginChallengeSchema, 
 	auth2FALoginChallengeVerifyCodeSchema, 
 	auth2FASetupSchema, 
-	auth2FASetupVerifySchema, 
+	auth2FAVerifySchema, 
 	authChangePasswordSchema, 
 	authLoginSchema, 
 	authOAuthSchema, 
@@ -25,11 +25,9 @@ import {
 	zodChangePasswordSchema, 
 	zodResetPasswordSchema, 
 	zodResetPasswordUpdateSchema, 
-	zodResetPasswordVerifySchema, 
-	zodTwoFactorLoginChallengeSchema, 
-	zodTwoFactorLoginChallengeVerifyCodeSchema,
-	zodTwoFactorSetupSchema, 
-	zodTwoFactorSetupVerifySchema
+	zodResetPasswordVerifySchema,
+	zodVerifyChallengeBodySchema,
+	zodTwoFALoginChallengeBodySchema,
 } from "../schemas/zod/auth.zod.schema";
 import { UAParser } from "ua-parser-js";
 import { oauthConfig } from "../config/oauth";
@@ -138,13 +136,13 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	/*----------------------------- Multi-Factor Authentication -----------------------------*/
 	fastify.post('/login/2fa/send', {
 		schema: auth2FALoginChallengeSchema,
-		...zodFormValidator(zodTwoFactorLoginChallengeSchema),
+		...zodFormValidator(zodTwoFALoginChallengeBodySchema),
 		handler: opts.authController.sendTwoFAChallengeHandler.bind(opts.authController)
 	});
 
 	fastify.post('/login/2fa/verify', {
 		schema: auth2FALoginChallengeVerifyCodeSchema,
-		...zodFormValidator(zodTwoFactorLoginChallengeVerifyCodeSchema),
+		...zodFormValidator(zodVerifyChallengeBodySchema),
 		handler: opts.authController.verifyTwoFAChallengeHandler.bind(opts.authController)
 	});
 
@@ -159,16 +157,16 @@ async function authRouter(fastify: FastifyInstance, opts: {
 		handler: opts.twoFactorController.disableMethodHandler.bind(opts.twoFactorController)
 	});
 
-	fastify.post('/2fa/:method/setup/init', {
+	fastify.post('/2fa/setup', {
 		schema: auth2FASetupSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.twoFactorController.setupInitHandler.bind(opts.twoFactorController)
+		handler: opts.twoFactorController.setupHandler.bind(opts.twoFactorController)
 	});
 	
-	fastify.post('/2fa/:method/setup/verify', {
-		schema: auth2FASetupVerifySchema,
+	fastify.post('/2fa/verify', {
+		schema: auth2FAVerifySchema,
 		preHandler: fastify.authenticate,
-		handler: opts.twoFactorController.setupVerifyHandler.bind(opts.twoFactorController)
+		handler: opts.twoFactorController.verifyHandler.bind(opts.twoFactorController)
 	});
 
 
