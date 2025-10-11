@@ -112,6 +112,29 @@ export const resetPasswordSchema = z.object({
 	path: ["confirm_password"],
 });
 
+export const emailSchema = z.object({
+	email: z.email()
+});
+export const confirmPasswordSchema = z.object({
+	password: z.string()
+		.nonempty("Password is required")
+		.min(8, "Password must be at least 8 characters")
+		.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
+		.regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
+		.regex(/(?=.*\d)/, "Password must contain a digit"),
+
+	confirm_password: z.string()
+		.nonempty("Please confirm your password"),
+	}).refine((data) => data.password === data.confirm_password, {
+	message: "Passwords do not match",
+	path: ["confirm_password"],
+});
+export const otpCodeSchema = z.object({
+	code: z.string()
+		.nonempty("Code is required")
+		.regex(/^\d{6}$/, "Code must be a 6-digit number"),
+});
+
 export const loginChallengeSchema = z.object({
 	code: z.string()
 		.nonempty("Code is required")

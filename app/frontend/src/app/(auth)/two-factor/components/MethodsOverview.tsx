@@ -21,9 +21,9 @@ export default function MethodsOverview({ method, loginSessionMeta, onMethod, on
 		send2FACode
 	} = useAuth();
 
-	const { 
-		isLoading, 
-		executeAPICall 
+	const {
+		isLoading,
+		executeAPICall
 	} = useAPICall();
 
 	async function handleSubmit(m: 'TOTP' | 'SMS' | 'EMAIL') {
@@ -37,11 +37,11 @@ export default function MethodsOverview({ method, loginSessionMeta, onMethod, on
 
 		try {
 			await executeAPICall(() => send2FACode(
-				loginSessionMeta.token, 
+				loginSessionMeta.token,
 				m
 			));
 			if (m !== 'TOTP')
-				toastSuccess('Code sent!');	
+				toastSuccess('Code sent!');
 			onNext();
 		} catch (err: any) {
 			toastError(err.message);
@@ -52,7 +52,7 @@ export default function MethodsOverview({ method, loginSessionMeta, onMethod, on
 	return (
 		<>
 			{/* Header */}
-			<div className='flex flex-col'>
+			<div className='flex flex-col mb-12'>
 				<Fingerprint size={64} className="bg-blue-500 rounded-full p-2 self-center mb-6"/>
 				<h1 className='font-semibold text-3xl text-center mb-3'>Two-Factor Authentication</h1>
 				<p className='mb-0 text-white/85 text-center'>Select one of the following methods to complete verification.</p>
@@ -62,17 +62,17 @@ export default function MethodsOverview({ method, loginSessionMeta, onMethod, on
 			<div className='flex flex-col gap-4 w-full'>
 				{loginSessionMeta.enabledMethods.map(m => {
 					return (
-						<button 
-							key={m} 
+						<button
+							key={m}
 							onClick={() => handleSubmit(m as 'TOTP' | 'SMS' | 'EMAIL')}
 							disabled={isLoading}
 							className={`single-two-fa-card ${isLoading ? 'cursor-not-allowed pointer-events-none brightness-75' : 'cursor-pointer'}`}
 						>
-							<div className='w-full flex justify-between items-center gap-16'>
+							<div className='w-full flex justify-between items-center gap-0'>
 								<div className='flex gap-4 items-center'>
 									{METHODS_META[m].icon}
 									<div>
-										<h1 className='font-semibold text-sm sm:text-base md:text-lg lg:text-2xl mb-1.5 flex items-center gap-4'>{METHODS_META[m].title}</h1>
+										<h1 className='font-semibold text-lg sm:text-base md:text-lg lg:text-2xl mb-1.5 flex items-center gap-4'>{METHODS_META[m].title}</h1>
 										<p className='font-light text-sm lg:text-base text-white/75'>{METHODS_META[m].description}</p>
 									</div>
 								</div>

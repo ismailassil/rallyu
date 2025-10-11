@@ -72,21 +72,25 @@ export default function TwoFaChallengePage() {
 		switch (step) {
 			case STEP.OVERVIEW:
 				return (
-					<MethodsOverview
-						method={method}
-						loginSessionMeta={session!}
-						onMethod={(m) => setMethod(m)}
-						onNext={() => setStep(STEP.VERIFY_CODE)}
-					/>
+					<div className='w-full max-w-2xl p-11 flex flex-col gap-5'>
+						<MethodsOverview
+							method={method}
+							loginSessionMeta={session!}
+							onMethod={(m) => setMethod(m)}
+							onNext={() => setStep(STEP.VERIFY_CODE)}
+						/>
+					</div>
 				);
 			case STEP.VERIFY_CODE:
 				return (
-					<VerifyCode 
-						method={method!}
-						loginSessionMeta={session!}
-						onNext={() => router.replace('/dashboard')}
-						onGoBack={() => setStep(STEP.OVERVIEW)}
-					/>
+					<div className='w-full max-w-lg p-11 flex flex-col gap-5'>
+						<VerifyCode
+							method={method!}
+							loginSessionMeta={session!}
+							onNext={() => router.replace('/dashboard')}
+							onGoBack={() => setStep(STEP.OVERVIEW)}
+						/>
+					</div>
 				);
 			default:
 				return null;
@@ -96,9 +100,9 @@ export default function TwoFaChallengePage() {
 
 	return (
 		<AuthPageWrapper wrapperKey="two-fa-challenge-page-wrapper">
-			<div className='w-full max-w-lg p-11 flex flex-col gap-5'>
+			{/* <div className='w-full max-w-xl p-11 flex flex-col gap-5'> */}
 					{renderCurrentStep()}
-			</div>
+			{/* </div> */}
 		</AuthPageWrapper>
 	);
 }

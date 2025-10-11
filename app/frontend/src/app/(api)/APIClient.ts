@@ -15,7 +15,7 @@ export class APIClient {
 	private accessToken: string = '';
 	private isRefreshing: boolean = false;
 	private failedQueue: any[] = [];
-	
+
 	// Service instances
 	public user: UserService;
 	public auth: AuthService;
@@ -54,7 +54,7 @@ export class APIClient {
 		});
 		this.failedQueue = [];
 	}
-	
+
 	private async handleResponseError(err: any) {
 		console.log('APIClient::handleResponseError();');
 		const originalRequest = err.config;
@@ -93,7 +93,7 @@ export class APIClient {
 				this.processQueue(refreshError, null);
 				throw this.classifyError(refreshError);
 				// return Promise.reject(refreshError);
-				
+
 			} finally {
 				this.isRefreshing = false;
 			}
@@ -114,7 +114,7 @@ export class APIClient {
 
 	// Proxy methods to maintain backward compatibility
 	/*--------------------------------- Users Profiles ---------------------------------*/
-	
+
 	async fetchUser(id: number) {
 		return this.user.fetchUser(id);
 	}
@@ -130,11 +130,11 @@ export class APIClient {
 	async fetchUserAnalytics(id: number) {
 		return this.user.fetchUserAnalytics(id);
 	}
-	
+
 	async fetchUserAnalyticsByDay(id: number) {
 		return this.user.fetchUserAnalyticsByDay(id);
 	}
-	
+
 	async fetchLeaderboard() {
 		return this.user.fetchLeaderboard();
 	}
@@ -146,11 +146,11 @@ export class APIClient {
 	async getUserAvatarBlob(url: string) {
 		return this.user.getUserAvatarBlob(url);
 	}
-	
+
 	async updateUserAvatar(id: number, avatarFile: FormData) {
 		return this.user.updateUserAvatar(id, avatarFile);
 	}
-	
+
 	async updateUser(id: number, payload: { first_name?: string, last_name?: string, username?: string, email?: string, bio?: string }) {
 		return this.user.updateUser(id, payload);
 	}
@@ -160,15 +160,15 @@ export class APIClient {
 	async getAllFriends() {
 		return this.user.getAllFriends();
 	}
-	
+
 	async getAllBlocked() {
 		return this.user.getAllBlocked();
 	}
-	
+
 	async getAllIncomingFriendRequests() {
 		return this.user.getAllIncomingFriendRequests();
 	}
-	
+
 	async getAllOutgoingFriendRequests() {
 		return this.user.getAllOutgoingFriendRequests();
 	}
@@ -206,7 +206,7 @@ export class APIClient {
 	async mfaEnabledMethods() {
 		return this.mfa.mfaEnabledMethods();
 	}
-	
+
 	async mfaDisableMethod(method: string) {
 		return this.mfa.mfaDisableMethod(method);
 	}
@@ -214,9 +214,9 @@ export class APIClient {
 	async mfaSetupInit(method: string) {
 		return this.mfa.mfaSetupInit(method);
 	}
-	
-	async mfaSetupVerify(method: string, code: string) {
-		return this.mfa.mfaSetupVerify(method, code);
+
+	async mfaSetupVerify(token: string, code: string) {
+		return this.mfa.mfaSetupVerify(token, code);
 	}
 
 	/*--------------------------------- Authentication ---------------------------------*/
@@ -262,13 +262,13 @@ export class APIClient {
 		this.setAccessToken(result.accessToken);
 		return result;
 	}
-	
-	async register(payload: { 
-		first_name: string, 
-		last_name: string, 
-		username: string, 
-		email: string, 
-		password: string 
+
+	async register(payload: {
+		first_name: string,
+		last_name: string,
+		username: string,
+		email: string,
+		password: string
 	}) {
 		return this.auth.register(payload);
 	}
@@ -299,12 +299,12 @@ export class APIClient {
 		return this.auth.requestPasswordReset(email);
 	}
 
-	async verifyPasswordResetCode(payload: { email: string, code: string }) {
-		return this.auth.verifyPasswordResetCode(payload);
+	async verifyPasswordResetCode(token: string, code: string) {
+		return this.auth.verifyPasswordResetCode(token, code);
 	}
 
-	async resetPassword(payload: { email: string, code: string, newPassword: string }) {
-		return this.auth.resetPassword(payload);
+	async resetPassword(token: string, newPassword: string) {
+		return this.auth.resetPassword(token, newPassword);
 	}
 
 	async fetchPlayerStatus(user_id: number) {

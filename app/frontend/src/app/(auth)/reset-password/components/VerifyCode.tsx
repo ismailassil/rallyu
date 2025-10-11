@@ -4,84 +4,92 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
 import { useRef, useState } from "react";
 import FormButton from "../../components/UI/FormButton";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import useAPICall from "@/app/hooks/useAPICall";
-import { useFormContext } from "../../components/Form/FormContext";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
 import InputFieldError from "../../components/Form/InputFieldError";
 import { AnimatePresence } from "framer-motion";
+import useForm from "@/app/hooks/useForm";
+import { otpCodeSchema } from "@/app/(api)/schema";
 
 interface VerifyCodeProps {
+	email: string;
+	token: string;
 	onNext: () => void;
 	onGoBack: () => void;
 }
 
-export function VerifyCode({ onNext, onGoBack } : VerifyCodeProps) {
-	const router = useRouter();
+export function VerifyCode({ email, token, onNext, onGoBack } : VerifyCodeProps) {
+	const [
+		,
+		,
+		errors,
+		,
+		handleChange,
+		validateAll,
+		getValidationErrors,
+		resetForm
+	] = useForm(
+		otpCodeSchema,
+		{ code: '' },
+		{ debounceMs: { code: 2400 } }
+	);
 
 	const {
 		apiClient
 	} = useAuth();
 
-	const { 
-		isLoading, 
-		executeAPICall 
-	} = useAPICall();
-
 	const {
-		formData, 
-		errors, 
-		handleChange, 
-		validateAll,
-		getValidationErrors,
-	} = useFormContext();
+		isLoading,
+		executeAPICall
+	} = useAPICall();
 
 	const [isResending, setIsResending] = useState<boolean>(false);
 	const [code, setCode] = useState(['', '', '', '', '', '']);
 	const inputRefs = useRef([]);
 
 	async function handleSubmit() {
+		const codeJoined = code.join('');
+
 		validateAll();
 		const errors = getValidationErrors();
 		if (errors?.code)
 			return ;
 
 		try {
-			await executeAPICall(() => apiClient.verifyPasswordResetCode({ email: formData.email, code: formData.code }));
+			await executeAPICall(() => apiClient.verifyPasswordResetCode(
+				token,
+				codeJoined
+			));
 			toastSuccess('Code verified!');
 			onNext();
 		} catch (err: any) {
 			toastError(err.message);
+			resetForm();
+			setCode(['', '', '', '', '', '']);
 		}
 	}
 
 	async function handleResend() {
-		validateAll();
-		const errors = getValidationErrors();
-		if (errors?.email) {
-			router.refresh();
-			return ;
-		}
-
+		resetForm();
+		setCode(['', '', '', '', '', '']);
 		setIsResending(true);
 		try {
 			await executeAPICall(() => apiClient.requestPasswordReset(
-				formData.email
+				email
 			));
 			toastSuccess('Code sent!');
 		} catch (err: any) {
 			toastError(err.message);
-		} finally {
-			setIsResending(false);
 		}
+		setIsResending(false);
 	}
 
 	return (
 		<>
 			{/* Header + Go Back */}
-			<div className="flex gap-4 items-center mb-8">
-				<button 
+			<div className="flex gap-4 items-center mb-2">
+				<button
 					onClick={onGoBack}
 					className="bg-blue-500/25 rounded-2xl p-2 hover:bg-blue-500/90 transition-all duration-300 cursor-pointer">
 					<ArrowLeft size={40} />
@@ -93,8 +101,8 @@ export function VerifyCode({ onNext, onGoBack } : VerifyCodeProps) {
 			</div>
 
 			{/* OTP Input + Verify Button + Resend Button */}
-			<div className="flex flex-col gap-6">
-				<OTPCodeInput 
+			<div className="flex flex-col gap-3">
+				<OTPCodeInput
 					code={code}
 					setCode={(newCode) => {
 						setCode(newCode);
@@ -118,13 +126,13 @@ export function VerifyCode({ onNext, onGoBack } : VerifyCodeProps) {
 					disabled={isResending}
 				/>
 
-				<p className='self-center'>
-					Didn&#39;t receive the code? 
-					<span 
+				<p className='self-center mt-2'>
+					Didn&#39;t receive the code?
+					<span
 						onClick={handleResend}
 						className={`font-semibold ml-1 ${
-							(isLoading) 
-								? 'text-gray-500 cursor-not-allowed pointer-events-none' 
+							(isLoading)
+								? 'text-gray-500 cursor-not-allowed pointer-events-none'
 								: 'text-blue-500 hover:underline cursor-pointer'
 						}`}
 					>

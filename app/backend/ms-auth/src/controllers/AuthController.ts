@@ -7,8 +7,8 @@ import AuthResponseFactory from "./AuthResponseFactory";
 import SessionsService from "../services/Auth/SessionsService";
 import { env } from "process";
 import z from "zod";
-import { zodTwoFactorLoginChallengeSchema, zodTwoFactorLoginChallengeVerifyCodeSchema } from "../schemas/zod/auth.zod.schema";
 import { UUID } from "crypto";
+import { zodTwoFALoginChallengeBodySchema, zodVerifyChallengeBodySchema } from "../schemas/zod/auth.zod.schema";
 
 
 class AuthController {
@@ -68,7 +68,7 @@ class AuthController {
 
 	async sendTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { token, method } = request.body as z.infer<typeof zodTwoFactorLoginChallengeSchema>;
+			const { token, method } = request.body as z.infer<typeof zodTwoFALoginChallengeBodySchema>;
 
 			await this.authService.sendTwoFAChallengeCode(
 				token as UUID, 
@@ -88,7 +88,7 @@ class AuthController {
 
 	async verifyTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { token, code } = request.body as z.infer<typeof zodTwoFactorLoginChallengeVerifyCodeSchema>;
+			const { token, code } = request.body as z.infer<typeof zodVerifyChallengeBodySchema>;
 
 			const { user, refreshToken, accessToken } = await this.authService.verifyTwoFAChallengeCode(
 				token as UUID, 

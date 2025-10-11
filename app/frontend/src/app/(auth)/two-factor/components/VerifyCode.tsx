@@ -2,7 +2,7 @@
 import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useRef, useState } from "react";
-import { METHODS_HELP, METHODS_HELP2, METHODS_META } from "./constants";
+import { METHODS_HELP, METHODS_META } from "./constants";
 import FormButton from "../../components/UI/FormButton";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import useAPICall from "@/app/hooks/useAPICall";
@@ -26,9 +26,9 @@ export default function VerifyCode({ method, loginSessionMeta, onNext, onGoBack 
 		verify2FACode
 	} = useAuth();
 
-	const { 
-		isLoading, 
-		executeAPICall 
+	const {
+		isLoading,
+		executeAPICall
 	} = useAPICall();
 
 	const [isResending, setIsResending] = useState<boolean>(false);
@@ -87,8 +87,8 @@ export default function VerifyCode({ method, loginSessionMeta, onNext, onGoBack 
 	return (
 		<>
 			{/* Header + Go Back */}
-			<div className="flex gap-4 items-center w-full">
-				<button 
+			<div className="flex gap-4 items-center mb-2">
+				<button
 					onClick={onGoBack}
 					className="bg-blue-500/25 rounded-2xl p-2 hover:bg-blue-500/90 transition-all duration-300 cursor-pointer">
 					<ArrowLeft size={40} />
@@ -100,8 +100,8 @@ export default function VerifyCode({ method, loginSessionMeta, onNext, onGoBack 
 			</div>
 
 			{/* OTP Input + Verify Button + Resend Button */}
-			<div className="w-full flex flex-col gap-4">
-				<OTPCodeInput 
+			<div className="flex flex-col gap-3">
+				<OTPCodeInput
 					code={code}
 					setCode={(newCode) => {
 						setCode(newCode);
@@ -122,13 +122,13 @@ export default function VerifyCode({ method, loginSessionMeta, onNext, onGoBack 
 					disabled={isResending}
 				/>
 
-				<p className='self-center'>
-					Didn&#39;t receive the code? 
-					<span 
+				<p className='self-center mt-2'>
+					Didn&#39;t receive the code?
+					<span
 						onClick={handleResend}
 						className={`font-semibold ml-1 ${
-							(isLoading) 
-								? 'text-gray-500 cursor-not-allowed pointer-events-none' 
+							(isLoading)
+								? 'text-gray-500 cursor-not-allowed pointer-events-none'
 								: 'text-blue-500 hover:underline cursor-pointer'
 						}`}
 					>
@@ -137,7 +137,7 @@ export default function VerifyCode({ method, loginSessionMeta, onNext, onGoBack 
 				</p>
 			</div>
 
-			{loginSessionMeta.enabledMethods.length > 1 && <p className='self-center text-center'>{METHODS_HELP2[method]}<br></br><a onClick={onGoBack} className="font-semibold text-blue-500 hover:underline cursor-pointer">Try other verification methods</a></p>}
+			{/* {loginSessionMeta.enabledMethods.length > 1 && <p className='mt-12 self-center text-center'>{METHODS_HELP2[method]}<br></br><a onClick={onGoBack} className="font-semibold text-blue-500 hover:underline cursor-pointer">Try other verification methods</a></p>} */}
 		</>
 	);
 }

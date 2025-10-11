@@ -79,6 +79,12 @@ export class TwoFANotEnabledError extends AuthError {
 		super(message, 404, 'AUTH_2FA_NOT_ENABLED', details);
 	}
 }
+export class TwoFAAlreadyEnabled extends AuthError {
+	constructor(method: string, message: string = '2FA already enabled', details: any = {}) {
+		message = `2FA via ${method} is already enabled`;
+		super(message, 404, `AUTH_2FA_ALREADY_ENABLED`, details);
+	}
+}
 export class TwoFAChallengeNotFound extends AuthError {
 	constructor(message: string = 'Two Factor challenge not found', details: any = {}) {
 		super(message, 404, 'AUTH_2FA_CHALLENGE_NOT_FOUND', details);

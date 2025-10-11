@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AxiosInstance } from 'axios';
 
+export type APIResetPasswordResponse = { token: string };
+
 export class AuthService {
 	constructor(private client: AxiosInstance) {}
 
@@ -53,13 +55,13 @@ export class AuthService {
 
 		return { user: res.data.user, accessToken: res.data.accessToken };
 	}
-	
-	async register(payload: { 
-		first_name: string, 
-		last_name: string, 
-		username: string, 
-		email: string, 
-		password: string 
+
+	async register(payload: {
+		first_name: string,
+		last_name: string,
+		username: string,
+		email: string,
+		password: string
 	}) {
 		console.log('APIClient::register();');
 		const { data } = await this.client.post('/auth/register', payload);
@@ -93,18 +95,18 @@ export class AuthService {
 		return res.data;
 	}
 
-	async requestPasswordReset(email: string) {
+	async requestPasswordReset(email: string) : Promise<APIResetPasswordResponse> {
 		const { data: res } = await this.client.post(`/auth/reset-password`, { email });
 		return res.data;
 	}
 
-	async verifyPasswordResetCode(payload: { email: string, code: string }) {
-		const { data: res } = await this.client.post(`/auth/reset-verify`, payload);
+	async verifyPasswordResetCode(token: string, code: string) {
+		const { data: res } = await this.client.post(`/auth/reset-verify`, { token, code });
 		return res.data;
 	}
 
-	async resetPassword(payload: { email: string, code: string, newPassword: string }) {
-		const { data: res } = await this.client.post(`/auth/reset-update`, payload);
+	async resetPassword(token: string, newPassword: string) {
+		const { data: res } = await this.client.post(`/auth/reset-update`, { token, newPassword });
 		return res.data;
 	}
 }

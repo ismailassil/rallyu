@@ -11,6 +11,7 @@ import MainCardWrapper from "../components/UI/MainCardWrapper";
 import { motion } from "framer-motion";
 import SetupTOTP from "./components/SetupTOTP";
 import VerifySetup from "./components/VerifySetup";
+import { APIEnabledMethodsResponse, APITOTPSecrets } from "@/app/(api)/services/MfaService";
 
 
 enum STEP {
@@ -25,42 +26,48 @@ export default function TwoFAManagerPage() {
 	const { apiClient } = useAuth();
 	const [currentStep, setCurrentStep] = useState<STEP>(STEP.OVERVIEW);
 	const [selectedMethod, setSelectedMethod] = useState('');
-	const [enabledMethods, setEnabledMethods] = useState(null); // null = loading, [] = none enabled, ['totp'] = totp enabled, etc.
+	const [enabledMethods, setEnabledMethods] = useState<APIEnabledMethodsResponse | null>(null); // null = loading, [] = none enabled, ['totp'] = totp enabled, etc.
+	const [token, setToken] = useState<string | null>(null);
 	const [code, setCode] = useState(['', '', '', '', '', '']);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isSendingCode, setIsSendingCode] = useState(false);
 	const [isVerifyingCode, setIsVerifyingCode] = useState(false);
-	const [totpSecrets, setTotpSecrets] = useState(null);
+	const [totpSecrets, setTotpSecrets] = useState<APITOTPSecrets | null>(null);
 	const inputRefs = useRef([]);
 
 	useEffect(() => {
-		if (currentStep === STEP.DONE) return ;
-		fetchEnabledMethods();
-	}, [currentStep]);
-	
-	async function fetchEnabledMethods() {
-		try {
-			setIsLoading(true);
-			const enabledMethods = await apiClient.mfaEnabledMethods();
-			setEnabledMethods(enabledMethods);
-		} catch (err) {
-			const apiErr = err as APIError;
-			toastError(apiErr.message);
-		} finally {
-			setIsLoading(false);
+		async function fetchEnabledMethods() {
+			try {
+				setIsLoading(true);
+				const enabledMethods = await apiClient.mfaEnabledMethods();
+				setEnabledMethods(enabledMethods);
+			} catch (err) {
+				const apiErr = err as APIError;
+				toastError(apiErr.message);
+			} finally {
+				setIsLoading(false);
+			}
 		}
-	}
+
+		if (currentStep === STEP.DONE)
+			return ;
+
+		fetchEnabledMethods();
+	}, [apiClient, currentStep]);
+
 
 	async function handleSetupMethod(method: string) {
 		setSelectedMethod(method);
-		
+
+		setIsLoading(true);
 		try {
-			setIsLoading(true);
-			
-			const res = await apiClient.mfaSetupInit(method);
+
+			const { token, secrets } = await apiClient.mfaSetupInit(method);
+			setToken(token);
+
 			if (method === 'TOTP')
-				setTotpSecrets(res);
-			
+				setTotpSecrets(secrets!);
+
 			if (method === 'TOTP')
 				setCurrentStep(STEP.SETUP_TOTP);
 			else
@@ -68,9 +75,8 @@ export default function TwoFAManagerPage() {
 		} catch (err) {
 			const apiErr = err as APIError;
 			toastError(apiErr.message);
-		} finally {
-			setIsLoading(false);
 		}
+		setIsLoading(false);
 	}
 
 	async function handleDisableMethod(method: string) {
@@ -82,9 +88,9 @@ export default function TwoFAManagerPage() {
 
 		try {
 			setIsLoading(true);
-			
 			await apiClient.mfaDisableMethod(method);
 			toastSuccess(`${METHODS_META[method].title} disabled successfully`);
+			setEnabledMethods((prev) => prev?.filter((m) => m !== method) || []);
 		} catch (err) {
 			const apiErr = err as APIError;
 			toastError(apiErr.message);
@@ -95,17 +101,17 @@ export default function TwoFAManagerPage() {
 
 	async function handleVerifySetup() {
 		try {
-			const toVerify = code.join('');
+			const codeJoin = code.join('');
 			setIsVerifyingCode(true);
-			
-			await apiClient.mfaSetupVerify(selectedMethod, toVerify);
+
+			await apiClient.mfaSetupVerify(token!, codeJoin);
 			toastSuccess(`${METHODS_META[selectedMethod].title} enabled successfully!`);
-			
+
 			setCurrentStep(STEP.DONE);
 			setCode(['', '', '', '', '', '']);
 			setSelectedMethod('');
+			setToken(null);
 			setTotpSecrets(null);
-			await fetchEnabledMethods();
 		} catch (err) {
 			const apiErr = err as APIError;
 			toastError(apiErr.message);
@@ -134,9 +140,9 @@ export default function TwoFAManagerPage() {
 		setTotpSecrets(null);
 	}
 
-	
+
 	console.log('RENDERING SETUP 2FA PAGE', isLoading, enabledMethods);
-	
+
 	if (enabledMethods === null) {
 		return (
 			<>
@@ -153,7 +159,7 @@ export default function TwoFAManagerPage() {
 		switch (currentStep) {
 			case STEP.OVERVIEW:
 				return (
-					<MethodsOverview 
+					<MethodsOverview
 						methods={enabledMethods || []}
 						isLoading={isLoading}
 						selectedMethod={selectedMethod}
@@ -163,7 +169,7 @@ export default function TwoFAManagerPage() {
 				);
 			case STEP.SETUP_TOTP:
 				return (
-					<SetupTOTP 
+					<SetupTOTP
 						totpSecrets={totpSecrets}
 						code={code}
 						setCode={setCode}
@@ -175,7 +181,7 @@ export default function TwoFAManagerPage() {
 				);
 			case STEP.VERIFY_SETUP:
 				return (
-					<VerifySetup 
+					<VerifySetup
 						selectedMethod={selectedMethod}
 						code={code}
 						setCode={setCode}
@@ -205,7 +211,7 @@ export default function TwoFAManagerPage() {
 				return null;
 		}
 	}
-	
+
 
 	return (
 		<>
@@ -215,11 +221,11 @@ export default function TwoFAManagerPage() {
 				transition={{ duration: 1, delay: 0.5 }}
 				className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
 			>
-			<MainCardWrapper className="h-full w-full custom-scrollbar font-funnel-display">
-				<div className="h-full w-full flex justify-center items-center overflow-auto px-4 py-16">
-					{renderCurrentStep()}
-				</div>
-			</MainCardWrapper>
+				<MainCardWrapper className="h-full w-full custom-scrollbar font-funnel-display">
+					<div className="h-full w-full flex justify-center items-center overflow-auto px-4 py-16">
+						{renderCurrentStep()}
+					</div>
+				</MainCardWrapper>
 			</motion.main>
 		</>
 	);

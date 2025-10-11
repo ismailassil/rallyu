@@ -39,7 +39,7 @@ const auth2FALoginChallengeBody = {
 	type: 'object',
 	properties: {
 		token: { type: 'string' },
-		method: { 
+		method: {
 			type: 'string',
 			enum: ['EMAIL', 'SMS', 'TOTP']
 		}
@@ -75,10 +75,20 @@ const auth2FALoginChallengeVerifyCodeBody = {
 // };
 
 // 2FA management
-const auth2FASetupParams = {
+const auth2FAMethodInQuery = {
 	type: 'object',
 	properties: {
-		method: { 
+		method: {
+			type: 'string',
+			enum: ['EMAIL', 'SMS', 'TOTP']
+		}
+	},
+	required: ['method']
+};
+const auth2FAMethodInParams = {
+	type: 'object',
+	properties: {
+		method: {
 			type: 'string',
 			enum: ['EMAIL', 'SMS', 'TOTP']
 		}
@@ -86,22 +96,14 @@ const auth2FASetupParams = {
 	required: ['method']
 };
 
-const auth2FASetupVerifyBody = {
+const authVerifyChallengeBody = {
 	type: 'object',
 	properties: {
+		token: { type: 'string'},
 		code: { type: 'string' }
 	},
-	required: ['code'],
+	required: ['token', 'code'],
 	additionalProperties: false
-};
-
-const auth2FADisableBody = {
-	type: 'object',
-	properties: {
-		method: { type: 'string' },
-		password: { type: 'string' }
-	},
-	required: ['method', 'password']
 };
 
 // Password management
@@ -111,16 +113,6 @@ const authResetPasswordBody = {
 		email: { type: 'string' }
 	},
 	required: ['email'],
-	additionalProperties: false
-};
-
-const authResetPasswordVerifyBody = {
-	type: 'object',
-	properties: {
-		token: { type: 'string' },
-		code: { type: 'string' }
-	},
-	required: ['token', 'code'],
 	additionalProperties: false
 };
 
@@ -181,28 +173,23 @@ export const authOAuthSchema = {
 }
 
 export const auth2FASetupSchema = {
-	params: auth2FASetupParams
+	querystring: auth2FAMethodInQuery
 }
 
 export const auth2FADisableSchema = {
-	params: auth2FASetupParams
+	params: auth2FAMethodInParams
 }
 
-export const auth2FASetupVerifySchema = {
-	params: auth2FASetupParams,
-	body: auth2FASetupVerifyBody
+export const auth2FAVerifySchema = {
+	body: authVerifyChallengeBody
 }
-
-// export const auth2FADisableSchema = {
-// 	body: auth2FADisableBody
-// }
 
 export const authResetPasswordSchema = {
 	body: authResetPasswordBody
 }
 
 export const authResetPasswordVerifySchema = {
-	body: authResetPasswordVerifyBody
+	body: authVerifyChallengeBody
 }
 
 export const authResetPasswordUpdateSchema = {
