@@ -30,7 +30,7 @@ export class AuthService {
 	}
 
 	async send2FACode(payload: { token: string, method: string }) {
-		const { data: res } = await this.client.post('/auth/login/2fa/send', payload);
+		const { data: res } = await this.client.post('/auth/login/2fa/select', payload);
 		return res.data;
 	}
 
@@ -41,6 +41,11 @@ export class AuthService {
 		const { data: res } = await this.client.post('/auth/login/2fa/verify', payload);
 
 		return { user: res.data.user, accessToken: res.data.accessToken };
+	}
+
+	async resend2FACode(payload: { token: string }) {
+		const { data: res } = await this.client.post('/auth/login/2fa/resend', payload);
+		return res.data;
 	}
 
 	async logout() {
@@ -101,12 +106,17 @@ export class AuthService {
 	}
 
 	async verifyPasswordResetCode(token: string, code: string) {
-		const { data: res } = await this.client.post(`/auth/reset-verify`, { token, code });
+		const { data: res } = await this.client.post(`/auth/reset-password/verify`, { token, code });
 		return res.data;
 	}
 
 	async resetPassword(token: string, newPassword: string) {
-		const { data: res } = await this.client.post(`/auth/reset-update`, { token, newPassword });
+		const { data: res } = await this.client.post(`/auth/reset-password/update`, { token, newPassword });
+		return res.data;
+	}
+
+	async resetPasswordResend(token: string) {
+		const { data: res } = await this.client.post(`/auth/reset-password/resend`, { token });
 		return res.data;
 	}
 }

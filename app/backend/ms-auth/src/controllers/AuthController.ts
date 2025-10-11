@@ -2,13 +2,12 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import AuthService from "../services/Auth/AuthService";
 import { ILoginRequest, IRegisterRequest } from "../types";
 import { TokenRequiredError } from "../types/auth.types";
-import TwoFactorService from "../services/TwoFactorAuth/[DEPRECATED]TwoFactorService";
 import AuthResponseFactory from "./AuthResponseFactory";
 import SessionsService from "../services/Auth/SessionsService";
 import { env } from "process";
 import z from "zod";
 import { UUID } from "crypto";
-import { zodTwoFALoginChallengeBodySchema, zodVerifyChallengeBodySchema } from "../schemas/zod/auth.zod.schema";
+import { zodResendSchema, zodTwoFALoginChallengeBodySchema, zodVerifyChallengeBodySchema } from "../schemas/zod/auth.zod.schema";
 
 
 class AuthController {
@@ -20,11 +19,11 @@ class AuthController {
 	async registerHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { first_name, last_name, username, email, password } = request.body as IRegisterRequest;
-			
+
 			await this.authService.SignUp(first_name, last_name, username, email, password);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(201, {});
-			
+
 			return reply.code(status).send(body);
 		} catch (err: any) {
 			const { status, body } = AuthResponseFactory.getErrorResponse(err);
@@ -40,12 +39,12 @@ class AuthController {
 			const loginResult = await this.authService.LogIn(username, password, request.fingerprint!);
 			if (loginResult._2FARequired) {
 				const { _2FARequired, enabled2FAMethods, token } = loginResult;
-				
+
 				const { status, body } = AuthResponseFactory.getSuccessResponse(200, { _2FARequired, enabled2FAMethods, token });
 
 				return reply.code(status).send(body);
 			}
-			
+
 			const { user, refreshToken, accessToken } = loginResult;
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
@@ -71,8 +70,8 @@ class AuthController {
 			const { token, method } = request.body as z.infer<typeof zodTwoFALoginChallengeBodySchema>;
 
 			await this.authService.sendTwoFAChallengeCode(
-				token as UUID, 
-				method, 
+				token as UUID,
+				method,
 				request.fingerprint!
 			);
 
@@ -91,8 +90,8 @@ class AuthController {
 			const { token, code } = request.body as z.infer<typeof zodVerifyChallengeBodySchema>;
 
 			const { user, refreshToken, accessToken } = await this.authService.verifyTwoFAChallengeCode(
-				token as UUID, 
-				code, 
+				token as UUID,
+				code,
 				request.fingerprint!
 			);
 
@@ -113,16 +112,32 @@ class AuthController {
 		}
 	}
 
+	async resendTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const { token } = request.body as z.infer<typeof zodResendSchema>;
+
+			await this.authService.resendTwoFAChallengeCode(token as UUID);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			return reply.code(status).send(body);
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
+		}
+	}
+
 	async logoutHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const refresh_token = request.cookies?.['refreshToken'];
 			if (!refresh_token)
 				throw new TokenRequiredError();
-			
+
 			await this.authService.LogOut(refresh_token!);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
-			
+
 			return reply.code(status).setCookie(
 				'refreshToken', '', {
 					path: '/',
@@ -144,8 +159,8 @@ class AuthController {
 			const oldRefreshToken = request.cookies?.['refreshToken'];
 			if (!oldRefreshToken)
 				throw new TokenRequiredError();
-			
-			const { user, newAccessToken: accessToken, newRefreshToken: refreshToken } 
+
+			const { user, newAccessToken: accessToken, newRefreshToken: refreshToken }
 				= await this.authService.Refresh(oldRefreshToken!, request.fingerprint!);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });

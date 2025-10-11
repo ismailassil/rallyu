@@ -25,7 +25,12 @@ export class MfaService {
 	}
 
 	async mfaSetupVerify(token: string, code: string) {
-		const { data: res } = await this.client.post(`/auth/2fa/verify`, { token, code });
+		const { data: res } = await this.client.post(`/auth/2fa/setup/verify`, { token, code });
+		return res.data;
+	}
+
+	async mfaSetupResend(token: string) {
+		const { data: res } = await this.client.post(`/auth/2fa/setup/resend`, { token });
 		return res.data;
 	}
 }

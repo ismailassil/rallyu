@@ -4,7 +4,7 @@ import TwoFactorMethodService from "../services/TwoFactorAuth/TwoFactorMethodSer
 import z from "zod";
 import { UUID } from "crypto";
 import { AuthChallengeMethod } from "../repositories/AuthChallengesRepository";
-import { zodVerifyChallengeBodySchema } from "../schemas/zod/auth.zod.schema";
+import { zodResendSchema, zodVerifyChallengeBodySchema } from "../schemas/zod/auth.zod.schema";
 
 class TwoFactorController {
 	constructor(
@@ -34,6 +34,23 @@ class TwoFactorController {
 			const { token, code } = request.body as z.infer<typeof zodVerifyChallengeBodySchema>;
 
 			await this.twoFactorService.enablePending(token as UUID, code);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+
+			return reply.status(status).send(body);
+
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
+		}
+	}
+
+	async resendHandler(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const { token } = request.body as z.infer<typeof zodResendSchema>;
+
+			await this.twoFactorService.resendChallenge(token as UUID);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 

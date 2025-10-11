@@ -23,7 +23,8 @@ export default function VerifyCode({ method, loginSessionMeta, onNext, onGoBack 
 
 	const {
 		send2FACode,
-		verify2FACode
+		verify2FACode,
+		apiClient
 	} = useAuth();
 
 	const {
@@ -72,10 +73,7 @@ export default function VerifyCode({ method, loginSessionMeta, onNext, onGoBack 
 
 		setIsResending(true);
 		try {
-			await executeAPICall(() => send2FACode(
-				loginSessionMeta.token,
-				method
-			));
+			await executeAPICall(() => apiClient.auth.resend2FACode({ token: loginSessionMeta.token }));
 			toastSuccess('Code sent!');
 		} catch (err: any) {
 			toastError(err.message);

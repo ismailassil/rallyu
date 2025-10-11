@@ -39,7 +39,7 @@ export default function TwoFAManagerPage() {
 		async function fetchEnabledMethods() {
 			try {
 				setIsLoading(true);
-				const enabledMethods = await apiClient.mfaEnabledMethods();
+				const enabledMethods = await apiClient.mfa.mfaEnabledMethods();
 				setEnabledMethods(enabledMethods);
 			} catch (err) {
 				const apiErr = err as APIError;
@@ -62,7 +62,7 @@ export default function TwoFAManagerPage() {
 		setIsLoading(true);
 		try {
 
-			const { token, secrets } = await apiClient.mfaSetupInit(method);
+			const { token, secrets } = await apiClient.mfa.mfaSetupInit(method);
 			setToken(token);
 
 			if (method === 'TOTP')
@@ -80,15 +80,13 @@ export default function TwoFAManagerPage() {
 	}
 
 	async function handleDisableMethod(method: string) {
-		// setSelectedMethod(method);
-
 		if (!confirm(`Are you sure you want to disable ${METHODS_META[method].title}?`)) {
 			return;
 		}
 
 		try {
 			setIsLoading(true);
-			await apiClient.mfaDisableMethod(method);
+			await apiClient.mfa.mfaDisableMethod(method);
 			toastSuccess(`${METHODS_META[method].title} disabled successfully`);
 			setEnabledMethods((prev) => prev?.filter((m) => m !== method) || []);
 		} catch (err) {
@@ -104,7 +102,7 @@ export default function TwoFAManagerPage() {
 			const codeJoin = code.join('');
 			setIsVerifyingCode(true);
 
-			await apiClient.mfaSetupVerify(token!, codeJoin);
+			await apiClient.mfa.mfaSetupVerify(token!, codeJoin);
 			toastSuccess(`${METHODS_META[selectedMethod].title} enabled successfully!`);
 
 			setCurrentStep(STEP.DONE);
@@ -123,7 +121,7 @@ export default function TwoFAManagerPage() {
 	async function handleResendCode() {
 		try {
 			setIsSendingCode(true);
-			await apiClient.mfaSetupInit(selectedMethod);
+			await apiClient.mfa.mfaSetupResend(token!);
 			toastSuccess('Code sent!');
 		} catch (err) {
 			const apiErr = err as APIError;

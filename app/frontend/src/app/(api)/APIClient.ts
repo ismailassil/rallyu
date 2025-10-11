@@ -307,6 +307,10 @@ export class APIClient {
 		return this.auth.resetPassword(token, newPassword);
 	}
 
+	async resetPasswordResend(token: string) {
+		return this.auth.resetPasswordResend(token);
+	}
+
 	async fetchPlayerStatus(user_id: number) {
 		const res = await this.client.get(`/game/user/${user_id}`);
 		return res.data;

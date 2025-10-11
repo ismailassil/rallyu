@@ -9,14 +9,13 @@ import MailingService from '../Communication/MailingService';
 import WhatsAppService from '../Communication/WhatsAppService';
 import TwoFactorMethodService from '../TwoFactorAuth/TwoFactorMethodService';
 import TwoFactorChallengeService from '../TwoFactorAuth/TwoFactorChallengeService';
-import { 
+import {
+	AuthChallengeExpired,
 	InvalidAuthProviderError,
-	InvalidCredentialsError, 
-	TokenRequiredError, 
-	TwoFAChallengeExpired, 
-	UserAlreadyExistsError, 
-	UserNotFoundError, 
-	_2FAInvalidCode 
+	InvalidCredentialsError,
+	TokenRequiredError,
+	UserAlreadyExistsError,
+	UserNotFoundError
 } from "../../types/auth.types";
 import axios, { create } from 'axios';
 import { oauthConfig } from '../../config/oauth';
@@ -44,11 +43,11 @@ class AuthService {
 		const hashedPassword = await bcrypt.hash(password!, this.authConfig.bcryptHashRounds);
 
 		await this.userService.createUser(
-			first_name, 
-			last_name, 
-			username, 
-			email, 
-			password, 
+			first_name,
+			last_name,
+			username,
+			email,
+			password,
 			hashedPassword
 		);
 	}
@@ -57,8 +56,8 @@ class AuthService {
 		const existingUser = await this.userService.getUserByUsername(username);
 		if (existingUser && existingUser.auth_provider !== 'Local')
 			throw new InvalidAuthProviderError(existingUser.auth_provider);
-		
-		const isValidPassword = 
+
+		const isValidPassword =
 			await bcrypt.compare(password, existingUser ? existingUser.password : this.authConfig.bcryptTimingHash);
 
 		if (!existingUser || !isValidPassword)
@@ -68,8 +67,8 @@ class AuthService {
 		const _2FARequired = enabled2FAMethods.length > 0;
 		if (_2FARequired)
 			return {
-				_2FARequired: true, 
-				enabled2FAMethods, 
+				_2FARequired: true,
+				enabled2FAMethods,
 				token: await this.twoFAChallengeService.createChallenge(existingUser.id)
 			};
 
@@ -92,8 +91,8 @@ class AuthService {
 		const existingUser = await this.userService.getUserById(refreshTokenPayload.sub);
 		if (!existingUser)
 			throw new UserNotFoundError();
-		
-		const { newAccessToken, newRefreshToken } 
+
+		const { newAccessToken, newRefreshToken }
 			= await this.sessionService.refreshSession(refreshToken, sessionFingerprint);
 
 		const { password: _, ...userWithoutPassword } = existingUser;
@@ -110,7 +109,7 @@ class AuthService {
 
 		const targetChall = await this.twoFAChallengeService.getChallengeByToken(token);
 		if (!targetChall)
-			throw new TwoFAChallengeExpired();
+			throw new AuthChallengeExpired();
 
 		const targetUser = await this.userService.getUserById(targetChall.user_id);
 		if (!targetUser)
@@ -121,6 +120,10 @@ class AuthService {
 		const { password: _, ...userWithoutPassword } = targetUser;
 
 		return { user: userWithoutPassword, accessToken: sessionTokens.accessToken, refreshToken: sessionTokens.refreshToken };
+	}
+
+	async resendTwoFAChallengeCode(token: UUID) {
+		await this.twoFAChallengeService.resendChallenge(token);
 	}
 
 	async loginIntra42(authorizationCode: string, sessionFingerprint: ISessionFingerprint) {
@@ -155,7 +158,7 @@ class AuthService {
 
 	private async exchangeAuthCodeIntra42(authorizationCode: string) {
 		try {
-			const { data: exchangeResult } = await axios.post(oauthConfig.intra42.exchange_uri, 
+			const { data: exchangeResult } = await axios.post(oauthConfig.intra42.exchange_uri,
 				null,
 				{
 					params: {
@@ -244,10 +247,10 @@ class AuthService {
 					}
 				}
 			);
-	
+
 			if (!exchangeResult.id_token)
 				throw new Error("Cannot find id_token");
-		
+
 			return await this.parseGoogleOAuthIDToken(exchangeResult.id_token);
 		} catch (err) {
 			console.error("Google token exchange failed");
@@ -257,7 +260,7 @@ class AuthService {
 
 	private async parseGoogleOAuthIDToken(IDToken: string) {
 		const payload: any = this.jwtUtils.decodeJWT(IDToken);
-		
+
 		return {
 			auth_provider_id: payload.sub,
 			email: payload.email,
@@ -295,7 +298,7 @@ class AuthService {
 
 			uniqueUsername = `${sanitizedBase}${++counter}`;
 		}
-		
+
 		counter = 0;
 		while (counter < MAX_ATTEMPTS) {
 			if (!await this.userService.isUsernameTaken(uniqueUsername))
@@ -311,12 +314,12 @@ class AuthService {
 		const existingUser = await this.userService.getUserById(user_id);
 		if (!existingUser)
 			throw new UserNotFoundError();
-		
-		const isValidPassword = 
+
+		const isValidPassword =
 			await bcrypt.compare(oldPassword, existingUser.password);
 		if (!isValidPassword)
 			throw new InvalidCredentialsError('Invalid password');
-		
+
 		const newHashedPassword = await bcrypt.hash(newPassword!, this.authConfig.bcryptHashRounds);
 
 		await this.userService.updateUser(user_id, { password: newHashedPassword });

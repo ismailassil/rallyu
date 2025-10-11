@@ -85,41 +85,52 @@ export class TwoFAAlreadyEnabled extends AuthError {
 		super(message, 404, `AUTH_2FA_ALREADY_ENABLED`, details);
 	}
 }
-export class TwoFAChallengeNotFound extends AuthError {
-	constructor(message: string = 'Two Factor challenge not found', details: any = {}) {
-		super(message, 404, 'AUTH_2FA_CHALLENGE_NOT_FOUND', details);
+
+// export class TwoFAChallengeNotFound extends AuthError {
+// 	constructor(message: string = 'Two Factor challenge not found', details: any = {}) {
+// 		super(message, 404, 'AUTH_2FA_CHALLENGE_NOT_FOUND', details);
+// 	}
+// }
+
+// export class TwoFAChallengeMethodNotSelected extends AuthError {
+// 	constructor(message: string = 'Two Factor challenge method not selected', details: any = {}) {
+// 		super(message, 400, 'AUTH_2FA_CHALLENGE_METHOD_NOT_SELECTED', details);
+// 	}
+// }
+
+// export class TwoFAChallengeExpired extends AuthError {
+// 	constructor(message: string = 'Two Factor challenge has expired', details: any = {}) {
+// 		super(message, 400, 'AUTH_2FA_CHALLENGE_EXPIRED', details);
+// 	}
+// }
+
+export class AuthChallengeExpired extends AuthError {
+	constructor(message: string = 'Challenge has expired', details: any = {}) {
+		super(message, 400, 'AUTH_CHALLENGE_EXPIRED', details);
+	}
+}
+export class TooManyResendsError extends AuthError {
+	constructor(message: string = 'Maximum resends reached', details: any = {}) {
+		super(message, 429, 'AUTH_RATE_LIMIT', details);
+	}
+}
+export class TooManyAttemptsError extends AuthError {
+	constructor(message: string = 'Maximum attempts reached', details: any = {}) {
+		super(message, 429, 'AUTH_RATE_LIMIT', details);
 	}
 }
 
-export class TwoFAChallengeMethodNotSelected extends AuthError {
-	constructor(message: string = 'Two Factor challenge method not selected', details: any = {}) {
-		super(message, 400, 'AUTH_2FA_CHALLENGE_METHOD_NOT_SELECTED', details);
-	}
-}
+// export class TwoFAChallengeMaxResendsReached extends AuthError {
+// 	constructor(message: string = 'Two Factor challenge maximum resends reached', details: any = {}) {
+// 		super(message, 400, 'AUTH_2FA_CHALLENGE_MAX_RESENDS_REACHED', details);
+// 	}
+// }
 
-export class TwoFAChallengeExpired extends AuthError {
-	constructor(message: string = 'Two Factor challenge has expired', details: any = {}) {
-		super(message, 400, 'AUTH_2FA_CHALLENGE_EXPIRED', details);
-	}
-}
-
-export class TwoFAChallengeMaxAttemptsReached extends AuthError {
-	constructor(message: string = 'Two Factor challenge maximum attempts reached', details: any = {}) {
-		super(message, 400, 'AUTH_2FA_CHALLENGE_MAX_ATTEMPTS_REACHED', details);
-	}
-}
-
-export class TwoFAChallengeMaxResendsReached extends AuthError {
-	constructor(message: string = 'Two Factor challenge maximum resends reached', details: any = {}) {
-		super(message, 400, 'AUTH_2FA_CHALLENGE_MAX_RESENDS_REACHED', details);
-	}
-}
-
-export class TwoFAChallengeInvalidCode extends AuthError {
-	constructor(message: string = 'Two Factor challenge invalid code', details: any = {}) {
-		super(message, 400, 'AUTH_2FA_CHALLENGE_INVALID_CODE', details);
-	}
-}
+// export class TwoFAChallengeInvalidCode extends AuthError {
+// 	constructor(message: string = 'Two Factor challenge invalid code', details: any = {}) {
+// 		super(message, 400, 'AUTH_2FA_CHALLENGE_INVALID_CODE', details);
+// 	}
+// }
 
 // AUTHENTICATION
 export class NoEmailIsAssociated extends AuthError {
@@ -174,59 +185,59 @@ export class InternalServerError extends AuthError {
 }
 
 // 2FA
-export class _2FANotFound extends AuthError {
-	constructor(method: string, message: string = '2FA not found', details: any = {}) {
-		message = `2FA via ${method} not found`;
-		super(message, 404, `AUTH_2FA_${method.toUpperCase()}_NOT_FOUND`, details);
-	}
-}
+// export class _2FANotFound extends AuthError {
+// 	constructor(method: string, message: string = '2FA not found', details: any = {}) {
+// 		message = `2FA via ${method} not found`;
+// 		super(message, 404, `AUTH_2FA_${method.toUpperCase()}_NOT_FOUND`, details);
+// 	}
+// }
 
-export class _2FANotEnabled extends AuthError {
-	constructor(method: string, message: string = '2FA not enabled', details: any = {}) {
-		message = `2FA via ${method} not enabled`;
-		super(message, 404, `AUTH_2FA_${method.toUpperCase()}_NOT_ENABLED`, details);
-	}
-}
+// export class _2FANotEnabled extends AuthError {
+// 	constructor(method: string, message: string = '2FA not enabled', details: any = {}) {
+// 		message = `2FA via ${method} not enabled`;
+// 		super(message, 404, `AUTH_2FA_${method.toUpperCase()}_NOT_ENABLED`, details);
+// 	}
+// }
 
-export class _2FAAlreadyEnabled extends AuthError {
-	constructor(method: string, message: string = '2FA already enabled', details: any = {}) {
-		message = `2FA via ${method} already enabled`;
-		super(message, 404, `AUTH_2FA_${method.toUpperCase()}_ALREADY_ENABLED`, details);
-	}
-}
+// export class _2FAAlreadyEnabled extends AuthError {
+// 	constructor(method: string, message: string = '2FA already enabled', details: any = {}) {
+// 		message = `2FA via ${method} already enabled`;
+// 		super(message, 404, `AUTH_2FA_${method.toUpperCase()}_ALREADY_ENABLED`, details);
+// 	}
+// }
 
-export class _2FAInvalidCode extends AuthError {
-	constructor(type: string, message: string = '2FA code is not valid', details: any = {}) {
-		message = `2FA ${type} verification code is not valid`;
-		super(message, 400, `AUTH_2FA_BY_${type.toUpperCase()}_INVALID_CODE`, details);
-	}
-}
+// export class _2FAInvalidCode extends AuthError {
+// 	constructor(type: string, message: string = '2FA code is not valid', details: any = {}) {
+// 		message = `2FA ${type} verification code is not valid`;
+// 		super(message, 400, `AUTH_2FA_BY_${type.toUpperCase()}_INVALID_CODE`, details);
+// 	}
+// }
 
-export class _2FAExpiredCode extends AuthError {
-	constructor(type: string, message: string = '2FA code expired', details: any = {}) {
-		message = `2FA ${type} verification code expired`;
-		super(message, 400, `AUTH_2FA_BY_${type.toUpperCase()}_EXPIRED_CODE`, details);
-	}
-}
+// export class _2FAExpiredCode extends AuthError {
+// 	constructor(type: string, message: string = '2FA code expired', details: any = {}) {
+// 		message = `2FA ${type} verification code expired`;
+// 		super(message, 400, `AUTH_2FA_BY_${type.toUpperCase()}_EXPIRED_CODE`, details);
+// 	}
+// }
 
 // PASSWORD RESET
-export class PasswordResetNotFoundError extends AuthError {
-	constructor(message: string = 'Password reset request is not found', details: any = {}) {
-		super(message, 400, 'AUTH_PASSWORD_RESET_EXPIRED', details);
-	}
-}
+// export class PasswordResetNotFoundError extends AuthError {
+// 	constructor(message: string = 'Password reset request is not found', details: any = {}) {
+// 		super(message, 400, 'AUTH_PASSWORD_RESET_EXPIRED', details);
+// 	}
+// }
 
-export class PasswordResetExpiredError extends AuthError {
-	constructor(message: string = 'Password reset request has expired', details: any = {}) {
-		super(message, 400, 'AUTH_PASSWORD_RESET_EXPIRED', details);
-	}
-}
+// export class PasswordResetExpiredError extends AuthError {
+// 	constructor(message: string = 'Password reset request has expired', details: any = {}) {
+// 		super(message, 400, 'AUTH_PASSWORD_RESET_EXPIRED', details);
+// 	}
+// }
 
-export class PasswordResetInvalidCodeError extends AuthError {
-	constructor(message: string = 'Invalid password reset code', details: any = {}) {
-		super(message, 400, 'AUTH_PASSWORD_RESET_INVALID_CODE', details);
-	}
-}
+// export class PasswordResetInvalidCodeError extends AuthError {
+// 	constructor(message: string = 'Invalid password reset code', details: any = {}) {
+// 		super(message, 400, 'AUTH_PASSWORD_RESET_INVALID_CODE', details);
+// 	}
+// }
 
 // RATE LIMIT
 export class RateLimitError extends AuthError {

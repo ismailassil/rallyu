@@ -75,8 +75,8 @@ export function VerifyCode({ email, token, onNext, onGoBack } : VerifyCodeProps)
 		setCode(['', '', '', '', '', '']);
 		setIsResending(true);
 		try {
-			await executeAPICall(() => apiClient.requestPasswordReset(
-				email
+			await executeAPICall(() => apiClient.resetPasswordResend(
+				token
 			));
 			toastSuccess('Code sent!');
 		} catch (err: any) {
