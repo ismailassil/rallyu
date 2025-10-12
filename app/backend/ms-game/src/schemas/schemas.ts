@@ -40,7 +40,7 @@ export const createRoomSchema = {
                 enum: ['online', 'local']
             }
         },
-        required: ['playerIds', 'gameType', 'gameMode'],
+        required: ['playersIds', 'gameType', 'gameMode'],
         additionalProperties: false
     }
 }
@@ -60,9 +60,9 @@ export const userStatusSchema = {
     params: {
         type: 'object',
         properties: {
-            user: { type: 'number' }
+            userid: { type: 'number' }
         },
-        required: ['user'],
+        required: ['userid'],
         additionalProperties: false
     },
 }

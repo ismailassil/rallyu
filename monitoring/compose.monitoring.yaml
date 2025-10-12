@@ -28,9 +28,9 @@ services:
             - monitoring
             - web-app
         env_file:
-            - ./.monitoring.env
+            - .env
         healthcheck:
-            test: ['CMD-SHELL', 'curl -f http://localhost:3000']
+            test: ["CMD-SHELL", "curl -f http://localhost:3000"]
             interval: 30s
             timeout: 10s
             retries: 10
@@ -46,10 +46,10 @@ services:
         networks:
             - monitoring
         command:
-            - '--config.file=/etc/prometheus/prometheus.yml'
-            - '--storage.tsdb.path=/prometheus'
-            - '--storage.tsdb.retention.time=20d'
-            - '--storage.tsdb.retention.size=10GB'
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+            - "--storage.tsdb.retention.time=20d"
+            - "--storage.tsdb.retention.size=10GB"
         ports: # TODO: TO BE REMOVED
             - 9090:9090
 
@@ -62,8 +62,8 @@ services:
             - ./prometheus/mail.key:/etc/alertmanager/secrets/mail.key
             - alertmanager-data:/data
         command:
-            - '--config.file=/config/alertmanager.yml'
-            - '--log.level=debug'
+            - "--config.file=/config/alertmanager.yml"
+            - "--log.level=debug"
         networks:
             - monitoring
 

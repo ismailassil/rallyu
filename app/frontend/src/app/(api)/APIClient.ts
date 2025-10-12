@@ -10,6 +10,27 @@ export type APIError = {
 	details?: any;
 }
 
+export type PlayerState = {
+	ID?: number;
+	score: number;
+	coords?: any;
+  };
+
+export type GameRoomState =
+	| {
+		gameType: 'pingpong' | 'tictactoe',
+		gameMode: 'online' | 'local',
+		cells: any[];
+		currentRound: number;
+		players: PlayerState[];
+	  }
+	| {
+		gameType: 'pingpong' | 'tictactoe',
+		gameMode: 'online' | 'local',
+		ball: any;
+		players: PlayerState[];
+	  };
+
 export class APIClient {
 	private client: AxiosInstance;
 	private accessToken: string = '';
@@ -308,7 +329,23 @@ export class APIClient {
 	}
 
 	async fetchPlayerStatus(user_id: number) {
-		const res = await this.client.get(`/game/user/${user_id}`);
+		const res = await this.client.get(`/game/user/${user_id}/status`);
+		return res.data;
+	}
+	
+	async fetchGameRoomStatus(room_id: string) : Promise<GameRoomState> {
+		const res = await this.client.get(`/game/room/${room_id}/status`);
+		return res.data;
+	}
+
+	async createGameRoom(playersIds: number[], gameType: string, gameMode: string) {
+		const res = await this.client.post(`/game/room/create`,
+			{
+				playersIds,
+				gameType,
+				gameMode
+			},
+		);
 		return res.data;
 	}
 

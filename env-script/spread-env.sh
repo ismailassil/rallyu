@@ -1,22 +1,28 @@
-ENV_MAPPINGS = (
+#!/bin/bash
+
+YELLOW='\033[1;33m'
+GREEN='\033[1;32m'
+NC='\033[0m'
+
+ENV_MAPPINGS=(
 	## Root
-	"./.env:../.env"
+	"./env-script/.env:.env"
 
 	## Backend
-	"./.backend.env:../app/backend/.backend.env"
+	"./env-script/.backend.env:app/backend/.env"
 
 	## Microservices
-	"./.api-gateway.env:../app/backend/api-gateway/.api-gateway.env"
-	"./.auth.env:../app/backend/ms-auth/.auth.env"
-	"./.chat.env:../app/backend/ms-chat/.chat.env"
-	"./.game.env:../app/backend/ms-game/.game.env"
-	"./.matchmaking.env:../app/backend/ms-matchmaking/.matchmaking.env"
-	"./.notif.env:../app/backend/ms-notif/.notif.env"
-	"./.xo.env:../app/backend/ms-xo/.xo.env"
+	"./env-script/.api-gateway.env:app/backend/api-gateway/.api-gateway.env"
+	"./env-script/.auth.env:app/backend/ms-auth/.auth.env"
+	"./env-script/.chat.env:app/backend/ms-chat/.chat.env"
+	"./env-script/.game.env:app/backend/ms-game/.game.env"
+	"./env-script/.matchmaking.env:app/backend/ms-matchmaking/.matchmaking.env"
+	"./env-script/.notif.env:app/backend/ms-notif/.notif.env"
+	"./env-script/.xo.env:app/backend/ms-xo/.xo.env"
 
 	## Logging & Monitoring
-	"./.logging.env:../logging/.logging.env"
-	"./.monitoring.env:../monitoring/.monitoring.env"
+	"./env-script/.logging.env:logging/.env"
+	"./env-script/.monitoring.env:monitoring/.env"
 )
 
 copy_env_file() {
@@ -25,26 +31,31 @@ copy_env_file() {
 
 	if [ -f "$src" ]; then
 		cp "$src" "$dest"
-		echo "Copied $src to $dest"
+		return 0
 	else
-		echo "Source file $src does not exist. Skipping."
+		return 1
 	fi
 }
 
+echo -e ${GREEN}"Starting to spread environment files [${YELLOW}${#ENV_MAPPINGS[@]} files${GREEN}]..."${NC}
+
 # Remove existing .env files in target locations
+count=0
 for mapping in "${ENV_MAPPINGS[@]}"; do
 	IFS=":" read -r _ dest <<< "$mapping"
 	if [ -f "$dest" ]; then
 		rm "$dest"
-		echo "Removed existing file $dest"
+		count=$((count + 1))
 	fi
 done
 
+echo -e ${GREEN}"Removed $count existing .env files."${NC}
+
 # Copy new .env files to target locations
+count=0
 for mapping in "${ENV_MAPPINGS[@]}"; do
 	IFS=":" read -r src dest <<< "$mapping"
-	copy_env_file "$src" "$dest"
+	copy_env_file "$src" "$dest" && count=$((count + 1))
 done
 
-echo "Environment files have been spread successfully."
-
+echo -e ${GREEN}"Successfully spread $count environment files."${NC}

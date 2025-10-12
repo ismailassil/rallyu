@@ -1,8 +1,13 @@
 import type { WebSocket } from "ws";
-import { TicTacToeRoom } from "../tictactoe/ticTacToeRoom";
-import { PingPongRoom } from "../pingpong/pingPongRoom";
+import { TicTacToeRoom } from "../room/ticTacToeRoom";
+import { PingPongRoom } from "../room/pingPongRoom";
+
+export type GameType = 'pingpong' | 'tictactoe'
+export type GameMode = 'online' | 'local'
 
 export interface PingPongStatus {
+	gameType: GameType,
+	gameMode: GameMode,
 	ball: BallState,
 	players: [
 		{
@@ -19,6 +24,8 @@ export interface PingPongStatus {
 }
 
 export interface TicTacToeStatus {
+	gameType: GameType,
+	gameMode: GameMode,
 	cells: string[][],
 	currentRound: number
 	players: [
@@ -74,8 +81,8 @@ export interface Player<TRoom = Room<any, any>> {
 
 export interface Room<TState, TStatus> {
 	id: string;
-	gameType: string;
-	gameMode: string;
+	gameType: GameType;
+	gameMode: GameMode;
 	startTime: number | null;
 	players: Player[];
 	running: boolean;

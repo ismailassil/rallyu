@@ -24,7 +24,7 @@ services:
       - web-app
     env_file:
       - ./api-gateway/.api-gateway.env
-      - .backend.env
+      - .env
     healthcheck:
       test:
         [
@@ -62,7 +62,7 @@ services:
       - backend
     env_file:
       - ./ms-auth/.auth.env
-      - .backend.env
+      - .env
     develop:
       watch:
         - path: ./ms-auth
@@ -87,7 +87,7 @@ services:
       - backend
     env_file:
       - ./ms-notif/.notif.env
-      - .backend.env
+      - .env
     develop:
       watch:
         - path: ./ms-notif
@@ -114,7 +114,7 @@ services:
       - backend
     env_file:
       - ./ms-chat/.chat.env
-      - .backend.env
+      - .env
     develop:
       watch:
         - path: ./ms-chat
@@ -158,7 +158,7 @@ services:
     networks:
       - backend
     env_file:
-      - .backend.env
+      - .env
       - ./ms-matchmaking/.matchmaking.env
     develop:
       watch:
@@ -183,7 +183,7 @@ services:
     networks:
       - backend
     env_file:
-      - .backend.env
+      - .env
       - ./ms-game/.game.env
     develop:
       watch:
@@ -204,7 +204,7 @@ services:
     # ports:
     #   - 6379:6379
     env_file:
-      - .backend.env
+      - .env
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
 
   redis_ui:
@@ -216,7 +216,7 @@ services:
       - backend
       - web-app
     env_file:
-      - .backend.env
+      - .env
     environment:
       - RI_REDIS_HOST=redis
       - RI_REDIS_ALIAS=BackendConnection
@@ -229,7 +229,7 @@ services:
     networks:
       - backend
     env_file:
-      - .backend.env
+      - .env
     # ports:
     #   - 4222:4222
     command: --user ${NATS_USER} --pass ${NATS_PASSWORD} -js -m 8222 -n internal-server

@@ -5,7 +5,7 @@
 all: help
 
 env:
-	@bash ./scripts/setup_env.sh
+	@bash ./env-script/spread-env.sh
 
 up:
 	@docker-compose up --build --watch

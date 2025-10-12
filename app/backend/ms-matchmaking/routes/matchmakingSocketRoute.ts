@@ -1,40 +1,38 @@
-import { WebSocket } from "@fastify/websocket";
+import ws from "@fastify/websocket";
 import { FastifyInstance, FastifyRequest } from "fastify";
 import { RawData } from "ws"; // type
 import { matchMakingRouteSchema } from "./schema.js";
+import axios from "axios";
 
 const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
+const MS_GAME_PORT = process.env.MS_GAME_PORT || '5010';
 // const matchQueue: { id: number, socket: WebSocket }[] = [];
-const pingpongQueue = new Map<number, WebSocket>();
-const tictactoeQueue = new Map<number, WebSocket>();
+const pingpongQueue = new Map<number, ws.WebSocket>();
+const tictactoeQueue = new Map<number, ws.WebSocket>();
 
-const processQueue = async (queue: Map<number, WebSocket>, mode: string) => {
+const processQueue = async (queue: Map<number, ws.WebSocket>, type: string) => {
     const matchedPlayers = [...queue.entries()].slice(0, 2);
     const IDs = matchedPlayers.map(([key, val]) => key);
     IDs.forEach(ID => queue.delete(ID));
 
     try {
-        const res = await fetch('http://ms-game:5010/game/create-room', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${MS_MATCHMAKING_API_KEY}`
-            },
-            body: JSON.stringify({ 
+        const res = await axios.post(`http://ms-game:${MS_GAME_PORT}/game/room/create`,
+            {
                 playersIds: IDs,
-                gameType: mode
-            })
-        })
-
-        if (!res.ok)
-            throw new Error(`API "Game service" error: ${res.status}`);
-
-        const data = await res.json();
-
+                gameType: type,
+                gameMode: 'online'
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${MS_MATCHMAKING_API_KEY}`
+                }
+            }
+        );
         matchedPlayers.forEach(([key, val]) => {
             if (val.readyState === WebSocket.OPEN) {
                 val.send(JSON.stringify({
-                    roomId: data.roomId,
+                    roomId: res.data.roomId,
                     opponentId: IDs.find(ID => ID != key)
                 }));
             }
@@ -53,10 +51,10 @@ const processQueue = async (queue: Map<number, WebSocket>, mode: string) => {
 
 const matchmakingSocketRoutes = async function (app: FastifyInstance) {
 
-    app.get("/:gameType/join", { websocket: true, schema: matchMakingRouteSchema }, (connection: WebSocket, req: FastifyRequest) => {
+    app.get("/:gameType/join", { websocket: true, schema: matchMakingRouteSchema }, (connection: ws.WebSocket, req: FastifyRequest) => {
         const { gameType } = req.params as { gameType: string };
         const queue = gameType === 'pingpong' ? pingpongQueue : tictactoeQueue;
-
+        console.log('queue, gameType', queue, gameType);
         connection.on('message', (message: RawData) => {
             try {
                 const data = message.toString('utf-8');
