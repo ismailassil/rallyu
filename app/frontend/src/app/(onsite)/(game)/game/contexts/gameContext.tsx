@@ -2,9 +2,14 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type GameType = 'pingpong' | 'tictactoe';
 
+type GameMode = 'online' | 'local';
+
 interface GameContextType {
   gameType: GameType;
   setGameType:  React.Dispatch<React.SetStateAction<GameType>>;
+  
+  gameMode: GameMode;
+  setGameMode:  React.Dispatch<React.SetStateAction<GameMode>>;
 
   gameTime: number;
   setGameTime: React.Dispatch<React.SetStateAction<number>>;
@@ -33,6 +38,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [url, setUrl] = useState<string | null>(null);
   const [gameTime, setGameTime] = useState<number>(0);
   const [opponentId, setOpponentId] = useState<number>(0);
+  const [gameMode, setGameMode] = useState<GameMode>('online');
 
   return (
     <GameContext.Provider
@@ -46,7 +52,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         gameTime,
         setGameTime,
         opponentId,
-        setOpponentId
+        setOpponentId,
+        gameMode,
+        setGameMode
       }}
     >
       {children}

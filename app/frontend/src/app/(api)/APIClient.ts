@@ -10,6 +10,23 @@ export type APIError = {
 	details?: any;
 }
 
+export type PlayerState = {
+	ID?: number;
+	score: number;
+	coords?: any;
+  };
+  
+export type GameRoomState =
+	| {
+		cells: any[];
+		currentRound: number;
+		players: PlayerState[];
+	  }
+	| {
+		ball: any;
+		players: PlayerState[];
+	  };
+
 export class APIClient {
 	private client: AxiosInstance;
 	private accessToken: string = '';
@@ -308,7 +325,12 @@ export class APIClient {
 	}
 
 	async fetchPlayerStatus(user_id: number) {
-		const res = await this.client.get(`/game/user/${user_id}`);
+		const res = await this.client.get(`/game/user/status/${user_id}`);
+		return res.data;
+	}
+
+	async fetchGameRoomStatus(room_id: string) : Promise<GameRoomState> {
+		const res = await this.client.get(`/game/room/status/${room_id}`);
 		return res.data;
 	}
 
