@@ -3,7 +3,8 @@ import type { Room, Player, PingPongGameState, TicTacToeGameState, PingPongStatu
 import ws from 'ws';
 
 const GAME_UPDATE_INTERVAL = 16.67; // 60hz
-const GAME_START_DELAY = 3000; // 3 sec
+const GAME_START_DELAY = 3; // 3 sec
+const GAME_TIME = 20;
 
 export class PingPongPlayer implements Player {
     id: number;
@@ -151,16 +152,16 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
     setupPackets(): NodeJS.Timeout {
         this.players.forEach((player, index) => {
             if (player.socket?.readyState === ws.OPEN)
-                player.socket.send(JSON.stringify({ type: 'ready', i: index }));
+                player.socket.send(JSON.stringify({ type: 'ready', i: index, t: GAME_START_DELAY }));
 		})
 
 		return setTimeout(() => {
 			this.players.forEach(player => {
 				if (player.socket?.readyState === ws.OPEN)
-                    player.socket.send(JSON.stringify({ type: 'start' }))
+                    player.socket.send(JSON.stringify({ type: 'start', t: GAME_TIME }))
 			})
 			this.state.pause = false
-		}, GAME_START_DELAY);
+		}, GAME_START_DELAY * 1000);
     }
 
 	startGame(): void {

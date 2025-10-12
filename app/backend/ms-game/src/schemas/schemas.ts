@@ -2,14 +2,14 @@ export const joinRoomSchema = {
     querystring: {
         type: 'object',
         properties: {
-            user: { type: 'string' }
+            userid: { type: 'number' }
         },
-        required: ['user']
+        required: ['userid']
     },
     params: {
         type: 'object',
         properties: {
-            roomid: { type: 'number' }
+            roomid: { type: 'string' }
         },
         required: ['roomid'],
         additionalProperties: false

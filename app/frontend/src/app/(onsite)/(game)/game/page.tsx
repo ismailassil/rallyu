@@ -21,7 +21,7 @@ export default function Game() {
 				const res = await apiClient.fetchPlayerStatus(loggedInUser.id);
 
 				updateGameState({
-					url: `/game/room/join/${res.roomId}?user=${loggedInUser.id}`,
+					url: `/game/room/join/${res.roomId}?userid=${loggedInUser.id}`,
 					opponentId: res.opponentId,
 					gameStarted: true,
 					gameType: res.gameType,
@@ -43,21 +43,14 @@ export default function Game() {
 			transition={{ duration: 0.5 }}
 			className="h-[100vh] pt-30 pr-6 pb-24 pl-6 sm:pb-6 sm:pl-30"
 		>
-			<button 
-			className="border-2" 
-			onClick={() => updateGameState(prev => ({gameStarted: !prev.gameStarted }))}
-			> 
-				gameStarted
-			</button>
-
 			<AnimatePresence mode="wait">
 				{!gameState.gameStarted ? (
 					<motion.div
 						key="lobby"
 						initial={{ opacity: 0, x: -20 }}
 						animate={{ opacity: 1, x: 0 }}
-						exit={{ opacity: 0, x: 20 }}
-						transition={{ duration: 0.3 }}
+						exit={{ opacity: 0, x: 30 }}
+						transition={{ duration: 0.4 }}
 						className="flex flex-row w-full h-full gap-4"
 					>
 						<LobbyPanel />
@@ -67,8 +60,8 @@ export default function Game() {
 						key="game"
 						initial={{ opacity: 0, x: -20 }}
 						animate={{ opacity: 1, x: 0 }}
-						exit={{ opacity: 0, x: 20 }}
-						transition={{ duration: 0.3 }}
+						exit={{ opacity: 0, x: 30 }}
+						transition={{ duration: 0.4 }}
 						className="flex flex-row w-full h-full gap-4"
 					>
 						<GameField />

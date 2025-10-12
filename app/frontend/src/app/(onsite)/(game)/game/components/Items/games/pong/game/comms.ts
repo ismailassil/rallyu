@@ -6,7 +6,7 @@ import { HALF_PADDLE } from "./renderer"
 export const setupInputHandlers = (canvas: HTMLCanvasElement, gameState: GameState, proxy: SocketProxy): (() => void) => {
 	let animationFrameId: number;
 	const keys = new Set<string>();
-	const speed = 10;
+	const speed = 15;
 
 	const handleMouseMove = (event: MouseEvent) => {
 		const rect = canvas.getBoundingClientRect();
@@ -25,11 +25,11 @@ export const setupInputHandlers = (canvas: HTMLCanvasElement, gameState: GameSta
 
 		if (!p1 || !p2) return;
 
-		if (keys.has('w') || keys.has('W')) p1.rect.y += speed;
-		if (keys.has('s') || keys.has('S')) p1.rect.y -= speed;
+		if (keys.has('w') || keys.has('W')) p1.rect.y -= speed;
+		if (keys.has('s') || keys.has('S')) p1.rect.y += speed;
 
-		if (keys.has('ArrowUp')) p2.rect.y += speed;
-		if (keys.has('ArrowDown')) p2.rect.y -= speed;
+		if (keys.has('ArrowUp')) p2.rect.y -= speed;
+		if (keys.has('ArrowDown')) p2.rect.y += speed;
 
 		p1.rect.y = Math.max(HALF_PADDLE, Math.min(p1.rect.y, canvas.height - HALF_PADDLE));
     	p2.rect.y = Math.max(HALF_PADDLE, Math.min(p2.rect.y, canvas.height - HALF_PADDLE));
@@ -53,19 +53,21 @@ export const setupInputHandlers = (canvas: HTMLCanvasElement, gameState: GameSta
 		keys.add(event.key);
 	}
 
-	window.addEventListener('mousemove', handleMouseMove);
 	if (gameState.gameMode === 'local') {
 		window.addEventListener('keydown', handleKeyDown);
 		window.addEventListener('keyup', handleKeyUp);
 		animationFrameId = requestAnimationFrame(handleKeyboardInput);
+	} else {
+		window.addEventListener('mousemove', handleMouseMove);
 	}
 
 	return () => {
-		window.removeEventListener("mousemove", handleMouseMove);
 		if (gameState.gameMode === 'local') {
 			window.removeEventListener("keydown", handleKeyDown);
 			window.removeEventListener("keyup", handleKeyUp);
 			cancelAnimationFrame(animationFrameId);
+		} else {
+			window.removeEventListener("mousemove", handleMouseMove);
 		}
 	  };
 }
@@ -103,12 +105,12 @@ export const setupCommunications = (
 			case 'ready':
 				gameStateRef.current.index = data.i
 				updateGameState({
-					gameTime: 3
+					gameTime: data.t
 				})
 				break;
 			case 'start':
 				updateGameState({
-					gameTime: 90
+					gameTime: data.t
 				})
 				break;
 			case 'state':
