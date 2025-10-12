@@ -10,7 +10,7 @@ const Pong = () => {
         try {
             const res = await apiClient.createGameRoom([loggedInUser.id], 'pingpong', 'local');
             updateGameState({
-                url: `/game/room/join/${res.roomId}?user=${loggedInUser.id}`,
+                url: `/game/room/join/${res.roomId}?userid=${loggedInUser.id}`,
                 opponentId: res.opponentId,
                 gameStarted: true,
                 gameType: 'pingpong',

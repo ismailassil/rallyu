@@ -12,21 +12,26 @@ const MS_AUTH_PORT = process.env.MS_AUTH_PORT || '5005'
 const JWT_ACCESS_SECRET = process.env['JWT_ACCESS_SECRET'] || ''
 
 const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
-	const ROOM_EXPIRATION_TIME = 10000; // 10 sec
-    const GAME_TIME = 10000; // 10 seconds
+	const ROOM_EXPIRATION_TIME = 20000; // 10 sec
+    const GAME_TIME = 23000; // 10 seconds
 	const userSessions = new Map() // Map<userid, roomid>
 
 	fastify.addHook('preHandler', async (req, res) => {
+		let token;
 		const authHeader = req.headers.authorization;
-		if (!authHeader)
-			return res.code(401).send({ message: 'Unauthorized' });
+
+		if (authHeader) {
+			token = authHeader.startsWith('Bearer ') 
+				? authHeader.slice(7)
+				: authHeader;
+		}
+		else if (req.query && (req.query as any).accessToken) {
+			token = (req.query as any).accessToken;
+		}
 	
-		const token = authHeader.startsWith('Bearer ') 
-			? authHeader.slice(7)
-			: authHeader;
-	
-		if (!token)
+		if (!token) {
 			return res.code(401).send({ message: 'Unauthorized' });
+		}
 		
 		if (token !== MS_MATCHMAKING_API_KEY) {
 			try {
@@ -51,8 +56,8 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 	fastify.get('/room/join/:roomid', { websocket: true, schema: joinRoomSchema }, (socket: WebSocket.WebSocket, req: FastifyRequest) => {
 		try {
 			const { roomid } = req.params as { roomid: string };
-			const { user } = req.query as { user : number };
-			const sessionId = userSessions.get(user);
+			const { userid } = req.query as { userid : number };
+			const sessionId = userSessions.get(userid);
 
 			if (sessionId != roomid) 
 				throw new Error("Session and room ID mismatch");
@@ -61,7 +66,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			if (!room)
 				throw new Error("Match room not found");
 
-			const player = room.players.find(player => player.id === user);
+			const player = room.players.find(player => player.id === userid);
 			if (!player)
 				throw new Error("Player not in match room");
 			if (player.connected)

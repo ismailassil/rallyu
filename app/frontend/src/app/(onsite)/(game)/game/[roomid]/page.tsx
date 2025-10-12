@@ -28,7 +28,7 @@ export default function Game() {
 					return;
 				}
 				updateGameState({
-					url: `/game/room/join/${roomid}?user=${loggedInUser.id}`,
+					url: `/game/room/join/${roomid}?userid=${loggedInUser.id}`,
 					opponentId,
 					gameStarted: true,
 					gameType: res.gameType,
