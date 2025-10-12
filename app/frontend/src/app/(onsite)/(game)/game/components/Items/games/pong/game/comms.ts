@@ -96,6 +96,7 @@ export const setupCommunications = (
 				gameStateRef.current.serverBall = { x: 800, y: 600, width: 20, height: 20 };
 				proxy.disconnect();
 				updateGameState({
+					gameStarted: false,
 					gameTime: 0
 				})
 				break;

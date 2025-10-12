@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useGame } from "../contexts/gameContext";
 import { useAuth } from "../../../contexts/AuthContext";
 import LobbyPanel from "../components/LobbyPanel";
-import GameField from "../components/Items/games/GameField";
+import GameField from "../components/GameField";
 import { useRouter } from "next/navigation";
 
 export default function Game() {

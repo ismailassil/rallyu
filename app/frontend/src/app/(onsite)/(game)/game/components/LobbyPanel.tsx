@@ -1,7 +1,7 @@
-import Ping from "./Ping";
-import Pong from "./Pong";
-import X from "./X";
-import O from "./O";
+import Ping from "./Items/Ping";
+import Pong from "./Items/Pong";
+import X from "./Items/X";
+import O from "./Items/O";
 
 const LobbyPanel = () => {
 	return (

@@ -1,5 +1,5 @@
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { useGame } from "../contexts/gameContext";
+import { useGame } from "../../contexts/gameContext";
 
 const Pong = () => {
     const { apiClient, loggedInUser } = useAuth();

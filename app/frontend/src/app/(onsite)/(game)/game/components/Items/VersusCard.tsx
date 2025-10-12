@@ -82,7 +82,7 @@ const VersusCard = () => {
 
     useEffect(() => {
         (async () => {
-            if (gameState.opponentId === null) return;
+            if (!gameState.opponentId) return;
             try {
                 const res = await apiClient.fetchUser(gameState.opponentId);
                 setOpponentInfo({

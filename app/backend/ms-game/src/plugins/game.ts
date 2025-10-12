@@ -169,7 +169,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 		playersIds.forEach(id => {
 			userSessions.set(id, roomid);
 		})
-		return { roomid };
+		return { roomId: roomid };
 	})
 }
 

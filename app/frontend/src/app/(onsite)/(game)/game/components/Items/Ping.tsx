@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useGame } from "../contexts/gameContext"
+import { useGame } from "../../contexts/gameContext"
 import useMatchmaking from "@/app/hooks/useMatchMaking";
 
 const MovingText = ({ dir }: { dir: 'left' | 'right' }) => {
