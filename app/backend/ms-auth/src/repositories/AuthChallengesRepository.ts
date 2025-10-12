@@ -17,7 +17,7 @@ export interface AuthChallenge {
 	user_id: number;
 }
 
-export type AuthChallengeType = '2fa_setup' | '2fa_login' | 'password_reset';
+export type AuthChallengeType = '2fa_setup' | '2fa_login' | 'password_reset' | 'email_verification' | 'phone_verification';
 export type AuthChallengeMethod = 'SMS' | 'EMAIL' | 'TOTP';
 export type AuthChallengeStatus = 'PENDING' | 'VERIFIED' | 'COMPLETED' | 'EXPIRED' | 'FAILED';
 

@@ -41,12 +41,12 @@ try {
 	env = envSchema.parse(process.env);
 } catch (err) {
 	if (err instanceof z.ZodError) {
-	console.error("ENV VARS VALIDATION ERROR:");
-	for (const issue of err.errors) {
-		console.error(`- ${issue.path.join(".") || "(root)"}: ${issue.message}`);
-	}
+		console.error("ENV VARS VALIDATION ERROR:");
+		for (const issue of err.errors) {
+			console.error(`- ${issue.path.join(".") || "(root)"}: ${issue.message}`);
+		}
 	} else {
-	console.error(err);
+		console.error(err);
 	}
 	process.exit(1);
 }

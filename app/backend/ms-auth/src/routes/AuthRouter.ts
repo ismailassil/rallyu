@@ -33,10 +33,12 @@ import {
 } from "../schemas/zod/auth.zod.schema";
 import { UAParser } from "ua-parser-js";
 import { oauthConfig } from "../config/oauth";
+import VerificationController from "../controllers/VerificationController";
 
 async function authRouter(fastify: FastifyInstance, opts: {
 	authController: AuthController,
 	twoFactorController: TwoFactorController,
+	verificationController: VerificationController,
 	passwordResetController: PasswordResetController
 }) {
 	fastify.decorate('authenticate', Authenticate); // auth middleware for protected routes
@@ -229,18 +231,16 @@ async function authRouter(fastify: FastifyInstance, opts: {
 		preHandler: fastify.authenticate,
 		handler: opts.authController.revokeAllSessionsHandler.bind(opts.authController)
 	});
-	// GET /auth/sessions — List active sessions/devices
-	// DELETE /auth/sessions/:id — Revoke a specific session
-	// DELETE /auth/sessions — Revoke all sessions except current
 
-	// PASSWORD MANAGEMENT
-	// POST /auth/forgot-password — Send password reset link
-	// POST /auth/reset-password — Reset password with token
-	// POST /auth/change-password — Authenticated user changes own password
-
-	// EMAIL VERIFICATION (optional)
-	// POST /auth/verify-email — Trigger email verification
-	// GET /auth/verify-email/:token — Confirm email with token
+	// EMAIL/PHONE VERIFICATION
+	fastify.post('/verify-:_for', {
+		preHandler: fastify.authenticate,
+		handler: opts.verificationController.requestHandler.bind(opts.verificationController)
+	});
+	fastify.post('/verify-:_for/verify', {
+		preHandler: fastify.authenticate,
+		handler: opts.verificationController.verifyHandler.bind(opts.verificationController)
+	});
 }
 
 export default authRouter;

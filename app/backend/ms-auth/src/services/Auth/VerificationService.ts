@@ -1,0 +1,133 @@
+import { UUID } from "crypto";
+import AuthChallengesRepository, { AuthChallenge, AuthChallengeMethod } from "../../repositories/AuthChallengesRepository";
+import { User } from "../../types";
+import UserService from "../User/UserService";
+import { AuthChallengeExpired, ExpiredCodeError, InvalidCodeError, NoEmailIsAssociated, NoPhoneIsAssociated, TooManyAttemptsError, UserNotFoundError } from "../../types/auth.types";
+import { generateOTP, generateUUID, nowInSeconds, nowPlusSeconds, verifyOTP } from "../TwoFactorAuth/utils";
+import MailingService from "../Communication/MailingService";
+import WhatsAppService from "../Communication/WhatsAppService";
+import { mailingConfig } from "../../config/mailing";
+
+const verificationConfig = {
+	expirySeconds: 5 * 60,
+	maxAttempts: 3,
+	maxResends: 3
+}
+
+class VerificationService {
+	private challengeRepository: AuthChallengesRepository;
+
+	constructor(
+		private userService: UserService,
+		private mailingService: MailingService,
+		private smsService: WhatsAppService
+	) {
+		this.challengeRepository = new AuthChallengesRepository();
+	}
+
+	async request(_for: 'email' | 'phone', userID: number, providedTarget: string | undefined) {
+		const targetUser = await this.userService.getUserById(userID);
+		if (!targetUser)
+			throw new UserNotFoundError();
+
+		if (_for === 'email' && !providedTarget && !targetUser.email)
+			throw new NoEmailIsAssociated();
+		if (_for === 'phone' && !providedTarget && !targetUser.phone)
+			throw new NoPhoneIsAssociated();
+
+		// CLEANUP PENDING
+		await this.challengeRepository.cleanupPendingByUserID(
+			userID,
+			_for === 'email' ? 'email_verification' : 'phone_verification'
+		);
+
+		const TARGET = providedTarget || (_for === 'email' ? targetUser.email : targetUser.phone);
+		const METHOD = _for === 'email' ? 'EMAIL' : 'SMS';
+		const OTP = generateOTP();
+		const TOKEN = generateUUID();
+		const USER_ID = userID;
+		const CHALL_TYPE = _for === 'email' ? 'email_verification' : 'phone_verification';
+		const EXP = nowPlusSeconds(verificationConfig.expirySeconds);
+
+		// CREATE CHALL
+		await this.challengeRepository.create(
+			CHALL_TYPE,
+			METHOD,
+			TOKEN,
+			TARGET,
+			OTP,
+			EXP,
+			USER_ID
+		);
+
+		await this.notifyUser(TARGET, METHOD, OTP);
+
+		return TOKEN;
+	}
+
+	async verify(token: UUID, code: string) {
+		const targetChall = await this.challengeRepository.findByQuery(
+			token,
+			'PENDING',
+		);
+
+		if (!targetChall)
+			throw new AuthChallengeExpired();
+
+		if (nowInSeconds() > targetChall.expires_at) {
+			await this.challengeRepository.update(targetChall.id, {
+				status: 'EXPIRED'
+			});
+			throw new ExpiredCodeError();
+		}
+
+		if (!verifyOTP(targetChall.secret!, code)) {
+			const totalAttempts = targetChall.verify_attempts + 1;
+			await this.challengeRepository.update(targetChall.id, {
+				verify_attempts: totalAttempts,
+				...(totalAttempts >= verificationConfig.maxAttempts && { status: 'FAILED' })
+			});
+			if (totalAttempts >= verificationConfig.maxAttempts)
+				throw new TooManyAttemptsError();
+			throw new InvalidCodeError();
+		}
+
+		await this.challengeRepository.update(targetChall.id, {
+			status: 'VERIFIED'
+		});
+
+		if (targetChall.challenge_type === 'email_verification')
+			await this.userService.updateUser(targetChall.user_id, {
+				email: targetChall.target,
+				email_verified: true
+			});
+		else if (targetChall.challenge_type === 'phone_verification')
+			await this.userService.updateUser(targetChall.user_id, {
+				phone: targetChall.target,
+				phone_verified: true
+			});
+
+		await this.challengeRepository.update(targetChall.id, {
+			status: 'COMPLETED'
+		});
+
+		return ;
+	}
+
+	private async notifyUser(target: string, method: AuthChallengeMethod, OTP: string) {
+		if (method === 'EMAIL')
+			return await this.mailingService.sendEmail({
+				from: mailingConfig.mailingServiceUser,
+				to: target,
+				subject: 'Your Email Verification OTP Code',
+				text: `Your Email Verification OTP code is: ${OTP}. It will expire in 5 minutes.`
+			});
+		if (method === 'SMS')
+			return await this.smsService.sendMessage(
+				target,
+				`Your Phone Verification OTP code is: ${OTP}. It will expire in 5 minutes.`
+			);
+	}
+}
+
+export default VerificationService;

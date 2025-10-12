@@ -136,7 +136,7 @@ class WhatsAppService {
 				throw new ServiceUnavailable('SMS service is not available at the moment');
 		}
 
-		const jid = `${receiverWANumber}@s.whatsapp.net`;
+		let jid = `${receiverWANumber}@s.whatsapp.net`;
 
 		this.logger.info({ jid }, '[SMS] Sending WhatsApp message');
 

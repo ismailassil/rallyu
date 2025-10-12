@@ -124,6 +124,10 @@ class TwoFactorMethodService {
 			throw new InvalidCodeError();
 		}
 
+		// MARK THE METHOD (EMAIL/SMS) AS VERIFIED
+		if (targetChall.method === 'EMAIL') await this.userService.updateUser(targetChall.user_id, { email_verified: true });
+		else if (targetChall.method === 'SMS') await this.userService.updateUser(targetChall.user_id, { phone_verified: true });
+
 		await this.challengeRepository.update(targetChall.id, {
 			status: 'VERIFIED'
 		});

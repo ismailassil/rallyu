@@ -119,4 +119,27 @@ export class AuthService {
 		const { data: res } = await this.client.post(`/auth/reset-password/resend`, { token });
 		return res.data;
 	}
+
+	/*--------------------------------- Verification ---------------------------------*/
+
+	async requestVerifyEmail(newEmail?: string) {
+		const { data: res } = await this.client.post(`/auth/verify-email`, { target: newEmail });
+		return res.data;
+	}
+
+	async verifyEmail(token: string, code: string) {
+		const { data: res } = await this.client.post(`/auth/verify-email`, { token, code });
+		return res.data;
+	}
+
+	async requestVerifyPhone(newPhone?: string) {
+		const { data: res } = await this.client.post(`/auth/verify-phone`, { target: newPhone });
+		return res.data;
+	}
+
+	async verifyPhone(token: string, code: string) {
+		const { data: res } = await this.client.post(`/auth/verify-phone`, { token, code });
+		return res.data;
+	}
+
 }
