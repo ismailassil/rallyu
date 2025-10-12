@@ -1,5 +1,5 @@
 import { getVelocity, angles, updateState } from './physics'
-import type { Room, Player, PingPongGameState, TicTacToeGameState, PingPongStatus } from '../types/types'
+import type { Room, Player, PingPongGameState, TicTacToeGameState, PingPongStatus, GameType, GameMode } from '../types/types'
 import ws from 'ws';
 
 const GAME_UPDATE_INTERVAL = 16.67; // 60hz
@@ -26,38 +26,62 @@ export class PingPongPlayer implements Player {
         this.connected = false;
     }
 
+	setupOnlineEventListeners(room: PingPongRoom): void {
+		this.socket!.on('message', (message: ws.RawData) => {
+			try {
+				const data = JSON.parse(message.toString());
+				if (room.state.players[data.pid]) {
+					room.state.players[data.pid].y = data.y;
+				}
+			} catch (e: any) {
+				console.log('JSON parse error:', e.message);
+			}
+		});
+
+		this.socket!.on('close', (ev: ws.CloseEvent) => {
+			this.detachSocket();
+			console.log('Player disconnected');
+			if (ev.code === 1000) return; // normal closure
+
+			const otherPlayer = room.players.find(p => p.id !== this.id);
+			if (otherPlayer?.socket && otherPlayer.socket.readyState === ws.OPEN) {
+				if (otherPlayer.socket.readyState === ws.OPEN)
+					otherPlayer.socket.send(JSON.stringify({ type: 'opp_left' }))
+			}
+		});
+	}
+
+	setupLocalEventListeners(room: PingPongRoom): void {
+		this.socket!.on('message', (message: ws.RawData) => {
+			try {
+				const data = JSON.parse(message.toString());
+				room.state.players.forEach((player, index) => player.y = data.pos![index])
+			} catch (e: any) {
+				console.log('JSON parse error:', e.message);
+			}
+		});
+
+		this.socket!.on('close', (ev: ws.CloseEvent) => {
+			this.detachSocket();
+			console.log('Player disconnected');
+			if (ev.code === 1000) return; // normal closure
+		});
+	}
+
     setupEventListeners(room: PingPongRoom ): void {
-        if (!this.socket) return;
-
-        this.socket.on('message', (message: ws.RawData) => {
-            try {
-                const data = JSON.parse(message.toString());
-                if (room.state.players[data.pid]) {
-                    room.state.players[data.pid].y = data.y;
-                }
-            } catch (e: any) {
-                console.log('JSON parse error:', e.message);
-            }
-        });
-
-        this.socket.on('close', (ev: ws.CloseEvent) => {
-            this.detachSocket();
-            console.log('Player disconnected');
-            if (ev.code === 1000) return; // normal closure
-
-            const otherPlayer = room.players.find(p => p.id !== this.id);
-            if (otherPlayer?.socket && otherPlayer.socket.readyState === ws.OPEN) {
-                if (otherPlayer.socket.readyState === ws.OPEN)
-                    otherPlayer.socket.send(JSON.stringify({ type: 'opp_left' }))
-            }
-        });
+		if (room.gameMode === 'online') {
+			this.setupOnlineEventListeners(room);
+		}
+		else {
+			this.setupLocalEventListeners(room);
+		}
     }
 }
 
 export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	id: string;
-	gameType: string;
-	gameMode: string;
+	gameType: GameType;
+	gameMode: GameMode;
 	startTime: number | null = null;
 	players: Player[] = [];
 	running = false;
@@ -67,7 +91,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	gameTimerId: NodeJS.Timeout | null = null;
 	state: PingPongGameState;
 
-	constructor(id: string, gameMode: string) {
+	constructor(id: string, gameMode: GameMode) {
 		this.id = id;
 		this.gameType = 'pingpong';
 		this.gameMode = gameMode;
@@ -95,6 +119,8 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	
 	getStatus(): PingPongStatus {
 		return {
+			gameType: this.gameType,
+			gameMode: this.gameMode,
 			ball: this.state.ball,
 			players: [
 				{

@@ -3,12 +3,12 @@ import SocketProxy from "../utils/socketProxy"
 import { initGame } from "./game/gameloop";
 import type { GameState } from "./types/GameTypes"
 import { setupCommunications } from "./game/comms";
-import { useGame } from "../../../../contexts/gameContext";
+import { GameMode, useGame } from "../../../../contexts/gameContext";
 
 export const CANVAS_WIDTH = 1600;
 export const CANVAS_HEIGHT = 1200;
 
-const initGameState = (): GameState => {
+const initGameState = (gameMode: GameMode): GameState => {
 	return ({
 		serverPlayerY: 600,
 		serverBall: { x: 800, y: 600, width: 20, height: 20 },
@@ -24,6 +24,7 @@ const initGameState = (): GameState => {
 			}
 		],
 		gameStatus: 'idle', // 'connecting', 'waiting', 'ready', 'playing', 'scored', 'gameover'
+		gameMode,
 		lastUpdateTime: 0,
 		opponentDC: false,
 		index: undefined
@@ -31,13 +32,13 @@ const initGameState = (): GameState => {
 }
 
 const Pong = ({ socketProxy }: { socketProxy: SocketProxy }) => {
-	const { setGameTime } = useGame();
+	const { updateGameState, gameState } = useGame();
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
-	const gameStateRef = useRef<GameState>(initGameState());
+	const gameStateRef = useRef<GameState>(initGameState(gameState.gameMode));
 
 	useEffect(() => {
 		const stopGame = initGame(gameStateRef, canvasRef.current!, socketProxy);
-		const unsubscribe = setupCommunications(gameStateRef, socketProxy, setGameTime);
+		const unsubscribe = setupCommunications(gameStateRef, socketProxy, updateGameState);
 
 		return () => {
 			unsubscribe();

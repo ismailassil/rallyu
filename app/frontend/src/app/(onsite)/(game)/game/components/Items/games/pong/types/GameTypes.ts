@@ -1,3 +1,5 @@
+import { GameMode } from "@/app/(onsite)/(game)/game/contexts/gameContext"
+
 export interface Rect {
 	x: number,
 	y: number,
@@ -20,6 +22,7 @@ export interface GameState {
 		}
 	],
 	gameStatus: string, // 'waiting', 'ready', 'playing', 'scored', 'gameover'
+	gameMode: GameMode,
 	opponentDC: boolean,
 	lastUpdateTime: number,
 	index: number | undefined

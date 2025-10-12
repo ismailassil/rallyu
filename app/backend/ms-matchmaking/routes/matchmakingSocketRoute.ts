@@ -2,8 +2,10 @@ import ws from "@fastify/websocket";
 import { FastifyInstance, FastifyRequest } from "fastify";
 import { RawData } from "ws"; // type
 import { matchMakingRouteSchema } from "./schema.js";
+import axios from "axios";
 
 const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
+const MS_GAME_PORT = process.env.MS_GAME_PORT || '5010';
 // const matchQueue: { id: number, socket: WebSocket }[] = [];
 const pingpongQueue = new Map<number, ws.WebSocket>();
 const tictactoeQueue = new Map<number, ws.WebSocket>();
@@ -14,27 +16,23 @@ const processQueue = async (queue: Map<number, ws.WebSocket>, type: string) => {
     IDs.forEach(ID => queue.delete(ID));
 
     try {
-        const res = await fetch('http://ms-game:5010/game/room/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${MS_MATCHMAKING_API_KEY}`
-            },
-            body: JSON.stringify({ 
+        const res = await axios.post(`http://ms-game:${MS_GAME_PORT}/game/room/create`,
+            {
                 playersIds: IDs,
                 gameType: type,
-            })
-        })
-
-        if (!res.ok)
-            throw new Error(`API "Game service" error: ${res.status}`);
-
-        const data = await res.json();
-
+                gameMode: 'online'
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${MS_MATCHMAKING_API_KEY}`
+                }
+            }
+        );
         matchedPlayers.forEach(([key, val]) => {
             if (val.readyState === WebSocket.OPEN) {
                 val.send(JSON.stringify({
-                    roomId: data.roomId,
+                    roomId: res.data.roomId,
                     opponentId: IDs.find(ID => ID != key)
                 }));
             }

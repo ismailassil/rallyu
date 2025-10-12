@@ -1,23 +1,41 @@
 import type { FastifyInstance, FastifyPluginOptions, FastifyRequest } from 'fastify';
 import WebSocket from 'ws'
-import type { Room } from '../types/types';
+import jwt from 'jsonwebtoken'
+import type { GameMode, GameType, Room } from '../types/types';
 import { createRoomSchema, joinRoomSchema, roomStatusSchema, userStatusSchema } from '../schemas/schemas';
-import { roomManager } from '../session/room';
+import { roomManager } from '../room/roomManager';
+import dotenv from 'dotenv'
+dotenv.config();
 
 const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
 const MS_AUTH_PORT = process.env.MS_AUTH_PORT || '5005'
-const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || ''
+const JWT_ACCESS_SECRET = process.env['JWT_ACCESS_SECRET'] || ''
 
 const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
 	const ROOM_EXPIRATION_TIME = 10000; // 10 sec
     const GAME_TIME = 10000; // 10 seconds
 	const userSessions = new Map() // Map<userid, roomid>
 
-
-	fastify.decorate('json', (socket: WebSocket.WebSocket, obj: any): void => {
-		if (socket?.readyState === WebSocket.OPEN)
-			socket.send(JSON.stringify(obj))
-	})
+	fastify.addHook('preHandler', async (req, res) => {
+		const authHeader = req.headers.authorization;
+		if (!authHeader)
+			return res.code(401).send({ message: 'Unauthorized' });
+	
+		const token = authHeader.startsWith('Bearer ') 
+			? authHeader.slice(7)
+			: authHeader;
+	
+		if (!token)
+			return res.code(401).send({ message: 'Unauthorized' });
+		
+		if (token !== MS_MATCHMAKING_API_KEY) {
+			try {
+				jwt.verify(token, JWT_ACCESS_SECRET, { algorithms: ['HS256'] });
+			} catch (err) {
+				return res.code(401).send({ message: 'Unauthorized' });
+			}
+		}
+	});
 
 	const closeRoom = (room: Room<any, any>, code: number, msg: string): void => {
 		// test this if players already closed sockets
@@ -96,23 +114,26 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 		}
 	})
 
-	fastify.get('/user/status/:userid', { schema: userStatusSchema }, (req, res) => {
-		const { user } = req.params as { user: number };
-		const session = userSessions.get(user);
+	fastify.get('/user/:userid/status', { schema: userStatusSchema }, (req, res) => {
+		const { userid } = req.params as { userid: number };
+		const session = userSessions.get(userid);
 		if (!session){
 			return res.code(404).send({
 				message: 'user not currently on an active game.'
 			})
 		}
-		const opponentId = roomManager.getRoom(session)?.players?.find(player => player.id !== user)?.id;
+		const room = roomManager.getRoom(session);
+		const opponentId = room!.players?.find(player => player.id !== userid)?.id;
 	
 		return {
 			roomId: session,
-			opponentId
+			opponentId,
+			gameType: room!.gameType,
+			gameMode: room!.gameMode
 		};
 	})
 
-	fastify.get('/room/status/:roomid', { schema: roomStatusSchema }, (req, res) => {
+	fastify.get('/room/:roomid/status', { schema: roomStatusSchema }, (req, res) => {
 		const { roomid } = req.params as { roomid: string };
 		const room = roomManager.getRoom(roomid);
 		if (!room) {
@@ -124,22 +145,14 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 	})
 
 	fastify.post('/room/create', { schema: createRoomSchema}, (req, res) => {
-		const auth = (req.headers.authorization as string).startsWith('Bearer ')
-            ? (req.headers.authorization as string).slice(7)
-            : (req.headers.authorization as string);
-
-		// add auth check with jwt here
-		if (auth !== MS_MATCHMAKING_API_KEY)
-			return res.code(401);
-
-		const { playersIds, gameType, gameMode } = req.body as { playersIds: number[], gameType: string, gameMode: string };
+		const { playersIds, gameType, gameMode } = req.body as { playersIds: number[], gameType: GameType, gameMode: GameMode };
 		if (!playersIds) {
 			return res.code(400).send({
 				message: 'players ids not provided.'
 			})
 		}
 
-		if (userSessions.get(playersIds[0]) || userSessions.get(playersIds[1])) {
+		if (playersIds.some(id => userSessions.get(id))) {
 			return res.code(403).send({
 				message: 'player already in game'
 			})
@@ -149,6 +162,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 		room.attachPlayers(playersIds);
 
 		room.expirationTimer = setTimeout(() => {
+			console.log('Match Room Expired!');
 			closeRoom(room, 1002, "Match room expired");
 		}, ROOM_EXPIRATION_TIME)
 

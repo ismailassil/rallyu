@@ -1,8 +1,8 @@
 // import TicTacToeRoom from '../tictactoe/ticTacToeRoom'
-import { PingPongRoom } from '../pingpong/pingPongRoom'
+import { PingPongRoom } from './pingPongRoom'
 import { v4 as uuidv4 } from 'uuid'
-import type { Room } from '../types/types'
-import { TicTacToeRoom } from '../tictactoe/ticTacToeRoom';
+import type { GameMode, Room } from '../types/types'
+import { TicTacToeRoom } from './ticTacToeRoom';
 
 class RoomManager {
     private rooms: Map<string, Room<any, any>>;
@@ -11,7 +11,7 @@ class RoomManager {
         this.rooms = new Map<string, Room<any, any>>() // <roomid, room>
     }
 
-    createRoom(type: string, mode: string): { roomid: string, room: Room<any, any> } {
+    createRoom(type: string, mode: GameMode): { roomid: string, room: Room<any, any> } {
         const roomid = uuidv4();
         const room = type === 'pingpong'
             ? new PingPongRoom(roomid, mode)

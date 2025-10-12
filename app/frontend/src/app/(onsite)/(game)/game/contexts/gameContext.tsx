@@ -1,27 +1,22 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useMemo, useCallback } from 'react';
 
-type GameType = 'pingpong' | 'tictactoe';
+export type GameType = 'pingpong' | 'tictactoe';
 
-type GameMode = 'online' | 'local';
+export type GameMode = 'online' | 'local';
+
+export interface GameContextState {
+  gameType: GameType;
+  gameMode: GameMode;
+  gameTime: number;
+  opponentId: number;
+  gameStarted: boolean;
+  url: string | null;
+}
 
 interface GameContextType {
-  gameType: GameType;
-  setGameType:  React.Dispatch<React.SetStateAction<GameType>>;
-  
-  gameMode: GameMode;
-  setGameMode:  React.Dispatch<React.SetStateAction<GameMode>>;
-
-  gameTime: number;
-  setGameTime: React.Dispatch<React.SetStateAction<number>>;
-
-  opponentId: number;
-  setOpponentId: React.Dispatch<React.SetStateAction<number>>;
-
-  gameStarted: boolean;
-  setGameStarted: React.Dispatch<React.SetStateAction<boolean>>;
-
-  url: string | null;
-  setUrl: React.Dispatch<React.SetStateAction<string | null>>;
+  gameState: GameContextState;
+  setGameState: React.Dispatch<React.SetStateAction<GameContextState>>;
+  updateGameState: (updates: Partial<GameContextState> | ((prev: GameContextState) => Partial<GameContextState>)) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -33,30 +28,36 @@ export const useGame = () => {
 };
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
-  const [gameType, setGameType] = useState<GameType>('pingpong');
-  const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const [url, setUrl] = useState<string | null>(null);
-  const [gameTime, setGameTime] = useState<number>(0);
-  const [opponentId, setOpponentId] = useState<number>(0);
-  const [gameMode, setGameMode] = useState<GameMode>('online');
+  const [gameState, setGameState] = useState<GameContextState>({
+    gameType: 'pingpong',
+    gameMode: 'online',
+    gameTime: 0,
+    opponentId: 0,
+    gameStarted: false,
+    url: null
+  });
+
+  const updateGameState = useCallback((
+    updates: Partial<GameContextState> | ((prev: GameContextState) => Partial<GameContextState>)
+  ) => {
+    if (typeof updates === 'function') {
+      setGameState(prev => {
+        const updatesObj = updates(prev);
+        return { ...prev, ...updatesObj };
+      });
+    } else {
+      setGameState(prev => ({ ...prev, ...updates }));
+    }
+  }, []);
+
+  const value = useMemo(() => ({
+    gameState,
+    setGameState,
+    updateGameState
+  }), [gameState, updateGameState]);
 
   return (
-    <GameContext.Provider
-      value={{
-        gameType,
-        setGameType,
-        gameStarted,
-        setGameStarted,
-        url,
-        setUrl,
-        gameTime,
-        setGameTime,
-        opponentId,
-        setOpponentId,
-        gameMode,
-        setGameMode
-      }}
-    >
+    <GameContext.Provider value={value}>
       {children}
     </GameContext.Provider>
   );

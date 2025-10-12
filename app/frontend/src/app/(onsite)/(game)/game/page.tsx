@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import GameField from "./components/Items/games/GameField";
 
 export default function Game() {
-	const { gameStarted, setUrl, setOpponentId, setGameStarted } = useGame();
+	const { updateGameState, gameState } = useGame();
 	const { loggedInUser, apiClient } = useAuth();
 	const router = useRouter();
 
@@ -20,15 +20,21 @@ export default function Game() {
 					return;
 				const res = await apiClient.fetchPlayerStatus(loggedInUser.id);
 
-				setUrl(`/game/room/join/${res.roomId}?user=${loggedInUser.id}`);
-				setOpponentId(res.opponentId)
-				setGameStarted(true);
+				updateGameState({
+					url: `/game/room/join/${res.roomId}?user=${loggedInUser.id}`,
+					opponentId: res.opponentId,
+					gameStarted: true,
+					gameType: res.gameType,
+					gameMode: res.gameMode
+				})
 				router.push(`/${res.roomId}`);
 			} catch (err) {
-				console.log(`Game Service: ${err}`);
+				console.log(`Game Service Error: ${err}`);
 			}
 		})()
 	}, []);
+
+	console.log('gameStarted:', gameState.gameStarted);
 
 	return (
 		<AnimatePresence>
@@ -39,9 +45,9 @@ export default function Game() {
 				className="h-[100vh] pt-30 pr-6 pb-24 pl-6 sm:pb-6 sm:pl-30"
 			>
 				<div className="flex flex-row w-full h-full gap-4">
-					{!gameStarted
+					{!gameState.gameStarted
 						? <LobbyPanel />
-						: <GameField/>
+						: <GameField />
 					}
 				</div>
 			</motion.main>

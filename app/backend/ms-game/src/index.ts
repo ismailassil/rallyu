@@ -1,9 +1,6 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import fastifyWebsocket from '@fastify/websocket';
 import game from './plugins/game';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const fastify: FastifyInstance = Fastify({
   logger: {

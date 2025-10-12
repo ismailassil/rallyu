@@ -2,17 +2,19 @@ import { useEffect } from "react";
 import { useGame } from "../../contexts/gameContext";
 
 const GameTimer = () => {
-    const { gameTime, setGameTime } = useGame();
+    const { gameState, updateGameState } = useGame();
 
     useEffect(() => {
-        if (gameTime <= 0) return ;
+        if (gameState.gameTime <= 0) return ;
 
         const interval = setInterval(() => {
-            setGameTime(t => t - 1);
+            updateGameState(prev => ({ 
+                gameTime: prev.gameTime - 1 
+            }));
         }, 1000);
         
         return () => clearInterval(interval);
-    }, [gameTime > 0])
+    }, [gameState.gameTime > 0])
 
     const formatTime = (seconds: number) => {
 		const mins = Math.floor(seconds / 60);
@@ -27,7 +29,7 @@ const GameTimer = () => {
                 fontFamily: 'AtariPongScore' 
             }}
         >
-            {formatTime(gameTime)}
+            {formatTime(gameState.gameTime)}
         </div>
     );
 }

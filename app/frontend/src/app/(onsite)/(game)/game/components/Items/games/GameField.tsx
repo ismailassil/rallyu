@@ -8,20 +8,20 @@ import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 
 const GameField = () => {
 	const { apiClient } = useAuth();
-	const { gameType, url, setGameTime, setGameStarted } = useGame();
+	const { gameState, updateGameState } = useGame();
 	const socketProxy = useRef<SocketProxy>(SocketProxy.getInstance());
 
 	useEffect(() => {
 		try {
-			if (!url)
+			if (!gameState.url)
 				return ;
-			const disconnect = socketProxy.current.connect(url, apiClient, setGameStarted, setGameTime);
+			const disconnect = socketProxy.current.connect(gameState.url, apiClient, updateGameState);
 			return disconnect;
 		}
 		catch (err) {
 			console.error('Unable to connect to game server: ', err);
 		}
-	}, [url])
+	}, [gameState.url])
 
 	return (
 		<div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center">
@@ -29,7 +29,7 @@ const GameField = () => {
 			<VersusCard />
 			{/* here we should flip between pong and tictactoe */}
 			<div className="flex min-h-0 w-full flex-1 items-center justify-center">
-				{gameType === "pingpong" ? <Pong socketProxy={socketProxy.current} /> : <TicTacToe socketProxy={socketProxy.current} />}
+				{gameState.gameType === "pingpong" ? <Pong socketProxy={socketProxy.current} /> : <TicTacToe socketProxy={socketProxy.current} />}
 			</div>
 		</div>
 	);

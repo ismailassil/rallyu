@@ -10,7 +10,7 @@ import GameField from "../components/Items/games/GameField";
 import { useRouter } from "next/navigation";
 
 export default function Game() {
-	const { gameStarted, setUrl, setOpponentId, setGameStarted } = useGame();
+	const { gameState, updateGameState } = useGame();
 	const { apiClient, loggedInUser } = useAuth();
 	const params = useParams();
 	const router = useRouter();
@@ -27,9 +27,13 @@ export default function Game() {
 					router.replace('/not-found');
 					return;
 				}
-				setUrl(`/game/room/join/${roomid}?user=${loggedInUser.id}`);
-				setOpponentId(opponentId);
-				setGameStarted(true);
+				updateGameState({
+					url: `/game/room/join/${roomid}?user=${loggedInUser.id}`,
+					opponentId,
+					gameStarted: true,
+					gameType: res.gameType,
+					gameMode: res.gameMode
+				})
 			} catch (err) {
 				console.log(`Game Service: ${err}`);
 				router.replace('/not-found');
@@ -46,7 +50,7 @@ export default function Game() {
 				className="h-[100vh] pt-30 pr-6 pb-24 pl-6 sm:pb-6 sm:pl-30"
 			>
 				<div className="flex flex-row w-full h-full gap-4">
-					{!gameStarted
+					{!gameState.gameStarted
 						? <LobbyPanel />
 						: <GameField />
 					}

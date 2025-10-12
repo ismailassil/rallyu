@@ -1,4 +1,5 @@
 import { APIClient } from '@/app/(api)/APIClient';
+import { GameContextState } from '@/app/(onsite)/(game)/game/contexts/gameContext';
 
 type MessageCallBack = (message: any) => void;
 
@@ -35,12 +36,13 @@ class SocketProxy {
 	public connect(
 		url: string,
 		api: APIClient,
-		setGameStarted: React.Dispatch<React.SetStateAction<boolean>>,
-		setGameTime: React.Dispatch<React.SetStateAction<number>>
+		updateGameState: (updates: Partial<GameContextState>) => void
 	): (() => void) {
 		this.socket = api.connectWebSocket(url);
 		this.socket.onopen = (): void => {
-			setGameStarted(true);
+			updateGameState({
+				gameStarted: true
+			})
 			console.log('Connected to Pong Server');
 		}
 
@@ -50,8 +52,10 @@ class SocketProxy {
 
 		this.socket.onclose = (event: CloseEvent): void => {
 			console.log("Disconnected from Pong Websocket");
-			setGameStarted(false);
-			setGameTime(0);
+			updateGameState({
+				gameStarted: false,
+				gameTime: 0
+			})
 			console.log(event.reason);
 			return;
 		}

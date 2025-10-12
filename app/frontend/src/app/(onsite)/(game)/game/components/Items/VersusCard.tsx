@@ -59,12 +59,10 @@ const PlayerCard = ({ side, info } : { side: string, info: PlayerInfo | null }) 
 }
 
 const VersusCard = () => {
-    const { opponentId, gameStarted } = useGame();
+    const { gameState } = useGame();
     const { apiClient, loggedInUser } = useAuth();
     const [loggedInUserInfo, setLoggedInUserInfo] = useState<PlayerInfo | null>(null);
     const [opponentInfo, setOpponentInfo] = useState<PlayerInfo | null>(null);
-
-    console.log("VersusCard rendered ", { opponentId, gameStarted, loggedInUserInfo, opponentInfo });
 
     useEffect(() => {
         (async () => {
@@ -84,9 +82,9 @@ const VersusCard = () => {
 
     useEffect(() => {
         (async () => {
-            if (opponentId === null) return;
+            if (gameState.opponentId === null) return;
             try {
-                const res = await apiClient.fetchUser(opponentId);
+                const res = await apiClient.fetchUser(gameState.opponentId);
                 setOpponentInfo({
                     username: res.user.username,
                     avatar_url: res.user.avatar_url,
@@ -97,7 +95,7 @@ const VersusCard = () => {
                 console.log('unable to fetch opponent data: ', err);
             }
         })()
-    }, [opponentId]);
+    }, [gameState.opponentId]);
 
     return (
         <div className="flex h-35 w-full justify-between items-center px-10 pb-2 gap-6">
@@ -110,7 +108,7 @@ const VersusCard = () => {
             <GameTimer />
             <AnimatePresence>
                 <div className={`w-[400px] min-w-0 transition-all duration-500 ease-out
-                    ${gameStarted ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'}
+                    ${gameState.gameStarted ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'}
                 `}>
                     <PlayerCard side='right' info={opponentInfo} />
                 </div>
