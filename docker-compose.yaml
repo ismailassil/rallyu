@@ -32,8 +32,10 @@ services:
         env_file:
             - .env
         ports:
-            # - 80:80
+            - 80:80
             - 443:443
+            - 8443:8443
+            - 8444:8444
         networks:
             - web-app
         healthcheck:
@@ -42,6 +44,10 @@ services:
             timeout: 10s
             retries: 5
             start_period: 10s
+        develop:
+          watch:
+            - path: ./nginx/conf
+              action: rebuild
 
 include:
     - ./app/compose.app.yaml

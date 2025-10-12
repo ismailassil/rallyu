@@ -42,7 +42,7 @@ class SocketProxy {
 		this.socket.onopen = (): void => {
 			setGameStarted(true);
 			console.log('Connected to Pong Server');
-		}
+		};
 
 		this.socket.onmessage = (message: MessageEvent): void => {
 			this.notifySubscribers(message.data);

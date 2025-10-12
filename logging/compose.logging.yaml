@@ -21,7 +21,7 @@ services:
         networks:
             - elk
         env_file:
-            - .env
+            - ./.logging.env
         entrypoint: sh
         command: >
             -c "
@@ -45,7 +45,7 @@ services:
         volumes:
             - elasticsearch-data:/usr/share/elasticsearch/data
         env_file:
-            - .env
+            - ./.logging.env
         environment:
             - node.name=es01
             - cluster.name=${CLUSTER_NAME}
@@ -89,7 +89,7 @@ services:
             - elk
             - web-app
         env_file:
-            - .env
+            - ./.logging.env
         ports:
             - 5601:5601
         volumes:
@@ -126,7 +126,7 @@ services:
             - ./logstash/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
             - ../nginx/logs/access.log:/usr/share/logstash/data/access.log:ro
         env_file:
-            - .env
+            - ./.logging.env
         environment:
             - NODE_NAME=logstash
             - ELASTIC_USERNAME=${ELASTIC_USERNAME}
@@ -156,4 +156,4 @@ services:
         networks:
             - elk
         env_file:
-            - .env
+            - ./.logging.env

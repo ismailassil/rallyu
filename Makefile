@@ -4,6 +4,9 @@
 
 all: help
 
+env:
+	@bash ./scripts/setup_env.sh
+
 up:
 	@docker-compose up --build --watch
 
@@ -31,6 +34,7 @@ prune: fclean
 help:
 	@echo "Makefile for RALLYU Deployment"
 	@echo "Usage:"
+	@echo "  make env      - Set up environment variables"
 	@echo "  make up       - Start the containers in detached mode"
 	@echo "  make clean    - Stop and remove the containers and volumes"
 	@echo "  make fclean   - Stop and remove the containers, volumes, and images"

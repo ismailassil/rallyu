@@ -56,21 +56,37 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 		httpMethods: ['GET', 'POST', 'PATCH'],
 	}
 
-	const matchmakingProxyOptions = {
+	const commonMatchMakingOptions = {
 		upstream: `http://ms-matchmaking:${MATCHMAKING_PORT}`,
-		// upstream: `http://host.docker.internal:${MATCHMAKING_PORT}`,
-		prefix: '/api/v1/matchmaking',
-		rewritePrefix: '/api/v1/matchmaking',
 		httpMethods: ['GET', 'POST'],
+		rewritePrefix: '/api/v1/matchmaking',
 		websocket: true,
 	}
 
-	const gameProxyOptions = {
+	const commonGameOptions = {
 		upstream: `http://ms-game:${GAME_PORT}`,
-		prefix: '/api/game',
-		rewritePrefix: '/game',
 		httpMethods: ['GET', 'POST'],
+		rewritePrefix: '/game',
 		websocket: true,
+	}
+
+	const matchmakingProxyOptions = {
+		...commonMatchMakingOptions,
+		prefix: '/api/v1/matchmaking',
+	}
+
+	const matchmakingWsProxyOptions = {
+		...commonMatchMakingOptions,
+		prefix: '/api-ws/matchmaking',
+	}
+	
+	const gameProxyOptions = {
+		...commonGameOptions,
+		prefix: '/api/game',
+	}
+	const gameWsProxyOptions = {
+		...commonGameOptions,
+		prefix: '/api-ws/game',
 	}
 
 	await fastify.register(proxy, authProxyOptions);
@@ -81,6 +97,8 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 	await fastify.register(proxy, tournamentProxyOptions);
 	await fastify.register(proxy, matchmakingProxyOptions);
 	await fastify.register(proxy, gameProxyOptions);
+	await fastify.register(proxy, matchmakingWsProxyOptions);
+	await fastify.register(proxy, gameWsProxyOptions);
 });
 
 export default endpointsPlugin;

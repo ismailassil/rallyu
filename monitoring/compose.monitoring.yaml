@@ -28,7 +28,7 @@ services:
             - monitoring
             - web-app
         env_file:
-            - .env
+            - ./.monitoring.env
         healthcheck:
             test: ['CMD-SHELL', 'curl -f http://localhost:3000']
             interval: 30s
