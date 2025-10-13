@@ -2,7 +2,7 @@ import { UUID } from "crypto";
 import AuthChallengesRepository, { AuthChallenge, AuthChallengeMethod } from "../../repositories/AuthChallengesRepository";
 import { User } from "../../types";
 import UserService from "../User/UserService";
-import { AuthChallengeExpired, ExpiredCodeError, InvalidCodeError, NoEmailIsAssociated, NoPhoneIsAssociated, TooManyAttemptsError, UserNotFoundError } from "../../types/auth.types";
+import { AuthChallengeExpired, ExpiredCodeError, InvalidCodeError, NoEmailIsAssociated, NoPhoneIsAssociated, TooManyAttemptsError, TooManyResendsError, UserNotFoundError } from "../../types/auth.types";
 import { generateOTP, generateUUID, nowInSeconds, nowPlusSeconds, verifyOTP } from "../TwoFactorAuth/utils";
 import MailingService from "../Communication/MailingService";
 import WhatsAppService from "../Communication/WhatsAppService";
@@ -112,6 +112,45 @@ class VerificationService {
 		});
 
 		return ;
+	}
+
+	async resend(token: UUID) {
+		const targetChall = await this.challengeRepository.findByQuery(
+			token,
+			'PENDING'
+		);
+
+		if (!targetChall)
+			throw new AuthChallengeExpired();
+
+		if (nowInSeconds() > targetChall.expires_at) {
+			await this.challengeRepository.update(targetChall.id, {
+				status: 'EXPIRED'
+			});
+			throw new AuthChallengeExpired();
+		}
+
+		if (targetChall.resend_attempts >= verificationConfig.maxResends) {
+			await this.challengeRepository.update(targetChall.id, {
+				status: 'FAILED'
+			});
+			throw new TooManyResendsError();
+		}
+
+		const targetUser = await this.userService.getUserById(targetChall.user_id);
+		if (!targetUser)
+			throw new UserNotFoundError();
+
+		const newOTP = generateOTP();
+		const newEXP = nowPlusSeconds(verificationConfig.expirySeconds);
+
+		await this.challengeRepository.update(targetChall.id, {
+			secret: newOTP,
+			expires_at: newEXP,
+			resend_attempts: targetChall.resend_attempts + 1
+		});
+
+		await this.notifyUser(targetChall.target!, targetChall.method!, newOTP);
 	}
 
 	private async notifyUser(target: string, method: AuthChallengeMethod, OTP: string) {

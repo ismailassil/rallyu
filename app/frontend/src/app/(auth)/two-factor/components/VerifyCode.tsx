@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
+import OTPCodeInput from "@/app/(onsite)/[DEPRECATED]2fa/components/OTPCodeInput";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useRef, useState } from "react";
 import { METHODS_HELP, METHODS_META } from "./constants";

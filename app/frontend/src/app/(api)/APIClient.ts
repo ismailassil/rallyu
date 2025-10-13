@@ -3,6 +3,7 @@ import axios, { AxiosInstance } from 'axios';
 import { UserService } from './services/UserService';
 import { AuthService } from './services/AuthService';
 import { MfaService } from './services/MfaService';
+import { VerifyService } from './services/VerifyService';
 
 export type APIError = {
 	code: string;
@@ -20,6 +21,7 @@ export class APIClient {
 	public user: UserService;
 	public auth: AuthService;
 	public mfa: MfaService;
+	public verify: VerifyService;
 
 	constructor(baseURL: string) {
 		this.client = axios.create({
@@ -31,6 +33,7 @@ export class APIClient {
 		this.user = new UserService(this.client);
 		this.auth = new AuthService(this.client);
 		this.mfa = new MfaService(this.client);
+		this.verify = new VerifyService(this.client);
 
 		this.client.interceptors.request.use(config => {
 			console.log('in interceptor, accessToken: ', this.accessToken);
@@ -203,21 +206,21 @@ export class APIClient {
 
 	/*-------------------------------------- 2FA --------------------------------------*/
 
-	async mfaEnabledMethods() {
-		return this.mfa.mfaEnabledMethods();
-	}
+	// async mfaEnabledMethods() {
+	// 	return this.mfa.mfaEnabledMethods();
+	// }
 
-	async mfaDisableMethod(method: string) {
-		return this.mfa.mfaDisableMethod(method);
-	}
+	// async mfaDisableMethod(method: string) {
+	// 	return this.mfa.mfaDisableMethod(method);
+	// }
 
-	async mfaSetupInit(method: string) {
-		return this.mfa.mfaSetupInit(method);
-	}
+	// async mfaSetupInit(method: string) {
+	// 	return this.mfa.mfaSetupInit(method);
+	// }
 
-	async mfaSetupVerify(token: string, code: string) {
-		return this.mfa.mfaSetupVerify(token, code);
-	}
+	// async mfaSetupVerify(token: string, code: string) {
+	// 	return this.mfa.mfaSetupVerify(token, code);
+	// }
 
 	/*--------------------------------- Authentication ---------------------------------*/
 

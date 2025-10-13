@@ -131,11 +131,6 @@ export default function TwoFAManagerPage() {
 		}
 	}
 
-	async function handleRequestVerify(_for: 'email' | 'phone', target?: string) {
-		
-
-	}
-
 	function handleGoBack() {
 		setCurrentStep(STEP.OVERVIEW);
 		setSelectedMethod('');

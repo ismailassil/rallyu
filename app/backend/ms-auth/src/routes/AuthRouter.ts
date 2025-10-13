@@ -137,19 +137,18 @@ async function authRouter(fastify: FastifyInstance, opts: {
 
 
 
-	/*----------------------------- Multi-Factor Authentication -----------------------------*/
+	/*------------------------------------------ Multi-Factor Authentication -----------------------------------------*/
+
 	fastify.post('/login/2fa/select', {
 		schema: auth2FALoginChallengeSchema,
 		...zodFormValidator(zodTwoFALoginChallengeBodySchema),
 		handler: opts.authController.sendTwoFAChallengeHandler.bind(opts.authController)
 	});
-
 	fastify.post('/login/2fa/verify', {
 		schema: auth2FALoginChallengeVerifyCodeSchema,
 		...zodFormValidator(zodVerifyChallengeBodySchema),
 		handler: opts.authController.verifyTwoFAChallengeHandler.bind(opts.authController)
 	});
-
 	fastify.post('/login/2fa/resend', {
 		schema: authChallengeResendSchema,
 		...zodFormValidator(zodResendSchema),
@@ -160,34 +159,30 @@ async function authRouter(fastify: FastifyInstance, opts: {
 		preHandler: fastify.authenticate,
 		handler: opts.twoFactorController.fetchEnabledMethodsHandler.bind(opts.twoFactorController)
 	});
-
+	fastify.post('/2fa/enabled/:method', {
+		preHandler: fastify.authenticate,
+		handler: opts.twoFactorController.enableMethodHandler.bind(opts.twoFactorController)
+	});
 	fastify.delete('/2fa/enabled/:method', {
-		schema: auth2FADisableSchema,
+		// schema: auth2FADisableSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.twoFactorController.disableMethodHandler.bind(opts.twoFactorController)
 	});
 
-	fastify.post('/2fa/setup', {
-		schema: auth2FASetupSchema,
+	fastify.post('/2fa/setup-totp', {
+		// schema: auth2FASetupSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.twoFactorController.setupHandler.bind(opts.twoFactorController)
+		handler: opts.twoFactorController.setupTOTPHandler.bind(opts.twoFactorController)
 	});
-
-	fastify.post('/2fa/setup/verify', {
-		schema: auth2FAVerifySchema,
+	fastify.post('/2fa/setup-totp/verify', {
+		// schema: auth2FASetupSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.twoFactorController.verifyHandler.bind(opts.twoFactorController)
-	});
-
-	fastify.post('/2fa/setup/resend', {
-		schema: authChallengeResendSchema,
-		preHandler: fastify.authenticate,
-		handler: opts.twoFactorController.resendHandler.bind(opts.twoFactorController)
+		handler: opts.twoFactorController.verifyTOTPHandler.bind(opts.twoFactorController)
 	});
 
 
+	/*--------------------------------------------- Password Management ---------------------------------------------*/
 
-	/*------------------------------------ Password Management ------------------------------------*/
 	fastify.post('/change-password', {
 		schema: authChangePasswordSchema,
 		...zodFormValidator(zodChangePasswordSchema),
@@ -232,7 +227,7 @@ async function authRouter(fastify: FastifyInstance, opts: {
 		handler: opts.authController.revokeAllSessionsHandler.bind(opts.authController)
 	});
 
-	// EMAIL/PHONE VERIFICATION
+	/*-------------------------------------------------- Verification --------------------------------------------------*/
 	fastify.post('/verify-:_for', {
 		preHandler: fastify.authenticate,
 		handler: opts.verificationController.requestHandler.bind(opts.verificationController)
@@ -240,6 +235,10 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	fastify.post('/verify-:_for/verify', {
 		preHandler: fastify.authenticate,
 		handler: opts.verificationController.verifyHandler.bind(opts.verificationController)
+	});
+	fastify.post('/verify-:_for/resend', {
+		preHandler: fastify.authenticate,
+		handler: opts.verificationController.resendHandler.bind(opts.verificationController)
 	});
 }
 

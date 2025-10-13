@@ -11,12 +11,12 @@ class TwoFactorController {
 		private twoFactorService: TwoFactorMethodService
 	) {}
 
-	async setupHandler(request: FastifyRequest, reply: FastifyReply) {
+	async setupTOTPHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub as number;
 			const { method } = request.query as { method: AuthChallengeMethod };
 
-			const tokenAndSecrets = await this.twoFactorService.createPending(method, user_id);
+			const tokenAndSecrets = await this.twoFactorService.setupTOTP('TOTP', user_id);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, tokenAndSecrets);
 
@@ -29,28 +29,11 @@ class TwoFactorController {
 		}
 	}
 
-	async verifyHandler(request: FastifyRequest, reply: FastifyReply) {
+	async verifyTOTPHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { token, code } = request.body as z.infer<typeof zodVerifyChallengeBodySchema>;
 
-			await this.twoFactorService.enablePending(token as UUID, code);
-
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
-
-			return reply.status(status).send(body);
-
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
-
-			return reply.code(status).send(body);
-		}
-	}
-
-	async resendHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
-			const { token } = request.body as z.infer<typeof zodResendSchema>;
-
-			await this.twoFactorService.resendChallenge(token as UUID);
+			await this.twoFactorService.enableTOTP(token as UUID, code);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
@@ -70,6 +53,24 @@ class TwoFactorController {
 			const enabledMethods = await this.twoFactorService.getEnabledMethods(user_id);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, enabledMethods);
+
+			return reply.status(status).send(body);
+
+		} catch (err: any) {
+			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+
+			return reply.code(status).send(body);
+		}
+	}
+
+	async enableMethodHandler(request: FastifyRequest, reply: FastifyReply) {
+		try {
+			const user_id = request.user?.sub as number;
+			const { method } = request.params as { method: AuthChallengeMethod };
+
+			await this.twoFactorService.enable(method, user_id);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
 			return reply.status(status).send(body);
 

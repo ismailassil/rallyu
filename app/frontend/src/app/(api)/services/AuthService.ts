@@ -128,7 +128,7 @@ export class AuthService {
 	}
 
 	async verifyEmail(token: string, code: string) {
-		const { data: res } = await this.client.post(`/auth/verify-email`, { token, code });
+		const { data: res } = await this.client.post(`/auth/verify-email/verify`, { token, code });
 		return res.data;
 	}
 
@@ -138,7 +138,7 @@ export class AuthService {
 	}
 
 	async verifyPhone(token: string, code: string) {
-		const { data: res } = await this.client.post(`/auth/verify-phone`, { token, code });
+		const { data: res } = await this.client.post(`/auth/verify-phone/verify`, { token, code });
 		return res.data;
 	}
 

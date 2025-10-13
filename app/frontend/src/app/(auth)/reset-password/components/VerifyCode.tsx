@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
+import OTPCodeInput from "@/app/(onsite)/[DEPRECATED]2fa/components/OTPCodeInput";
 import { useRef, useState } from "react";
 import FormButton from "../../components/UI/FormButton";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";

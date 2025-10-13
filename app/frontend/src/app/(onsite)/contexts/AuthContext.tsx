@@ -26,14 +26,14 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	const [isLoading, setIsLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [isBusy, setIsBusy] = useState<boolean>(false);
-	
+
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
 			apiClient = new APIClient(`${window.location.origin}/api`);
 			socket = new SocketClient(window.location.origin);
 		}
 	}, []);
-	
+
 	// THIS USE EFFECT WILL ONLY RUN ON PAGE FIRSTLOAD/REFRESH
 	useEffect(() => {
 		console.log('AuthProvider useEffect - Checking authentication status...');
@@ -55,7 +55,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 		initializeAuth();
 	}, []);
-	
+
 	async function login(username: string, password: string) {
 		try {
 			// setIsLoading(true);
@@ -85,17 +85,17 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	async function send2FACode(token: string, method: string) {
 		return apiClient.send2FACode({ token, method });
 	}
-	
+
 	async function verify2FACode(token: string, code: string) {
 		try {
 			const { user, accessToken } = await apiClient.verify2FACode({ token, code });
-			
+
 			setLoggedInUser(user);
 			setIsAuthenticated(true);
 
 			sessionStorage.removeItem('token');
 			sessionStorage.removeItem('enabledMethods');
-	
+
 			socket.connect(accessToken);
 			return { user, accessToken };
 		} catch (err) {
@@ -115,13 +115,13 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			throw err; // TODO: SHOULD WE PROPAGATE?
 		}
 	}
-	
+
 	async function register(
-		first_name: string, 
-		last_name: string, 
-		username: string, 
-		email: string, 
-		password: string 
+		first_name: string,
+		last_name: string,
+		username: string,
+		email: string,
+		password: string
 	) {
 		try {
 			await apiClient.register({ first_name, last_name, username, email, password });
@@ -133,6 +133,18 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	async function updateLoggedInUserState(payload: Partial<LoggedInUser>) {
 		setLoggedInUser(prev => prev ? { ...prev, ...payload } : prev);
+	}
+
+	async function triggerLoggedInUserRefresh() {
+		if (!loggedInUser)
+			return ;
+
+		try {
+			const data = await apiClient.fetchUser(loggedInUser!.id);
+			setLoggedInUser(data.user);
+		} catch (err) {
+			throw err;
+		}
 	}
 
 	const value = {
@@ -151,6 +163,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		verify2FACode,
 		logout,
 		apiClient,
+		triggerLoggedInUserRefresh,
 		socket
 	};
 

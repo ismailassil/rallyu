@@ -3,29 +3,20 @@ import { FormProvider } from '@/app/(auth)/components/Form/FormContext';
 import InputField from '@/app/(auth)/components/Form/InputField';
 import FormButton from '@/app/(auth)/components/UI/FormButton';
 import useForm from '@/app/hooks/useForm';
-import { ArrowLeft, ArrowRight, RotateCw } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import React from 'react';
-import { useAuth } from '../contexts/AuthContext';
 import useAPICall from '@/app/hooks/useAPICall';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
+import AnimatedComponent from '../../UI/AnimatedComponent';
 
-const META = {
-	PHONE: {
-		title: 'SMS',
-		description: 'Receive codes via SMS'
-	},
-	EMAIL: {
-		title: 'Email',
-		description: 'Receive codes via Email'
-	}
-};
 
 interface VerifyPhoneProps {
 	onNext: (token: string) => void;
 	onGoBack: () => void;
 }
 
-export default function VerifyPhone({ onNext } : VerifyPhoneProps) {
+export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 	const {
 		apiClient,
 		loggedInUser
@@ -57,7 +48,9 @@ export default function VerifyPhone({ onNext } : VerifyPhoneProps) {
 			return ;
 
 		try {
-			const { token } = await executeAPICall(() => apiClient.auth.requestVerifyPhone(formData.phone));
+			const { token } = await executeAPICall(() => apiClient.verify.requestPhone(
+				formData.phone
+			));
 			toastSuccess('Code sent');
 			onNext(token);
 		} catch (err: any) {
@@ -66,11 +59,11 @@ export default function VerifyPhone({ onNext } : VerifyPhoneProps) {
 	}
 
 	return (
-		<div className="w-full max-w-lg p-11 flex flex-col gap-5 select-none">
+		<AnimatedComponent componentKey='verify-phone-setup' className="w-full max-w-lg p-11 flex flex-col gap-5 select-none">
 			{/* Header + Go Back */}
 			<div className="flex gap-4 items-center mb-2">
 				<button
-					onClick={undefined}
+					onClick={onGoBack}
 					className="bg-blue-500/25 rounded-2xl p-2 hover:bg-blue-500/90 transition-all duration-300 cursor-pointer">
 					<ArrowLeft size={40} />
 				</button>
@@ -108,6 +101,6 @@ export default function VerifyPhone({ onNext } : VerifyPhoneProps) {
 				/>
 			</div>
 			{/* <p className='self-center mt-2'>Remember your password? <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>Sign in</span></p> */}
-		</div>
+		</AnimatedComponent>
 	);
 }

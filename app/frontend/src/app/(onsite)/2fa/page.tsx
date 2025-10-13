@@ -1,156 +1,63 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { METHODS_META } from "./components/constants";
-import MethodsOverview from "./components/MethodsOverview";
-import { Loader, Check } from "lucide-react";
-import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { APIError } from "@/app/(api)/APIClient";
+import MethodsOverview from "./components/Overview";
 import { toastSuccess, toastError } from "@/app/components/CustomToast";
 import MainCardWrapper from "../components/UI/MainCardWrapper";
 import { motion } from "framer-motion";
-import SetupTOTP from "./components/SetupTOTP";
-import VerifySetup from "./components/VerifySetup";
-import { APIEnabledMethodsResponse, APITOTPSecrets } from "@/app/(api)/services/MfaService";
-
+import PhoneVerification from "@/app/(auth)/components/Verification/Phone/PhoneVerification";
+import EmailVerification from "@/app/(auth)/components/Verification/Email/EmailVerification";
+import TOTPVerification from "@/app/(auth)/components/Verification/TOTP/TOTPVerification";
+import { useAuth } from "../contexts/AuthContext";
+import useAPICall from "@/app/hooks/useAPICall";
+import Done from "./components/Done";
 
 enum STEP {
 	OVERVIEW = 'OVERVIEW',
-	SETUP_TOTP = 'SETUP_TOTP',
-	VERIFY_SETUP = 'VERIFY_SETUP',
+	TOTP = 'TOTP',
+	SMS = 'SMS',
+	EMAIL = 'EMAIL',
 	DONE = 'DONE'
 }
 
 export default function TwoFAManagerPage() {
 	const router = useRouter();
-	const { apiClient } = useAuth();
-	const [currentStep, setCurrentStep] = useState<STEP>(STEP.OVERVIEW);
-	const [selectedMethod, setSelectedMethod] = useState('');
-	const [enabledMethods, setEnabledMethods] = useState<APIEnabledMethodsResponse | null>(null); // null = loading, [] = none enabled, ['totp'] = totp enabled, etc.
-	const [token, setToken] = useState<string | null>(null);
-	const [code, setCode] = useState(['', '', '', '', '', '']);
-	const [isLoading, setIsLoading] = useState(false);
-	const [isSendingCode, setIsSendingCode] = useState(false);
-	const [isVerifyingCode, setIsVerifyingCode] = useState(false);
-	const [totpSecrets, setTotpSecrets] = useState<APITOTPSecrets | null>(null);
-	const inputRefs = useRef([]);
+	const [currentStep, setCurrentStep] = useState<STEP>(STEP.DONE);
 
-	useEffect(() => {
-		async function fetchEnabledMethods() {
-			try {
-				setIsLoading(true);
-				const enabledMethods = await apiClient.mfa.mfaEnabledMethods();
-				setEnabledMethods(enabledMethods);
-			} catch (err) {
-				const apiErr = err as APIError;
-				toastError(apiErr.message);
-			} finally {
-				setIsLoading(false);
+	const {
+		apiClient
+	} = useAuth();
+
+	const {
+		executeAPICall
+	} = useAPICall();
+
+
+	function handleSetup(m: string) {
+		switch (m) {
+			case 'TOTP': {
+				setCurrentStep(STEP.TOTP);
+				break;
+			}
+			case 'SMS': {
+				setCurrentStep(STEP.SMS);
+				break;
+			}
+			case 'EMAIL': {
+				setCurrentStep(STEP.EMAIL);
+				break;
 			}
 		}
+	}
 
-		if (currentStep === STEP.DONE)
-			return ;
-
-		fetchEnabledMethods();
-	}, [apiClient, currentStep]);
-
-
-	async function handleSetupMethod(method: string) {
-		setSelectedMethod(method);
-
-		setIsLoading(true);
+	async function handleEnableAfterVerification(m: 'TOTP' | 'SMS' | 'EMAIL') {
 		try {
-
-			const { token, secrets } = await apiClient.mfa.mfaSetupInit(method);
-			setToken(token);
-
-			if (method === 'TOTP')
-				setTotpSecrets(secrets!);
-
-			if (method === 'TOTP')
-				setCurrentStep(STEP.SETUP_TOTP);
-			else
-				setCurrentStep(STEP.VERIFY_SETUP);
-		} catch (err) {
-			const apiErr = err as APIError;
-			toastError(apiErr.message);
+			await executeAPICall(() => apiClient.mfa.enableMethod(m));
+			toastSuccess(`2FA via ${m} enabled`);
+		} catch (err: any) {
+			toastError(err.message);
 		}
-		setIsLoading(false);
-	}
-
-	async function handleDisableMethod(method: string) {
-		if (!confirm(`Are you sure you want to disable ${METHODS_META[method].title}?`)) {
-			return;
-		}
-
-		try {
-			setIsLoading(true);
-			await apiClient.mfa.mfaDisableMethod(method);
-			toastSuccess(`${METHODS_META[method].title} disabled successfully`);
-			setEnabledMethods((prev) => prev?.filter((m) => m !== method) || []);
-		} catch (err) {
-			const apiErr = err as APIError;
-			toastError(apiErr.message);
-		} finally {
-			setIsLoading(false);
-		}
-	}
-
-	async function handleVerifySetup() {
-		try {
-			const codeJoin = code.join('');
-			setIsVerifyingCode(true);
-
-			await apiClient.mfa.mfaSetupVerify(token!, codeJoin);
-			toastSuccess(`${METHODS_META[selectedMethod].title} enabled successfully!`);
-
-			setCurrentStep(STEP.DONE);
-			setCode(['', '', '', '', '', '']);
-			setSelectedMethod('');
-			setToken(null);
-			setTotpSecrets(null);
-		} catch (err) {
-			const apiErr = err as APIError;
-			toastError(apiErr.message);
-		} finally {
-			setIsVerifyingCode(false);
-		}
-	}
-
-	async function handleResendCode() {
-		try {
-			setIsSendingCode(true);
-			await apiClient.mfa.mfaSetupResend(token!);
-			toastSuccess('Code sent!');
-		} catch (err) {
-			const apiErr = err as APIError;
-			toastError(apiErr.message);
-		} finally {
-			setIsSendingCode(false);
-		}
-	}
-
-	function handleGoBack() {
-		setCurrentStep(STEP.OVERVIEW);
-		setSelectedMethod('');
-		setCode(['', '', '', '', '', '']);
-		setTotpSecrets(null);
-	}
-
-
-	console.log('RENDERING SETUP 2FA PAGE', isLoading, enabledMethods);
-
-	if (enabledMethods === null) {
-		return (
-			<>
-				<main className="pt-30 flex h-[100vh] w-full pb-10">
-					<div className="flex h-full w-full justify-center items-center">
-						<Loader size={24} className="animate-spin" />
-					</div>
-				</main>
-			</>
-		);
 	}
 
 	function renderCurrentStep() {
@@ -158,52 +65,45 @@ export default function TwoFAManagerPage() {
 			case STEP.OVERVIEW:
 				return (
 					<MethodsOverview
-						methods={enabledMethods || []}
-						isLoading={isLoading}
-						selectedMethod={selectedMethod}
-						onSetupMethod={handleSetupMethod}
-						onDisableMethod={handleDisableMethod}
+						onSetup={(m) => handleSetup(m)}
 					/>
 				);
-			case STEP.SETUP_TOTP:
+			case STEP.TOTP:
 				return (
-					<SetupTOTP
-						totpSecrets={totpSecrets}
-						code={code}
-						setCode={setCode}
-						inputRefs={inputRefs}
-						isVerifyingCode={isVerifyingCode}
-						onVerify={handleVerifySetup}
-						onGoBack={handleGoBack}
+					<TOTPVerification
+						onReset={() => setCurrentStep(STEP.OVERVIEW)}
+						onSuccess={() => setCurrentStep(STEP.DONE)}
+						onFailure={() => toastError('onFailure')}
 					/>
 				);
-			case STEP.VERIFY_SETUP:
+			case STEP.SMS:
 				return (
-					<VerifySetup
-						selectedMethod={selectedMethod}
-						code={code}
-						setCode={setCode}
-						inputRefs={inputRefs}
-						isResendingCode={isSendingCode}
-						isVerifyingCode={isVerifyingCode}
-						onVerify={handleVerifySetup}
-						onResend={handleResendCode}
-						onGoBack={handleGoBack}
+					<PhoneVerification
+						onReset={() => setCurrentStep(STEP.OVERVIEW)}
+						onSuccess={() => {
+							handleEnableAfterVerification('SMS');
+							setCurrentStep(STEP.DONE);
+						}}
+						onFailure={() => toastError('onFailure')}
+					/>
+				);
+			case STEP.EMAIL:
+				return (
+					<EmailVerification
+						onReset={() => setCurrentStep(STEP.OVERVIEW)}
+						onSuccess={() => {
+							handleEnableAfterVerification('EMAIL');
+							setCurrentStep(STEP.DONE);
+						}}
+						onFailure={() => toastError('onFailure')}
 					/>
 				);
 			case STEP.DONE:
 				return (
-					<>
-						<Check className='h-22 w-22 bg-blue-500/25 rounded-full p-5 self-center'/>
-						<div className='flex flex-col gap-2 px-6 items-center'>
-							<h1 className='font-semibold text-3xl text-center'>2FA Setup Complete</h1>
-							<p className='mb-0 text-white/85 text-center'>Your account is now protected with two-factor authentication.</p>
-						</div>
-						<div className="flex gap-4">
-							<button className='h-11 px-6 bg-blue-600 hover:bg-blue-700 rounded-lg cursor-pointer' onClick={() => router.push('/dashboard')}>Continue to Dashboard</button>
-							<button className='h-11 px-6 bg-blue-600 hover:bg-blue-700 rounded-lg cursor-pointer' onClick={() => setCurrentStep(STEP.OVERVIEW)}>Setup another method</button>
-						</div>
-					</>
+					<Done
+						onDashboard={() => router.push('/dashboard')}
+						onSetupAnotherMethod={() => setCurrentStep(STEP.OVERVIEW)}
+					/>
 				);
 			default:
 				return null;

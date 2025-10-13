@@ -10,12 +10,16 @@ export type LoggedInUser = {
 	email: string,
 	bio: string,
 	avatar_url: string,
+	phone: string,
+	phone_verified: boolean,
+	email_verified: boolean,
 	last_message : MessageType
 }
 
 export type AuthContextType = {
 	loggedInUser: LoggedInUser | null;
 	updateLoggedInUserState: (payload: Partial<LoggedInUser>) => void;
+	triggerLoggedInUserRefresh: () => void;
 	isLoading: boolean;
 	isAuthenticated: boolean;
 	isBusy: boolean;
