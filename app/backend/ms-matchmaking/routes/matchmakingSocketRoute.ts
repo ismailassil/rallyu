@@ -20,7 +20,6 @@ const processQueue = async (queue: Map<number, ws.WebSocket>, type: string) => {
             {
                 playersIds: IDs,
                 gameType: type,
-                gameMode: 'online'
             },
             {
                 headers: {

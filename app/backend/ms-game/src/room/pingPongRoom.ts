@@ -1,5 +1,5 @@
 import { getVelocity, angles, updateState } from './physics'
-import type { Room, Player, PingPongGameState, TicTacToeGameState, PingPongStatus, GameType, GameMode } from '../types/types'
+import type { Room, Player, PingPongGameState, TicTacToeGameState, PingPongStatus, GameType } from '../types/types'
 import ws from 'ws';
 
 const GAME_UPDATE_INTERVAL = 16.67; // 60hz
@@ -27,7 +27,7 @@ export class PingPongPlayer implements Player {
         this.connected = false;
     }
 
-	setupOnlineEventListeners(room: PingPongRoom): void {
+    setupEventListeners(room: PingPongRoom ): void {
 		this.socket!.on('message', (message: ws.RawData) => {
 			try {
 				const data = JSON.parse(message.toString());
@@ -50,39 +50,12 @@ export class PingPongPlayer implements Player {
 					otherPlayer.socket.send(JSON.stringify({ type: 'opp_left' }))
 			}
 		});
-	}
-
-	setupLocalEventListeners(room: PingPongRoom): void {
-		this.socket!.on('message', (message: ws.RawData) => {
-			try {
-				const data = JSON.parse(message.toString());
-				room.state.players.forEach((player, index) => player.y = data.pos![index])
-			} catch (e: any) {
-				console.log('JSON parse error:', e.message);
-			}
-		});
-
-		this.socket!.on('close', (ev: ws.CloseEvent) => {
-			this.detachSocket();
-			console.log('Player disconnected');
-			if (ev.code === 1000) return; // normal closure
-		});
-	}
-
-    setupEventListeners(room: PingPongRoom ): void {
-		if (room.gameMode === 'online') {
-			this.setupOnlineEventListeners(room);
-		}
-		else {
-			this.setupLocalEventListeners(room);
-		}
     }
 }
 
 export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	id: string;
 	gameType: GameType;
-	gameMode: GameMode;
 	startTime: number | null = null;
 	players: Player[] = [];
 	running = false;
@@ -92,10 +65,9 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	gameTimerId: NodeJS.Timeout | null = null;
 	state: PingPongGameState;
 
-	constructor(id: string, gameMode: GameMode) {
+	constructor(id: string, ) {
 		this.id = id;
 		this.gameType = 'pingpong';
-		this.gameMode = gameMode;
 
 		const initialAngle = angles[Math.floor(Math.random() * angles.length)];
 		this.state = {
@@ -121,16 +93,15 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	getStatus(): PingPongStatus {
 		return {
 			gameType: this.gameType,
-			gameMode: this.gameMode,
 			ball: this.state.ball,
 			players: [
 				{
-					...(this.gameMode === 'online' ? { ID: this.players[0]!.id } : {}),
+					ID: this.players[0]!.id,
 					score: this.state.score[0],
 					coords: this.state.players[0]
 				},
 				{
-					...(this.gameMode === 'online' ? { ID: this.players[1]!.id } : {}),
+					ID: this.players[1]!.id,
 					score: this.state.score[1],
 					coords: this.state.players[1]
 				}

@@ -41,15 +41,28 @@ const PlayerCard = ({ side, info } : { side: string, info: PlayerInfo | null }) 
             }
         </h2>
     );
+
+    const rank = (
+        <div className={`flex min-w-[60px] h-[30px] self-center border border-black/5 ${side === 'left' ? 'ml-auto mr-6' : 'mr-auto ml-6'} `}>
+            {
+            info
+                ? <div className={`flex items-center justify-center text-lg w-full h-full font-bold bg-white/90 rounded-full text-black`}>#{info.rank}</div>
+                : <div className="w-full h-full rounded-full bg-white/90 bg- animate-pulse"></div>
+            }
+        </div>
+    )
+
     return (
         <div className={`flex flex-row ${side === 'right' ? 'justify-end' : ''} gap-6 shadow-xl border border-neutral-700/50 bg-neutral-900/50 rounded-full p-2`}>
             {side === 'left' ? (
                 <>
                     {avatar}
                     {playerInfo}
+                    {rank}
                 </>
             ) : (
                 <>
+                    {rank}
                     {playerInfo}
                     {avatar}
                 </>
@@ -58,8 +71,7 @@ const PlayerCard = ({ side, info } : { side: string, info: PlayerInfo | null }) 
     )
 }
 
-const VersusCard = () => {
-    const { gameState } = useGame();
+const VersusCard = ({ opponentId }: { opponentId? : number | undefined }) => {
     const { apiClient, loggedInUser } = useAuth();
     const [loggedInUserInfo, setLoggedInUserInfo] = useState<PlayerInfo | null>(null);
     const [opponentInfo, setOpponentInfo] = useState<PlayerInfo | null>(null);
@@ -82,9 +94,9 @@ const VersusCard = () => {
 
     useEffect(() => {
         (async () => {
-            if (!gameState.opponentId) return;
+            if (!opponentId) return;
             try {
-                const res = await apiClient.fetchUser(gameState.opponentId);
+                const res = await apiClient.fetchUser(opponentId);
                 setOpponentInfo({
                     username: res.user.username,
                     avatar_url: res.user.avatar_url,
@@ -95,24 +107,17 @@ const VersusCard = () => {
                 console.log('unable to fetch opponent data: ', err);
             }
         })()
-    }, [gameState.opponentId]);
+    }, [opponentId]);
 
     return (
-        <div className="flex h-35 w-full justify-between items-center px-10 pb-2 gap-6">
-            
-            <AnimatePresence>
-                <div className="w-[400px] min-w-0">
-                    <PlayerCard side='left' info={loggedInUserInfo} />
-                </div>
-            </AnimatePresence>
+        <div className="flex h-35 w-full max-w-[2000px] justify-between items-center px-10 pb-2 gap-6">
+            <div className="w-[400px] min-w-0">
+                <PlayerCard side='left' info={loggedInUserInfo} />
+            </div>
             <GameTimer />
-            <AnimatePresence>
-                <div className={`w-[400px] min-w-0 transition-all duration-500 ease-out
-                    ${gameState.gameStarted ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'}
-                `}>
-                    <PlayerCard side='right' info={opponentInfo} />
-                </div>
-            </AnimatePresence>
+            <div className={`w-[400px] min-w-0`}>
+                <PlayerCard side='right' info={opponentInfo} />
+            </div>
         </div>
     );
 }

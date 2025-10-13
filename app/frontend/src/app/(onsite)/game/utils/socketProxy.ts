@@ -1,5 +1,4 @@
 import { APIClient } from '@/app/(api)/APIClient';
-import { GameContextState } from '@/app/(onsite)/(game)/game/contexts/gameContext';
 
 type MessageCallBack = (message: any) => void;
 
@@ -35,14 +34,10 @@ class SocketProxy {
 
 	public connect(
 		url: string,
-		api: APIClient,
-		updateGameState: (updates: Partial<GameContextState>) => void
+		api: APIClient
 	): (() => void) {
 		this.socket = api.connectWebSocket(url);
 		this.socket.onopen = (): void => {
-			updateGameState({
-				gameStarted: true
-			})
 			console.log('Connected to Pong Server');
 		};
 

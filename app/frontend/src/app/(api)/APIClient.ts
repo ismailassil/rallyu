@@ -3,6 +3,7 @@ import axios, { AxiosInstance } from 'axios';
 import { UserService } from './services/UserService';
 import { AuthService } from './services/AuthService';
 import { MfaService } from './services/MfaService';
+import { GameType } from '../(onsite)/game/types/PongTypes';
 
 export type APIError = {
 	code: string;
@@ -11,22 +12,26 @@ export type APIError = {
 }
 
 export type PlayerState = {
-	ID?: number;
+	ID: number;
 	score: number;
 	coords?: any;
-  };
+};
 
-export type GameRoomState =
+export type RemotePlayerStatus = {
+	roomId: string,
+	opponentId: number,
+	gameType: GameType,
+}
+
+export type GameRoomStatus =
 	| {
 		gameType: 'pingpong' | 'tictactoe',
-		gameMode: 'online' | 'local',
 		cells: any[];
 		currentRound: number;
 		players: PlayerState[];
 	  }
 	| {
 		gameType: 'pingpong' | 'tictactoe',
-		gameMode: 'online' | 'local',
 		ball: any;
 		players: PlayerState[];
 	  };
@@ -328,12 +333,12 @@ export class APIClient {
 		return this.auth.resetPassword(token, newPassword);
 	}
 
-	async fetchPlayerStatus(user_id: number) {
+	async fetchPlayerStatus(user_id: number) : Promise<RemotePlayerStatus>{
 		const res = await this.client.get(`/game/user/${user_id}/status`);
 		return res.data;
 	}
 	
-	async fetchGameRoomStatus(room_id: string) : Promise<GameRoomState> {
+	async fetchGameRoomStatus(room_id: string) : Promise<GameRoomStatus> {
 		const res = await this.client.get(`/game/room/${room_id}/status`);
 		return res.data;
 	}

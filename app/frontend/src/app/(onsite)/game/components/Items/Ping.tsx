@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { useGame } from "../../contexts/gameContext"
 import useMatchmaking from "@/app/hooks/useMatchMaking";
 
 const MovingText = ({ dir }: { dir: 'left' | 'right' }) => {
@@ -36,7 +34,6 @@ const MovingText = ({ dir }: { dir: 'left' | 'right' }) => {
 
 const Ping = () => {
     const { queueTime, isSearching, toggleSearch } = useMatchmaking('pingpong');
-    const { updateGameState } = useGame();
 
     const formatTime = (seconds: number) => {
 		const mins = Math.floor(seconds / 60);
@@ -44,17 +41,10 @@ const Ping = () => {
 		return `${mins}:${secs.toString().padStart(2, '0')}`;
 	};
 
-    const handleClick = () => {
-        updateGameState({
-            gameType: 'pingpong',
-        })
-        toggleSearch();
-    }
-
     return (
         <div
         className="absolute inset-0 flex items-center rounded-xl transition-all duration-150 border shadow-xl border-card bg-neutral-900/70 hover:bg-neutral-900/90 hover:scale-[101%] active:scale-[99%] cursor-pointer [clip-path:polygon(0_0,55%_0,45%_100%,0_100%)] group"
-        onClick={handleClick}
+        onClick={toggleSearch}
         >
             <div className="absolute flex flex-col items-center left-3/11 max-w-[400px] min-w-0 min-h-0 max-h-[200px] -translate-x-1/2 ">
                 <span
@@ -75,7 +65,7 @@ const Ping = () => {
                         fontFamily: 'Serious2b'
                     }}
                 >
-                        {isSearching ? `In Queue ${formatTime(queueTime)}` :'online play'}
+                        {isSearching ? `In Queue ${formatTime(queueTime)}` :'remote play'}
                 </span>
             </div>
             <div className="absolute top-3/5 left-3 h-[15%] bg-white w-[10px] group-hover:-translate-y-50 transition-transform duration-600 ease-in-out delay-400 group-hover:delay-0" />
