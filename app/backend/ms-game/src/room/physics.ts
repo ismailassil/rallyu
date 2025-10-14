@@ -44,7 +44,7 @@ const resetBall = (dir: 'left' | 'right') => {
 
 	return ({
 		x: 800,
-		y: 600,
+		y: 450,
 		dir,
 		speed: 14,
 		angle: initialAngle,
@@ -83,8 +83,8 @@ export const updateState = (gameState: PingPongGameState) => {
 	}
 
 	// bottom wall bounce
-	if (newBall.y + BALL_RADIUS > 1200) {
-		gameState.ball.y = 1200 - BALL_RADIUS
+	if (newBall.y + BALL_RADIUS > 900) {
+		gameState.ball.y = 900 - BALL_RADIUS
 		gameState.ball.angle *= -1
 		gameState.ball.velocity.y *= -1
 		return

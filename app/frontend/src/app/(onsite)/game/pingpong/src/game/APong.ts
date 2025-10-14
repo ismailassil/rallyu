@@ -2,7 +2,7 @@ import { PongState } from "@/app/(onsite)/game/types/PongTypes"
 
 class APong {
     CANVAS_WIDTH = 1600
-    CANVAS_HEIGHT = 1200
+    CANVAS_HEIGHT = 900
     PADDLE_WIDTH = 15
     PADDLE_HEIGHT = 100
     HALF_PADDLE = 50
@@ -14,11 +14,11 @@ class APong {
         ctx.fillStyle = 'white' // fill color
         ctx.strokeStyle = 'white' // stroke color
         
-        ctx.font = '150px "AtariPongScore"';
+        ctx.font = '120px "AtariPongScore"';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(`${state.players[0].score}`, this.CANVAS_WIDTH * 0.3, 120)
-        ctx.fillText(`${state.players[1].score}`, this.CANVAS_WIDTH * 0.7, 120)
+        ctx.fillText(`${state.players[0].score}`, this.CANVAS_WIDTH * 0.35, 120)
+        ctx.fillText(`${state.players[1].score}`, this.CANVAS_WIDTH * 0.65, 120)
     
         // player 1 paddle
         ctx.fillRect(

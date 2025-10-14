@@ -8,7 +8,6 @@ import { useState } from 'react';
 const Game = () => {
 	const [ timeLeft, setTimeLeft ] = useState(0);
 
-
 	return (
         <motion.main
 			initial={{ opacity: 0, x: -20 }}
@@ -16,10 +15,10 @@ const Game = () => {
 			transition={{ duration: 0.5 }}
 			className="h-[100vh] pt-30 pr-6 pb-24 pl-6 sm:pb-6 sm:pl-30"
 		>
-            <article className="flex gap-4 bg-card border-br-card h-full w-full justify-center rounded-2xl border-2">
+            <article className="flex bg-card border-br-card h-full w-full justify-center rounded-2xl border-2">
                 <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center">
                     <VersusCard timeLeft={timeLeft} />
-                    <div className="flex min-h-0 w-full flex-1 items-center justify-center">
+                    <div className="flex w-auto h-aut max-h-full max-w-full items-center justify-center">
                         <Pong socketProxy={null} mode='local' updateTimer={setTimeLeft} />
                     </div>
                 </div>

@@ -19,7 +19,7 @@ class LocalPong extends APong {
         this.state = {
             ball: {
                 x: 800,
-                y: 600,
+                y: 450,
                 speed: 14,
                 angle: initialAngle,
                 dir: 'left',
@@ -27,11 +27,11 @@ class LocalPong extends APong {
             },
             players: [
                 {
-                    pos: { x: 20, y: 600 },
+                    pos: { x: 20, y: 450 },
                     score: 0
                 },
                 {
-                    pos: { x: 1580, y: 600 },
+                    pos: { x: 1580, y: 450 },
                     score: 0
                 }
             ]
@@ -76,7 +76,7 @@ class LocalPong extends APong {
     
         return ({
             x: 800,
-            y: 600,
+            y: 450,
             dir,
             speed: 14,
             angle: initialAngle,
@@ -115,8 +115,8 @@ class LocalPong extends APong {
         }
     
         // bottom wall bounce
-        if (newBall.y + this.BALL_RADIUS > 1200) {
-            this.state.ball.y = 1200 - this.BALL_RADIUS
+        if (newBall.y + this.BALL_RADIUS > this.CANVAS_HEIGHT) {
+            this.state.ball.y = 900 - this.BALL_RADIUS
             this.state.ball.angle! *= -1
             this.state.ball.velocity!.y *= -1
             return
@@ -132,7 +132,7 @@ class LocalPong extends APong {
         }
         
         // left player scored
-        if (this.state.ball.x > 1600) {
+        if (this.state.ball.x > this.CANVAS_WIDTH) {
             this.state.players[0].score++
             this.state.ball = this.resetBall("right")
             this.pause = true

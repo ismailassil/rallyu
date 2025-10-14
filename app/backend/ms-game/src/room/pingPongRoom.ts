@@ -73,13 +73,13 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 		this.state = {
 			ball: {
 				x: 800,
-				y: 600,
+				y: 450,
 				speed: 14,
 				angle: initialAngle,
 				dir: 'left',
 				velocity: getVelocity(initialAngle, 14)
 			},
-			players: [{ x: 20, y: 600 }, { x: 1580, y: 600 }],
+			players: [{ x: 20, y: 450 }, { x: 1580, y: 450 }],
 			score: [0, 0],
 			pause: true
 		};

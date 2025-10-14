@@ -13,11 +13,11 @@ interface PlayerInfo {
 
 const PlayerCard = ({ side, info } : { side: string, info: PlayerInfo | null }) => {
     const avatar =  (
-        <div className="w-[80px] h-[80px] border border-white/5 rounded-full bg-black/10">
+        <div className="w-[80px] h-[80px] border border-white/18 rounded-lg">
             {
             info
-                ? <Avatar avatar={info.avatar_url} className="h-full w-full" />
-                : <div className="w-full h-full bg-card rounded-full animate-pulse"></div>
+                ? <Avatar avatar={info.avatar_url} className="h-full w-full rounded-none" />
+                : <div className="w-full h-full bg-card animate-pulse"></div>
             }
         </div>
     );
@@ -44,14 +44,14 @@ const PlayerCard = ({ side, info } : { side: string, info: PlayerInfo | null }) 
         <div className={`flex min-w-[60px] h-[30px] self-center border border-black/5 ${side === 'left' ? 'ml-auto mr-6' : 'mr-auto ml-6'} `}>
             {
             info
-                ? <div className={`flex items-center justify-center text-lg w-full h-full font-bold bg-white/90 rounded-full text-black`}>#{info.rank}</div>
+                ? <div className={`flex items-center justify-center px-2 text-lg w-full h-full font-bold bg-white/90 rounded-full text-black`}>#{info.rank}</div>
                 : <div className="w-full h-full rounded-full bg-white/90 bg- animate-pulse"></div>
             }
         </div>
     )
 
     return (
-        <div className={`flex flex-row ${side === 'right' ? 'justify-end' : ''} gap-6 shadow-xl border border-neutral-700/50 bg-neutral-900/50 rounded-full p-2`}>
+        <div className={`flex flex-row ${side === 'right' ? 'justify-end' : ''} gap-6 shadow-xl p-2`}>
             {side === 'left' ? (
                 <>
                     {avatar}
@@ -108,7 +108,7 @@ const VersusCard = ({ opponentId, timeLeft }: { opponentId? : number | undefined
     }, [opponentId]);
 
     return (
-        <div className="flex h-35 w-full max-w-[2000px] justify-between items-center px-10 pb-2 gap-6">
+        <div className="flex min-h-35 w-full max-w-[1600px] justify-between items-end gap-6">
             <div className="w-[400px] min-w-0">
                 <PlayerCard side='left' info={loggedInUserInfo} />
             </div>

@@ -5,7 +5,7 @@ import RemotePong from "./game/RemotePong";
 import LocalPong from "./game/LocalPong";
 
 const CANVAS_WIDTH = 1600;
-const CANVAS_HEIGHT = 1200;
+const CANVAS_HEIGHT = 900;
 
 const Pong = ({ socketProxy, mode, updateTimer }: { socketProxy: SocketProxy | null, mode: GameMode, updateTimer: (timeLeft: number) => void }) => {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -19,10 +19,11 @@ const Pong = ({ socketProxy, mode, updateTimer }: { socketProxy: SocketProxy | n
 			if (stopGame) stopGame();
 		}
 	}, []);
-
+// border border-neutral-700
+// border border-white/60 rounded-lg
 	return (
 		<canvas
-			className='max-w-full max-h-full rounded-lg border shadow-xl border-neutral-700 bg-neutral-900/50' //border-neutral-700
+			className='rounded-lg border border-white/60 bg-neutral-900/50' //border-neutral-700
 			ref={canvasRef}
 			width={CANVAS_WIDTH}
 			height={CANVAS_HEIGHT}

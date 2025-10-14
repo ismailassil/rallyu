@@ -27,7 +27,7 @@ const GameTimer = ({ time }: { time: number }) => {
 
     return (
         <div 
-            className={`flex ${fustat.className} items-center justify-center pl-4 font-bold text-3xl text-right tracking-widest gap-6 shadow-xl border border-neutral-700/50 bg-neutral-900/50 rounded-full p-2 w-[160px] h-[70px] min-w-0`}
+            className={`flex font-funnel-display text-black items-center justify-center font-bold text-3xl text-right tracking-widest rounded-t-2xl mb-[1px] bg-white/90 w-[140px] h-[60px] min-w-0`}
         >
             {formatTime(gameTime)}
         </div>
