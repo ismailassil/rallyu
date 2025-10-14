@@ -35,12 +35,8 @@ export const createRoomSchema = {
                 type: 'string',
                 enum: ['pingpong', 'tictactoe']
             },
-            gameMode: {
-                type: 'string',
-                enum: ['online', 'local']
-            }
         },
-        required: ['playersIds', 'gameType', 'gameMode'],
+        required: ['playersIds', 'gameType'],
         additionalProperties: false
     }
 }

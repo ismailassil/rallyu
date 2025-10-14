@@ -1,4 +1,4 @@
-import type { Room, Player, TicTacToeGameState, TicTacToeStatus, GameType, GameMode } from '../types/types'
+import type { Room, Player, TicTacToeGameState, TicTacToeStatus, GameType } from '../types/types'
 import ws from 'ws';
 
 const GAME_UPDATE_INTERVAL = 1000; // 1hz
@@ -64,7 +64,6 @@ export class TicTacToePlayer implements Player {
 export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> {
 	id: string;
 	gameType: GameType;
-	gameMode: GameMode;
 	startTime: number | null = null;
 	players: Player[] = [];
 	running = false;
@@ -74,10 +73,9 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	gameTimerId: NodeJS.Timeout | null = null;
 	state: TicTacToeGameState;
 
-	constructor(id: string, gameMode: GameMode) {
+	constructor(id: string, ) {
 		this.id = id;
 		this.gameType = 'tictactoe';
-		this.gameMode = gameMode;
 
 		this.state = {
 			cells: [['', '', ''], ['', '', ''], ['', '', '']],
@@ -94,16 +92,15 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	getStatus(): TicTacToeStatus {
 		return {
 			gameType: this.gameType,
-			gameMode: this.gameMode,
 			cells: this.state.cells,
 			currentRound: this.state.currentRound,
 			players: [
 				{
-					...(this.gameMode === 'online' ? { ID: this.players[0]!.id } : {}),
+					ID: this.players[0]!.id,
 					score: this.state.score[0],
 				},
 				{
-					...(this.gameMode === 'online' ? { ID: this.players[0]!.id } : {}),
+					ID: this.players[0]!.id,
 					score: this.state.score[0],
 				}
 			]

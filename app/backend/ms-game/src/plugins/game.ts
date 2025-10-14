@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyPluginOptions, FastifyRequest } from 'fastify';
 import WebSocket from 'ws'
 import jwt from 'jsonwebtoken'
-import type { GameMode, GameType, Room } from '../types/types';
+import type { GameType, Room } from '../types/types';
 import { createRoomSchema, joinRoomSchema, roomStatusSchema, userStatusSchema } from '../schemas/schemas';
 import { roomManager } from '../room/roomManager';
 import dotenv from 'dotenv'
@@ -134,7 +134,6 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			roomId: session,
 			opponentId,
 			gameType: room!.gameType,
-			gameMode: room!.gameMode
 		};
 	})
 
@@ -150,7 +149,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 	})
 
 	fastify.post('/room/create', { schema: createRoomSchema}, (req, res) => {
-		const { playersIds, gameType, gameMode } = req.body as { playersIds: number[], gameType: GameType, gameMode: GameMode };
+		const { playersIds, gameType } = req.body as { playersIds: number[], gameType: GameType };
 		if (!playersIds) {
 			return res.code(400).send({
 				message: 'players ids not provided.'
@@ -163,7 +162,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			})
 		}
 
-		const { roomid, room }  = roomManager.createRoom(gameType, gameMode);
+		const { roomid, room }  = roomManager.createRoom(gameType);
 		room.attachPlayers(playersIds);
 
 		room.expirationTimer = setTimeout(() => {

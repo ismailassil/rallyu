@@ -23,7 +23,7 @@ class WhatsAppService {
 	}
 
 	private async initWhatsappConnection() {
-		const baileys = await import ('baileys');
+		const baileys = await import ('@whiskeysockets/baileys');
 
 		const baileysLogger = pino({
 			level: 'warn',
@@ -45,6 +45,7 @@ class WhatsAppService {
 
 		this.WASocket = makeWASocket({
 			auth: this.state,
+			version: [2, 3000, 1025190524],
 			logger: baileysLogger
 		});
 
@@ -62,48 +63,28 @@ class WhatsAppService {
 		const { connection, lastDisconnect, qr } = update;
 
 		if (qr) {
-			// console.log('📱 Scan QRCode:');
-			this.logger.info('[SMS] Scan QRCode:');
+			this.logger.info('[SMS] Scan QRCode: ');
 			qrcodeinterminal.generate(qr, { small: true });
 		}
 
 		if (connection === 'close') {
 			const disconnectReason = (lastDisconnect.error)?.output?.statusCode;
 
-			if (disconnectReason === this.DisconnectReason.restartRequired) {
-				// console.log('🔄 Connection to WASocket restarted!');
-				this.logger.warn('[SMS] WhatsApp connection restarted, reconnecting...');
+			if (disconnectReason !== this.DisconnectReason.loggedOut) {
+				this.logger.warn('[SMS] Connection closed, reconnecting...');
 				await this.initWhatsappConnection();
-				return ;
-			} else if (disconnectReason !== this.DisconnectReason.loggedOut) {
-				// console.log('⏲️ Connection to WASocket timed out, reconnecting...');
-				this.logger.warn('[SMS] WhatsApp connection logged out, reconnecting...');
-				await this.initWhatsappConnection();
-				return ;
+			} else {
+				this.logger.warn('[SMS] Connection logged out. QR Code scan is required...');
 			}
-
-			// console.log('❌ Connection to WASocket closed due to: ', lastDisconnect.error);
-			// this.logger.error({ err: lastDisconnect.error }, '[SMS] Connection to WASocket closed');
-
-			// if (disconnectReason !== this.DisconnectReason.loggedOut) {
-			// 	// console.log('🔄 Reconnecting to WASocket...');
-			// 	this.logger.warn('[SMS] Reconnecting to WhatsApp...');
-			// 	await this.initWhatsappConnection();
-			// } else {
-			// 	// console.log('❌ Logged out. QR scan required.');
-			// 	this.logger.error('[SMS] WhatsApp Logged out.');
-			// }
 		} else if (connection === 'open') {
-			// console.log('✅ Connected to WASocket!');
-			this.logger.info('[SMS] WhatsApp service is up and running');
+			this.logger.info('[SMS] Service is up and running');
 			await this.sendReadyNotification();
 		}
 	}
 
 	private async sendReadyNotification() : Promise<void> {
 		if (!this.WASocket || !this.isReady) {
-			// console.log('❌ WASocket is not initialized yet!');
-			this.logger.error('WASocket is not initialized yet!');
+			this.logger.error('[SMS] Service is not running yet!');
 			return ;
 		}
 
@@ -121,19 +102,16 @@ class WhatsAppService {
 					caption: READY_MSG
 				});
 			}
-			// console.log('✅ Sent ready notification to ADMIN');
 			this.logger.info('[SMS] Sent ready notification to Admin via WhatsApp');
 		} catch (err) {
-			// console.log('⚠️ Failed to send ready notification:', err);
 			this.logger.error({ err }, '[SMS] Failed to send ready notification to Admin via WhatsApp');
 		}
 	}
 
 	async sendMessage(receiverWANumber: string, message: string) {
 		if (!this.WASocket || !this.isReady) {
-			// console.log('❌ WASocket is not initialized yet!');
-			this.logger.error('[SMS] WhatsApp service is not running yet!');
-				throw new ServiceUnavailable('SMS service is not available at the moment');
+			this.logger.error('[SMS] Service is not running yet!');
+			throw new ServiceUnavailable('SMS service is not available at the moment');
 		}
 
 		const jid = `${receiverWANumber}@s.whatsapp.net`;

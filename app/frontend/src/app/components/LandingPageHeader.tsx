@@ -22,11 +22,11 @@ const LandingPageHeader = () => {
 				onClick={() => setLogo(!logo)}
 			/>
 
-			<div className="flex gap-10 *:cursor-pointer pr-0 sm:pr-6 *:hover:scale-102 *:duration-400">
-				<button onClick={() => router.push('/login')}>Login</button>
+			<div className="flex justify-between h-12 w-58 gap-7 *:cursor-pointer *:hover:scale-102 *:duration-400">
+				<button onClick={() => router.push('/login')} className='border bg-white/3 border-card flex-1 rounded-md hover:scale-102 duration-400 hover:ring-2 ring-white/10'>Login</button>
 				<button
 					onClick={() => router.push('/signup')}
-					className="bg-main py-2 px-6 rounded-md 
+					className="bg-main flex-1 rounded-md whitespace-nowrap 
 						hover:bg-main-hover hover:ring-2 ring-white/10
 						hover:scale-102 duration-400"
 				>

@@ -1,24 +1,10 @@
-import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { useGame } from "../../contexts/gameContext";
+import { useRouter } from "next/navigation";
 
 const Pong = () => {
-    const { apiClient, loggedInUser } = useAuth();
-    const { updateGameState } = useGame();
-    
+    const router = useRouter();
+
     const handleClick = async () => {
-        if (!loggedInUser) return;
-        try {
-            const res = await apiClient.createGameRoom([loggedInUser.id], 'pingpong', 'local');
-            updateGameState({
-                url: `/game/room/join/${res.roomId}?userid=${loggedInUser.id}`,
-                opponentId: res.opponentId,
-                gameStarted: true,
-                gameType: 'pingpong',
-                gameMode: 'local'
-            })
-        } catch (err) {
-			console.log(`Game Service Error: ${err}`);
-        }
+        router.push('/game/pingpong/local');
     }
 
     return (
