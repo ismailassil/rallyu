@@ -7,7 +7,7 @@ all: help
 env:
 	@bash ./env-script/spread-env.sh
 
-up:
+up: env
 	@docker-compose up --build --watch
 
 down:
