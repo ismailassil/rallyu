@@ -17,7 +17,7 @@ export default function Game() {
 				if (!loggedInUser)
 					return;
 				const res = await apiClient.fetchPlayerStatus(loggedInUser.id);
-				router.push(`/game/${res.gameType}/${res.roomId}?opponent=${res.opponentId}`);
+				router.push(`/game/${res.gameType}/${res.roomId}`);
 			} catch (err) {
 				console.log(`Game Service Error: ${err}`);
 			}

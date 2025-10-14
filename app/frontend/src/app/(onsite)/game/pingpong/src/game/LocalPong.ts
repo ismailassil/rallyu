@@ -5,14 +5,12 @@ import APong from "./APong";
 
 class LocalPong extends APong {
     state: PongState;
-    CANVAS_WIDTH = 1600
-    CANVAS_HEIGHT = 1200
     animationFrameId: number | null;
     angles = [2.61799, 3.66519, 3.14159 ,0, 0.523599, 5.75959];
     maxBounceAngle = 0.785398 
-    BALL_RADIUS = 10
-    gameDuration = 60000;
+    gameDuration = 30000;
     pause = true;
+    gameTimeoutId: NodeJS.Timeout | undefined = undefined;
     
     constructor(private eventHandlers?: PongEventHandlers) {
         super();
@@ -196,30 +194,33 @@ class LocalPong extends APong {
         }
         const cleanUpInput = this.setupInputHandlers(canvas);
     
-        this.eventHandlers?.updateTimer!(3);
 
-        const gameLoop = (timestamp: DOMHighResTimeStamp) => {
+        const gameLoop = () => {
             if (!this.pause) this.updateGame();
             this.render(ctx, this.state);
             this.animationFrameId = requestAnimationFrame(gameLoop);
         }
         this.animationFrameId = requestAnimationFrame(gameLoop);
-        const timeoutId = setTimeout(()=> {
+        
+        this.eventHandlers?.updateTimer(3);
+        const gameStartTimeoutId = setTimeout(()=> {
             this.pause = false;
-            this.eventHandlers?.updateTimer!(30);
+            this.eventHandlers?.updateTimer(this.gameDuration / 1000);
+            this.gameTimeoutId = setTimeout(() => {
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    this.animationFrameId = null;
+                }
+            }, this.gameDuration);
         }, 3000)
 
-        setTimeout(() => {
-            if (this.animationFrameId) {
-                cancelAnimationFrame(this.animationFrameId);
-                this.animationFrameId = null;
-            }
-        }, this.gameDuration);
+       
     
         return () => {
             cancelAnimationFrame(this.animationFrameId!);
             cleanUpInput();
-            clearTimeout(timeoutId);
+            clearTimeout(gameStartTimeoutId);
+            clearTimeout(this.gameTimeoutId);
         }
     }
 

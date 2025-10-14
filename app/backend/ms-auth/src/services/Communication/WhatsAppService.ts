@@ -78,8 +78,8 @@ class WhatsAppService {
 			} else if (disconnectReason !== this.DisconnectReason.loggedOut) {
 				// console.log('⏲️ Connection to WASocket timed out, reconnecting...');
 				this.logger.warn('[SMS] WhatsApp connection logged out, reconnecting...');
-				await this.initWhatsappConnection();
 				return ;
+				// await this.initWhatsappConnection();
 			}
 
 			// console.log('❌ Connection to WASocket closed due to: ', lastDisconnect.error);

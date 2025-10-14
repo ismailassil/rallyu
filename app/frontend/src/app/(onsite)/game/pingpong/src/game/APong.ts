@@ -6,7 +6,7 @@ class APong {
     PADDLE_WIDTH = 15
     PADDLE_HEIGHT = 100
     HALF_PADDLE = 50
-    BALL_RADIUS = 20
+    BALL_RADIUS = 10
 
 
     protected render = (ctx: CanvasRenderingContext2D, state: PongState) => {

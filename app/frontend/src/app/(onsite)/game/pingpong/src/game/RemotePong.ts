@@ -5,15 +5,13 @@ import APong from "./APong";
 class RemotePong extends APong {
     state: RemotePongState;
     animationFrameId: number | null;
-    CANVAS_WIDTH = 1600
-    CANVAS_HEIGHT = 1200
     
     constructor(private eventHandlers?: PongEventHandlers) {
         super();
         this.animationFrameId = null;
         this.state = {
             serverPlayerY: 600,
-            serverBall: { x: 800, y: 600, width: 20, height: 20 },
+            serverBall: { x: 800, y: 600 },
             ball: { x: 800, y: 600 },
             players:[
                 {
@@ -37,8 +35,8 @@ class RemotePong extends APong {
     }
 
     private updateGame = () => {
-        this.state.ball.x += this.lerp(this.state.ball.x, this.state.serverBall.x, 0.5)
-        this.state.ball.y += this.lerp(this.state.ball.y, this.state.serverBall.y, 0.5)
+        this.state.ball.x += this.lerp(this.state.ball.x, this.state.serverBall.x, 0.6)
+        this.state.ball.y += this.lerp(this.state.ball.y, this.state.serverBall.y, 0.6)
     
         this.state.players[1].pos.y += this.lerp(
             this.state.players[1].pos.y,
@@ -49,8 +47,6 @@ class RemotePong extends APong {
 
     setupCommunications = (
         proxy: SocketProxy
-        // setGameTime: React.Dispatch<React.SetStateAction<number>>,
-        // setGameStarted: React.Dispatch<React.SetStateAction<boolean>>
     ): (() => void) => {
         return proxy.subscribe((data: any): void => {
             this.state.gameStatus = data.type
@@ -65,20 +61,19 @@ class RemotePong extends APong {
                     this.state.index = data.i;
                     this.state.players[0].score = data.score[data.i]
                     this.state.players[1].score = data.score[data.i ^ 1]
-                    // setGameTime(data.t);
+                    this.eventHandlers?.updateTimer!(data.t);
                     break;
                 case 'gameover':
-                    this.state.serverBall = { x: 800, y: 600, width: 20, height: 20 };
+                    this.state.serverBall = { x: 800, y: 600 };
                     proxy.disconnect();
-                    // setGameTime(0);
-                    // setGameStarted(false);
+                    this.eventHandlers?.updateTimer!(0);
                     break;
                 case 'ready':
                     this.state.index = data.i
-                    // setGameTime(data.t);
+                    this.eventHandlers?.updateTimer!(data.t);
                     break;
                 case 'start':
-                    // setGameTime(data.t);
+                    this.eventHandlers?.updateTimer!(data.t);
                     break;
                 case 'state':
                     this.state.serverBall = data.state.b

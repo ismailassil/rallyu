@@ -5,11 +5,15 @@ const GameTimer = ({ time }: { time: number }) => {
     const [ gameTime, setGameTime ] = useState(0);
 
     useEffect(() => {
-        if (time <= 0) return ;
-
         setGameTime(time);
         const interval = setInterval(() => {
-            setGameTime(prev => prev - 1);
+            setGameTime(prev => {
+                if (prev <= 1) {
+                    clearInterval(interval);
+                    return 0;
+                }
+                return prev - 1
+            });
         }, 1000);
         
         return () => clearInterval(interval);
