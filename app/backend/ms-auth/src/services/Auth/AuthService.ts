@@ -11,12 +11,11 @@ import TwoFactorMethodService from '../TwoFactorAuth/TwoFactorMethodService';
 import TwoFactorChallengeService from '../TwoFactorAuth/TwoFactorChallengeService';
 import {
 	AuthChallengeExpired,
-	InvalidAuthProviderError,
-	InvalidCredentialsError,
-	TokenRequiredError,
-	UserAlreadyExistsError,
-	UserNotFoundError
-} from "../../types/auth.types";
+} from '../../types/exceptions/verification.exceptions';
+import { InvalidAuthProviderError } from '../../types/exceptions/auth.exceptions';
+import { InvalidCredentialsError } from '../../types/exceptions/auth.exceptions';
+import { UserAlreadyExistsError } from '../../types/exceptions/user.exceptions';
+import { UserNotFoundError } from '../../types/exceptions/user.exceptions';
 import axios, { create } from 'axios';
 import { oauthConfig } from '../../config/oauth';
 import { UUID, randomBytes } from 'crypto';

@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import MethodsOverview from './components/MethodsOverview';
-import VerifyCode from './components/VerifyCode';
+import Overview from './components/Overview';
+import VerifyCode from '../components/Verification/Two-Factor/VerifyCode';
 import { toastError } from '@/app/components/CustomToast';
 import AuthPageWrapper from '../components/UI/AuthPageWrapper';
 
@@ -54,7 +54,7 @@ function getTwoFAChallengeSession() {
 export default function TwoFaChallengePage() {
 	const router = useRouter();
 	const [step, setStep] = useState<STEP>(STEP.OVERVIEW);
-	const [method, setMethod] = useState<'TOTP' | 'SMS' | 'EMAIL' | null>(null);
+	const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
 	const [session] = useState(() => getTwoFAChallengeSession());
 
 	useEffect(() => {
@@ -72,25 +72,24 @@ export default function TwoFaChallengePage() {
 		switch (step) {
 			case STEP.OVERVIEW:
 				return (
-					<div className='w-full max-w-2xl p-11 flex flex-col gap-5'>
-						<MethodsOverview
-							method={method}
-							loginSessionMeta={session!}
-							onMethod={(m) => setMethod(m)}
-							onNext={() => setStep(STEP.VERIFY_CODE)}
-						/>
-					</div>
+					<Overview
+						loginSessionMeta={session!}
+						onSuccess={(m) => {
+							setSelectedMethod(m);
+							setStep(STEP.VERIFY_CODE);
+						}}
+						onFailure={() => router.replace('/login')}
+					/>
 				);
 			case STEP.VERIFY_CODE:
 				return (
-					<div className='w-full max-w-lg p-11 flex flex-col gap-5'>
-						<VerifyCode
-							method={method!}
-							loginSessionMeta={session!}
-							onNext={() => router.replace('/dashboard')}
-							onGoBack={() => setStep(STEP.OVERVIEW)}
-						/>
-					</div>
+					<VerifyCode
+						selectedMethod={selectedMethod!}
+						loginSessionMeta={session!}
+						onSuccess={() => router.replace('/dashboard')}
+						onFailure={() => router.replace('/login')}
+						onGoBack={() => setStep(STEP.OVERVIEW)}
+					/>
 				);
 			default:
 				return null;
@@ -100,9 +99,7 @@ export default function TwoFaChallengePage() {
 
 	return (
 		<AuthPageWrapper wrapperKey="two-fa-challenge-page-wrapper">
-			{/* <div className='w-full max-w-xl p-11 flex flex-col gap-5'> */}
-					{renderCurrentStep()}
-			{/* </div> */}
+			{renderCurrentStep()}
 		</AuthPageWrapper>
 	);
 }

@@ -3,10 +3,10 @@ import MatchesRepository from "../../repositories/[DEPRECATED]/matchesRepository
 // import StatsRepository from "../repositories/statsRepository";
 import StatsRepository from "../../repositories/StatsRepository";
 import UserRepository from "../../repositories/UserRepository";
-import { InternalServerError, UserNotFoundError } from "../../types/auth.types";
+import { UserNotFoundError } from "../../types/exceptions/user.exceptions";
 
 class StatsService {
-	
+
 
 	constructor(
 		private userRepository: UserRepository,
@@ -32,7 +32,7 @@ class StatsService {
 	}
 
 	async getUserStats(
-		userID: number, 
+		userID: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
 		gameTypeFilter: 'PONG' | 'XO' | 'all'
 	) {
@@ -46,7 +46,7 @@ class StatsService {
 	}
 
 	async getUserAnalytics(
-		userID: number, 
+		userID: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
 		gameTypeFilter: 'PONG' | 'XO' | 'all'
 	) {
@@ -59,7 +59,7 @@ class StatsService {
 		return analytics;
 	}
 	async getUserAnalyticsByDay(
-		userID: number, 
+		userID: number,
 		daysCount: number = 7,
 		gameTypeFilter: 'PONG' | 'XO' | 'all'
 	) {

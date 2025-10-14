@@ -193,17 +193,17 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	fastify.post('/reset-password', {
 		schema: authResetPasswordSchema,
 		...zodFormValidator(zodResetPasswordSchema),
-		handler: opts.passwordResetController.resetPasswordSetupHandler.bind(opts.passwordResetController)
+		handler: opts.passwordResetController.requestHandler.bind(opts.passwordResetController)
 	});
 	fastify.post('/reset-password/verify', {
 		schema: authResetPasswordVerifySchema,
 		...zodFormValidator(zodResetPasswordVerifySchema),
-		handler: opts.passwordResetController.resetPasswordVerifyHandler.bind(opts.passwordResetController)
+		handler: opts.passwordResetController.verifyHandler.bind(opts.passwordResetController)
 	});
 	fastify.post('/reset-password/update', {
 		schema: authResetPasswordUpdateSchema,
 		...zodFormValidator(zodResetPasswordUpdateSchema),
-		handler: opts.passwordResetController.resetPasswordUpdateHandler.bind(opts.passwordResetController)
+		handler: opts.passwordResetController.useHandler.bind(opts.passwordResetController)
 	});
 	fastify.post('/reset-password/resend', {
 		schema: authChallengeResendSchema,

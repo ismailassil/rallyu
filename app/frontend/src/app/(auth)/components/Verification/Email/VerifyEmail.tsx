@@ -9,6 +9,7 @@ import useAPICall from '@/app/hooks/useAPICall';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import AnimatedComponent from '../../UI/AnimatedComponent';
+import { APIError } from '@/app/(api)/APIClient';
 
 
 interface VerifyEmailProps {
@@ -53,8 +54,8 @@ export default function VerifyEmail({ onGoBack, onNext } : VerifyEmailProps) {
 			));
 			toastSuccess('Code sent');
 			onNext(token);
-		} catch (err: any) {
-			toastError(err.message);
+		} catch (err) {
+			toastError((err as APIError).message);
 		}
 	}
 

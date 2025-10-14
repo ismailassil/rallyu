@@ -1,6 +1,6 @@
 import { db } from "../../database";
 import { ISessionFingerprint } from "../../types";
-import { InternalServerError } from "../../types/auth.types";
+import { InternalServerError } from "../../types/exceptions/AAuthError";
 
 class SessionRepository {
 	constructor() {
@@ -55,7 +55,7 @@ class SessionRepository {
 			expires_at: number,
 			user_id: number
 		) : Promise<number> {
-		
+
 		try {
 			const runResult = await db.run(
 				`INSERT INTO refresh_tokens (session_id, created_at, expires_at, device_name, browser_version, ip_address, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -81,7 +81,7 @@ class SessionRepository {
 			created_at: number,
 			expires_at: number,
 		}>
-		
+
 	) : Promise<boolean> {
 		const keys: string[] = [];
 		const values: any[] = [];
@@ -147,7 +147,7 @@ class SessionRepository {
 			created_at: number,
 			expires_at: number,
 		}>
-		
+
 	) : Promise<boolean> {
 		const keys: string[] = [];
 		const values: any[] = [];
@@ -205,12 +205,12 @@ class SessionRepository {
 	// 		user_id: number,
 	// 		reason: string
 	// 	) : Promise<{ lastID: number, changes: number }> {
-		
+
 	// 	const runResult = await db.run(
 	// 		`UPDATE refresh_tokens SET is_revoked = true, reason = ? WHERE session_id = ? AND user_id = ?`,
 	// 		[reason, session_id, user_id]
 	// 	);
-		
+
 	// 	return { lastID: runResult.lastID, changes: runResult.changes };
 	// }
 
@@ -218,12 +218,12 @@ class SessionRepository {
 	// 		user_id: number,
 	// 		reason: string
 	// 	) : Promise<{ lastID: number, changes: number }> {
-		
+
 	// 	const runResult = await db.run(
 	// 		`UPDATE refresh_tokens SET is_revoked = true, reason = ? WHERE is_revoked = false AND user_id = ?`,
 	// 		[reason, user_id]
 	// 	);
-		
+
 	// 	return { lastID: runResult.lastID, changes: runResult.changes };
 	// }
 }

@@ -11,12 +11,12 @@ enum STEP {
 }
 
 interface PhoneVerificationProps {
-	onReset: () => void;
+	onGoBack: () => void;
 	onSuccess?: () => void;
 	onFailure?: () => void;
 }
 
-export default function EmailVerification({ onReset, onSuccess, onFailure } : PhoneVerificationProps) {
+export default function EmailVerification({ onGoBack, onSuccess, onFailure } : PhoneVerificationProps) {
 	const [currentStep, setCurrentStep] = useState<STEP>(STEP.SETUP);
 	const [token, setToken] = useState('');
 
@@ -29,7 +29,7 @@ export default function EmailVerification({ onReset, onSuccess, onFailure } : Ph
 			case STEP.SETUP:
 				return (
 					<VerifyEmail
-						onGoBack={onReset}
+						onGoBack={onGoBack}
 						onNext={(token) => {
 							setToken(token);
 							setCurrentStep(STEP.VERIFY);
@@ -43,10 +43,18 @@ export default function EmailVerification({ onReset, onSuccess, onFailure } : Ph
 							setCurrentStep(STEP.SETUP);
 						}}
 						token={token}
-						onNext={() => {
+						onSuccess={() => {
 							triggerLoggedInUserRefresh();
 							if (onSuccess) onSuccess();
 							else setCurrentStep(STEP.DONE);
+						}}
+						onFailure={() => {
+							triggerLoggedInUserRefresh();
+							if (onFailure) onFailure();
+							else {
+								setToken('');
+								setCurrentStep(STEP.SETUP);
+							}
 						}}
 					/>
 				);

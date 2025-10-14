@@ -23,7 +23,7 @@ enum STEP {
 
 export default function TwoFAManagerPage() {
 	const router = useRouter();
-	const [currentStep, setCurrentStep] = useState<STEP>(STEP.DONE);
+	const [currentStep, setCurrentStep] = useState<STEP>(STEP.OVERVIEW);
 
 	const {
 		apiClient
@@ -72,30 +72,39 @@ export default function TwoFAManagerPage() {
 				return (
 					<TOTPVerification
 						onReset={() => setCurrentStep(STEP.OVERVIEW)}
-						onSuccess={() => setCurrentStep(STEP.DONE)}
-						onFailure={() => toastError('onFailure')}
+						onSuccess={() => {
+							// handleEnableAfterVerification('TOTP');
+							setCurrentStep(STEP.DONE);
+						}}
+						onFailure={() => {
+							setCurrentStep(STEP.OVERVIEW);
+						}}
 					/>
 				);
 			case STEP.SMS:
 				return (
 					<PhoneVerification
-						onReset={() => setCurrentStep(STEP.OVERVIEW)}
+						onGoBack={() => setCurrentStep(STEP.OVERVIEW)}
 						onSuccess={() => {
 							handleEnableAfterVerification('SMS');
 							setCurrentStep(STEP.DONE);
 						}}
-						onFailure={() => toastError('onFailure')}
+						onFailure={() => {
+							setCurrentStep(STEP.OVERVIEW);
+						}}
 					/>
 				);
 			case STEP.EMAIL:
 				return (
 					<EmailVerification
-						onReset={() => setCurrentStep(STEP.OVERVIEW)}
+						onGoBack={() => setCurrentStep(STEP.OVERVIEW)}
 						onSuccess={() => {
 							handleEnableAfterVerification('EMAIL');
 							setCurrentStep(STEP.DONE);
 						}}
-						onFailure={() => toastError('onFailure')}
+						onFailure={() => {
+							setCurrentStep(STEP.OVERVIEW);
+						}}
 					/>
 				);
 			case STEP.DONE:

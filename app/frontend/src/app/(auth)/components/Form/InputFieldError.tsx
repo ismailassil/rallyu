@@ -6,6 +6,7 @@ type InputFieldErrorProps = {
 };
 
 export default function InputFieldError({ error } : InputFieldErrorProps) {
+	if (!error) return null;
 	return (
 		<motion.div
 			key='field-error'

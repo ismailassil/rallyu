@@ -2,11 +2,12 @@ import { UUID } from "crypto";
 import AuthChallengesRepository, { AuthChallenge, AuthChallengeMethod } from "../../repositories/AuthChallengesRepository";
 import { User } from "../../types";
 import UserService from "../User/UserService";
-import { AuthChallengeExpired, ExpiredCodeError, InvalidCodeError, NoEmailIsAssociated, NoPhoneIsAssociated, TooManyAttemptsError, TooManyResendsError, UserNotFoundError } from "../../types/auth.types";
 import { generateOTP, generateUUID, nowInSeconds, nowPlusSeconds, verifyOTP } from "../TwoFactorAuth/utils";
 import MailingService from "../Communication/MailingService";
 import WhatsAppService from "../Communication/WhatsAppService";
 import { mailingConfig } from "../../config/mailing";
+import { NoEmailIsAssociated, NoPhoneIsAssociated, UserNotFoundError } from "../../types/exceptions/user.exceptions";
+import { AuthChallengeExpired, ExpiredCodeError, InvalidCodeError, TooManyAttemptsError, TooManyResendsError } from "../../types/exceptions/verification.exceptions";
 
 const verificationConfig = {
 	expirySeconds: 5 * 60,

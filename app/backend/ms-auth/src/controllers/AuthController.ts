@@ -1,13 +1,13 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import AuthService from "../services/Auth/AuthService";
 import { ILoginRequest, IRegisterRequest } from "../types";
-import { TokenRequiredError } from "../types/auth.types";
 import AuthResponseFactory from "./AuthResponseFactory";
 import SessionsService from "../services/Auth/SessionsService";
 import { env } from "process";
 import z from "zod";
 import { UUID } from "crypto";
 import { zodResendSchema, zodTwoFALoginChallengeBodySchema, zodVerifyChallengeBodySchema } from "../schemas/zod/auth.zod.schema";
+import { TokenRequiredError } from "../types/exceptions/auth.exceptions";
 
 
 class AuthController {

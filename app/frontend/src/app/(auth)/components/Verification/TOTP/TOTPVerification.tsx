@@ -1,14 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from "react";
-import { RefObject } from "react";
-import { ArrowLeft, ArrowRight, LoaderCircle, QrCode } from "lucide-react";
+import { ArrowLeft, ArrowRight, QrCode } from "lucide-react";
 import FormButton from "@/app/(auth)/components/UI/FormButton";
 import { APITOTPSecrets } from "@/app/(api)/services/MfaService";
 import OTPCodeInput from "@/app/(onsite)/[DEPRECATED]2fa/components/OTPCodeInput";
-import { toastError, toastSuccess } from "@/app/components/CustomToast";
+import { toastError } from "@/app/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import useAPICall from "@/app/hooks/useAPICall";
 import AnimatedComponent from "../../UI/AnimatedComponent";
+import { APIError } from "@/app/(api)/APIClient";
 
 interface TOTPVerification {
 	onReset: () => void;
@@ -20,6 +19,7 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 	const [token, setToken] = useState('');
 	const [TOTPSecrets, setTOTPSecrets] = useState<APITOTPSecrets | null>(null);
 	const [code, setCode] = useState(['', '', '', '', '', '']);
+	const [hasError, setHasError] = useState(false);
 	const inputRefs = useRef([]);
 
 	const {
@@ -38,8 +38,8 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 				const { token, secrets } = await executeAPICall(() => apiClient.mfa.setupTOTP());
 				setToken(token);
 				setTOTPSecrets(secrets);
-			} catch (err: any) {
-				toastError(err.message);
+			} catch (err) {
+				toastError((err as APIError).message);
 			}
 		}
 
@@ -47,23 +47,31 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 	}, [apiClient.mfa, executeAPICall]);
 
 	async function handleSubmit() {
-		if (!code.join('')) {
+		const OTPJoined = code.join('');
+		if (OTPJoined.length !== 6) {
 			toastError('Code is required');
-			return ;
-		} else if (code.join('').length !== 6) {
-			toastError('Code must be a 6-digit number');
+			setHasError(true);
+			setTimeout(() => {
+				setHasError(false);
+			}, 1000);
 			return ;
 		}
 
 		try {
 			await executeAPICall(() => apiClient.mfa.verifyTOTP(
 				token,
-				code.join('')
+				OTPJoined
 			));
 			triggerLoggedInUserRefresh();
 			onSuccess();
-		} catch (err: any) {
-			toastError(err.message);
+		} catch (err) {
+			setHasError(true);
+			setTimeout(() => {
+				setHasError(false);
+				if ((err as APIError).code !== 'AUTH_INVALID_CODE')
+					onFailure();
+			}, 1000);
+			toastError((err as APIError).message);
 		}
 	}
 
@@ -83,8 +91,7 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 			</div>
 
 			{/* QR Code + Manual Code + OTP Input */}
-			<div className="">
-				{/* QR Code + Manual Code */}
+			<div>
 				<div className="flex flex-col items-center gap-8 py-12">
 					{TOTPSecrets?.secret_qrcode_url ? (
 						<div className="bg-white p-3 rounded-4xl overflow-hidden pointer-events-none">
@@ -104,20 +111,22 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 					</div>
 				</div>
 
-				{/* OTP Input + Verify Button */}
 				<div className="flex flex-col gap-3 mt-8">
 					<p className="text-center text-gray-200 text-sm sm:text-base">Enter the 6-digit code from your authenticator app</p>
+
 					<OTPCodeInput
 						code={code}
 						setCode={setCode}
 						inputRefs={inputRefs}
 						isDisabled={isLoading}
+						hasError={hasError}
 					/>
+
 					<FormButton
 						text='Continue'
 						icon={<ArrowRight size={16} />}
 						onClick={handleSubmit}
-						disabled={isLoading || !code.every(digit => digit !== '')}
+						disabled={isLoading || code.some((d) => d === '')}
 					/>
 				</div>
 			</div>

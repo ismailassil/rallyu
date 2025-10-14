@@ -1,6 +1,6 @@
 import { TokenExpiredError } from "jsonwebtoken";
 import { ErrorResponse, SuccessResponse } from "../types";
-import { AuthError, InvalidCredentialsError, SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenInvalidError, TokenRequiredError, UserAlreadyExistsError, UserNotFoundError } from "../types/auth.types";
+import { AuthError } from "../types/exceptions/AAuthError";
 
 // export interface ErrorResponse {
 // 	success: boolean,

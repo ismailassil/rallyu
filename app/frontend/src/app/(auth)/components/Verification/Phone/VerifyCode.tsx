@@ -1,50 +1,76 @@
 import React, { useRef, useState } from 'react';
 import useAPICall from '@/app/hooks/useAPICall';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { AnimatePresence } from 'framer-motion';
 import FormButton from '@/app/(auth)/components/UI/FormButton';
-import { toastError, toastSuccess } from '@/app/components/CustomToast';
+import { toastError } from '@/app/components/CustomToast';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import OTPCodeInput from '@/app/(onsite)/[DEPRECATED]2fa/components/OTPCodeInput';
 import AnimatedComponent from '../../UI/AnimatedComponent';
+import ResendCode from '../ResendCode';
+import { APIError } from '@/app/(api)/APIClient';
 
 interface VerifyCodeProps {
 	token: string,
-	onNext: () => void;
+	onSuccess: () => void;
+	onFailure: () => void;
 	onGoBack: () => void;
 }
 
 // EMAIL
-export default function VerifyCode({ token, onGoBack, onNext } : VerifyCodeProps) {
+export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : VerifyCodeProps) {
 	const {
 		apiClient
 	} = useAuth();
 
 	const {
-		isLoading,
-		executeAPICall
+		isLoading: isVerifyingCode,
+		executeAPICall: verifyCode
+	} = useAPICall();
+	const {
+		isLoading: isResendingCode,
+		executeAPICall: resendCode
 	} = useAPICall();
 
 	const [code, setCode] = useState(['', '', '', '', '', '']);
+	const [hasError, setHasError] = useState(false);
 	const inputRefs = useRef([]);
 
 	async function handleSubmit() {
-		if (!code.join('')) {
+		const OTPJoined = code.join('');
+		if (OTPJoined.length !== 6) {
 			toastError('Code is required');
-			return ;
-		} else if (code.join('').length !== 6) {
-			toastError('Code must be a 6-digit number');
+			setHasError(true);
+			setTimeout(() => {
+				setHasError(false);
+			}, 1000);
 			return ;
 		}
 
 		try {
-			await executeAPICall(() => apiClient.verify.verifyPhone(
+			await verifyCode(() => apiClient.verify.verifyPhone(
 				token,
-				code.join('')
+				OTPJoined
 			));
-			onNext();
-		} catch (err: any) {
-			toastError(err.message);
+			onSuccess();
+		} catch (err) {
+			setHasError(true);
+			setTimeout(() => {
+				setHasError(false);
+				if ((err as APIError).code !== 'AUTH_INVALID_CODE')
+					onFailure();
+			}, 1000);
+			toastError((err as APIError).message);
+		}
+	}
+
+	async function handleResend() {
+		try {
+			await resendCode(() => apiClient.verify.resendPhone(
+				token
+			));
+		} catch (err) {
+			onFailure();
+			toastError((err as APIError).message);
 		}
 	}
 
@@ -69,32 +95,24 @@ export default function VerifyCode({ token, onGoBack, onNext } : VerifyCodeProps
 					code={code}
 					setCode={setCode}
 					inputRefs={inputRefs}
-					isDisabled={isLoading}
+					isDisabled={isResendingCode || isVerifyingCode}
+					hasError={hasError}
 				/>
 
 				<FormButton
 					text='Continue'
 					icon={<ArrowRight size={16} />}
 					onClick={handleSubmit}
-					isSubmitting={isLoading}
+					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '')}
+					isSubmitting={isVerifyingCode}
 				/>
 
-				<p className='self-center mt-2'>
-					Didn&#39;t receive the code?
-					<span
-						onClick={undefined}
-						className={`font-semibold ml-1 ${
-							(isLoading)
-								? 'text-gray-500 cursor-not-allowed pointer-events-none'
-								: 'text-blue-500 hover:underline cursor-pointer'
-						}`}
-					>
-						Resend code
-					</span>
-				</p>
+				<ResendCode
+					isDisabled={isVerifyingCode || isResendingCode}
+					onResend={handleResend}
+					onMaxResends={onFailure}
+				/>
 			</div>
-
-			{/* {loginSessionMeta.enabledMethods.length > 1 && <p className='mt-12 self-center text-center'>{METHODS_HELP2[method]}<br></br><a onClick={onGoBack} className="font-semibold text-blue-500 hover:underline cursor-pointer">Try other verification methods</a></p>} */}
 		</AnimatedComponent>
 	);
 }

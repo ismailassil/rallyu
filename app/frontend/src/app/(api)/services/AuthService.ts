@@ -29,22 +29,22 @@ export class AuthService {
 		return { user: res.data.user, accessToken: res.data.accessToken };
 	}
 
-	async send2FACode(payload: { token: string, method: string }) {
-		const { data: res } = await this.client.post('/auth/login/2fa/select', payload);
+	async select2FAMethod(token: string, method: string) {
+		const { data: res } = await this.client.post('/auth/login/2fa/select', { token, method });
 		return res.data;
 	}
 
-	async verify2FACode(payload: { token: string, code: string }) : Promise<{
+	async verify2FACode(token: string, code: string) : Promise<{
 		user: any;
 		accessToken: any;
 	}> {
-		const { data: res } = await this.client.post('/auth/login/2fa/verify', payload);
+		const { data: res } = await this.client.post('/auth/login/2fa/verify', { token, code });
 
 		return { user: res.data.user, accessToken: res.data.accessToken };
 	}
 
-	async resend2FACode(payload: { token: string }) {
-		const { data: res } = await this.client.post('/auth/login/2fa/resend', payload);
+	async resend2FACode(token: string) {
+		const { data: res } = await this.client.post('/auth/login/2fa/resend', { token });
 		return res.data;
 	}
 

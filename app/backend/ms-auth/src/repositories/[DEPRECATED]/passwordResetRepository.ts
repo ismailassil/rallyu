@@ -1,5 +1,5 @@
 import { db } from "../../database";
-import { InternalServerError } from "../../types/auth.types";
+import { InternalServerError } from "../../types/exceptions/AAuthError";
 
 class PasswordResetRepository {
 

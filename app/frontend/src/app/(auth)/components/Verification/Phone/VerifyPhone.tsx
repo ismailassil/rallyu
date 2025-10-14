@@ -9,6 +9,7 @@ import useAPICall from '@/app/hooks/useAPICall';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import AnimatedComponent from '../../UI/AnimatedComponent';
+import { APIError } from '@/app/(api)/APIClient';
 
 
 interface VerifyPhoneProps {
@@ -53,8 +54,8 @@ export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 			));
 			toastSuccess('Code sent');
 			onNext(token);
-		} catch (err: any) {
-			toastError(err.message);
+		} catch (err) {
+			toastError((err as APIError).message);
 		}
 	}
 

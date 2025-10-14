@@ -49,7 +49,7 @@ class VerificationController {
 			const { _for } = request.query as { _for: 'email' | 'phone' };
 			const { token, code } = request.body as { token: string, code: string };
 
-			await this.verificationService.verify(token as UUID, code);
+			await this.verificationService.resend(token as UUID);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(201, { token });
 

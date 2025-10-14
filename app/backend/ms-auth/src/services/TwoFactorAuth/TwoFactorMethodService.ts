@@ -3,10 +3,13 @@ import TwoFactorRepository from '../../repositories/TwoFactorRepository';
 import UserService from '../User/UserService';
 import MailingService from '../Communication/MailingService';
 import WhatsAppService from '../Communication/WhatsAppService';
-import { AuthChallengeExpired, BadRequestError, ExpiredCodeError, InvalidCodeError, NoEmailIsAssociated, NoPhoneIsAssociated, TooManyAttemptsError, TooManyResendsError, TwoFAAlreadyEnabled, TwoFANotEnabledError, UserNotFoundError } from '../../types/auth.types';
 import { mailingConfig } from '../../config/mailing';
 import AuthChallengesRepository, { AuthChallengeMethod } from '../../repositories/AuthChallengesRepository';
 import { UUID } from 'crypto';
+import { NoEmailIsAssociated, NoPhoneIsAssociated, UserNotFoundError } from '../../types/exceptions/user.exceptions';
+import { TwoFAAlreadyEnabled, TwoFANotEnabledError } from '../../types/exceptions/twofa.exception';
+import { ExpiredCodeError, InvalidCodeError, TooManyAttemptsError } from '../../types/exceptions/verification.exceptions';
+import { BadRequestError } from '../../types/exceptions/AAuthError';
 
 const twoFAConfig = {
 	pendingExpirySeconds: 5 * 60,

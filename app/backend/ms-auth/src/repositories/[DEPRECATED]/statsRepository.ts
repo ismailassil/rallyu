@@ -1,4 +1,4 @@
-import { InternalServerError } from "../../types/auth.types";
+import { InternalServerError } from "../../types/exceptions/AAuthError";
 import { db } from "../../database";
 
 class StatsRepository {
@@ -22,7 +22,7 @@ class StatsRepository {
 			const params = paginationFilter ? [paginationFilter.limit, (paginationFilter.page - 1) * paginationFilter.limit] : [];
 
 			const rankByXP = await db.all(`
-				SELECT 
+				SELECT
 					ROW_NUMBER() OVER (ORDER BY s.total_xp DESC, u.id ASC) AS rank,
 					u.username,
 					u.avatar_url,
@@ -57,7 +57,7 @@ class StatsRepository {
 						user_id
 					FROM users_stats
 				)
-				SELECT 
+				SELECT
 					rank,
 					level,
 					total_xp,
@@ -118,7 +118,7 @@ class StatsRepository {
 
 			const detailedStatsGroupedByDay = await db.all(`
 				${CTE.sql}
-				SELECT 
+				SELECT
 					date(finished_at) as day,
 
 					COUNT(*) AS matches,
@@ -140,12 +140,12 @@ class StatsRepository {
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN user_score ELSE NULL END), 0), 2) AS avg_user_win_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN user_score ELSE NULL END), 0), 2) AS avg_user_loss_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN user_score ELSE NULL END), 0), 2) AS avg_user_draw_score,
-					
+
 					COALESCE(SUM(opp_score), 0) AS total_opp_score,
 					COALESCE(MAX(opp_score), 0) AS max_opp_score,
 					COALESCE(MIN(opp_score), 0) AS min_opp_score,
 					ROUND(COALESCE(AVG(opp_score), 0), 2) AS avg_opp_score,
-					
+
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_win_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_loss_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_draw_score,
@@ -182,7 +182,7 @@ class StatsRepository {
 
 			const detailedStats = await db.get(`
 				${CTE.sql}
-				SELECT 
+				SELECT
 					COUNT(*) AS matches,
 
 					COALESCE(SUM(CASE WHEN outcome = 'W' THEN 1 ELSE 0 END), 0) AS wins,
@@ -202,12 +202,12 @@ class StatsRepository {
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN user_score ELSE NULL END), 0), 2) AS avg_user_win_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN user_score ELSE NULL END), 0), 2) AS avg_user_loss_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN user_score ELSE NULL END), 0), 2) AS avg_user_draw_score,
-					
+
 					COALESCE(SUM(opp_score), 0) AS total_opp_score,
 					COALESCE(MAX(opp_score), 0) AS max_opp_score,
 					COALESCE(MIN(opp_score), 0) AS min_opp_score,
 					ROUND(COALESCE(AVG(opp_score), 0), 2) AS avg_opp_score,
-					
+
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_win_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_loss_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_draw_score,
@@ -355,16 +355,16 @@ class StatsRepository {
 		gameTypeFilter: 'PONG' | 'XO' | 'all',
 		paginationFilter?: { page: number, limit: number }
 	) : { sql: string, params: any[] } {
-		const timeCondition = 
+		const timeCondition =
 			timeFilter === 'all' ? '' :
 			timeFilter === '0d' ? `AND date(m.finished_at) = date('now')` : `AND date(m.finished_at) >= date('now', ?)`;
 
-		const gameTypeCondition = 
+		const gameTypeCondition =
 			gameTypeFilter === 'all' ? '' : `AND game_type = ?`;
-		
-		const paginationCondition = 
+
+		const paginationCondition =
 			paginationFilter ? 'LIMIT ? OFFSET ?' : '';
-		
+
 		const params: any[] = [
 			user_id, user_id, user_id, user_id, user_id,
 			user_id, user_id, user_id, user_id, user_id
@@ -396,16 +396,16 @@ class StatsRepository {
 					u_opp.username AS opponent_username,
 					(strftime('%s', m.finished_at) - strftime('%s', m.started_at)) AS duration,
 					CASE
-						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score) 
+						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score)
 						OR (m.player_away_id = ? AND m.player_away_score > m.player_home_score) THEN 'W'
-						WHEN (m.player_home_id = ? AND m.player_home_score < m.player_away_score) 
+						WHEN (m.player_home_id = ? AND m.player_home_score < m.player_away_score)
 						OR (m.player_away_id = ? AND m.player_away_score < m.player_home_score) THEN 'L'
 						ELSE 'D'
 					END AS outcome
 				FROM matches m
 				JOIN users u_self ON u_self.id = ?
 				JOIN users u_opp ON u_opp.id = CASE
-					WHEN m.player_home_id = ? THEN m.player_away_id 
+					WHEN m.player_home_id = ? THEN m.player_away_id
 					ELSE m.player_home_id
 				END
 				WHERE (m.player_home_id = ? OR m.player_away_id = ?)

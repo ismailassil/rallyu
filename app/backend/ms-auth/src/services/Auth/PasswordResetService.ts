@@ -1,6 +1,5 @@
 import ResetPasswordRepository from "../../repositories/ResetPasswordRepository";
 import bcrypt from 'bcrypt';
-import { AuthChallengeExpired, ExpiredCodeError, InvalidCodeError, InvalidCredentialsError, NoEmailIsAssociated, TooManyAttemptsError, TooManyResendsError, UserNotFoundError } from "../../types/auth.types";
 import MailingService from "../Communication/MailingService";
 import WhatsAppService from "../Communication/WhatsAppService";
 import { AuthConfig } from "../../config/auth";
@@ -8,6 +7,8 @@ import UserService from "../User/UserService";
 import { generateOTP, generateUUID, nowInSeconds, nowPlusSeconds, verifyOTP } from "../TwoFactorAuth/utils";
 import AuthChallengesRepository from "../../repositories/AuthChallengesRepository";
 import { UUID } from "crypto";
+import { NoEmailIsAssociated, UserNotFoundError } from "../../types/exceptions/user.exceptions";
+import { AuthChallengeExpired, ExpiredCodeError, InvalidCodeError, TooManyAttemptsError, TooManyResendsError } from "../../types/exceptions/verification.exceptions";
 
 const passwordResetConfig = {
 	codeExpirySeconds: 5 * 60, // 5 minutes

@@ -1,5 +1,5 @@
 import { db } from "../../database";
-import { InternalServerError } from "../../types/auth.types";
+import { InternalServerError } from "../../types/exceptions/AAuthError";
 
 class TwoFactorRepository {
 	async findEnabled2FAMethods(user_id: number) : Promise<any> {
@@ -132,7 +132,7 @@ class TwoFactorRepository {
 			throw new InternalServerError();
 		}
 	}
-	
+
 	async createPending2FAMethod(method: string, temp_value: string, expires_at: number, user_id: number) : Promise<any> {
 		try {
 			const newPending2FAMethod = await db.run(
@@ -278,7 +278,7 @@ class TwoFactorRepository {
 			throw new InternalServerError();
 		}
 	}
-	
+
 	async deleteEnabled2FAById(id: number) {
 		try {
 			const runResult = await db.run(
@@ -393,15 +393,15 @@ class TwoFactorRepository {
 		try {
 			const fields = Object.keys(updates);
 			if (fields.length === 0) return false;
-	
+
 			const setClause = fields.map(f => `${f} = ?`).join(', ');
 			const values = fields.map(f => (updates as any)[f]);
-	
+
 			const runResult = await db.run(
 				`UPDATE pending_2fa_login SET ${setClause} WHERE user_id = ? AND id = ?`,
 				[...values, user_id, id]
 			);
-	
+
 			return runResult.changes > 0;
 		} catch (err: any) {
 			console.error("SQLite Error:", err);

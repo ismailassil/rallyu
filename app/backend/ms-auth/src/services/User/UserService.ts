@@ -1,6 +1,6 @@
 import { MultipartFile } from "@fastify/multipart";
 import UserRepository from "../../repositories/UserRepository";
-import { UserAlreadyExistsError, UserNotFoundError } from "../../types/auth.types";
+import { UserAlreadyExistsError, UserNotFoundError } from "../../types/exceptions/user.exceptions";
 import StatsService from "../GameAndStats/StatsService";
 import fs, { createWriteStream } from 'fs';
 import { pipeline } from "stream/promises";
@@ -20,11 +20,11 @@ class UserService {
 	async getUserById(userID: number) : Promise<any | null> {
 		return await this.userRepository.findOne(userID);
 	}
-	
+
 	async getUserByUsername(username: string) : Promise<any | null> {
 		return await this.userRepository.findByUsername(username);
 	}
-	
+
 	async getUserByEmail(email: string) : Promise<any | null> {
 		return await this.userRepository.findByEmail(email);
 	}
@@ -35,7 +35,7 @@ class UserService {
 
 	async getUserProfile(viewerID: number, targetUserID?: number, targetUsername?: string) {
 		let targetUser = null;
-		
+
 		console.log('==============> targetUserID: ', targetUserID);
 		console.log('==============> targetUsername: ', targetUsername);
 		if (targetUserID)
@@ -48,7 +48,7 @@ class UserService {
 
 		console.log('==============> targetUser: ', targetUser);
 		console.log('==============> viewerID: ', viewerID);
-		
+
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)
 			throw new UserNotFoundError();
@@ -58,7 +58,7 @@ class UserService {
 		const currentRelationship = await this.relationsService.getRelationStatus(viewerID, targetUser.id);
 		const userRecords = await this.statsService.getUserRecords(targetUser.id);
 		const userStats = await this.statsService.getUserStats(targetUser.id, 'all', 'all');
-		const { matches: userRecentMatches } = 
+		const { matches: userRecentMatches } =
 			await this.matchesRepository.findAll(targetUser.id, { timeFilter: 'all', gameTypeFilter: 'all', paginationFilter: { page: 1, limit: 10 } });
 		const userRecentDetailedAnalytics: any[] = await this.statsService.getUserAnalyticsByDay(targetUser.id, 7, 'all');
 		const userRecentTimeSpent = userRecentDetailedAnalytics.map((item) => {
@@ -79,8 +79,8 @@ class UserService {
 	}
 
 	async getUserMatches(
-		viewerID: number, 
-		targetID: number, 
+		viewerID: number,
+		targetID: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
 		gameTypeFilter: 'PONG' | 'XO' | 'all' = 'all',
 		paginationFilter?: { page: number, limit: number }
@@ -93,15 +93,15 @@ class UserService {
 		if (!isAllowed)
 			throw new UserNotFoundError();
 
-		const userMatches = 
+		const userMatches =
 			await this.matchesRepository.findAll(targetUser.id, { timeFilter, gameTypeFilter, paginationFilter });
-		
+
 		return userMatches;
 	}
 
 	async getUserAnalytics(
-		viewerID: number, 
-		targetID: number, 
+		viewerID: number,
+		targetID: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all' = 'all',
 		gameTypeFilter: 'PONG' | 'XO' | 'all' = 'all'
 	) {
@@ -114,12 +114,12 @@ class UserService {
 			throw new UserNotFoundError();
 
 		const userAnalytics = await this.statsService.getUserAnalytics(targetUser.id, timeFilter, gameTypeFilter);
-		
+
 		return userAnalytics;
 	}
 	async getUserAnalyticsByDay(
-		viewerID: number, 
-		targetID: number, 
+		viewerID: number,
+		targetID: number,
 		daysCount: number = 7,
 		gameTypeFilter: 'PONG' | 'XO' | 'all' = 'all'
 	) {
@@ -132,7 +132,7 @@ class UserService {
 			throw new UserNotFoundError();
 
 		const userAnalytics = await this.statsService.getUserAnalyticsByDay(targetUser.id, daysCount, gameTypeFilter);
-		
+
 		return userAnalytics;
 	}
 
@@ -143,10 +143,10 @@ class UserService {
 	/*----------------------------------------------- CREATE -----------------------------------------------*/
 
 	async createUser(
-		first_name: string, 
-		last_name: string, 
-		username: string, 
-		email: string, 
+		first_name: string,
+		last_name: string,
+		username: string,
+		email: string,
 		password: string | null,
 		hashedPassword: string | null,
 		avatar_url?: string,
@@ -161,10 +161,10 @@ class UserService {
 			throw new UserAlreadyExistsError('Email');
 
 		const createdUserID = await this.userRepository.create(
-			username, 
-			hashedPassword, 
-			email, 
-			first_name, 
+			username,
+			hashedPassword,
+			email,
+			first_name,
 			last_name,
 			avatar_url,
 			auth_provider,
@@ -204,7 +204,7 @@ class UserService {
 	async isEmailTaken(email: string) {
 		return await this.userRepository.findByEmail(email) != null;
 	}
-	
+
 	async isUsernameTaken(username: string) {
 		return await this.userRepository.findByUsername(username) != null;
 	}
@@ -221,7 +221,7 @@ class UserService {
 		const fileExtension = fileData.mimetype.split('/')[1];
 		const fileName = `${targetUser.username}.${fileExtension}`;
 		const uploadDir = `./uploads/avatars`;
-		
+
 		if (!fs.existsSync(uploadDir))
 			fs.mkdirSync(uploadDir, { recursive: true });
 
