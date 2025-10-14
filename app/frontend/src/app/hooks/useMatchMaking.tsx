@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { GameType, useGame } from "../(onsite)/game/contexts/gameContext";
 import { useAuth } from "../(onsite)/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { GameType } from "../(onsite)/game/types/PongTypes";
 
 const useMatchmaking = (gameType: GameType) => {
     const [queueTime, setQueueTime] = useState(0);
     const [isSearching, setIsSearching] = useState(false);
-	  const { setUrl, setOpponentId, setGameMode, setGameType, setGameStarted } = useGame();
     const { apiClient, loggedInUser, isBusy, setIsBusy } = useAuth();
     const wsRef = useRef<WebSocket | null>(null);
+    const router = useRouter();
   
     useEffect(() => {
       let interval: NodeJS.Timeout;
@@ -29,11 +30,7 @@ const useMatchmaking = (gameType: GameType) => {
         ws.onmessage = (event: MessageEvent) => {
           try {
             const data = JSON.parse(event.data);
-            setUrl(`/game/room/${data.roomId}?user=${loggedInUser.id}`);
-            setOpponentId(data.opponentId);
-            setGameType(gameType);
-            setGameMode('online');
-            setGameStarted(true);
+				    router.push(`/game/${gameType}/${data.roomId}`);
             setIsSearching(false);
             setIsBusy(false);
             ws.close();

@@ -37,12 +37,12 @@ export interface PongState {
 }
 
 export interface PongEventHandlers {
-	updateTimer?: (timeLeft: number) => void; 
+	updateTimer: (timeLeft: number) => void; 
 }
 
 export interface RemotePongState extends PongState {
 	serverPlayerY: number,
-	serverBall: Rect,
+	serverBall: Coords,
 	gameStatus: string, // 'waiting', 'ready', 'playing', 'scored', 'gameover'
 	gameMode: GameMode,
 	opponentDC: boolean,

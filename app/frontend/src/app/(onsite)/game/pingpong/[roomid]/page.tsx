@@ -18,26 +18,18 @@ const Game = () => {
 	const [opponentId, setOpponentId] = useState<number | undefined>(undefined);
     const { roomid }: { roomid: string} = useParams();
 	const [ timeLeft, setTimeLeft ] = useState(0);
-	const query = useSearchParams();
 
 	useEffect(() => {
 		let disconnect: (() => void) | undefined;
 		let isMounted = true;
 		(async () => {
 			try {
-				const queryOpponentId = Number(query.get('opponent'));
+				const res = await apiClient.fetchGameRoomStatus(roomid);
 
-				if (queryOpponentId) {
-					setOpponentId(queryOpponentId);
-					setIsLoading(false);
-				} else {
-					const res = await apiClient.fetchGameRoomStatus(roomid);
+				if (!isMounted) return;
 
-					if (!isMounted) return;
-
-					setOpponentId(res.players.find(p => p.ID !== loggedInUser!.id)?.ID);
-					setIsLoading(false);
-				}
+				setOpponentId(res.players.find(p => p.ID !== loggedInUser!.id)?.ID);
+				setIsLoading(false);
 				disconnect = socketProxy.current.connect(`/game/room/join/${roomid}?userid=${loggedInUser?.id}`, apiClient);
 			} catch (err) {
 				if (!isMounted) return;

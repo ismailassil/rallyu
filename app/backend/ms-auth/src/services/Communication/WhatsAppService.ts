@@ -102,10 +102,8 @@ class WhatsAppService {
 					caption: READY_MSG
 				});
 			}
-			// console.log('✅ Sent ready notification to ADMIN');
 			this.logger.info('[SMS] Sent ready notification to Admin via WhatsApp');
 		} catch (err) {
-			// console.log('⚠️ Failed to send ready notification:', err);
 			this.logger.error({ err }, '[SMS] Failed to send ready notification to Admin via WhatsApp');
 		}
 	}

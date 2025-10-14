@@ -20,7 +20,7 @@ const Game = () => {
                 <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center">
                     <VersusCard timeLeft={timeLeft} />
                     <div className="flex min-h-0 w-full flex-1 items-center justify-center">
-                        <Pong socketProxy={null} mode='remote' updateTimer={setTimeLeft} />
+                        <Pong socketProxy={null} mode='local' updateTimer={setTimeLeft} />
                     </div>
                 </div>
             </article>
