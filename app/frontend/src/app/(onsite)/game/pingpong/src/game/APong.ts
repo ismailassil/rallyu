@@ -6,7 +6,7 @@ class APong {
     PADDLE_WIDTH = 15
     PADDLE_HEIGHT = 100
     HALF_PADDLE = 50
-    BALL_RADIUS = 10
+    BALL_RADIUS = 7
 
 
     protected render = (ctx: CanvasRenderingContext2D, state: PongState) => {
@@ -17,8 +17,8 @@ class APong {
         ctx.font = '120px "AtariPongScore"';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(`${state.players[0].score}`, this.CANVAS_WIDTH * 0.35, 120)
-        ctx.fillText(`${state.players[1].score}`, this.CANVAS_WIDTH * 0.65, 120)
+        ctx.fillText(`${state.players[0].score}`, this.CANVAS_WIDTH * 0.32, 120)
+        ctx.fillText(`${state.players[1].score}`, this.CANVAS_WIDTH * 0.68, 120)
     
         // player 1 paddle
         ctx.fillRect(

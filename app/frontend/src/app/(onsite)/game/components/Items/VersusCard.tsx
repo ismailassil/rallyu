@@ -13,54 +13,44 @@ interface PlayerInfo {
 
 const PlayerCard = ({ side, info } : { side: string, info: PlayerInfo | null }) => {
     const avatar =  (
-        <div className="w-[80px] h-[80px] border border-white/18 rounded-lg">
+        <div className="w-[100px] h-[100px] border border-white/18 rounded-lg">
             {
             info
-                ? <Avatar avatar={info.avatar_url} className="h-full w-full rounded-none" />
+                ? <Avatar avatar={info.avatar_url} className="h-full w-full rounded-lg" />
                 : <div className="w-full h-full bg-card animate-pulse"></div>
             }
         </div>
     );
 
     const playerInfo = (
-        <h2 className={`flex flex-col my-4 ${inter.className}`}>
+        <div className={`flex flex-col justify-between items-start min-w-[100px] ${inter.className}`}>
             {
                 info
                     ? 
                     <>
-                        <span className={`text-${side} text-xl font-bold shadow-2xl`}>{info?.username}</span>
-                        <span className={`text-${side} opacity-25 font-light`}>LVL {info?.level}</span>
+                        <span className={`text-${side} text-3xl font-bold shadow-2xl`}>{info?.username}</span>
+                        <span className={`inline-flex flex-none items-center justify-center px-2 text-md font-bold bg-white/90 rounded-full text-black`}>Rank {info.rank}</span>
+                        <span className={`text-${side} text-lg opacity-40 font-medium`}>LVL {info?.level}</span>
                     </>
                     :
-                    <div className="flex flex-col justify-end items-end gap-3">
+                    <div className={`flex flex-col ${side === 'right' && 'justify-end items-end' } pt-2  gap-3`}>
                         <div className="w-[120px] h-[20px] bg-card rounded-full animate-pulse"></div>
+                        <div className="w-[60px] h-[20px] bg-card rounded-full animate-pulse"></div>
                         <div className="w-[50px] h-[20px] bg-card rounded-full animate-pulse"></div>
                     </div>
             }
-        </h2>
+        </div>
     );
 
-    const rank = (
-        <div className={`flex min-w-[60px] h-[30px] self-center border border-black/5 ${side === 'left' ? 'ml-auto mr-6' : 'mr-auto ml-6'} `}>
-            {
-            info
-                ? <div className={`flex items-center justify-center px-2 text-lg w-full h-full font-bold bg-white/90 rounded-full text-black`}>#{info.rank}</div>
-                : <div className="w-full h-full rounded-full bg-white/90 bg- animate-pulse"></div>
-            }
-        </div>
-    )
-
     return (
-        <div className={`flex flex-row ${side === 'right' ? 'justify-end' : ''} gap-6 shadow-xl p-2`}>
+        <div className={`flex flex-row ${side === 'right' ? 'justify-end' : ''} gap-4 shadow-xl py-2`}>
             {side === 'left' ? (
                 <>
                     {avatar}
                     {playerInfo}
-                    {rank}
                 </>
             ) : (
                 <>
-                    {rank}
                     {playerInfo}
                     {avatar}
                 </>
@@ -108,7 +98,7 @@ const VersusCard = ({ opponentId, timeLeft }: { opponentId? : number | undefined
     }, [opponentId]);
 
     return (
-        <div className="flex min-h-35 w-full max-w-[1600px] justify-between items-end gap-6">
+        <div className="flex min-h-0 w-full max-w-[1600px] justify-between items-end">
             <div className="w-[400px] min-w-0">
                 <PlayerCard side='left' info={loggedInUserInfo} />
             </div>

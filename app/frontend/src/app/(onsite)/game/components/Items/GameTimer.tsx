@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import fustat from "@/app/fonts/Fustat";
 
 const GameTimer = ({ time }: { time: number }) => {
     const [ gameTime, setGameTime ] = useState(0);

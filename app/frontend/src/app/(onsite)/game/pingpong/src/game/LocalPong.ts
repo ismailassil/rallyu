@@ -6,7 +6,7 @@ import APong from "./APong";
 class LocalPong extends APong {
     state: PongState;
     animationFrameId: number | null;
-    angles = [2.61799, 3.66519, 3.14159 ,0, 0.523599, 5.75959];
+    angles = [2.44346, 3.49066, 3.14159, 0, 0.349066, 5.93412];
     maxBounceAngle = 0.785398 
     gameDuration = 30000;
     pause = true;

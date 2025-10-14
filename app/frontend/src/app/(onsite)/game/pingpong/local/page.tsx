@@ -18,9 +18,7 @@ const Game = () => {
             <article className="flex bg-card border-br-card h-full w-full justify-center rounded-2xl border-2">
                 <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center">
                     <VersusCard timeLeft={timeLeft} />
-                    <div className="flex w-auto h-aut max-h-full max-w-full items-center justify-center">
-                        <Pong socketProxy={null} mode='local' updateTimer={setTimeLeft} />
-                    </div>
+                    <Pong socketProxy={null} mode='local' updateTimer={setTimeLeft} />
                 </div>
             </article>
         </motion.main>
