@@ -7,12 +7,12 @@ import LocalPong from "./game/LocalPong";
 const CANVAS_WIDTH = 1600;
 const CANVAS_HEIGHT = 1200;
 
-const Pong = ({ socketProxy, mode }: { socketProxy: SocketProxy | null, mode: GameMode }) => {
+const Pong = ({ socketProxy, mode, updateTimer }: { socketProxy: SocketProxy | null, mode: GameMode, updateTimer: (timeLeft: number) => void }) => {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const pong = useRef<RemotePong | LocalPong | null>(null);
 
 	useEffect(() => {
-		pong.current = mode === 'remote' ? new RemotePong() : new LocalPong();
+		pong.current = mode === 'remote' ? new RemotePong({ updateTimer }) : new LocalPong({ updateTimer });
 		const stopGame = pong.current.initGame(canvasRef.current!, socketProxy!);
 
 		return () => {

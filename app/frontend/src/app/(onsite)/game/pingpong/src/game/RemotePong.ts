@@ -1,4 +1,4 @@
-import { RemotePongState } from "@/app/(onsite)/game/types/PongTypes"
+import { PongEventHandlers, RemotePongState } from "@/app/(onsite)/game/types/PongTypes"
 import SocketProxy from '@/app/(onsite)/game/utils/socketProxy'
 import APong from "./APong";
 
@@ -8,7 +8,7 @@ class RemotePong extends APong {
     CANVAS_WIDTH = 1600
     CANVAS_HEIGHT = 1200
     
-    constructor() {
+    constructor(private eventHandlers?: PongEventHandlers) {
         super();
         this.animationFrameId = null;
         this.state = {

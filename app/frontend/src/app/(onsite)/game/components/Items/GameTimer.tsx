@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react";
-import { useGame } from "../../contexts/gameContext";
 import fustat from "@/app/fonts/Fustat";
 
-const GameTimer = () => {
-    const { gameTime, setGameTime } = useGame();
-    // const [ time, setTime ] = useState(0);
+const GameTimer = ({ time }: { time: number }) => {
+    const [ gameTime, setGameTime ] = useState(0);
 
     useEffect(() => {
-        if (gameTime <= 0) return ;
+        if (time <= 0) return ;
 
+        setGameTime(time);
         const interval = setInterval(() => {
             setGameTime(prev => prev - 1);
         }, 1000);
         
         return () => clearInterval(interval);
-    }, [gameTime > 0])
+    }, [time])
 
     const formatTime = (seconds: number) => {
 		const mins = Math.floor(seconds / 60);

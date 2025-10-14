@@ -10,13 +10,14 @@ import LoadingComponent from "@/app/(auth)/components/UI/LoadingComponents";
 import { motion } from "framer-motion";
 import RoomNotFound from "./components/RoomNotFound";
 
-const GameField = () => {
+const Game = () => {
 	const { apiClient, loggedInUser } = useAuth();
 	const socketProxy = useRef<SocketProxy>(SocketProxy.getInstance());
 	const [isLoading, setIsLoading ] = useState(true);
 	const [notFound, setNotFound ] = useState(false);
 	const [opponentId, setOpponentId] = useState<number | undefined>(undefined);
     const { roomid }: { roomid: string} = useParams();
+	const [ timeLeft, setTimeLeft ] = useState(0);
 	const query = useSearchParams();
 
 	useEffect(() => {
@@ -36,7 +37,6 @@ const GameField = () => {
 
 					setOpponentId(res.players.find(p => p.ID !== loggedInUser!.id)?.ID);
 					setIsLoading(false);
-
 				}
 				disconnect = socketProxy.current.connect(`/game/room/join/${roomid}?userid=${loggedInUser?.id}`, apiClient);
 			} catch (err) {
@@ -65,9 +65,9 @@ const GameField = () => {
 					<RoomNotFound />
 				) : (
 					<div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center">
-						<VersusCard opponentId={opponentId}/>
+						<VersusCard opponentId={opponentId} timeLeft={timeLeft} />
 						<div className="flex min-h-0 w-full flex-1 items-center justify-center">
-							<Pong socketProxy={socketProxy.current} mode='remote' />
+							<Pong socketProxy={socketProxy.current} mode='remote' updateTimer={setTimeLeft} />
 						</div>
 					</div>
 				)
@@ -77,4 +77,4 @@ const GameField = () => {
 	);
 };
 
-export default GameField;
+export default Game;

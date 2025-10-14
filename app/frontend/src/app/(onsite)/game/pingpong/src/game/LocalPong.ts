@@ -1,4 +1,4 @@
-import { PongState, Coords, BallState } from '@/app/(onsite)/game/types/PongTypes';
+import { PongState, Coords, BallState, PongEventHandlers } from '@/app/(onsite)/game/types/PongTypes';
 import SocketProxy from '@/app/(onsite)/game/utils/socketProxy'
 import APong from "./APong";
 
@@ -11,8 +11,10 @@ class LocalPong extends APong {
     angles = [2.61799, 3.66519, 3.14159 ,0, 0.523599, 5.75959];
     maxBounceAngle = 0.785398 
     BALL_RADIUS = 10
+    gameDuration = 60000;
+    pause = true;
     
-    constructor() {
+    constructor(private eventHandlers?: PongEventHandlers) {
         super();
         this.animationFrameId = null;
         const initialAngle = this.angles[Math.floor(Math.random() * this.angles.length)];
@@ -126,6 +128,8 @@ class LocalPong extends APong {
         if (this.state.ball.x < 0) {
             this.state.players[1].score++
             this.state.ball = this.resetBall("left")
+		    this.pause = true
+		    setTimeout(() => this.pause = false, 1200)
             return
         }
         
@@ -133,6 +137,8 @@ class LocalPong extends APong {
         if (this.state.ball.x > 1600) {
             this.state.players[0].score++
             this.state.ball = this.resetBall("right")
+            this.pause = true
+		    setTimeout(() => this.pause = false, 1200)
             return
         }
     
@@ -190,16 +196,30 @@ class LocalPong extends APong {
         }
         const cleanUpInput = this.setupInputHandlers(canvas);
     
+        this.eventHandlers?.updateTimer!(3);
+
         const gameLoop = (timestamp: DOMHighResTimeStamp) => {
-            this.updateGame();
+            if (!this.pause) this.updateGame();
             this.render(ctx, this.state);
             this.animationFrameId = requestAnimationFrame(gameLoop);
         }
         this.animationFrameId = requestAnimationFrame(gameLoop);
+        const timeoutId = setTimeout(()=> {
+            this.pause = false;
+            this.eventHandlers?.updateTimer!(30);
+        }, 3000)
+
+        setTimeout(() => {
+            if (this.animationFrameId) {
+                cancelAnimationFrame(this.animationFrameId);
+                this.animationFrameId = null;
+            }
+        }, this.gameDuration);
     
         return () => {
             cancelAnimationFrame(this.animationFrameId!);
             cleanUpInput();
+            clearTimeout(timeoutId);
         }
     }
 

@@ -95,7 +95,7 @@ export const updateState = (gameState: PingPongGameState) => {
 		gameState.score[1]++
 		gameState.ball = resetBall("left")
 		gameState.pause = true
-		setTimeout(() => gameState.pause = false, 1000)
+		setTimeout(() => gameState.pause = false, 1200)
 		return
 	}
 	
@@ -104,7 +104,7 @@ export const updateState = (gameState: PingPongGameState) => {
 		gameState.score[0]++
 		gameState.ball = resetBall("right")
 		gameState.pause = true
-		setTimeout(() => gameState.pause = false, 1000)
+		setTimeout(() => gameState.pause = false, 1200)
 		return
 	}
 

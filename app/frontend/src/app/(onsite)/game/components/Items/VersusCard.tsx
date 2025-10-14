@@ -1,10 +1,8 @@
 import Avatar from "@/app/(onsite)/users/components/Avatar";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import inter from "@/app/fonts/inter";
-import { AnimatePresence } from "framer-motion";
 import GameTimer from "./GameTimer";
 import { useEffect, useState } from "react";
-import { useGame } from "../../contexts/gameContext";
 
 interface PlayerInfo {
     username: string,
@@ -71,7 +69,7 @@ const PlayerCard = ({ side, info } : { side: string, info: PlayerInfo | null }) 
     )
 }
 
-const VersusCard = ({ opponentId }: { opponentId? : number | undefined }) => {
+const VersusCard = ({ opponentId, timeLeft }: { opponentId? : number | undefined, timeLeft: number }) => {
     const { apiClient, loggedInUser } = useAuth();
     const [loggedInUserInfo, setLoggedInUserInfo] = useState<PlayerInfo | null>(null);
     const [opponentInfo, setOpponentInfo] = useState<PlayerInfo | null>(null);
@@ -114,7 +112,7 @@ const VersusCard = ({ opponentId }: { opponentId? : number | undefined }) => {
             <div className="w-[400px] min-w-0">
                 <PlayerCard side='left' info={loggedInUserInfo} />
             </div>
-            <GameTimer />
+            <GameTimer time={timeLeft} />
             <div className={`w-[400px] min-w-0`}>
                 <PlayerCard side='right' info={opponentInfo} />
             </div>

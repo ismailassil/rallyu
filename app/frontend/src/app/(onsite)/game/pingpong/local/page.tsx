@@ -3,13 +3,12 @@
 import { motion } from 'framer-motion'
 import Pong from "../src/Pong";
 import VersusCard from "../../components/Items/VersusCard";
-import { useEffect} from "react";
+import { useState } from 'react';
 
-const GameField = () => {
+const Game = () => {
+	const [ timeLeft, setTimeLeft ] = useState(0);
 
-    useEffect(() => {
 
-    }, []) 
 	return (
         <motion.main
 			initial={{ opacity: 0, x: -20 }}
@@ -19,9 +18,9 @@ const GameField = () => {
 		>
             <article className="flex gap-4 bg-card border-br-card h-full w-full justify-center rounded-2xl border-2">
                 <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center">
-                    <VersusCard />
+                    <VersusCard timeLeft={timeLeft} />
                     <div className="flex min-h-0 w-full flex-1 items-center justify-center">
-                        <Pong socketProxy={null} mode='remote' />
+                        <Pong socketProxy={null} mode='remote' updateTimer={setTimeLeft} />
                     </div>
                 </div>
             </article>
@@ -29,4 +28,4 @@ const GameField = () => {
 	);
 };
 
-export default GameField;
+export default Game;
