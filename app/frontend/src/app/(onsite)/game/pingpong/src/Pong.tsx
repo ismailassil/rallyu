@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect } from "react"
 import SocketProxy from "../../utils/socketProxy"
 import RemotePong from "./game/RemotePong";
 import LocalPong from "./game/LocalPong";
