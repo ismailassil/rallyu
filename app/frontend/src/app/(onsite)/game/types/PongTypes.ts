@@ -38,7 +38,7 @@ export interface PongState {
 
 export interface PongEventHandlers {
 	updateTimer: (timeLeft: number) => void;
-	updateOverlayStatus?: (newStatus: string) => void;
+	updateOverlayStatus: (newStatus: string) => void;
 }
 
 export interface RemotePongState extends PongState {

@@ -10,7 +10,7 @@ const PauseIcon = ({ className }: { className: string }) => {
     )
 }
 
-const Overlay = ({ pauseHandler, resetHandler, status }: { pauseHandler: () => void, resetHandler: () => void, status: string }) => { // status: pause countdown empty gameover
+const Overlay = ({ pauseHandler, resetHandler, status }: { pauseHandler: () => void, resetHandler: () => void, status: string }) => { // status: pause countdown none gameover
     const router = useRouter();
 
 
