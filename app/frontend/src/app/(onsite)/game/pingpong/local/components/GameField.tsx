@@ -37,6 +37,7 @@ const GameField = () => {
                         socketProxy={null}
                         pong={pong.current}
                     />
+                    
                     <Overlay
                         pauseHandler={pauseGame}
                         resetHandler={resetGame}

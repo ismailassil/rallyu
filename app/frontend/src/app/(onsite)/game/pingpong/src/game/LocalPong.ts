@@ -200,7 +200,7 @@ class LocalPong extends APong {
     }
 
     pauseGame = () => {
-        if (this.gamePlayStatus === 'play') {
+        if (this.gamePlayStatus === 'play' || this.gamePlayStatus === 'delay') {
             this.gamePlayStatus = 'pause';
             this.remaining -= Date.now() - this.startTime!;
             console.log(this.remaining)
