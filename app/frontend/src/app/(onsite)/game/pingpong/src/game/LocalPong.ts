@@ -131,7 +131,10 @@ class LocalPong extends APong {
             this.state.players[1].score++
             this.state.ball = this.resetBall("left")
 		    this.gamePlayStatus = 'delay'
-		    setTimeout(() => this.gamePlayStatus = 'play', 1200)
+		    setTimeout(() => {
+                if (this.gamePlayStatus === 'delay')
+                    this.gamePlayStatus = 'play';
+            }, 1200)
             return
         }
         
@@ -140,7 +143,10 @@ class LocalPong extends APong {
             this.state.players[0].score++
             this.state.ball = this.resetBall("right")
             this.gamePlayStatus = 'delay'
-		    setTimeout(() => this.gamePlayStatus = 'play', 1200)
+		    setTimeout(() => {
+                if (this.gamePlayStatus === 'delay')
+                    this.gamePlayStatus = 'play';
+            }, 1200)
             return
         }
     
@@ -198,9 +204,11 @@ class LocalPong extends APong {
             this.gamePlayStatus = 'pause';
             this.remaining -= Date.now() - this.startTime!;
             console.log(this.remaining)
+            this.eventHandlers?.updateOverlayStatus!('pause');
             this.eventHandlers?.updateTimer(this.remaining);
             this.cleanupTimeouts();
-        } else {
+        } else if (this.gamePlayStatus === 'pause') {
+            this.eventHandlers?.updateOverlayStatus!('empty');
             this.startGameTimer();
         }
     }
@@ -210,6 +218,7 @@ class LocalPong extends APong {
         this.gamePlayStatus = 'play';
         this.eventHandlers?.updateTimer(this.remaining); // TODO
         this.gameTimeoutId = setTimeout(() => {
+            this.eventHandlers?.updateOverlayStatus!('gameover');
             this.gamePlayStatus = 'gameover';
         }, this.remaining);
     }
@@ -238,6 +247,7 @@ class LocalPong extends APong {
         };
         this.cleanupTimeouts();
         this.gamePlayStatus = 'countdown';
+        this.eventHandlers?.updateOverlayStatus!('empty');
         this.eventHandlers?.updateTimer(this.countdown);
         this.gameStartTimeoutId = setTimeout(()=> {
             this.remaining = this.GAME_DURATION;
@@ -248,6 +258,8 @@ class LocalPong extends APong {
     cleanupTimeouts = () => {
         clearTimeout(this.gameStartTimeoutId);
         clearTimeout(this.gameTimeoutId);
+        this.gameStartTimeoutId = undefined;
+        this.gameTimeoutId = undefined;
     }
 
     initGame = (canvas : HTMLCanvasElement, proxy? : SocketProxy | null) => {

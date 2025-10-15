@@ -1,8 +1,6 @@
 import { Pause, Play, RotateCcw } from "lucide-react";
-import { useState } from "react";
 
-const Overlay = ({ pauseHandler, resetHandler }: { pauseHandler: () => void, resetHandler: () => void }) => {
-    const [ pauseButton, setPauseButton ] = useState(false);
+const Overlay = ({ pauseHandler, resetHandler, status }: { pauseHandler: () => void, resetHandler: () => void, status: string }) => {
 
     return (
         <div className="absolute inset-0 border w-full h-full">
@@ -11,15 +9,12 @@ const Overlay = ({ pauseHandler, resetHandler }: { pauseHandler: () => void, res
 
                 <button 
                     className="rounded-xl border cursor-pointer border-card bg-card transition-all duration-200 hover:bg-white/6 hover:opacity-80 hover:scale-103 active:scale-96 p-2 opacity-50"
-                    onClick={() => {
-                        setPauseButton(!pauseButton);
-                        pauseHandler();
-                    }}
+                    onClick={pauseHandler}
                 >
-                    {!pauseButton ? (
-                        <Pause className="w-[35px] h-[35px]" />
-                    ) : (
+                    {status === 'pause' ? (
                         <Play className="w-[35px] h-[35px] scale-105" />
+                    ) : (
+                        <Pause className="w-[35px] h-[35px]" />
                     )}
                 </button>
 
