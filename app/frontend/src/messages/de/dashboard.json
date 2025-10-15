@@ -19,7 +19,8 @@
         "text": "Starten",
         "subtext": "Training"
       }
-    }
+    },
+    "snapshot": "{snap, select, total_xp {Total XP}, win_rate {Win Rate}, current_streak {Current Streak}, longest_streak {Longest Streak}, matches {Games Played}, wins {Games Won}, losses {Games Lost}, draws {Games Drawn}, total_user_score {Total Score}, max_user_score {Highest Score}, min_user_score {Lowest Score}, avg_user_score {Average Score}, total_duration {Total Playtime}, max_duration {Longest Game}, min_duration {Shortest Game}, avg_duration {Average Game}}"
   },
   "headers": {
     "profile": {
