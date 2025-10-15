@@ -102,7 +102,7 @@ const VersusCard = ({ opponentId, timeLeft }: { opponentId? : number | undefined
             <div className="w-[400px] min-w-0">
                 <PlayerCard side='left' info={loggedInUserInfo} />
             </div>
-            <GameTimer time={timeLeft} />
+            <GameTimer time={timeLeft} pause={null} />
             <div className={`w-[400px] min-w-0`}>
                 <PlayerCard side='right' info={opponentInfo} />
             </div>

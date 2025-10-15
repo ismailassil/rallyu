@@ -4,13 +4,17 @@ import APong from "./APong";
 
 
 class LocalPong extends APong {
+    GAME_DURATION = 15000;
     state: PongState;
     animationFrameId: number | null;
-    angles = [2.44346, 3.49066, 3.14159, 0, 0.349066, 5.93412];
+    angles = [2.79253, 3.49066, 3.14159, 0, 0.34907, 5.93412];
     maxBounceAngle = 0.785398 
-    gameDuration = 30000;
-    pause = true;
     gameTimeoutId: NodeJS.Timeout | undefined = undefined;
+    gameStartTimeoutId: NodeJS.Timeout | undefined = undefined;
+    countdown = 3000;
+    remaining = this.GAME_DURATION;
+    startTime: number | null = null;
+    gamePlayStatus = 'countdown'; // pause, gameover, delay, play
     
     constructor(private eventHandlers?: PongEventHandlers) {
         super();
@@ -22,7 +26,7 @@ class LocalPong extends APong {
                 y: 450,
                 speed: 14,
                 angle: initialAngle,
-                dir: 'left',
+                dir: Math.random() > 0.5 ? 'right' : 'left',
                 velocity: this.getVelocity(initialAngle, 14)
             },
             players: [
@@ -126,8 +130,8 @@ class LocalPong extends APong {
         if (this.state.ball.x < 0) {
             this.state.players[1].score++
             this.state.ball = this.resetBall("left")
-		    this.pause = true
-		    setTimeout(() => this.pause = false, 1200)
+		    this.gamePlayStatus = 'delay'
+		    setTimeout(() => this.gamePlayStatus = 'play', 1200)
             return
         }
         
@@ -135,8 +139,8 @@ class LocalPong extends APong {
         if (this.state.ball.x > this.CANVAS_WIDTH) {
             this.state.players[0].score++
             this.state.ball = this.resetBall("right")
-            this.pause = true
-		    setTimeout(() => this.pause = false, 1200)
+            this.gamePlayStatus = 'delay'
+		    setTimeout(() => this.gamePlayStatus = 'play', 1200)
             return
         }
     
@@ -150,10 +154,13 @@ class LocalPong extends APong {
         const speed = 15;
     
         const handleKeyboardInput = () => {
+            if (this.gamePlayStatus === 'pause')  {
+                animationFrameId = requestAnimationFrame(handleKeyboardInput);
+                return;
+            }
+
             const p1 = this.state.players[0];
             const p2 = this.state.players[1];
-    
-            if (!p1 || !p2) return;
             
             if (keys.has('ArrowUp')) p2.pos.y -= speed;
             if (keys.has('ArrowDown')) p2.pos.y += speed;
@@ -186,6 +193,63 @@ class LocalPong extends APong {
         };
     }
 
+    pauseGame = () => {
+        if (this.gamePlayStatus === 'play') {
+            this.gamePlayStatus = 'pause';
+            this.remaining -= Date.now() - this.startTime!;
+            console.log(this.remaining)
+            this.eventHandlers?.updateTimer(this.remaining);
+            this.cleanupTimeouts();
+        } else {
+            this.startGameTimer();
+        }
+    }
+
+    startGameTimer = () => {
+        this.startTime = Date.now();
+        this.gamePlayStatus = 'play';
+        this.eventHandlers?.updateTimer(this.remaining); // TODO
+        this.gameTimeoutId = setTimeout(() => {
+            this.gamePlayStatus = 'gameover';
+        }, this.remaining);
+    }
+
+    reset = () => {
+        const initialAngle = this.angles[Math.floor(Math.random() * this.angles.length)];
+        this.state = {
+            ball: {
+                x: 800,
+                y: 450,
+                speed: 14,
+                angle: initialAngle,
+                dir: Math.random() > 0.5 ? 'left' : 'right',
+                velocity: this.getVelocity(initialAngle, 14)
+            },
+            players: [
+                {
+                    pos: { x: 20, y: 450 },
+                    score: 0
+                },
+                {
+                    pos: { x: 1580, y: 450 },
+                    score: 0
+                }
+            ]
+        };
+        this.cleanupTimeouts();
+        this.gamePlayStatus = 'countdown';
+        this.eventHandlers?.updateTimer(this.countdown);
+        this.gameStartTimeoutId = setTimeout(()=> {
+            this.remaining = this.GAME_DURATION;
+            this.startGameTimer()
+        }, this.countdown)
+    }
+
+    cleanupTimeouts = () => {
+        clearTimeout(this.gameStartTimeoutId);
+        clearTimeout(this.gameTimeoutId);
+    }
+
     initGame = (canvas : HTMLCanvasElement, proxy? : SocketProxy | null) => {
         const ctx = canvas.getContext('2d');
         if (!ctx) {
@@ -196,31 +260,23 @@ class LocalPong extends APong {
     
 
         const gameLoop = () => {
-            if (!this.pause) this.updateGame();
+            if (this.gamePlayStatus === 'play') this.updateGame();
             this.render(ctx, this.state);
             this.animationFrameId = requestAnimationFrame(gameLoop);
         }
         this.animationFrameId = requestAnimationFrame(gameLoop);
         
-        this.eventHandlers?.updateTimer(3);
-        const gameStartTimeoutId = setTimeout(()=> {
-            this.pause = false;
-            this.eventHandlers?.updateTimer(this.gameDuration / 1000);
-            this.gameTimeoutId = setTimeout(() => {
-                if (this.animationFrameId) {
-                    cancelAnimationFrame(this.animationFrameId);
-                    this.animationFrameId = null;
-                }
-            }, this.gameDuration);
-        }, 3000)
+        this.eventHandlers?.updateTimer(this.countdown);
+        this.gameStartTimeoutId = setTimeout(()=> {
+            this.startGameTimer()
+        }, this.countdown);
 
        
     
         return () => {
             cancelAnimationFrame(this.animationFrameId!);
             cleanUpInput();
-            clearTimeout(gameStartTimeoutId);
-            clearTimeout(this.gameTimeoutId);
+            this.cleanupTimeouts();
         }
     }
 

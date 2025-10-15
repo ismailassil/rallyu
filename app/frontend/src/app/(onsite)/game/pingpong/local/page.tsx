@@ -1,13 +1,9 @@
 "use client";
 
 import { motion } from 'framer-motion'
-import Pong from "../src/Pong";
-import VersusCard from "../../components/Items/VersusCard";
-import { useState } from 'react';
+import GameField from './components/GameField';
 
 const Game = () => {
-	const [ timeLeft, setTimeLeft ] = useState(0);
-
 	return (
         <motion.main
 			initial={{ opacity: 0, x: -20 }}
@@ -17,8 +13,7 @@ const Game = () => {
 		>
             <article className="flex bg-card border-br-card h-full w-full justify-center rounded-2xl border-2">
                 <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center">
-                    <VersusCard timeLeft={timeLeft} />
-                    <Pong socketProxy={null} mode='local' updateTimer={setTimeLeft} />
+                    <GameField />
                 </div>
             </article>
         </motion.main>
