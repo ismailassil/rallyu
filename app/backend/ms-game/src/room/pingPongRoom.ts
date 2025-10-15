@@ -31,8 +31,27 @@ export class PingPongPlayer implements Player {
 		this.socket!.on('message', (message: ws.RawData) => {
 			try {
 				const data = JSON.parse(message.toString());
-				if (room.state.players[data.pid]) {
-					room.state.players[data.pid].y = data.y;
+				switch (data.type) {
+					case 'paddle':
+						room.state.players[data.pid].y = data.y;
+						break;
+					case 'forfeit':
+						room.sendGameOverPacket();
+						// closeRoom(room, 1003, 'Game Over');
+						// await axios.post(`http://ms-auth:${MS_AUTH_PORT}/users/match`, {
+						// 	players: [
+						// 		{ 
+						// 			ID: room.players[0].id, 
+						// 			score: room.state.score[0]
+						// 		},
+						// 		{
+						// 			ID: room.players[1].id, 
+						// 			score: room.state.score[1]
+						// 		}
+						// 	],
+						// 	gameStartedAt: room.startTime,
+						// 	gameFinishedAt: Math.floor(Date.now() / 1000)
+						// });
 				}
 			} catch (e: any) {
 				console.log('JSON parse error:', e.message);

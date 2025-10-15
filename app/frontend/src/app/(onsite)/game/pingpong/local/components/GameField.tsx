@@ -13,8 +13,6 @@ const GameField = () => {
         updateOverlayStatus: setOverlayStatus
     }));
 
-    console.log('TimeLeft', timeLeft);
-
     const pauseGame = () => {
         pong.current.pauseGame();
 
@@ -28,7 +26,7 @@ const GameField = () => {
     }
 
 	return (
-        <>
+        <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center">
             <GameTimer time={timeLeft} pause={pause}/>
             {/* <VersusCard /> */}
             <div className="flex w-auto h-auto max-h-full max-w-full items-center justify-center">
@@ -37,6 +35,7 @@ const GameField = () => {
                         socketProxy={null}
                         pong={pong.current}
                     />
+                    
                     <Overlay
                         pauseHandler={pauseGame}
                         resetHandler={resetGame}
@@ -44,7 +43,7 @@ const GameField = () => {
                     />
                 </div>
             </div>
-        </>
+        </div>
 	);
 };
 

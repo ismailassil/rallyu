@@ -19,7 +19,7 @@ const Pong = ({ socketProxy, pong }: { socketProxy: SocketProxy | null, pong: Re
 
 	return (
 		<canvas
-			className='rounded-lg border border-neutral-700 bg-neutral-900/50' //border-neutral-700
+			className='rounded-lg border shadow-black/80 shadow-2xl border-neutral-700 bg-neutral-900/50' //border-neutral-700
 			ref={canvasRef}
 			width={CANVAS_WIDTH}
 			height={CANVAS_HEIGHT}

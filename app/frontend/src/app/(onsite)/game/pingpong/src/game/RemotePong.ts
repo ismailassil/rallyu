@@ -6,7 +6,7 @@ class RemotePong extends APong {
     state: RemotePongState;
     animationFrameId: number | null;
     
-    constructor(private eventHandlers?: PongEventHandlers) {
+    constructor(private proxy: SocketProxy, private eventHandlers?: PongEventHandlers) {
         super();
         this.animationFrameId = null;
         this.state = {
@@ -45,10 +45,8 @@ class RemotePong extends APong {
         )
     }
 
-    setupCommunications = (
-        proxy: SocketProxy
-    ): (() => void) => {
-        return proxy.subscribe((data: any): void => {
+    setupCommunications = (): (() => void) => {
+        return this.proxy.subscribe((data: any): void => {
             this.state.gameStatus = data.type
             switch (data.type) {
                 case 'opp_left':
@@ -65,7 +63,7 @@ class RemotePong extends APong {
                     break;
                 case 'gameover':
                     this.state.serverBall = { x: 800, y: 600 };
-                    proxy.disconnect();
+                    this.proxy.disconnect();
                     this.eventHandlers?.updateTimer!(0);
                     break;
                 case 'ready':
@@ -87,7 +85,7 @@ class RemotePong extends APong {
         })
     }
 
-    private setupInputHandlers = (canvas: HTMLCanvasElement, proxy: SocketProxy): (() => void) => {
+    private setupInputHandlers = (canvas: HTMLCanvasElement): (() => void) => {
         const handleMouseMove = (event: MouseEvent) => {
             const rect = canvas.getBoundingClientRect();
             const mouseY = event.clientY - rect.top;
@@ -96,7 +94,7 @@ class RemotePong extends APong {
             
             this.state.players[0].pos.y = boundedY;
             if (this.state.index !== undefined)
-                proxy.send(JSON.stringify({ type: 'paddle', pid: this.state.index, y: boundedY }));
+                this.proxy.send(JSON.stringify({ type: 'paddle', pid: this.state.index, y: boundedY }));
         }
         window.addEventListener('mousemove', handleMouseMove);
     
@@ -105,17 +103,23 @@ class RemotePong extends APong {
         };
     }
 
-    initGame = (canvas : HTMLCanvasElement, proxy: SocketProxy) => {
+    forfeit = () => {
+        this.proxy.send({ type: 'forfeit' });
+        this.eventHandlers?.updateOverlayStatus('gameover');
+        this.eventHandlers?.updateTimer(0);
+    }
+
+    initGame = (canvas : HTMLCanvasElement) => {
         const ctx = canvas.getContext('2d');
         if (!ctx) {
             console.log('Failed to get context from canvas.');
             return ;
         }
 
-        const cleanUpInput = this.setupInputHandlers(canvas, proxy);
-        const cleanUpComms = this.setupCommunications(proxy);
+        const cleanUpInput = this.setupInputHandlers(canvas);
+        const cleanUpComms = this.setupCommunications();
     
-        const gameLoop = (timestamp: DOMHighResTimeStamp) => {
+        const gameLoop = () => {
             this.updateGame();
             this.render(ctx, this.state);
             this.animationFrameId = requestAnimationFrame(gameLoop);
