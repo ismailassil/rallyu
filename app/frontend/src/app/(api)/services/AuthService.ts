@@ -4,7 +4,10 @@ import { AxiosInstance } from 'axios';
 export type APIResetPasswordResponse = { token: string };
 
 export class AuthService {
-	constructor(private client: AxiosInstance) {}
+	constructor(
+		private client: AxiosInstance,
+		private setAccessToken: (token: string) => void
+	) {}
 
 	/*--------------------------------- Authentication ---------------------------------*/
 
@@ -19,12 +22,20 @@ export class AuthService {
 	}
 
 	async login(payload: { username: string, password: string }) {
-		console.log('APIClient::login();');
 		const { data: res } = await this.client.post('/auth/login', payload);
-		console.log('login: ', res);
 
 		if (res.data._2FARequired)
 			return res.data;
+
+		this.setAccessToken(res.data.accessToken);
+
+		return { user: res.data.user, accessToken: res.data.accessToken };
+	}
+
+	async loginUsing2FA(token: string, code: string) {
+		const { data: res } = await this.client.post('/auth/login/2fa/verify', { token, code });
+
+		this.setAccessToken(res.data.accessToken);
 
 		return { user: res.data.user, accessToken: res.data.accessToken };
 	}

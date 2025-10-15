@@ -46,7 +46,9 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 		fetchTOTPSecrets();
 	}, [apiClient.mfa, executeAPICall]);
 
-	async function handleSubmit() {
+	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+
 		const OTPJoined = code.join('');
 		if (OTPJoined.length !== 6) {
 			toastError('Code is required');
@@ -111,7 +113,7 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 					</div>
 				</div>
 
-				<div className="flex flex-col gap-3 mt-8">
+				<form className="flex flex-col gap-3 mt-8" onSubmit={handleSubmit}>
 					<p className="text-center text-gray-200 text-sm sm:text-base">Enter the 6-digit code from your authenticator app</p>
 
 					<OTPCodeInput
@@ -124,11 +126,12 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 
 					<FormButton
 						text='Continue'
+						type="submit"
 						icon={<ArrowRight size={16} />}
-						onClick={handleSubmit}
-						disabled={isLoading || code.some((d) => d === '')}
+						disabled={code.some((d) => d === '')}
+						isSubmitting={isLoading}
 					/>
-				</div>
+				</form>
 			</div>
 		</AnimatedComponent>
 	);

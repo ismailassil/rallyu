@@ -23,7 +23,7 @@ export default function LoginForm() {
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
-		
+
 		const isValid = validateAll();
 		if (!isValid)
 			return ;
@@ -32,7 +32,7 @@ export default function LoginForm() {
 			const result = await executeAPICall(() => login(formData.username, formData.password));
 			if (result._2FARequired) {
 				toastSuccess('Two Factor Authentication is required!');
-				router.push('/two-factor');
+				router.push('/2fa');
 			}
 			else
 				toastSuccess('Logged in successfully');
@@ -53,14 +53,15 @@ export default function LoginForm() {
 			resetForm={resetForm}
 		>
 			<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-				<InputField 
+				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/at.svg'
 					label='Username'
 					field='username'
 					inputPlaceholder='xezzuz'
+					autoFocus
 				/>
-				<InputField 
+				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/lock.svg'
 					label='Password'

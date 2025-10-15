@@ -6,6 +6,7 @@ import Users from './components/Tabs/Users/UsersSettingsTab';
 import Security from "./components/Tabs/Security/SecuritySettingsTab";
 import { useState } from "react";
 import { Cog, UsersIcon, Fingerprint } from "lucide-react";
+import FriendsCard from "../components/Main/FriendsCard/FriendsCard";
 
 const TABS = [
 	{ label: 'General', icon: <Cog size={18} /> },
@@ -45,7 +46,7 @@ export default function SettingsPage() {
 			default: return null;
 		}
 	}
-	
+
 	return (
 		<motion.main
 			initial={{ opacity: 0, x: -20 }}
@@ -53,30 +54,34 @@ export default function SettingsPage() {
 			transition={{ duration: 0.5 }}
 			className="pt-30 sm:pl-30 h-screen w-screen pb-24 pl-6 pr-6 sm:pb-6 overflow-hidden font-funnel-display"
 		>
-			<div className="sm:h-[calc(100vh-9rem)] h-[calc(100vh-14rem)] overflow-hidden">
-				{/* HEADER + TABS */}
-				<div>
-					<div className="bg-white/4 border border-white/10 w-full rounded-2xl py-4 sm:py-8 mb-8">
-						<header className="relative shrink-0 overflow-hidden">
-							<h1
-								className='font-bold pb-0.5 px-13 select-none text-2xl lg:text-4xl capitalize relative left-0 hover:left-4 transition-all duration-500'
-							>
-								Settings
-							</h1>
-							<div className="w-18 h-5 absolute left-0 top-[55%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E0E0E0] transition-all duration-200 group-hover:scale-105" />
-						</header>
-						<p className="px-14 text-white/65 text-sm lg:text-lg">Manage your account preferences and security settings</p>
+			<div className="flex gap-4 size-full">
+				<div className="sm:h-[calc(100vh-9rem)] h-[calc(100vh-14rem)] overflow-hidden flex-5">
+					{/* HEADER + TABS */}
+					<div>
+						<div className="bg-white/4 border border-white/10 w-full rounded-2xl py-4 sm:py-8 mb-8">
+							<header className="relative shrink-0 overflow-hidden">
+								<h1
+									className='font-bold pb-0.5 px-13 select-none text-2xl lg:text-4xl capitalize relative left-0 hover:left-4 transition-all duration-500'
+								>
+									Settings
+								</h1>
+								<div className="w-18 h-5 absolute left-0 top-[55%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E0E0E0] transition-all duration-200 group-hover:scale-105" />
+							</header>
+							<p className="px-14 text-white/65 text-sm lg:text-lg">Manage your account preferences and security settings</p>
+						</div>
+
+						<TabSelector activeTab={activeTab} onSelect={setActiveTab} />
 					</div>
-					
-					<TabSelector activeTab={activeTab} onSelect={setActiveTab} />
+
+					{/* PAGE MAIN CONTENT */}
+					<div className="h-[calc(100vh-26rem)] sm:h-[calc(100vh-22.7rem)] overflow-y-auto hide-scrollbar rounded-2xl">
+						<AnimatePresence>
+								{renderActiveTab()}
+						</AnimatePresence>
+					</div>
 				</div>
 
-				{/* PAGE MAIN CONTENT */}
-				<div className="h-[calc(100vh-26rem)] sm:h-[calc(100vh-22.7rem)] overflow-y-auto hide-scrollbar rounded-2xl">
-					<AnimatePresence>
-							{renderActiveTab()}
-					</AnimatePresence>
-				</div>
+				<FriendsCard />
 			</div>
 		</motion.main>
 	);

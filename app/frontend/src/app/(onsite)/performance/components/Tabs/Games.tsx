@@ -44,9 +44,9 @@ function GamesHistoryTable() {
 					gameType: gameTypeFilter,
 					time: timeFilter
 				});
-			
+
 				setUserMatches(res.matches);
-	
+
 				setPagination({
 					currentPage: res.pagination.page,
 					totalPages: res.pagination.totalPages,
@@ -60,7 +60,7 @@ function GamesHistoryTable() {
 
 		fetchUserMatchesPage();
 	}, [gameTypeFilter, timeFilter, page, apiClient, loggedInUser]);
-  
+
 	return (
 		<MainCardWrapper className='font-funnel-display pb-4 sm:pb-8'>
 			<header className="relative overflow-x-hidden">
@@ -70,37 +70,37 @@ function GamesHistoryTable() {
 				<div className="w-18 h-5 absolute left-0 top-[51%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E0E0E0] transition-all duration-200 group-hover:scale-105" />
 			</header>
 
+			{/* FILTERS */}
+			<div className="flex flex-wrap gap-2">
+				<select
+					value={gameTypeFilter}
+					onChange={(e) => { setGameTypeFilter(e.target.value as any); setPage(1); }}
+					className="rounded px-2 py-1"
+				>
+					<option value="all">All Types</option>
+					<option value="PONG">Ping Pong</option>
+					<option value="XO">XO</option>
+				</select>
+				<select
+					value={timeFilter}
+					onChange={(e) => { setTimeFilter(e.target.value as any); setPage(1); }}
+					className="rounded px-2 py-1"
+				>
+					<option value="all">All Time</option>
+					<option value="1d">Last 1 day</option>
+					<option value="7d">Last 7 days</option>
+					<option value="30d">Last 30 days</option>
+					<option value="90d">Last 90 days</option>
+					<option value="1y">Last year</option>
+				</select>
+			</div>
+
 			{userMatches.length === 0 ? (
 				<div className='h-80 flex items-center justify-center'>
 					<p className='text-gray-300' >No games available. Go play some.</p>
 				</div>
 			) : (
 				<>
-				{/* FILTERS */}
-				<div className="flex flex-wrap gap-2">
-					<select
-						value={gameTypeFilter}
-						onChange={(e) => { setGameTypeFilter(e.target.value as any); setPage(1); }}
-						className="rounded px-2 py-1"
-					>
-						<option value="all">All Types</option>
-						<option value="PONG">Ping Pong</option>
-						<option value="XO">XO</option>
-					</select>
-					<select
-						value={timeFilter}
-						onChange={(e) => { setTimeFilter(e.target.value as any); setPage(1); }}
-						className="rounded px-2 py-1"
-					>
-						<option value="all">All Time</option>
-						<option value="1d">Last 1 day</option>
-						<option value="7d">Last 7 days</option>
-						<option value="30d">Last 30 days</option>
-						<option value="90d">Last 90 days</option>
-						<option value="1y">Last year</option>
-					</select>
-				</div>
-
 				{/* TABLE FOR MEDIUM+ SCREENS */}
 				<div className="hidden md:block overflow-x-auto">
 					<table className="min-w-full divide-y divide-gray-200">
@@ -197,7 +197,7 @@ export default function Games({ userAnalytics, userAnalyticsByDay } : { userAnal
 			className='flex flex-col gap-4'
 		>
 			<GamesHistoryTable />
-			<TimeAnalysis 
+			<TimeAnalysis
 				userAnalytics={userAnalytics}
 				userAnalyticsByDay={userAnalyticsByDay}
 			/>

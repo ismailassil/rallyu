@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import MainCardWrapper from '../components/UI/MainCardWrapper';
-import Overview from './Overview';
 import VerifyPhone from './VerifyPhone';
 import VerifyCode from './VerifyCode';
 

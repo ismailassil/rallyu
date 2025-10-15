@@ -122,7 +122,7 @@ export default function TwoFAManagerPage() {
 		try {
 			setIsSendingCode(true);
 			await apiClient.mfa.mfaSetupResend(token!);
-			toastSuccess('Code sent!');
+			toastSuccess('Code sent');
 		} catch (err) {
 			const apiErr = err as APIError;
 			toastError(apiErr.message);

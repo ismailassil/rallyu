@@ -21,12 +21,12 @@ export default function SignUpForm() {
 	const { isLoading, executeAPICall } = useAPICall();
 
 	const [
-		formData, 
-		touched, 
-		errors, 
-		debounced, 
-		handleChange, 
-		validateAll, 
+		formData,
+		touched,
+		errors,
+		debounced,
+		handleChange,
+		validateAll,
 		getValidationErrors,
 		resetForm
 	] = useForm(
@@ -73,14 +73,15 @@ export default function SignUpForm() {
 		>
 			<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
 				<div className='flex flex-col gap-5 sm:flex-row sm:gap-2'>
-					<InputField 
+					<InputField
 						className='field flex flex-col gap-0.5 min-w-0 flex-1'
 						iconSrc='/icons/firstname.svg'
 						label='First Name'
 						field='first_name'
 						inputPlaceholder='Achraf'
+						autoFocus
 					/>
-					<InputField 
+					<InputField
 						className='field flex flex-col gap-0.5 min-w-0 flex-1'
 						iconSrc='/icons/lastname.svg'
 						label='Last Name'
@@ -88,7 +89,7 @@ export default function SignUpForm() {
 						inputPlaceholder='Demnati'
 					/>
 				</div>
-				<InputField 
+				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/at.svg'
 					label='Username'
@@ -97,7 +98,7 @@ export default function SignUpForm() {
 				>
 					{debounced.username && !errors.username && <AvailabilityIndicator key="username-availability" label='Username' status={usernameStatus} />}
 				</InputField>
-				<InputField 
+				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/mail.svg'
 					label='Email'
@@ -106,7 +107,7 @@ export default function SignUpForm() {
 				>
 					{debounced.username && !errors.username && <AvailabilityIndicator key="email-availability" label='Email' status={emailStatus} />}
 				</InputField>
-				<InputField 
+				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/lock.svg'
 					label='Password'

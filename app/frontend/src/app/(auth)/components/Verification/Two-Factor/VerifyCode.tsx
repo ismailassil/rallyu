@@ -20,7 +20,8 @@ interface VerifyCodeProps {
 export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess, onFailure, onGoBack } : VerifyCodeProps) {
 
 	const {
-		apiClient
+		apiClient,
+		loginUsing2FA
 	} = useAuth();
 
 	const {
@@ -54,9 +55,9 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 		}
 
 		try {
-			await verifyCode(() => apiClient.auth.verify2FACode(
+			await verifyCode(() => loginUsing2FA(
 				loginSessionMeta.token,
-				code.join('')
+				OTPJoined
 			));
 			onSuccess();
 		} catch (err) {

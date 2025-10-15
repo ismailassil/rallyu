@@ -42,7 +42,7 @@ export default function Overview({ loginSessionMeta, onSuccess, onFailure }: Met
 				m
 			));
 			if (m !== 'TOTP')
-				toastSuccess('Code sent!');
+				toastSuccess('Code sent');
 			onSuccess(m);
 		} catch (err) {
 			const apiErr = err as APIError;

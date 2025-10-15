@@ -35,7 +35,9 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 	const [hasError, setHasError] = useState(false);
 	const inputRefs = useRef([]);
 
-	async function handleSubmit() {
+	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+
 		const OTPJoined = code.join('');
 		if (OTPJoined.length !== 6) {
 			toastError('Code is required');
@@ -90,7 +92,7 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 			</div>
 
 			{/* OTP Input + Verify Button + Resend Button */}
-			<div className="flex flex-col gap-3">
+			<form className="flex flex-col gap-3" onSubmit={handleSubmit}>
 				<OTPCodeInput
 					code={code}
 					setCode={setCode}
@@ -101,8 +103,8 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 
 				<FormButton
 					text='Continue'
+					type='submit'
 					icon={<ArrowRight size={16} />}
-					onClick={handleSubmit}
 					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '')}
 					isSubmitting={isVerifyingCode}
 				/>
@@ -112,7 +114,7 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 					onResend={handleResend}
 					onMaxResends={onFailure}
 				/>
-			</div>
+			</form>
 		</AnimatedComponent>
 	);
 }

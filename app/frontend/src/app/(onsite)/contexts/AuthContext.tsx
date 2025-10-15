@@ -86,21 +86,22 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		return apiClient.send2FACode({ token, method });
 	}
 
-	async function verify2FACode(token: string, code: string) {
+	async function loginUsing2FA(token: string, code: string) {
+		console.log('loginUsing2FA');
 		try {
-			const { user, accessToken } = await apiClient.verify2FACode({ token, code });
+			const { user, accessToken } = await apiClient.auth.loginUsing2FA(
+				token,
+				code
+			);
 
 			setLoggedInUser(user);
 			setIsAuthenticated(true);
-
+			socket.connect(accessToken);
+		} catch (err) {
+			throw err;
+		} finally {
 			sessionStorage.removeItem('token');
 			sessionStorage.removeItem('enabledMethods');
-
-			socket.connect(accessToken);
-			return { user, accessToken };
-		} catch (err) {
-			console.log('Verify2FACode Error Catched in AuthContext: ', err);
-			throw err; // TODO: SHOULD WE PROPAGATE?
 		}
 	}
 
@@ -160,7 +161,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		register,
 		login,
 		send2FACode,
-		verify2FACode,
+		loginUsing2FA,
 		logout,
 		apiClient,
 		triggerLoggedInUserRefresh,

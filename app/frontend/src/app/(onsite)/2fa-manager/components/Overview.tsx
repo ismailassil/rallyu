@@ -8,6 +8,7 @@ import { APIEnabledMethodsResponse } from '@/app/(api)/services/MfaService';
 import { toastError } from '@/app/components/CustomToast';
 import ToggleSwitch from '../../../(auth)/components/UI/ToggleSwitch';
 import AnimatedComponent from '@/app/(auth)/components/UI/AnimatedComponent';
+import NoteBox from '@/app/components/NoteBox';
 
 interface OverviewProps {
 	onSetup: (m: string) => void;
@@ -101,8 +102,6 @@ export default function Overview({ onSetup }: OverviewProps) {
 					const isEnabled = enabledMethods?.includes(m as 'TOTP' | 'SMS' | 'EMAIL') || false;
 					const isVerified = (m === 'SMS' && loggedInUser!.phone_verified) || (m === 'EMAIL' && loggedInUser!.email_verified);
 
-					console.log('METHOD: ', METHODS_META[m].title, 'isEnabled', isEnabled, 'isVerified', isVerified);
-
 					return (
 						<div key={METHODS_META[m].title} className="single-two-fa-card">
 							<div>
@@ -127,9 +126,9 @@ export default function Overview({ onSetup }: OverviewProps) {
 			</div>
 
 			{/* Recommendation */}
-			<div className='bg-blue-500/6 px-6 py-4 rounded-2xl border-1 border-white/8 md:text-lg text-blue-400'>
-				<p><span className='font-bold'>Recommendation: </span>Authenticator apps provide the highest security and work without internet connection.</p>
-			</div>
+			<NoteBox title='Recommended' className='md:text-lg'>
+				Authenticator apps provide the highest security and work without internet connection.
+			</NoteBox>
 		</AnimatedComponent>
 	);
 }

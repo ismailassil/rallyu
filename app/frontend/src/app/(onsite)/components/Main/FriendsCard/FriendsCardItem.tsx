@@ -1,6 +1,6 @@
 'use client';
 import { Send, Swords } from "lucide-react";
-import Avatar from "../../users/components/Avatar";
+import Avatar from "../../../users/components/Avatar";
 import Link from "next/link";
 
 interface LeaderboardProps {

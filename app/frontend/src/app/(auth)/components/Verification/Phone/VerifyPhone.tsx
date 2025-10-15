@@ -10,6 +10,7 @@ import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import AnimatedComponent from '../../UI/AnimatedComponent';
 import { APIError } from '@/app/(api)/APIClient';
+import NoteBox from '@/app/components/NoteBox';
 
 
 interface VerifyPhoneProps {
@@ -43,7 +44,9 @@ export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 		executeAPICall
 	} = useAPICall();
 
-	async function handleSubmit() {
+	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+
 		const isValid = validateAll();
 		if (!isValid)
 			return ;
@@ -75,7 +78,7 @@ export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 			</div>
 
 			{/* Phone Input + Continue Button */}
-			<div className="flex flex-col gap-3">
+			<form className="flex flex-col gap-3" onSubmit={handleSubmit}>
 				<FormProvider
 					formData={formData}
 					errors={errors}
@@ -92,16 +95,20 @@ export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 					label=''
 					field='phone'
 					inputPlaceholder='+212636299820'
+					autoFocus
 				/>
 				</FormProvider>
 				<FormButton
 					text='Continue'
+					type='submit'
 					icon={<ArrowRight size={16} />}
-					onClick={handleSubmit}
 					isSubmitting={isLoading}
 				/>
-			</div>
-			{/* <p className='self-center mt-2'>Remember your password? <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>Sign in</span></p> */}
+			</form>
+
+			<NoteBox title='Note' className='bg-blue-500/6 text-blue-400 md:text-sm mt-2'>
+				<br></br>Updating this phone will replace the existing contact information on your account. <br></br>Please ensure the new information is correct, as it will be used for all future communications and verifications.
+			</NoteBox>
 		</AnimatedComponent>
 	);
 }

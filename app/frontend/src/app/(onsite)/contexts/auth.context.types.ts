@@ -28,10 +28,7 @@ export type AuthContextType = {
 	register: (first_name: string, last_name: string, username: string, email: string, password: string) => Promise<void>;
 	login: (username: string, password: string) => Promise<any>;
 	send2FACode: (token: string, method: string) => Promise<any>;
-	verify2FACode: (token: string, code: string) => Promise<{
-		user: any;
-		accessToken: any;
-	}>;
+	loginUsing2FA: (token: string, code: string) => Promise<any>;
 	logout: () => Promise<void>;
 
 	apiClient: APIClient;

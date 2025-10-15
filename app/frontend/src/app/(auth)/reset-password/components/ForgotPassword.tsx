@@ -10,8 +10,9 @@ import { toastError, toastSuccess } from "@/app/components/CustomToast";
 import { emailSchema } from "@/app/(api)/schema";
 import useForm from "@/app/hooks/useForm";
 import { FormProvider } from "../../components/Form/FormContext";
+import AnimatedComponent from "../../components/UI/AnimatedComponent";
 
-export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string, email: string) => void, onGoBack: () => void }) {
+export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) => void, onGoBack: () => void }) {
 	const router = useRouter();
 
 	const [
@@ -38,26 +39,26 @@ export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string, 
 		executeAPICall
 	} = useAPICall();
 
-	async function handleSubmit() {
-		validateAll();
-		const errors = getValidationErrors();
-		if (errors?.email)
+	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+
+		const isValid = validateAll();
+		if (!isValid)
 			return ;
 
 		try {
-			const { token } = await executeAPICall(() => apiClient.requestPasswordReset(
+			const { token } = await executeAPICall(() => apiClient.auth.requestPasswordReset(
 				formData.email
 			));
-			toastSuccess('Code sent!');
-			onNext(token, formData.email);
+			toastSuccess('Code sent');
+			onNext(token);
 		} catch (err: any) {
 			toastError(err.message);
-			resetForm();
 		}
 	}
 
 	return (
-		<>
+		<AnimatedComponent componentKey="forgot-password" className='w-full max-w-lg p-11 flex flex-col gap-5'>
 			{/* Header + Go Back */}
 			<div className="flex gap-4 items-center mb-2">
 				<button
@@ -72,7 +73,7 @@ export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string, 
 			</div>
 
 			{/* Email Input + Reset Password Button */}
-			<div className="flex flex-col gap-3">
+			<form className="flex flex-col gap-3" onSubmit={handleSubmit}>
 				<FormProvider
 					formData={formData}
 					errors={errors}
@@ -89,16 +90,17 @@ export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string, 
 					label=''
 					field='email'
 					inputPlaceholder='iassil@1337.student.ma'
+					autoFocus
 				/>
 				</FormProvider>
 				<FormButton
 					text='Reset Password'
+					type="submit"
 					icon={<RotateCw size={16} />}
-					onClick={handleSubmit}
 					isSubmitting={isLoading}
 				/>
-			</div>
+			</form>
 			<p className='self-center mt-2'>Remember your password? <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>Sign in</span></p>
-		</>
+		</AnimatedComponent>
 	);
 }

@@ -96,11 +96,11 @@ export default function ProfileCard({ userId, fullName, username, bio, avatar, f
 						}
 					</div>
 					{/* Avatar */}
-					<Avatar 
+					<Avatar
 						avatar={avatar}
-						className='ring-4 hover:ring-3 aspect-square h-24 sm:h-36 lg:h-48 self-start sm:self-center
+						className='ring-3 aspect-square h-24 sm:h-36 lg:h-48 self-start sm:self-center
 						overflow-hidden rounded-full relative
-						ring-white/10 transition-all duration-500 hover:scale-105 hover:ring-white/30'
+						ring-white/10 transition-all duration-500 hover:scale-101 hover:ring-white/20'
 					/>
 				</div>
 				{/* Level Bar */}
@@ -113,7 +113,7 @@ export default function ProfileCard({ userId, fullName, username, bio, avatar, f
 							</div>
 							<div className="h-full w-full">
 								<div className="bg-card h-2 w-full rounded-full">
-									<div 
+									<div
 										className={`bg-accent h-2 rounded-full`}
 										style={{ width: `${Math.floor((level % 1) * 100)}%` }}
 									>
@@ -140,7 +140,7 @@ export default function ProfileCard({ userId, fullName, username, bio, avatar, f
 				</div>
 				<div className='profile-inner-stat-card flex-1'>
 					<span className='text-lg lg:text-xl font-semibold text-white/60 text-center lg:text-start'>
-						Win 
+						Win
 						<span className="inline"> </span>
 						<span className="inline md:hidden lg:inline"><br /></span>
 						Rate
