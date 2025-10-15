@@ -3,20 +3,20 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import MainCardWithHeader from '../../../components/UI/MainCardWithHeader';
 import GameCard from '../../../users/components/GamesHistory/GameCard';
-import { secondsToHMS } from '@/app/(api)/utils';
+import { secondsToHMS, secondsToMinutes } from '@/app/(api)/utils';
 import ChartCardWrapper from '../../../performance/components/Charts/ChartCardWrapper';
 import { useTranslations } from 'next-intl';
 import CustomAreaChart from '../../../performance/components/Charts/CustomAreaChart';
 import { SnapshotSkeleton } from './SnapshotCardSkeleton';
 import useAPICall from '@/app/hooks/useAPICall';
 import { EmptyComponent } from '@/app/(auth)/components/UI/LoadingComponents';
-import { flattenStats } from './constants';
 import { HalfWidthStatDisplay } from './components/HalfWidthStatDisplay';
 import { FullWidthStatDisplay } from './components/FullWidthStatDisplay';
+import { STAT_CONFIG } from './constants';
 
 
 export default function SnapshotCard() {
-	const t = useTranslations("dashboard.titles");
+	const t = useTranslations("dashboard");
 	const [index, setIndex] = useState(0);
 
 	const {
@@ -48,6 +48,22 @@ export default function SnapshotCard() {
 		fetchUserAnalytics(() => apiClient.user.fetchUserAnalytics(loggedInUser.id));
 	}, [apiClient.user, fetchUserAnalytics, fetchUserProfile, loggedInUser]);
 
+	function flattenStats(obj: Record<string, any> = {}) {
+		return Object.entries(obj)
+			  .filter(([key]) => STAT_CONFIG[key as keyof typeof STAT_CONFIG])
+			  .map(([key, value]) => {
+				const config = STAT_CONFIG[key as keyof typeof STAT_CONFIG];
+				const displayValue = key.includes('duration') ? secondsToMinutes(value) : value;
+
+				return {
+					label: t('snapshots', { statKey: key }),
+					value: displayValue,
+					suffix: config.suffix,
+				};
+		});
+	};
+
+
 	const records = flattenStats(userProfile?.userRecords);
   	const totals = flattenStats(userAnalytics?.totals);
   	const scores = flattenStats(userAnalytics?.scores);
@@ -64,21 +80,21 @@ export default function SnapshotCard() {
 
 	if (isLoading) {
 		return (
-		<MainCardWithHeader headerName={t("snapshots")} color="notwhite" className="font-funnel-display flex-3 select-none">
-			<div className="group flex flex-col gap-4">
-			<SnapshotSkeleton />
-			</div>
-		</MainCardWithHeader>
+			<MainCardWithHeader headerName={t("titles.snapshots")} color="notwhite" className="font-funnel-display flex-3 select-none">
+				<div className="group flex flex-col gap-4">
+				<SnapshotSkeleton />
+				</div>
+			</MainCardWithHeader>
 		);
 	}
 
   	if (isError) {
 		return (
-		<MainCardWithHeader headerName={t("snapshots")} color="notwhite" className="font-funnel-display flex-3 select-none">
-			<div className="group flex flex-col gap-4">
-			<EmptyComponent content={isError} />
-			</div>
-		</MainCardWithHeader>
+			<MainCardWithHeader headerName={t("titles.snapshots")} color="notwhite" className="font-funnel-display flex-3 select-none">
+				<div className="group flex flex-col gap-4">
+				<EmptyComponent content={isError} />
+				</div>
+			</MainCardWithHeader>
 		);
 	}
 
@@ -97,7 +113,7 @@ export default function SnapshotCard() {
 
 
 	return (
-		<MainCardWithHeader headerName={t("snapshots")} color="notwhite" className="font-funnel-display flex-3 select-none">
+		<MainCardWithHeader headerName={t("titles.snapshots")} color="notwhite" className="font-funnel-display flex-3 select-none">
 			<div className="group flex flex-col gap-4">
 				{matchToShow && (
 				<div className="relative px-6 py-0.5 overflow-hidden">

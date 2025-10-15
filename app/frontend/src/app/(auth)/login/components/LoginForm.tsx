@@ -11,12 +11,32 @@ import FormButton from '../../components/UI/FormButton';
 import { LogIn } from 'lucide-react';
 import { FormProvider } from '../../components/Form/FormContext';
 import useAPICall from '@/app/hooks/useAPICall';
+import { useTranslations } from 'next-intl';
 
 export default function LoginForm() {
-	const { login } = useAuth();
+	const t = useTranslations('auth.common');
+
 	const router = useRouter();
-	const { isLoading, executeAPICall } = useAPICall();
-	const [formData, touched, errors, debounced, handleChange, validateAll, getValidationErrors, resetForm] = useForm(
+
+	const {
+		login
+	} = useAuth();
+
+	const {
+		isLoading,
+		executeAPICall
+	} = useAPICall();
+
+	const [
+		formData,
+		touched,
+		errors,
+		debounced,
+		handleChange,
+		validateAll,
+		getValidationErrors,
+		resetForm
+	] = useForm(
 		loginFormSchema,
 		{ username: '', password: '' }
 	);
@@ -56,7 +76,7 @@ export default function LoginForm() {
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/at.svg'
-					label='Username'
+					label={t('username')}
 					field='username'
 					inputPlaceholder='xezzuz'
 					autoFocus
@@ -64,14 +84,14 @@ export default function LoginForm() {
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/lock.svg'
-					label='Password'
+					label={t('password')}
 					field='password'
 					inputPlaceholder='••••••••••••••••'
 					inputHidden={true}
 				>
 					<p className='text-sm text-end hover:underline cursor-pointer'
 						onClick={() => router.push('/reset-password')}>
-						Forgot Password?
+						{t('forgot_password')}?
 					</p>
 				</InputField>
 				<FormButton

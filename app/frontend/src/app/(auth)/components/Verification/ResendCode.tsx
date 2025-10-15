@@ -1,5 +1,6 @@
 'use client';
 import useResendCooldown from '@/app/hooks/useResendCooldown';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 
 export default function ResendCode({
@@ -11,6 +12,8 @@ export default function ResendCode({
 	onResend: () => Promise<void>,
 	onMaxResends: () => void
 }) {
+	const t = useTranslations('auth.common');
+
 	const {
 		cooldown,
 		isCooldownActive,
@@ -30,12 +33,12 @@ export default function ResendCode({
 	if (isMaxResendReached) {
 		return (
 			<p className='self-center mt-2 text-gray-200'>
-				You&#39;ve reached the resend limit.
+				{t('max_resends')}
 				<span
 					onClick={onMaxResends}
 					className='font-semibold ml-2 text-blue-500 hover:underline cursor-pointer'
 				>
-					Retry?
+					{t('retry')}
 				</span>
 			</p>
 		);
@@ -43,7 +46,7 @@ export default function ResendCode({
 
 	return (
 		<p className='self-center mt-2'>
-			Didn&#39;t receive the code?
+			{t('didnt_receive_code')}
 			<span
 				onClick={handleClick}
 				className={`font-semibold ml-1 ${
@@ -53,8 +56,8 @@ export default function ResendCode({
 				}`}
 			>
 				{isCooldownActive
-					? `Resend in ${cooldown}s`
-					: 'Resend code'}
+					? `${t('resend_in')} ${cooldown}s`
+					: `${t('resend_code')}`}
 			</span>
 		</p>
 	);

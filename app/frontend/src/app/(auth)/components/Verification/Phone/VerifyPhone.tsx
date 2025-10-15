@@ -11,6 +11,7 @@ import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import AnimatedComponent from '../../UI/AnimatedComponent';
 import { APIError } from '@/app/(api)/APIClient';
 import NoteBox from '@/app/components/NoteBox';
+import { useTranslations } from 'next-intl';
 
 
 interface VerifyPhoneProps {
@@ -19,6 +20,8 @@ interface VerifyPhoneProps {
 }
 
 export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
+	const t = useTranslations('auth.verification');
+
 	const {
 		apiClient,
 		loggedInUser
@@ -72,8 +75,8 @@ export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>Phone number</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>We&#39;ll send you a 6-digit verification code</p>
+					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('input.title', { method: 'SMS' })}</h1>
+					<p className='text-gray-300 text-sm sm:text-balance'>{t('input.subtitle', { method: 'SMS' })}</p>
 				</div>
 			</div>
 
@@ -106,8 +109,8 @@ export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 				/>
 			</form>
 
-			<NoteBox title='Note' className='bg-blue-500/6 text-blue-400 md:text-sm mt-2'>
-				<br></br>Updating this phone will replace the existing contact information on your account. <br></br>Please ensure the new information is correct, as it will be used for all future communications and verifications.
+			<NoteBox title={t('note.title')} className='bg-blue-500/6 text-blue-400 md:text-sm mt-2'>
+				<br></br>{t('note.first')}<br></br>{t('note.second')}
 			</NoteBox>
 		</AnimatedComponent>
 	);

@@ -9,6 +9,8 @@ import { toastError } from "@/app/components/CustomToast";
 import AnimatedComponent from "../../components/UI/AnimatedComponent";
 import { APIError } from "@/app/(api)/APIClient";
 import ResendCode from "../../components/Verification/ResendCode";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 interface VerifyCodeProps {
 	token: string;
@@ -18,6 +20,10 @@ interface VerifyCodeProps {
 }
 
 export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCodeProps) {
+	const t = useTranslations('auth');
+
+	const router = useRouter();
+
 	const {
 		apiClient
 	} = useAuth();
@@ -86,8 +92,8 @@ export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCod
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>Check your Email!</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>We&#39;ve sent a 6-digit code to your email address</p>
+					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('auth.reset_password.verifyCode.title')}</h1>
+					<p className='text-gray-300 text-sm sm:text-balance'>{t('auth.reset_password.verifyCode.subtitle')}</p>
 				</div>
 			</div>
 
@@ -115,6 +121,7 @@ export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCod
 					onMaxResends={onFailure}
 				/>
 			</form>
+			<p className='self-center mt-2'>{t('auth.reset_password.verifyCode.instruction')} <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>{t('auth.common.signin')}</span></p>
 		</AnimatedComponent>
 	);
 }

@@ -6,8 +6,11 @@ import { useState } from "react";
 import Sessions from "./Sessions";
 import { motion } from 'framer-motion';
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import { useTranslations } from "next-intl";
 
 export default function SecuritySettingsTab() {
+	const t = useTranslations('settings.security.cards');
+
 	const router = useRouter();
 	const changePasswordFormId = 'change-password-form';
 	const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -28,16 +31,16 @@ export default function SecuritySettingsTab() {
 			{loggedInUser!.auth_provider === 'Local' && (
 				<>
 				<SettingsCard
-					title="Two-factor Authentication"
-					subtitle="Add an extra layer of security to your account by choosing your preferred verification method"
-					actionLabel='Manage 2FA'
+					title={t('twoFactor.title')}
+					subtitle={t('twoFactor.subtitle')}
+					actionLabel={t('twoFactor.button')}
 					actionIcon={<Fingerprint size={16} />}
 					onAction={() => router.push('/2fa-manager')}
 				>
 				</SettingsCard>
 				<SettingsCard
-					title="Change Password"
-					subtitle="Modify your current password"
+					title={t('change_password_form.title')}
+					subtitle={t('change_password_form.subtitle')}
 					actionIcon={buttonDisabled ? <LoaderCircle size={16} className='animate-spin' /> : <Check size={16} />}
 					formId={changePasswordFormId}
 					isButtonDisabled={buttonDisabled}
@@ -54,15 +57,15 @@ export default function SecuritySettingsTab() {
 				</>
 			)}
 			<SettingsCard
-				title="Browsers and devices"
-				subtitle="These browsers and devices are currently signed in to you account. Remove any unauthorized devices"
+				title={t('sessions.title')}
+				subtitle={t('sessions.subtitle')}
 			>
 				<Sessions />
 			</SettingsCard>
 			<SettingsCard
-				title="Delete Account"
-				subtitle="This will permanently delete your account and all associated data. This action is irreversible"
-				actionLabel='Delete Account'
+				title={t('delete_account.title')}
+				subtitle={t('delete_account.subtitle')}
+				actionLabel={t('delete_account.button')}
 				actionIcon={<X size={16} />}
 				isButtonHidden={false}
 				isButtonDisabled={false}

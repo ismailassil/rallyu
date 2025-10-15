@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, QrCode } from "lucide-react";
 import FormButton from "@/app/(auth)/components/UI/FormButton";
@@ -8,6 +9,7 @@ import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import useAPICall from "@/app/hooks/useAPICall";
 import AnimatedComponent from "../../UI/AnimatedComponent";
 import { APIError } from "@/app/(api)/APIClient";
+import { useTranslations } from "next-intl";
 
 interface TOTPVerification {
 	onReset: () => void;
@@ -16,6 +18,8 @@ interface TOTPVerification {
 }
 
 export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTPVerification) {
+	const t = useTranslations('auth.verification');
+
 	const [token, setToken] = useState('');
 	const [TOTPSecrets, setTOTPSecrets] = useState<APITOTPSecrets | null>(null);
 	const [code, setCode] = useState(['', '', '', '', '', '']);
@@ -87,8 +91,8 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>Authenticator App</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>Scan the QR code with your authenticator app</p>
+					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('input.title', { method: 'TOTP' })}</h1>
+					<p className='text-gray-300 text-sm sm:text-balance'>{t('input.subtitle', { method: 'TOTP' })}</p>
 				</div>
 			</div>
 
@@ -106,7 +110,7 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 					)}
 
 					<div className="text-center">
-						<p className="text-sm text-gray-300 mb-2">Can&#39;t scan? Enter this code manually:</p>
+						<p className="text-sm text-gray-300 mb-2">{t('input.cant_scan_qr')}</p>
 						<code className="bg-gray-800 px-3 py-1 rounded text-xs sm:text-sm font-mono select-text truncate">
 							{TOTPSecrets?.secret_base32 || 'XXXX XXXX XXXX XXXX'}
 						</code>
@@ -114,7 +118,7 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 				</div>
 
 				<form className="flex flex-col gap-3 mt-8" onSubmit={handleSubmit}>
-					<p className="text-center text-gray-200 text-sm sm:text-base">Enter the 6-digit code from your authenticator app</p>
+					<p className="text-center text-gray-200 text-sm sm:text-base">{t('verifyCode.subtitle')}</p>
 
 					<OTPCodeInput
 						code={code}

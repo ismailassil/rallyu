@@ -6,9 +6,10 @@ import FriendsCardItem from "./FriendsCardItem";
 import useAPICall from "@/app/hooks/useAPICall";
 import { EmptyComponent } from "@/app/(auth)/components/UI/LoadingComponents";
 import { LoadingSkeletonList } from "./FriendsCardSkeleton";
+import { useTranslations } from "next-intl";
 
 export default function FriendsCard() {
-	// const t = useTranslations("dashboard.titles");
+	const t = useTranslations("dashboard.titles");
 
 	const {
 		apiClient
@@ -34,7 +35,7 @@ export default function FriendsCard() {
 	}, []);
 
 	return (
-		<MainCardWithHeader headerName='Friends' className='font-funnel-display flex-2 scroll-smooth hidden 2xl:block'>
+		<MainCardWithHeader headerName={t('friends')} className='font-funnel-display flex-2 scroll-smooth hidden 2xl:block'>
 			<div className="group flex flex-col gap-3 px-6 h-full">
 				{isLoading ? (
 					<LoadingSkeletonList

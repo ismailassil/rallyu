@@ -7,6 +7,7 @@ import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import useAPICall from '@/app/hooks/useAPICall';
 import { APIError } from '@/app/(api)/APIClient';
 import AnimatedComponent from '../../components/UI/AnimatedComponent';
+import { useTranslations } from 'next-intl';
 
 interface MethodsOverviewProps {
 	loginSessionMeta: { token: string, enabledMethods: string[] }
@@ -16,6 +17,8 @@ interface MethodsOverviewProps {
 
 export default function Overview({ loginSessionMeta, onSuccess, onFailure }: MethodsOverviewProps) {
 	const router = useRouter();
+
+	const t = useTranslations('auth.twoFactorAtLogin.overview');
 
 	const {
 		apiClient
@@ -59,8 +62,8 @@ export default function Overview({ loginSessionMeta, onSuccess, onFailure }: Met
 			{/* Header */}
 			<div className='flex flex-col mb-12'>
 				<Fingerprint size={64} className="bg-blue-500 rounded-full p-2 self-center mb-6"/>
-				<h1 className='font-semibold text-3xl text-center mb-3'>Two-Factor Authentication</h1>
-				<p className='mb-0 text-white/85 text-center'>Select one of the following methods to complete verification.</p>
+				<h1 className='font-semibold text-3xl text-center mb-3'>{t('title')}</h1>
+				<p className='mb-0 text-white/85 text-center'>{t('subtitle')}</p>
 			</div>
 
 			{/* Methods List */}
@@ -78,8 +81,12 @@ export default function Overview({ loginSessionMeta, onSuccess, onFailure }: Met
 									<div className='flex gap-4 items-center'>
 										{METHODS_META[m].icon}
 										<div>
-											<h1 className='font-semibold text-lg sm:text-base md:text-lg lg:text-2xl mb-1.5 flex items-center gap-4'>{METHODS_META[m].title}</h1>
-											<p className='font-light text-sm lg:text-base text-white/75'>{METHODS_META[m].description}</p>
+											<h1 className='font-semibold text-lg sm:text-base md:text-lg lg:text-2xl mb-1.5 flex items-center gap-4'>
+												{t('cards.title', { method: m })}
+											</h1>
+											<p className='font-light text-sm lg:text-base text-white/75'>
+												{t('cards.subtitle', { method: m })}
+											</p>
 										</div>
 									</div>
 									{(isLoading && selectedMethod === m) ? <LoaderCircle size={36} className='ml-auto animate-spin'/> : <ChevronRight size={36} className='ml-auto'/>}

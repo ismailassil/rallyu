@@ -11,8 +11,11 @@ import { emailSchema } from "@/app/(api)/schema";
 import useForm from "@/app/hooks/useForm";
 import { FormProvider } from "../../components/Form/FormContext";
 import AnimatedComponent from "../../components/UI/AnimatedComponent";
+import { useTranslations } from "next-intl";
 
 export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) => void, onGoBack: () => void }) {
+	const t = useTranslations('auth');
+
 	const router = useRouter();
 
 	const [
@@ -67,8 +70,8 @@ export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) 
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>Forgot your password?</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>We&#39;ll send you a 6-digit verification code</p>
+					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('auth.reset_password.forgotPassword.title')}</h1>
+					<p className='text-gray-300 text-sm sm:text-balance'>{t('auth.reset_password.forgotPassword.subtitle')}</p>
 				</div>
 			</div>
 
@@ -100,7 +103,7 @@ export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) 
 					isSubmitting={isLoading}
 				/>
 			</form>
-			<p className='self-center mt-2'>Remember your password? <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>Sign in</span></p>
+			<p className='self-center mt-2'>{t('auth.reset_password.forgotPassword.instruction')} <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>{t('auth.common.signin')}</span></p>
 		</AnimatedComponent>
 	);
 }

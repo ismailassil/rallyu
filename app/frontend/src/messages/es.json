@@ -19,6 +19,227 @@
         "text": "Comenzar",
         "subtext": "Entrenamiento"
       }
+    },
+    "snapshots": "{statKey, select, total_xp {Experiencia total} win_rate {Porcentaje victorias} current_streak {Racha actual} longest_streak {Racha larga} matches {Partidas jugadas} wins {Partidas ganadas} losses {Partidas perdidas} draws {Empates} total_user_score {Puntuación total} max_user_score {Puntuación alta} min_user_score {Puntuación baja} avg_user_score {Puntuación promedio} total_duration {Tiempo total} max_duration {Partida larga} min_duration {Partida corta} avg_duration {Duración promedio} other {Estadística desconocida}}"
+  },
+  "profile": {
+    "common": {
+      "level": "nivel"
+    },
+    "cards": {
+      "global_rank": {
+        "part1": "Posición",
+        "part2": "mundial"
+      },
+      "win_rate": {
+        "part1": "Porcentaje",
+        "part2": "victorias"
+      },
+      "current_streak": {
+        "part1": "Racha",
+        "part2": "actual"
+      }
+    },
+    "buttons": {
+      "edit_profile": "Editar perfil",
+      "view_performance": "Ver rendimiento"
+    }
+  },
+  "relations": {
+    "common": {
+      "sent": "Enviado",
+      "accepted": "Aceptado",
+      "canceled": "Cancelado",
+      "declined": "Rechazado",
+      "unfriended": "Eliminado como amigo",
+      "blocked": "Bloqueado",
+      "unblocked": "Desbloqueado",
+      "add": "Añadir",
+      "cancel": "Cancelar",
+      "accept": "Aceptar",
+      "decline": "Rechazar",
+      "unfriend": "Eliminar amigo",
+      "block": "Bloquear",
+      "unblock": "Desbloquear"
+    }
+  },
+  "settings": {
+    "title": "Ajustes",
+    "subtitle": "Gestiona las preferencias de tu cuenta y la configuración de seguridad",
+    "general": {
+      "title": "General",
+      "cards": {
+        "personal_infos": {
+          "title": "Información personal",
+          "subtitle": "Actualiza la información de tu perfil y tu dirección de correo electrónico"
+        }
+      }
+    },
+    "users": {
+      "title": "Usuarios",
+      "cards": {
+        "friends": {
+          "title": "Amigos",
+          "subtitle": "Ver y gestionar tus relaciones con todos tus amigos"
+        },
+        "incoming": {
+          "title": "Solicitudes de amistad recibidas",
+          "subtitle": "Ver y rechazar todas las solicitudes de amistad pendientes que has recibido"
+        },
+        "outgoing": {
+          "title": "Solicitudes de amistad enviadas",
+          "subtitle": "Ver y cancelar todas las solicitudes de amistad pendientes que has enviado"
+        },
+        "blocked": {
+          "title": "Usuarios bloqueados",
+          "subtitle": "Ver y desbloquear a todos los usuarios que has bloqueado"
+        }
+      }
+    },
+    "security": {
+      "title": "Seguridad",
+      "cards": {
+        "twoFactor": {
+          "title": "Autenticación en dos pasos",
+          "subtitle": "Añade una capa adicional de seguridad a tu cuenta eligiendo tu método de verificación preferido",
+          "button": "Gestionar 2FA"
+        },
+        "change_password_form": {
+          "title": "Cambiar contraseña",
+          "subtitle": "Modifica tu contraseña actual",
+          "sidecard": {
+            "title": "Requisitos de la contraseña",
+            "text1": "Para crear una nueva contraseña,",
+            "text2": "debes cumplir con todos los siguientes requisitos:",
+            "text3": "Mínimo 8 caracteres",
+            "text4": "Al menos una letra minúscula",
+            "text5": "Al menos una letra mayúscula",
+            "text6": "Al menos un dígito"
+          },
+          "button": "Guardar cambios"
+        },
+        "sessions": {
+          "title": "Navegadores y dispositivos",
+          "subtitle": "Estos navegadores y dispositivos están actualmente conectados a tu cuenta. Elimina cualquier dispositivo no autorizado"
+        },
+        "delete_account": {
+          "title": "Eliminar cuenta",
+          "subtitle": "Esto eliminará permanentemente tu cuenta y todos los datos asociados. Esta acción es irreversible",
+          "button": "Eliminar cuenta"
+        }
+      }
+    }
+  },
+  "auth": {
+    "common": {
+      "first_name": "Nombre",
+      "last_name": "Apellido",
+      "email": "Correo electrónico",
+      "username": "Nombre de usuario",
+      "password": "Contraseña",
+      "confirm_password": "Confirmar contraseña",
+      "current_password": "Contraseña actual",
+      "new_password": "Nueva contraseña",
+      "forgot_password": "¿Olvidaste tu contraseña?",
+      "bio": "Biografía",
+      "max_resends": "Has alcanzado el límite de reenvíos",
+      "retry": "¿Reintentar?",
+      "didnt_receive_code": "¿No recibiste el código?",
+      "resend_code": "Reenviar código",
+      "resend_in": "Reenviar en",
+      "or": "O",
+      "signup": "Registrarse",
+      "singin": "Iniciar sesión",
+      "login": "Iniciar sesión",
+      "play": "Jugar",
+      "chat": "Chat",
+      "online": "En línea",
+      "offline": "Desconectado",
+      "remove_pic": "Eliminar foto",
+      "change_pic": "Cambiar foto",
+      "current": "Actual"
+    },
+    "login": {
+      "title": "¡Bienvenido de nuevo!",
+      "subtitle": "Introduce tus datos para iniciar sesión.",
+      "instruction": "¿Aún no tienes una cuenta?"
+    },
+    "signup": {
+      "title": "Crear una cuenta",
+      "subtitle": "Introduce tus datos para registrarte.",
+      "instruction": "¿Ya tienes una cuenta?"
+    },
+    "twoFactorAtLogin": {
+      "overview": {
+        "title": "Autenticación en dos pasos",
+        "subtitle": "Selecciona uno de los siguientes métodos para completar la verificación",
+        "cards": {
+          "title": "{method, select, TOTP {Aplicación de autenticación} EMAIL {Correo electrónico} SMS {SMS} other {Método de autenticación}}",
+          "subtitle": "{method, select, TOTP {Usando Google Authenticator, Authy...} EMAIL {Recibe códigos por correo electrónico} SMS {Recibe códigos por SMS} other {Método de autenticación}}"
+        }
+      },
+      "verifyCode": {
+        "title": "Autenticación en dos pasos",
+        "subtitle": "{method, select, TOTP {Ingresa el código de 6 dígitos de tu aplicación de autenticación} EMAIL {Hemos enviado un código de 6 dígitos a tu correo electrónico} SMS {Hemos enviado un código de 6 dígitos por SMS} other {Ingresa el código de 6 dígitos para completar la verificación}}",
+        "cannot_access": "{method, select, TOTP {¿No puedes acceder a tu aplicación de autenticación?} EMAIL {¿No puedes acceder a tu correo electrónico?} SMS {¿No puedes acceder a tu teléfono?} other {¿No puedes acceder a este método?}}",
+        "other_method": "Probar otros métodos de verificación"
+      }
+    },
+    "twoFactorManager": {
+      "overview": {
+        "title": "Autenticación en dos pasos",
+        "subtitle": "Añade una capa adicional de seguridad a tu cuenta eligiendo tu método de verificación preferido",
+        "cards": {
+          "title": "{method, select, TOTP {Aplicación de autenticación} EMAIL {Correo electrónico} SMS {SMS} other {Método de autenticación}}",
+          "subtitle": "{method, select, TOTP {Usando Google Authenticator, Authy...} EMAIL {Recibe códigos por correo electrónico} SMS {Recibe códigos por SMS} other {Método de autenticación}}"
+        },
+        "note": {
+          "title": "Recomendado",
+          "text": "Las aplicaciones de autenticación ofrecen la mayor seguridad y funcionan sin conexión a internet."
+        }
+      },
+      "done": {
+        "title": "Autenticación en dos pasos",
+        "subtitle": "Configuración completada",
+        "2nd_subtitle": "Tu cuenta ahora está protegida con autenticación en dos pasos.",
+        "buttons": {
+          "goback": "Volver al gestor de 2FA",
+          "continue": "Ir al panel de control"
+        }
+      }
+    },
+    "verification": {
+      "input": {
+        "title": "{method, select, TOTP {Aplicación de autenticación} EMAIL {Correo electrónico} SMS {SMS} other {Método de autenticación}}",
+        "subtitle": "{method, select, TOTP {Escanea el código QR con tu aplicación de autenticación} EMAIL {Te enviaremos un código de verificación de 6 dígitos a tu correo electrónico} SMS {Te enviaremos un código de verificación de 6 dígitos a tu teléfono} other {Te enviaremos un código de verificación de 6 dígitos}}",
+        "cant_scan_qr": "¿No puedes escanearlo? Ingresa este código manualmente:"
+      },
+      "verifyCode": {
+        "title": "{method, select, TOTP {Aplicación de autenticación} EMAIL {Correo electrónico} SMS {SMS} other {Método de autenticación}}",
+        "subtitle": "{method, select, TOTP {Ingresa el código de 6 dígitos de tu aplicación de autenticación} EMAIL {Hemos enviado un código de 6 dígitos a tu correo electrónico} SMS {Hemos enviado un código de 6 dígitos por SMS} other {Ingresa el código de 6 dígitos para completar la verificación}}"
+      },
+      "note": {
+        "title": "Nota",
+        "first": "Actualizar este correo reemplazará la información de contacto existente en tu cuenta.",
+        "second": "Asegúrate de que la nueva información sea correcta, ya que se utilizará para todas las comunicaciones y verificaciones futuras."
+      }
+    },
+    "reset_password": {
+      "forgotPassword": {
+        "title": "¿Olvidaste tu contraseña?",
+        "subtitle": "Hemos enviado un código de 6 dígitos a tu correo electrónico",
+        "instruction": "¿Recuperaste tu contraseña?"
+      },
+      "verifyCode": {
+        "title": "¡Revisa tu correo electrónico!",
+        "subtitle": "Hemos enviado un código de 6 dígitos a tu correo electrónico",
+        "instruction": "¿Recuperaste tu contraseña?"
+      },
+      "setNewPassword": {
+        "title": "Crear una nueva contraseña",
+        "subtitle": "Introduce y confirma tu nueva contraseña",
+        "instruction": "¿Recuperaste tu contraseña?"
+      }
     }
   },
   "headers": {

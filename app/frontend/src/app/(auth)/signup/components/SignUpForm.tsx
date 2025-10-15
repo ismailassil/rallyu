@@ -14,11 +14,21 @@ import { FormProvider } from '../../components/Form/FormContext';
 import AvailabilityIndicator from '../../components/Form/AvailabilityIndicator';
 import useAPICall from '@/app/hooks/useAPICall';
 import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
+import { useTranslations } from 'next-intl';
 
 export default function SignUpForm() {
+	const t = useTranslations('auth');
+
 	const router = useRouter();
-	const { register } = useAuth();
-	const { isLoading, executeAPICall } = useAPICall();
+
+	const {
+		register
+	} = useAuth();
+
+	const {
+		isLoading,
+		executeAPICall
+	} = useAPICall();
 
 	const [
 		formData,
@@ -76,7 +86,7 @@ export default function SignUpForm() {
 					<InputField
 						className='field flex flex-col gap-0.5 min-w-0 flex-1'
 						iconSrc='/icons/firstname.svg'
-						label='First Name'
+						label={t('common.first_name')}
 						field='first_name'
 						inputPlaceholder='Achraf'
 						autoFocus
@@ -84,7 +94,7 @@ export default function SignUpForm() {
 					<InputField
 						className='field flex flex-col gap-0.5 min-w-0 flex-1'
 						iconSrc='/icons/lastname.svg'
-						label='Last Name'
+						label={t('common.last_name')}
 						field='last_name'
 						inputPlaceholder='Demnati'
 					/>
@@ -92,7 +102,7 @@ export default function SignUpForm() {
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/at.svg'
-					label='Username'
+					label={t('common.username')}
 					field='username'
 					inputPlaceholder='xezzuz'
 				>
@@ -101,7 +111,7 @@ export default function SignUpForm() {
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/mail.svg'
-					label='Email'
+					label={t('common.email')}
 					field='email'
 					inputPlaceholder='iassil@1337.student.ma'
 				>
@@ -110,7 +120,7 @@ export default function SignUpForm() {
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/lock.svg'
-					label='Password'
+					label={t('common.password')}
 					field='password'
 					inputPlaceholder='••••••••••••••••'
 					inputHidden={true}

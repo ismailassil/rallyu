@@ -1,5 +1,3 @@
-import { secondsToMinutes } from "@/app/(api)/utils";
-
 export const STAT_CONFIG = {
 	total_xp: { label: "Total XP", suffix: " XP", decimals: 0 },
 	win_rate: { label: "Win Rate", suffix: "%", decimals: 2 },
@@ -21,18 +19,3 @@ export const STAT_CONFIG = {
 	min_duration: { label: "Shortest Game", suffix: "m", decimals: 0 },
 	avg_duration: { label: "Average Game", suffix: "m", decimals: 1 },
 } as const;
-
-export function flattenStats(obj: Record<string, any> = {}) {
-	return Object.entries(obj)
-	  	.filter(([key]) => STAT_CONFIG[key as keyof typeof STAT_CONFIG])
-	  	.map(([key, value]) => {
-		const config = STAT_CONFIG[key as keyof typeof STAT_CONFIG];
-		const displayValue = key.includes('duration') ? secondsToMinutes(value) : value;
-
-		return {
-			label: config.label,
-			value: displayValue,
-			suffix: config.suffix,
-		};
-	});
-};

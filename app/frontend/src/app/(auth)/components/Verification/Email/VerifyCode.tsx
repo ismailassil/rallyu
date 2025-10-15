@@ -8,6 +8,7 @@ import OTPCodeInput from '@/app/(onsite)/[DEPRECATED]2fa/components/OTPCodeInput
 import AnimatedComponent from '../../UI/AnimatedComponent';
 import ResendCode from '../ResendCode';
 import { APIError } from '@/app/(api)/APIClient';
+import { useTranslations } from 'next-intl';
 
 interface VerifyCodeProps {
 	token: string,
@@ -18,6 +19,8 @@ interface VerifyCodeProps {
 
 // EMAIL
 export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : VerifyCodeProps) {
+	const t = useTranslations('auth.verification');
+
 	const {
 		apiClient
 	} = useAuth();
@@ -86,8 +89,8 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>Email</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>We&#39;ve sent a 6-digit code via SMS</p>
+					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('verifyCode.title', { method: 'EMAIL' })}</h1>
+					<p className='text-gray-300 text-sm sm:text-balance'>{t('verifyCode.subtitle', { method: 'EMAIL' })}</p>
 				</div>
 			</div>
 

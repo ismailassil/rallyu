@@ -8,6 +8,7 @@ import { toastError } from "@/app/components/CustomToast";
 import { APIError } from "@/app/(api)/APIClient";
 import ResendCode from "../ResendCode";
 import AnimatedComponent from "../../UI/AnimatedComponent";
+import { useTranslations } from "next-intl";
 
 interface VerifyCodeProps {
 	selectedMethod: string;
@@ -18,6 +19,7 @@ interface VerifyCodeProps {
 }
 
 export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess, onFailure, onGoBack } : VerifyCodeProps) {
+	const t = useTranslations('auth.twoFactorAtLogin.verifyCode');
 
 	const {
 		apiClient,
@@ -98,8 +100,8 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-[27px] inline-block'>Two-Factor Authentication</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>Enter the 6-digit code to complete verification</p>
+					<h1 className='font-semibold text-lg sm:text-[27px] inline-block'>{t('title')}</h1>
+					<p className='text-gray-300 text-sm sm:text-balance'>{t('subtitle', { method: selectedMethod })}</p>
 				</div>
 			</div>
 
@@ -130,7 +132,7 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 				)}
 			</div>
 
-			{loginSessionMeta.enabledMethods.length > 1 && <p className='mt-12 self-center text-center'>Can&#39;t access this method?<br></br><a onClick={onGoBack} className="font-semibold text-blue-500 hover:underline cursor-pointer">Try other verification methods</a></p>}
+			{loginSessionMeta.enabledMethods.length > 1 && <p className='mt-12 self-center text-center'>{t('cannot_access', { method: selectedMethod })}<br></br><a onClick={onGoBack} className="font-semibold text-blue-500 hover:underline cursor-pointer">{t('other_method')}</a></p>}
 		</AnimatedComponent>
 	);
 }

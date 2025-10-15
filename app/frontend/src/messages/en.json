@@ -19,6 +19,227 @@
         "text": "Start",
         "subtext": "Training"
       }
+    },
+    "snapshots": "{statKey, select, total_xp {Total XP} win_rate {Win Rate} current_streak {Current Streak} longest_streak {Longest Streak} matches {Games Played} wins {Games Won} losses {Games Lost} draws {Games Drawn} total_user_score {Total Score} max_user_score {Highest Score} min_user_score {Lowest Score} avg_user_score {Average Score} total_duration {Total Playtime} max_duration {Longest Game} min_duration {Shortest Game} avg_duration {Average Game} other {Unknown Stat}}"
+  },
+  "profile": {
+    "common": {
+      "level": "level"
+    },
+    "cards": {
+      "global_rank": {
+        "part1": "Global",
+        "part2": "Rank"
+      },
+      "win_rate": {
+        "part1": "Win",
+        "part2": "Rate"
+      },
+      "current_streak": {
+        "part1": "Current",
+        "part2": "Streak"
+      }
+    },
+    "buttons": {
+      "edit_profile": "Edit Profile",
+      "view_performance": "View Performance"
+    }
+  },
+  "relations": {
+    "common": {
+      "sent": "Sent",
+      "accepted": "Accepted",
+      "canceled": "Canceled",
+      "declined": "Declined",
+      "unfriended": "Unfriended",
+      "blocked": "Blocked",
+      "unblocked": "Unblocked",
+      "add": "Add",
+      "cancel": "Cancel",
+      "accept": "Accept",
+      "decline": "Decline",
+      "unfriend": "Unfriend",
+      "block": "Block",
+      "unblock": "Unblock"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account preferences and security settings",
+    "general": {
+      "title": "General",
+      "cards": {
+        "personal_infos": {
+          "title": "Personal Informations",
+          "subtitle": "Update your account profile information and email address"
+        }
+      }
+    },
+    "users": {
+      "title": "Users",
+      "cards": {
+        "friends": {
+          "title": "Friends",
+          "subtitle": "View and manage relationship with all of your friends"
+        },
+        "incoming": {
+          "title": "Incoming Friend Requests",
+          "subtitle": "View and decline all the pending friend requests you've received"
+        },
+        "outgoing": {
+          "title": "Outgoing Friend Requests",
+          "subtitle": "View and cancel all the pending friend requests you've sent"
+        },
+        "blocked": {
+          "title": "Blocked Users",
+          "subtitle": "View and unblock all the users you have blocked"
+        }
+      }
+    },
+    "security": {
+      "title": "Security",
+      "cards": {
+        "twoFactor": {
+          "title": "Two-factor Authentication",
+          "subtitle": "Add an extra layer of security to your account by choosing your preferred verification method",
+          "button": "Manage 2FA"
+        },
+        "change_password_form": {
+          "title": "Change Password",
+          "subtitle": "Modify your current password",
+          "sidecard": {
+            "title": "Password Requirements",
+            "text1": "To create a new password,",
+            "text2": "you have to meet all of the following requirements:",
+            "text3": "Minimum 8 characters long",
+            "text4": "At least one lowercase letter",
+            "text5": "At least one uppercase letter",
+            "text6": "At least one digit"
+          },
+          "button": "Save Changes"
+        },
+        "sessions": {
+          "title": "Browsers and devices",
+          "subtitle": "These browsers and devices are currently signed in to you account. Remove any unauthorized devices"
+        },
+        "delete_account": {
+          "title": "Delete Account",
+          "subtitle": "This will permanently delete your account and all associated data. This action is irreversible",
+          "button": "Delete Account"
+        }
+      }
+    }
+  },
+  "auth": {
+    "common": {
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "email": "Email",
+      "username": "Username",
+      "password": "Password",
+      "confirm_password": "Confirm Password",
+      "current_password": "Current Password",
+      "new_password": "New Password",
+      "forgot_password": "Forgot Password",
+      "bio": "Bio",
+      "max_resends": "You've reached the resend limit",
+      "retry": "Retry?",
+      "didnt_receive_code": "Didn't receive the code?",
+      "resend_code": "Resend code",
+      "resend_in": "Resend in",
+      "or": "OR",
+      "signup": "Sign Up",
+      "singin": "Sign In",
+      "login": "Log In",
+      "play": "Play",
+      "chat": "Chat",
+      "online": "Online",
+      "offline": "Offline",
+      "remove_pic": "Remove Picture",
+      "change_pic": "Change Picture",
+      "current": "Current"
+    },
+    "login": {
+      "title": "Welcome Back!",
+      "subtitle": "Please enter you details to sign in.",
+      "instruction": "Don't have an account yet?"
+    },
+    "signup": {
+      "title": "Create an account",
+      "subtitle": "Please enter you details to sign up.",
+      "instruction": "Already have an account?"
+    },
+    "twoFactorAtLogin": {
+      "overview": {
+        "title": "Two-Factor Authentication",
+        "subtitle": "Select one of the following methods to complete verification",
+        "cards": {
+          "title": "{method, select, TOTP {Authenticator App} EMAIL {Email} SMS {SMS} other {Authentication Method}}",
+          "subtitle": "{method, select, TOTP {Using Google Authenticator, Authy...} EMAIL {Receive codes via Email} SMS {Receive codes via SMS} other {Authentication Method}}"
+        }
+      },
+      "verifyCode": {
+        "title": "Two-Factor Authentication",
+        "subtitle": "{method, select, TOTP {Enter the 6-digit code from your Authenticator App} EMAIL {We've sent a 6-digit code to your Email} SMS {We've sent a 6-digit code via SMS} other {Enter the 6-digit code to complete verification}}",
+        "cannot_access": "{method, select, TOTP {Cannot access your Authenticator App?} EMAIL {Cannot access your Email?} SMS {Cannot access your Phone?} other {Can't access this method?}}",
+        "other_method": "Try other verification methods"
+      }
+    },
+    "twoFactorManager": {
+      "overview": {
+        "title": "Two-Factor Authentication",
+        "subtitle": "Add an extra layer of security to your account by choosing your preferred verification method",
+        "cards": {
+          "title": "{method, select, TOTP {Authenticator App} EMAIL {Email} SMS {SMS} other {Authentication Method}}",
+          "subtitle": "{method, select, TOTP {Using Google Authenticator, Authy...} EMAIL {Receive codes via Email} SMS {Receive codes via SMS} other {Authentication Method}}"
+        },
+        "note": {
+          "title": "Recommended",
+          "text": "Authenticator apps provide the highest security and work without internet connection."
+        }
+      },
+      "done": {
+        "title": "Two-Factor Authentication",
+        "subtitle": "Setup complete",
+        "2nd_subtitle": "Your account is now protected with two-factor authentication.",
+        "buttons": {
+          "goback": "Back to 2FA Manager",
+          "continue": "Continue to Dashboard"
+        }
+      }
+    },
+    "verification": {
+      "input": {
+        "title": "{method, select, TOTP {Authenticator App} EMAIL {Email} SMS {SMS} other {Authentication Method}}",
+        "subtitle": "{method, select, TOTP {Scan the QR code with your authenticator app} EMAIL {We'll send a 6-digit verification code to your Email} SMS {We'll send a 6-digit verification code to your phone} other {We'll send a 6-digit verification code}}",
+        "cant_scan_qr": "Can't scan? Enter this code manually:"
+      },
+      "verifyCode": {
+        "title": "{method, select, TOTP {Authenticator App} EMAIL {Email} SMS {SMS} other {Authentication Method}}",
+        "subtitle": "{method, select, TOTP {Enter the 6-digit code from your Authenticator App} EMAIL {We've sent a 6-digit code to your Email} SMS {We've sent a 6-digit code via SMS} other {Enter the 6-digit code to complete verification}}"
+      },
+      "note": {
+        "title": "Note",
+        "first": "Updating this email will replace the existing contact information on your account.",
+        "second": "Please ensure the new information is correct, as it will be used for all future communications and verifications."
+      }
+    },
+    "reset_password": {
+      "forgotPassword": {
+        "title": "Forgot your password?",
+        "subtitle": "We've sent a 6-digit code to your Email",
+        "instruction": "Remember your password?"
+      },
+      "verifyCode": {
+        "title": "Check your Email!",
+        "subtitle": "We've sent a 6-digit code to your Email",
+        "instruction": "Remember your password?"
+      },
+      "setNewPassword": {
+        "title": "Create a New Password",
+        "subtitle": "Please enter and confirm your new password",
+        "instruction": "Remember your password?"
+      }
     }
   },
   "headers": {

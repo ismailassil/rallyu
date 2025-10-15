@@ -9,12 +9,15 @@ import { toastError } from '@/app/components/CustomToast';
 import ToggleSwitch from '../../../(auth)/components/UI/ToggleSwitch';
 import AnimatedComponent from '@/app/(auth)/components/UI/AnimatedComponent';
 import NoteBox from '@/app/components/NoteBox';
+import { useTranslations } from 'next-intl';
 
 interface OverviewProps {
 	onSetup: (m: string) => void;
 }
 
 export default function Overview({ onSetup }: OverviewProps) {
+	const t = useTranslations('auth');
+
 	const {
 		loggedInUser,
 		apiClient
@@ -92,8 +95,8 @@ export default function Overview({ onSetup }: OverviewProps) {
 			{/* Header */}
 			<div className='flex flex-col'>
 				<Fingerprint size={64} className="bg-blue-500 rounded-full p-2 self-center mb-6"/>
-				<h1 className='font-semibold text-3xl text-center mb-3'>Two-Factor Authentication</h1>
-				<p className='mb-0 text-white/85 text-center'>Add an extra layer of security to your account by choosing your preferred verification method.</p>
+				<h1 className='font-semibold text-3xl text-center mb-3'>{t('auth.twoFactorManager.overview.title')}</h1>
+				<p className='mb-0 text-white/85 text-center'>{t('auth.twoFactorManager.overview.subtitle')}</p>
 			</div>
 
 			{/* Methods List */}
@@ -108,8 +111,8 @@ export default function Overview({ onSetup }: OverviewProps) {
 								{METHODS_META[m].icon}
 							</div>
 							<div>
-								<h1 className='font-semibold text-sm sm:text-base md:text-lg lg:text-2xl mb-1.5 flex items-center gap-4'>{METHODS_META[m].title}</h1>
-								<p className='font-light text-sm lg:text-base text-white/75'>{METHODS_META[m].description}</p>
+								<h1 className='font-semibold text-sm sm:text-base md:text-lg lg:text-2xl mb-1.5 flex items-center gap-4'>{t('auth.twoFactorManager.overview.cards.title', { method: m })}</h1>
+								<p className='font-light text-sm lg:text-base text-white/75'>{t('auth.twoFactorManager.overview.cards.subtitle', { method: m })}</p>
 							</div>
 							<ToggleSwitch
 								enabled={isEnabled}
@@ -126,8 +129,8 @@ export default function Overview({ onSetup }: OverviewProps) {
 			</div>
 
 			{/* Recommendation */}
-			<NoteBox title='Recommended' className='md:text-lg'>
-				Authenticator apps provide the highest security and work without internet connection.
+			<NoteBox title={t('auth.twoFactorManager.overview.note.title')} className='md:text-lg'>
+				{t('auth.twoFactorManager.overview.note.text')}
 			</NoteBox>
 		</AnimatedComponent>
 	);
