@@ -18,7 +18,7 @@ interface TOTPVerification {
 }
 
 export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTPVerification) {
-	const t = useTranslations('auth.verification');
+	const t = useTranslations('auth');
 
 	const [token, setToken] = useState('');
 	const [TOTPSecrets, setTOTPSecrets] = useState<APITOTPSecrets | null>(null);
@@ -91,8 +91,8 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('input.title', { method: 'TOTP' })}</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>{t('input.subtitle', { method: 'TOTP' })}</p>
+					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('verification.input.title', { method: 'TOTP' })}</h1>
+					<p className='text-gray-300 text-sm sm:text-balance'>{t('verification.input.subtitle', { method: 'TOTP' })}</p>
 				</div>
 			</div>
 
@@ -110,7 +110,7 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 					)}
 
 					<div className="text-center">
-						<p className="text-sm text-gray-300 mb-2">{t('input.cant_scan_qr')}</p>
+						<p className="text-sm text-gray-300 mb-2">{t('verification.input.cant_scan_qr')}</p>
 						<code className="bg-gray-800 px-3 py-1 rounded text-xs sm:text-sm font-mono select-text truncate">
 							{TOTPSecrets?.secret_base32 || 'XXXX XXXX XXXX XXXX'}
 						</code>
@@ -118,7 +118,7 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 				</div>
 
 				<form className="flex flex-col gap-3 mt-8" onSubmit={handleSubmit}>
-					<p className="text-center text-gray-200 text-sm sm:text-base">{t('verifyCode.subtitle')}</p>
+					<p className="text-center text-gray-200 text-sm sm:text-base">{t('verification.verifyCode.subtitle')}</p>
 
 					<OTPCodeInput
 						code={code}
@@ -129,7 +129,7 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 					/>
 
 					<FormButton
-						text='Continue'
+						text={t('common.continue')}
 						type="submit"
 						icon={<ArrowRight size={16} />}
 						disabled={code.some((d) => d === '')}

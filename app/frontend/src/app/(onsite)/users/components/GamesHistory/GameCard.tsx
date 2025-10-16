@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Avatar from "../Avatar";
+import { useTranslations } from "next-intl";
 
 
 export type GameProps = {
@@ -20,12 +21,6 @@ export type GameProps = {
 }
 
 type Outcome = 'W' | 'L' | 'D';
-
-const outcomeStyles: Record<Outcome, { bg: string; ring: string; label: string }> = {
-	W: { bg: 'bg-green-600', ring: 'ring-3 ring-green-500', label: 'Victory' },
-	L: { bg: 'bg-red-600', ring: 'ring-3 ring-red-500', label: 'Defeat' },
-	D: { bg: 'bg-gray-600', ring: 'ring-3 ring-gray-500', label: 'Draw' },
-};
 
 function PlayerAvatar({ avatar, ringClass } : { avatar: string; ringClass: string; }) {
 	return (
@@ -51,6 +46,14 @@ export default function GameCard({
 	// duration,
 	outcome,
 } : GameProps) {
+	const t = useTranslations('');
+
+	const outcomeStyles: Record<Outcome, { bg: string; ring: string; label: string }> = {
+		W: { bg: 'bg-green-600', ring: 'ring-3 ring-green-500', label: t('common.victory') },
+		L: { bg: 'bg-red-600', ring: 'ring-3 ring-red-500', label: t('common.defeat') },
+		D: { bg: 'bg-gray-600', ring: 'ring-3 ring-gray-500', label: t('common.draw') },
+	};
+
 	const outcomeStyle = outcomeStyles[outcome as Outcome];
 	const opponentRingClass =
 		outcome === 'W'

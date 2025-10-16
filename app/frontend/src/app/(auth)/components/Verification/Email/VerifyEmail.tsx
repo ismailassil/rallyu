@@ -75,8 +75,8 @@ export default function VerifyEmail({ onGoBack, onNext } : VerifyEmailProps) {
 						<ArrowLeft size={40} />
 					</button>
 					<div>
-						<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('input.title', { method: 'EMAIL' })}</h1>
-						<p className='text-gray-300 text-sm sm:text-balance'>{t('input.subtitle', { method: 'EMAIL' })}</p>
+						<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('verification.input.title', { method: 'EMAIL' })}</h1>
+						<p className='text-gray-300 text-sm sm:text-balance'>{t('verification.input.title', { method: 'EMAIL' })}</p>
 					</div>
 				</div>
 
@@ -102,15 +102,15 @@ export default function VerifyEmail({ onGoBack, onNext } : VerifyEmailProps) {
 					/>
 					</FormProvider>
 					<FormButton
-						text='Continue'
+						text={t('common.continue')}
 						type='submit'
 						icon={<ArrowRight size={16} />}
 						isSubmitting={isLoading}
 					/>
 				</form>
 
-				<NoteBox title={t('note.title')} className='bg-blue-500/6 text-blue-400 md:text-sm mt-2'>
-					<br></br>{t('note.first')}<br></br>{t('note.second')}
+				<NoteBox title={t('verification.note.title')} className='bg-blue-500/6 text-blue-400 md:text-sm mt-2'>
+					<br></br>{t('verification.note.first')}<br></br>{t('verification.note.second')}
 				</NoteBox>
 		</AnimatedComponent>
 	);

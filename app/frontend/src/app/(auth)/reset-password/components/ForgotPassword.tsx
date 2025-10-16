@@ -14,7 +14,7 @@ import AnimatedComponent from "../../components/UI/AnimatedComponent";
 import { useTranslations } from "next-intl";
 
 export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) => void, onGoBack: () => void }) {
-	const t = useTranslations('auth');
+	const t = useTranslations('');
 
 	const router = useRouter();
 
@@ -97,7 +97,7 @@ export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) 
 				/>
 				</FormProvider>
 				<FormButton
-					text='Reset Password'
+					text={t('auth.common.reset_password')}
 					type="submit"
 					icon={<RotateCw size={16} />}
 					isSubmitting={isLoading}

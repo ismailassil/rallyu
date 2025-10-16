@@ -15,7 +15,7 @@ export default function FriendsCardItem({
 	avatar,
 	isOnline
 } : LeaderboardProps) {
-	const t = useTranslations('auth.common');
+	const t = useTranslations('common');
 
 	return (
 		<div className="flex bg-white/2 border border-white/8 rounded-2xl py-4 px-5 justify-between items-center select-none">

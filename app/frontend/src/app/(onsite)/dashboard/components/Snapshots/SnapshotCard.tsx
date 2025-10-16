@@ -16,7 +16,7 @@ import { STAT_CONFIG } from './constants';
 
 
 export default function SnapshotCard() {
-	const t = useTranslations("dashboard");
+	const t = useTranslations('dashboard');
 	const [index, setIndex] = useState(0);
 
 	const {
@@ -158,7 +158,7 @@ export default function SnapshotCard() {
 					)}
 
 					<ChartCardWrapper
-						chartTitle="Time Spent in the Platform"
+						chartTitle={t('common.time_spent')}
 						className="h-110"
 						isEmpty={timeSpentData.length === 0}
 					>

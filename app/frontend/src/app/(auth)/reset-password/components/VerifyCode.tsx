@@ -20,7 +20,7 @@ interface VerifyCodeProps {
 }
 
 export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCodeProps) {
-	const t = useTranslations('auth');
+	const t = useTranslations('');
 
 	const router = useRouter();
 
@@ -108,7 +108,7 @@ export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCod
 				/>
 
 				<FormButton
-					text='Continue'
+					text={t('auth.common.continue')}
 					type="submit"
 					icon={<ArrowRight size={16} />}
 					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '')}

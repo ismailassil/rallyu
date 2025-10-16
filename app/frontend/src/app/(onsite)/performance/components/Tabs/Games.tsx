@@ -121,7 +121,7 @@ function GamesHistoryTable() {
 								<tr key={match.match_id} className="hover:bg-white/6">
 									<td className="px-6 py-3 text-center text-sm font-medium text-white tracking-wider">{match.opponent_username}</td>
 									<td className="px-6 py-3 text-center text-sm font-medium text-white tracking-wider">{match.game_type}</td>
-									<td className="px-6 py-3 text-center text-sm font-medium text-white tracking-wider">{match.mode || "Ranked 1v1"}</td>
+									<td className="px-6 py-3 text-center text-sm font-medium text-white tracking-wider">{match.mode || "1v1"}</td>
 									<td className="px-6 py-3 text-center text-sm font-medium text-white tracking-wider">
 										<span className={`px-3 py-1 rounded-full border ${
 											match.outcome === "W" ? "border-green-500 text-green-500"

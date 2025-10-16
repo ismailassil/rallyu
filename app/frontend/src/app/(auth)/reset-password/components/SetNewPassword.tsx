@@ -13,7 +13,7 @@ import AnimatedComponent from "../../components/UI/AnimatedComponent";
 import { useTranslations } from "next-intl";
 
 export function SetNewPassword({ token, onSuccess } : { token: string, onSuccess: () => void }) {
-	const t = useTranslations('auth');
+	const t = useTranslations('');
 
 	const router = useRouter();
 
@@ -70,7 +70,7 @@ export function SetNewPassword({ token, onSuccess } : { token: string, onSuccess
 				</div>
 			</div>
 
-			<form onSubmit={handleSubmit}>
+			<form className="flex flex-col gap-5" onSubmit={handleSubmit}>
 				<FormProvider
 					formData={formData}
 					errors={errors}
@@ -100,7 +100,7 @@ export function SetNewPassword({ token, onSuccess } : { token: string, onSuccess
 				/>
 				</FormProvider>
 				<FormButton
-					text='Reset Password'
+					text={t('auth.common.reset_password')}
 					type="submit"
 					icon={<RotateCw size={16} />}
 					isSubmitting={isLoading}

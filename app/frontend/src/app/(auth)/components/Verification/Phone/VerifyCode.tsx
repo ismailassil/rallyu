@@ -19,7 +19,7 @@ interface VerifyCodeProps {
 
 // EMAIL
 export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : VerifyCodeProps) {
-	const t = useTranslations('auth.verification');
+	const t = useTranslations('auth');
 
 	const {
 		apiClient
@@ -89,8 +89,8 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-				<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('verifyCode.title', { method: 'SMS' })}</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>{t('verifyCode.subtitle', { method: 'SMS' })}</p>
+				<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('verification.verifyCode.title', { method: 'SMS' })}</h1>
+					<p className='text-gray-300 text-sm sm:text-balance'>{t('verification.verifyCode.subtitle', { method: 'SMS' })}</p>
 				</div>
 			</div>
 
@@ -105,7 +105,7 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 				/>
 
 				<FormButton
-					text='Continue'
+					text={t('common.continue')}
 					type='submit'
 					icon={<ArrowRight size={16} />}
 					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '')}

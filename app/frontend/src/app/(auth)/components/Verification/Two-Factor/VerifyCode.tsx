@@ -19,7 +19,7 @@ interface VerifyCodeProps {
 }
 
 export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess, onFailure, onGoBack } : VerifyCodeProps) {
-	const t = useTranslations('auth.twoFactorAtLogin.verifyCode');
+	const t = useTranslations('auth');
 
 	const {
 		apiClient,
@@ -100,8 +100,8 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-[27px] inline-block'>{t('title')}</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>{t('subtitle', { method: selectedMethod })}</p>
+					<h1 className='font-semibold text-lg sm:text-[27px] inline-block'>{t('twoFactorAtLogin.verifyCode.title')}</h1>
+					<p className='text-gray-300 text-sm sm:text-balance'>{t('twoFactorAtLogin.verifyCode.subtitle', { method: selectedMethod })}</p>
 				</div>
 			</div>
 
@@ -116,7 +116,7 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 				/>
 
 				<FormButton
-					text='Continue'
+					text={t('common.continue')}
 					icon={<ArrowRight size={16} />}
 					onClick={handleSubmit}
 					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '')}
@@ -132,7 +132,7 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 				)}
 			</div>
 
-			{loginSessionMeta.enabledMethods.length > 1 && <p className='mt-12 self-center text-center'>{t('cannot_access', { method: selectedMethod })}<br></br><a onClick={onGoBack} className="font-semibold text-blue-500 hover:underline cursor-pointer">{t('other_method')}</a></p>}
+			{loginSessionMeta.enabledMethods.length > 1 && <p className='mt-12 self-center text-center'>{t('twoFactorAtLogin.verifyCode.cannot_access', { method: selectedMethod })}<br></br><a onClick={onGoBack} className="font-semibold text-blue-500 hover:underline cursor-pointer">{t('twoFactorAtLogin.verifyCode.other_method')}</a></p>}
 		</AnimatedComponent>
 	);
 }

@@ -17,7 +17,7 @@ import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
 import { useTranslations } from 'next-intl';
 
 export default function SignUpForm() {
-	const t = useTranslations('auth');
+	const t = useTranslations('auth.common');
 
 	const router = useRouter();
 
@@ -86,7 +86,7 @@ export default function SignUpForm() {
 					<InputField
 						className='field flex flex-col gap-0.5 min-w-0 flex-1'
 						iconSrc='/icons/firstname.svg'
-						label={t('common.first_name')}
+						label={t('first_name')}
 						field='first_name'
 						inputPlaceholder='Achraf'
 						autoFocus
@@ -94,7 +94,7 @@ export default function SignUpForm() {
 					<InputField
 						className='field flex flex-col gap-0.5 min-w-0 flex-1'
 						iconSrc='/icons/lastname.svg'
-						label={t('common.last_name')}
+						label={t('last_name')}
 						field='last_name'
 						inputPlaceholder='Demnati'
 					/>
@@ -102,7 +102,7 @@ export default function SignUpForm() {
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/at.svg'
-					label={t('common.username')}
+					label={t('username')}
 					field='username'
 					inputPlaceholder='xezzuz'
 				>
@@ -111,7 +111,7 @@ export default function SignUpForm() {
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/mail.svg'
-					label={t('common.email')}
+					label={t('email')}
 					field='email'
 					inputPlaceholder='iassil@1337.student.ma'
 				>
@@ -120,7 +120,7 @@ export default function SignUpForm() {
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/lock.svg'
-					label={t('common.password')}
+					label={t('password')}
 					field='password'
 					inputPlaceholder='••••••••••••••••'
 					inputHidden={true}
@@ -128,7 +128,7 @@ export default function SignUpForm() {
 					{formData.password && <PasswordStrengthIndicator key="password-strength" value={formData.password} />}
 				</InputField>
 				<FormButton
-					text='Sign Up'
+					text={t('signup')}
 					icon={<LogIn size={16} />}
 					type='submit'
 					isSubmitting={isLoading}

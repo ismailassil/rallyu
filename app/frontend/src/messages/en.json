@@ -1,5 +1,8 @@
 {
   "dashboard": {
+    "common": {
+      "time_spent": "Time Spent in the Platform"
+    },
     "titles": {
       "greetings": "Welcome back,",
       "leaderboard": "Leaderboard",
@@ -22,9 +25,19 @@
     },
     "snapshots": "{statKey, select, total_xp {Total XP} win_rate {Win Rate} current_streak {Current Streak} longest_streak {Longest Streak} matches {Games Played} wins {Games Won} losses {Games Lost} draws {Games Drawn} total_user_score {Total Score} max_user_score {Highest Score} min_user_score {Lowest Score} avg_user_score {Average Score} total_duration {Total Playtime} max_duration {Longest Game} min_duration {Shortest Game} avg_duration {Average Game} other {Unknown Stat}}"
   },
+  "common": {
+    "play": "Play",
+    "chat": "Chat",
+    "online": "Online",
+    "offline": "Offline",
+    "victory": "Victory",
+    "defeat": "Defeat",
+    "draw": "Draw"
+  },
   "profile": {
     "common": {
-      "level": "level"
+      "level": "Level",
+      "time_spent": "Time Spent in the Platform"
     },
     "cards": {
       "global_rank": {
@@ -38,6 +51,26 @@
       "current_streak": {
         "part1": "Current",
         "part2": "Streak"
+      },
+      "games_history": {
+        "title": "Games History"
+      },
+      "performance": {
+        "title": "Performance",
+        "cards": {
+          "total_xp": "Total XP",
+          "games_played": {
+            "part1": "Games",
+            "part2": "Played"
+          },
+          "longest_streak": {
+            "part1": "Longest",
+            "part2": "Streak"
+          },
+          "wins": "Wins",
+          "losses": "Losses",
+          "draws": "Draws"
+        }
       }
     },
     "buttons": {
@@ -130,6 +163,189 @@
       }
     }
   },
+  "performance_dashboard": {
+    "title": "Performance",
+    "subtitle": "View detailed stats and historical data of your games",
+    "common": {
+      "games": "{count, plural, one {# game} other {# games}}",
+      "points": "{count, plural, one {# point} other {# points}}"
+    },
+    "overview": {
+      "title": "Overview",
+      "cards": {
+        "your_statistics": {
+          "title": "Your Statistics",
+          "cards": {
+            "total_matches": {
+              "title": "Total Games",
+              "subtitle": ""
+            },
+            "win_rate": {
+              "title": "Win Rate",
+              "subtitle": ""
+            },
+            "points_scored": {
+              "title": "Points Scored",
+              "subtitle": "net differential"
+            },
+            "time_played": {
+              "title": "Time Played",
+              "subtitle": "{count, plural, one {# minute total} other {# minutes total}}"
+            },
+            "score_records": {
+              "title": "Score Records",
+              "1st": "Highest Score",
+              "2nd": "Lowest Score",
+              "3rd": "Average Score"
+            },
+            "avg_p_by_outcome": {
+              "title": "Average Score by Outcome",
+              "1st": "Per Win",
+              "2nd": "Per Loss",
+              "3rd": "Per Draw"
+            },
+            "charts": {
+              "win_rate_trends": {
+                "title": "Win Rate Trends",
+                "subtitle": "Win rate over the last 7 days"
+              },
+              "wins_vs_losses": {
+                "title": "Wins / Losses",
+                "subtitle": "Wins / Losses distribution over time",
+                "common": {
+                  "wins": "Wins",
+                  "losses": "Losses",
+                  "draws": "Draws"
+                }
+              },
+              "avg_score_trends": {
+                "title": "Average Score Trends",
+                "subtitle": "Average score over the last 7 days"
+              }
+            }
+          }
+        }
+      }
+    },
+    "opponent": {
+      "title": "Opponent",
+      "cards": {
+        "opp_analysis": {
+          "title": "Opponent Analysis",
+          "cards": {
+            "most_wins": {
+              "title": "Most Wins",
+              "subtitle": "{count, plural, one {you won # game} other {you won # games}}"
+            },
+            "most_freq": {
+              "title": "Most Frequent",
+              "subtitle": "{count, plural, one {# game} other {# games}}"
+            },
+            "most_losses": {
+              "title": "Most Losses",
+              "subtitle": "{count, plural, one {you lost # game} other {you lost # games}}"
+            },
+            "unique_players": {
+              "title": "Opponents",
+              "subtitle": "{count, plural, one {# unique player} other {# unique players}}"
+            },
+            "score_records": {
+              "title": "Score Records",
+              "1st": "Highest Score",
+              "2nd": "Lowest Score",
+              "3rd": "Average Score"
+            },
+            "avg_p_by_outcome": {
+              "title": "Average Score by Outcome",
+              "1st": "Per Win",
+              "2nd": "Per Loss",
+              "3rd": "Per Draw"
+            },
+            "charts": {
+              "opp_score_trends": {
+                "title": "Opponents Score Trends",
+                "subtitle": "Score of your opponents over the last 7 days"
+              },
+              "wins_vs_losses": {
+                "title": "Opponents Score Trends",
+                "subtitle": "Score of your opponents over the last 7 days"
+              },
+              "avg_score_trends": {
+                "title": "Opponents Average Score Trends",
+                "subtitle": "Average score of your opponents over the last 7 days"
+              }
+            }
+          }
+        }
+      }
+    },
+    "games": {
+      "title": "Games",
+      "cards": {
+        "games_history": {
+          "title": "Games History",
+          "selectors": {
+            "alltime": "All Time",
+            "1d": "Last 1 day",
+            "7d": "Last 7 days",
+            "30d": "Last 30 days",
+            "90d": "Last 90 days",
+            "year": "Last year",
+            "alltypes": "All Types",
+            "pong": "Ping Pong",
+            "xo": "XO"
+          },
+          "pagination": {
+            "page": "Page",
+            "prev": "Previous",
+            "next": "Next"
+          },
+          "columns": {
+            "opp": "Opponent",
+            "type": "Type",
+            "mode": "Mode",
+            "result": "Result",
+            "score": "Score",
+            "duration": "Duration",
+            "date": "Date"
+          },
+          "common": {
+            "ranked1v1": "Ranked 1v1",
+            "win": "Win",
+            "loss": "Loss",
+            "draw": "Draw"
+          }
+        },
+        "time_analysis": {
+          "title": "Opponent Analysis",
+          "cards": {
+            "duration_records": {
+              "title": "Duration Records",
+              "1st": "Longest Game",
+              "2nd": "Shortest Game",
+              "3rd": "Average Game"
+            },
+            "avg_d_by_outcome": {
+              "title": "Duration by Outcome",
+              "1st": "Average Win",
+              "2nd": "Average Loss",
+              "3rd": "Average Draw"
+            },
+            "charts": {
+              "time_spent": {
+                "title": "Time Spent",
+                "subtitle": "Daily Playtime over the last 7 days"
+              },
+              "games_per_day": {
+                "title": "Games Per Day",
+                "subtitle": "Daily Playtime over the last 7 days"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "auth": {
     "common": {
       "first_name": "First Name",
@@ -141,6 +357,7 @@
       "current_password": "Current Password",
       "new_password": "New Password",
       "forgot_password": "Forgot Password",
+      "reset_password": "Reset Password",
       "bio": "Bio",
       "max_resends": "You've reached the resend limit",
       "retry": "Retry?",
@@ -149,15 +366,12 @@
       "resend_in": "Resend in",
       "or": "OR",
       "signup": "Sign Up",
-      "singin": "Sign In",
+      "signin": "Sign In",
       "login": "Log In",
-      "play": "Play",
-      "chat": "Chat",
-      "online": "Online",
-      "offline": "Offline",
       "remove_pic": "Remove Picture",
       "change_pic": "Change Picture",
-      "current": "Current"
+      "current": "Current",
+      "continue": "Continue"
     },
     "login": {
       "title": "Welcome Back!",
@@ -247,7 +461,7 @@
       "titles": {
         "profile": "Profile",
         "settings": "Settings",
-        "Logout": "Logout"
+        "logout": "Logout"
       }
     },
     "notification": {

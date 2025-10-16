@@ -1,5 +1,8 @@
 {
   "dashboard": {
+    "common": {
+      "time_spent": "Tiempo Pasado en la Plataforma"
+    },
     "titles": {
       "greetings": "Bienvenido de nuevo,",
       "leaderboard": "Clasificación",
@@ -22,9 +25,19 @@
     },
     "snapshots": "{statKey, select, total_xp {Experiencia total} win_rate {Porcentaje victorias} current_streak {Racha actual} longest_streak {Racha larga} matches {Partidas jugadas} wins {Partidas ganadas} losses {Partidas perdidas} draws {Empates} total_user_score {Puntuación total} max_user_score {Puntuación alta} min_user_score {Puntuación baja} avg_user_score {Puntuación promedio} total_duration {Tiempo total} max_duration {Partida larga} min_duration {Partida corta} avg_duration {Duración promedio} other {Estadística desconocida}}"
   },
+  "common": {
+    "play": "Jugar",
+    "chat": "Chat",
+    "online": "En línea",
+    "offline": "Desconectado",
+    "victory": "Victoria",
+    "defeat": "Derrota",
+    "draw": "Empate"
+  },
   "profile": {
     "common": {
-      "level": "nivel"
+      "level": "Nivel",
+      "time_spent": "Tiempo Pasado en la Plataforma"
     },
     "cards": {
       "global_rank": {
@@ -38,6 +51,26 @@
       "current_streak": {
         "part1": "Racha",
         "part2": "actual"
+      },
+      "games_history": {
+        "title": "Historial de juegos"
+      },
+      "performance": {
+        "title": "Actuación",
+        "cards": {
+          "total_xp": "Experiencia total",
+          "games_played": {
+            "part1": "Partidas",
+            "part2": "jugadas"
+          },
+          "longest_streak": {
+            "part1": "Racha",
+            "part2": "larga"
+          },
+          "wins": "Victorias",
+          "losses": "Derrotas",
+          "draws": "Empates"
+        }
       }
     },
     "buttons": {
@@ -64,7 +97,7 @@
     }
   },
   "settings": {
-    "title": "Ajustes",
+    "title": "Configuración",
     "subtitle": "Gestiona las preferencias de tu cuenta y la configuración de seguridad",
     "general": {
       "title": "General",
@@ -130,6 +163,189 @@
       }
     }
   },
+  "performance_dashboard": {
+    "title": "Rendimiento",
+    "subtitle": "Consulta estadísticas detalladas e historial de tus partidas",
+    "common": {
+      "games": "{count, plural, one {# partida} other {# partidas}}",
+      "points": "{count, plural, one {# punto} other {# puntos}}"
+    },
+    "overview": {
+      "title": "Resumen",
+      "cards": {
+        "your_statistics": {
+          "title": "Tus estadísticas",
+          "cards": {
+            "total_matches": {
+              "title": "Partidas totales",
+              "subtitle": ""
+            },
+            "win_rate": {
+              "title": "Porcentaje de victorias",
+              "subtitle": ""
+            },
+            "points_scored": {
+              "title": "Puntos anotados",
+              "subtitle": "diferencial neto"
+            },
+            "time_played": {
+              "title": "Tiempo jugado",
+              "subtitle": "{count, plural, one {# minuto total} other {# minutos totales}}"
+            },
+            "score_records": {
+              "title": "Récords de puntuación",
+              "1st": "Puntuación más alta",
+              "2nd": "Puntuación más baja",
+              "3rd": "Puntuación promedio"
+            },
+            "avg_p_by_outcome": {
+              "title": "Puntuación promedio por resultado",
+              "1st": "Por victoria",
+              "2nd": "Por derrota",
+              "3rd": "Por empate"
+            },
+            "charts": {
+              "win_rate_trends": {
+                "title": "Tendencia del porcentaje de victorias",
+                "subtitle": "Porcentaje de victorias en los últimos 7 días"
+              },
+              "wins_vs_losses": {
+                "title": "Victorias / Derrotas",
+                "subtitle": "Distribución de victorias y derrotas en el tiempo",
+                "common": {
+                  "wins": "Victorias",
+                  "losses": "Derrotas",
+                  "draws": "Empates"
+                }
+              },
+              "avg_score_trends": {
+                "title": "Tendencia de puntuación promedio",
+                "subtitle": "Puntuación promedio en los últimos 7 días"
+              }
+            }
+          }
+        }
+      }
+    },
+    "opponent": {
+      "title": "Contrincante",
+      "cards": {
+        "opp_analysis": {
+          "title": "Análisis de contrincantes",
+          "cards": {
+            "most_wins": {
+              "title": "Más victorias",
+              "subtitle": "{count, plural, one {ganaste # partida} other {ganaste # partidas}}"
+            },
+            "most_freq": {
+              "title": "Más frecuente",
+              "subtitle": "{count, plural, one {# partida} other {# partidas}}"
+            },
+            "most_losses": {
+              "title": "Más derrotas",
+              "subtitle": "{count, plural, one {perdiste # partida} other {perdiste # partidas}}"
+            },
+            "unique_players": {
+              "title": "Contrincantes",
+              "subtitle": "{count, plural, one {# jugador único} other {# jugadores únicos}}"
+            },
+            "score_records": {
+              "title": "Récords de puntuación",
+              "1st": "Puntuación más alta",
+              "2nd": "Puntuación más baja",
+              "3rd": "Puntuación promedio"
+            },
+            "avg_p_by_outcome": {
+              "title": "Puntuación promedio por resultado",
+              "1st": "Por victoria",
+              "2nd": "Por derrota",
+              "3rd": "Por empate"
+            },
+            "charts": {
+              "opp_score_trends": {
+                "title": "Tendencia de puntuación de contrincantes",
+                "subtitle": "Puntuación de tus contrincantes en los últimos 7 días"
+              },
+              "wins_vs_losses": {
+                "title": "Tendencia de puntuación de contrincantes",
+                "subtitle": "Puntuación de tus contrincantes en los últimos 7 días"
+              },
+              "avg_score_trends": {
+                "title": "Tendencia de puntuación promedio de contrincantes",
+                "subtitle": "Puntuación promedio de tus contrincantes en los últimos 7 días"
+              }
+            }
+          }
+        }
+      }
+    },
+    "games": {
+      "title": "Partidas",
+      "cards": {
+        "games_history": {
+          "title": "Historial de partidas",
+          "selectors": {
+            "alltime": "Todo el tiempo",
+            "1d": "Último día",
+            "7d": "Últimos 7 días",
+            "30d": "Últimos 30 días",
+            "90d": "Últimos 90 días",
+            "year": "Último año",
+            "alltypes": "Todos los tipos",
+            "pong": "Ping Pong",
+            "xo": "XO"
+          },
+          "pagination": {
+            "page": "Página",
+            "prev": "Anterior",
+            "next": "Siguiente"
+          },
+          "columns": {
+            "opp": "Contrincante",
+            "type": "Tipo",
+            "mode": "Modo",
+            "result": "Resultado",
+            "score": "Puntuación",
+            "duration": "Duración",
+            "date": "Fecha"
+          },
+          "common": {
+            "ranked1v1": "1v1 clasificatorio",
+            "win": "Victoria",
+            "loss": "Derrota",
+            "draw": "Empate"
+          }
+        },
+        "time_analysis": {
+          "title": "Análisis de tiempo",
+          "cards": {
+            "duration_records": {
+              "title": "Récords de duración",
+              "1st": "Partida más larga",
+              "2nd": "Partida más corta",
+              "3rd": "Duración promedio"
+            },
+            "avg_d_by_outcome": {
+              "title": "Duración por resultado",
+              "1st": "Victoria promedio",
+              "2nd": "Derrota promedio",
+              "3rd": "Empate promedio"
+            },
+            "charts": {
+              "time_spent": {
+                "title": "Tiempo jugado",
+                "subtitle": "Tiempo diario jugado en los últimos 7 días"
+              },
+              "games_per_day": {
+                "title": "Partidas por día",
+                "subtitle": "Número de partidas diarias en los últimos 7 días"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "auth": {
     "common": {
       "first_name": "Nombre",
@@ -141,6 +357,7 @@
       "current_password": "Contraseña actual",
       "new_password": "Nueva contraseña",
       "forgot_password": "¿Olvidaste tu contraseña?",
+      "reset_password": "Restablecer contraseña",
       "bio": "Biografía",
       "max_resends": "Has alcanzado el límite de reenvíos",
       "retry": "¿Reintentar?",
@@ -149,15 +366,12 @@
       "resend_in": "Reenviar en",
       "or": "O",
       "signup": "Registrarse",
-      "singin": "Iniciar sesión",
+      "signin": "Iniciar sesión",
       "login": "Iniciar sesión",
-      "play": "Jugar",
-      "chat": "Chat",
-      "online": "En línea",
-      "offline": "Desconectado",
       "remove_pic": "Eliminar foto",
       "change_pic": "Cambiar foto",
-      "current": "Actual"
+      "current": "Actual",
+      "continue": "Continuar"
     },
     "login": {
       "title": "¡Bienvenido de nuevo!",
@@ -247,7 +461,7 @@
       "titles": {
         "profile": "Perfil",
         "settings": "Configuración",
-        "Logout": "Cerrar sesión"
+        "logout": "Cerrar sesión"
       }
     },
     "notification": {

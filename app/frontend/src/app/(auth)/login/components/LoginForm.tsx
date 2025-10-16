@@ -95,7 +95,7 @@ export default function LoginForm() {
 					</p>
 				</InputField>
 				<FormButton
-					text='Sign In'
+					text={t('signin')}
 					icon={<LogIn size={16} />}
 					type='submit'
 					isSubmitting={isLoading}

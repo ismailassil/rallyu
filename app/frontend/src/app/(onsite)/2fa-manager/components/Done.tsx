@@ -19,12 +19,12 @@ export default function Done({ onDashboard, onSetupAnotherMethod } : { onDashboa
 			</div>
 			<div className='flex gap-4'>
 				<FormButton
-					text='Back to 2FA Manager'
+					text={t('buttons.goback')}
 					icon={<Fingerprint size={16} />}
 					onClick={onSetupAnotherMethod}
 					/>
 				<FormButton
-					text='Continue to Dashboard'
+					text={t('buttons.continue')}
 					icon={<ArrowRight size={16} />}
 					onClick={onDashboard}
 				/>

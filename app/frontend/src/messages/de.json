@@ -1,5 +1,8 @@
 {
   "dashboard": {
+    "common": {
+      "time_spent": "Verweildauer auf der Plattform"
+    },
     "titles": {
       "greetings": "Willkommen zurück,",
       "leaderboard": "Bestenliste",
@@ -22,9 +25,19 @@
     },
     "snapshots": "{statKey, select, total_xp {Gesamte EP} win_rate {Gewinnrate} current_streak {Aktuelle Siegesserie} longest_streak {Längste Siegesserie} matches {Spiele gespielt} wins {Spiele gewonnen} losses {Spiele verloren} draws {Unentschieden} total_user_score {Gesamtpunktzahl} max_user_score {Höchste Punktzahl} min_user_score {Niedrigste Punktzahl} avg_user_score {Durchschnittliche Punktzahl} total_duration {Gesamte Spielzeit} max_duration {Längstes Spiel} min_duration {Kürzestes Spiel} avg_duration {Durchschnittliche Spieldauer} other {Unbekannte Statistik}}"
   },
+  "common": {
+    "play": "Spielen",
+    "chat": "Chat",
+    "online": "Online",
+    "offline": "Offline",
+    "victory": "Sieg",
+    "defeat": "Niederlage",
+    "draw": "Unentschieden"
+  },
   "profile": {
     "common": {
-      "level": "Level"
+      "level": "Level",
+      "time_spent": "Verweildauer auf der Plattform"
     },
     "cards": {
       "global_rank": {
@@ -38,6 +51,26 @@
       "current_streak": {
         "part1": "Aktuelle",
         "part2": "Serie"
+      },
+      "games_history": {
+        "title": "Spielegeschichte"
+      },
+      "performance": {
+        "title": "Leistung",
+        "cards": {
+          "total_xp": "Gesamte EP",
+          "games_played": {
+            "part1": "Spiele",
+            "part2": "gespielt"
+          },
+          "longest_streak": {
+            "part1": "Längste",
+            "part2": "Siegesserie"
+          },
+          "wins": "Siege",
+          "losses": "Niederlagen",
+          "draws": "Unentschieden"
+        }
       }
     },
     "buttons": {
@@ -130,6 +163,189 @@
       }
     }
   },
+  "performance_dashboard": {
+    "title": "Leistung",
+    "subtitle": "Detaillierte Statistiken und Verlauf deiner Spiele einsehen",
+    "common": {
+      "games": "{count, plural, one {# Spiel} other {# Spiele}}",
+      "points": "{count, plural, one {# Punkt} other {# Punkte}}"
+    },
+    "overview": {
+      "title": "Übersicht",
+      "cards": {
+        "your_statistics": {
+          "title": "Deine Statistiken",
+          "cards": {
+            "total_matches": {
+              "title": "Gesamtspiele",
+              "subtitle": ""
+            },
+            "win_rate": {
+              "title": "Gewinnrate",
+              "subtitle": ""
+            },
+            "points_scored": {
+              "title": "Erzielte Punkte",
+              "subtitle": "Netto-Differenz"
+            },
+            "time_played": {
+              "title": "Spielzeit",
+              "subtitle": "{count, plural, one {# Minute insgesamt} other {# Minuten insgesamt}}"
+            },
+            "score_records": {
+              "title": "Punkte-Rekorde",
+              "1st": "Höchste Punktzahl",
+              "2nd": "Niedrigste Punktzahl",
+              "3rd": "Durchschnittliche Punktzahl"
+            },
+            "avg_p_by_outcome": {
+              "title": "Durchschnittspunkte nach Ergebnis",
+              "1st": "Pro Sieg",
+              "2nd": "Pro Niederlage",
+              "3rd": "Pro Unentschieden"
+            },
+            "charts": {
+              "win_rate_trends": {
+                "title": "Entwicklung der Gewinnrate",
+                "subtitle": "Gewinnrate der letzten 7 Tage"
+              },
+              "wins_vs_losses": {
+                "title": "Siege / Niederlagen",
+                "subtitle": "Verteilung von Siegen und Niederlagen über die Zeit",
+                "common": {
+                  "wins": "Siege",
+                  "losses": "Niederlagen",
+                  "draws": "Unentschieden"
+                }
+              },
+              "avg_score_trends": {
+                "title": "Entwicklung der durchschnittlichen Punktzahl",
+                "subtitle": "Durchschnittspunkte der letzten 7 Tage"
+              }
+            }
+          }
+        }
+      }
+    },
+    "opponent": {
+      "title": "Gegner",
+      "cards": {
+        "opp_analysis": {
+          "title": "Gegneranalyse",
+          "cards": {
+            "most_wins": {
+              "title": "Meiste Siege",
+              "subtitle": "{count, plural, one {du hast # Spiel gewonnen} other {du hast # Spiele gewonnen}}"
+            },
+            "most_freq": {
+              "title": "Häufigster Gegner",
+              "subtitle": "{count, plural, one {# Spiel} other {# Spiele}}"
+            },
+            "most_losses": {
+              "title": "Meiste Niederlagen",
+              "subtitle": "{count, plural, one {du hast # Spiel verloren} other {du hast # Spiele verloren}}"
+            },
+            "unique_players": {
+              "title": "Gegner",
+              "subtitle": "{count, plural, one {# einzigartiger Spieler} other {# einzigartige Spieler}}"
+            },
+            "score_records": {
+              "title": "Punkte-Rekorde",
+              "1st": "Höchste Punktzahl",
+              "2nd": "Niedrigste Punktzahl",
+              "3rd": "Durchschnittliche Punktzahl"
+            },
+            "avg_p_by_outcome": {
+              "title": "Durchschnittspunkte nach Ergebnis",
+              "1st": "Pro Sieg",
+              "2nd": "Pro Niederlage",
+              "3rd": "Pro Unentschieden"
+            },
+            "charts": {
+              "opp_score_trends": {
+                "title": "Punkteentwicklung der Gegner",
+                "subtitle": "Punktzahl deiner Gegner in den letzten 7 Tagen"
+              },
+              "wins_vs_losses": {
+                "title": "Punkteentwicklung der Gegner",
+                "subtitle": "Punktzahl deiner Gegner in den letzten 7 Tagen"
+              },
+              "avg_score_trends": {
+                "title": "Durchschnittliche Punkteentwicklung der Gegner",
+                "subtitle": "Durchschnittspunkte deiner Gegner in den letzten 7 Tagen"
+              }
+            }
+          }
+        }
+      }
+    },
+    "games": {
+      "title": "Spiele",
+      "cards": {
+        "games_history": {
+          "title": "Spielverlauf",
+          "selectors": {
+            "alltime": "Gesamte Zeit",
+            "1d": "Letzter Tag",
+            "7d": "Letzte 7 Tage",
+            "30d": "Letzte 30 Tage",
+            "90d": "Letzte 90 Tage",
+            "year": "Letztes Jahr",
+            "alltypes": "Alle Typen",
+            "pong": "Ping Pong",
+            "xo": "XO"
+          },
+          "pagination": {
+            "page": "Seite",
+            "prev": "Zurück",
+            "next": "Weiter"
+          },
+          "columns": {
+            "opp": "Gegner",
+            "type": "Typ",
+            "mode": "Modus",
+            "result": "Ergebnis",
+            "score": "Punkte",
+            "duration": "Dauer",
+            "date": "Datum"
+          },
+          "common": {
+            "ranked1v1": "Gewertetes 1v1",
+            "win": "Sieg",
+            "loss": "Niederlage",
+            "draw": "Unentschieden"
+          }
+        },
+        "time_analysis": {
+          "title": "Zeitanalyse",
+          "cards": {
+            "duration_records": {
+              "title": "Dauer-Rekorde",
+              "1st": "Längstes Spiel",
+              "2nd": "Kürzestes Spiel",
+              "3rd": "Durchschnittliche Spieldauer"
+            },
+            "avg_d_by_outcome": {
+              "title": "Durchschnittliche Dauer nach Ergebnis",
+              "1st": "Durchschnittlicher Sieg",
+              "2nd": "Durchschnittliche Niederlage",
+              "3rd": "Durchschnittliches Unentschieden"
+            },
+            "charts": {
+              "time_spent": {
+                "title": "Verbrachte Spielzeit",
+                "subtitle": "Tägliche Spielzeit der letzten 7 Tage"
+              },
+              "games_per_day": {
+                "title": "Spiele pro Tag",
+                "subtitle": "Anzahl der Spiele pro Tag in den letzten 7 Tagen"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "auth": {
     "common": {
       "first_name": "Vorname",
@@ -141,6 +357,7 @@
       "current_password": "Aktuelles Passwort",
       "new_password": "Neues Passwort",
       "forgot_password": "Passwort vergessen",
+      "reset_password": "Passwort zurücksetzen",
       "bio": "Bio",
       "max_resends": "Du hast das Limit für erneute Zusendungen erreicht",
       "retry": "Erneut versuchen?",
@@ -149,15 +366,12 @@
       "resend_in": "Erneut senden in",
       "or": "ODER",
       "signup": "Registrieren",
-      "singin": "Anmelden",
+      "signin": "Anmelden",
       "login": "Anmelden",
-      "play": "Spielen",
-      "chat": "Chat",
-      "online": "Online",
-      "offline": "Offline",
       "remove_pic": "Bild entfernen",
       "change_pic": "Bild ändern",
-      "current": "Aktuell"
+      "current": "Aktuell",
+      "continue": "Weitermachen"
     },
     "login": {
       "title": "Willkommen zurück!",
@@ -247,7 +461,7 @@
       "titles": {
         "profile": "Profil",
         "settings": "Einstellungen",
-        "Logout": "Abmelden"
+        "logout": "Abmelden"
       }
     },
     "notification": {
