@@ -108,7 +108,7 @@ function GamesHistoryTable() {
 					<table className="min-w-full divide-y divide-gray-200">
 						<thead>
 							<tr>
-							{[t('columns.opp'), t('columns.type'), t('columns.mode'), t('columns.result'), t('columns.score'), t('columns.duration'), t('columns.date')].map((col) => (
+							{["Opponent", "Type", "Mode", "Result", "Score", "Duration", "Date"].map((col) => (
 								<th
 									key={col}
 									className="px-6 py-3 text-center text-sm font-medium text-white uppercase tracking-wider"

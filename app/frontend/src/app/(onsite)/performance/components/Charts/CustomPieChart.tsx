@@ -34,7 +34,7 @@ export default function CustomPieChart({
 							active && payload && payload.length ? (
 								<div className="border-br-card ring-3 rounded-lg border-2 bg-white/10 p-2 ring-white/5 backdrop-blur-lg">
 									<p>{payload[0].name}</p>
-									<p className="text-xl">
+									<p className="text-xl capitalize">
 										{tooltipFormatter(payload[0].value as number)}
 									</p>
 								</div>
