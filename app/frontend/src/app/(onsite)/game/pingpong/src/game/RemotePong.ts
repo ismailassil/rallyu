@@ -91,7 +91,9 @@ class RemotePong extends APong {
                     break;
                 case 'forfeit':
                     this.proxy.disconnect();
-                    
+                    this.eventHandlers?.updateOverlayStatus(data.result);
+                    this.eventHandlers?.updateOverlayStatus('gameover');
+                    this.eventHandlers?.updateTimer(0);
                     break;
             }
         })

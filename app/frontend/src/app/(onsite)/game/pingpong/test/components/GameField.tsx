@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import Overlay from "./Overlay";
-import Pong from "../../src/Pong";
+import Pong from "@/app/(onsite)/game/pingpong/src/Pong";
 import VersusCard from "@/app/(onsite)/game/components/Items/VersusCard";
 import LoadingComponent from "@/app/(auth)/components/UI/LoadingComponents";
 import RoomNotFound from "./RoomNotFound";
 import { useParams } from "next/navigation";
-import SocketProxy from "../../../utils/socketProxy";
+import SocketProxy from "@/app/(onsite)/game/utils/socketProxy";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import RemotePong from "../../src/game/RemotePong";
+import RemotePong from "@/app/(onsite)/game/pingpong/src/game/RemotePong";
 
 
 
 const GameField = () => {
     const { apiClient, loggedInUser } = useAuth();
 	const socketProxy = useRef<SocketProxy>(SocketProxy.getInstance());
-	const [isLoading, setIsLoading ] = useState(true);
+	const [isLoading, setIsLoading ] = useState(false);
 	const [notFound, setNotFound ] = useState(false);
 	const [opponentId, setOpponentId] = useState<number | undefined>(undefined);
     const { roomid }: { roomid: string} = useParams();
@@ -25,35 +25,9 @@ const GameField = () => {
         updateOverlayStatus: setOverlayStatus,
     }));
 
-    useEffect(() => {
-		let disconnect: (() => void) | undefined;
-		let isMounted = true;
-		(async () => {
-			try {
-				const res = await apiClient.fetchGameRoomStatus(roomid);
-
-				if (!isMounted) return;
-
-				setOpponentId(res.players.find(p => p.ID !== loggedInUser!.id)?.ID);
-				setIsLoading(false);
-				disconnect = socketProxy.current.connect(`/game/room/join/${roomid}?userid=${loggedInUser?.id}`, apiClient);
-			} catch (err) {
-				if (!isMounted) return;
-				
-				setIsLoading(false);
-				setNotFound(true);
-				console.log(`Game Service: ${err}`);
-			}
-		})()
-		
-		return disconnect;
-	}, [])
 
     const forfeitGame = () => {
         pong.current.forfeit();
-
-        // if (pong.current.gamePlayStatus !== 'gameover' && pong.current.gamePlayStatus !== 'countdown')
-        //     setPause(!pause);
     }
 
 

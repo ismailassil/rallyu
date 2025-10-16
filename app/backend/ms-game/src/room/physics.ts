@@ -80,6 +80,7 @@ const updatePlayers = (players: PongPlayerState[]) => {
 
 export const updateState = (gameState: PingPongGameState) => {
 	updatePlayers(gameState.players);
+	if (gameState.pause) return ;
 	const newBall: Coords = updateBall(gameState.ball)
 
 	// check bounce off left paddle

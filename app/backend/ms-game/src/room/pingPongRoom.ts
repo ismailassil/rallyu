@@ -103,12 +103,12 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				{
 					coords: { x: 20, y: 450 },
 					movement: 'still',
-					speed: 10
+					speed: 12
 				},
 				{
 					coords: { x: 1580, y: 450 },
 					movement: 'still',
-					speed: 10
+					speed: 12
 				}
 			],
 			score: [0, 0],
@@ -140,11 +140,22 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 		}
 	}
 
+	private getResults = () => {
+		const [p1, p2] = this.state.score;
+	  
+		if (p1 > p2) return ["win", "loss"];
+		if (p1 < p2) return ["loss", "win"];
+		return ["tie", "tie"];
+	}
+
     sendGameOverPacket = () => {
-		this.players.forEach(player => {
+		const results = this.getResults();
+	
+		this.players.forEach((player, i) => {
 			if (player.socket?.readyState === ws.OPEN) {
             	player.socket.send(JSON.stringify({
 					type: 'gameover',
+					result: results[i],
 					scores: this.state.score
 				}))
 			}
@@ -189,7 +200,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 		});
 
 		this.intervalId = setInterval(() => {
-			if (!this.state.pause) updateState(this.state);
+			updateState(this.state);
 
 			this.players.forEach((player, index) => {
 				if (player.socket?.readyState === ws.OPEN)
