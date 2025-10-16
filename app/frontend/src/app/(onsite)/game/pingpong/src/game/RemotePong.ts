@@ -36,25 +36,26 @@ class RemotePong extends APong {
     }
 
     private updateGame = () => {
-        this.state.ball.x += this.lerp(this.state.ball.x, this.state.serverBall.x, 0.4)
-        this.state.ball.y += this.lerp(this.state.ball.y, this.state.serverBall.y, 0.4)
+        this.state.ball.x += this.lerp(this.state.ball.x, this.state.serverBall.x, 0.6)
+        this.state.ball.y += this.lerp(this.state.ball.y, this.state.serverBall.y, 0.6)
     
         this.state.players[0].pos.y += this.lerp(
             this.state.players[0].pos.y,
             this.state.serverPlayerY,
-            0.4
+            0.6
         )
 
         this.state.players[1].pos.y += this.lerp(
             this.state.players[1].pos.y,
             this.state.serverOpponentY,
-            0.4
+            0.6
         )
     }
 
     setupCommunications = (): (() => void) => {
         return this.proxy.subscribe((data: any): void => {
             this.state.gameStatus = data.type
+            // console.log('Data From GameServer: ', data);
             switch (data.type) {
                 case 'opp_left':
                     this.state.opponentDC = true;
@@ -92,7 +93,6 @@ class RemotePong extends APong {
                 case 'forfeit':
                     this.proxy.disconnect();
                     this.eventHandlers?.updateOverlayStatus(data.result);
-                    this.eventHandlers?.updateOverlayStatus('gameover');
                     this.eventHandlers?.updateTimer(0);
                     break;
             }
@@ -122,9 +122,7 @@ class RemotePong extends APong {
     }
 
     forfeit = () => {
-        this.proxy.send({ type: 'forfeit', pid: this.state.index });
-        this.eventHandlers?.updateOverlayStatus('gameover');
-        this.eventHandlers?.updateTimer(0);
+        this.proxy.send(JSON.stringify({ type: 'forfeit', pid: this.state.index }));
     }
 
     initGame = (canvas : HTMLCanvasElement) => {

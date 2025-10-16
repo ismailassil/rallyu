@@ -3,18 +3,10 @@ import { APIClient } from '@/app/(api)/APIClient';
 type MessageCallBack = (message: any) => void;
 
 class SocketProxy {
-	private static instance: SocketProxy;
 	private socket: WebSocket | null = null;
 	private subscribers: MessageCallBack[] = [];
 
-	private constructor() {};
-
-	public static getInstance(): SocketProxy {
-		if (!SocketProxy.instance) {
-			SocketProxy.instance = new SocketProxy;
-		}
-		return SocketProxy.instance;
-	}
+	constructor() {};
 
 	private notifySubscribers(message: any) {
 		try {
@@ -57,6 +49,7 @@ class SocketProxy {
 	}
 
 	public disconnect(): void {
+		console.log('Disconnect Called');
 		this.socket?.close(1000, "Normal");
 		this.socket = null;
 	}

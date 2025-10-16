@@ -14,9 +14,17 @@ const Overlay = ({ status }: { status: string }) => { // status: pause countdown
 
     return (
         <div className="absolute inset-0 w-full h-full">
-            <div className={`absolute inset-0 rounded-lg transition-all duration-150 w-full h-full ${status === 'gameover' ? 'bg-neutral-800/30 ': ''}`}>
+            <div className={`absolute inset-0 rounded-lg transition-all duration-150 w-full h-full ${status === 'gameover' && 'bg-neutral-800/30'}`}>
                 <div className={`absolute inset-0 m-auto p-3 flex flex-col justify-between w-[clamp(170px,20%,100%)] h-[clamp(100px,20%,100%)] border border-card bg-neutral-900 shadow-black shadow-2xl rounded-lg transition-all duration-300 ease-in-out ${status === 'gameover' ? 'opacity-100 translate-y-0': 'translate-y-20 opacity-0'}`}>
-                    <span className='flex flex-1 text-4xl whitespace-nowrap mb-5 font-funnel-display font-bold justify-center items-center'>You {status}</span>
+                    <span className='flex flex-1 text-4xl whitespace-nowrap mb-5 font-funnel-display font-bold justify-center items-center'>
+                        {status === 'win' ? (
+                            'You Win!'
+                        ): status === 'loss' ? (
+                            'You lose'
+                        ) : status === 'tie' ? (
+                            'Draw'
+                        ) : 'Gameover'}
+                    </span>
                     <div className="inline-flex gap-2 ">
                         <button
                             onClick={() => router.push('/game')}

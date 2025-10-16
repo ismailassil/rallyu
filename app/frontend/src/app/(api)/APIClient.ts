@@ -375,23 +375,17 @@ export class APIClient {
 	}
 
 	private classifyError(err: any) : APIError {
-		try {
-			if (!err.response) {
-				return {
-					code: 'NETWORK_ERR',
-					message: 'Network Error - Try again later!'
-				};
-			}
-
+		if (!err.response) {
 			return {
-				code: err.response.data.error.code || 'ERROR',
-				message: err.response.data.error.message || 'Something Went Wrong! - Coming from ClassifyError'
-			};
-		} catch {
-			return {
-				code: 'ERROR',
-				message: 'Something Went Wrong! - Coming from ClassifyError'
+				code: 'NETWORK_ERR',
+				message: 'Network Error - Try again later!'
 			};
 		}
+
+		return {
+			code: err.response.data.error.code || 'ERROR',
+			message: err.response.data.error.message || 'Something Went Wrong! - Coming from ClassifyError',
+			details: err
+		};
 	}
 }

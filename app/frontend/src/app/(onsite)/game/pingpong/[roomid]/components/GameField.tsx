@@ -9,11 +9,9 @@ import SocketProxy from "../../../utils/socketProxy";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import RemotePong from "../../src/game/RemotePong";
 
-
-
 const GameField = () => {
     const { apiClient, loggedInUser } = useAuth();
-	const socketProxy = useRef<SocketProxy>(SocketProxy.getInstance());
+	const socketProxy = useRef<SocketProxy>(new SocketProxy());
 	const [isLoading, setIsLoading ] = useState(true);
 	const [notFound, setNotFound ] = useState(false);
 	const [opponentId, setOpponentId] = useState<number | undefined>(undefined);
@@ -46,7 +44,9 @@ const GameField = () => {
 			}
 		})()
 		
-		return disconnect;
+		return () => {
+            if (disconnect) disconnect();
+        }
 	}, [])
 
     const forfeitGame = () => {

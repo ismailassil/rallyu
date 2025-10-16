@@ -1,7 +1,7 @@
 import { getVelocity, angles, updateState } from './physics'
 import type { Room, Player, PingPongGameState, TicTacToeGameState, PingPongStatus, GameType } from '../types/types'
 import ws from 'ws';
-import { closeRoom } from './roomManager';
+import { closeRoom, userSessions } from './roomManager';
 
 const GAME_UPDATE_INTERVAL = 16.67; // 60hz
 const GAME_START_DELAY = 3000; // 3 sec
@@ -41,7 +41,7 @@ export class PingPongPlayer implements Player {
 						closeRoom(room, 1003, 'Game Over');
 						// await axios.post(`http://ms-auth:${MS_AUTH_PORT}/users/match`, {
 						// 	players: [
-						// 		{ 
+						// 		{
 						// 			ID: room.players[0].id, 
 						// 			score: room.state.score[0]
 						// 		},
@@ -103,12 +103,12 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				{
 					coords: { x: 20, y: 450 },
 					movement: 'still',
-					speed: 12
+					speed: 15
 				},
 				{
 					coords: { x: 1580, y: 450 },
 					movement: 'still',
-					speed: 12
+					speed: 15
 				}
 			],
 			score: [0, 0],
@@ -164,11 +164,13 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 
 	sendForfeitPacket = (yeilder: number) => {
 		console.log("forfeit: ", yeilder)
-		this.players.forEach(player => {
+		const results = this.getResults();
+
+		this.players.forEach((player, i) => {
 			if (player.socket?.readyState === ws.OPEN) {
             	player.socket.send(JSON.stringify({
 					type: 'forfeit',
-					yeilder,
+					result: results[i],
 					scores: this.state.score
 				}))
 			}

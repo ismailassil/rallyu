@@ -55,6 +55,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 				throw new Error("Match room not found");
 
 			const player = room.players.find(player => player.id === userid);
+			console.log('is player connected? : ', player?.connected);
 			if (!player)
 				throw new Error("Player not in match room");
 			if (player.connected)

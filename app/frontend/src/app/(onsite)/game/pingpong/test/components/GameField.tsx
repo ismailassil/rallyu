@@ -13,7 +13,7 @@ import RemotePong from "@/app/(onsite)/game/pingpong/src/game/RemotePong";
 
 const GameField = () => {
     const { apiClient, loggedInUser } = useAuth();
-	const socketProxy = useRef<SocketProxy>(SocketProxy.getInstance());
+	const socketProxy = useRef<SocketProxy>(new SocketProxy());
 	const [isLoading, setIsLoading ] = useState(false);
 	const [notFound, setNotFound ] = useState(false);
 	const [opponentId, setOpponentId] = useState<number | undefined>(undefined);
