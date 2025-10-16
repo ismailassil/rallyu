@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import GameField from "../local/components/GameField";
+import GameField from "./components/GameField";
 
 const Game = () => {
 

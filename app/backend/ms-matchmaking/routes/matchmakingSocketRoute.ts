@@ -51,6 +51,20 @@ const processQueue = async (queue: Map<number, ws.WebSocket>, type: string) => {
 
 const matchmakingSocketRoutes = async function (app: FastifyInstance) {
 
+    app.get("/:gameType/queue", (req, res) => {
+        const { gameType } = req.params as { gameType: string };
+        let queue: Map<number, ws.WebSocket>;
+        if (gameType === 'pingpong') queue = pingpongQueue;
+        else if (gameType === 'tictactoe') queue = tictactoeQueue;
+        else {
+            return res.code(400).send({ message: "Unknown game type"});
+        }
+        return { 
+            inQueue: [...queue.keys()],
+            size: queue.size
+        }
+    })
+
     app.get("/:gameType/join", { websocket: true, schema: matchMakingRouteSchema }, (connection: ws.WebSocket, req: FastifyRequest) => {
         const { gameType } = req.params as { gameType: string };
         let queue: Map<number, ws.WebSocket>;
@@ -60,11 +74,16 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
             connection.close(1008, "Unknown game type");
             return;
         }
+
         connection.on('message', (message: RawData) => {
             try {
                 const data = message.toString('utf-8');
                 const dataObj = JSON.parse(data);
-    
+                
+                const prev = queue.get(dataObj.id);
+                if (prev) {
+                    prev.close(1002, 'account active on another device');
+                }
                 queue.set(dataObj.id, connection);
                 if (queue.size >= 2)
                 {
@@ -72,7 +91,6 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
                         processQueue(queue, gameType);
                     })
                 }
-                console.log('queue, gameType', queue.size, gameType);
             } catch (err) {
                 console.error('Error processing message:', err);
                 if (connection.readyState === WebSocket.OPEN) {

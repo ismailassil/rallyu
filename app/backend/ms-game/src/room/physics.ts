@@ -63,19 +63,19 @@ const updateBall = (ball: BallState) => {
 }
 
 const updatePlayers = (players: PongPlayerState[]) => {
-	for(const player of players) {
-		if (player.movement === 'still')
-			continue;
+    for (const player of players) {
+        if (player.movement !== 'up' && player.movement !== 'down')
+            continue;
 
-		const newY = player.coords.y + (player.movement === 'up' ? -player.speed : player.speed);
+        const newY = player.coords.y + (player.movement === 'up' ? -player.speed : player.speed);
 
-		if (newY - HALF_PADDLE > ARENA_HEIGHT || newY + HALF_PADDLE < 0) {
-			player.movement = 'still'
-			return;
-		}
+        if (newY - HALF_PADDLE < 0 || newY + HALF_PADDLE > ARENA_HEIGHT) {
+            player.movement = 'still';
+            continue;
+        }
 
-		player.coords.y = newY;
-	}
+        player.coords.y = newY;
+    }
 }
 
 export const updateState = (gameState: PingPongGameState) => {

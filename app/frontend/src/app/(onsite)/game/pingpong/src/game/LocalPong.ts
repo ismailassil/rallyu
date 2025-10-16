@@ -203,7 +203,6 @@ class LocalPong extends APong {
         if (this.gamePlayStatus === 'play' || this.gamePlayStatus === 'delay') {
             this.gamePlayStatus = 'pause';
             this.remaining -= Date.now() - this.startTime!;
-            console.log(this.remaining)
             this.eventHandlers?.updateOverlayStatus('pause');
             this.eventHandlers?.updateTimer(this.remaining);
             this.cleanupTimeouts();

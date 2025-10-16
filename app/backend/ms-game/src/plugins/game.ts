@@ -72,7 +72,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 						type: 'reconnected',
 						score: room.state.score,
 						i: index,
-						time: Math.round(GAME_TIME - (Date.now() - room.startTime!))
+						t: Math.round(GAME_TIME - (Date.now() - room.startTime!))
 					}));
 				}
 			} else if (room.players.every(p => p.connected)) {

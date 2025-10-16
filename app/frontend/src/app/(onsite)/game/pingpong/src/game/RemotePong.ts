@@ -10,17 +10,17 @@ class RemotePong extends APong {
         super();
         this.animationFrameId = null;
         this.state = {
-            serverOpponentY: 600,
-            serverPlayerY: 600,
-            serverBall: { x: 800, y: 600 },
-            ball: { x: 800, y: 600 },
+            serverOpponentY: 450,
+            serverPlayerY: 450,
+            serverBall: { x: 800, y: 450 },
+            ball: { x: 800, y: 450 },
             players:[
                 {
-                    pos: { x: 20, y: 600 },
+                    pos: { x: 20, y: 450 },
                     score: 0
                 },
                 {
-                    pos: { x: 1580, y: 600 },
+                    pos: { x: 1580, y: 450 },
                     score: 0
                 }
             ],
@@ -36,12 +36,18 @@ class RemotePong extends APong {
     }
 
     private updateGame = () => {
-        this.state.ball.x += this.lerp(this.state.ball.x, this.state.serverBall.x, 0.6)
-        this.state.ball.y += this.lerp(this.state.ball.y, this.state.serverBall.y, 0.6)
+        this.state.ball.x += this.lerp(this.state.ball.x, this.state.serverBall.x, 0.4)
+        this.state.ball.y += this.lerp(this.state.ball.y, this.state.serverBall.y, 0.4)
     
+        this.state.players[0].pos.y += this.lerp(
+            this.state.players[0].pos.y,
+            this.state.serverPlayerY,
+            0.4
+        )
+
         this.state.players[1].pos.y += this.lerp(
             this.state.players[1].pos.y,
-            this.state.serverPlayerY,
+            this.state.serverOpponentY,
             0.4
         )
     }
@@ -63,7 +69,7 @@ class RemotePong extends APong {
                     this.eventHandlers?.updateTimer!(data.t);
                     break;
                 case 'gameover':
-                    this.state.serverBall = { x: 800, y: 600 };
+                    this.state.serverBall = { x: 800, y: 450 };
                     this.proxy.disconnect();
                     this.eventHandlers?.updateTimer!(0);
                     break;
@@ -78,10 +84,10 @@ class RemotePong extends APong {
                     this.state.serverBall = data.state.b
                     if (this.state.index === 1)
                         this.state.serverBall.x = 1600 - this.state.serverBall.x;
-                    this.state.serverPlayerY = data.state.opp
+                    this.state.serverOpponentY = data.state.opp
                     this.state.serverPlayerY = data.state.p
-                    this.state.players[0].score = data.state.s[data.i]
-                    this.state.players[1].score = data.state.s[data.i ^ 1]
+                    this.state.players[0].score = data.state.s[this.state.index!]
+                    this.state.players[1].score = data.state.s[this.state.index! ^ 1]
                     break;
                 case 'forfeit':
                     this.proxy.disconnect();
@@ -91,18 +97,17 @@ class RemotePong extends APong {
         })
     }
 
-    private setupInputHandlers = (canvas: HTMLCanvasElement): (() => void) => {
-
+    private setupInputHandlers = (): (() => void) => {
         const handleKeyUp = (ev: KeyboardEvent) => {
             if (ev.key === "ArrowUp" || ev.key === "ArrowDown")
-                this.proxy.send(JSON.stringify({ type: "move", direction: "still", pid: this.state.index }));
+                this.proxy.send(JSON.stringify({ type: "move", dir: "still", pid: this.state.index }));
         }
 
         const handleKeyDown = (ev: KeyboardEvent) => {
             if (ev.key === "ArrowUp")
-                this.proxy.send(JSON.stringify({ type: "move", direction: "up", pid: this.state.index }));
+                this.proxy.send(JSON.stringify({ type: "move", dir: "up", pid: this.state.index }));
             else if (ev.key === "ArrowDown")
-                this.proxy.send(JSON.stringify({ type: "move", direction: "down", pid: this.state.index }));
+                this.proxy.send(JSON.stringify({ type: "move", dir: "down", pid: this.state.index }));
         }
 
         window.addEventListener("keydown", handleKeyDown);
@@ -127,8 +132,8 @@ class RemotePong extends APong {
             return ;
         }
 
-        const cleanUpInput = this.setupInputHandlers(canvas);
         const cleanUpComms = this.setupCommunications();
+        const cleanUpInput = this.setupInputHandlers();
     
         const gameLoop = () => {
             this.updateGame();

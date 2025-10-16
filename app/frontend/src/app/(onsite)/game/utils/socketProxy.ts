@@ -46,8 +46,7 @@ class SocketProxy {
 		}
 
 		this.socket.onclose = (event: CloseEvent): void => {
-			console.log("Disconnected from Pong Websocket");
-			console.log(event.reason);
+			console.log("Disconnected from Pong Websocket", event.reason);
 			return;
 		}
 

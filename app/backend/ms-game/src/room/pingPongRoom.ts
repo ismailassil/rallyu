@@ -61,7 +61,7 @@ export class PingPongPlayer implements Player {
 
 		this.socket!.on('close', (ev: ws.CloseEvent) => {
 			this.detachSocket();
-			console.log('Player disconnected');
+			console.log(`Player ${this.id} disconnected`);
 			if (ev.code === 1000) return; // normal closure
 
 			const otherPlayer = room.players.find(p => p.id !== this.id);
@@ -152,6 +152,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	}
 
 	sendForfeitPacket = (yeilder: number) => {
+		console.log("forfeit: ", yeilder)
 		this.players.forEach(player => {
 			if (player.socket?.readyState === ws.OPEN) {
             	player.socket.send(JSON.stringify({
@@ -175,7 +176,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
                     player.socket.send(JSON.stringify({ type: 'start', t: GAME_TIME }))
 			})
 			this.state.pause = false
-		}, GAME_START_DELAY * 1000);
+		}, GAME_START_DELAY);
     }
 
 	startGame(): void {
@@ -196,11 +197,10 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
                     player.socket.send(JSON.stringify({
                         type: 'state',
                         state: {
-							i: index,
                             b: { x: this.state.ball.x, y: this.state.ball.y },
                             opp: this.state.players[index ^ 1].coords.y,
                             p: this.state.players[index].coords.y,
-                            s: [this.state.score[0], this.state.score[1]]
+                            s: this.state.score
                         }
 				    }))
                 }

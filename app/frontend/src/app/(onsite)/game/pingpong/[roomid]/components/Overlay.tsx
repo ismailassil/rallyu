@@ -44,7 +44,7 @@ const Overlay = ({ forfeitHandler, status }: { forfeitHandler: () => void, statu
 
             <div className="absolute flex justify-center items-center gap-3 left-8 top-5 w-[120px] h-[60px]">
                 <button 
-                    className="rounded-xl cursor-pointer bg-red-600 transition-all duration-200 hover:bg-white/6 opacity-50 hover:opacity-80 hover:scale-103 active:scale-96 p-2"
+                    className="rounded-xl cursor-pointer bg-red-600 transition-all duration-20 opacity-50 hover:opacity-80 hover:scale-103 active:scale-96 p-2"
                     onClick={forfeitHandler}
                 >
                     <Flag  className="w-[35px] h-[35px]" />

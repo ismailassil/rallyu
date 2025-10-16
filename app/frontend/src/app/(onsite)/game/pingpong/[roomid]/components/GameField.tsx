@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import Overlay from "./Overlay";
-import GameTimer from "../../../components/Items/GameTimer";
 import Pong from "../../src/Pong";
 import VersusCard from "@/app/(onsite)/game/components/Items/VersusCard";
 import LoadingComponent from "@/app/(auth)/components/UI/LoadingComponents";
