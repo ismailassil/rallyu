@@ -10,6 +10,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { motion } from "framer-motion"
 import Link from 'next/link';
 import { Swords, UserX } from 'lucide-react';
+import useIsOnline from '@/app/hooks/useIsOnline';
 
 const ConversationHeader = () => {
 	const [option, setOption] = useState(false);
@@ -18,6 +19,9 @@ const ConversationHeader = () => {
 	const { isBusy } = useAuth();
 	const [timer, setTimer] = useState<boolean>(false);
 	const requestBattleFriend = useRequestBattleFriend();
+
+	// online status
+	const isOnline = useIsOnline(selectedUser?.id);
 
 	return (
 		<div className='flex justify-start gap-4 p-4 pl-6 border-b border-b-white/30'>
@@ -39,8 +43,8 @@ const ConversationHeader = () => {
 					{selectedUser?.first_name + " " + selectedUser?.last_name}
 				</span>
 				<div className='flex items-center gap-2'>
-					<span className={`h-3 w-3 rounded-full ${1 ? 'bg-green-700 animate-pulse' : 'bg-red-700'}`}></span>
-					<span className="text-gray-400">{1 ? 'Online' : 'Offline'}</span>
+					<span className={`h-3 w-3 rounded-full ${isOnline ? 'bg-green-400' : 'bg-gray-400'}`}></span>
+					<span className="text-gray-400 font-funnel-display">{isOnline ? 'Online' : 'Offline'}</span>
 				</div>
 			</div>
 			<div className='ml-auto my-auto flex gap-4 h-8 relative'>

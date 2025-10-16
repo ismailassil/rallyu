@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import Button from './Button';
-import { LocalUserMinusIcon, LocalUserPlusIcon, LocalUserXIcon } from './LocalIcon';
+import { LocalChatIcon, LocalUserMinusIcon, LocalUserPlusIcon, LocalUserXIcon } from './LocalIcon';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 
 export type FriendshipStatus = 'NONE' | 'OUTGOING' | 'INCOMING' | 'FRIENDS' | 'BLOCKED' | null;
 
-export default function Relations({ userId, currentStatus } : { userId: number, currentStatus: FriendshipStatus }) {
+interface RelationsProps {
+	username: string;
+	userId: number;
+	currentStatus: FriendshipStatus;
+}
+
+export default function Relations({ userId, username, currentStatus } : RelationsProps) {
 	const t = useTranslations('relations.common');
+
+	const router = useRouter();
 
 	const [friendshipStatus, setFriendshipStatus] = useState<FriendshipStatus>(currentStatus);
 	const { apiClient } = useAuth();
@@ -44,7 +53,7 @@ export default function Relations({ userId, currentStatus } : { userId: number, 
 			<Button key="accept" text={t('accept')} icon={LocalUserPlusIcon} onClick={ACTIONS.accept} />,
 			<Button key="reject" text={t('decline')} icon={LocalUserMinusIcon} onClick={ACTIONS.reject} />,
 		],
-		FRIENDS: [<Button key="unfriend" text={t('unfriend')} icon={LocalUserMinusIcon} onClick={ACTIONS.unfriend} />],
+		FRIENDS: [<Button key="chat" text='Chat' icon={LocalChatIcon} onClick={() => router.push(`/chat/${username}`) } />, <Button key="unfriend" text={t('unfriend')} icon={LocalUserMinusIcon} onClick={ACTIONS.unfriend} />],
 		BLOCKED: [<Button key="unblock" text={t('unblock')} icon={LocalUserXIcon} onClick={ACTIONS.unblock} />]
 	};
 

@@ -3,18 +3,20 @@ import { Send, Swords } from "lucide-react";
 import Avatar from "../../../users/components/Avatar";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import useIsOnline from "@/app/hooks/useIsOnline";
 
-interface LeaderboardProps {
+interface FriendsCardItemProps {
+	id: number;
 	username: string;
 	avatar: string;
-	isOnline: boolean;
 }
 
 export default function FriendsCardItem({
+	id,
 	username,
 	avatar,
-	isOnline
-} : LeaderboardProps) {
+} : FriendsCardItemProps) {
+	const isOnline = useIsOnline(id);
 	const t = useTranslations('common');
 
 	return (

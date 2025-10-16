@@ -58,6 +58,7 @@ export default function LeaderboardCard() {
 								className='bg-red-500/0'
 							>
 								<LeaderboardItem
+									userId={item.id}
 									position={i}
 									img={item.avatar_url}
 									username={item.username}

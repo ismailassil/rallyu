@@ -1,5 +1,5 @@
-"use client"
-import { useContext, createContext, useState, ReactNode, useEffect, useCallback } from "react"
+"use client";
+import { useContext, createContext, useState, ReactNode, useEffect, useCallback } from "react";
 import React from 'react';
 import { useAuth } from "../../contexts/AuthContext";
 import { LoggedUser, MessageType } from "../types/chat.types";
@@ -24,12 +24,12 @@ type ChatContextType = {
 const ChatContext = createContext<ChatContextType | null>(null)
 
 export const useChat = () => {
-	const context = useContext(ChatContext)
+	const context = useContext(ChatContext);
 	if (context === null) {
 		throw new Error("useChat must be used within a ChatProvider");
 	}
-	return context
-}
+	return context;
+};
 
 type ChatProviderProps = {
 	children: ReactNode;
@@ -55,7 +55,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			}
 		}
 		getAllFriends();
-	}, [showConversation, selectedUser]);
+	}, [showConversation, selectedUser, apiClient]);
 
 	const playMessageSound = () => {
 		const audio = new Audio("/message.mp3");
@@ -69,7 +69,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			playMessageSound();
 			setMessages((prev) => [...prev, data]);
 		}
-		
+
 		function handleUpdateMessage(data: MessageType) {
 			setMessages((prev) => [...prev, data]);
 		}
@@ -79,8 +79,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 		return () => {
 			socket.off("chat_receive_msg", handleMessage);
 			socket.off("chat_update_msg", handleUpdateMessage);
-		}
-	}, [])
+		};
+	}, []);
 
 
 	useEffect(() => {

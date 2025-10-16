@@ -16,6 +16,8 @@ class SocketIOService {
 	private readonly fastify: FastifyInstance;
 	private readonly options: socketioOpts;
 
+	private onlineUsersIDs = new Set<string>;
+
 	constructor(fastify: FastifyInstance, opts: socketioOpts) {
 		this.fastify = fastify;
 		this.options = opts;
@@ -147,15 +149,43 @@ class SocketIOService {
 		const userId: string = socket.data.userId;
 		this.fastify.log.info(`[SocketIO] Client Connected: '${userId}:${socket.id}'`);
 
+		await this.handleOnlineStatus(socket);
+
 		await socket.join(userId);
 	}
 
 	private async handleDisconnection(socket: Socket) {
 		const userId: string = socket.data.userId;
-
 		this.fastify.log.info(`[SocketIO] Disconnected: '${userId}:${socket.id}'`);
 
+		await this.handleOfflineStatus(socket);
+
 		await socket.leave(userId);
+	}
+
+	private async handleOnlineStatus(socket: Socket) {
+		const userId: string = socket.data.userId;
+		// this.fastify.log.info(`[SocketIO] User is online: '${userId}:${socket.id}'`);
+
+		// add him to online set
+		this.onlineUsersIDs.add(userId);
+
+		// send a full list as first status
+		socket.emit('online_users_list', Array.from(this.onlineUsersIDs));
+
+		// notify other users that this user in now online
+		socket.broadcast.emit('is_online', { userId });
+	}
+
+	private async handleOfflineStatus(socket: Socket) {
+		const userId: string = socket.data.userId;
+		// this.fastify.log.info(`[SocketIO] User is offline: '${userId}:${socket.id}'`);
+
+		// add him to online set
+		this.onlineUsersIDs.delete(userId);
+
+		// notify all that this user went offline
+		this.io.emit('is_offline', { userId });
 	}
 
 	private setupMiddleware() {
