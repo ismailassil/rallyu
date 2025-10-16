@@ -10,6 +10,7 @@ class RemotePong extends APong {
         super();
         this.animationFrameId = null;
         this.state = {
+            serverOpponentY: 600,
             serverPlayerY: 600,
             serverBall: { x: 800, y: 600 },
             ball: { x: 800, y: 600 },
@@ -77,34 +78,44 @@ class RemotePong extends APong {
                     this.state.serverBall = data.state.b
                     if (this.state.index === 1)
                         this.state.serverBall.x = 1600 - this.state.serverBall.x;
+                    this.state.serverPlayerY = data.state.opp
                     this.state.serverPlayerY = data.state.p
-                    this.state.players[0].score = data.state.s[0]
-                    this.state.players[1].score = data.state.s[1]
+                    this.state.players[0].score = data.state.s[data.i]
+                    this.state.players[1].score = data.state.s[data.i ^ 1]
+                    break;
+                case 'forfeit':
+                    this.proxy.disconnect();
+                    
                     break;
             }
         })
     }
 
     private setupInputHandlers = (canvas: HTMLCanvasElement): (() => void) => {
-        const handleMouseMove = (event: MouseEvent) => {
-            const rect = canvas.getBoundingClientRect();
-            const mouseY = event.clientY - rect.top;
-            const canvasY = mouseY * (canvas.height / rect.height);
-            const boundedY = Math.max(this.HALF_PADDLE, Math.min(canvasY, canvas.height) - this.HALF_PADDLE);
-            
-            this.state.players[0].pos.y = boundedY;
-            if (this.state.index !== undefined)
-                this.proxy.send(JSON.stringify({ type: 'paddle', pid: this.state.index, y: boundedY }));
+
+        const handleKeyUp = (ev: KeyboardEvent) => {
+            if (ev.key === "ArrowUp" || ev.key === "ArrowDown")
+                this.proxy.send(JSON.stringify({ type: "move", direction: "still", pid: this.state.index }));
         }
-        window.addEventListener('mousemove', handleMouseMove);
+
+        const handleKeyDown = (ev: KeyboardEvent) => {
+            if (ev.key === "ArrowUp")
+                this.proxy.send(JSON.stringify({ type: "move", direction: "up", pid: this.state.index }));
+            else if (ev.key === "ArrowDown")
+                this.proxy.send(JSON.stringify({ type: "move", direction: "down", pid: this.state.index }));
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
     
         return () => {
-            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keyup", handleKeyUp);
         };
     }
 
     forfeit = () => {
-        this.proxy.send({ type: 'forfeit' });
+        this.proxy.send({ type: 'forfeit', pid: this.state.index });
         this.eventHandlers?.updateOverlayStatus('gameover');
         this.eventHandlers?.updateTimer(0);
     }

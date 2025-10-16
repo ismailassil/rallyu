@@ -1,6 +1,7 @@
 import { getVelocity, angles, updateState } from './physics'
 import type { Room, Player, PingPongGameState, TicTacToeGameState, PingPongStatus, GameType } from '../types/types'
 import ws from 'ws';
+import { closeRoom } from './roomManager';
 
 const GAME_UPDATE_INTERVAL = 16.67; // 60hz
 const GAME_START_DELAY = 3000; // 3 sec
@@ -32,12 +33,12 @@ export class PingPongPlayer implements Player {
 			try {
 				const data = JSON.parse(message.toString());
 				switch (data.type) {
-					case 'paddle':
-						room.state.players[data.pid].y = data.y;
+					case 'move':
+						room.state.players[data.pid].movement = data.dir;
 						break;
 					case 'forfeit':
-						room.sendGameOverPacket();
-						// closeRoom(room, 1003, 'Game Over');
+						room.sendForfeitPacket(data.pid);
+						closeRoom(room, 1003, 'Game Over');
 						// await axios.post(`http://ms-auth:${MS_AUTH_PORT}/users/match`, {
 						// 	players: [
 						// 		{ 
@@ -98,7 +99,18 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				dir: 'left',
 				velocity: getVelocity(initialAngle, 14)
 			},
-			players: [{ x: 20, y: 450 }, { x: 1580, y: 450 }],
+			players: [
+				{
+					coords: { x: 20, y: 450 },
+					movement: 'still',
+					speed: 10
+				},
+				{
+					coords: { x: 1580, y: 450 },
+					movement: 'still',
+					speed: 10
+				}
+			],
 			score: [0, 0],
 			pause: true
 		};
@@ -117,12 +129,12 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				{
 					ID: this.players[0]!.id,
 					score: this.state.score[0],
-					coords: this.state.players[0]
+					coords: this.state.players[0].coords
 				},
 				{
 					ID: this.players[1]!.id,
 					score: this.state.score[1],
-					coords: this.state.players[1]
+					coords: this.state.players[1].coords
 				}
 			]
 		}
@@ -133,6 +145,18 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 			if (player.socket?.readyState === ws.OPEN) {
             	player.socket.send(JSON.stringify({
 					type: 'gameover',
+					scores: this.state.score
+				}))
+			}
+		})
+	}
+
+	sendForfeitPacket = (yeilder: number) => {
+		this.players.forEach(player => {
+			if (player.socket?.readyState === ws.OPEN) {
+            	player.socket.send(JSON.stringify({
+					type: 'forfeit',
+					yeilder,
 					scores: this.state.score
 				}))
 			}
@@ -172,8 +196,10 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
                     player.socket.send(JSON.stringify({
                         type: 'state',
                         state: {
+							i: index,
                             b: { x: this.state.ball.x, y: this.state.ball.y },
-                            p: this.state.players[index ^ 1].y,
+                            opp: this.state.players[index ^ 1].coords.y,
+                            p: this.state.players[index].coords.y,
                             s: [this.state.score[0], this.state.score[1]]
                         }
 				    }))

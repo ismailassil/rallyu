@@ -3,7 +3,7 @@ import WebSocket from 'ws'
 import jwt from 'jsonwebtoken'
 import type { GameType, Room } from '../types/types';
 import { createRoomSchema, joinRoomSchema, roomStatusSchema, userStatusSchema } from '../schemas/schemas';
-import { roomManager } from '../room/roomManager';
+import { roomManager, userSessions, closeRoom } from '../room/roomManager';
 import dotenv from 'dotenv'
 dotenv.config();
 
@@ -14,7 +14,6 @@ const JWT_ACCESS_SECRET = process.env['JWT_ACCESS_SECRET'] || ''
 const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
 	const ROOM_EXPIRATION_TIME = 20000; // 10 sec
     const GAME_TIME = 23000; // 10 seconds
-	const userSessions = new Map() // Map<userid, roomid>
 
 	fastify.addHook('preHandler', async (req, res) => {
 		let token;
@@ -41,17 +40,6 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			}
 		}
 	});
-
-	const closeRoom = (room: Room<any, any>, code: number, msg: string): void => {
-		// test this if players already closed sockets
-		room.players.forEach(p => {
-			userSessions.delete(p.id);
-			if (p.socket?.readyState === WebSocket.OPEN)
-				p.socket.close(code, msg);
-		})
-		room.cleanUp();
-		roomManager.deleteRoom(room.id);
-	}
 
 	fastify.get('/room/join/:roomid', { websocket: true, schema: joinRoomSchema }, (socket: WebSocket.WebSocket, req: FastifyRequest) => {
 		try {

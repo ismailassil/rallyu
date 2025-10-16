@@ -42,6 +42,7 @@ export interface PongEventHandlers {
 }
 
 export interface RemotePongState extends PongState {
+	serverOpponentY: number,
 	serverPlayerY: number,
 	serverBall: Coords,
 	gameStatus: string, // 'waiting', 'ready', 'playing', 'scored', 'gameover'

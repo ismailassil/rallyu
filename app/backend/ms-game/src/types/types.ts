@@ -44,6 +44,12 @@ export interface BallState {
 	velocity: { x: number; y: number };
 }
 
+export interface PongPlayerState {
+	coords: Coords,
+	movement: 'up' | 'down' | 'still',
+	speed: number
+}
+
 export interface Coords {
 	x: number;
 	y: number;
@@ -51,7 +57,7 @@ export interface Coords {
 
 export interface PingPongGameState {
 	ball: BallState;
-	players: Coords[];
+	players: PongPlayerState[];
 	score: [number, number];
 	pause: boolean;
 }
@@ -89,6 +95,7 @@ export interface Room<TState, TStatus> {
 	attachPlayers(playersIds: number[]): void;
     setupPackets(): NodeJS.Timeout | void;
 	sendGameOverPacket(): void;
+	sendForfeitPacket(yeilder: number): void;
 	startGame(): void;
 	getStatus(): TStatus;
 	cleanUp(): void;

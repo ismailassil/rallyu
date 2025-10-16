@@ -1,8 +1,11 @@
-import { BallState, Coords, PingPongGameState } from "../types/types";
+import { BallState, Coords, PingPongGameState, PongPlayerState } from "../types/types";
 
+const ARENA_WIDTH = 1600;
+const ARENA_HEIGHT = 900;
 const maxBounceAngle = 0.785398 // RAD / 45 degrees
 const PADDLE_WIDTH = 15
 const PADDLE_HEIGHT = 100
+const HALF_PADDLE = 50;
 const BALL_RADIUS = 10
 export const angles = [2.61799, 3.66519, 3.14159 ,0, 0.523599, 5.75959];
 
@@ -59,19 +62,36 @@ const updateBall = (ball: BallState) => {
 	})
 }
 
+const updatePlayers = (players: PongPlayerState[]) => {
+	for(const player of players) {
+		if (player.movement === 'still')
+			continue;
+
+		const newY = player.coords.y + (player.movement === 'up' ? -player.speed : player.speed);
+
+		if (newY - HALF_PADDLE > ARENA_HEIGHT || newY + HALF_PADDLE < 0) {
+			player.movement = 'still'
+			return;
+		}
+
+		player.coords.y = newY;
+	}
+}
+
 export const updateState = (gameState: PingPongGameState) => {
+	updatePlayers(gameState.players);
 	const newBall: Coords = updateBall(gameState.ball)
 
 	// check bounce off left paddle
-	if (newBall.x < gameState.players[0].x + 5 && paddleCollision(newBall, gameState.players[0])) {
-		gameState.ball.x = gameState.players[0].x + 5
-		return bounceBall(gameState.ball, gameState.players[0])
+	if (newBall.x < gameState.players[0].coords.x + 5 && paddleCollision(newBall, gameState.players[0].coords)) {
+		gameState.ball.x = gameState.players[0].coords.x + 5
+		return bounceBall(gameState.ball, gameState.players[0].coords)
 	}
 	
 	// check bounce off right paddle
-	if (newBall.x > gameState.players[1].x - 5 && paddleCollision(newBall, gameState.players[1])) {
-		gameState.ball.x = gameState.players[1].x - 5
-		return bounceBall(gameState.ball, gameState.players[1])
+	if (newBall.x > gameState.players[1].coords.x - 5 && paddleCollision(newBall, gameState.players[1].coords)) {
+		gameState.ball.x = gameState.players[1].coords.x - 5
+		return bounceBall(gameState.ball, gameState.players[1].coords)
 	}
 	
 	// top wall bounce
@@ -83,8 +103,8 @@ export const updateState = (gameState: PingPongGameState) => {
 	}
 
 	// bottom wall bounce
-	if (newBall.y + BALL_RADIUS > 900) {
-		gameState.ball.y = 900 - BALL_RADIUS
+	if (newBall.y + BALL_RADIUS > ARENA_HEIGHT) {
+		gameState.ball.y = ARENA_HEIGHT - BALL_RADIUS
 		gameState.ball.angle *= -1
 		gameState.ball.velocity.y *= -1
 		return
@@ -100,7 +120,7 @@ export const updateState = (gameState: PingPongGameState) => {
 	}
 	
 	// left player scored
-	if (newBall.x > 1600) {
+	if (newBall.x > ARENA_WIDTH) {
 		gameState.score[0]++
 		gameState.ball = resetBall("right")
 		gameState.pause = true

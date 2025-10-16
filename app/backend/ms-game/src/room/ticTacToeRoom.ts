@@ -107,6 +107,18 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		}
 	}
 
+	sendForfeitPacket = (yeilder: number) => {
+		this.players.forEach(player => {
+			if (player.socket?.readyState === ws.OPEN) {
+            	player.socket.send(JSON.stringify({
+					type: 'forfeit',
+					yeilder,
+					scores: this.state.score
+				}))
+			}
+		})
+	}
+
     sendGameOverPacket = () => {
 		this.players.forEach(player => {
 			if (player.socket?.readyState === ws.OPEN) {
