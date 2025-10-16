@@ -6,6 +6,7 @@ import ProtectedRoute from "../(auth)/components/Guards/ProtectedRoute";
 import ToasterCenter from "./components/Header/toaster/ToasterCenter";
 import { NotificationProvider } from "./components/Header/notification/context/NotificationContext";
 import { HeaderProvider } from "./components/Header/context/HeaderContext";
+import PresenceProvider from "./contexts/PresenceContext";
 
 export default function OnsiteLayout({
 	children,
@@ -20,10 +21,10 @@ export default function OnsiteLayout({
 					<ToasterCenter />
 				</NotificationProvider>
 			</HeaderProvider>
-			<div>
+			<PresenceProvider>
 				<SideBar />
 				{children}
-			</div>
+			</PresenceProvider>
 		</ProtectedRoute>
 	);
 }

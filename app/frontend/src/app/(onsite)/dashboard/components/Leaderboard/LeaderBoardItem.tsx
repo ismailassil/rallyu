@@ -3,6 +3,7 @@ import Avatar from '../../../users/components/Avatar';
 import { CrownIcon } from 'lucide-react';
 
 interface LeaderboardProps {
+	userId: number;
 	username: string;
 	rank: number;
 	score: number;
@@ -11,6 +12,7 @@ interface LeaderboardProps {
 }
 
 export default function LeaderboardItem({
+	userId,
 	username,
 	rank,
 	score,
@@ -48,7 +50,7 @@ export default function LeaderboardItem({
 				<h2 className="text-wrap text-base lg:text-lg">
 					{username}
 				</h2>
-				<p className="text-sm text-gray-400 bg-white/7 p-2 
+				<p className="text-sm text-gray-400 bg-white/7 p-2
 					rounded-lg ring-1 ring-white/15 text-end"
 				>
 					<span className="font-semibold text-yellow-400">{score}</span>{' '}XP

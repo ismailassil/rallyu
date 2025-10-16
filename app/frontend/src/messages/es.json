@@ -80,6 +80,7 @@
   },
   "relations": {
     "common": {
+      "chat": "Chat",
       "sent": "Enviado",
       "accepted": "Aceptado",
       "canceled": "Cancelado",

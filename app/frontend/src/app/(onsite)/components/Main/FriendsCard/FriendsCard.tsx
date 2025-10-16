@@ -59,9 +59,9 @@ export default function FriendsCard() {
 								className='bg-red-500/0'
 							>
 								<FriendsCardItem
+									id={item.id}
 									username={item.username}
 									avatar={item.avatar_url}
-									isOnline={true}
 								/>
 							</motion.div>
 						))}
