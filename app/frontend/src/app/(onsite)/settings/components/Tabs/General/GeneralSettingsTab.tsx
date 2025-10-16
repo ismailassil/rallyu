@@ -6,13 +6,13 @@ import PersonalInformationsForm from './PersonalInformationsForm';
 import useForm from '@/app/hooks/useForm';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import { LoaderCircle } from 'lucide-react';
-import { personalInfoSettingsSchema } from '@/app/(api)/schema';
 import { FormProvider } from '@/app/(auth)/components/Form/FormContext';
 import { motion } from 'framer-motion';
 // import useAPICall from '@/app/hooks/useAPICall';
 import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
 import useCanSave from '@/app/hooks/useCanSave';
 import { useTranslations } from 'next-intl';
+import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export interface FormDataState {
 	first_name: string;
@@ -39,6 +39,10 @@ export default function GeneralSettingsTab() {
 	// const {
 	// 	executeAPICall
 	// } = useAPICall();
+
+	const {
+		personalInfoSettingsSchema
+	} = useValidationSchema();
 
 	const [
 		formData,

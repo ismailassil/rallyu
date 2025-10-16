@@ -6,12 +6,13 @@ import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import InputField from '../../components/Form/InputField';
 import useForm from '@/app/hooks/useForm';
-import { loginFormSchema } from '@/app/(api)/schema';
+// import { loginFormSchema } from '@/app/(api)/schema';
 import FormButton from '../../components/UI/FormButton';
 import { LogIn } from 'lucide-react';
 import { FormProvider } from '../../components/Form/FormContext';
 import useAPICall from '@/app/hooks/useAPICall';
 import { useTranslations } from 'next-intl';
+import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export default function LoginForm() {
 	const t = useTranslations('auth.common');
@@ -26,6 +27,10 @@ export default function LoginForm() {
 		isLoading,
 		executeAPICall
 	} = useAPICall();
+
+	const {
+		loginFormSchema
+	} = useValidationSchema();
 
 	const [
 		formData,

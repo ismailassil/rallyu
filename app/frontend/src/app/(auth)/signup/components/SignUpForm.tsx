@@ -6,7 +6,6 @@ import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import InputField from '../../components/Form/InputField';
 import useForm from '@/app/hooks/useForm';
-import { signupFormSchema } from '@/app/(api)/schema';
 import PasswordStrengthIndicator from '../../components/Form/PasswordStrengthIndicator';
 import FormButton from '../../components/UI/FormButton';
 import { LogIn } from 'lucide-react';
@@ -15,6 +14,7 @@ import AvailabilityIndicator from '../../components/Form/AvailabilityIndicator';
 import useAPICall from '@/app/hooks/useAPICall';
 import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
 import { useTranslations } from 'next-intl';
+import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export default function SignUpForm() {
 	const t = useTranslations('auth.common');
@@ -29,6 +29,10 @@ export default function SignUpForm() {
 		isLoading,
 		executeAPICall
 	} = useAPICall();
+
+	const {
+		signupFormSchema
+	} = useValidationSchema();
 
 	const [
 		formData,
@@ -106,7 +110,7 @@ export default function SignUpForm() {
 					field='username'
 					inputPlaceholder='xezzuz'
 				>
-					{debounced.username && !errors.username && <AvailabilityIndicator key="username-availability" label='Username' status={usernameStatus} />}
+					{debounced.username && !errors.username && <AvailabilityIndicator key="username-availability" label={t('username')} status={usernameStatus} />}
 				</InputField>
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'
@@ -115,7 +119,7 @@ export default function SignUpForm() {
 					field='email'
 					inputPlaceholder='iassil@1337.student.ma'
 				>
-					{debounced.username && !errors.username && <AvailabilityIndicator key="email-availability" label='Email' status={emailStatus} />}
+					{debounced.username && !errors.username && <AvailabilityIndicator key="email-availability" label={t('email')} status={emailStatus} />}
 				</InputField>
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'

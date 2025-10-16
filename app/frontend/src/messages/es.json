@@ -373,14 +373,74 @@
       "current": "Actual",
       "continue": "Continuar"
     },
+    "validation": {
+      "common": {
+        "availability": {
+          "checking": "Comprobando disponibilidad...",
+          "available": "¡está disponible!",
+          "unavailable": "¡ya está ocupado!",
+          "error": "¡Error al comprobar!"
+        }
+      },
+      "first_name": {
+        "required": "El nombre es obligatorio",
+        "min": "El nombre debe tener al menos 2 caracteres",
+        "max": "El nombre debe tener como máximo 15 caracteres",
+        "format": "El nombre solo puede contener letras, espacios, guiones y apóstrofes"
+      },
+      "last_name": {
+        "required": "El apellido es obligatorio",
+        "min": "El apellido debe tener al menos 2 caracteres",
+        "max": "El apellido debe tener como máximo 15 caracteres",
+        "format": "El apellido solo puede contener letras, espacios, guiones y apóstrofes"
+      },
+      "username": {
+        "required": "El nombre de usuario es obligatorio",
+        "min": "El nombre de usuario debe tener al menos 3 caracteres",
+        "max": "El nombre de usuario debe tener como máximo 10 caracteres",
+        "format": "El nombre de usuario solo puede contener letras, números y guiones bajos"
+      },
+      "email": {
+        "required": "El correo electrónico es obligatorio",
+        "invalid": "Por favor, introduce una dirección de correo válida"
+      },
+      "password": {
+        "required": "La contraseña es obligatoria",
+        "min": "La contraseña debe tener al menos 8 caracteres",
+        "lowercase": "La contraseña debe contener al menos una letra minúscula",
+        "uppercase": "La contraseña debe contener al menos una letra mayúscula",
+        "digit": "La contraseña debe contener al menos un dígito",
+        "no_match": "Las contraseñas no coinciden",
+        "same_as_current": "La nueva contraseña debe ser diferente a la actual"
+      },
+      "current_password": {
+        "required": "La contraseña actual es obligatoria"
+      },
+      "confirm_password": {
+        "required": "Por favor, confirma tu contraseña"
+      },
+      "bio": {
+        "required": "La biografía es obligatoria",
+        "min": "La biografía debe tener al menos 3 caracteres",
+        "max": "La biografía debe tener como máximo 50 caracteres"
+      },
+      "phone": {
+        "required": "El número de teléfono es obligatorio",
+        "format": "Por favor, introduce un número de teléfono válido (p. ej., +212659871356)"
+      },
+      "code": {
+        "required": "El código de verificación es obligatorio",
+        "format": "El código debe tener exactamente 6 dígitos"
+      }
+    },
     "login": {
       "title": "¡Bienvenido de nuevo!",
-      "subtitle": "Introduce tus datos para iniciar sesión.",
+      "subtitle": "Introduce tus datos para iniciar sesión",
       "instruction": "¿Aún no tienes una cuenta?"
     },
     "signup": {
       "title": "Crear una cuenta",
-      "subtitle": "Introduce tus datos para registrarte.",
+      "subtitle": "Introduce tus datos para registrarte",
       "instruction": "¿Ya tienes una cuenta?"
     },
     "twoFactorAtLogin": {

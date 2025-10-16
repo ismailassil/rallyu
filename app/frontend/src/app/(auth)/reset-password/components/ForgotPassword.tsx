@@ -7,16 +7,20 @@ import InputField from "../../components/Form/InputField";
 import useAPICall from "@/app/hooks/useAPICall";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
-import { emailSchema } from "@/app/(api)/schema";
 import useForm from "@/app/hooks/useForm";
 import { FormProvider } from "../../components/Form/FormContext";
 import AnimatedComponent from "../../components/UI/AnimatedComponent";
 import { useTranslations } from "next-intl";
+import useValidationSchema from "@/app/hooks/useValidationSchema";
 
 export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) => void, onGoBack: () => void }) {
 	const t = useTranslations('');
 
 	const router = useRouter();
+
+	const {
+		emailOnlySchema
+	} = useValidationSchema();
 
 	const [
 		formData,
@@ -28,7 +32,7 @@ export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) 
 		getValidationErrors,
 		resetForm
 	] = useForm(
-		emailSchema,
+		emailOnlySchema,
 		{ email: '' },
 		{ debounceMs: { email: 1200 } }
 	);

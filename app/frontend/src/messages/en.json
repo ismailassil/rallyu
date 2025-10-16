@@ -373,14 +373,74 @@
       "current": "Current",
       "continue": "Continue"
     },
+    "validation": {
+      "common": {
+        "availability": {
+          "checking": "Checking availability...",
+          "available": "is available!",
+          "unavailable": "is already taken!",
+          "error": "checking failed!"
+        }
+      },
+      "first_name": {
+        "required": "First name is required",
+        "min": "First name must be at least 2 characters",
+        "max": "First name must be at most 15 characters",
+        "format": "First name can only contain letters, spaces, hyphens, and apostrophes"
+      },
+      "last_name": {
+        "required": "Last name is required",
+        "min": "Last name must be at least 2 characters",
+        "max": "Last name must be at most 15 characters",
+        "format": "Last name can only contain letters, spaces, hyphens, and apostrophes"
+      },
+      "username": {
+        "required": "Username is required",
+        "min": "Username must be at least 3 characters",
+        "max": "Username must be at most 10 characters",
+        "format": "Username can only contain letters, numbers, and underscores"
+      },
+      "email": {
+        "required": "Email is required",
+        "invalid": "Please enter a valid email address"
+      },
+      "password": {
+        "required": "Password is required",
+        "min": "Password must be at least 8 characters",
+        "lowercase": "Password must contain at least one lowercase letter",
+        "uppercase": "Password must contain at least one uppercase letter",
+        "digit": "Password must contain at least one digit",
+        "no_match": "Passwords do not match",
+        "same_as_current": "New password must be different from your current password"
+      },
+      "current_password": {
+        "required": "Current password is required"
+      },
+      "confirm_password": {
+        "required": "Please confirm your password"
+      },
+      "bio": {
+        "required": "Bio is required",
+        "min": "Bio must be at least 3 characters",
+        "max": "Bio must be at most 50 characters"
+      },
+      "phone": {
+        "required": "Phone number is required",
+        "format": "Please enter a valid phone number (e.g., +212659871356)"
+      },
+      "code": {
+        "required": "Verification code is required",
+        "format": "Code must be exactly 6 digits"
+      }
+    },
     "login": {
       "title": "Welcome Back!",
-      "subtitle": "Please enter you details to sign in.",
+      "subtitle": "Please enter you details to sign in",
       "instruction": "Don't have an account yet?"
     },
     "signup": {
       "title": "Create an account",
-      "subtitle": "Please enter you details to sign up.",
+      "subtitle": "Please enter you details to sign up",
       "instruction": "Already have an account?"
     },
     "twoFactorAtLogin": {

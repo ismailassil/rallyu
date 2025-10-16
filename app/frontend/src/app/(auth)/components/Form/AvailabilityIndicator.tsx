@@ -2,21 +2,24 @@ import React from 'react';
 import { AvailabilityStatus } from '@/app/hooks/useAvailabilityCheck';
 import { AlertCircle, CheckCircle2, LoaderCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
-export default function AvailabilityIndicator({ label, status } : { label: 'Username' | 'Email'; status: AvailabilityStatus }) {
+export default function AvailabilityIndicator({ label, status } : { label: string; status: AvailabilityStatus }) {
+	const t = useTranslations('auth.validation.common.availability');
+
 	if (status === 'idle')
 		return null;
 
-	function getDisplayInfo(label: 'Username' | 'Email', status: AvailabilityStatus) : { message: string; icon: React.ReactNode; colorClass: string } {
+	function getDisplayInfo(label: string, status: AvailabilityStatus) : { message: string; icon: React.ReactNode; colorClass: string } {
 		switch (status) {
 			case 'checking':
-				return { message: 'Checking availability...', icon: <LoaderCircle className="animate-spin" size={14}/>, colorClass: 'text-blue-400' };
+				return { message: `${t('checking')}`, icon: <LoaderCircle className="animate-spin" size={14}/>, colorClass: 'text-blue-400' };
 			case 'available':
-				return { message: `${label} is available!`, icon: <CheckCircle2 className="shrink-0" size={14}/>, colorClass: 'text-green-400' };
+				return { message: `${label} ${t('available')}`, icon: <CheckCircle2 className="shrink-0" size={14}/>, colorClass: 'text-green-400' };
 			case 'unavailable':
-				return { message: `${label} is already taken!`, icon: <AlertCircle size={14} className="shrink-0"/>, colorClass: 'text-red-400' };
+				return { message: `${label} ${t('unavailable')}`, icon: <AlertCircle size={14} className="shrink-0"/>, colorClass: 'text-red-400' };
 			case 'error':
-				return { message: `${label} checking failed!`, icon: <AlertCircle size={14} className="shrink-0"/>, colorClass: 'text-red-400' };
+				return { message: `${label} ${t('error')}`, icon: <AlertCircle size={14} className="shrink-0"/>, colorClass: 'text-red-400' };
 			default:
 				return { message: '', icon: '', colorClass: '' };
 		}

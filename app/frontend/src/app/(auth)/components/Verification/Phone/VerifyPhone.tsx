@@ -1,4 +1,3 @@
-import { phoneSchema } from '@/app/(api)/schema';
 import { FormProvider } from '@/app/(auth)/components/Form/FormContext';
 import InputField from '@/app/(auth)/components/Form/InputField';
 import FormButton from '@/app/(auth)/components/UI/FormButton';
@@ -12,6 +11,7 @@ import AnimatedComponent from '../../UI/AnimatedComponent';
 import { APIError } from '@/app/(api)/APIClient';
 import NoteBox from '@/app/components/NoteBox';
 import { useTranslations } from 'next-intl';
+import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 
 interface VerifyPhoneProps {
@@ -27,6 +27,10 @@ export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 		loggedInUser
 	} = useAuth();
 
+	const {
+		phoneOnlySchema
+	} = useValidationSchema();
+
 	const [
 		formData,
 		touched,
@@ -37,7 +41,7 @@ export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 		getValidationErrors,
 		resetForm
 	] = useForm(
-		phoneSchema,
+		phoneOnlySchema,
 		{ phone: loggedInUser!.phone || '' },
 		{ debounceMs: { phone: 1200 } }
 	);

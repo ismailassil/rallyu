@@ -6,16 +6,20 @@ import { RotateCw } from "lucide-react";
 import useAPICall from "@/app/hooks/useAPICall";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
-import { confirmPasswordSchema } from "@/app/(api)/schema";
 import useForm from "@/app/hooks/useForm";
 import { FormProvider } from "../../components/Form/FormContext";
 import AnimatedComponent from "../../components/UI/AnimatedComponent";
 import { useTranslations } from "next-intl";
+import useValidationSchema from "@/app/hooks/useValidationSchema";
 
 export function SetNewPassword({ token, onSuccess } : { token: string, onSuccess: () => void }) {
 	const t = useTranslations('');
 
 	const router = useRouter();
+
+	const {
+		resetPasswordUpdateSchema
+	} = useValidationSchema();
 
 	const [
 		formData,
@@ -27,7 +31,7 @@ export function SetNewPassword({ token, onSuccess } : { token: string, onSuccess
 		getValidationErrors,
 		resetForm
 	] = useForm(
-		confirmPasswordSchema,
+		resetPasswordUpdateSchema,
 		{ password: '', confirm_password: '' },
 		{ debounceMs: { password: 1200, confirm_password: 1200 } }
 	);

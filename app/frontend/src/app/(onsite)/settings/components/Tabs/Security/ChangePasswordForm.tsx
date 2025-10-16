@@ -4,10 +4,10 @@ import { FormProvider } from "@/app/(auth)/components/Form/FormContext";
 import useForm from "@/app/hooks/useForm";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { changePasswordSchema } from "@/app/(api)/schema";
 import { Check, Lock } from "lucide-react";
 import useAPICall from "@/app/hooks/useAPICall";
 import { useTranslations } from "next-intl";
+import useValidationSchema from "@/app/hooks/useValidationSchema";
 
 interface ChangePasswordFormProps {
 	formId: string;
@@ -25,6 +25,10 @@ export default function ChangePasswordForm({ formId, setButtonDisabled, setButto
 	const {
 		executeAPICall
 	} = useAPICall();
+
+	const {
+		changePasswordSchema
+	} = useValidationSchema();
 
 	const [
 		formData,

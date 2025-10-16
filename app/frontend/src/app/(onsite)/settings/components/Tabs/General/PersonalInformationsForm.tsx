@@ -43,7 +43,7 @@ export default function PersonalInformationsForm({ usernameStatus, emailStatus }
 					field='username'
 					inputPlaceholder='xezzuz'
 				>
-					{debounced.username && !errors.username && <AvailabilityIndicator key="username-availability" label='Username' status={usernameStatus} />}
+					{debounced.username && !errors.username && <AvailabilityIndicator key="username-availability" label={t('username')} status={usernameStatus} />}
 				</InputField>
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'
@@ -52,7 +52,7 @@ export default function PersonalInformationsForm({ usernameStatus, emailStatus }
 					field='email'
 					inputPlaceholder='iassil@1337.student.ma'
 				>
-					{debounced.email && !errors.email && <AvailabilityIndicator key="email-availability" label='Email' status={emailStatus} />}
+					{debounced.email && !errors.email && <AvailabilityIndicator key="email-availability" label={t('email')} status={emailStatus} />}
 				</InputField>
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'
