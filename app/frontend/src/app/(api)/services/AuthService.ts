@@ -4,7 +4,10 @@ import { AxiosInstance } from 'axios';
 export type APIResetPasswordResponse = { token: string };
 
 export class AuthService {
-	constructor(private client: AxiosInstance) {}
+	constructor(
+		private client: AxiosInstance,
+		private setAccessToken: (token: string) => void
+	) {}
 
 	/*--------------------------------- Authentication ---------------------------------*/
 
@@ -19,28 +22,41 @@ export class AuthService {
 	}
 
 	async login(payload: { username: string, password: string }) {
-		console.log('APIClient::login();');
 		const { data: res } = await this.client.post('/auth/login', payload);
-		console.log('login: ', res);
 
 		if (res.data._2FARequired)
 			return res.data;
 
+		this.setAccessToken(res.data.accessToken);
+
 		return { user: res.data.user, accessToken: res.data.accessToken };
 	}
 
-	async send2FACode(payload: { token: string, method: string }) {
-		const { data: res } = await this.client.post('/auth/login/2fa/send', payload);
+	async loginUsing2FA(token: string, code: string) {
+		const { data: res } = await this.client.post('/auth/login/2fa/verify', { token, code });
+
+		this.setAccessToken(res.data.accessToken);
+
+		return { user: res.data.user, accessToken: res.data.accessToken };
+	}
+
+	async select2FAMethod(token: string, method: string) {
+		const { data: res } = await this.client.post('/auth/login/2fa/select', { token, method });
 		return res.data;
 	}
 
-	async verify2FACode(payload: { token: string, code: string }) : Promise<{
+	async verify2FACode(token: string, code: string) : Promise<{
 		user: any;
 		accessToken: any;
 	}> {
-		const { data: res } = await this.client.post('/auth/login/2fa/verify', payload);
+		const { data: res } = await this.client.post('/auth/login/2fa/verify', { token, code });
 
 		return { user: res.data.user, accessToken: res.data.accessToken };
+	}
+
+	async resend2FACode(token: string) {
+		const { data: res } = await this.client.post('/auth/login/2fa/resend', { token });
+		return res.data;
 	}
 
 	async logout() {
@@ -101,12 +117,40 @@ export class AuthService {
 	}
 
 	async verifyPasswordResetCode(token: string, code: string) {
-		const { data: res } = await this.client.post(`/auth/reset-verify`, { token, code });
+		const { data: res } = await this.client.post(`/auth/reset-password/verify`, { token, code });
 		return res.data;
 	}
 
 	async resetPassword(token: string, newPassword: string) {
-		const { data: res } = await this.client.post(`/auth/reset-update`, { token, newPassword });
+		const { data: res } = await this.client.post(`/auth/reset-password/update`, { token, newPassword });
 		return res.data;
 	}
+
+	async resetPasswordResend(token: string) {
+		const { data: res } = await this.client.post(`/auth/reset-password/resend`, { token });
+		return res.data;
+	}
+
+	/*--------------------------------- Verification ---------------------------------*/
+
+	async requestVerifyEmail(newEmail?: string) {
+		const { data: res } = await this.client.post(`/auth/verify-email`, { target: newEmail });
+		return res.data;
+	}
+
+	async verifyEmail(token: string, code: string) {
+		const { data: res } = await this.client.post(`/auth/verify-email/verify`, { token, code });
+		return res.data;
+	}
+
+	async requestVerifyPhone(newPhone?: string) {
+		const { data: res } = await this.client.post(`/auth/verify-phone`, { target: newPhone });
+		return res.data;
+	}
+
+	async verifyPhone(token: string, code: string) {
+		const { data: res } = await this.client.post(`/auth/verify-phone/verify`, { token, code });
+		return res.data;
+	}
+
 }

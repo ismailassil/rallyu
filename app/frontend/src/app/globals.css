@@ -40,8 +40,8 @@
 
 /* autofill background color */
 input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
 input:-webkit-autofill:active{
     -webkit-background-clip: text;
     -webkit-text-fill-color: #ffffff;
@@ -417,7 +417,7 @@ input[type='number']::-webkit-inner-spin-button {
 
 .profile-inner-stat-card {
 	@apply bg-white/2 border border-white/8 rounded-2xl px-4 py-2;
-	
+
 	@apply hover:bg-white/4;
 
 	@apply flex flex-col flex-1 justify-between gap-1 items-center select-none;
@@ -429,7 +429,7 @@ input[type='number']::-webkit-inner-spin-button {
 
 .profile-inner-stat-card-animated {
 	@apply bg-white/2 border border-white/8 rounded-2xl px-4 py-2;
-	
+
 	@apply hover:bg-white/4;
 
 	@apply transition-all duration-300 hover:scale-101 overflow-hidden;
@@ -459,7 +459,7 @@ input[type='number']::-webkit-inner-spin-button {
 	@apply bg-white/2 border border-white/8 rounded-2xl px-5 py-6;
 
 	@apply flex justify-between gap-1 items-center select-none;
-	
+
 	@apply hover:bg-white/4;
 
 	@apply transition-all duration-300 hover:scale-101;
@@ -469,7 +469,7 @@ input[type='number']::-webkit-inner-spin-button {
 	@apply bg-white/2 border border-white/8 rounded-2xl px-5 py-4;
 
 	@apply flex justify-center items-center gap-4 select-none;
-	
+
 	@apply hover:bg-white/4;
 
 	@apply transition-all duration-300 hover:scale-101;
@@ -477,7 +477,7 @@ input[type='number']::-webkit-inner-spin-button {
 
 .single-two-fa-card {
 	@apply bg-white/2 border border-white/8 rounded-3xl px-8 py-6;
-	
+
 	@apply hover:bg-white/4;
 
 	@apply flex gap-5 items-center select-none;
@@ -534,3 +534,19 @@ input[type='number']::-webkit-inner-spin-button {
   animation: peek 1s both infinite;
   animation-delay: var(--d);
 }
+
+@keyframes shake {
+	0%, 100% {
+	  transform: translateX(0);
+	}
+	20%, 60% {
+	  transform: translateX(-6px);
+	}
+	40%, 80% {
+	  transform: translateX(6px);
+	}
+  }
+
+  .animate-shake {
+	animation: shake 0.3s ease-in-out;
+  }

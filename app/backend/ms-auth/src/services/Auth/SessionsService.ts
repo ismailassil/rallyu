@@ -1,9 +1,9 @@
 import { ISessionFingerprint } from "../../types";
 import JWTUtils, { JWT_REFRESH_PAYLOAD } from "../../utils/auth/Auth";
-import { SessionExpiredError, SessionRevokedError, SessionNotFoundError, TokenExpiredError, TokenInvalidError } from "../../types/auth.types";
 import { AuthConfig } from "../../config/auth";
 import SessionsRepository from "../../repositories/SessionsRepository";
 import { nowInSeconds } from "../TwoFactorAuth/utils";
+import { SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenInvalidError } from "../../types/exceptions/auth.exceptions";
 
 class SessionsService {
 	constructor(
@@ -29,10 +29,10 @@ class SessionsService {
 			if (sessionToRevoke)
 				await this.sessionRepository.revoke(sessionToRevoke.session_id, 'Maximum active sessions exceeded');
 		}
-		
+
 		// TODO: HARD EXPIRY SHOULD BE GET FROM SESSION CONFIG
 		const expires_at = Math.floor((Date.now() / 1000) + (60 * 60 * 24 * 30)); // 30d
-		
+
 		await this.sessionRepository.create(
 			session_id,
 			device,
@@ -50,9 +50,9 @@ class SessionsService {
 		const { device, browser, ip_address }: ISessionFingerprint = thisSessionFingerprint;
 
 		try {
-			const payload: JWT_REFRESH_PAYLOAD = 
+			const payload: JWT_REFRESH_PAYLOAD =
 				await this.isValidSession(refreshToken, thisSessionFingerprint);
-	
+
 			// TODO: EXPIRY SHOULD BE GET FROM SESSION CONFIG
 			const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await this.JWTUtils.generateTokenPair(
 				payload.sub,
@@ -61,7 +61,7 @@ class SessionsService {
 				payload.session_id,
 				payload.version + 1
 			);
-	
+
 			await this.sessionRepository.update(
 				payload.session_id,
 				{
@@ -71,7 +71,7 @@ class SessionsService {
 					ip_address: ip_address
 				}
 			);
-	
+
 			return { newAccessToken, newRefreshToken };
 		} catch (err) {
 			throw err;
@@ -91,7 +91,7 @@ class SessionsService {
 		const isFound = await this.sessionRepository.findOne(session_id, userID);
 		if (!isFound)
 			throw new SessionNotFoundError();
-		
+
 		await this.sessionRepository.revoke(session_id, reason);
 	}
 
@@ -118,7 +118,7 @@ class SessionsService {
 			const payload = refreshToken ? await this.JWTUtils.verifyRefreshToken(refreshToken) : null;
 
 			const sessions = await this.sessionRepository.findAllActive(userID);
-			
+
 			return sessions.map(session => ({ ...session, is_current: payload ? session.session_id === payload.session_id : false }));
 		} catch (err) {
 			throw err;

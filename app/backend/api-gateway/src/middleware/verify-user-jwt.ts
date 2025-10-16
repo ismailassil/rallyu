@@ -50,12 +50,14 @@ function shouldIgnorePath(path: string): boolean {
 		'/api/auth/refresh',
 		'/api/auth/login',
 		'/api/auth/register',
-		'/api/auth/login/2fa/send',
+		'/api/auth/login/2fa/select',
 		'/api/auth/login/2fa/verify',
+		'/api/auth/login/2fa/resend',
 		'/api/auth/logout',
 		'/api/auth/reset-password',
-		'/api/auth/reset-verify',
-		'/api/auth/reset-update'
+		'/api/auth/reset-password/verify',
+		'/api/auth/reset-password/resend',
+		'/api/auth/reset-password/update'
 	];
 
 	const avatarPath = '/api/users/avatars';
@@ -73,7 +75,7 @@ function shouldIgnorePath(path: string): boolean {
 		path.startsWith(emailAvailablePath) ||
 		path.startsWith(resetPath) ||
 		path.startsWith(searchTEMP) ||
-		path.startsWith(googleOAuth) || 
+		path.startsWith(googleOAuth) ||
 		path.startsWith(intra42OAuth)
 	);
 }

@@ -1,12 +1,11 @@
 "use client";
 import UserInfo from "./components/Hero/UserInfo";
-import FriendsPanel from "../components/Main/FriendsPanel";
 import { motion } from "framer-motion";
 import DashboardGameCards from "./components/GamesCards/DashboardGameCards";
 import { useAuth } from "../contexts/AuthContext";
 import LeaderboardCard from './components/Leaderboard/LeaderBoardCard';
 import SnapshotCard from './components/Snapshots/SnapshotCard';
-import FriendsCard from "../components/Main/FriendsCard";
+import FriendsCard from "../components/Main/FriendsCard/FriendsCard";
 
 export default function Dashboard() {
 	const { loggedInUser } = useAuth();
@@ -32,7 +31,6 @@ export default function Dashboard() {
 					</section>
 				</article>
 				<FriendsCard />
-				{/* <FriendsPanel /> */}
 			</div>
 		</motion.main>
 	);

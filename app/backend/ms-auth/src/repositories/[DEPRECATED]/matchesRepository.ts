@@ -1,5 +1,5 @@
 import { db } from "../../database";
-import { InternalServerError } from "../../types/auth.types";
+import { InternalServerError } from "../../types/exceptions/AAuthError";
 
 class MatchesRepository {
 
@@ -17,8 +17,8 @@ class MatchesRepository {
 
 		try {
 			const runResult = await db.run(
-				`INSERT INTO matches 
-				(player_home_score, player_away_score, game_type, started_at, finished_at, player_home_id, player_away_id) 
+				`INSERT INTO matches
+				(player_home_score, player_away_score, game_type, started_at, finished_at, player_home_id, player_away_id)
 				VALUES (?, ?, ?, ?, ?, ?, ?)`,
 				[player_home_score, player_away_score, game_type, startedVal, finishedVal, player_home_id, player_away_id]
 			);
@@ -106,16 +106,16 @@ class MatchesRepository {
 		gameTypeFilter: 'PONG' | 'XO' | 'all',
 		paginationFilter?: { page: number, limit: number }
 	) : { sql: string, params: any[] } {
-		const timeCondition = 
+		const timeCondition =
 			timeFilter === 'all' ? '' :
 			timeFilter === '0d' ? `AND date(m.finished_at) = date('now')` : `AND date(m.finished_at) >= date('now', ?)`;
 
-		const gameTypeCondition = 
+		const gameTypeCondition =
 			gameTypeFilter === 'all' ? '' : `AND game_type = ?`;
-		
-		const paginationCondition = 
+
+		const paginationCondition =
 			paginationFilter ? 'LIMIT ? OFFSET ?' : '';
-		
+
 		const params: any[] = [
 			user_id, user_id, user_id, user_id, user_id,
 			user_id, user_id, user_id, user_id, user_id
@@ -147,16 +147,16 @@ class MatchesRepository {
 					u_opp.username AS opponent_username,
 					(strftime('%s', m.finished_at) - strftime('%s', m.started_at)) AS duration,
 					CASE
-						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score) 
+						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score)
 						OR (m.player_away_id = ? AND m.player_away_score > m.player_home_score) THEN 'W'
-						WHEN (m.player_home_id = ? AND m.player_home_score < m.player_away_score) 
+						WHEN (m.player_home_id = ? AND m.player_home_score < m.player_away_score)
 						OR (m.player_away_id = ? AND m.player_away_score < m.player_home_score) THEN 'L'
 						ELSE 'D'
 					END AS outcome
 				FROM matches m
 				JOIN users u_self ON u_self.id = ?
 				JOIN users u_opp ON u_opp.id = CASE
-					WHEN m.player_home_id = ? THEN m.player_away_id 
+					WHEN m.player_home_id = ? THEN m.player_away_id
 					ELSE m.player_home_id
 				END
 				WHERE (m.player_home_id = ? OR m.player_away_id = ?)

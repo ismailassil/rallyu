@@ -1,5 +1,5 @@
 import { Database } from "sqlite3";
-import { DatabaseQueryError } from "../types/auth.types";
+import { DatabaseQueryError } from "../types/exceptions/database.exceptions";
 
 /**
  * Abstract repository class that provides base patterns for all repositories.
@@ -19,7 +19,7 @@ class ARepository {
 	 */
 	protected handleDatabaseError(error: any, operation: string) {
 		console.error(`Database error during ${operation}:`, error); // TODO: replace with proper logging
-		
+
 		// here we are checking for specific SQLite error codes
 
 		if (error.message?.includes('SQLITE_CONSTRAINT')) {

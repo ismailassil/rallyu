@@ -5,8 +5,11 @@ import FriendsList from './FriendsList';
 import BlockedList from './BlockedList';
 import OutgoingFriendRequestsList from './OutgoingFriendRequestsList';
 import IncomingFriendRequestsList from './IncomingFriendRequestsList';
+import { useTranslations } from 'next-intl';
 
 export default function UsersSettingsTab() {
+	const t = useTranslations('settings.users');
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: 15 }}
@@ -15,36 +18,36 @@ export default function UsersSettingsTab() {
 			transition={{ duration: 0.5 }}
 			className='flex flex-col gap-4'
 		>
-			<SettingsCard 
-				title="Friends"
-				subtitle="View and manage relationship with all of your friends"
+			<SettingsCard
+				title={t('cards.friends.title')}
+				subtitle={t('cards.friends.subtitle')}
 				isFoldable={true}
 				defaultExpanded={true}
 			>
 				<FriendsList />
 			</SettingsCard>
 
-			<SettingsCard 
-				title="Outgoing Friend Requests"
-				subtitle="View and cancel all the pending friend requests you've sent"
+			<SettingsCard
+				title={t('cards.outgoing.title')}
+				subtitle={t('cards.outgoing.subtitle')}
 				isFoldable={true}
 				defaultExpanded={true}
 			>
 				<OutgoingFriendRequestsList />
 			</SettingsCard>
 
-			<SettingsCard 
-				title="Incoming Friend Requests"
-				subtitle="View and decline all the pending friend requests you've received"
+			<SettingsCard
+				title={t('cards.incoming.title')}
+				subtitle={t('cards.incoming.subtitle')}
 				isFoldable={true}
 				defaultExpanded={true}
 			>
 				<IncomingFriendRequestsList />
 			</SettingsCard>
 
-			<SettingsCard 
-				title="Blocked Users"
-				subtitle="View and unblock all the users you have blocked"
+			<SettingsCard
+				title={t('cards.blocked.title')}
+				subtitle={t('cards.blocked.subtitle')}
 				isFoldable={true}
 				defaultExpanded={true}
 			>

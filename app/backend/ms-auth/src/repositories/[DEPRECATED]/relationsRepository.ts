@@ -1,5 +1,5 @@
 import { db } from "../../database"
-import { InternalServerError } from "../../types/auth.types";
+import { InternalServerError } from "../../types/exceptions/AAuthError";
 
 class RelationsRepository {
 	constructor() {
@@ -11,7 +11,7 @@ class RelationsRepository {
 			DELETE FROM relations
 		`);
 	}
-	
+
 	async create(requester_id: number, receiver_id: number, relation_status: string) {
 		try {
 			const runResult = await db.run(
@@ -40,7 +40,7 @@ class RelationsRepository {
 	async findTwoWaysByUsers(user_id_a: number, user_id_b: number) : Promise<any | null> {
 		try {
 			const relation = await db.get(
-				`SELECT * FROM relations 
+				`SELECT * FROM relations
 					WHERE (requester_user_id = ? AND receiver_user_id = ?)
 					OR (requester_user_id = ? AND receiver_user_id = ?)`,
 			[user_id_a, user_id_b, user_id_b, user_id_a]);
@@ -54,7 +54,7 @@ class RelationsRepository {
 	async findOneWayByUsers(requester_id: number, receiver_id: number) {
 		try {
 			const relation = await db.get(
-				`SELECT * FROM relations 
+				`SELECT * FROM relations
 					WHERE requester_user_id = ? AND receiver_user_id = ?`,
 			[requester_id, receiver_id]);
 			return relation ?? null;
@@ -80,7 +80,7 @@ class RelationsRepository {
 			throw new InternalServerError();
 		}
 	}
-	
+
 	// OUTGOING FRIEND REQUESTS
 	async findOutgoingFriendRequests(user_id: number) {
 		try {
@@ -97,7 +97,7 @@ class RelationsRepository {
 			throw new InternalServerError();
 		}
 	}
-			
+
 	// BLOCKED USERS (WHO BLOCKED THIS USER)
 	async findIncomingBlocks(user_id: number) {
 		try {
@@ -147,7 +147,7 @@ class RelationsRepository {
 			throw new InternalServerError();
 		}
 	}
-	
+
 	// CHECK BLOCK BETWEEN TWO USERS (BI-DIRECTION)
 	async findTwoWaysBlockBetweenUsers(user_id_a: number, user_id_b: number) {
 		try {
@@ -184,7 +184,7 @@ class RelationsRepository {
 	async updateRelationStatus(id: number, status: string) : Promise<boolean> {
 		try {
 			const runResult = await db.run(`
-				UPDATE relations 
+				UPDATE relations
 				SET relation_status = ?, updated_at = (strftime('%s','now'))
 				WHERE id = ?
 			`, [status, id]);
@@ -238,7 +238,7 @@ class RelationsRepository {
 	async findAllFriends(user_id: number) {
 		try {
 			const allFriends = await db.all(`
-				SELECT 
+				SELECT
 					users.id,
 					users.username,
 					users.first_name,

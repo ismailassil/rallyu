@@ -4,9 +4,10 @@ import { FormProvider } from "@/app/(auth)/components/Form/FormContext";
 import useForm from "@/app/hooks/useForm";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { changePasswordSchema } from "@/app/(api)/schema";
 import { Check, Lock } from "lucide-react";
 import useAPICall from "@/app/hooks/useAPICall";
+import { useTranslations } from "next-intl";
+import useValidationSchema from "@/app/hooks/useValidationSchema";
 
 interface ChangePasswordFormProps {
 	formId: string;
@@ -15,6 +16,8 @@ interface ChangePasswordFormProps {
 }
 
 export default function ChangePasswordForm({ formId, setButtonDisabled, setButtonHidden } : ChangePasswordFormProps) {
+	const t = useTranslations('');
+
 	const {
 		apiClient
 	} = useAuth();
@@ -23,13 +26,17 @@ export default function ChangePasswordForm({ formId, setButtonDisabled, setButto
 		executeAPICall
 	} = useAPICall();
 
+	const {
+		changePasswordSchema
+	} = useValidationSchema();
+
 	const [
-		formData, 
-		touched, 
-		errors, 
-		debounced, 
-		handleChange, 
-		validateAll, 
+		formData,
+		touched,
+		errors,
+		debounced,
+		handleChange,
+		validateAll,
 		getValidationErrors,
 		resetForm
 	] = useForm(
@@ -45,7 +52,7 @@ export default function ChangePasswordForm({ formId, setButtonDisabled, setButto
 
 		if (hasErrors || !allTouched || !allFilled || !allDebounced)
 			return ;
-		
+
 		setButtonHidden(false);
 	}, [formData, errors, debounced, touched, setButtonHidden]);
 
@@ -82,31 +89,31 @@ export default function ChangePasswordForm({ formId, setButtonDisabled, setButto
 					getValidationErrors={getValidationErrors}
 					validateAll={validateAll}
 				>
-					<form 
+					<form
 						id={formId}
 						onSubmit={handleSubmit}
 						className="flex flex-col gap-5"
 					>
-						<InputField 
+						<InputField
 							className='field flex flex-col gap-0.5 box-border'
 							iconSrc='/icons/lock.svg'
-							label='Current Password'
+							label={t('auth.common.current_password')}
 							field='current_password'
 							inputPlaceholder='••••••••••••••••'
 							inputHidden={true}
 						/>
-						<InputField 
+						<InputField
 							className='field flex flex-col gap-0.5 box-border'
 							iconSrc='/icons/lock.svg'
-							label='New Password'
+							label={t('auth.common.new_password')}
 							field='new_password'
 							inputPlaceholder='••••••••••••••••'
 							inputHidden={true}
 						/>
-						<InputField 
+						<InputField
 							className='field flex flex-col gap-0.5 box-border'
 							iconSrc='/icons/lock.svg'
-							label='Confirm New Password'
+							label={t('auth.common.confirm_password')}
 							field='confirm_new_password'
 							inputPlaceholder='••••••••••••••••'
 							inputHidden={true}
@@ -121,26 +128,26 @@ export default function ChangePasswordForm({ formId, setButtonDisabled, setButto
 					<div className="flex items-center gap-3 mb-4">
 						<Lock className="w-5 h-5 shrink-0" />
 						<div>
-							<h2 className="font-bold text-lg sm:text-xl text-white">Password Requirements</h2>
+							<h2 className="font-bold text-lg sm:text-xl text-white">{t('settings.security.cards.change_password_form.sidecard.title')}</h2>
 						</div>
 					</div>
-					<p className="text-sm text-white/75">To create a new password, <br /> you have to meet all of the following requirements: </p>
+					<p className="text-sm text-white/75">{t('settings.security.cards.change_password_form.sidecard.text1')} <br /> {t('settings.security.cards.change_password_form.sidecard.text2')} </p>
 					<ul className="space-y-2.5 mt-5">
 						<li className="flex items-start gap-2 text-sm text-white/85">
 							<Check className="w-5 h-5 shrink-0" />
-							<span>Minimum 8 characters long</span>
+							<span>{t('settings.security.cards.change_password_form.sidecard.text3')}</span>
 						</li>
 						<li className="flex items-start gap-2 text-sm text-white/85">
 							<Check className="w-5 h-5 shrink-0" />
-							<span>At least one lowercase letter</span>
+							<span>A{t('settings.security.cards.change_password_form.sidecard.text4')}</span>
 						</li>
 						<li className="flex items-start gap-2 text-sm text-white/85">
 							<Check className="w-5 h-5 shrink-0" />
-							<span>At least one uppercase letter</span>
+							<span>{t('settings.security.cards.change_password_form.sidecard.text5')}</span>
 						</li>
 						<li className="flex items-start gap-2 text-sm text-white/85">
 							<Check className="w-5 h-5 shrink-0" />
-							<span>At least one digit</span>
+							<span>{t('settings.security.cards.change_password_form.sidecard.text6')}</span>
 						</li>
 					</ul>
 				</div>

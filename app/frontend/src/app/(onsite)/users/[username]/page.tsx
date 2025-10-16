@@ -9,6 +9,7 @@ import { toastError } from '@/app/components/CustomToast';
 import { useRouter } from 'next/navigation';
 import { EmptyComponent, LoadingPage } from '@/app/(auth)/components/UI/LoadingComponents';
 import useAPICall from '@/app/hooks/useAPICall';
+import FriendsCard from '../../components/Main/FriendsCard/FriendsCard';
 
 export default function UserProfilePage({ params } : { params: Promise<{ username: string }> }) {
 	const router = useRouter();
@@ -66,7 +67,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 						null
 					) : (
 						<>
-						<ProfileCard 
+						<ProfileCard
 							userId={userProfile.user.id}
 							fullName={userProfile.user.first_name + ' ' + userProfile.user.last_name}
 							username={userProfile.user.username}
@@ -81,7 +82,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 						<div
 							className="hide-scrollbar flex flex-1 flex-col gap-4 lg:flex-row overflow-scroll overflow-x-hidden"
 						>
-							<PerformanceCard 
+							<PerformanceCard
 								totalXP={userProfile.userRecords.total_xp}
 								totalMatches={userProfile.userStats.matches}
 								longestStreak={userProfile.userRecords.longest_streak}
@@ -95,7 +96,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 						</>
 					)}
 				</article>
-				{/* <FriendsPanel /> */}
+				<FriendsCard />
 			</div>
 		</motion.main>
 	);

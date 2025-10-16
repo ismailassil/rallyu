@@ -140,3 +140,7 @@ export const loginChallengeSchema = z.object({
 		.nonempty("Code is required")
 		.regex(/^\d{6}$/, "Code must be a 6-digit number"),
 });
+
+export const phoneSchema = z.object({
+	phone: z.e164()
+});

@@ -2,30 +2,33 @@ import { AxiosInstance } from 'axios';
 
 export type APIEnabledMethodsResponse = Array<'TOTP' | 'SMS' | 'EMAIL'>;
 export type APITOTPSecrets = { secret_base32: string, secret_qrcode_url: string };
-export type APITwoFASetupResponse = { token: string, secrets: APITOTPSecrets | undefined };
+export type APITwoFASetupResponse = { token: string, secrets: APITOTPSecrets };
 
 export class MfaService {
 	constructor(private client: AxiosInstance) {}
 
 	/*-------------------------------------- 2FA --------------------------------------*/
 
-	async mfaEnabledMethods() : Promise<APIEnabledMethodsResponse> {
+	async fetchEnabledMethods() : Promise<APIEnabledMethodsResponse> {
 		const { data: res } = await this.client.get('/auth/2fa/enabled');
 		return res.data;
 	}
 
-	async mfaDisableMethod(method: string) : Promise<undefined> {
+	async enableMethod(method: string) : Promise<undefined> {
+		const { data: res } = await this.client.post(`/auth/2fa/enabled/${method}`);
+		return res.data;
+	}
+	async disableMethod(method: string) : Promise<undefined> {
 		const { data: res } = await this.client.delete(`/auth/2fa/enabled/${method}`);
 		return res.data;
 	}
 
-	async mfaSetupInit(method: string) : Promise<APITwoFASetupResponse> {
-		const { data: res } = await this.client.post(`/auth/2fa/setup?method=${method}`);
+	async setupTOTP() : Promise<APITwoFASetupResponse> {
+		const { data: res } = await this.client.post(`/auth/2fa/setup-totp`);
 		return res.data;
 	}
-
-	async mfaSetupVerify(token: string, code: string) {
-		const { data: res } = await this.client.post(`/auth/2fa/verify`, { token, code });
+	async verifyTOTP(token: string, code: string) : Promise<APITwoFASetupResponse> {
+		const { data: res } = await this.client.post(`/auth/2fa/setup-totp/verify`, { token, code });
 		return res.data;
 	}
 }

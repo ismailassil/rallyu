@@ -96,6 +96,16 @@ const auth2FAMethodInParams = {
 	required: ['method']
 };
 
+const authChallengeTokenInBody = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string'
+		}
+	},
+	required: ['token']
+};
+
 const authVerifyChallengeBody = {
 	type: 'object',
 	properties: {
@@ -135,6 +145,9 @@ const authChangePasswordBody = {
 	required: ['oldPassword', 'newPassword'],
 	additionalProperties: false
 };
+
+
+// Verify email/phone
 
 
 
@@ -194,4 +207,8 @@ export const authResetPasswordVerifySchema = {
 
 export const authResetPasswordUpdateSchema = {
 	body: authResetPasswordUpdateBody
+}
+
+export const authChallengeResendSchema = {
+	body: authChallengeTokenInBody
 }

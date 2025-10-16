@@ -1,92 +1,89 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import OTPCodeInput from "@/app/(onsite)/2fa/components/OTPCodeInput";
+import OTPCodeInput from "@/app/(onsite)/[DEPRECATED]2fa/components/OTPCodeInput";
 import { useRef, useState } from "react";
 import FormButton from "../../components/UI/FormButton";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import useAPICall from "@/app/hooks/useAPICall";
-import { toastError, toastSuccess } from "@/app/components/CustomToast";
-import InputFieldError from "../../components/Form/InputFieldError";
-import { AnimatePresence } from "framer-motion";
-import useForm from "@/app/hooks/useForm";
-import { otpCodeSchema } from "@/app/(api)/schema";
+import { toastError } from "@/app/components/CustomToast";
+import AnimatedComponent from "../../components/UI/AnimatedComponent";
+import { APIError } from "@/app/(api)/APIClient";
+import ResendCode from "../../components/Verification/ResendCode";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 interface VerifyCodeProps {
-	email: string;
 	token: string;
-	onNext: () => void;
+	onSuccess: () => void;
+	onFailure: () => void;
 	onGoBack: () => void;
 }
 
-export function VerifyCode({ email, token, onNext, onGoBack } : VerifyCodeProps) {
-	const [
-		,
-		,
-		errors,
-		,
-		handleChange,
-		validateAll,
-		getValidationErrors,
-		resetForm
-	] = useForm(
-		otpCodeSchema,
-		{ code: '' },
-		{ debounceMs: { code: 2400 } }
-	);
+export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCodeProps) {
+	const t = useTranslations('');
+
+	const router = useRouter();
 
 	const {
 		apiClient
 	} = useAuth();
 
 	const {
-		isLoading,
-		executeAPICall
+		isLoading: isVerifyingCode,
+		executeAPICall: verifyCode
+	} = useAPICall();
+	const {
+		isLoading: isResendingCode,
+		executeAPICall: resendCode
 	} = useAPICall();
 
-	const [isResending, setIsResending] = useState<boolean>(false);
 	const [code, setCode] = useState(['', '', '', '', '', '']);
+	const [hasError, setHasError] = useState(false);
 	const inputRefs = useRef([]);
 
-	async function handleSubmit() {
-		const codeJoined = code.join('');
+	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
 
-		validateAll();
-		const errors = getValidationErrors();
-		if (errors?.code)
+		const OTPJoined = code.join('');
+		if (OTPJoined.length !== 6) {
+			toastError('Code is required');
+			setHasError(true);
+			setTimeout(() => {
+				setHasError(false);
+			}, 1000);
 			return ;
+		}
 
 		try {
-			await executeAPICall(() => apiClient.verifyPasswordResetCode(
+			await verifyCode(() => apiClient.verifyPasswordResetCode(
 				token,
-				codeJoined
+				OTPJoined
 			));
-			toastSuccess('Code verified!');
-			onNext();
-		} catch (err: any) {
-			toastError(err.message);
-			resetForm();
-			setCode(['', '', '', '', '', '']);
+			onSuccess();
+		} catch (err) {
+			setHasError(true);
+			setTimeout(() => {
+				setHasError(false);
+				if ((err as APIError).code !== 'AUTH_INVALID_CODE')
+					onFailure();
+			}, 1000);
+			toastError((err as APIError).message);
 		}
 	}
 
 	async function handleResend() {
-		resetForm();
-		setCode(['', '', '', '', '', '']);
-		setIsResending(true);
 		try {
-			await executeAPICall(() => apiClient.requestPasswordReset(
-				email
+			await resendCode(() => apiClient.resetPasswordResend(
+				token
 			));
-			toastSuccess('Code sent!');
-		} catch (err: any) {
-			toastError(err.message);
+		} catch (err) {
+			onFailure();
+			toastError((err as APIError).message);
 		}
-		setIsResending(false);
 	}
 
 	return (
-		<>
+		<AnimatedComponent componentKey="reset-password-verify" className='w-full max-w-lg p-11 flex flex-col gap-5'>
 			{/* Header + Go Back */}
 			<div className="flex gap-4 items-center mb-2">
 				<button
@@ -95,51 +92,36 @@ export function VerifyCode({ email, token, onNext, onGoBack } : VerifyCodeProps)
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>Check your Email!</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>We&#39;ve sent a 6-digit code to your email address</p>
+					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('auth.reset_password.verifyCode.title')}</h1>
+					<p className='text-gray-300 text-sm sm:text-balance'>{t('auth.reset_password.verifyCode.subtitle')}</p>
 				</div>
 			</div>
 
 			{/* OTP Input + Verify Button + Resend Button */}
-			<div className="flex flex-col gap-3">
+			<form className="flex flex-col gap-3" onSubmit={handleSubmit}>
 				<OTPCodeInput
 					code={code}
-					setCode={(newCode) => {
-						setCode(newCode);
-						const fakeChangeEvent = {
-							target: {
-								name: 'code',
-								value: newCode.join('')
-							}
-						} as React.ChangeEvent<HTMLInputElement>;
-						handleChange(fakeChangeEvent);
-					}}
+					setCode={setCode}
 					inputRefs={inputRefs}
-					isDisabled={isLoading}
-				><AnimatePresence>{errors.code && <InputFieldError error={errors.code} />}</AnimatePresence></OTPCodeInput>
-
-				<FormButton
-					text='Continue'
-					icon={<ArrowRight size={16} />}
-					onClick={handleSubmit}
-					isSubmitting={isLoading && !isResending}
-					disabled={isResending}
+					isDisabled={isResendingCode || isVerifyingCode}
+					hasError={hasError}
 				/>
 
-				<p className='self-center mt-2'>
-					Didn&#39;t receive the code?
-					<span
-						onClick={handleResend}
-						className={`font-semibold ml-1 ${
-							(isLoading)
-								? 'text-gray-500 cursor-not-allowed pointer-events-none'
-								: 'text-blue-500 hover:underline cursor-pointer'
-						}`}
-					>
-						Resend code
-					</span>
-				</p>
-			</div>
-		</>
+				<FormButton
+					text={t('auth.common.continue')}
+					type="submit"
+					icon={<ArrowRight size={16} />}
+					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '')}
+					isSubmitting={isVerifyingCode}
+				/>
+
+				<ResendCode
+					isDisabled={isVerifyingCode || isResendingCode}
+					onResend={handleResend}
+					onMaxResends={onFailure}
+				/>
+			</form>
+			<p className='self-center mt-2'>{t('auth.reset_password.verifyCode.instruction')} <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>{t('auth.common.signin')}</span></p>
+		</AnimatedComponent>
 	);
 }

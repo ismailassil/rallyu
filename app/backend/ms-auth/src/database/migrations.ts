@@ -60,7 +60,7 @@ const MIGRATIONS = [
 		sql: `
 			CREATE TABLE IF NOT EXISTS _2fa_methods (
 				id INTEGER PRIMARY KEY AUTOINCREMENT, -- 2FA ID
-				
+
 				method TEXT NOT NULL, -- email, sms, totp,
 				totp_secret TEXT,
 
@@ -75,7 +75,7 @@ const MIGRATIONS = [
 		sql: `
 			CREATE TABLE IF NOT EXISTS pending_2fa (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				
+
 				method TEXT NOT NULL,
 				temp_value TEXT,
 
@@ -92,7 +92,7 @@ const MIGRATIONS = [
 		sql: `
 			CREATE TABLE IF NOT EXISTS otps (
 				id INTEGER PRIMARY KEY AUTOINCREMENT, -- OTP ID
-				
+
 				method TEXT NOT NULL, -- email, sms,
 				code TEXT,
 
@@ -109,21 +109,21 @@ const MIGRATIONS = [
 		sql: `
 			CREATE TABLE IF NOT EXISTS relations (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
-  
+
 				requester_user_id INTEGER NOT NULL, -- USER WHO DID THE FIRST ACTION
 				receiver_user_id INTEGER NOT NULL,  -- USER REQUESTED TO REPLY TO ACTION
-				
+
 				relation_status TEXT NOT NULL,    -- VALUES (PENDING, ACCEPTED, BLOCKED)
-				
+
 				updated_by_user_id INTEGER,         -- USER WHO PERFORMED LAST ACTION
 																							-- EX:
 																								-- ADD FRIEND => PENDING
 																								-- UNFRIEND   => DELETE
 																								-- BLOCK      => BLOCKED
-				
+
 				created_at INTEGER DEFAULT (strftime('%s','now')),
 				updated_at INTEGER DEFAULT (strftime('%s','now')),
-				
+
 				FOREIGN KEY (requester_user_id) REFERENCES users(id), -- ON DELETE CASCADE?
 				FOREIGN KEY (receiver_user_id) REFERENCES users(id),   -- ON DELETE CASCADE?
   				FOREIGN KEY (updated_by_user_id) REFERENCES users(id) -- ON DELETE CASCADE?
@@ -135,12 +135,12 @@ const MIGRATIONS = [
 		name: 'create-reset-password-table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS reset_password (
-				id INTEGER PRIMARY KEY AUTOINCREMENT, 
-				
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+
 				code TEXT,
 
 				expires_at INTEGER,
-				
+
 				user_id INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id)
 			)
@@ -151,8 +151,8 @@ const MIGRATIONS = [
 		name: 'create-users-stats-table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS users_stats (
-				id INTEGER PRIMARY KEY AUTOINCREMENT, 
-				
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+
 				level INTEGER DEFAULT 0,
 				total_xp INTEGER DEFAULT 0,
 				current_streak INTEGER DEFAULT 0,
@@ -168,8 +168,8 @@ const MIGRATIONS = [
 		name: 'create-matches-table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS matches (
-				id INTEGER PRIMARY KEY AUTOINCREMENT, 
-				
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+
 				player_home_score INTEGER NOT NULL,
 				player_away_score INTEGER NOT NULL,
 
@@ -190,7 +190,7 @@ const MIGRATIONS = [
 		sql: `
 			CREATE TABLE IF NOT EXISTS pending_2fa_login (
 				id INTEGER PRIMARY KEY AUTOINCREMENT, -- 2FA ID
-				
+
 				method TEXT, -- email, sms, totp,
 				code TEXT,
 				remaining_attempts INTEGER,
@@ -215,11 +215,14 @@ const MIGRATIONS = [
 				),
 				method TEXT CHECK (method IN ('SMS', 'EMAIL', 'TOTP')),
 				status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'VERIFIED', 'COMPLETED', 'EXPIRED', 'FAILED')),
-				
+
 				token TEXT NOT NULL UNIQUE,      -- frontend state
 				target TEXT,                     -- email or phone number
 				secret TEXT,            		-- OTP or TOTP Secret
-				
+
+				verify_attempts INTEGER NOT NULL DEFAULT 0,
+				resend_attempts INTEGER NOT NULL DEFAULT 0,
+
 				created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
 				updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
 				expires_at INTEGER NOT NULL

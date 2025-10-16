@@ -4,6 +4,7 @@ import funnelDisplay from "@/app/fonts/FunnelDisplay";
 import Image from "next/image";
 import GameCard, { GameProps } from "./GameCard";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 function NoGameHistoryData() {
 	return (
@@ -25,12 +26,14 @@ function NoGameHistoryData() {
 }
 
 export default function GamesHistoryCard({ matches } : { matches: GameProps[] }) {
+	const t = useTranslations('');
+
 	if (matches.length === 0) {
 		return <NoGameHistoryData />;
 	}
 
 	return (
-		<MainCardWithHeader headerName='Games History' color='blue-500' className='font-funnel-display flex-3'>
+		<MainCardWithHeader headerName={t('profile.cards.games_history.title')} color='blue-500' className='font-funnel-display flex-3'>
 			{/* Games List */}
 			<div className="group flex flex-col gap-4 px-6">
 				{matches.map((match, i) => (

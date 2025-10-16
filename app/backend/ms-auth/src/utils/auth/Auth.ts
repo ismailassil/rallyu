@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { TokenInvalidError, TokenExpiredError } from '../../types/auth.types';
+import { TokenInvalidError, TokenExpiredError } from '../../types/exceptions/auth.exceptions';
 
 export interface JWT_ACCESS_PAYLOAD {
 	sub: number,
@@ -24,10 +24,10 @@ const JWT_REFRESH_SECRET = 'jwt-refresh-secret';
 
 class JWTUtils {
 	constructor() {}
-	
+
 	private signJWT<T extends object>(payload: T, JWT_SECRET: string, exp: jwt.SignOptions["expiresIn"] = '15m') : Promise<string> {
 		return new Promise((resolve, reject) => {
-	
+
 			jwt.sign(payload, JWT_SECRET, { algorithm: 'HS256' }, (err, token) => {
 				if (err || !token) {
 					reject(err);
@@ -35,13 +35,13 @@ class JWTUtils {
 				}
 				resolve(token as string);
 			});
-	
+
 		});
 	}
-	
+
 	private verifyJWT<T extends object>(token: string, JWT_SECRET: string) : Promise<T> {
 		return new Promise((resolve, reject) => {
-	
+
 			jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }, (err, decoded) => {
 				if (err || !decoded) {
 					// console.log('jwt', err);
@@ -50,7 +50,7 @@ class JWTUtils {
 				}
 				resolve(decoded as T);
 			});
-	
+
 		});
 	}
 
@@ -65,7 +65,7 @@ class JWTUtils {
 	public generateAccessToken(payload: JWT_ACCESS_PAYLOAD, exp = '15m') {
 		return this.signJWT(payload, JWT_ACCESS_SECRET, payload.exp);
 	}
-	
+
 	public generateRefreshToken(payload: JWT_REFRESH_PAYLOAD, exp = '7d') {
 		return this.signJWT(payload, JWT_REFRESH_SECRET, payload.exp);
 	}
@@ -109,7 +109,7 @@ class JWTUtils {
 		session_id: string = this.generateRandom32(),
 		session_version: number = 1
 	) : Promise<{ accessToken: JWT_TOKEN, refreshToken: JWT_TOKEN }> {
-		
+
 		const now = Math.floor(Date.now() / 1000);		// now
 		const at_exp = Math.floor(60 * 15);				// 15m
 		const rt_exp = Math.floor(60 * 60 * 24 * 7);	// 7d
