@@ -1,12 +1,9 @@
-import { db } from "../../database";
-import MatchesRepository from "../../repositories/[DEPRECATED]/matchesRepository";
-// import StatsRepository from "../repositories/statsRepository";
 import StatsRepository from "../../repositories/StatsRepository";
 import UserRepository from "../../repositories/UserRepository";
 import { UserNotFoundError } from "../../types/exceptions/user.exceptions";
 
 class StatsService {
-	private readonly XP_SCALE = 50;
+	private readonly XP_SCALE = 100;
 	private readonly LEVEL_GROWTH_RATE = 2;
 
 	constructor(
@@ -68,7 +65,11 @@ class StatsService {
 		if (!existingUser)
 			throw new UserNotFoundError();
 
-		const analytics = await this.statsRepository.getUserDetailedAnalyticsGroupedByDay(userID, gameTypeFilter, daysCount);
+		const analytics = await this.statsRepository.getUserDetailedAnalyticsGroupedByDay(
+			userID,
+			gameTypeFilter,
+			daysCount
+		);
 
 		return analytics;
 	}
@@ -79,7 +80,7 @@ class StatsService {
 		return rankByXP;
 	}
 
-	async applyGame(ID_P1: number, SCORE_P1: number, ID_P2: number, SCORE_P2: number) {
+	async applyFinishedGame(ID_P1: number, SCORE_P1: number, ID_P2: number, SCORE_P2: number) {
 		const STATS_P1 = await this.statsRepository.findByUserID(ID_P1);
 		const STATS_P2 = await this.statsRepository.findByUserID(ID_P2);
 		if (!STATS_P1 || !STATS_P2)
@@ -101,8 +102,8 @@ class StatsService {
 		const XP_GAIN_P2 = this.calculateXPGain(
 			LVL_P2,
 			LVL_P1,
-			SCORE_P1,
-			SCORE_P2
+			SCORE_P2,
+			SCORE_P1
 		);
 
 		const UPDATE_P1 = this.calculateXPLevelUpdate(
@@ -124,6 +125,8 @@ class StatsService {
 			level: UPDATE_P2.newLevel,
 			total_xp: UPDATE_P2.newXP
 		});
+
+		return { UPDATE_P1, UPDATE_P2 };
 	}
 
 	private calculateXPGain(playerLevel: number, oppLevel: number, playerScore: number, oppScore: number) {

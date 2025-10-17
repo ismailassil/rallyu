@@ -12,11 +12,12 @@ export default function CustomAreaChart({
 	dataKeyY: string,
 	tooltipFormatter: (v: number) => string
 }) {
+	const reversedData = [...data].reverse();
 	return (
 		<div className='relative w-full'>
 			<div className='bg-[#78d369]/7 h-[5px] w-full absolute bottom-0'></div>
 			<ResponsiveContainer width='100%' height={360}>
-				<AreaChart data={data} margin={{ top: 20, right: 0, left: 0, bottom: 5 }}>
+				<AreaChart data={reversedData} margin={{ top: 20, right: 0, left: 0, bottom: 5 }}>
 					<defs>
 						<linearGradient id="colorGradient" x1="0" y1="0" x2="1" y2="0">
 							<stop offset="0%" stopColor="#ffe600" />

@@ -264,16 +264,20 @@
             },
             "charts": {
               "opp_score_trends": {
-                "title": "Tendencia de puntuación de contrincantes",
-                "subtitle": "Puntuación de tus contrincantes en los últimos 7 días"
+                "title": "Tendencias de la puntuación de los oponentes",
+                "subtitle": "Puntuación de tus oponentes en los últimos 7 días"
               },
-              "wins_vs_losses": {
-                "title": "Tendencia de puntuación de contrincantes",
-                "subtitle": "Puntuación de tus contrincantes en los últimos 7 días"
+              "you_vs_opp_score": {
+                "title": "Diferencia de puntuación con los oponentes",
+                "subtitle": "Diferencia entre tu puntuación y la de tus oponentes",
+                "common": {
+                  "you": "Tú",
+                  "your_opponents": "Tus oponentes"
+                }
               },
-              "avg_score_trends": {
-                "title": "Tendencia de puntuación promedio de contrincantes",
-                "subtitle": "Puntuación promedio de tus contrincantes en los últimos 7 días"
+              "opp_avg_score_trends": {
+                "title": "Tendencias de la puntuación promedio de los oponentes",
+                "subtitle": "Puntuación promedio de tus oponentes en los últimos 7 días"
               }
             }
           }

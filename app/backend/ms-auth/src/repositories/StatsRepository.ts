@@ -69,8 +69,8 @@ class StatsRepository extends ARepository {
 					ROW_NUMBER() OVER (ORDER BY s.total_xp DESC, u.id ASC) AS rank,
 					u.username,
 					u.avatar_url,
-					s.level,
-					s.total_xp,
+					ROUND(s.level, 2) as level,
+					ROUND(s.total_xp, 0) total_xp,
 					u.id
 				FROM users_stats s
 				JOIN users u ON s.user_id = u.id
@@ -96,8 +96,8 @@ class StatsRepository extends ARepository {
 				WITH ranked_users AS (
 					SELECT
 						ROW_NUMBER() OVER (ORDER BY total_xp DESC) as rank,
-						level,
-						total_xp,
+						ROUND(level, 2) as level,
+						ROUND(total_xp, 0) as total_xp,
 						current_streak,
 						longest_streak,
 						user_id
@@ -220,7 +220,7 @@ class StatsRepository extends ARepository {
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN duration ELSE NULL END), 0), 2) AS avg_user_draw_duration
 				FROM user_matches
 				GROUP BY day
-				ORDER BY day ASC
+				ORDER BY day DESC
 				LIMIT ${lastAvailableDaysCount}
 			`, CTE.params);
 
@@ -496,7 +496,7 @@ class StatsRepository extends ARepository {
 			values.push(id);
 
 			const runResult = await db.run(
-				`UPDATE users_stats SET ${setClause}, updated_at = (strftime('%s','now')) WHERE id = ?`,
+				`UPDATE users_stats SET ${setClause} WHERE id = ?`,
 				values
 			);
 			return runResult.changes > 0;

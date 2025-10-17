@@ -14,8 +14,8 @@ export default function Opponent({ userAnalytics, userAnalyticsByDay } : { userA
 	const { totals, scores, opponents } = userAnalytics;
 
 	const youVsOppTotalScore = totals.matches === 0 ? [] : [
-		{ name: t('opponent.cards.opp_analysis.title'), value: scores.total_user_score },
-		{ name: t('opponent.cards.opp_analysis.title'), value: scores.total_opp_score }
+		{ name: t('opponent.cards.opp_analysis.cards.charts.you_vs_opp_score.common.you'), value: scores.total_user_score },
+		{ name: t('opponent.cards.opp_analysis.cards.charts.you_vs_opp_score.common.your_opponents'), value: scores.total_opp_score }
 	];
 
 	const oppAvgScoreTrend = totals.matches === 0 ? [] : userAnalyticsByDay.map(d => ({ date: d.day, value: d.avg_opp_score }));
@@ -81,16 +81,16 @@ export default function Opponent({ userAnalytics, userAnalyticsByDay } : { userA
 							<CustomAreaChart data={oppScoreTrend} dataKeyX='date' dataKeyY='value' tooltipFormatter={(v) => t('common.points', { count: v })}/>
 						</ChartCard>
 						<ChartCard
-							chartTitle={t('opponent.cards.opp_analysis.cards.charts.wins_vs_losses.title')}
-							chartSubtitle={t('opponent.cards.opp_analysis.cards.charts.wins_vs_losses.subtitle')}
+							chartTitle={t('opponent.cards.opp_analysis.cards.charts.you_vs_opp_score.title')}
+							chartSubtitle={t('opponent.cards.opp_analysis.cards.charts.you_vs_opp_score.subtitle')}
 							className='h-full'
 							isEmpty={youVsOppTotalScore.length === 0}
 						>
 							<CustomBarChart data={youVsOppTotalScore} nameKey='name' dataKey='value' tooltipFormatter={(v) => t('common.points', { count: v })} />
 						</ChartCard>
 						<ChartCard
-							chartTitle={t('opponent.cards.opp_analysis.cards.charts.avg_score_trends.title')}
-							chartSubtitle={t('opponent.cards.opp_analysis.cards.charts.avg_score_trends.subtitle')}
+							chartTitle={t('opponent.cards.opp_analysis.cards.charts.opp_avg_score_trends.title')}
+							chartSubtitle={t('opponent.cards.opp_analysis.cards.charts.opp_avg_score_trends.subtitle')}
 							className='h-full'
 							isEmpty={oppAvgScoreTrend.length === 0}
 						>

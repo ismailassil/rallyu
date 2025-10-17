@@ -12,6 +12,8 @@ interface Match {
 	player_away_id: number;
 	created_at: number;
 	updated_at: number;
+	player_home_xp_gain: number;
+	player_away_xp_gain: number;
 }
 
 interface MatchFilterOptions {
@@ -56,13 +58,23 @@ class MatchesRepository extends ARepository {
 	 * @param finished - Finish time of the match.
 	 * @returns The ID of the newly created match.
 	 */
-	async create(player_home_score: number, player_away_score: number, game_type: string, player_home_id: number, player_away_id: number, started_at: number, finished_at: number) : Promise<number> {
+	async create(
+		player_home_id: number,
+		player_home_score: number,
+		player_home_xp_gain: number,
+		player_away_id: number,
+		player_away_score: number,
+		player_away_xp_gain: number,
+		game_type: string,
+		started_at: number,
+		finished_at: number
+	) : Promise<number> {
 		try {
 			const runResult = await db.run(
-				`INSERT INTO matches 
-				(player_home_score, player_away_score, game_type, started_at, finished_at, player_home_id, player_away_id) 
-				VALUES (?, ?, ?, ?, ?, ?, ?)`,
-				[player_home_score, player_away_score, game_type, started_at, finished_at, player_home_id, player_away_id]
+				`INSERT INTO matches
+				(player_home_id, player_home_score, player_home_xp_gain, player_away_id, player_away_score, player_away_xp_gain, game_type, started_at, finished_at)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+				[player_home_id, player_home_score, player_home_xp_gain, player_away_id, player_away_score, player_away_xp_gain, game_type, started_at, finished_at]
 			);
 			return runResult.lastID;
 		} catch (err: any) {
@@ -174,16 +186,16 @@ class MatchesRepository extends ARepository {
 	buildUserMatchesCTE(userID: number, filters: MatchFilterOptions) : { sql: string, params: any[] } {
 		const { timeFilter = 'all', gameTypeFilter = 'all', paginationFilter } = filters;
 
-		const timeCondition = 
+		const timeCondition =
 			timeFilter === 'all' ? '' :
 			timeFilter === '0d' ? `AND date(m.finished_at, 'unixepoch') = date('now')` : `AND date(m.finished_at, 'unixepoch') >= date('now', ?)`;
 
-		const gameTypeCondition = 
+		const gameTypeCondition =
 			gameTypeFilter === 'all' ? '' : `AND game_type = ?`;
-		
-		const paginationCondition = 
+
+		const paginationCondition =
 			paginationFilter ? 'LIMIT ? OFFSET ?' : '';
-		
+
 		const params: any[] = [
 			userID, userID, userID, userID, userID,
 			userID, userID, userID, userID, userID
@@ -217,16 +229,16 @@ class MatchesRepository extends ARepository {
 					u_opp.avatar_url AS opponent_avatar_url,
 					(m.finished_at - m.started_at) AS duration,
 					CASE
-						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score) 
+						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score)
 						OR (m.player_away_id = ? AND m.player_away_score > m.player_home_score) THEN 'W'
-						WHEN (m.player_home_id = ? AND m.player_home_score < m.player_away_score) 
+						WHEN (m.player_home_id = ? AND m.player_home_score < m.player_away_score)
 						OR (m.player_away_id = ? AND m.player_away_score < m.player_home_score) THEN 'L'
 						ELSE 'D'
 					END AS outcome
 				FROM matches m
 				JOIN users u_self ON u_self.id = ?
 				JOIN users u_opp ON u_opp.id = CASE
-					WHEN m.player_home_id = ? THEN m.player_away_id 
+					WHEN m.player_home_id = ? THEN m.player_away_id
 					ELSE m.player_home_id
 				END
 				WHERE (m.player_home_id = ? OR m.player_away_id = ?)

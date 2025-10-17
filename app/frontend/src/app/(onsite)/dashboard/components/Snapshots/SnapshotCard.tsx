@@ -105,6 +105,7 @@ export default function SnapshotCard() {
 		date: item.day,
 		value: item.total_duration,
 	})) || [];
+	console.log('timeSpentData: ', timeSpentData);
 
 	const currentRecord = records[index];
 	const currentTotal = totals[index];
@@ -163,10 +164,10 @@ export default function SnapshotCard() {
 						isEmpty={timeSpentData.length === 0}
 					>
 						<CustomAreaChart
-						data={timeSpentData}
-						dataKeyX="date"
-						dataKeyY="value"
-						tooltipFormatter={secondsToHMS}
+							data={timeSpentData}
+							dataKeyX="date"
+							dataKeyY="value"
+							tooltipFormatter={secondsToHMS}
 						/>
 					</ChartCardWrapper>
 				</div>

@@ -267,13 +267,17 @@
                 "title": "Punkteentwicklung der Gegner",
                 "subtitle": "Punktzahl deiner Gegner in den letzten 7 Tagen"
               },
-              "wins_vs_losses": {
-                "title": "Punkteentwicklung der Gegner",
-                "subtitle": "Punktzahl deiner Gegner in den letzten 7 Tagen"
+              "you_vs_opp_score": {
+                "title": "Punktedifferenz zu Gegnern",
+                "subtitle": "Differenz zwischen deiner Punktzahl und der deiner Gegner",
+                "common": {
+                  "you": "Du",
+                  "your_opponents": "Deine Gegner"
+                }
               },
-              "avg_score_trends": {
+              "opp_avg_score_trends": {
                 "title": "Durchschnittliche Punkteentwicklung der Gegner",
-                "subtitle": "Durchschnittspunkte deiner Gegner in den letzten 7 Tagen"
+                "subtitle": "Durchschnittliche Punktzahl deiner Gegner in den letzten 7 Tagen"
               }
             }
           }
