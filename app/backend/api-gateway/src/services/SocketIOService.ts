@@ -16,7 +16,6 @@ class SocketIOService {
 	private readonly fastify: FastifyInstance;
 	private readonly options: socketioOpts;
 
-	private onlineUsersIDs = new Set<string>();
 	private onlineUsers = new Map<string, number>();
 
 	constructor(fastify: FastifyInstance, opts: socketioOpts) {
