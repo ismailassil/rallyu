@@ -17,10 +17,12 @@ const GameField = () => {
 	const [opponentId, setOpponentId] = useState<number | undefined>(undefined);
     const { roomid }: { roomid: string} = useParams();
 	const [ timeLeft, setTimeLeft ] = useState(0);
+	const [ oppdisconnect, setOppdisconnect ] = useState(false);
     const [ overlayStatus, setOverlayStatus ] = useState('none');
 	const pong = useRef<RemotePong>(new RemotePong(socketProxy.current, {
         updateTimer: setTimeLeft,
         updateOverlayStatus: setOverlayStatus,
+        updateConnection: setOppdisconnect
     }));
 
     useEffect(() => {
@@ -65,7 +67,12 @@ const GameField = () => {
                 <RoomNotFound />
             ) : (
                 <>
-                    <VersusCard opponentId={opponentId} timeLeft={timeLeft} handleResign={forfeitGame} />
+                    <VersusCard
+                        opponentId={opponentId}
+                        timeLeft={timeLeft}
+                        handleResign={forfeitGame}
+                        disconnect={oppdisconnect}
+                    />
                     <div className="flex w-auto h-auto max-h-full max-w-full items-center justify-center">
                         <div className="relative inline-block">
                             <Pong socketProxy={socketProxy.current} pong={pong.current} />

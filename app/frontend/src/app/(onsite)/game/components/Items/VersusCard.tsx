@@ -3,7 +3,7 @@ import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import inter from "@/app/fonts/inter";
 import GameTimer from "./GameTimer";
 import { useEffect, useRef, useState } from "react";
-import { Flag } from "lucide-react";
+import { Flag, Unplug } from "lucide-react";
 
 interface PlayerInfo {
     username: string,
@@ -12,7 +12,7 @@ interface PlayerInfo {
     level: number
 }
 
-const PlayerCard = ({ side, info } : { side: string, info: PlayerInfo | null }) => {
+const PlayerCard = ({ side, info, disconnect } : { side: string, info: PlayerInfo | null, disconnect?: boolean }) => {
     const avatar =  (
         <div className="w-[100px] h-[100px] border border-white/18 rounded-lg">
             {
@@ -52,6 +52,7 @@ const PlayerCard = ({ side, info } : { side: string, info: PlayerInfo | null }) 
                 </>
             ) : (
                 <>
+                    {disconnect && <Unplug className="mt-3 rotate-15 animate-pulse" />}
                     {playerInfo}
                     {avatar}
                 </>
@@ -118,7 +119,7 @@ const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
     );
 }
 
-const VersusCard = ({ opponentId, timeLeft, handleResign }: { opponentId? : number | undefined, timeLeft: number, handleResign: () => void }) => {
+const VersusCard = ({ opponentId, timeLeft, handleResign, disconnect }: { opponentId? : number | undefined, timeLeft: number, handleResign: () => void, disconnect?: boolean }) => {
     const { apiClient, loggedInUser } = useAuth();
     const [loggedInUserInfo, setLoggedInUserInfo] = useState<PlayerInfo | null>(null);
     const [opponentInfo, setOpponentInfo] = useState<PlayerInfo | null>(null);
@@ -156,6 +157,8 @@ const VersusCard = ({ opponentId, timeLeft, handleResign }: { opponentId? : numb
         })()
     }, [opponentId]);
 
+    console.log('disconnect: ', disconnect);
+
     return (
         <div className="flex min-h-0 w-full max-w-[1600px] justify-between items-end">
             
@@ -166,7 +169,7 @@ const VersusCard = ({ opponentId, timeLeft, handleResign }: { opponentId? : numb
             
             <GameTimer time={timeLeft} pause={null} />
             <div className={`w-[400px] min-w-0`}>
-                <PlayerCard side='right' info={opponentInfo} />
+                <PlayerCard side='right' info={opponentInfo} disconnect={disconnect} />
             </div>
         </div>
     );

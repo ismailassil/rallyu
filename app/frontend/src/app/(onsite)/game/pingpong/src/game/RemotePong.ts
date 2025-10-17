@@ -26,7 +26,6 @@ class RemotePong extends APong {
             ],
             gameStatus: 'idle', // 'connecting', 'waiting', 'ready', 'playing', 'scored', 'gameover'
             gameMode: 'remote',
-            opponentDC: false,
             index: undefined
         };
     }
@@ -55,24 +54,20 @@ class RemotePong extends APong {
     setupCommunications = (): (() => void) => {
         return this.proxy.subscribe((data: any): void => {
             this.state.gameStatus = data.type
-            // console.log('Data From GameServer: ', data);
+            console.log('data.type: ', data.type);
             switch (data.type) {
                 case 'opp_left':
-                    this.state.opponentDC = true;
+                    console.log('opp disconnected');
+                    this.eventHandlers?.updateConnection(true);
                     break;
                 case 'opp_joined':
-                    this.state.opponentDC = false;
+                    this.eventHandlers?.updateConnection(false);
                     break;
                 case 'reconnected':
                     this.state.index = data.i;
                     this.state.players[0].score = data.score[data.i]
                     this.state.players[1].score = data.score[data.i ^ 1]
                     this.eventHandlers?.updateTimer!(data.t);
-                    break;
-                case 'gameover':
-                    this.state.serverBall = { x: 800, y: 450 };
-                    this.proxy.disconnect();
-                    this.eventHandlers?.updateTimer!(0);
                     break;
                 case 'ready':
                     this.state.index = data.i
@@ -90,10 +85,13 @@ class RemotePong extends APong {
                     this.state.players[0].score = data.state.s[this.state.index!]
                     this.state.players[1].score = data.state.s[this.state.index! ^ 1]
                     break;
-                case 'forfeit':
+                case 'gameover':
+                    this.state.serverBall = { x: 800, y: 450 };
                     this.proxy.disconnect();
-                    this.eventHandlers?.updateOverlayStatus(data.result);
-                    this.eventHandlers?.updateTimer(0);
+                    this.state.players[0].score = data.score[this.state.index!]
+                    this.state.players[1].score = data.score[this.state.index! ^ 1]
+                    this.eventHandlers?.updateOverlayStatus(data.result)
+                    this.eventHandlers?.updateTimer!(0);
                     break;
             }
         })

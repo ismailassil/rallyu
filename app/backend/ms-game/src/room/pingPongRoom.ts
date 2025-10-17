@@ -66,8 +66,10 @@ export class PingPongPlayer implements Player {
 
 			const otherPlayer = room.players.find(p => p.id !== this.id);
 			if (otherPlayer?.socket && otherPlayer.socket.readyState === ws.OPEN) {
-				if (otherPlayer.socket.readyState === ws.OPEN)
+				if (otherPlayer.socket.readyState === ws.OPEN){
 					otherPlayer.socket.send(JSON.stringify({ type: 'opp_left' }))
+					console.log('Opp_left packet sent to user : ', otherPlayer.id);
+				}
 			}
 		});
     }
@@ -156,7 +158,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
             	player.socket.send(JSON.stringify({
 					type: 'gameover',
 					result: results[i],
-					scores: this.state.score
+					score: this.state.score
 				}))
 			}
 		})
@@ -164,13 +166,14 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 
 	sendForfeitPacket = (yeilder: number) => {
 		console.log("forfeit: ", yeilder)
+		this.state.score = yeilder === 0 ? [0, 3] : [3, 0];
 
 		this.players.forEach((player, i) => {
 			if (player.socket?.readyState === ws.OPEN) {
             	player.socket.send(JSON.stringify({
-					type: 'forfeit',
+					type: 'gameover',
 					result: yeilder === i ? 'loss' : 'win',
-					scores: this.state.score
+					score: this.state.score
 				}))
 			}
 		})
