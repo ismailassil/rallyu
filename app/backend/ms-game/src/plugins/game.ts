@@ -8,7 +8,6 @@ import dotenv from 'dotenv'
 dotenv.config();
 
 const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
-const MS_AUTH_PORT = process.env.MS_AUTH_PORT || '5005'
 const JWT_ACCESS_SECRET = process.env['JWT_ACCESS_SECRET'] || ''
 
 const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {

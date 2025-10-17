@@ -59,27 +59,26 @@ const GameField = () => {
 
 
 	return (
-        <div className="border overflow-auto flex min-h-0 w-full flex-1 flex-col items-center justify-center">
+        <div className="flex min-h-0 w-full px-10 flex-1 flex-col items-center justify-center">
             { isLoading ? (
 				<LoadingComponent />
             ) : notFound ? (
                 <RoomNotFound />
             ) : (
-                <>
-                    <VersusCard
-                        opponentId={opponentId}
-                        timeLeft={timeLeft}
-                        handleResign={forfeitGame}
-                        disconnect={oppdisconnect}
-                        round={currentRound}
-                    />
-                    <div className="flex border w-auto h-auto max-h-full max-w-full min-w-0 min-h-0 items-center justify-center">
-                        <div className="relative inline-block">
+
+                    <div className="flex flex-col w-full max-w-[1200px] aspect-[4/3] items-center">
+                        <VersusCard
+                            opponentId={opponentId}
+                            timeLeft={timeLeft}
+                            handleResign={forfeitGame}
+                            disconnect={oppdisconnect}
+                            round={currentRound}
+                        />
+                        <div className="relative w-full h-auto">
                             <TicTacToe tictactoe={tictactoe.current} />
                             <Overlay status={overlayStatus} />
                         </div>
                     </div>
-                </>
             )
 			}
         </div>

@@ -60,7 +60,7 @@ const GameField = () => {
 
 
 	return (
-        <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center">
+        <div className="flex min-h-0 w-full px-10 flex-1 flex-col items-center justify-center">
             { isLoading ? (
 				<LoadingComponent />
             ) : notFound ? (
