@@ -23,18 +23,23 @@ export default function PresenceProvider({ children } : { children: ReactNode })
 	} = useAuth();
 
 	useEffect(() => {
+		// console.log('presence ctx: socket: ', socket, 'isAuth', isAuthenticated);
+
 		if (!socket)
-			return;
+			return ;
 
 		function handlePresenceInitialState(payload: string[]) {
+			console.log('presence initial state payload: ', payload);
 			setOnlineUsers(new Set(payload.map(id => Number(id))));
 		}
 
 		function handleOnlineUpdate(payload: { userId: string }) {
+			console.log('is online payload: ', payload);
 			setOnlineUsers(prev => new Set([...prev, Number(payload.userId)]));
 		}
 
 		function handleOfflineUpdate(payload: { userId: string }) {
+			console.log('is offline payload: ', payload);
 			setOnlineUsers(prev => {
 				const updated = new Set(prev);
 				updated.delete(Number(payload.userId));
@@ -45,6 +50,7 @@ export default function PresenceProvider({ children } : { children: ReactNode })
 		socket.on('online_users_list', handlePresenceInitialState);
 		socket.on('is_online', handleOnlineUpdate);
 		socket.on('is_offline', handleOfflineUpdate);
+		socket.emit('request_online_users_list', {});
 
 		return () => {
 			socket.off('online_users_list', handlePresenceInitialState);

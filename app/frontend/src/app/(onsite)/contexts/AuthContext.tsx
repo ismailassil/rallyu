@@ -41,9 +41,9 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			try {
 				const { user, accessToken } = await apiClient.refreshToken();
 
+				socket.connect(accessToken);
 				setLoggedInUser(user);
 				setIsAuthenticated(true);
-				socket.connect(accessToken);
 			} catch {
 				console.log('No valid refresh token found!');
 				setLoggedInUser(null);
@@ -68,9 +68,9 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 			const { user, accessToken } = res;
 
+			socket.connect(accessToken);
 			setLoggedInUser(user);
 			setIsAuthenticated(true);
-			socket.connect(accessToken);
 			return user;
 		} catch (err) {
 			console.log('Login Error Catched in AuthContext: ', err);
@@ -94,9 +94,9 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 				code
 			);
 
+			socket.connect(accessToken);
 			setLoggedInUser(user);
 			setIsAuthenticated(true);
-			socket.connect(accessToken);
 		} catch (err) {
 			throw err;
 		} finally {
