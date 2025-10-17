@@ -16,7 +16,8 @@ class SocketIOService {
 	private readonly fastify: FastifyInstance;
 	private readonly options: socketioOpts;
 
-	private onlineUsersIDs = new Set<string>;
+	private onlineUsersIDs = new Set<string>();
+	private onlineUsers = new Map<string, number>();
 
 	constructor(fastify: FastifyInstance, opts: socketioOpts) {
 		this.fastify = fastify;
@@ -167,25 +168,35 @@ class SocketIOService {
 		const userId: string = socket.data.userId;
 		// this.fastify.log.info(`[SocketIO] User is online: '${userId}:${socket.id}'`);
 
-		// add him to online set
-		this.onlineUsersIDs.add(userId);
+		// add him to online map
+		const currentCount = this.onlineUsers.get(userId) || 0;
+		this.onlineUsers.set(userId, currentCount + 1);
+
+		// if first connection notify other users
+		if (currentCount === 0)
+			socket.broadcast.emit('is_online', { userId });
 
 		// send a full list as first status
-		socket.emit('online_users_list', Array.from(this.onlineUsersIDs));
-
-		// notify other users that this user in now online
-		socket.broadcast.emit('is_online', { userId });
+		socket.emit('online_users_list', Array.from(this.onlineUsers.keys()));
 	}
 
 	private async handleOfflineStatus(socket: Socket) {
 		const userId: string = socket.data.userId;
 		// this.fastify.log.info(`[SocketIO] User is offline: '${userId}:${socket.id}'`);
 
-		// add him to online set
-		this.onlineUsersIDs.delete(userId);
+		// remove him from online map
+		const currentCount = this.onlineUsers.get(userId) || 0;
+		const newCount = Math.max(0, currentCount - 1);
 
-		// notify all that this user went offline
-		this.io.emit('is_offline', { userId });
+		if (newCount === 0) {
+			// user has no more connections
+			this.onlineUsers.delete(userId);
+			// notify all that this user went offline
+			this.io.emit('is_offline', { userId });
+		} else {
+			// user has other connections
+			this.onlineUsers.set(userId, newCount);
+		}
 	}
 
 	private setupMiddleware() {
