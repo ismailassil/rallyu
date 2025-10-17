@@ -65,7 +65,7 @@ class StatsRepository extends ARepository {
 
 		try {
 			const rankByXP = await db.all(`
-				SELECT 
+				SELECT
 					ROW_NUMBER() OVER (ORDER BY s.total_xp DESC, u.id ASC) AS rank,
 					u.username,
 					u.avatar_url,
@@ -103,7 +103,7 @@ class StatsRepository extends ARepository {
 						user_id
 					FROM users_stats
 				)
-				SELECT 
+				SELECT
 					rank,
 					level,
 					total_xp,
@@ -128,32 +128,32 @@ class StatsRepository extends ARepository {
 	 * @returns Stats object containing matches, wins, losses, draws, win_rate, duration.
 	 */
 	async getUserStats(
-		userID: number, 
+		userID: number,
 		timeFilter: '0d' | '1d' | '7d' | '30d' | '90d' | '1y' | 'all',
 		gameTypeFilter: 'PONG' | 'XO' | 'all'
 	) : Promise<any> {
 
 		try {
 			const CTE = this.buildUserMatchesCTE(userID, { timeFilter, gameTypeFilter });
-	
+
 			const userStats = await db.get(`
 				${CTE.sql}
 				SELECT
 					COUNT(*) AS matches,
-	
+
 					COALESCE(SUM(CASE WHEN outcome = 'W' THEN 1 ELSE 0 END), 0) AS wins,
 					COALESCE(SUM(CASE WHEN outcome = 'L' THEN 1 ELSE 0 END), 0) AS losses,
 					COALESCE(SUM(CASE WHEN outcome = 'D' THEN 1 ELSE 0 END), 0) AS draws,
-	
+
 					CASE
 						WHEN COUNT(*) = 0 THEN 0
 						ELSE ROUND(100.00 * COALESCE(SUM(CASE WHEN outcome = 'W' THEN 1 ELSE 0 END), 0) / COUNT(*), 2)
 					END AS win_rate,
-	
+
 					COALESCE(SUM(duration), 0) AS duration
 				FROM user_matches
 			`, CTE.params);
-	
+
 			return userStats ?? null;
 		} catch (err: any) {
 			this.handleDatabaseError(err, 'getting user stats');
@@ -178,7 +178,7 @@ class StatsRepository extends ARepository {
 
 			const detailedStatsGroupedByDay = await db.all(`
 				${CTE.sql}
-				SELECT 
+				SELECT
 					date(finished_at, 'unixepoch') as day,
 
 					COUNT(*) AS matches,
@@ -200,12 +200,12 @@ class StatsRepository extends ARepository {
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN user_score ELSE NULL END), 0), 2) AS avg_user_win_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN user_score ELSE NULL END), 0), 2) AS avg_user_loss_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN user_score ELSE NULL END), 0), 2) AS avg_user_draw_score,
-					
+
 					COALESCE(SUM(opp_score), 0) AS total_opp_score,
 					COALESCE(MAX(opp_score), 0) AS max_opp_score,
 					COALESCE(MIN(opp_score), 0) AS min_opp_score,
 					ROUND(COALESCE(AVG(opp_score), 0), 2) AS avg_opp_score,
-					
+
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_win_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_loss_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_draw_score,
@@ -248,7 +248,7 @@ class StatsRepository extends ARepository {
 
 			const detailedStats = await db.get(`
 				${CTE.sql}
-				SELECT 
+				SELECT
 					COUNT(*) AS matches,
 
 					COALESCE(SUM(CASE WHEN outcome = 'W' THEN 1 ELSE 0 END), 0) AS wins,
@@ -268,12 +268,12 @@ class StatsRepository extends ARepository {
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN user_score ELSE NULL END), 0), 2) AS avg_user_win_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN user_score ELSE NULL END), 0), 2) AS avg_user_loss_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN user_score ELSE NULL END), 0), 2) AS avg_user_draw_score,
-					
+
 					COALESCE(SUM(opp_score), 0) AS total_opp_score,
 					COALESCE(MAX(opp_score), 0) AS max_opp_score,
 					COALESCE(MIN(opp_score), 0) AS min_opp_score,
 					ROUND(COALESCE(AVG(opp_score), 0), 2) AS avg_opp_score,
-					
+
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'W' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_win_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'L' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_loss_score,
 					ROUND(COALESCE(AVG(CASE WHEN outcome = 'D' THEN opp_score ELSE NULL END), 0), 2) AS avg_opp_draw_score,
@@ -420,16 +420,16 @@ class StatsRepository extends ARepository {
 	buildUserMatchesCTE(userID: number, filters: MatchFilterOptions) : { sql: string, params: any[] } {
 		const { timeFilter = 'all', gameTypeFilter = 'all', paginationFilter } = filters;
 
-		const timeCondition = 
+		const timeCondition =
 			timeFilter === 'all' ? '' :
 			timeFilter === '0d' ? `AND date(m.finished_at, 'unixepoch') = date('now')` : `AND date(m.finished_at, 'unixepoch') >= date('now', ?)`;
 
-		const gameTypeCondition = 
+		const gameTypeCondition =
 			gameTypeFilter === 'all' ? '' : `AND game_type = ?`;
-		
-		const paginationCondition = 
+
+		const paginationCondition =
 			paginationFilter ? 'LIMIT ? OFFSET ?' : '';
-		
+
 		const params: any[] = [
 			userID, userID, userID, userID, userID,
 			userID, userID, userID, userID, userID
@@ -463,16 +463,16 @@ class StatsRepository extends ARepository {
 					u_opp.avatar_url AS opponent_avatar_url,
 					(m.finished_at - m.started_at) AS duration,
 					CASE
-						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score) 
+						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score)
 						OR (m.player_away_id = ? AND m.player_away_score > m.player_home_score) THEN 'W'
-						WHEN (m.player_home_id = ? AND m.player_home_score < m.player_away_score) 
+						WHEN (m.player_home_id = ? AND m.player_home_score < m.player_away_score)
 						OR (m.player_away_id = ? AND m.player_away_score < m.player_home_score) THEN 'L'
 						ELSE 'D'
 					END AS outcome
 				FROM matches m
 				JOIN users u_self ON u_self.id = ?
 				JOIN users u_opp ON u_opp.id = CASE
-					WHEN m.player_home_id = ? THEN m.player_away_id 
+					WHEN m.player_home_id = ? THEN m.player_away_id
 					ELSE m.player_home_id
 				END
 				WHERE (m.player_home_id = ? OR m.player_away_id = ?)
@@ -484,6 +484,26 @@ class StatsRepository extends ARepository {
 		`;
 
 		return { sql: SQL, params };
+	}
+
+	async update(id: number, updates: Partial<UserStats>) : Promise<boolean> {
+		try {
+			const fields = Object.keys(updates);
+			if (fields.length === 0) return false;
+
+			const setClause = fields.map(field => `${field} = ?`).join(', ');
+			const values = fields.map(field => (updates as any)[field]);
+			values.push(id);
+
+			const runResult = await db.run(
+				`UPDATE users_stats SET ${setClause}, updated_at = (strftime('%s','now')) WHERE id = ?`,
+				values
+			);
+			return runResult.changes > 0;
+		} catch (err: any) {
+			this.handleDatabaseError(err, 'updating user stats');
+		}
+		return false;
 	}
 }
 
