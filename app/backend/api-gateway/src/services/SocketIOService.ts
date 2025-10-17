@@ -163,6 +163,10 @@ class SocketIOService {
 		await socket.leave(userId);
 	}
 
+	// private async handleRequestOnlineUsersState(socket: Socket) {
+
+	// }
+
 	private async handleOnlineStatus(socket: Socket) {
 		const userId: string = socket.data.userId;
 		// this.fastify.log.info(`[SocketIO] User is online: '${userId}:${socket.id}'`);
@@ -176,7 +180,9 @@ class SocketIOService {
 			socket.broadcast.emit('is_online', { userId });
 
 		// send a full list as first status
-		socket.emit('online_users_list', Array.from(this.onlineUsers.keys()));
+		socket.on('request_online_users_list', () => {
+			socket.emit('online_users_list', Array.from(this.onlineUsers.keys()));
+		});
 	}
 
 	private async handleOfflineStatus(socket: Socket) {
