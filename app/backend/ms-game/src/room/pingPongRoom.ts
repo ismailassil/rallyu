@@ -164,13 +164,12 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 
 	sendForfeitPacket = (yeilder: number) => {
 		console.log("forfeit: ", yeilder)
-		const results = this.getResults();
 
 		this.players.forEach((player, i) => {
 			if (player.socket?.readyState === ws.OPEN) {
             	player.socket.send(JSON.stringify({
 					type: 'forfeit',
-					result: results[i],
+					result: yeilder === i ? 'loss' : 'win',
 					scores: this.state.score
 				}))
 			}

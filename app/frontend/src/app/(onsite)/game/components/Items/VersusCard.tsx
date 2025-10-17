@@ -24,15 +24,15 @@ const PlayerCard = ({ side, info } : { side: string, info: PlayerInfo | null }) 
     );
 
     const playerInfo = (
-        <div className={`flex flex-col justify-between items-start min-w-[100px] ${inter.className}`}>
+        <div className={`flex min-w-[100px] ${inter.className}`}>
             {
                 info
                     ? 
-                    <>
+                    <div className={`flex flex-col justify-between  ${side === 'right' ? 'items-end' : 'items-start' }`}>
                         <span className={`text-${side} text-3xl font-bold shadow-2xl`}>{info?.username}</span>
                         <span className={`inline-flex flex-none items-center justify-center px-2 text-md font-bold bg-white/90 rounded-full text-black`}>Rank {info.rank}</span>
                         <span className={`text-${side} text-lg opacity-40 font-medium`}>LVL {info?.level}</span>
-                    </>
+                    </div>
                     :
                     <div className={`flex flex-col ${side === 'right' && 'justify-end items-end' } pt-2  gap-3`}>
                         <div className="w-[120px] h-[20px] bg-card rounded-full animate-pulse"></div>
