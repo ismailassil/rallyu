@@ -6,6 +6,7 @@ dotenv.config();
 const envSchema = z.object({
 	NODE_ENV: z.enum(['development', 'production']),
 	PORT: z.coerce.number().int().min(1).max(65535),
+	API_KEY: z.string().min(1),
 	JWT_ACCESS_SECRET: z.string().min(32),
 	JWT_REFRESH_SECRET: z.string().min(32),
 	JWT_ACCESS_EXP: z.coerce.number().int().min(1).default(60 * 15),			// DEFAULTS TO 15m

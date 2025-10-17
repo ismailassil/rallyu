@@ -5,19 +5,24 @@ import Authenticate from "../middleware/Authenticate";
 import fastifyMultipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import path from "path";
-import { 
-	emailAvailabilitySchema, 
-	leaderboardSchema, 
-	matchesRequestSchema, 
-	relationsRequestSchema, 
-	userIdSchema, 
-	userSearchByUsernameSchema, 
-	userUpdateSchema, 
-	userUsernameSchema, 
-	usernameAvailabilitySchema 
+import {
+	emailAvailabilitySchema,
+	leaderboardSchema,
+	matchesRequestSchema,
+	relationsRequestSchema,
+	userIdSchema,
+	userSearchByUsernameSchema,
+	userUpdateSchema,
+	userUsernameSchema,
+	usernameAvailabilitySchema
 } from "../schemas/users.schema";
+import MatchesController from "../controllers/MatchesController";
 
-async function userRouter(fastify: FastifyInstance, opts: { userController: UserController, relationsController: RelationsController }) {
+async function userRouter(fastify: FastifyInstance, opts: {
+	userController: UserController,
+	relationsController: RelationsController,
+	matchesController: MatchesController
+}) {
 
 	await fastify.register(fastifyMultipart, {
 		limits: {
@@ -36,7 +41,7 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 	fastify.decorate('requireAuth', { preHandler: fastify.authenticate }); // preHandler hook
 	fastify.decorateRequest('user', null);
 
-	
+
 	/*-------------------------------------------- AVAILABILITY --------------------------------------------*/
 	fastify.get('/username-available', {
 		schema: usernameAvailabilitySchema,
@@ -70,7 +75,7 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 		preHandler: fastify.authenticate,
 		handler: opts.userController.deleteUserHandler.bind(opts.userController)
 	});
-	
+
 	fastify.get('/leaderboard', {
 		schema: leaderboardSchema,
 		preHandler: fastify.authenticate,
@@ -158,6 +163,35 @@ async function userRouter(fastify: FastifyInstance, opts: { userController: User
 		schema: relationsRequestSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.relationsController.unblockUserHandler.bind(opts.relationsController)
+	});
+
+	/*-------------------------------------------- EXTERNAL ENDPOINTS --------------------------------------------*/
+	fastify.post('/matches', {
+		schema: {
+			body: {
+				type: 'object',
+				required: [
+					'player_home_score',
+					'player_away_score',
+					'game_type',
+					'player_home_id',
+					'player_away_id',
+					'started_at',
+					'finished_at'
+				],
+				properties: {
+					player_home_score: { type: 'number' },
+					player_away_score: { type: 'number' },
+					player_home_id: { type: 'number' },
+					player_away_id: { type: 'number' },
+					started_at: { type: 'number' },
+					finished_at: { type: 'number' },
+					game_type: { type: 'string', enum: ['XO', 'PONG'] }
+				},
+				additionalProperties: false
+			}
+		},
+		handler: opts.matchesController.createGameHandler.bind(opts.matchesController)
 	});
 }
 

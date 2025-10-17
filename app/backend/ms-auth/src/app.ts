@@ -33,6 +33,8 @@ import SessionsRepository from './repositories/SessionsRepository';
 import natsPlugin from './plugins/natsPlugin';
 import VerificationController from './controllers/VerificationController';
 import VerificationService from './services/Auth/VerificationService';
+import MatchesController from './controllers/MatchesController';
+import MatchesService from './services/GameAndStats/MatchesService';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
@@ -87,6 +89,7 @@ async function buildApp(): Promise<FastifyInstance> {
 	const authService = new AuthService(authConfig, jwtUtils, userService, sessionsService, twoFAMethodService, twoFAChallengeService, mailingService, whatsAppService);
 	const passwordResetService = new PasswordResetService(authConfig, userService, resetPasswordRepository, mailingService, whatsAppService);
 	const verificationService = new VerificationService(userService, mailingService, whatsAppService);
+	const matchesService = new MatchesService(statsService, matchesRepository);
 
 	// INIT CONTROLLERS
 	const passwordResetController = new PasswordResetController(passwordResetService);
@@ -95,6 +98,7 @@ async function buildApp(): Promise<FastifyInstance> {
 	const userController = new UserController(userService);
 	const relationsController = new RelationsController(relationsService);
 	const verificationController = new VerificationController(verificationService);
+	const matchesController = new MatchesController(matchesService);
 
 	// REGISTER AUTH PLUGIN
 	await fastify.register(natsPlugin, {
@@ -110,7 +114,7 @@ async function buildApp(): Promise<FastifyInstance> {
 		verificationController,
 		passwordResetController
 	});
-	await fastify.register(userRouter, { prefix: '/users', userController, relationsController });
+	await fastify.register(userRouter, { prefix: '/users', userController, relationsController, matchesController });
 
 	return fastify;
 }

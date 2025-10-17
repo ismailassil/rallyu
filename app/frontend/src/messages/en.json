@@ -267,11 +267,15 @@
                 "title": "Opponents Score Trends",
                 "subtitle": "Score of your opponents over the last 7 days"
               },
-              "wins_vs_losses": {
-                "title": "Opponents Score Trends",
-                "subtitle": "Score of your opponents over the last 7 days"
+              "you_vs_opp_score": {
+                "title": "Opponent Score Difference",
+                "subtitle": "Your vs Your Opponents Score Diff",
+                "common": {
+                  "you": "You",
+                  "your_opponents": "Your Opponents"
+                }
               },
-              "avg_score_trends": {
+              "opp_avg_score_trends": {
                 "title": "Opponents Average Score Trends",
                 "subtitle": "Average score of your opponents over the last 7 days"
               }

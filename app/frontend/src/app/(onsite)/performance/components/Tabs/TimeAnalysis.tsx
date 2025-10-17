@@ -42,7 +42,7 @@ export default function TimeAnalysis({ userAnalytics, userAnalyticsByDay } : { u
 						className='h-full'
 						isEmpty={gamesPerDay.length === 0}
 					>
-						<CustomBarChart data={gamesPerDay} nameKey='name' dataKey='value' tooltipFormatter={(v) => t('common.games', { count: v })} />
+						<CustomBarChart data={gamesPerDay} nameKey='date' dataKey='value' tooltipFormatter={(v) => t('common.games', { count: v })} />
 					</ChartCard>
 
 					{/* CARDS */}
