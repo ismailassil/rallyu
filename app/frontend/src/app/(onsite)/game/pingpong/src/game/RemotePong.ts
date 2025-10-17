@@ -1,4 +1,4 @@
-import { PongEventHandlers, RemotePongState } from "@/app/(onsite)/game/types/PongTypes"
+import { PongEventHandlers, RemotePongState } from "@/app/(onsite)/game/types/types"
 import SocketProxy from '@/app/(onsite)/game/utils/socketProxy'
 import APong from "./APong";
 
@@ -58,10 +58,10 @@ class RemotePong extends APong {
             switch (data.type) {
                 case 'opp_left':
                     console.log('opp disconnected');
-                    this.eventHandlers?.updateConnection(true);
+                    this.eventHandlers?.updateConnection!(true);
                     break;
                 case 'opp_joined':
-                    this.eventHandlers?.updateConnection(false);
+                    this.eventHandlers?.updateConnection!(false);
                     break;
                 case 'reconnected':
                     this.state.index = data.i;

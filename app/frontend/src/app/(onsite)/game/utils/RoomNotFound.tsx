@@ -2,7 +2,6 @@ import FormButton from "@/app/(auth)/components/UI/FormButton";
 import { ArrowLeft, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-
 const RoomNotFound = () => {
     const router = useRouter();
 

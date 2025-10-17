@@ -12,8 +12,8 @@ const MS_AUTH_PORT = process.env.MS_AUTH_PORT || '5005'
 const JWT_ACCESS_SECRET = process.env['JWT_ACCESS_SECRET'] || ''
 
 const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
-	const ROOM_EXPIRATION_TIME = 20000; // 10 sec
-    const GAME_TIME = 23000; // 10 seconds
+	const ROOM_EXPIRATION_TIME = 20000; // 20 sec
+    const GAME_TIME = 20000; // 20 seconds
 
 	fastify.addHook('preHandler', async (req, res) => {
 		let token;
@@ -63,39 +63,9 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 
 			player.attachSocket(socket);
 			if (room.running) {
-				const index = room.players.indexOf(player);
-				player.setupEventListeners(room);
-				if (room.players[index ^ 1].socket?.readyState === WebSocket.OPEN)
-					room.players[index ^ 1].socket!.send(JSON.stringify({type: 'opp_joined'}))
-
-				if (player.socket?.readyState === WebSocket.OPEN) {
-					player.socket!.send(JSON.stringify({
-						type: 'reconnected',
-						score: room.state.score,
-						i: index,
-						t: Math.round(GAME_TIME - (Date.now() - room.startTime!))
-					}));
-				}
+				room.reconnect(player);
 			} else if (room.players.every(p => p.connected)) {
 				clearTimeout(room.expirationTimer!);
-				room.gameTimerId = setTimeout(async () => {
-					room.sendGameOverPacket();
-					closeRoom(room, 1003, 'Game Over');
-					// await axios.post(`http://ms-auth:${MS_AUTH_PORT}/users/match`, {
-					// 	players: [
-					// 		{ 
-					// 			ID: room.players[0].id, 
-					// 			score: room.state.score[0]
-					// 		},
-					// 		{
-					// 			ID: room.players[1].id, 
-					// 			score: room.state.score[1]
-					// 		}
-					// 	],
-					// 	gameStartedAt: room.startTime,
-					// 	gameFinishedAt: Math.floor(Date.now() / 1000)
-					// });
-				}, GAME_TIME);
 				room.startGame();
 			}
 

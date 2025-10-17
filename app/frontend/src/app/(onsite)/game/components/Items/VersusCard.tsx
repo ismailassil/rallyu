@@ -119,7 +119,7 @@ const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
     );
 }
 
-const VersusCard = ({ opponentId, timeLeft, handleResign, disconnect }: { opponentId? : number | undefined, timeLeft: number, handleResign: () => void, disconnect?: boolean }) => {
+const VersusCard = ({ opponentId, timeLeft, handleResign, disconnect, round }: { opponentId? : number | undefined, timeLeft: number, handleResign: () => void, disconnect?: boolean, round?: number }) => {
     const { apiClient, loggedInUser } = useAuth();
     const [loggedInUserInfo, setLoggedInUserInfo] = useState<PlayerInfo | null>(null);
     const [opponentInfo, setOpponentInfo] = useState<PlayerInfo | null>(null);
@@ -160,13 +160,13 @@ const VersusCard = ({ opponentId, timeLeft, handleResign, disconnect }: { oppone
     console.log('disconnect: ', disconnect);
 
     return (
-        <div className="flex min-h-0 w-full max-w-[1600px] justify-between items-end">
+        <div className="flex min-h-0 w-full justify-between items-end">
             
             <div className="flex w-[400px] min-w-0 gap-3 items-start">
                 <PlayerCard side='left' info={loggedInUserInfo} />
                 <ResignButton handleResign={handleResign} />
             </div>
-            
+            {/* round */}
             <GameTimer time={timeLeft} pause={null} />
             <div className={`w-[400px] min-w-0`}>
                 <PlayerCard side='right' info={opponentInfo} disconnect={disconnect} />

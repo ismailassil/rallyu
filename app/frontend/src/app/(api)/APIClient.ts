@@ -4,7 +4,7 @@ import { UserService } from './services/UserService';
 import { AuthService } from './services/AuthService';
 import { MfaService } from './services/MfaService';
 import { VerifyService } from './services/VerifyService';
-import { GameType } from '../(onsite)/game/types/PongTypes';
+import { GameType } from '../(onsite)/game/types/types';
 
 export type APIError = {
 	code: string;

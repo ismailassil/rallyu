@@ -39,8 +39,8 @@ const GameField = () => {
                 <RoomNotFound />
             ) : (
                 <>
-                    <VersusCard opponentId={opponentId} timeLeft={timeLeft} handleResign={forfeitGame} />
                     <div className="flex w-auto h-auto max-h-full max-w-full items-center justify-center">
+                        <VersusCard opponentId={opponentId} timeLeft={timeLeft} handleResign={forfeitGame} />
                         <div className="relative inline-block">
                             <Pong socketProxy={socketProxy.current} pong={pong.current} />
                             <Overlay status={overlayStatus} />

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../(onsite)/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import { GameType } from "../(onsite)/game/types/PongTypes";
+import { GameType } from "../(onsite)/game/types/types";
 
 const useMatchmaking = (gameType: GameType) => {
 		const [queueTime, setQueueTime] = useState(0);

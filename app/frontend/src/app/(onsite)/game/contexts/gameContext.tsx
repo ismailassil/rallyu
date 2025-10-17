@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { GameType } from '../types/PongTypes';
+import { GameType } from '../types/types';
 
 interface GameContextType {
   gameType: GameType;

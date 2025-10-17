@@ -39,20 +39,7 @@ export class PingPongPlayer implements Player {
 					case 'forfeit':
 						room.sendForfeitPacket(data.pid);
 						closeRoom(room, 1003, 'Game Over');
-						// await axios.post(`http://ms-auth:${MS_AUTH_PORT}/users/match`, {
-						// 	players: [
-						// 		{
-						// 			ID: room.players[0].id, 
-						// 			score: room.state.score[0]
-						// 		},
-						// 		{
-						// 			ID: room.players[1].id, 
-						// 			score: room.state.score[1]
-						// 		}
-						// 	],
-						// 	gameStartedAt: room.startTime,
-						// 	gameFinishedAt: Math.floor(Date.now() / 1000)
-						// });
+						room.saveGameData();
 				}
 			} catch (e: any) {
 				console.log('JSON parse error:', e.message);
@@ -79,12 +66,12 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	id: string;
 	gameType: GameType;
 	startTime: number | null = null;
-	players: Player[] = [];
+	players: PingPongPlayer[] = [];
 	running = false;
-	timeoutId: NodeJS.Timeout | null = null;
-	intervalId: NodeJS.Timeout | null = null;
-	expirationTimer: NodeJS.Timeout | null = null;
-	gameTimerId: NodeJS.Timeout | null = null;
+	timeoutId: NodeJS.Timeout | undefined = undefined;
+	intervalId: NodeJS.Timeout | undefined = undefined;
+	expirationTimer: NodeJS.Timeout | undefined = undefined;
+	gameTimerId: NodeJS.Timeout | undefined = undefined;
 	state: PingPongGameState;
 
 	constructor(id: string, ) {
@@ -150,7 +137,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 		return ["tie", "tie"];
 	}
 
-    sendGameOverPacket = () => {
+    private handleGameOver = () => {
 		const results = this.getResults();
 	
 		this.players.forEach((player, i) => {
@@ -179,7 +166,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 		})
 	}
 
-    setupPackets(): NodeJS.Timeout {
+    private setupPackets(): NodeJS.Timeout {
         this.players.forEach((player, index) => {
             if (player.socket?.readyState === ws.OPEN)
                 player.socket.send(JSON.stringify({ type: 'ready', i: index, t: GAME_START_DELAY }));
@@ -194,14 +181,57 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 		}, GAME_START_DELAY);
     }
 
+	saveGameData() {
+		try {
+			// await axios.post(`http://ms-auth:${MS_AUTH_PORT}/users/match`, {
+			// 	players: [
+			// 		{ 
+			// 			ID: this.players[0].id, 
+			// 			score: this.state.score[0]
+			// 		},
+			// 		{
+			// 			ID: this.players[1].id, 
+			// 			score: this.state.score[1]
+			// 		}
+			// 	],
+			// 	gameStartedAt: this.startTime,
+			// 	gameFinishedAt: Math.floor(Date.now() / 1000)
+			// });
+		} catch (err) {
+			console.log("error from user management: ", err);
+		}
+	}
+
+	reconnect(player: PingPongPlayer): void {
+		player.setupEventListeners(this);
+		const opponent = this.players.find(p => p !== player);
+		if (opponent && opponent.socket?.readyState === WebSocket.OPEN)
+			opponent.socket.send(JSON.stringify({type: 'opp_joined'}))
+
+		if (player.socket?.readyState === WebSocket.OPEN) {
+			player.socket!.send(JSON.stringify({
+				type: 'reconnected',
+				score: this.state.score,
+				i: this.players.indexOf(player),
+				t: Math.round(GAME_TIME - (Date.now() - this.startTime!))
+			}));
+		}
+	}
+
 	startGame(): void {
-		this.startTime = Math.floor(Date.now() / 1000);
 		this.running = true;
 		this.timeoutId = this.setupPackets();
-
+		
 		this.players.forEach((p) => {
 			p.setupEventListeners(this);
 		});
+
+		this.startTime = Math.floor(Date.now() / 1000);
+		this.gameTimerId = setTimeout(async () => {
+			this.handleGameOver();
+			closeRoom(this, 1003, 'Game Over');
+			this.saveGameData();
+		}, GAME_TIME);
 
 		this.intervalId = setInterval(() => {
 			updateState(this.state);

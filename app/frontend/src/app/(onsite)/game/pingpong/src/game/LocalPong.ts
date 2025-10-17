@@ -1,10 +1,10 @@
-import { PongState, Coords, BallState, PongEventHandlers } from '@/app/(onsite)/game/types/PongTypes';
+import { PongState, Coords, BallState, PongEventHandlers } from '@/app/(onsite)/game/types/types';
 import SocketProxy from '@/app/(onsite)/game/utils/socketProxy'
 import APong from "./APong";
 
 
 class LocalPong extends APong {
-    GAME_DURATION = 15000;
+    GAME_DURATION = 30000;
     state: PongState;
     animationFrameId: number | null;
     angles = [2.79253, 3.49066, 3.14159, 0, 0.34907, 5.93412];

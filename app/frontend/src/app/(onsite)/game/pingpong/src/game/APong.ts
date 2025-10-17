@@ -1,4 +1,4 @@
-import { PongState } from "@/app/(onsite)/game/types/PongTypes"
+import { PongState } from "@/app/(onsite)/game/types/types"
 
 class APong {
     CANVAS_WIDTH = 1600

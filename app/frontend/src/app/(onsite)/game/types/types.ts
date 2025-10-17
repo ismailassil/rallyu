@@ -1,6 +1,8 @@
 export type GameType = 'pingpong' | 'tictactoe';
 export type GameMode = 'remote' | 'local';
 
+export type XOSign = 'X' | 'O' | ''
+
 export interface Rect {
 	x: number,
 	y: number,
@@ -36,10 +38,11 @@ export interface PongState {
 	],
 }
 
-export interface PongEventHandlers {
+export interface EventHandlers {
 	updateTimer: (timeLeft: number) => void;
 	updateOverlayStatus: (newStatus: string) => void;
-	updateConnection: (disconnected: boolean) => void;
+	updateConnection?: (disconnected: boolean) => void;
+	updateRound?: (round: number) => void;
 }
 
 export interface RemotePongState extends PongState {
@@ -49,4 +52,12 @@ export interface RemotePongState extends PongState {
 	gameStatus: string, // 'waiting', 'ready', 'playing', 'scored', 'gameover'
 	gameMode: GameMode,
 	index: number | undefined
+}
+
+export interface XOState {
+	cells: XOSign[];
+	currentRound: number;
+	currentPlayer: XOSign;
+	mySign: XOSign,
+	score: [number, number]
 }

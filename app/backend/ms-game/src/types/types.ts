@@ -1,6 +1,7 @@
 import type { WebSocket } from "ws";
 
 export type GameType = 'pingpong' | 'tictactoe'
+export type XOSign = 'X' | 'O' | ''
 
 export interface PingPongStatus {
 	gameType: GameType,
@@ -20,9 +21,10 @@ export interface PingPongStatus {
 }
 
 export interface TicTacToeStatus {
-	gameType: GameType,
-	cells: string[][],
-	currentRound: number
+	gameType: GameType;
+	cells: string[];
+	currentRound: number;
+	currentPlayer: XOSign;
 	players: [
 		{
 			ID: number,
@@ -63,17 +65,19 @@ export interface PingPongGameState {
 }
 
 export interface TicTacToeGameState {
-	cells: string[][],
-	currentRound: number,
-	roundTimer: number,
-	score: [number, number]
+	cells: XOSign[];
+	currentRound: number;
+	currentPlayer: XOSign;
 }
+
 
 export interface Player<TRoom = Room<any, any>> {
 	id: number;
 	roomId: string;
 	socket: WebSocket | null;
 	connected: boolean;
+	sign?: XOSign;
+	score?: number;
 
 	attachSocket(socket: WebSocket): void;
 	detachSocket(): void;
@@ -84,19 +88,17 @@ export interface Room<TState, TStatus> {
 	id: string;
 	gameType: GameType;
 	startTime: number | null;
-	players: Player[];
+	players: Player<any>[];
 	running: boolean;
-	timeoutId: NodeJS.Timeout | null;
-	intervalId: NodeJS.Timeout | null;
-	expirationTimer: NodeJS.Timeout | null;
-	gameTimerId: NodeJS.Timeout | null;
+	timeoutId?: NodeJS.Timeout | undefined;
+	intervalId?: NodeJS.Timeout | undefined;
+	expirationTimer: NodeJS.Timeout | undefined;
+	gameTimerId: NodeJS.Timeout | undefined;
 	state: TState;
 
 	attachPlayers(playersIds: number[]): void;
-    setupPackets(): NodeJS.Timeout | void;
-	sendGameOverPacket(): void;
-	sendForfeitPacket(yeilder: number): void;
 	startGame(): void;
 	getStatus(): TStatus;
 	cleanUp(): void;
+	reconnect(player: Player): void;
 }
