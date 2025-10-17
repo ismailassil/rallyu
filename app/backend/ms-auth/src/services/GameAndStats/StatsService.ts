@@ -77,6 +77,17 @@ class StatsService {
 
 		return rankByXP;
 	}
+
+	private calculateXPGain(playerLevel: number, oppLevel: number, playerScore: number, oppScore: number) {
+		// BASE XP (BASED ON GAME TYPE/MODE)
+		const BASE_XP = 50;
+		const RESULT_FACTOR = playerScore > oppScore ? 1.5 : playerScore < oppScore ? 0.5 : 1.0;
+		const DIFFICULTY_FACTOR = Math.max(Math.min(1 + (oppLevel - playerLevel) * 0.05, 2), 0.5);
+		const SCORE_FACTOR = Math.max(Math.min(1 + Math.abs(playerScore - oppScore) * 0.05, 2), 0.5);
+		const XP_GAIN = BASE_XP * RESULT_FACTOR * DIFFICULTY_FACTOR * SCORE_FACTOR;
+
+		return XP_GAIN;
+	}
 }
 
 export default StatsService;

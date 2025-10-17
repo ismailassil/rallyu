@@ -1,4 +1,4 @@
-import MatchesRepository from "../../repositories/[DEPRECATED]/matchesRepository";
+import MatchesRepository from "../../repositories/MatchesRepository";
 
 class MatchesService {
 	constructor(
@@ -11,17 +11,17 @@ class MatchesService {
 		game_type: string,
 		player_home_id: number,
 		player_away_id: number,
-		started?: string,
-		finished?: string
+		started_at: number,
+		finished_at: number
 	) {
 		const createdMatchID = await this.matchesRepository.create(
-			player_home_score, 
-			player_away_score, 
-			game_type, 
-			player_home_id, 
-			player_away_id, 
-			started,
-			finished
+			player_home_score,
+			player_away_score,
+			game_type,
+			player_home_id,
+			player_away_id,
+			started_at,
+			finished_at
 		);
 
 		return createdMatchID;
@@ -33,7 +33,8 @@ class MatchesService {
 		gameTypeFilter: 'PONG' | 'XO' | 'all',
 		paginationFilter?: { page: number, limit: number }
 	) {
-		return await this.matchesRepository.getMatchesByUser(userID, timeFilter, gameTypeFilter, paginationFilter);
+		// return await this.matchesRepository.getMatchesByUser(userID, timeFilter, gameTypeFilter, paginationFilter);
+		return await this.matchesRepository.findAll(userID, { timeFilter, gameTypeFilter, paginationFilter });
 	}
 }
 
