@@ -45,33 +45,33 @@ services:
         - path: ./api-gateway/package.json
           action: rebuild
 
-  # ms-auth:
-  #   build:
-  #     context: ./ms-auth
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     api-gateway:
-  #       condition: service_healthy
-  #   image: rallyu/ms-auth:v1.0
-  #   container_name: ms-auth
-  #   restart: always
-  #   volumes:
-  #     - ./ms-auth/src/database/database.db:/app/src/database/database.db
-  #     - ./ms-auth/uploads/avatars/:/app/uploads/avatars/
-  #   networks:
-  #     - backend
-  #   env_file:
-  #     - ./ms-auth/.auth.env
-  #     - .env
-  #   develop:
-  #     watch:
-  #       - path: ./ms-auth
-  #         action: sync
-  #         target: /app
-  #         ignore:
-  #           - node_modules/
-  #       - path: ./ms-auth/package.json
-  #         action: rebuild
+  ms-auth:
+    build:
+      context: ./ms-auth
+      dockerfile: Dockerfile
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    image: rallyu/ms-auth:v1.0
+    container_name: ms-auth
+    restart: always
+    volumes:
+      - ./ms-auth/src/database/database.db:/app/src/database/database.db
+      - ./ms-auth/uploads/avatars/:/app/uploads/avatars/
+    networks:
+      - backend
+    env_file:
+      - ./ms-auth/.auth.env
+      - .env
+    develop:
+      watch:
+        - path: ./ms-auth
+          action: sync
+          target: /app
+          ignore:
+            - node_modules/
+        - path: ./ms-auth/package.json
+          action: rebuild
 
   ms-notif:
     build:
