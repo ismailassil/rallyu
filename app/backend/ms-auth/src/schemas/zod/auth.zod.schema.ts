@@ -6,7 +6,7 @@ export const zodRegisterSchema = z.object({
 	first_name: z.string()
 		.min(2, "First name must be at least 2 characters")
 		.max(10, "First name must be at most 10 characters")
-		.regex(/^[A-Za-z]+$/, "First name must contain only letters"),  
+		.regex(/^[A-Za-z]+$/, "First name must contain only letters"),
 	last_name: z.string()
 		.min(2, "Last name must be at least 2 characters")
 		.max(10, "Last name must be at most 10 characters")
@@ -62,6 +62,10 @@ export const zodResetPasswordUpdateSchema = z.object({
 		.regex(/(?=.*[a-z])/, "Password must contain a lowercase letter")
 		.regex(/(?=.*[A-Z])/, "Password must contain an uppercase letter")
 		.regex(/(?=.*\d)/, "Password must contain a digit")
+});
+
+export const zodResendSchema = z.object({
+	token: z.string().min(1, "Token is required")
 });
 
 

@@ -1,4 +1,5 @@
 import { io, Socket } from "socket.io-client";
+import { GameType } from "../(onsite)/game/types/types";
 
 class SocketClient {
 	private socket: Socket;
@@ -74,12 +75,12 @@ class SocketClient {
 		this.emit("notification", data);
 	}
 
-	emitGameResponse(targetId: number, accept: boolean, actionUrl: string) {
+	emitGameResponse(targetId: number, accept: boolean, actionUrl: string, type: GameType) {
 		const data = {
 			eventType: "UPDATE_GAME",
 			data: {
 				receiverId: targetId,
-				type: accept ? "game_accept" : "game_reject",
+				type: !accept ? "game_reject" : type,
 				actionUrl,
 			},
 		};

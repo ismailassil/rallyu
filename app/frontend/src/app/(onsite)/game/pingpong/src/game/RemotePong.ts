@@ -1,4 +1,4 @@
-import { PongEventHandlers, RemotePongState } from "@/app/(onsite)/game/types/PongTypes"
+import { PongEventHandlers, RemotePongState } from "@/app/(onsite)/game/types/types"
 import SocketProxy from '@/app/(onsite)/game/utils/socketProxy'
 import APong from "./APong";
 
@@ -6,26 +6,26 @@ class RemotePong extends APong {
     state: RemotePongState;
     animationFrameId: number | null;
     
-    constructor(private eventHandlers?: PongEventHandlers) {
+    constructor(private proxy: SocketProxy, private eventHandlers?: PongEventHandlers) {
         super();
         this.animationFrameId = null;
         this.state = {
-            serverPlayerY: 600,
-            serverBall: { x: 800, y: 600 },
-            ball: { x: 800, y: 600 },
+            serverOpponentY: 450,
+            serverPlayerY: 450,
+            serverBall: { x: 800, y: 450 },
+            ball: { x: 800, y: 450 },
             players:[
                 {
-                    pos: { x: 20, y: 600 },
+                    pos: { x: 20, y: 450 },
                     score: 0
                 },
                 {
-                    pos: { x: 1580, y: 600 },
+                    pos: { x: 1580, y: 450 },
                     score: 0
                 }
             ],
             gameStatus: 'idle', // 'connecting', 'waiting', 'ready', 'playing', 'scored', 'gameover'
             gameMode: 'remote',
-            opponentDC: false,
             index: undefined
         };
     }
@@ -38,35 +38,36 @@ class RemotePong extends APong {
         this.state.ball.x += this.lerp(this.state.ball.x, this.state.serverBall.x, 0.6)
         this.state.ball.y += this.lerp(this.state.ball.y, this.state.serverBall.y, 0.6)
     
+        this.state.players[0].pos.y += this.lerp(
+            this.state.players[0].pos.y,
+            this.state.serverPlayerY,
+            0.6
+        )
+
         this.state.players[1].pos.y += this.lerp(
             this.state.players[1].pos.y,
-            this.state.serverPlayerY,
-            0.4
+            this.state.serverOpponentY,
+            0.6
         )
     }
 
-    setupCommunications = (
-        proxy: SocketProxy
-    ): (() => void) => {
-        return proxy.subscribe((data: any): void => {
+    setupCommunications = (): (() => void) => {
+        return this.proxy.subscribe((data: any): void => {
             this.state.gameStatus = data.type
+            console.log('data.type: ', data.type);
             switch (data.type) {
                 case 'opp_left':
-                    this.state.opponentDC = true;
+                    console.log('opp disconnected');
+                    this.eventHandlers?.updateConnection!(true);
                     break;
                 case 'opp_joined':
-                    this.state.opponentDC = false;
+                    this.eventHandlers?.updateConnection!(false);
                     break;
                 case 'reconnected':
                     this.state.index = data.i;
                     this.state.players[0].score = data.score[data.i]
                     this.state.players[1].score = data.score[data.i ^ 1]
                     this.eventHandlers?.updateTimer!(data.t);
-                    break;
-                case 'gameover':
-                    this.state.serverBall = { x: 800, y: 600 };
-                    proxy.disconnect();
-                    this.eventHandlers?.updateTimer!(0);
                     break;
                 case 'ready':
                     this.state.index = data.i
@@ -79,43 +80,60 @@ class RemotePong extends APong {
                     this.state.serverBall = data.state.b
                     if (this.state.index === 1)
                         this.state.serverBall.x = 1600 - this.state.serverBall.x;
+                    this.state.serverOpponentY = data.state.opp
                     this.state.serverPlayerY = data.state.p
-                    this.state.players[0].score = data.state.s[0]
-                    this.state.players[1].score = data.state.s[1]
+                    this.state.players[0].score = data.state.s[this.state.index!]
+                    this.state.players[1].score = data.state.s[this.state.index! ^ 1]
+                    break;
+                case 'gameover':
+                    this.state.serverBall = { x: 800, y: 450 };
+                    this.proxy.disconnect();
+                    this.state.players[0].score = data.score[this.state.index!]
+                    this.state.players[1].score = data.score[this.state.index! ^ 1]
+                    this.eventHandlers?.updateOverlayStatus(data.result)
+                    this.eventHandlers?.updateTimer!(0);
                     break;
             }
         })
     }
 
-    private setupInputHandlers = (canvas: HTMLCanvasElement, proxy: SocketProxy): (() => void) => {
-        const handleMouseMove = (event: MouseEvent) => {
-            const rect = canvas.getBoundingClientRect();
-            const mouseY = event.clientY - rect.top;
-            const canvasY = mouseY * (canvas.height / rect.height);
-            const boundedY = Math.max(this.HALF_PADDLE, Math.min(canvasY, canvas.height) - this.HALF_PADDLE);
-            
-            this.state.players[0].pos.y = boundedY;
-            if (this.state.index !== undefined)
-                proxy.send(JSON.stringify({ type: 'paddle', pid: this.state.index, y: boundedY }));
+    private setupInputHandlers = (): (() => void) => {
+        const handleKeyUp = (ev: KeyboardEvent) => {
+            if (ev.key === "ArrowUp" || ev.key === "ArrowDown")
+                this.proxy.send(JSON.stringify({ type: "move", dir: "still", pid: this.state.index }));
         }
-        window.addEventListener('mousemove', handleMouseMove);
+
+        const handleKeyDown = (ev: KeyboardEvent) => {
+            if (ev.key === "ArrowUp")
+                this.proxy.send(JSON.stringify({ type: "move", dir: "up", pid: this.state.index }));
+            else if (ev.key === "ArrowDown")
+                this.proxy.send(JSON.stringify({ type: "move", dir: "down", pid: this.state.index }));
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
     
         return () => {
-            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keyup", handleKeyUp);
         };
     }
 
-    initGame = (canvas : HTMLCanvasElement, proxy: SocketProxy) => {
+    forfeit = () => {
+        this.proxy.send(JSON.stringify({ type: 'forfeit', pid: this.state.index }));
+    }
+
+    initGame = (canvas : HTMLCanvasElement) => {
         const ctx = canvas.getContext('2d');
         if (!ctx) {
             console.log('Failed to get context from canvas.');
             return ;
         }
 
-        const cleanUpInput = this.setupInputHandlers(canvas, proxy);
-        const cleanUpComms = this.setupCommunications(proxy);
+        const cleanUpComms = this.setupCommunications();
+        const cleanUpInput = this.setupInputHandlers();
     
-        const gameLoop = (timestamp: DOMHighResTimeStamp) => {
+        const gameLoop = () => {
             this.updateGame();
             this.render(ctx, this.state);
             this.animationFrameId = requestAnimationFrame(gameLoop);

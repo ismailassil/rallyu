@@ -4,6 +4,18 @@ import { v4 as uuidv4 } from 'uuid'
 import type { Room } from '../types/types'
 import { TicTacToeRoom } from './ticTacToeRoom';
 
+export const userSessions = new Map<number, string>() // Map<userid, roomid>
+
+export const closeRoom = (room: Room<any, any>, code: number, msg: string): void => {
+	room.players.forEach(p => {
+		userSessions.delete(p.id);
+		if (p.socket?.readyState === WebSocket.OPEN)
+			p.socket.close(code, msg);
+	})
+	room.cleanUp();
+	roomManager.deleteRoom(room.id);
+}
+
 class RoomManager {
     private rooms: Map<string, Room<any, any>>;
 

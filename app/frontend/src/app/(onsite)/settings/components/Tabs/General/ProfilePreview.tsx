@@ -4,6 +4,7 @@ import { Upload, X } from 'lucide-react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import Avatar from '@/app/(onsite)/users/components/Avatar';
 import { useFormContext } from '@/app/(auth)/components/Form/FormContext';
+import { useTranslations } from 'next-intl';
 
 interface ProfilePreviewProps {
 	avatarFile: File | null;
@@ -25,11 +26,11 @@ function Button({ children, actionIcon, onClick, disabled = false, asLabel = fal
 	const className = `flex gap-2 justify-center items-center px-5 py-1.5 rounded-full h-10 select-none
 						bg-white/6 border border-white/8 transition-all duration-800 ease-in-out
 						font-funnel-display font-medium
-						${disabled 
-						? 'opacity-0 pointer-events-none translate-y-0.5' 
+						${disabled
+						? 'opacity-0 pointer-events-none translate-y-0.5'
 						: 'opacity-100 hover:bg-white hover:text-black cursor-pointer'
 					}`;
-	
+
 	if (asLabel) {
 		return (
 			<label htmlFor={htmlFor} className={className}>
@@ -52,6 +53,8 @@ function Button({ children, actionIcon, onClick, disabled = false, asLabel = fal
 }
 
 export default function ProfilePreview({ avatarFile, avatarBlobPreview, onAddAvatarFile, onRemoveAvatarFile } : ProfilePreviewProps) {
+	const t = useTranslations('auth.common');
+
 	const { loggedInUser } = useAuth();
 
 	const {
@@ -92,23 +95,23 @@ export default function ProfilePreview({ avatarFile, avatarBlobPreview, onAddAva
 					</p>
 				</div>
 			</div>
-			
+
 
 			{/* CHANGE/REMOVE PIC BUTTON */}
 			{avatarFile ? (
-				<Button 
+				<Button
 					actionIcon={<X size={16} />}
 					onClick={onRemoveAvatarFile}
 				>
-					Remove Picture
+					{t('remove_pic')}
 				</Button>
 			) : (
-				<Button 
+				<Button
 					actionIcon={<Upload size={16} />}
 					asLabel
 					htmlFor='profile-upload'
 				>
-					Change Picture
+					{t('change_pic')}
 				</Button>
 			)}
 			<input

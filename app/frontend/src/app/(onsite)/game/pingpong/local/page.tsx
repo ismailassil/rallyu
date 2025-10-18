@@ -12,9 +12,7 @@ const Game = () => {
 			className="h-[100vh] pt-30 pr-6 pb-24 pl-6 sm:pb-6 sm:pl-30"
 		>
             <article className="flex bg-card border-br-card h-full w-full justify-center rounded-2xl border-2">
-                <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center">
-                    <GameField />
-                </div>
+                <GameField />
             </article>
         </motion.main>
 	);

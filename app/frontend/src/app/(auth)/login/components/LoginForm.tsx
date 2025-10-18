@@ -6,24 +6,49 @@ import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import InputField from '../../components/Form/InputField';
 import useForm from '@/app/hooks/useForm';
-import { loginFormSchema } from '@/app/(api)/schema';
+// import { loginFormSchema } from '@/app/(api)/schema';
 import FormButton from '../../components/UI/FormButton';
 import { LogIn } from 'lucide-react';
 import { FormProvider } from '../../components/Form/FormContext';
 import useAPICall from '@/app/hooks/useAPICall';
+import { useTranslations } from 'next-intl';
+import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export default function LoginForm() {
-	const { login } = useAuth();
+	const t = useTranslations('auth.common');
+
 	const router = useRouter();
-	const { isLoading, executeAPICall } = useAPICall();
-	const [formData, touched, errors, debounced, handleChange, validateAll, getValidationErrors, resetForm] = useForm(
+
+	const {
+		login
+	} = useAuth();
+
+	const {
+		isLoading,
+		executeAPICall
+	} = useAPICall();
+
+	const {
+		loginFormSchema
+	} = useValidationSchema();
+
+	const [
+		formData,
+		touched,
+		errors,
+		debounced,
+		handleChange,
+		validateAll,
+		getValidationErrors,
+		resetForm
+	] = useForm(
 		loginFormSchema,
 		{ username: '', password: '' }
 	);
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
-		
+
 		const isValid = validateAll();
 		if (!isValid)
 			return ;
@@ -32,7 +57,7 @@ export default function LoginForm() {
 			const result = await executeAPICall(() => login(formData.username, formData.password));
 			if (result._2FARequired) {
 				toastSuccess('Two Factor Authentication is required!');
-				router.push('/two-factor');
+				router.push('/2fa');
 			}
 			else
 				toastSuccess('Logged in successfully');
@@ -53,28 +78,29 @@ export default function LoginForm() {
 			resetForm={resetForm}
 		>
 			<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-				<InputField 
+				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/at.svg'
-					label='Username'
+					label={t('username')}
 					field='username'
 					inputPlaceholder='xezzuz'
+					autoFocus
 				/>
-				<InputField 
+				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/lock.svg'
-					label='Password'
+					label={t('password')}
 					field='password'
 					inputPlaceholder='••••••••••••••••'
 					inputHidden={true}
 				>
 					<p className='text-sm text-end hover:underline cursor-pointer'
 						onClick={() => router.push('/reset-password')}>
-						Forgot Password?
+						{t('forgot_password')}?
 					</p>
 				</InputField>
 				<FormButton
-					text='Sign In'
+					text={t('signin')}
 					icon={<LogIn size={16} />}
 					type='submit'
 					isSubmitting={isLoading}

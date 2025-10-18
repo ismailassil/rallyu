@@ -10,12 +10,14 @@ export interface AuthChallenge {
 	token: UUID;
 	target: string | null;
 	secret: string | null;
+	verify_attempts: number;
+	resend_attempts: number;
 	expires_at: number;
 	created_at: number;
 	user_id: number;
 }
 
-export type AuthChallengeType = '2fa_setup' | '2fa_login' | 'password_reset';
+export type AuthChallengeType = '2fa_setup' | '2fa_login' | 'password_reset' | 'email_verification' | 'phone_verification';
 export type AuthChallengeMethod = 'SMS' | 'EMAIL' | 'TOTP';
 export type AuthChallengeStatus = 'PENDING' | 'VERIFIED' | 'COMPLETED' | 'EXPIRED' | 'FAILED';
 
@@ -37,7 +39,7 @@ class AuthChallengesRepository extends ARepository {
 				`SELECT * FROM auth_challenges WHERE id = ?`,
 				[id]
 			);
-			
+
 			return getResult ?? null;
 		} catch (err: any) {
 			this.handleDatabaseError(err, 'finding auth challenge by ID');
@@ -118,10 +120,10 @@ class AuthChallengesRepository extends ARepository {
 		expires_at: number,
 		user_id: number
 	) : Promise<number> {
-		
+
 		try {
 			const runResult = await db.run(
-				`INSERT INTO auth_challenges (challenge_type, method, token, target, secret, expires_at, user_id) 
+				`INSERT INTO auth_challenges (challenge_type, method, token, target, secret, expires_at, user_id)
 					VALUES (?, ?, ?, ?, ?, ?, ?)`,
 				[challenge_type, method, token, target, secret, expires_at, user_id]
 			);

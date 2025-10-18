@@ -79,7 +79,7 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 		...commonMatchMakingOptions,
 		prefix: '/api-ws/v1/matchmaking',
 	}
-	
+
 	const gameProxyOptions = {
 		...commonGameOptions,
 		prefix: '/api/game',

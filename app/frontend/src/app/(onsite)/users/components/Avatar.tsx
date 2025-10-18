@@ -58,8 +58,6 @@ export default function Avatar({ avatar, fallback = "/profile/image_1.jpg", clas
 		};
 	}, [avatar, apiClient, fallback]);
 
-	console.log('Avatar component rendering with src:', src);
-
 	return (
 		<div className={`rounded-full overflow-hidden relative ${className || ''}`}>
 			{isLoading && (

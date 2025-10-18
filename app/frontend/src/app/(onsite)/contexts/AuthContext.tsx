@@ -26,14 +26,14 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	const [isLoading, setIsLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [isBusy, setIsBusy] = useState<boolean>(false);
-	
+
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
 			apiClient = new APIClient(`${window.location.origin}/api`);
 			socket = new SocketClient(window.location.origin);
 		}
 	}, []);
-	
+
 	// THIS USE EFFECT WILL ONLY RUN ON PAGE FIRSTLOAD/REFRESH
 	useEffect(() => {
 		console.log('AuthProvider useEffect - Checking authentication status...');
@@ -41,9 +41,9 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			try {
 				const { user, accessToken } = await apiClient.refreshToken();
 
+				socket.connect(accessToken);
 				setLoggedInUser(user);
 				setIsAuthenticated(true);
-				socket.connect(accessToken);
 			} catch {
 				console.log('No valid refresh token found!');
 				setLoggedInUser(null);
@@ -55,7 +55,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 		initializeAuth();
 	}, []);
-	
+
 	async function login(username: string, password: string) {
 		try {
 			// setIsLoading(true);
@@ -68,9 +68,9 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 			const { user, accessToken } = res;
 
+			socket.connect(accessToken);
 			setLoggedInUser(user);
 			setIsAuthenticated(true);
-			socket.connect(accessToken);
 			return user;
 		} catch (err) {
 			console.log('Login Error Catched in AuthContext: ', err);
@@ -85,22 +85,23 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	async function send2FACode(token: string, method: string) {
 		return apiClient.send2FACode({ token, method });
 	}
-	
-	async function verify2FACode(token: string, code: string) {
+
+	async function loginUsing2FA(token: string, code: string) {
+		console.log('loginUsing2FA');
 		try {
-			const { user, accessToken } = await apiClient.verify2FACode({ token, code });
-			
+			const { user, accessToken } = await apiClient.auth.loginUsing2FA(
+				token,
+				code
+			);
+
+			socket.connect(accessToken);
 			setLoggedInUser(user);
 			setIsAuthenticated(true);
-
+		} catch (err) {
+			throw err;
+		} finally {
 			sessionStorage.removeItem('token');
 			sessionStorage.removeItem('enabledMethods');
-	
-			socket.connect(accessToken);
-			return { user, accessToken };
-		} catch (err) {
-			console.log('Verify2FACode Error Catched in AuthContext: ', err);
-			throw err; // TODO: SHOULD WE PROPAGATE?
 		}
 	}
 
@@ -115,13 +116,13 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			throw err; // TODO: SHOULD WE PROPAGATE?
 		}
 	}
-	
+
 	async function register(
-		first_name: string, 
-		last_name: string, 
-		username: string, 
-		email: string, 
-		password: string 
+		first_name: string,
+		last_name: string,
+		username: string,
+		email: string,
+		password: string
 	) {
 		try {
 			await apiClient.register({ first_name, last_name, username, email, password });
@@ -133,6 +134,18 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	async function updateLoggedInUserState(payload: Partial<LoggedInUser>) {
 		setLoggedInUser(prev => prev ? { ...prev, ...payload } : prev);
+	}
+
+	async function triggerLoggedInUserRefresh() {
+		if (!loggedInUser)
+			return ;
+
+		try {
+			const data = await apiClient.fetchUser(loggedInUser!.id);
+			setLoggedInUser(data.user);
+		} catch (err) {
+			throw err;
+		}
 	}
 
 	const value = {
@@ -148,9 +161,10 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		register,
 		login,
 		send2FACode,
-		verify2FACode,
+		loginUsing2FA,
 		logout,
 		apiClient,
+		triggerLoggedInUserRefresh,
 		socket
 	};
 

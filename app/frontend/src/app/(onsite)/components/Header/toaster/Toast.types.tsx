@@ -78,19 +78,4 @@ export type TOAST_PAYLOAD = {
 	state: NOTIFICATION_STATE;
 };
 
-/**
- * export type NOTIFICATION_TYPE =
-	| "chat"
-	| "game"
-	| "pp_game"
-	| "xo_game"
-	| "friend_request"
-	| "tournament"
-	| "friend_accept"
-	| "friend_reject"
-	| "friend_cancel"
-	| "game_accept"
-	| "game_reject";
- */
-
 export const decisionOptions = ["game", "tournament", "pp_game", "xo_game", "friend_request"];

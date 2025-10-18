@@ -4,7 +4,7 @@ import ARepository from "./ARepository";
 interface User {
 	id: number;
 	username: string;
-	password?: string;
+	password: string | null;
 	email: string;
 	first_name: string;
 	last_name: string;
@@ -13,6 +13,9 @@ interface User {
 	auth_provider_id: string | null;
 	role: string;
 	bio: string;
+	phone: string;
+	email_verified: number;
+	phone_verified: number;
 	created_at: string;
 	updated_at: string;
 }
@@ -116,10 +119,10 @@ class UserRepository extends ARepository {
 		role: string = 'user',
 		bio: string = 'DFK',
 	) : Promise<number> {
-		
+
 		try {
 			const runResult = await db.run(
-				`INSERT INTO users (username, password, email, first_name, last_name, avatar_url, auth_provider, auth_provider_id, role, bio) 
+				`INSERT INTO users (username, password, email, first_name, last_name, avatar_url, auth_provider, auth_provider_id, role, bio)
 					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 				[username, password, email, first_name, last_name, avatar_url, auth_provider, auth_provider_id, role, bio]
 			);
@@ -185,8 +188,8 @@ class UserRepository extends ARepository {
 			const likeQuery = `%${query}%`;
 			const allResults = await db.all(
 				`SELECT u.id, u.username, u.avatar_url
-						FROM users u 
-					LEFT JOIN relations r 
+						FROM users u
+					LEFT JOIN relations r
 						ON ((r.requester_user_id = u.id AND r.receiver_user_id = ?)
 							OR (r.requester_user_id = ? AND r.receiver_user_id = u.id))
 					WHERE (u.username LIKE ? OR u.email LIKE ? OR (u.first_name || ' ' || u.last_name) LIKE ?)
@@ -195,7 +198,7 @@ class UserRepository extends ARepository {
 			);
 
 			console.log('SEARCH RESULTS: ', allResults);
-			
+
 			return allResults as User[];
 		} catch (err: any) {
 			this.handleDatabaseError(err, 'searching users');

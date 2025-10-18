@@ -5,7 +5,6 @@ import { ForgotPassword } from "./components/ForgotPassword";
 import { VerifyCode } from "./components/VerifyCode";
 import { SetNewPassword } from "./components/SetNewPassword";
 import AuthPageWrapper from "../components/UI/AuthPageWrapper";
-// import { FormProvider } from "../components/Form/FormContext";
 
 enum STEP {
 	FORGOT_PASSWORD = 'FORGOT-PASSWORD',
@@ -17,16 +16,14 @@ export default function ResetPasswordPage() {
 	const router = useRouter();
 	const [step, setStep] = useState<STEP>(STEP.FORGOT_PASSWORD);
 	const [token, setToken] = useState<string | null>(null);
-	const [email, setEmail] = useState<string | null>(null);
 
 	function renderCurrentStep() {
 		switch (step) {
 			case STEP.FORGOT_PASSWORD:
 				return (
 					<ForgotPassword
-						onNext={(token: string, email: string) => {
+						onNext={(token: string) => {
 							setToken(token);
-							setEmail(email);
 							setStep(STEP.VERIFY_CODE);
 						}}
 						onGoBack={() => router.push('/login')}
@@ -35,9 +32,9 @@ export default function ResetPasswordPage() {
 			case STEP.VERIFY_CODE:
 				return (
 					<VerifyCode
-						email={email!}
 						token={token!}
-						onNext={() => setStep(STEP.SET_NEW_PASSWORD)}
+						onSuccess={() => setStep(STEP.SET_NEW_PASSWORD)}
+						onFailure={() => router.replace('/login')}
 						onGoBack={() => setStep(STEP.FORGOT_PASSWORD)}
 					/>
 				);
@@ -45,7 +42,7 @@ export default function ResetPasswordPage() {
 				return (
 					<SetNewPassword
 						token={token!}
-						onNext={() => router.push('/login')}
+						onSuccess={() => router.push('/login')}
 					/>
 				);
 			default:
@@ -55,9 +52,7 @@ export default function ResetPasswordPage() {
 
 	return (
 		<AuthPageWrapper wrapperKey="reset-password-page-wrapper">
-			<div className='w-full max-w-lg p-11 flex flex-col gap-5'>
-				{renderCurrentStep()}
-			</div>
+			{renderCurrentStep()}
 		</AuthPageWrapper>
 	);
 }

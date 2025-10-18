@@ -5,36 +5,40 @@ import { zodFormValidator } from "../utils/validation/zodFormValidator";
 import cookie from '@fastify/cookie';
 import TwoFactorController from "../controllers/TwoFactorController";
 import PasswordResetController from "../controllers/PasswordResetController";
-import { 
+import {
 	auth2FADisableSchema,
-	auth2FALoginChallengeSchema, 
-	auth2FALoginChallengeVerifyCodeSchema, 
-	auth2FASetupSchema, 
-	auth2FAVerifySchema, 
-	authChangePasswordSchema, 
-	authLoginSchema, 
-	authOAuthSchema, 
-	authRegisterSchema, 
-	authResetPasswordSchema, 
-	authResetPasswordUpdateSchema, 
-	authResetPasswordVerifySchema 
+	auth2FALoginChallengeSchema,
+	auth2FALoginChallengeVerifyCodeSchema,
+	auth2FASetupSchema,
+	auth2FAVerifySchema,
+	authChallengeResendSchema,
+	authChangePasswordSchema,
+	authLoginSchema,
+	authOAuthSchema,
+	authRegisterSchema,
+	authResetPasswordSchema,
+	authResetPasswordUpdateSchema,
+	authResetPasswordVerifySchema
 } from "../schemas/auth.schema";
-import { 
-	zodLoginSchema, 
-	zodRegisterSchema, 
-	zodChangePasswordSchema, 
-	zodResetPasswordSchema, 
-	zodResetPasswordUpdateSchema, 
+import {
+	zodLoginSchema,
+	zodRegisterSchema,
+	zodChangePasswordSchema,
+	zodResetPasswordSchema,
+	zodResetPasswordUpdateSchema,
 	zodResetPasswordVerifySchema,
 	zodVerifyChallengeBodySchema,
 	zodTwoFALoginChallengeBodySchema,
+	zodResendSchema,
 } from "../schemas/zod/auth.zod.schema";
 import { UAParser } from "ua-parser-js";
 import { oauthConfig } from "../config/oauth";
+import VerificationController from "../controllers/VerificationController";
 
 async function authRouter(fastify: FastifyInstance, opts: {
 	authController: AuthController,
 	twoFactorController: TwoFactorController,
+	verificationController: VerificationController,
 	passwordResetController: PasswordResetController
 }) {
 	fastify.decorate('authenticate', Authenticate); // auth middleware for protected routes
@@ -60,7 +64,7 @@ async function authRouter(fastify: FastifyInstance, opts: {
 			request.refreshToken = request.cookies?.['refreshToken'];
 		} else
 			request.refreshToken = null;
-		
+
 		console.log('refreshToken from cookies: ', request.refreshToken);
 	});
 
@@ -74,18 +78,18 @@ async function authRouter(fastify: FastifyInstance, opts: {
 		...zodFormValidator(zodRegisterSchema),
 		handler: opts.authController.registerHandler.bind(opts.authController)
 	});
-	
+
 	fastify.post('/login', {
 		schema: authLoginSchema,
 		...zodFormValidator(zodLoginSchema),
 		handler: opts.authController.loginHandler.bind(opts.authController)
 	});
-	
+
 	fastify.post('/logout', {
 		// preHandler: fastify.authenticate,
 		handler: opts.authController.logoutHandler.bind(opts.authController)
 	});
-	
+
 	fastify.get('/refresh', {
 		handler: opts.authController.refreshHandler.bind(opts.authController)
 	});
@@ -133,68 +137,78 @@ async function authRouter(fastify: FastifyInstance, opts: {
 
 
 
-	/*----------------------------- Multi-Factor Authentication -----------------------------*/
-	fastify.post('/login/2fa/send', {
+	/*------------------------------------------ Multi-Factor Authentication -----------------------------------------*/
+
+	fastify.post('/login/2fa/select', {
 		schema: auth2FALoginChallengeSchema,
 		...zodFormValidator(zodTwoFALoginChallengeBodySchema),
 		handler: opts.authController.sendTwoFAChallengeHandler.bind(opts.authController)
 	});
-
 	fastify.post('/login/2fa/verify', {
 		schema: auth2FALoginChallengeVerifyCodeSchema,
 		...zodFormValidator(zodVerifyChallengeBodySchema),
 		handler: opts.authController.verifyTwoFAChallengeHandler.bind(opts.authController)
+	});
+	fastify.post('/login/2fa/resend', {
+		schema: authChallengeResendSchema,
+		...zodFormValidator(zodResendSchema),
+		handler: opts.authController.resendTwoFAChallengeHandler.bind(opts.authController)
 	});
 
 	fastify.get('/2fa/enabled', {
 		preHandler: fastify.authenticate,
 		handler: opts.twoFactorController.fetchEnabledMethodsHandler.bind(opts.twoFactorController)
 	});
-
+	fastify.post('/2fa/enabled/:method', {
+		preHandler: fastify.authenticate,
+		handler: opts.twoFactorController.enableMethodHandler.bind(opts.twoFactorController)
+	});
 	fastify.delete('/2fa/enabled/:method', {
-		schema: auth2FADisableSchema,
+		// schema: auth2FADisableSchema,
 		preHandler: fastify.authenticate,
 		handler: opts.twoFactorController.disableMethodHandler.bind(opts.twoFactorController)
 	});
 
-	fastify.post('/2fa/setup', {
-		schema: auth2FASetupSchema,
+	fastify.post('/2fa/setup-totp', {
+		// schema: auth2FASetupSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.twoFactorController.setupHandler.bind(opts.twoFactorController)
+		handler: opts.twoFactorController.setupTOTPHandler.bind(opts.twoFactorController)
 	});
-	
-	fastify.post('/2fa/verify', {
-		schema: auth2FAVerifySchema,
+	fastify.post('/2fa/setup-totp/verify', {
+		// schema: auth2FASetupSchema,
 		preHandler: fastify.authenticate,
-		handler: opts.twoFactorController.verifyHandler.bind(opts.twoFactorController)
+		handler: opts.twoFactorController.verifyTOTPHandler.bind(opts.twoFactorController)
 	});
 
 
+	/*--------------------------------------------- Password Management ---------------------------------------------*/
 
-	/*------------------------------------ Password Management ------------------------------------*/
 	fastify.post('/change-password', {
 		schema: authChangePasswordSchema,
 		...zodFormValidator(zodChangePasswordSchema),
 		preHandler: fastify.authenticate,
 		handler: opts.authController.changePasswordHandler.bind(opts.authController)
 	});
-	
+
 	fastify.post('/reset-password', {
 		schema: authResetPasswordSchema,
 		...zodFormValidator(zodResetPasswordSchema),
-		handler: opts.passwordResetController.resetPasswordSetupHandler.bind(opts.passwordResetController)
+		handler: opts.passwordResetController.requestHandler.bind(opts.passwordResetController)
 	});
-	
-	fastify.post('/reset-verify', {
+	fastify.post('/reset-password/verify', {
 		schema: authResetPasswordVerifySchema,
 		...zodFormValidator(zodResetPasswordVerifySchema),
-		handler: opts.passwordResetController.resetPasswordVerifyHandler.bind(opts.passwordResetController)
+		handler: opts.passwordResetController.verifyHandler.bind(opts.passwordResetController)
 	});
-	
-	fastify.post('/reset-update', {
+	fastify.post('/reset-password/update', {
 		schema: authResetPasswordUpdateSchema,
 		...zodFormValidator(zodResetPasswordUpdateSchema),
-		handler: opts.passwordResetController.resetPasswordUpdateHandler.bind(opts.passwordResetController)
+		handler: opts.passwordResetController.useHandler.bind(opts.passwordResetController)
+	});
+	fastify.post('/reset-password/resend', {
+		schema: authChallengeResendSchema,
+		...zodFormValidator(zodResendSchema),
+		handler: opts.passwordResetController.resendHandler.bind(opts.passwordResetController)
 	});
 
 	// fastify.delete('/revoke-all', authController.RevokeAllRoute.bind(opts.authController));
@@ -212,18 +226,20 @@ async function authRouter(fastify: FastifyInstance, opts: {
 		preHandler: fastify.authenticate,
 		handler: opts.authController.revokeAllSessionsHandler.bind(opts.authController)
 	});
-	// GET /auth/sessions — List active sessions/devices
-	// DELETE /auth/sessions/:id — Revoke a specific session
-	// DELETE /auth/sessions — Revoke all sessions except current
 
-	// PASSWORD MANAGEMENT
-	// POST /auth/forgot-password — Send password reset link
-	// POST /auth/reset-password — Reset password with token
-	// POST /auth/change-password — Authenticated user changes own password
-
-	// EMAIL VERIFICATION (optional)
-	// POST /auth/verify-email — Trigger email verification
-	// GET /auth/verify-email/:token — Confirm email with token
+	/*-------------------------------------------------- Verification --------------------------------------------------*/
+	fastify.post('/verify-:_for', {
+		preHandler: fastify.authenticate,
+		handler: opts.verificationController.requestHandler.bind(opts.verificationController)
+	});
+	fastify.post('/verify-:_for/verify', {
+		preHandler: fastify.authenticate,
+		handler: opts.verificationController.verifyHandler.bind(opts.verificationController)
+	});
+	fastify.post('/verify-:_for/resend', {
+		preHandler: fastify.authenticate,
+		handler: opts.verificationController.resendHandler.bind(opts.verificationController)
+	});
 }
 
 export default authRouter;

@@ -19,7 +19,9 @@ export default function MainCardWithHeader({ children, className, headerName } :
 								transition-all duration-200 group-hover:scale-105'
 					></div>
 				</div>
-				<div className='hide-scrollbar max-h-190 pb-6 overflow-y-auto py-1'>
+
+				{/* Content */}
+				<div className='hide-scrollbar pb-6 overflow-y-auto py-1 h-full'>
 					{children}
 				</div>
 

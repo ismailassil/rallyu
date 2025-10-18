@@ -1,8 +1,10 @@
-import type { Room, Player, TicTacToeGameState, TicTacToeStatus, GameType } from '../types/types'
+import type { Room, Player, TicTacToeGameState, TicTacToeStatus, GameType, Coords, XOSign } from '../types/types'
 import ws from 'ws';
+import { closeRoom } from './roomManager';
 
-const GAME_UPDATE_INTERVAL = 1000; // 1hz
-const TOTALROUNDS: number = 3;
+const TOTAL_ROUNDS: number = 3;
+const MOVE_TIMEOUT: number = 15000;
+const COUNTDOWN_TIME: number = 3000;
 const WINNING_COMBOS: number[][] = [
 	[0, 1, 2],
 	[3, 4, 5],
@@ -14,13 +16,14 @@ const WINNING_COMBOS: number[][] = [
 	[2, 4, 6],
 ] as const;
 
-export class TicTacToePlayer implements Player {
+export class TicTacToePlayer implements Player<TicTacToeRoom> {
     id: number;
     roomId: string;
     socket: ws.WebSocket | null = null;
     connected: boolean = false;
+	score: number = 0;
 
-    constructor(roomId: string, id: number) {
+    constructor(roomId: string, id: number, public sign: XOSign) {
         this.id = id;
         this.roomId = roomId;
     }
@@ -41,7 +44,24 @@ export class TicTacToePlayer implements Player {
         this.socket.on('message', (message: ws.RawData) => {
             try {
                 const data = JSON.parse(message.toString());
-				// here
+				switch (data.type) {
+					case 'move':
+						if (room.state.currentPlayer !== this.sign || !room.playMove(data.move, this.sign)) {
+							return;
+						}
+						room.broadcastToPlayers({
+							type: 'move',
+							move: data.move,
+							sign: this.sign,
+							currentPlayer: room.state.currentPlayer
+						});
+						break;
+					case 'forfeit':
+						room.handleForfeit(this);
+						break;
+				}
+				
+				
             } catch (e: any) {
                 console.log('JSON parse error:', e.message);
             }
@@ -65,12 +85,11 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	id: string;
 	gameType: GameType;
 	startTime: number | null = null;
-	players: Player[] = [];
+	players: TicTacToePlayer[] = [];
 	running = false;
-	timeoutId: NodeJS.Timeout | null = null;
-	intervalId: NodeJS.Timeout | null = null;
-	expirationTimer: NodeJS.Timeout | null = null;
-	gameTimerId: NodeJS.Timeout | null = null;
+	timeoutId: NodeJS.Timeout | undefined | undefined;
+	expirationTimer: NodeJS.Timeout | undefined = undefined;
+	gameTimerId: NodeJS.Timeout | undefined = undefined;
 	state: TicTacToeGameState;
 
 	constructor(id: string, ) {
@@ -78,85 +97,237 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.gameType = 'tictactoe';
 
 		this.state = {
-			cells: [['', '', ''], ['', '', ''], ['', '', '']],
+			cells: ['', '', '', '', '', '', '', '', ''],
 			currentRound: 1,
-			roundTimer: 0,
-			score: [0, 0]
+			currentPlayer: 'X'
 		};
 	}
 
-	attachPlayers(playersIds: number[]): void {
-		playersIds.forEach(playerid => this.players.push(new TicTacToePlayer(this.id, playerid)));
+	public attachPlayers(playersIds: number[]): void {
+		playersIds.forEach((playerid, i) => this.players.push(new TicTacToePlayer(this.id, playerid, i % 2 === 0 ? 'X' : 'O')));
 	}
 
-	getStatus(): TicTacToeStatus {
+	public getStatus(): TicTacToeStatus {
 		return {
-			gameType: this.gameType,
+			gameType: 'tictactoe',
 			cells: this.state.cells,
 			currentRound: this.state.currentRound,
+			currentPlayer: this.state.currentPlayer,
 			players: [
 				{
 					ID: this.players[0]!.id,
-					score: this.state.score[0],
+					score: this.players[0].score,
 				},
 				{
 					ID: this.players[0]!.id,
-					score: this.state.score[0],
+					score: this.players[0].score,
 				}
 			]
 		}
 	}
 
-    sendGameOverPacket = () => {
-		this.players.forEach(player => {
-			if (player.socket?.readyState === ws.OPEN) {
-            	player.socket.send(JSON.stringify({
-					type: 'gameover',
-					scores: this.state.score
-				}))
-			}
-		})
-	}
-
-    setupPackets(): void {
-        this.players.forEach((player, index) => {
+	private setupPackets(): void {
+        this.players.forEach(player => {
             if (player.socket?.readyState === ws.OPEN)
-                player.socket.send(JSON.stringify({ type: 'ready', i: index }));
+                player.socket.send(JSON.stringify({ type: 'ready', sign: player.sign }));
 		})
     }
+
+	public handleForfeit(forfeitingPlayer: Player): void {
+		const winner = this.players.find(p => p !== forfeitingPlayer);
+		const forfeiter = forfeitingPlayer;
+	
+		if (!winner) return;
+	
+		winner.score = TOTAL_ROUNDS;
+		forfeiter.score = 0;
+	
+		this.broadcastToPlayers({
+			type: 'forfeit',
+			forfeitingPlayer: forfeiter.sign,
+			winner: winner.sign,
+			finalScores: this.players.map(p => p.score),
+		});
+	
+		setTimeout(() => {
+			closeRoom(this, 1004, 'Forfeit');
+		}, 3000);
+	}
+
+	playMove(move: number, sign: XOSign): boolean {
+		if (move < 0 || move > 9 || this.state.cells[move] !== '')
+			return false;
+
+		this.state.cells[move] = sign;
+		this.state.currentPlayer = this.state.currentPlayer === 'X' ? 'O' : 'X';
+
+		const winner = this.checkWin();
+		if (winner) {
+			this.handleWin(winner);
+		} else if (this.checkDraw()) {
+			this.handleDraw();
+		} else {
+			this.resetTurnTimer();
+		}
+		
+		return true;
+	}
+	
+	private checkWin(): XOSign | null {
+		for (const [a, b, c] of WINNING_COMBOS) {
+			if (
+				this.state.cells[a] !== '' &&
+				this.state.cells[a] === this.state.cells[b] &&
+				this.state.cells[a] === this.state.cells[c]
+			) {
+				return this.state.cells[a];
+			}
+		}
+		return null;
+	}
+	
+	private checkDraw(): boolean {
+		return this.state.cells.every(cell => cell !== '');
+	}
+	
+	private handleWin(winner: XOSign): void {
+		const winnerPlayer = this.players.find(p => p.sign === winner);
+		if (winnerPlayer) {
+			winnerPlayer.score++;
+		}
+
+		this.broadcastToPlayers({
+			type: 'round_result',
+			winner: winner,
+			scores: this.players.map(p => p.score),
+			currentRound: this.state.currentRound
+		});
+
+		this.state.currentRound++;
+		
+		if (this.state.currentRound > TOTAL_ROUNDS) {
+			this.handleGameOver();
+		} else {
+			this.startRound();
+		}
+	}
+	
+	private handleDraw(): void {
+		this.broadcastToPlayers({
+			type: 'round_result',
+			winner: 'draw',
+			score: this.players.map(p => p.score),
+			currentRound: this.state.currentRound
+		});
+	
+		this.state.currentRound++;
+		
+		if (this.state.currentRound > TOTAL_ROUNDS) {
+			this.handleGameOver();
+		} else {
+			this.startRound();
+		}
+	}
+	
+	
+	private handleGameOver(): void {
+		const overallWinner = this.determineOverallWinner();
+		
+		this.broadcastToPlayers({
+			type: 'gameover',
+			winner: overallWinner,
+			finalScores: this.players.map(p => p.score)
+		});
+
+		closeRoom(this, 1003, 'GameOver');
+	}
+	
+	private startRound(): void {
+		this.broadcastToPlayers({
+			type: 'countdown',
+			duration: COUNTDOWN_TIME, // 3 seconds
+			round: this.state.currentRound
+		});
+	
+		setTimeout(() => {
+			this.resetBoard();
+			this.broadcastToPlayers({
+				type: 'round_start',
+				round: this.state.currentRound,
+				duration: MOVE_TIMEOUT,
+				currentPlayer: this.state.currentPlayer
+			});
+			this.resetTurnTimer();
+		}, COUNTDOWN_TIME);
+	}
+	
+	private resetBoard(): void {
+		this.state.cells = Array(9).fill('');
+		this.state.currentPlayer = 'X'; // Or alternate who starts
+	}
+	
+	private resetTurnTimer(): void {
+		clearTimeout(this.gameTimerId);
+		this.gameTimerId = setTimeout(() => {
+			this.handleTurnTimeout();
+		}, MOVE_TIMEOUT);
+	}
+	
+	private handleTurnTimeout(): void {
+		const winnerSign = this.state.currentPlayer === 'X' ? 'O' : 'X';
+		this.handleWin(winnerSign);
+	}
+	
+	private determineOverallWinner(): XOSign | 'draw' {
+		const [player1, player2] = this.players;
+		if (player1.score > player2.score) return player1.sign;
+		if (player2.score > player1.score) return player2.sign;
+		return 'draw';
+	}
+	
+	public broadcastToPlayers(message: any): void {
+		this.players.forEach(player => {
+			if (player.socket?.readyState === WebSocket.OPEN) {
+				player.socket.send(JSON.stringify(message));
+			}
+		});
+	}
+
+	reconnect(player: TicTacToePlayer): void {
+		player.setupEventListeners(this);
+		const opponent = this.players.find(p => p !== player);
+		if (opponent && opponent.socket?.readyState === WebSocket.OPEN)
+			opponent.socket.send(JSON.stringify({type: 'opp_joined'}))
+
+		if (player.socket?.readyState === WebSocket.OPEN) {
+			player.socket!.send(JSON.stringify({
+				type: 'reconnected',
+				score: [this.players[0].score, this.players[1].score],
+				sign: player.sign,
+				currentPlayer: this.state.currentPlayer,
+				currentRound: this.state.currentRound,
+				// countdown or round time
+			}));
+		}
+	}
 
 	startGame(): void {
 		this.startTime = Math.floor(Date.now() / 1000);
 		this.running = true;
+		this.state.currentRound = 1;
 
 		this.setupPackets();
-
+		
 		this.players.forEach((p) => {
 			p.setupEventListeners(this);
 		});
 
-		this.intervalId = setInterval(() => {
-
-			this.players.forEach((player, index) => {
-				if (player.socket?.readyState === ws.OPEN)
-                {
-                    player.socket.send(JSON.stringify({
-                        type: 'state',
-                        state: {
-							c: this.state.cells,
-                            s: this.state.score,
-							r: this.state.currentRound,
-							t: this.state.roundTimer
-                        }
-				    }))
-                }
-			});
-		}, GAME_UPDATE_INTERVAL);
+		this.startRound();
 	}
 
 	cleanUp(): void {
-		clearTimeout(this.timeoutId!);
-		clearInterval(this.intervalId!);
-		clearTimeout(this.gameTimerId!);
+		clearTimeout(this.gameTimerId);
+		clearTimeout(this.timeoutId);
+		clearInterval(this.expirationTimer);
 	}
 }

@@ -14,6 +14,8 @@ interface Props {
 	handler: (id: number, status: "read" | "dismissed", state: "pending" | "finished") => void;
 }
 
+const decisionOptions = ["tournament", "game", "xo_game", "pp_game"];
+
 function NotificationCard({ data, handler }: Props) {
 	const { id, senderUsername, senderId, content, type, updatedAt, status, avatar, state } = data;
 	const t = useTranslations("headers.notification.box");
@@ -63,7 +65,7 @@ function NotificationCard({ data, handler }: Props) {
 						handleDecline={() => handleDecline(data, false)}
 					/>
 			) : (
-				type === 'tournament' || type == 'game' && (
+				decisionOptions.includes(type) && (
 					<GameOrTournament
 						type={type}
 						handleAccept={() => handleAccept(data, false)}

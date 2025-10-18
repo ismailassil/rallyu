@@ -6,7 +6,6 @@ import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import InputField from '../../components/Form/InputField';
 import useForm from '@/app/hooks/useForm';
-import { signupFormSchema } from '@/app/(api)/schema';
 import PasswordStrengthIndicator from '../../components/Form/PasswordStrengthIndicator';
 import FormButton from '../../components/UI/FormButton';
 import { LogIn } from 'lucide-react';
@@ -14,19 +13,34 @@ import { FormProvider } from '../../components/Form/FormContext';
 import AvailabilityIndicator from '../../components/Form/AvailabilityIndicator';
 import useAPICall from '@/app/hooks/useAPICall';
 import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
+import { useTranslations } from 'next-intl';
+import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export default function SignUpForm() {
+	const t = useTranslations('auth.common');
+
 	const router = useRouter();
-	const { register } = useAuth();
-	const { isLoading, executeAPICall } = useAPICall();
+
+	const {
+		register
+	} = useAuth();
+
+	const {
+		isLoading,
+		executeAPICall
+	} = useAPICall();
+
+	const {
+		signupFormSchema
+	} = useValidationSchema();
 
 	const [
-		formData, 
-		touched, 
-		errors, 
-		debounced, 
-		handleChange, 
-		validateAll, 
+		formData,
+		touched,
+		errors,
+		debounced,
+		handleChange,
+		validateAll,
 		getValidationErrors,
 		resetForm
 	] = useForm(
@@ -73,43 +87,44 @@ export default function SignUpForm() {
 		>
 			<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
 				<div className='flex flex-col gap-5 sm:flex-row sm:gap-2'>
-					<InputField 
+					<InputField
 						className='field flex flex-col gap-0.5 min-w-0 flex-1'
 						iconSrc='/icons/firstname.svg'
-						label='First Name'
+						label={t('first_name')}
 						field='first_name'
 						inputPlaceholder='Achraf'
+						autoFocus
 					/>
-					<InputField 
+					<InputField
 						className='field flex flex-col gap-0.5 min-w-0 flex-1'
 						iconSrc='/icons/lastname.svg'
-						label='Last Name'
+						label={t('last_name')}
 						field='last_name'
 						inputPlaceholder='Demnati'
 					/>
 				</div>
-				<InputField 
+				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/at.svg'
-					label='Username'
+					label={t('username')}
 					field='username'
 					inputPlaceholder='xezzuz'
 				>
-					{debounced.username && !errors.username && <AvailabilityIndicator key="username-availability" label='Username' status={usernameStatus} />}
+					{debounced.username && !errors.username && <AvailabilityIndicator key="username-availability" label={t('username')} status={usernameStatus} />}
 				</InputField>
-				<InputField 
+				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/mail.svg'
-					label='Email'
+					label={t('email')}
 					field='email'
 					inputPlaceholder='iassil@1337.student.ma'
 				>
-					{debounced.username && !errors.username && <AvailabilityIndicator key="email-availability" label='Email' status={emailStatus} />}
+					{debounced.username && !errors.username && <AvailabilityIndicator key="email-availability" label={t('email')} status={emailStatus} />}
 				</InputField>
-				<InputField 
+				<InputField
 					className='field flex flex-col gap-0.5 box-border'
 					iconSrc='/icons/lock.svg'
-					label='Password'
+					label={t('password')}
 					field='password'
 					inputPlaceholder='••••••••••••••••'
 					inputHidden={true}
@@ -117,7 +132,7 @@ export default function SignUpForm() {
 					{formData.password && <PasswordStrengthIndicator key="password-strength" value={formData.password} />}
 				</InputField>
 				<FormButton
-					text='Sign Up'
+					text={t('signup')}
 					icon={<LogIn size={16} />}
 					type='submit'
 					isSubmitting={isLoading}

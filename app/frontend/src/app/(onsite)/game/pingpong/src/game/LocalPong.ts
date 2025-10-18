@@ -1,10 +1,10 @@
-import { PongState, Coords, BallState, PongEventHandlers } from '@/app/(onsite)/game/types/PongTypes';
+import { PongState, Coords, BallState, PongEventHandlers } from '@/app/(onsite)/game/types/types';
 import SocketProxy from '@/app/(onsite)/game/utils/socketProxy'
 import APong from "./APong";
 
 
 class LocalPong extends APong {
-    GAME_DURATION = 15000;
+    GAME_DURATION = 30000;
     state: PongState;
     animationFrameId: number | null;
     angles = [2.79253, 3.49066, 3.14159, 0, 0.34907, 5.93412];
@@ -200,15 +200,14 @@ class LocalPong extends APong {
     }
 
     pauseGame = () => {
-        if (this.gamePlayStatus === 'play') {
+        if (this.gamePlayStatus === 'play' || this.gamePlayStatus === 'delay') {
             this.gamePlayStatus = 'pause';
             this.remaining -= Date.now() - this.startTime!;
-            console.log(this.remaining)
-            this.eventHandlers?.updateOverlayStatus!('pause');
+            this.eventHandlers?.updateOverlayStatus('pause');
             this.eventHandlers?.updateTimer(this.remaining);
             this.cleanupTimeouts();
         } else if (this.gamePlayStatus === 'pause') {
-            this.eventHandlers?.updateOverlayStatus!('empty');
+            this.eventHandlers?.updateOverlayStatus('none');
             this.startGameTimer();
         }
     }
@@ -218,7 +217,7 @@ class LocalPong extends APong {
         this.gamePlayStatus = 'play';
         this.eventHandlers?.updateTimer(this.remaining); // TODO
         this.gameTimeoutId = setTimeout(() => {
-            this.eventHandlers?.updateOverlayStatus!('gameover');
+            this.eventHandlers?.updateOverlayStatus('gameover');
             this.gamePlayStatus = 'gameover';
         }, this.remaining);
     }
@@ -247,7 +246,7 @@ class LocalPong extends APong {
         };
         this.cleanupTimeouts();
         this.gamePlayStatus = 'countdown';
-        this.eventHandlers?.updateOverlayStatus!('empty');
+        this.eventHandlers?.updateOverlayStatus('none');
         this.eventHandlers?.updateTimer(this.countdown);
         this.gameStartTimeoutId = setTimeout(()=> {
             this.remaining = this.GAME_DURATION;

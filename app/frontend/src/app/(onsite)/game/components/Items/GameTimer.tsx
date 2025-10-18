@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 const GameTimer = ({ time, pause }: { time: number, pause: boolean | null }) => {
     const [ gameTime, setGameTime ] = useState(0);
 
-    console.log('GameTimer time: ', time);
-
     useEffect(() => {
         setGameTime(time);
         if (pause) return;

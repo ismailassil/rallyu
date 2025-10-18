@@ -52,31 +52,32 @@ class NotifSerives {
 	 *
 	 */
 	async createAndDispatch(payload: NOTIFY_USER_PAYLOAD, timestamp: number): Promise<void> {
-		const { receiverId } = payload;
+		try {
+			fastify.log.warn("-----------------[CEATE_AND_DISPATCH]-----------------");
+			const { receiverId } = payload;
 
-		fastify.log.info("UPDATE ARRIVED");
+			const resData = await this.registerNotification(payload);
 
-		const resData = await this.registerNotification(payload);
-		fastify.log.info("✅ Notification Created");
+			const data = await this.filterMessage(resData);
 
-		const data = await this.filterMessage(resData);
+			// ********************************* */
+			// ** PAYLOAD TO SEND THROUGH `NATS`
+			// ********************************* */
+			const storedAt = millis(timestamp);
+			const currentTime = Date.now();
 
-		// ********************************* */
-		// ** PAYLOAD TO SEND THROUGH `NATS`
-		// ********************************* */
-		const storedAt = millis(timestamp);
-		const currentTime = Date.now();
+			const fiveMinutes = 5 * 60 * 1000; // * 5 Minutes
 
-		const fiveMinutes = 5 * 60 * 1000; // * 5 Minutes
+			if (currentTime - storedAt > fiveMinutes) return;
 
-		fastify.log.warn(currentTime - storedAt > fiveMinutes);
-		if (currentTime - storedAt > fiveMinutes) return;
+			const resPayload = { userId: receiverId, load: { eventType: NOTIF_TYPE.NOTIFY, data } };
 
-		const resPayload = { userId: receiverId, load: { eventType: NOTIF_TYPE.NOTIFY, data } };
-
-		fastify.log.warn(resPayload);
-		const res = fastify.jc.encode(resPayload);
-		fastify.nats.publish("gateway.notification", res);
+			const res = fastify.jc.encode(resPayload);
+			fastify.nats.publish("gateway.notification", res);
+		} catch (error) {
+			fastify.log.error((error as Error).message);
+			throw error;
+		}
 	}
 
 	/**
@@ -91,44 +92,48 @@ class NotifSerives {
 	 *
 	 */
 	async updateAndDispatch(userId: number, payload: UPDATE_NOTIFICATION_DATA): Promise<void> {
-		const ans = await this.updateNotification(userId, payload);
-		fastify.log.info("✅ NOTIFICATION UPDATED [" + payload.status + "]");
+		try {
+			fastify.log.warn("-----------------[UPDATE_AND_DISPATCH]-----------------");
+			const ans = await this.updateNotification(userId, payload);
 
-		// ********************************* */
-		// ** PAYLOAD TO SEND THROUGH `NATS`
-		// ********************************* */
-		let resPayload: OutgoingGatewayType;
+			// ********************************* */
+			// ** PAYLOAD TO SEND THROUGH `NATS`
+			// ********************************* */
+			let resPayload: OutgoingGatewayType;
 
-		if (!payload.updateAll) {
-			if (!ans) return;
+			if (!payload.updateAll) {
+				if (!ans) return;
 
-			resPayload = {
-				userId,
-				load: {
-					eventType: NOTIF_TYPE.UPDATE_ACTION,
-					data: {
-						updateAll: false,
-						notificationId: ans.id,
-						status: ans.status,
-						state: ans.state,
+				resPayload = {
+					userId,
+					load: {
+						eventType: NOTIF_TYPE.UPDATE_ACTION,
+						data: {
+							updateAll: false,
+							notificationId: ans.id,
+							status: ans.status,
+							state: ans.state,
+						},
 					},
-				},
-			};
-		} else {
-			resPayload = {
-				userId,
-				load: {
-					eventType: NOTIF_TYPE.UPDATE_ACTION,
-					data: {
-						updateAll: true,
-						status: payload.status,
+				};
+			} else {
+				resPayload = {
+					userId,
+					load: {
+						eventType: NOTIF_TYPE.UPDATE_ACTION,
+						data: {
+							updateAll: true,
+							status: payload.status,
+						},
 					},
-				},
-			};
+				};
+			}
+
+			const res = fastify.jc.encode(resPayload);
+			fastify.nats.publish("gateway.notification", res);
+		} catch (error) {
+			fastify.log.error((error as Error).message);
 		}
-
-		const res = fastify.jc.encode(resPayload);
-		fastify.nats.publish("gateway.notification", res);
 	}
 
 	/**
@@ -148,28 +153,35 @@ class NotifSerives {
 	 *
 	 */
 	async handleMicroServicesEvent(payload: MICRO_ACTION_PAYLOAD): Promise<void> {
-		const { senderId, receiverId, load } = payload;
+		fastify.log.warn("-----------------[HANDLE_MICROSERVICES]-----------------");
+		try {
+			const { senderId, receiverId, load } = payload;
 
-		fastify.log.info(payload);
+			if (load.type === "friend_request") {
+				const { id } = await this.notifRepository.getNotifId(
+					senderId,
+					receiverId,
+					load.type,
+				);
+				this.removeAndDispatch(id, receiverId);
 
-		if (load.type === "friend_request") {
-			const { id } = await this.notifRepository.getNotifId(senderId, receiverId, load.type);
-			this.removeAndDispatch(id, receiverId);
+				if (load.status === "cancel") return;
 
-			if (load.status === "cancel") return;
-
-			// Notify the user who triggered the friend_request
-			const senderPayload: NOTIFY_USER_PAYLOAD = {
-				senderId: receiverId,
-				receiverId: senderId,
-				type: load.status === "accept" ? "friend_accept" : "friend_reject",
-			};
-			const currentTimestamp: number = new Date().getTime() * 1_000_000;
-			this.createAndDispatch(senderPayload, currentTimestamp);
-		} else if (load.type === "tournament") {
-			/**
-			 * TODO - adapt with smoumni
-			 */
+				// Notify the user who triggered the friend_request
+				const senderPayload: NOTIFY_USER_PAYLOAD = {
+					senderId: receiverId,
+					receiverId: senderId,
+					type: load.status === "accept" ? "friend_accept" : "friend_reject",
+				};
+				const currentTimestamp: number = new Date().getTime() * 1_000_000;
+				this.createAndDispatch(senderPayload, currentTimestamp);
+			} else if (load.type === "tournament") {
+				/**
+				 * TODO - adapt with smoumni
+				 */
+			}
+		} catch (error) {
+			fastify.log.error((error as Error).message);
 		}
 	}
 
@@ -186,24 +198,28 @@ class NotifSerives {
 	 *
 	 */
 	async updateContext(userId: number, payload: UPDATE_CONTEXT_DATA) {
+		fastify.log.warn("-----------------[UPDATE_CONTEXT]-----------------");
 		const { type } = payload;
+		try {
+			// if (status === "dismissed") {
+			await this.notifRepository.removeAllNotif(userId, type);
+			// } else {
+			// 	await this.notifRepository.updateAllNotifOnType(userId, status, state, type);
+			// }
 
-		// if (status === "dismissed") {
-		await this.notifRepository.removeAllNotif(userId, type);
-		// } else {
-		// 	await this.notifRepository.updateAllNotifOnType(userId, status, state, type);
-		// }
+			const resPayload: OutgoingGatewayType = {
+				userId,
+				load: {
+					eventType: NOTIF_TYPE.UPDATE_CONTEXT,
+					data: { type, status: "dismissed" },
+				},
+			};
 
-		const resPayload: OutgoingGatewayType = {
-			userId,
-			load: {
-				eventType: NOTIF_TYPE.UPDATE_CONTEXT,
-				data: { type, status: "dismissed" },
-			},
-		};
-
-		const res = fastify.jc.encode(resPayload);
-		fastify.nats.publish("gateway.notification", res);
+			const res = fastify.jc.encode(resPayload);
+			fastify.nats.publish("gateway.notification", res);
+		} catch (error) {
+			fastify.log.error((error as Error).message);
+		}
 	}
 
 	/**
@@ -216,58 +232,66 @@ class NotifSerives {
 	 *
 	 * */
 	async createGame(userId: number, senderSocket: string, payload: CreateGamePayload) {
+		fastify.log.warn("-----------------[CREATE_GAME]-----------------");
 		const { targetId: receiverId, type } = payload;
+
+		const uniqueID = randomUUID();
 
 		const resPayload: NOTIFY_USER_PAYLOAD = {
 			senderId: userId,
 			receiverId: receiverId,
 			type,
 			message: senderSocket,
-			actionUrl: randomUUID(),
+			actionUrl: uniqueID,
 		};
 
 		const currentTimestamp: number = new Date().getTime() * 1_000_000;
 		fastify.notifService.createAndDispatch(resPayload, currentTimestamp);
 
 		fastify.gameUsers.set(
-			userId,
+			String(userId),
 			setTimeout(() => {
 				fastify.notifService.updateGame(receiverId, "", {
 					receiverId: userId,
 					type: "game_reject",
-					actionUrl: resPayload.actionUrl!,
+					actionUrl: uniqueID,
 				});
 			}, 10 * 1000),
 		);
 	}
 
 	async updateGame(userId: number, socketId: string, payload: UpdateGamePayload) {
-		const { receiverId, actionUrl, type } = payload;
-		const { id } = await this.notifRepository.getNotifIdByActionURL(actionUrl ?? "");
+		fastify.log.warn("-----------------[UPDATE_GAME]-----------------");
+		try {
+			const { receiverId, actionUrl, type } = payload;
+			const { id, content } = await this.notifRepository.getNotifIdByActionURL(
+				actionUrl ?? "",
+			);
 
-		clearTimeout(fastify.gameUsers.get(userId));
-		fastify.gameUsers.delete(userId);
+			this.removeAndDispatch(id, userId);
+			clearTimeout(fastify.gameUsers.get(String(payload.receiverId)));
+			fastify.gameUsers.delete(String(payload.receiverId));
 
-		this.removeAndDispatch(id, userId);
-		if (type === "game_reject") return;
+			if (type === "game_reject") return;
 
-		const { content } = await this.notifRepository.getNotifById(id);
+			// If the player accepted the Game send both gameType and roomId
+			const gameType = type === "pp_game" ? "pingpong" : "tictactoe";
+			const roomId = await this.requestRoom([userId, receiverId], gameType);
 
-		// If the player accepted the Game send both gameType and roomId
-		const gameType = type === "pp_game" ? "pingpong" : "tictactoe";
-		const roomId = await this.requestRoom([userId, receiverId], gameType);
-
-		fastify.nats.publish(
-			"gateway.notification",
-			fastify.jc.encode({
-				sockets: [content, socketId],
-				userId: receiverId,
-				load: {
-					eventType: NOTIF_TYPE.UPDATE_GAME,
-					data: gameType + "/" + roomId,
-				},
-			} as OutgoingGatewayType),
-		);
+			fastify.nats.publish(
+				"gateway.notification",
+				fastify.jc.encode({
+					sockets: [content, socketId],
+					userId: receiverId,
+					load: {
+						eventType: NOTIF_TYPE.UPDATE_GAME,
+						data: gameType + "/" + roomId,
+					},
+				} as OutgoingGatewayType),
+			);
+		} catch (error) {
+			fastify.log.error((error as Error).message);
+		}
 	}
 
 	async unpackMessages(fullData: RAW_NOTIFICATION[]): Promise<USER_NOTIFICATION[]> {
@@ -336,7 +360,7 @@ class NotifSerives {
 			headers: {
 				"Content-Type": "application/json",
 				// FIX THIS
-				Authorization: `Bearer DEFAULT_MS_MATCHMAKING_SECRET_`,
+				Authorization: `Bearer ${process.env.MS_GAME_API_KEY}`,
 			},
 			body: JSON.stringify({ playersIds: Ids, gameType }),
 		});
@@ -349,19 +373,23 @@ class NotifSerives {
 	}
 
 	private async updateNotification(userId: number, payload: UPDATE_NOTIFICATION_DATA) {
-		const { updateAll, status } = payload;
+		try {
+			const { updateAll, status } = payload;
 
-		if (updateAll === true) {
-			await this.notifRepository.updateAllNotif(userId, status);
-		} else {
-			const { state, notificationId } = payload;
+			if (updateAll === true) {
+				await this.notifRepository.updateAllNotif(userId, status);
+			} else {
+				const { state, notificationId } = payload;
 
-			return await this.notifRepository.updateNotif(
-				notificationId,
-				userId,
-				status,
-				state ?? "pending",
-			);
+				return await this.notifRepository.updateNotif(
+					notificationId,
+					userId,
+					status,
+					state ?? "pending",
+				);
+			}
+		} catch (error) {
+			throw error;
 		}
 	}
 

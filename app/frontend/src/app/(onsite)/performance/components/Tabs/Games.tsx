@@ -7,6 +7,7 @@ import { UserAnalytics, UserAnalyticsByDay } from '../../types';
 import MainCardWrapper from '@/app/(onsite)/components/UI/MainCardWrapper';
 import { motion } from 'framer-motion';
 import TimeAnalysis from './TimeAnalysis';
+import { useTranslations } from 'next-intl';
 
 interface UserMatch {
     match_id: number;
@@ -27,6 +28,7 @@ interface UserMatch {
 }
 
 function GamesHistoryTable() {
+	const t = useTranslations('performance_dashboard.games.cards.games_history');
 	const { loggedInUser, apiClient } = useAuth();
 	const [userMatches, setUserMatches] = useState<UserMatch[]>([]);
 	const [gameTypeFilter, setGameTypeFilter] = useState<'PONG' | 'XO' | 'all'>('all');
@@ -44,9 +46,9 @@ function GamesHistoryTable() {
 					gameType: gameTypeFilter,
 					time: timeFilter
 				});
-			
+
 				setUserMatches(res.matches);
-	
+
 				setPagination({
 					currentPage: res.pagination.page,
 					totalPages: res.pagination.totalPages,
@@ -60,15 +62,40 @@ function GamesHistoryTable() {
 
 		fetchUserMatchesPage();
 	}, [gameTypeFilter, timeFilter, page, apiClient, loggedInUser]);
-  
+
 	return (
 		<MainCardWrapper className='font-funnel-display pb-4 sm:pb-8'>
 			<header className="relative overflow-x-hidden">
 				<h1 className='font-bold py-10 px-13 select-none text-3xl lg:text-4xl capitalize relative left-0 hover:left-4 transition-all duration-500'>
-					Games History
+					{t('title')}
 				</h1>
 				<div className="w-18 h-5 absolute left-0 top-[51%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E0E0E0] transition-all duration-200 group-hover:scale-105" />
 			</header>
+
+			{/* FILTERS */}
+			<div className="flex flex-wrap gap-2">
+				<select
+					value={gameTypeFilter}
+					onChange={(e) => { setGameTypeFilter(e.target.value as any); setPage(1); }}
+					className="rounded px-2 py-1"
+				>
+					<option value="all">{t('selectors.alltypes')}</option>
+					<option value="PONG">{t('selectors.pong')}</option>
+					<option value="XO">{t('selectors.xo')}</option>
+				</select>
+				<select
+					value={timeFilter}
+					onChange={(e) => { setTimeFilter(e.target.value as any); setPage(1); }}
+					className="rounded px-2 py-1"
+				>
+					<option value="all">{t('selectors.alltime')}</option>
+					<option value="1d">{t('selectors.1d')}</option>
+					<option value="7d">{t('selectors.7d')}</option>
+					<option value="30d">{t('selectors.30d')}</option>
+					<option value="90d">{t('selectors.90d')}</option>
+					<option value="1y">{t('selectors.year')}</option>
+				</select>
+			</div>
 
 			{userMatches.length === 0 ? (
 				<div className='h-80 flex items-center justify-center'>
@@ -76,37 +103,12 @@ function GamesHistoryTable() {
 				</div>
 			) : (
 				<>
-				{/* FILTERS */}
-				<div className="flex flex-wrap gap-2">
-					<select
-						value={gameTypeFilter}
-						onChange={(e) => { setGameTypeFilter(e.target.value as any); setPage(1); }}
-						className="rounded px-2 py-1"
-					>
-						<option value="all">All Types</option>
-						<option value="PONG">Ping Pong</option>
-						<option value="XO">XO</option>
-					</select>
-					<select
-						value={timeFilter}
-						onChange={(e) => { setTimeFilter(e.target.value as any); setPage(1); }}
-						className="rounded px-2 py-1"
-					>
-						<option value="all">All Time</option>
-						<option value="1d">Last 1 day</option>
-						<option value="7d">Last 7 days</option>
-						<option value="30d">Last 30 days</option>
-						<option value="90d">Last 90 days</option>
-						<option value="1y">Last year</option>
-					</select>
-				</div>
-
 				{/* TABLE FOR MEDIUM+ SCREENS */}
 				<div className="hidden md:block overflow-x-auto">
 					<table className="min-w-full divide-y divide-gray-200">
 						<thead>
 							<tr>
-							{["Opponent", "Type", "Mode", "Result", "Score", "Duration", "Date"].map((col) => (
+							{[t('columns.opp'), t('columns.type'), t('columns.mode'), t('columns.result'), t('columns.score'), t('columns.duration'), t('columns.date')].map((col) => (
 								<th
 									key={col}
 									className="px-6 py-3 text-center text-sm font-medium text-white uppercase tracking-wider"
@@ -121,14 +123,14 @@ function GamesHistoryTable() {
 								<tr key={match.match_id} className="hover:bg-white/6">
 									<td className="px-6 py-3 text-center text-sm font-medium text-white tracking-wider">{match.opponent_username}</td>
 									<td className="px-6 py-3 text-center text-sm font-medium text-white tracking-wider">{match.game_type}</td>
-									<td className="px-6 py-3 text-center text-sm font-medium text-white tracking-wider">{match.mode || "Ranked 1v1"}</td>
+									<td className="px-6 py-3 text-center text-sm font-medium text-white tracking-wider">{match.mode || t('common.ranked1v1')}</td>
 									<td className="px-6 py-3 text-center text-sm font-medium text-white tracking-wider">
 										<span className={`px-3 py-1 rounded-full border ${
 											match.outcome === "W" ? "border-green-500 text-green-500"
 											: match.outcome === "L" ? "border-red-500 text-red-500"
 											: "border-gray-500 text-gray-500"}`}
 										>
-											{match.outcome === "W" ? "Win" : match.outcome === "L" ? "Loss" : "Draw"}
+											{match.outcome === "W" ? t('common.win') : match.outcome === "L" ? t('common.loss') : t('common.draw')}
 										</span>
 									</td>
 									<td className="px-6 py-3 text-center text-sm font-medium text-white tracking-wider">{match.user_score}-{match.opp_score}</td>
@@ -145,14 +147,14 @@ function GamesHistoryTable() {
 					{userMatches.map((match) => (
 						<div key={match.match_id} className="bg-white/3 border border-white/8 px-6 py-4 rounded-2xl mb-5">
 							<p className="font-bold mb-1">{match.opponent_username}</p>
-							<p className="text-sm mb-1">{match.game_type} | {match.mode || "Ranked 1v1"}</p>
+							<p className="text-sm mb-1">{match.game_type} | {match.mode || t('common.ranked1v1')}</p>
 							<p className="text-sm mb-1">
 								<span className={`inline-flex px-2 py-1 text-sm font-semibold rounded-full border ${
 									match.outcome === "W" ? "border-green-500 text-green-500"
 									: match.outcome === "L" ? "border-red-500 text-red-500"
 									: "border-gray-500 text-gray-500"
 								}`}>
-									{match.outcome === "W" ? "Win" : match.outcome === "L" ? "Loss" : "Draw"}
+									{match.outcome === "W" ? t('common.win') : match.outcome === "L" ? t('common.loss') : t('common.draw')}
 								</span>
 							</p>
 							<p className="text-sm mb-1">Score: {match.user_score}-{match.opp_score}</p>
@@ -169,15 +171,15 @@ function GamesHistoryTable() {
 						disabled={!pagination.hasPrev}
 						className="px-3 py-1 border rounded disabled:opacity-50"
 					>
-						Previous
+						{t('pagination.prev')}
 					</button>
-					<span className="px-2 py-1">Page {pagination.currentPage || page}</span>
+					<span className="px-2 py-1">{t('pagination.page')} {pagination.currentPage || page}</span>
 					<button
 						onClick={() => setPage(pagination.currentPage + 1)}
 						disabled={!pagination.hasNext}
 						className="px-3 py-1 border rounded disabled:opacity-50"
 					>
-						Next
+						{t('pagination.next')}
 					</button>
 				</div>
 				</>
@@ -197,7 +199,7 @@ export default function Games({ userAnalytics, userAnalyticsByDay } : { userAnal
 			className='flex flex-col gap-4'
 		>
 			<GamesHistoryTable />
-			<TimeAnalysis 
+			<TimeAnalysis
 				userAnalytics={userAnalytics}
 				userAnalyticsByDay={userAnalyticsByDay}
 			/>

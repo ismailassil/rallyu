@@ -9,6 +9,6 @@ declare module 'fastify' {
 		database: Database;
 		nats: NatsConnection;
 		jc: JSONCodec;
-		gameUsers: Map<number, NodeJS.Timeout>;
+		gameUsers: Map<string, NodeJS.Timeout>;
 	}
 }

@@ -6,12 +6,13 @@ import PersonalInformationsForm from './PersonalInformationsForm';
 import useForm from '@/app/hooks/useForm';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import { LoaderCircle } from 'lucide-react';
-import { personalInfoSettingsSchema } from '@/app/(api)/schema';
 import { FormProvider } from '@/app/(auth)/components/Form/FormContext';
 import { motion } from 'framer-motion';
 // import useAPICall from '@/app/hooks/useAPICall';
 import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
 import useCanSave from '@/app/hooks/useCanSave';
+import { useTranslations } from 'next-intl';
+import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export interface FormDataState {
 	first_name: string;
@@ -28,6 +29,8 @@ export interface FormDataState {
 */
 
 export default function GeneralSettingsTab() {
+	const t = useTranslations('settings.general.cards.personal_infos');
+
 	const { apiClient, loggedInUser, updateLoggedInUserState } = useAuth();
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -37,13 +40,17 @@ export default function GeneralSettingsTab() {
 	// 	executeAPICall
 	// } = useAPICall();
 
+	const {
+		personalInfoSettingsSchema
+	} = useValidationSchema();
+
 	const [
-		formData, 
-		touched, 
-		errors, 
-		debounced, 
-		handleChange, 
-		validateAll, 
+		formData,
+		touched,
+		errors,
+		debounced,
+		handleChange,
+		validateAll,
 		getValidationErrors,
 		resetForm
 	] = useForm(
@@ -140,8 +147,8 @@ export default function GeneralSettingsTab() {
 			className='h-full'
 		>
 		<SettingsCard
-			title="Personal Informations"
-			subtitle="Update your account profile information and email address"
+			title={t('title')}
+			subtitle={t('subtitle')}
 			actionIcon={isSubmitting ? <LoaderCircle size={16} className='animate-spin' /> : undefined}
 			onAction={handleSubmit}
 			isButtonHidden={!canSave}
@@ -159,7 +166,7 @@ export default function GeneralSettingsTab() {
 					getValidationErrors={getValidationErrors}
 					resetForm={resetForm}
 				>
-					<ProfilePreview 
+					<ProfilePreview
 						avatarFile={avatarFile}
 						avatarBlobPreview={avatarPreview}
 						onAddAvatarFile={handleAvatarFileChange}

@@ -55,8 +55,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			}
 		}
 		getAllFriends();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [showConversation, selectedUser]);
+	}, [showConversation, selectedUser, apiClient]);
 
 	const playMessageSound = () => {
 		const audio = new Audio("/message.mp3");
@@ -70,7 +69,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			playMessageSound();
 			setMessages((prev) => [...prev, data]);
 		}
-		
+
 		function handleUpdateMessage(data: MessageType) {
 			setMessages((prev) => [...prev, data]);
 		}

@@ -4,8 +4,11 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAuth } from "../../contexts/AuthContext";
 import { useHeaderContext } from "./context/HeaderContext";
+import { useTranslations } from "next-intl";
 
 export default function Profile() {
+	const t = useTranslations('headers.profile.titles');
+
 	const { logout, loggedInUser } = useAuth();
 
 	const { setIsNotif, setIsProfile, setIsSearch, isProfile, profileRef } = useHeaderContext();
@@ -75,7 +78,7 @@ export default function Profile() {
 								width={30}
 								height={30}
 							/>
-							<span className="ml-5">Profile</span>
+							<span className="ml-5">{t('profile')}</span>
 						</div>
 						<div
 							className="hover:bg-hbbg flex w-full items-center px-7 py-3 hover:cursor-pointer"
@@ -91,7 +94,7 @@ export default function Profile() {
 								width={30}
 								height={30}
 							/>
-							<span className="ml-5">Settings</span>
+							<span className="ml-5">{t('settings')}</span>
 						</div>
 						<div
 							className="hover:bg-hbbg mb-2 flex w-full items-center px-7 py-3 hover:cursor-pointer"
@@ -103,7 +106,7 @@ export default function Profile() {
 								width={30}
 								height={30}
 							/>
-							<p className="ml-5">Logout</p>
+							<p className="ml-5">{t('logout')}</p>
 						</div>
 					</motion.div>
 				)}

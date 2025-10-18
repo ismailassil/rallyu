@@ -3,18 +3,17 @@ import WebSocket from 'ws'
 import jwt from 'jsonwebtoken'
 import type { GameType, Room } from '../types/types';
 import { createRoomSchema, joinRoomSchema, roomStatusSchema, userStatusSchema } from '../schemas/schemas';
-import { roomManager } from '../room/roomManager';
+import { roomManager, userSessions, closeRoom } from '../room/roomManager';
 import dotenv from 'dotenv'
 dotenv.config();
 
 const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
-const MS_AUTH_PORT = process.env.MS_AUTH_PORT || '5005'
+const MS_NOTIF_API_KEY = process.env.MS_NOTIF_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
 const JWT_ACCESS_SECRET = process.env['JWT_ACCESS_SECRET'] || ''
 
 const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
-	const ROOM_EXPIRATION_TIME = 20000; // 10 sec
-    const GAME_TIME = 23000; // 10 seconds
-	const userSessions = new Map() // Map<userid, roomid>
+	const ROOM_EXPIRATION_TIME = 20000; // 20 sec
+    const GAME_TIME = 20000; // 20 seconds
 
 	fastify.addHook('preHandler', async (req, res) => {
 		let token;
@@ -33,7 +32,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			return res.code(401).send({ message: 'Unauthorized' });
 		}
 		
-		if (token !== MS_MATCHMAKING_API_KEY) {
+		if (token !== MS_MATCHMAKING_API_KEY && token !== MS_NOTIF_API_KEY) {
 			try {
 				jwt.verify(token, JWT_ACCESS_SECRET, { algorithms: ['HS256'] });
 			} catch (err) {
@@ -41,17 +40,6 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			}
 		}
 	});
-
-	const closeRoom = (room: Room<any, any>, code: number, msg: string): void => {
-		// test this if players already closed sockets
-		room.players.forEach(p => {
-			userSessions.delete(p.id);
-			if (p.socket?.readyState === WebSocket.OPEN)
-				p.socket.close(code, msg);
-		})
-		room.cleanUp();
-		roomManager.deleteRoom(room.id);
-	}
 
 	fastify.get('/room/join/:roomid', { websocket: true, schema: joinRoomSchema }, (socket: WebSocket.WebSocket, req: FastifyRequest) => {
 		try {
@@ -67,6 +55,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 				throw new Error("Match room not found");
 
 			const player = room.players.find(player => player.id === userid);
+			console.log('is player connected? : ', player?.connected);
 			if (!player)
 				throw new Error("Player not in match room");
 			if (player.connected)
@@ -74,39 +63,9 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 
 			player.attachSocket(socket);
 			if (room.running) {
-				const index = room.players.indexOf(player);
-				player.setupEventListeners(room);
-				if (room.players[index ^ 1].socket?.readyState === WebSocket.OPEN)
-					room.players[index ^ 1].socket!.send(JSON.stringify({type: 'opp_joined'}))
-
-				if (player.socket?.readyState === WebSocket.OPEN) {
-					player.socket!.send(JSON.stringify({
-						type: 'reconnected',
-						score: room.state.score,
-						i: index,
-						time: Math.round(GAME_TIME - (Date.now() - room.startTime!))
-					}));
-				}
+				room.reconnect(player);
 			} else if (room.players.every(p => p.connected)) {
 				clearTimeout(room.expirationTimer!);
-				room.gameTimerId = setTimeout(async () => {
-					room.sendGameOverPacket();
-					closeRoom(room, 1003, 'Game Over');
-					// await axios.post(`http://ms-auth:${MS_AUTH_PORT}/users/match`, {
-					// 	players: [
-					// 		{ 
-					// 			ID: room.players[0].id, 
-					// 			score: room.state.score[0]
-					// 		},
-					// 		{
-					// 			ID: room.players[1].id, 
-					// 			score: room.state.score[1]
-					// 		}
-					// 	],
-					// 	gameStartedAt: room.startTime,
-					// 	gameFinishedAt: Math.floor(Date.now() / 1000)
-					// });
-				}, GAME_TIME);
 				room.startGame();
 			}
 

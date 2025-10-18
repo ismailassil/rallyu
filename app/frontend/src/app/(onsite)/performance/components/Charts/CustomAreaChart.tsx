@@ -12,28 +12,29 @@ export default function CustomAreaChart({
 	dataKeyY: string,
 	tooltipFormatter: (v: number) => string
 }) {
+	const reversedData = [...data].reverse();
 	return (
 		<div className='relative w-full'>
 			<div className='bg-[#78d369]/7 h-[5px] w-full absolute bottom-0'></div>
 			<ResponsiveContainer width='100%' height={360}>
-				<AreaChart data={data} margin={{ top: 20, right: 0, left: 0, bottom: 5 }}>
+				<AreaChart data={reversedData} margin={{ top: 20, right: 0, left: 0, bottom: 5 }}>
 					<defs>
 						<linearGradient id="colorGradient" x1="0" y1="0" x2="1" y2="0">
 							<stop offset="0%" stopColor="#ffe600" />
 							<stop offset="100%" stopColor="#00faff" />
 						</linearGradient>
 					</defs>
-					
+
 					<XAxis dataKey={dataKeyX} hide />
 					<YAxis dataKey={dataKeyY} hide />
 
-					<Tooltip 
+					<Tooltip
 						formatter={tooltipFormatter}
 						content={({ active, payload, label }: TooltipProps<number, string>) =>
 							active && payload && payload.length ? (
 								<div className="border-br-card ring-3 rounded-lg border-2 bg-white/10 p-2 ring-white/5 backdrop-blur-xs">
 									<p>{label}</p>
-									<p className="text-xl">
+									<p className="text-xl capitalize">
 										{tooltipFormatter(payload[0].value as number)}
 									</p>
 								</div>
@@ -54,7 +55,7 @@ export default function CustomAreaChart({
 					/>
 				</AreaChart>
 			</ResponsiveContainer>
-			
+
 		</div>
 	);
 }

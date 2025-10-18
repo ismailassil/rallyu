@@ -19,6 +19,7 @@ import {
 } from "../types/notifications.types";
 import { TOAST_PAYLOAD } from "../../toaster/Toast.types";
 import { useRouter } from "next/navigation";
+import { GameType } from "@/app/(onsite)/game/types/types";
 
 // Create the Context
 export const NotifContext = createContext<NotificationContext | undefined>(undefined);
@@ -156,8 +157,9 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 			try {
 				if (type === "friend_request") {
 					await apiClient.acceptFriendRequest(senderId);
-				} else if (type === "game") {
-					socket.emitGameResponse(senderId, true, data.actionUrl!);
+				} else if (type === "game" || type === 'pp_game' || type === 'xo_game') {
+					console.log(data.actionUrl);
+					socket.emitGameResponse(senderId, true, data.actionUrl!, type as GameType);
 				} else if (type === "tournament") {
 				}
 			} catch (err) {
@@ -178,8 +180,8 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 			try {
 				if (type === "friend_request") {
 					await apiClient.rejectFriendRequest(senderId);
-				} else if (type === "game") {
-					socket.emitGameResponse(senderId, false, data.actionUrl!);
+				} else if (type === "game" || type === 'pp_game' || type === 'xo_game') {
+					socket.emitGameResponse(senderId, false, data.actionUrl!, type as GameType);
 				} else if (type === "tournament") {
 				}
 			} catch (err) {

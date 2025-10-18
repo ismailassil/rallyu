@@ -1,5 +1,8 @@
 {
   "dashboard": {
+    "common": {
+      "time_spent": "Tiempo Pasado en la Plataforma"
+    },
     "titles": {
       "greetings": "Bienvenido de nuevo,",
       "leaderboard": "Clasificación",
@@ -19,6 +22,503 @@
         "text": "Comenzar",
         "subtext": "Entrenamiento"
       }
+    },
+    "snapshots": "{statKey, select, total_xp {Experiencia total} win_rate {Porcentaje victorias} current_streak {Racha actual} longest_streak {Racha larga} matches {Partidas jugadas} wins {Partidas ganadas} losses {Partidas perdidas} draws {Empates} total_user_score {Puntuación total} max_user_score {Puntuación alta} min_user_score {Puntuación baja} avg_user_score {Puntuación promedio} total_duration {Tiempo total} max_duration {Partida larga} min_duration {Partida corta} avg_duration {Duración promedio} other {Estadística desconocida}}"
+  },
+  "common": {
+    "play": "Jugar",
+    "chat": "Chat",
+    "online": "En línea",
+    "offline": "Desconectado",
+    "victory": "Victoria",
+    "defeat": "Derrota",
+    "draw": "Empate"
+  },
+  "profile": {
+    "common": {
+      "level": "Nivel",
+      "time_spent": "Tiempo Pasado en la Plataforma"
+    },
+    "cards": {
+      "global_rank": {
+        "part1": "Posición",
+        "part2": "mundial"
+      },
+      "win_rate": {
+        "part1": "Porcentaje",
+        "part2": "victorias"
+      },
+      "current_streak": {
+        "part1": "Racha",
+        "part2": "actual"
+      },
+      "games_history": {
+        "title": "Historial de juegos"
+      },
+      "performance": {
+        "title": "Actuación",
+        "cards": {
+          "total_xp": "Experiencia total",
+          "games_played": {
+            "part1": "Partidas",
+            "part2": "jugadas"
+          },
+          "longest_streak": {
+            "part1": "Racha",
+            "part2": "larga"
+          },
+          "wins": "Victorias",
+          "losses": "Derrotas",
+          "draws": "Empates"
+        }
+      }
+    },
+    "buttons": {
+      "edit_profile": "Editar perfil",
+      "view_performance": "Ver rendimiento"
+    }
+  },
+  "relations": {
+    "common": {
+      "chat": "Chat",
+      "sent": "Enviado",
+      "accepted": "Aceptado",
+      "canceled": "Cancelado",
+      "declined": "Rechazado",
+      "unfriended": "Eliminado como amigo",
+      "blocked": "Bloqueado",
+      "unblocked": "Desbloqueado",
+      "add": "Añadir",
+      "cancel": "Cancelar",
+      "accept": "Aceptar",
+      "decline": "Rechazar",
+      "unfriend": "Eliminar amigo",
+      "block": "Bloquear",
+      "unblock": "Desbloquear"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Gestiona las preferencias de tu cuenta y la configuración de seguridad",
+    "general": {
+      "title": "General",
+      "cards": {
+        "personal_infos": {
+          "title": "Información personal",
+          "subtitle": "Actualiza la información de tu perfil y tu dirección de correo electrónico"
+        }
+      }
+    },
+    "users": {
+      "title": "Usuarios",
+      "cards": {
+        "friends": {
+          "title": "Amigos",
+          "subtitle": "Ver y gestionar tus relaciones con todos tus amigos"
+        },
+        "incoming": {
+          "title": "Solicitudes de amistad recibidas",
+          "subtitle": "Ver y rechazar todas las solicitudes de amistad pendientes que has recibido"
+        },
+        "outgoing": {
+          "title": "Solicitudes de amistad enviadas",
+          "subtitle": "Ver y cancelar todas las solicitudes de amistad pendientes que has enviado"
+        },
+        "blocked": {
+          "title": "Usuarios bloqueados",
+          "subtitle": "Ver y desbloquear a todos los usuarios que has bloqueado"
+        }
+      }
+    },
+    "security": {
+      "title": "Seguridad",
+      "cards": {
+        "twoFactor": {
+          "title": "Autenticación en dos pasos",
+          "subtitle": "Añade una capa adicional de seguridad a tu cuenta eligiendo tu método de verificación preferido",
+          "button": "Gestionar 2FA"
+        },
+        "change_password_form": {
+          "title": "Cambiar contraseña",
+          "subtitle": "Modifica tu contraseña actual",
+          "sidecard": {
+            "title": "Requisitos de la contraseña",
+            "text1": "Para crear una nueva contraseña,",
+            "text2": "debes cumplir con todos los siguientes requisitos:",
+            "text3": "Mínimo 8 caracteres",
+            "text4": "Al menos una letra minúscula",
+            "text5": "Al menos una letra mayúscula",
+            "text6": "Al menos un dígito"
+          },
+          "button": "Guardar cambios"
+        },
+        "sessions": {
+          "title": "Navegadores y dispositivos",
+          "subtitle": "Estos navegadores y dispositivos están actualmente conectados a tu cuenta. Elimina cualquier dispositivo no autorizado"
+        },
+        "delete_account": {
+          "title": "Eliminar cuenta",
+          "subtitle": "Esto eliminará permanentemente tu cuenta y todos los datos asociados. Esta acción es irreversible",
+          "button": "Eliminar cuenta"
+        }
+      }
+    }
+  },
+  "performance_dashboard": {
+    "title": "Rendimiento",
+    "subtitle": "Consulta estadísticas detalladas e historial de tus partidas",
+    "common": {
+      "games": "{count, plural, one {# partida} other {# partidas}}",
+      "points": "{count, plural, one {# punto} other {# puntos}}"
+    },
+    "overview": {
+      "title": "Resumen",
+      "cards": {
+        "your_statistics": {
+          "title": "Tus estadísticas",
+          "cards": {
+            "total_matches": {
+              "title": "Partidas totales",
+              "subtitle": ""
+            },
+            "win_rate": {
+              "title": "Porcentaje de victorias",
+              "subtitle": ""
+            },
+            "points_scored": {
+              "title": "Puntos anotados",
+              "subtitle": "diferencial neto"
+            },
+            "time_played": {
+              "title": "Tiempo jugado",
+              "subtitle": "{count, plural, one {# minuto total} other {# minutos totales}}"
+            },
+            "score_records": {
+              "title": "Récords de puntuación",
+              "1st": "Puntuación más alta",
+              "2nd": "Puntuación más baja",
+              "3rd": "Puntuación promedio"
+            },
+            "avg_p_by_outcome": {
+              "title": "Puntuación promedio por resultado",
+              "1st": "Por victoria",
+              "2nd": "Por derrota",
+              "3rd": "Por empate"
+            },
+            "charts": {
+              "win_rate_trends": {
+                "title": "Tendencia del porcentaje de victorias",
+                "subtitle": "Porcentaje de victorias en los últimos 7 días"
+              },
+              "wins_vs_losses": {
+                "title": "Victorias / Derrotas",
+                "subtitle": "Distribución de victorias y derrotas en el tiempo",
+                "common": {
+                  "wins": "Victorias",
+                  "losses": "Derrotas",
+                  "draws": "Empates"
+                }
+              },
+              "avg_score_trends": {
+                "title": "Tendencia de puntuación promedio",
+                "subtitle": "Puntuación promedio en los últimos 7 días"
+              }
+            }
+          }
+        }
+      }
+    },
+    "opponent": {
+      "title": "Contrincante",
+      "cards": {
+        "opp_analysis": {
+          "title": "Análisis de contrincantes",
+          "cards": {
+            "most_wins": {
+              "title": "Más victorias",
+              "subtitle": "{count, plural, one {ganaste # partida} other {ganaste # partidas}}"
+            },
+            "most_freq": {
+              "title": "Más frecuente",
+              "subtitle": "{count, plural, one {# partida} other {# partidas}}"
+            },
+            "most_losses": {
+              "title": "Más derrotas",
+              "subtitle": "{count, plural, one {perdiste # partida} other {perdiste # partidas}}"
+            },
+            "unique_players": {
+              "title": "Contrincantes",
+              "subtitle": "{count, plural, one {# jugador único} other {# jugadores únicos}}"
+            },
+            "score_records": {
+              "title": "Récords de puntuación",
+              "1st": "Puntuación más alta",
+              "2nd": "Puntuación más baja",
+              "3rd": "Puntuación promedio"
+            },
+            "avg_p_by_outcome": {
+              "title": "Puntuación promedio por resultado",
+              "1st": "Por victoria",
+              "2nd": "Por derrota",
+              "3rd": "Por empate"
+            },
+            "charts": {
+              "opp_score_trends": {
+                "title": "Tendencias de la puntuación de los oponentes",
+                "subtitle": "Puntuación de tus oponentes en los últimos 7 días"
+              },
+              "you_vs_opp_score": {
+                "title": "Diferencia de puntuación con los oponentes",
+                "subtitle": "Diferencia entre tu puntuación y la de tus oponentes",
+                "common": {
+                  "you": "Tú",
+                  "your_opponents": "Tus oponentes"
+                }
+              },
+              "opp_avg_score_trends": {
+                "title": "Tendencias de la puntuación promedio de los oponentes",
+                "subtitle": "Puntuación promedio de tus oponentes en los últimos 7 días"
+              }
+            }
+          }
+        }
+      }
+    },
+    "games": {
+      "title": "Partidas",
+      "cards": {
+        "games_history": {
+          "title": "Historial de partidas",
+          "selectors": {
+            "alltime": "Todo el tiempo",
+            "1d": "Último día",
+            "7d": "Últimos 7 días",
+            "30d": "Últimos 30 días",
+            "90d": "Últimos 90 días",
+            "year": "Último año",
+            "alltypes": "Todos los tipos",
+            "pong": "Ping Pong",
+            "xo": "XO"
+          },
+          "pagination": {
+            "page": "Página",
+            "prev": "Anterior",
+            "next": "Siguiente"
+          },
+          "columns": {
+            "opp": "Contrincante",
+            "type": "Tipo",
+            "mode": "Modo",
+            "result": "Resultado",
+            "score": "Puntuación",
+            "duration": "Duración",
+            "date": "Fecha"
+          },
+          "common": {
+            "ranked1v1": "1v1 clasificatorio",
+            "win": "Victoria",
+            "loss": "Derrota",
+            "draw": "Empate"
+          }
+        },
+        "time_analysis": {
+          "title": "Análisis de tiempo",
+          "cards": {
+            "duration_records": {
+              "title": "Récords de duración",
+              "1st": "Partida más larga",
+              "2nd": "Partida más corta",
+              "3rd": "Duración promedio"
+            },
+            "avg_d_by_outcome": {
+              "title": "Duración por resultado",
+              "1st": "Victoria promedio",
+              "2nd": "Derrota promedio",
+              "3rd": "Empate promedio"
+            },
+            "charts": {
+              "time_spent": {
+                "title": "Tiempo jugado",
+                "subtitle": "Tiempo diario jugado en los últimos 7 días"
+              },
+              "games_per_day": {
+                "title": "Partidas por día",
+                "subtitle": "Número de partidas diarias en los últimos 7 días"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "auth": {
+    "common": {
+      "first_name": "Nombre",
+      "last_name": "Apellido",
+      "email": "Correo electrónico",
+      "username": "Nombre de usuario",
+      "password": "Contraseña",
+      "confirm_password": "Confirmar contraseña",
+      "current_password": "Contraseña actual",
+      "new_password": "Nueva contraseña",
+      "forgot_password": "¿Olvidaste tu contraseña?",
+      "reset_password": "Restablecer contraseña",
+      "bio": "Biografía",
+      "max_resends": "Has alcanzado el límite de reenvíos",
+      "retry": "¿Reintentar?",
+      "didnt_receive_code": "¿No recibiste el código?",
+      "resend_code": "Reenviar código",
+      "resend_in": "Reenviar en",
+      "or": "O",
+      "signup": "Registrarse",
+      "signin": "Iniciar sesión",
+      "login": "Iniciar sesión",
+      "remove_pic": "Eliminar foto",
+      "change_pic": "Cambiar foto",
+      "current": "Actual",
+      "continue": "Continuar"
+    },
+    "validation": {
+      "common": {
+        "availability": {
+          "checking": "Comprobando disponibilidad...",
+          "available": "¡está disponible!",
+          "unavailable": "¡ya está ocupado!",
+          "error": "¡Error al comprobar!"
+        }
+      },
+      "first_name": {
+        "required": "El nombre es obligatorio",
+        "min": "El nombre debe tener al menos 2 caracteres",
+        "max": "El nombre debe tener como máximo 15 caracteres",
+        "format": "El nombre solo puede contener letras, espacios, guiones y apóstrofes"
+      },
+      "last_name": {
+        "required": "El apellido es obligatorio",
+        "min": "El apellido debe tener al menos 2 caracteres",
+        "max": "El apellido debe tener como máximo 15 caracteres",
+        "format": "El apellido solo puede contener letras, espacios, guiones y apóstrofes"
+      },
+      "username": {
+        "required": "El nombre de usuario es obligatorio",
+        "min": "El nombre de usuario debe tener al menos 3 caracteres",
+        "max": "El nombre de usuario debe tener como máximo 10 caracteres",
+        "format": "El nombre de usuario solo puede contener letras, números y guiones bajos"
+      },
+      "email": {
+        "required": "El correo electrónico es obligatorio",
+        "invalid": "Por favor, introduce una dirección de correo válida"
+      },
+      "password": {
+        "required": "La contraseña es obligatoria",
+        "min": "La contraseña debe tener al menos 8 caracteres",
+        "lowercase": "La contraseña debe contener al menos una letra minúscula",
+        "uppercase": "La contraseña debe contener al menos una letra mayúscula",
+        "digit": "La contraseña debe contener al menos un dígito",
+        "no_match": "Las contraseñas no coinciden",
+        "same_as_current": "La nueva contraseña debe ser diferente a la actual"
+      },
+      "current_password": {
+        "required": "La contraseña actual es obligatoria"
+      },
+      "confirm_password": {
+        "required": "Por favor, confirma tu contraseña"
+      },
+      "bio": {
+        "required": "La biografía es obligatoria",
+        "min": "La biografía debe tener al menos 3 caracteres",
+        "max": "La biografía debe tener como máximo 50 caracteres"
+      },
+      "phone": {
+        "required": "El número de teléfono es obligatorio",
+        "format": "Por favor, introduce un número de teléfono válido (p. ej., +212659871356)"
+      },
+      "code": {
+        "required": "El código de verificación es obligatorio",
+        "format": "El código debe tener exactamente 6 dígitos"
+      }
+    },
+    "login": {
+      "title": "¡Bienvenido de nuevo!",
+      "subtitle": "Introduce tus datos para iniciar sesión",
+      "instruction": "¿Aún no tienes una cuenta?"
+    },
+    "signup": {
+      "title": "Crear una cuenta",
+      "subtitle": "Introduce tus datos para registrarte",
+      "instruction": "¿Ya tienes una cuenta?"
+    },
+    "twoFactorAtLogin": {
+      "overview": {
+        "title": "Autenticación en dos pasos",
+        "subtitle": "Selecciona uno de los siguientes métodos para completar la verificación",
+        "cards": {
+          "title": "{method, select, TOTP {Aplicación de autenticación} EMAIL {Correo electrónico} SMS {SMS} other {Método de autenticación}}",
+          "subtitle": "{method, select, TOTP {Usando Google Authenticator, Authy...} EMAIL {Recibe códigos por correo electrónico} SMS {Recibe códigos por SMS} other {Método de autenticación}}"
+        }
+      },
+      "verifyCode": {
+        "title": "Autenticación en dos pasos",
+        "subtitle": "{method, select, TOTP {Ingresa el código de 6 dígitos de tu aplicación de autenticación} EMAIL {Hemos enviado un código de 6 dígitos a tu correo electrónico} SMS {Hemos enviado un código de 6 dígitos por SMS} other {Ingresa el código de 6 dígitos para completar la verificación}}",
+        "cannot_access": "{method, select, TOTP {¿No puedes acceder a tu aplicación de autenticación?} EMAIL {¿No puedes acceder a tu correo electrónico?} SMS {¿No puedes acceder a tu teléfono?} other {¿No puedes acceder a este método?}}",
+        "other_method": "Probar otros métodos de verificación"
+      }
+    },
+    "twoFactorManager": {
+      "overview": {
+        "title": "Autenticación en dos pasos",
+        "subtitle": "Añade una capa adicional de seguridad a tu cuenta eligiendo tu método de verificación preferido",
+        "cards": {
+          "title": "{method, select, TOTP {Aplicación de autenticación} EMAIL {Correo electrónico} SMS {SMS} other {Método de autenticación}}",
+          "subtitle": "{method, select, TOTP {Usando Google Authenticator, Authy...} EMAIL {Recibe códigos por correo electrónico} SMS {Recibe códigos por SMS} other {Método de autenticación}}"
+        },
+        "note": {
+          "title": "Recomendado",
+          "text": "Las aplicaciones de autenticación ofrecen la mayor seguridad y funcionan sin conexión a internet."
+        }
+      },
+      "done": {
+        "title": "Autenticación en dos pasos",
+        "subtitle": "Configuración completada",
+        "2nd_subtitle": "Tu cuenta ahora está protegida con autenticación en dos pasos.",
+        "buttons": {
+          "goback": "Volver al gestor de 2FA",
+          "continue": "Ir al panel de control"
+        }
+      }
+    },
+    "verification": {
+      "input": {
+        "title": "{method, select, TOTP {Aplicación de autenticación} EMAIL {Correo electrónico} SMS {SMS} other {Método de autenticación}}",
+        "subtitle": "{method, select, TOTP {Escanea el código QR con tu aplicación de autenticación} EMAIL {Te enviaremos un código de verificación de 6 dígitos a tu correo electrónico} SMS {Te enviaremos un código de verificación de 6 dígitos a tu teléfono} other {Te enviaremos un código de verificación de 6 dígitos}}",
+        "cant_scan_qr": "¿No puedes escanearlo? Ingresa este código manualmente:"
+      },
+      "verifyCode": {
+        "title": "{method, select, TOTP {Aplicación de autenticación} EMAIL {Correo electrónico} SMS {SMS} other {Método de autenticación}}",
+        "subtitle": "{method, select, TOTP {Ingresa el código de 6 dígitos de tu aplicación de autenticación} EMAIL {Hemos enviado un código de 6 dígitos a tu correo electrónico} SMS {Hemos enviado un código de 6 dígitos por SMS} other {Ingresa el código de 6 dígitos para completar la verificación}}"
+      },
+      "note": {
+        "title": "Nota",
+        "first": "Actualizar este correo reemplazará la información de contacto existente en tu cuenta.",
+        "second": "Asegúrate de que la nueva información sea correcta, ya que se utilizará para todas las comunicaciones y verificaciones futuras."
+      }
+    },
+    "reset_password": {
+      "forgotPassword": {
+        "title": "¿Olvidaste tu contraseña?",
+        "subtitle": "Hemos enviado un código de 6 dígitos a tu correo electrónico",
+        "instruction": "¿Recuperaste tu contraseña?"
+      },
+      "verifyCode": {
+        "title": "¡Revisa tu correo electrónico!",
+        "subtitle": "Hemos enviado un código de 6 dígitos a tu correo electrónico",
+        "instruction": "¿Recuperaste tu contraseña?"
+      },
+      "setNewPassword": {
+        "title": "Crear una nueva contraseña",
+        "subtitle": "Introduce y confirma tu nueva contraseña",
+        "instruction": "¿Recuperaste tu contraseña?"
+      }
     }
   },
   "headers": {
@@ -26,7 +526,7 @@
       "titles": {
         "profile": "Perfil",
         "settings": "Configuración",
-        "Logout": "Cerrar sesión"
+        "logout": "Cerrar sesión"
       }
     },
     "notification": {

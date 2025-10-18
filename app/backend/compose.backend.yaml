@@ -17,8 +17,6 @@ services:
     image: rallyu/api-gateway:v1.0
     container_name: api-gateway
     restart: always
-    # ports:
-    #   - 4025:4025
     networks:
       - backend
       - web-app
@@ -83,6 +81,8 @@ services:
     image: rallyu/ms-notif:v1.0
     container_name: ms-notif
     restart: always
+    volumes:
+      - ./ms-notif/database/database.sqlite:/app/database/database.sqlite
     networks:
       - backend
     env_file:
@@ -94,7 +94,8 @@ services:
           action: sync
           target: /app
           ignore:
-            - node_modules/
+            - ./ms-notif/node_modules/
+            - ./ms-notif/database/
         - path: ./ms-notif/package.json
           action: rebuild
 
@@ -201,8 +202,8 @@ services:
     restart: always
     networks:
       - backend
-    # ports:
-    #   - 6379:6379
+    ports:
+      - 6379:6379
     env_file:
       - .env
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
@@ -230,8 +231,8 @@ services:
       - backend
     env_file:
       - .env
-    # ports:
-    #   - 4222:4222
+    ports:
+      - 4222:4222
     command: --user ${NATS_USER} --pass ${NATS_PASSWORD} -js -m 8222 -n internal-server
     healthcheck:
       test: wget http://localhost:8222/healthz -q -S -O -

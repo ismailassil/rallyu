@@ -26,8 +26,6 @@ class NotifRepository {
 			const row = fastify.database
 				.prepare(`SELECT * FROM messages WHERE id = ?`)
 				.get(info.lastInsertRowid);
-
-			fastify.log.info(`✅ msg registration done`);
 			return row;
 		} catch (error) {
 			fastify.log.error("3- DB Error: " + error);
@@ -36,8 +34,6 @@ class NotifRepository {
 	}
 
 	async getMessages(receiver_id: number, page: number): Promise<RAW_NOTIFICATION[]> {
-		fastify.log.info(`receiver_id: ${receiver_id} + page: ${page}`);
-
 		const LIMIT = 10;
 		const offset = (page - 1) * LIMIT;
 
@@ -54,8 +50,6 @@ class NotifRepository {
 			if (!rows || rows.length === 0) {
 				return [];
 			}
-
-			fastify.log.info("✅ Msgs found");
 			return rows;
 		} catch (error) {
 			fastify.log.error("4- DB Error: " + error);
@@ -194,10 +188,10 @@ class NotifRepository {
 		}
 	}
 
-	async getNotifIdByActionURL(actionUrl: string): Promise<{ id: number }> {
+	async getNotifIdByActionURL(actionUrl: string): Promise<RAW_NOTIFICATION> {
 		try {
 			const stmt = fastify.database.prepare(`
-				SELECT id FROM messages WHERE action_url = ?
+				SELECT * FROM messages WHERE action_url = ?
 			`);
 
 			const row = stmt.get(actionUrl);
@@ -239,7 +233,7 @@ class NotifRepository {
 			const res = stmt.run(receiverId, type);
 
 			if (res.changes === 0) {
-				fastify.log.info("NO AFFECTION");
+				fastify.log.warn("NO AFFECTION");
 			}
 		} catch (error) {
 			fastify.log.error("DB ERROR: " + error);

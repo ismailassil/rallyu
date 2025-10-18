@@ -6,6 +6,7 @@ import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import LoadingComponent, { EmptyComponent } from '@/app/(auth)/components/UI/LoadingComponents';
 import useAPICall from '@/app/hooks/useAPICall';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 export interface Session {
 	session_id: string;
@@ -25,7 +26,7 @@ export interface Session {
 function DeviceIcon({ type }: { type: string }) {
 	const iconClass = "h-10 w-10 sm:h-11 sm:w-11";
 	const lowerType = type.toLowerCase();
-	
+
 	if (lowerType === 'mobile')
 		return <Smartphone className={iconClass} />;
 	if (lowerType === 'tablet')
@@ -34,6 +35,8 @@ function DeviceIcon({ type }: { type: string }) {
 }
 
 function SessionCard({ session, onRevoke }: { session: Session; onRevoke: (id: string) => void }) {
+	const t = useTranslations('');
+
 	const isCurrent = session.is_current;
 	const lastActive = relativeTimeAgoFromNow(session.updated_at);
 
@@ -51,7 +54,7 @@ function SessionCard({ session, onRevoke }: { session: Session; onRevoke: (id: s
 								</h2>
 								{isCurrent && (
 									<span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded whitespace-nowrap">
-										Current
+										{t('auth.common.current')}
 									</span>
 								)}
 							</div>
@@ -71,7 +74,7 @@ function SessionCard({ session, onRevoke }: { session: Session; onRevoke: (id: s
 						<LogOut className="h-5 w-5 sm:h-6 sm:w-6" />
 					</button>
 				</div>
-				
+
 				<div className="flex items-center justify-between text-xs pl-[52px] sm:pl-[58px]">
 					<div className="flex gap-1.5 items-center min-w-0 flex-1">
 						<MapPin className="h-3.5 w-3.5 text-white/75 flex-shrink-0" />
@@ -95,7 +98,7 @@ function SessionCard({ session, onRevoke }: { session: Session; onRevoke: (id: s
 							</h2>
 							{isCurrent && (
 								<span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded whitespace-nowrap">
-									Current
+									{t('auth.common.current')}
 								</span>
 							)}
 						</div>
@@ -137,7 +140,7 @@ export default function Sessions() {
 	const {
 		executeAPICall
 	} = useAPICall();
-	
+
 	const [sessions, setSessions] = useState<Session[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);

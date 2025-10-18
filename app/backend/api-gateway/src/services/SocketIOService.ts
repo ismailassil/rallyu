@@ -9,6 +9,8 @@ class SocketIOService {
 	private readonly fastify: FastifyInstance;
 	private readonly options: socketioOpts;
 
+	private onlineUsers = new Map<string, number>();
+
 	constructor(fastify: FastifyInstance, opts: socketioOpts) {
 		this.fastify = fastify;
 		this.options = opts;
@@ -71,15 +73,59 @@ class SocketIOService {
 		const userId: string = socket.data.userId;
 		this.fastify.log.info(`[SocketIO] Client Connected: '${userId}:${socket.id}'`);
 
+		await this.handleOnlineStatus(socket);
+
 		await socket.join(userId);
 	}
 
 	private async handleDisconnection(socket: Socket) {
 		const userId: string = socket.data.userId;
-
 		this.fastify.log.info(`[SocketIO] Disconnected: '${userId}:${socket.id}'`);
 
+		await this.handleOfflineStatus(socket);
+
 		await socket.leave(userId);
+	}
+
+	// private async handleRequestOnlineUsersState(socket: Socket) {
+
+	// }
+
+	private async handleOnlineStatus(socket: Socket) {
+		const userId: string = socket.data.userId;
+		// this.fastify.log.info(`[SocketIO] User is online: '${userId}:${socket.id}'`);
+
+		// add him to online map
+		const currentCount = this.onlineUsers.get(userId) || 0;
+		this.onlineUsers.set(userId, currentCount + 1);
+
+		// if first connection notify other users
+		if (currentCount === 0)
+			socket.broadcast.emit('is_online', { userId });
+
+		// send a full list as first status
+		socket.on('request_online_users_list', () => {
+			socket.emit('online_users_list', Array.from(this.onlineUsers.keys()));
+		});
+	}
+
+	private async handleOfflineStatus(socket: Socket) {
+		const userId: string = socket.data.userId;
+		// this.fastify.log.info(`[SocketIO] User is offline: '${userId}:${socket.id}'`);
+
+		// remove him from online map
+		const currentCount = this.onlineUsers.get(userId) || 0;
+		const newCount = Math.max(0, currentCount - 1);
+
+		if (newCount === 0) {
+			// user has no more connections
+			this.onlineUsers.delete(userId);
+			// notify all that this user went offline
+			this.io.emit('is_offline', { userId });
+		} else {
+			// user has other connections
+			this.onlineUsers.set(userId, newCount);
+		}
 	}
 
 	private setupMiddleware() {

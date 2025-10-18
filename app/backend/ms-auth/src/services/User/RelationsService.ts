@@ -1,7 +1,19 @@
 // import RelationsRepository from "../repositories/relationsRepository";
 import RelationsRepository from "../../repositories/RelationsRepository";
 import UserRepository from "../../repositories/UserRepository";
-import { AlreadyFriendsError, CannotAcceptRequestError, CannotBlockError, CannotCancelRequestError, CannotRejectRequestError, CannotSendFriendRequestError, CannotUnfriendError, FriendRequestAlreadySentError, InternalServerError, NoPendingRequestError, UserNotFoundError, UsersNotFoundError } from "../../types/auth.types";
+import { InternalServerError } from "../../types/exceptions/AAuthError";
+import {
+	AlreadyFriendsError,
+	CannotAcceptRequestError,
+	CannotBlockError,
+	CannotCancelRequestError,
+	CannotRejectRequestError,
+	CannotSendFriendRequestError,
+	CannotUnfriendError,
+	FriendRequestAlreadySentError,
+	NoPendingRequestError,
+} from '../../types/exceptions/relations.exceptions';
+import { UsersNotFoundError } from "../../types/exceptions/user.exceptions";
 
 class RelationsService {
 	constructor(
@@ -13,11 +25,11 @@ class RelationsService {
 	async getFriends(userID: number) {
 		return await this.relationsRepository.findAllFriends(userID);
 	}
-	
+
 	async getIncomingFriendRequests(userID: number) {
 		return await this.relationsRepository.findIncomingFriendRequests(userID);
 	}
-	
+
 	async getOutgoingFriendRequests(userID: number) {
 		return await this.relationsRepository.findOutgoingFriendRequests(userID);
 	}
@@ -25,7 +37,7 @@ class RelationsService {
 	async getIncomingBlocks(userID: number) {
 		return await this.relationsRepository.findUsersWhoBlocked(userID);
 	}
-	
+
 	async getOutgoingBlocks(userID: number) {
 		return await this.relationsRepository.findBlockedUsers(userID);
 	}
@@ -34,11 +46,11 @@ class RelationsService {
 		if (userID === targetUserID)
 			return null;
 
-		const currentRelationship = 
+		const currentRelationship =
 			await this.relationsRepository.findBetweenUsers(userID, targetUserID);
 		if (!currentRelationship)
 			return 'NONE';
-		
+
 		switch (currentRelationship.relation_status) {
 			case 'ACCEPTED':
 				return 'FRIENDS';
@@ -48,7 +60,7 @@ class RelationsService {
 				return 'NONE';
 		}
 	}
-	
+
 	/*----------------------------------------------- REQUESTS -----------------------------------------------*/
 	async sendFriendRequest(fromUserID: number, toUserID: number) {
 		try {
@@ -92,21 +104,21 @@ class RelationsService {
 				this.userRepository.findOne(fromUserID),
 				this.userRepository.findOne(toUserID)
 			]);
-	
+
 			if (!fromUser || !targetUser)
 				throw new UsersNotFoundError();
-	
+
 			const existingTwoWayRelation = await this.relationsRepository.findBetweenUsers(
 				fromUserID,
 				toUserID
 			);
-	
+
 			if (!existingTwoWayRelation || existingTwoWayRelation.relation_status !== 'PENDING')
 				throw new NoPendingRequestError('No pending request to this user to cancel');
-			
+
 			if (existingTwoWayRelation.requester_user_id !== fromUserID)
 				throw new CannotCancelRequestError('Only the sender can cancel the request');
-			
+
 			await this.relationsRepository.delete(existingTwoWayRelation.id);
 		} catch (err) {
 			if (err instanceof UsersNotFoundError ||
@@ -124,10 +136,10 @@ class RelationsService {
 				this.userRepository.findOne(fromUserID),
 				this.userRepository.findOne(toUserID)
 			]);
-	
+
 			if (!fromUser || !targetUser)
 				throw new UsersNotFoundError();
-	
+
 			const existingTwoWayRelation = await this.relationsRepository.findBetweenUsers(
 				fromUserID,
 				toUserID
@@ -155,7 +167,7 @@ class RelationsService {
 				this.userRepository.findOne(fromUserID),
 				this.userRepository.findOne(toUserID)
 			]);
-	
+
 			if (!fromUser || !targetUser)
 				throw new UsersNotFoundError();
 
@@ -169,7 +181,7 @@ class RelationsService {
 
 			if (existingTwoWayRelation.receiver_user_id !== toUserID)
 				throw new CannotRejectRequestError('Only the receiver can reject the request');
-			
+
 			await this.relationsRepository.delete(existingTwoWayRelation.id);
 		} catch (err) {
 			if (err instanceof UsersNotFoundError ||
@@ -180,7 +192,7 @@ class RelationsService {
 			throw new InternalServerError('Failed to reject friend request');
 		}
 	}
-	
+
 	async blockUser(blockerID: number, blockedID: number) {
 		try {
 			const [fromUser, targetUser] = await Promise.all([
@@ -245,7 +257,7 @@ class RelationsService {
 			throw new InternalServerError('Failed to unblock user');
 		}
 	}
-	
+
 	async unfriend(unfrienderUserID: number, unfriendedUserID: number) {
 		try {
 			const [fromUser, targetUser] = await Promise.all([

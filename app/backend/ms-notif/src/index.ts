@@ -11,7 +11,7 @@ import fastifyRedis from '@fastify/redis';
 const PORT = parseInt(process.env.PORT || '');
 const routesPrefix = { prefix: '/notif' };
 
-fastify.decorate('gameUsers', new Map<number, NodeJS.Timeout>())
+fastify.decorate('gameUsers', new Map<string, NodeJS.Timeout>())
 // fastify.register(fastifyPrintRoutes);
 fastify.register(schemasPlugin);
 fastify.register(databasePlugin);

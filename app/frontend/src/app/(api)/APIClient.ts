@@ -3,7 +3,8 @@ import axios, { AxiosInstance } from 'axios';
 import { UserService } from './services/UserService';
 import { AuthService } from './services/AuthService';
 import { MfaService } from './services/MfaService';
-import { GameType } from '../(onsite)/game/types/PongTypes';
+import { VerifyService } from './services/VerifyService';
+import { GameType } from '../(onsite)/game/types/types';
 
 export type APIError = {
 	code: string;
@@ -46,6 +47,7 @@ export class APIClient {
 	public user: UserService;
 	public auth: AuthService;
 	public mfa: MfaService;
+	public verify: VerifyService;
 
 	constructor(baseURL: string) {
 		this.client = axios.create({
@@ -55,8 +57,9 @@ export class APIClient {
 
 		// Initialize services
 		this.user = new UserService(this.client);
-		this.auth = new AuthService(this.client);
+		this.auth = new AuthService(this.client, accessToken => this.setAccessToken(accessToken));
 		this.mfa = new MfaService(this.client);
+		this.verify = new VerifyService(this.client);
 
 		this.client.interceptors.request.use(config => {
 			console.log('in interceptor, accessToken: ', this.accessToken);
@@ -130,7 +133,7 @@ export class APIClient {
 	}
 
 	setAccessToken(token: string) {
-		console.log('Setting accessToken: ', token);
+		console.log('We are setting accessToken in the apiClient');
 		this.accessToken = token;
 	}
 
@@ -229,21 +232,21 @@ export class APIClient {
 
 	/*-------------------------------------- 2FA --------------------------------------*/
 
-	async mfaEnabledMethods() {
-		return this.mfa.mfaEnabledMethods();
-	}
+	// async mfaEnabledMethods() {
+	// 	return this.mfa.mfaEnabledMethods();
+	// }
 
-	async mfaDisableMethod(method: string) {
-		return this.mfa.mfaDisableMethod(method);
-	}
+	// async mfaDisableMethod(method: string) {
+	// 	return this.mfa.mfaDisableMethod(method);
+	// }
 
-	async mfaSetupInit(method: string) {
-		return this.mfa.mfaSetupInit(method);
-	}
+	// async mfaSetupInit(method: string) {
+	// 	return this.mfa.mfaSetupInit(method);
+	// }
 
-	async mfaSetupVerify(token: string, code: string) {
-		return this.mfa.mfaSetupVerify(token, code);
-	}
+	// async mfaSetupVerify(token: string, code: string) {
+	// 	return this.mfa.mfaSetupVerify(token, code);
+	// }
 
 	/*--------------------------------- Authentication ---------------------------------*/
 
@@ -333,11 +336,19 @@ export class APIClient {
 		return this.auth.resetPassword(token, newPassword);
 	}
 
+	async resetPasswordResend(token: string) {
+		return this.auth.resetPasswordResend(token);
+	}
+
+	// async resetPasswordResend(token: string) {
+	// 	return this.auth.resetPasswordResend(token);
+	// }
+
 	async fetchPlayerStatus(user_id: number) : Promise<RemotePlayerStatus>{
 		const res = await this.client.get(`/game/user/${user_id}/status`);
 		return res.data;
 	}
-	
+
 	async fetchGameRoomStatus(room_id: string) : Promise<GameRoomStatus> {
 		const res = await this.client.get(`/game/room/${room_id}/status`);
 		return res.data;
@@ -364,23 +375,17 @@ export class APIClient {
 	}
 
 	private classifyError(err: any) : APIError {
-		try {
-			if (!err.response) {
-				return {
-					code: 'NETWORK_ERR',
-					message: 'Network Error - Try again later!'
-				};
-			}
-
+		if (!err.response) {
 			return {
-				code: err.response.data.error.code || 'ERROR',
-				message: err.response.data.error.message || 'Something Went Wrong! - Coming from ClassifyError'
-			};
-		} catch {
-			return {
-				code: 'ERROR',
-				message: 'Something Went Wrong! - Coming from ClassifyError'
+				code: 'NETWORK_ERR',
+				message: 'Network Error - Try again later!'
 			};
 		}
+
+		return {
+			code: err.response.data.error.code || 'ERROR',
+			message: err.response.data.error.message || 'Something Went Wrong! - Coming from ClassifyError',
+			details: err
+		};
 	}
 }

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import pino from 'pino';
-import { ServiceUnavailable } from '../../types/auth.types';
+import { ServiceUnavailableError } from '../../types/exceptions/AAuthError';
 const qrcodeinterminal = require('qrcode-terminal');
 
 class WhatsAppService {
@@ -111,10 +111,14 @@ class WhatsAppService {
 	async sendMessage(receiverWANumber: string, message: string) {
 		if (!this.WASocket || !this.isReady) {
 			this.logger.error('[SMS] Service is not running yet!');
-			throw new ServiceUnavailable('SMS service is not available at the moment');
+			throw new ServiceUnavailableError('SMS service is not available at the moment');
 		}
 
-		const jid = `${receiverWANumber}@s.whatsapp.net`;
+		const sanitizedNumber = receiverWANumber.startsWith('+')
+			? receiverWANumber.slice(1)
+			: receiverWANumber;
+
+		const jid = `${sanitizedNumber}@s.whatsapp.net`;
 
 		this.logger.info({ jid }, '[SMS] Sending WhatsApp message');
 
@@ -122,7 +126,7 @@ class WhatsAppService {
 			await this.WASocket.sendMessage(jid, { text: message });
 		} catch (err) {
 			this.logger.error('[SMS] WhatsApp service error!', err);
-				throw new ServiceUnavailable('SMS service is not available at the moment');
+			throw new ServiceUnavailableError('SMS service is not available at the moment');
 		}
 
 		this.logger.info({ jid }, '[SMS] WhatsApp message sent');
