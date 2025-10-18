@@ -216,10 +216,6 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 	);
 
 	useEffect(() => {
-		socket.on("notification_notify", handleNotify);
-		socket.on("notification_update_action", handleUpdate);
-		socket.on("notification_game_init", handleGameInit);
-
 		socket.on("notification", handleAll);
 
 		return () => {
