@@ -89,7 +89,9 @@ class RemotePong extends APong {
                     this.proxy.disconnect();
                     this.state.players[0].score = data.score[this.state.index!]
                     this.state.players[1].score = data.score[this.state.index! ^ 1]
-                    this.eventHandlers?.updateOverlayStatus(data.result)
+                    const result = data.result === 'win' ? 'You Won!' : data.result === 'loss' ? 'You lost' : 'Draw'
+                    this.eventHandlers?.updateDisplayedResult!(result);
+                    this.eventHandlers?.updateOverlayStatus('gameover');
                     this.eventHandlers?.updateTimer!(0);
                     break;
             }

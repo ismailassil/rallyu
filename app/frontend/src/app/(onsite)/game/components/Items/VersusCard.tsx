@@ -4,6 +4,7 @@ import inter from "@/app/fonts/inter";
 import GameTimer from "./GameTimer";
 import { useEffect, useRef, useState } from "react";
 import { Flag, Unplug } from "lucide-react";
+import { AnimatePresence, motion } from 'framer-motion'
 import unicaOne from "@/app/fonts/unicaOne";
 
 interface PlayerInfo {
@@ -62,7 +63,7 @@ const PlayerCard = ({ side, info, disconnect, score } : { side: string, info: Pl
     )
 }
 
-const ResignButton = ({ handleResign, resignable }: { handleResign?: () => void, resignable?: boolean }) => {
+const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
     const [ popup, setPopup ] = useState(false);
     const popupRef = useRef<HTMLDivElement | null>(null);
 
@@ -83,10 +84,17 @@ const ResignButton = ({ handleResign, resignable }: { handleResign?: () => void,
 
 
     return (
-        <div ref={popupRef} className="relative inline-block mt-1">
+        <motion.div
+			initial={{ opacity: 0}}
+			animate={{ opacity: 1}}
+            exit={{ opacity: 0 }}
+			transition={{ duration: 0.3 }}
+			className="relative inline-block mt-1"
+            ref={popupRef}
+        >
             <button 
                 onClick={() => setPopup(true)}
-                className={`inline-flex rounded-xl ${resignable ? 'cursor-pointer' : 'pointer-events-none hidden'} shadow-black/40 shadow-xl bg-red-700
+                className={`inline-flex rounded-xl cursor-pointer shadow-black/40 shadow-xl bg-red-700
                         transition-all duration-200 opacity-50 hover:opacity-80 ${popup ? 'opacity-80' : 'opacity-50'} hover:scale-103 active:scale-96 py-1 px-2 gap-1`}
             >
                 <Flag className="aspect-square w-[17px]" />
@@ -115,7 +123,7 @@ const ResignButton = ({ handleResign, resignable }: { handleResign?: () => void,
                     >No</button>
                 </div>
             </div>
-        </div>
+        </motion.div>
 
     );
 }
@@ -169,7 +177,9 @@ const VersusCard = (
         <div className="flex min-h-0 w-full justify-between ">
             <div className="flex w-full min-w-0 gap-3 justify-start">
                 <PlayerCard side='left' info={loggedInUserInfo} />
-                <ResignButton handleResign={handleResign} resignable={resignSwitch} />
+                <AnimatePresence>
+                    {resignSwitch && <ResignButton handleResign={handleResign} />}
+                </AnimatePresence>
                 {score && <span className={`self-center ml-auto mr-10 text-5xl lg:text-6xl font-extrabold font-funnel-display`}>{score[0]}</span>}
             </div>
             <div className={`flex flex-col ${round ? 'justify-between py-2' : 'justify-end'} items-center h-full`}>
