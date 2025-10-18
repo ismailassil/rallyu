@@ -81,8 +81,9 @@ const GameField = () => {
                             disconnect={oppdisconnect}
                             round={currentRound}
                             score={score}
+                            resignSwitch={overlayStatus === 'gameover' ? false : true}
                         />
-                        <div className="relative w-auto h-auto ">
+                        <div className="relative w-auto h-auto">
                             <TicTacToe tictactoe={tictactoe.current} board={cells} />
                             <Overlay status={overlayStatus} result={result} round={currentRound} />
                         </div>

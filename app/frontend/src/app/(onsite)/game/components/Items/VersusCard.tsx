@@ -169,7 +169,7 @@ const VersusCard = (
         <div className="flex min-h-0 w-full justify-between ">
             <div className="flex w-full min-w-0 gap-3 justify-start">
                 <PlayerCard side='left' info={loggedInUserInfo} />
-                <ResignButton handleResign={handleResign} resignable={true} />
+                <ResignButton handleResign={handleResign} resignable={resignSwitch} />
                 {score && <span className={`self-center ml-auto mr-10 text-5xl lg:text-6xl font-extrabold font-funnel-display`}>{score[0]}</span>}
             </div>
             <div className={`flex flex-col ${round ? 'justify-between py-2' : 'justify-end'} items-center h-full`}>

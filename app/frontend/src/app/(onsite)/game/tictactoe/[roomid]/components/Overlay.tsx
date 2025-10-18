@@ -62,7 +62,7 @@ const Countdown = ({ round }: { round: number }) => {
                     initial={{ scale: 0.4, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.4, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
                     className={`text-5xl lg:text-7xl font-funnel-display font-bold`}
                 >
                     {sequence[index]}
@@ -78,7 +78,7 @@ const Overlay = ({ status, result, round }: { status: string, result: string | n
 
     return (
         <div className={`absolute inset-0 w-full ${status !== 'gameover' && 'pointer-events-none'} h-full`}>
-            <div className={`absolute inset-0  rounded-lg transition-all duration-150 w-full h-full ${(status === 'gameover' || status === 'countdown') && 'bg-neutral-800/30'}`}>
+            <div className={`absolute inset-0  rounded-lg transition-all duration-150 w-full h-full`}>
                 {result && <GameOver display={result} />}
                 {status === 'countdown' && <Countdown round={round} />}
             </div>
