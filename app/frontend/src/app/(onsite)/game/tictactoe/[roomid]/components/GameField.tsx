@@ -22,6 +22,7 @@ const GameField = () => {
     const [ overlayStatus, setOverlayStatus ] = useState('none');
     const [ currentRound, setCurrentRound ] = useState(1);
     const [ score, setScore ] = useState<[number, number]>([0, 0]);
+    const [ result, setResult ] = useState<string | null>(null);
 	const [cells, setCells] = useState<XOSign[]>(Array(9).fill(''));
 	const tictactoe = useRef<RemoteXO>(new RemoteXO(socketProxy.current, {
         updateTimer: setTimeLeft,
@@ -29,7 +30,8 @@ const GameField = () => {
         updateConnection: setOppdisconnect,
         updateRound: setCurrentRound,
         updateBoard: setCells,
-        updateScore: setScore
+        updateScore: setScore,
+        updateDisplayedResult: setResult
     }));
 
     useEffect(() => {
@@ -80,9 +82,9 @@ const GameField = () => {
                             round={currentRound}
                             score={score}
                         />
-                        <div className="relative w-full h-auto">
+                        <div className="relative w-auto h-auto ">
                             <TicTacToe tictactoe={tictactoe.current} board={cells} />
-                            {/* <Overlay status={overlayStatus} /> */}
+                            <Overlay status={overlayStatus} result={result} round={currentRound} />
                         </div>
                     </div>
             )}

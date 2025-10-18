@@ -45,6 +45,7 @@ export interface EventHandlers {
 	updateRound?: React.Dispatch<React.SetStateAction<number>>;
 	updateBoard?: React.Dispatch<React.SetStateAction<XOSign[]>>;
 	updateScore?: React.Dispatch<React.SetStateAction<[number, number]>>; 
+	updateDisplayedResult?: React.Dispatch<React.SetStateAction<string | null>>; 
 
 }
 

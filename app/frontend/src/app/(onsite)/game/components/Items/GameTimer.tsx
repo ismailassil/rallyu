@@ -4,7 +4,6 @@ const GameTimer = ({ time, pause, className }: { time: number, pause?: boolean |
     const [displayTime, setDisplayTime] = useState(time);
 
     useEffect(() => {
-        console.log('Displayed Time', displayTime);
         setDisplayTime(time);
     }, [time]);
 

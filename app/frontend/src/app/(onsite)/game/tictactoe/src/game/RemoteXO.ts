@@ -18,9 +18,7 @@ class RemoteXO {
     }
 
     setupCommunications = (): (() => void) => {
-        console.log('Comms set up');
         return this.proxy.subscribe((data: any): void => {
-            console.log("Data form tictactoe: ", data);
             switch (data.type) {
                 case 'ready':
                     this.state.mySign = data.sign
@@ -43,7 +41,6 @@ class RemoteXO {
                     // this.eventHandlers?.updateTimer!(data.t);
                     break;
                 case 'countdown':
-                    this.state.cells.fill('');
 					this.state.currentRound = data.round;
                     this.status = 'countdown';
                     this.eventHandlers?.updateOverlayStatus(this.status);
@@ -51,6 +48,7 @@ class RemoteXO {
 					this.eventHandlers?.updateTimer(prev => prev === data.duration ? prev - 1 : data.duration);
 					break;
                 case 'round_start':
+                    this.state.cells.fill('');
                     this.state.currentRound = data.round;
                     this.state.currentPlayer = data.currentPlayer
                     this.status = this.state.currentPlayer === this.state.mySign ? 'play' : 'wait';
@@ -74,7 +72,10 @@ class RemoteXO {
                     this.status = 'gameover';
 					this.state.score = data.score
 					this.eventHandlers?.updateScore!(data.score);
-					this.eventHandlers?.updateOverlayStatus(data.winner);
+					this.eventHandlers?.updateOverlayStatus(this.status)
+                    const displayedResult = data.winner === this.state.mySign ? 'You Won!' : data.winner === 'draw' ? 'Draw' : data.winner === 'X' ? `Cross Wins` : 'Circle Wins'
+                    this.eventHandlers?.updateDisplayedResult!(displayedResult);
+					this.eventHandlers?.updateTimer(0);
 					this.proxy.disconnect();
 					break;
             }

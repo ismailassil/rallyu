@@ -139,10 +139,10 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		forfeiter.score = 0;
 	
 		this.broadcastToPlayers({
-			type: 'forfeit',
+			type: 'gameover',
 			forfeitingPlayer: forfeiter.sign,
 			winner: winner.sign,
-			finalScores: this.players.map(p => p.score),
+			score: this.players.map(p => p.score),
 		});
 	
 		setTimeout(() => {
@@ -202,7 +202,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.broadcastToPlayers({
 			type: 'round_result',
 			winner: winner,
-			scores: this.players.map(p => p.score),
+			score: this.players.map(p => p.score),
 			currentRound: this.state.currentRound
 		});
 
@@ -239,7 +239,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.broadcastToPlayers({
 			type: 'gameover',
 			winner: overallWinner,
-			finalScores: this.players.map(p => p.score)
+			score: this.players.map(p => p.score)
 		});
 
 		closeRoom(this, 1003, 'GameOver');

@@ -131,7 +131,6 @@ const VersusCard = (
     const [loggedInUserInfo, setLoggedInUserInfo] = useState<PlayerInfo | null>(null);
     const [opponentInfo, setOpponentInfo] = useState<PlayerInfo | null>(null);
 
-    console.log('newTime', timeLeft);
 
     useEffect(() => {
         (async () => {
