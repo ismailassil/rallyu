@@ -23,8 +23,7 @@ export default function FriendsList() {
 		async function fetchFriends() {
 			try {
 				setIsLoading(true);
-				const data = await executeAPICall(() => apiClient.getAllFriends());
-				// const data = await apiClient.getAllFriends();
+				const data = await executeAPICall(() => apiClient.user.fetchFriends());
 				setFriends(data);
 				setError(null);
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,7 +62,7 @@ export default function FriendsList() {
 		return <EmptyComponent content='No friends found. Go touch some grass.' />;
 
 	return (
-		<UserList 
+		<UserList
 			users={friends}
 			actions={[
 				{

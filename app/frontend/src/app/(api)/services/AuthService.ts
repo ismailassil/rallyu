@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AxiosInstance } from 'axios';
 
 export type APIResetPasswordResponse = { token: string };
@@ -21,8 +20,8 @@ export class AuthService {
 		return res.data;
 	}
 
-	async login(payload: { username: string, password: string }) {
-		const { data: res } = await this.client.post('/auth/login', payload);
+	async login(username: string, password: string) {
+		const { data: res } = await this.client.post('/auth/login', { username, password });
 
 		if (res.data._2FARequired)
 			return res.data;
@@ -45,14 +44,14 @@ export class AuthService {
 		return res.data;
 	}
 
-	async verify2FACode(token: string, code: string) : Promise<{
-		user: any;
-		accessToken: any;
-	}> {
-		const { data: res } = await this.client.post('/auth/login/2fa/verify', { token, code });
+	// async verify2FACode(token: string, code: string) : Promise<{
+	// 	user: any;
+	// 	accessToken: any;
+	// }> {
+	// 	const { data: res } = await this.client.post('/auth/login/2fa/verify', { token, code });
 
-		return { user: res.data.user, accessToken: res.data.accessToken };
-	}
+	// 	return { user: res.data.user, accessToken: res.data.accessToken };
+	// }
 
 	async resend2FACode(token: string) {
 		const { data: res } = await this.client.post('/auth/login/2fa/resend', { token });
@@ -60,29 +59,36 @@ export class AuthService {
 	}
 
 	async logout() {
-		console.log('APIClient::logout();');
-		await this.client.post('/auth/logout');
+		const { data: res } = await this.client.post('/auth/logout');
+
+		this.setAccessToken('');
+
+		return res.data;
 	}
 
 	async refreshToken() {
-		console.log('APIClient::refreshToken();');
 		const { data: res } = await this.client.get('/auth/refresh');
-		console.log('refreshToken: ', res);
+
+		this.setAccessToken(res.data.accessToken);
 
 		return { user: res.data.user, accessToken: res.data.accessToken };
 	}
 
-	async register(payload: {
+	async register(
 		first_name: string,
 		last_name: string,
 		username: string,
 		email: string,
 		password: string
-	}) {
-		console.log('APIClient::register();');
-		const { data } = await this.client.post('/auth/register', payload);
-		console.log('register: ', data);
-		return data;
+	) {
+		const { data: res } = await this.client.post('/auth/register', {
+			first_name,
+			last_name,
+			username,
+			email,
+			password
+		});
+		return res.data;
 	}
 
 	/*---------------------------------- Session Management ----------------------------------*/
@@ -96,18 +102,21 @@ export class AuthService {
 		return res.data;
 	}
 
-	async revokeAllOtherSessions() {
+	async revokeOtherSessions() {
 		const { data: res } = await this.client.delete('/auth/sessions');
 		return res.data;
 	}
 
 	/*--------------------------------- Password Management ---------------------------------*/
 
-	async changePassword(payload: {
+	async changePassword(
 		oldPassword: string,
 		newPassword: string
-	}) {
-		const { data: res } = await this.client.post(`/auth/change-password`, payload);
+	) {
+		const { data: res } = await this.client.post(`/auth/change-password`, {
+			oldPassword,
+			newPassword
+		});
 		return res.data;
 	}
 

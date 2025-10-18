@@ -24,8 +24,7 @@ export default function BlockedList() {
 		async function fetchBlockedUsers() {
 			try {
 				setIsLoading(true);
-				const data = await executeAPICall(() => apiClient.getAllBlocked());
-				// const data = await apiClient.getAllFriends();
+				const data = await executeAPICall(() => apiClient.user.fetchBlocked());
 				setBlocked(data);
 				setError(null);
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,7 +62,7 @@ export default function BlockedList() {
 		return <EmptyComponent content='No blocked users found. Go block some.' />;
 
 	return (
-		<UserList 
+		<UserList
 			users={blocked}
 			actions={[
 				{

@@ -3,11 +3,9 @@ import AuthService from "../services/Auth/AuthService";
 import { ILoginRequest, IRegisterRequest } from "../types";
 import AuthResponseFactory from "./AuthResponseFactory";
 import SessionsService from "../services/Auth/SessionsService";
-import { env } from "process";
-import z from "zod";
 import { UUID } from "crypto";
-import { zodResendSchema, zodTwoFALoginChallengeBodySchema, zodVerifyChallengeBodySchema } from "../schemas/zod/auth.zod.schema";
 import { TokenRequiredError } from "../types/exceptions/auth.exceptions";
+import { AuthChallengeMethod } from "../repositories/AuthChallengesRepository";
 
 
 class AuthController {
@@ -67,7 +65,7 @@ class AuthController {
 
 	async sendTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { token, method } = request.body as z.infer<typeof zodTwoFALoginChallengeBodySchema>;
+			const { token, method } = request.body as { token: string, method: AuthChallengeMethod };
 
 			await this.authService.sendTwoFAChallengeCode(
 				token as UUID,
@@ -87,7 +85,7 @@ class AuthController {
 
 	async verifyTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { token, code } = request.body as z.infer<typeof zodVerifyChallengeBodySchema>;
+			const { token, code } = request.body as { token: string, code: string };
 
 			const { user, refreshToken, accessToken } = await this.authService.verifyTwoFAChallengeCode(
 				token as UUID,
@@ -114,7 +112,7 @@ class AuthController {
 
 	async resendTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { token } = request.body as z.infer<typeof zodResendSchema>;
+			const { token } = request.body as { token: string };
 
 			await this.authService.resendTwoFAChallengeCode(token as UUID);
 

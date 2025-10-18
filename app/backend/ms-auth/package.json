@@ -34,7 +34,7 @@
     "sqlite3": "^5.1.7",
     "ua-parser-js": "^2.0.3",
     "uuid": "^13.0.0",
-    "zod": "^3.25.76"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

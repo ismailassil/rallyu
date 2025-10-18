@@ -23,8 +23,7 @@ export default function IncomingFriendRequestsList() {
 		async function fetchIncomingRequests() {
 			try {
 				setIsLoading(true);
-				const data = await executeAPICall(() => apiClient.getAllIncomingFriendRequests());
-				// const data = await apiClient.getAllFriends();
+				const data = await executeAPICall(() => apiClient.user.fetchIncomingFriendRequests());
 				setIncoming(data);
 				setError(null);
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any

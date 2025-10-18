@@ -4,33 +4,35 @@ import { MessageType } from "../chat/types/chat.types";
 import SocketClient from "@/app/(api)/SocketClient";
 
 export type LoggedInUser = {
-	id: number,
-	first_name: string,
-	last_name: string,
-	username: string,
-	email: string,
-	bio: string,
-	avatar_url: string,
-	phone: string,
-	phone_verified: boolean,
-	email_verified: boolean,
+	id: number;
+	email: string;
+	username: string;
+	first_name: string;
+	last_name: string;
+	bio: string;
+	avatar_url: string;
+	auth_provider: 'Local' | 'Google' | '42';
+	role: 'user' | 'mod' | 'admin' | string;
+	created_at: number;
+	updated_at: number;
+	phone: string | null;
+	auth_provider_id: string | null;
+	email_verified: 0 | 1;
+	phone_verified: 0 | 1;
 	last_message : MessageType
 }
 
 export type AuthContextType = {
 	loggedInUser: LoggedInUser | null;
-	updateLoggedInUserState: (payload: Partial<LoggedInUser>) => void;
-	triggerLoggedInUserRefresh: () => void;
 	isLoading: boolean;
 	isAuthenticated: boolean;
 	isBusy: boolean;
 	setIsBusy: React.Dispatch<React.SetStateAction<boolean>>;
 
-	register: (first_name: string, last_name: string, username: string, email: string, password: string) => Promise<void>;
 	login: (username: string, password: string) => Promise<any>;
-	send2FACode: (token: string, method: string) => Promise<any>;
 	loginUsing2FA: (token: string, code: string) => Promise<any>;
 	logout: () => Promise<void>;
+	triggerLoggedInUserRefresh: () => Promise<void>;
 
 	apiClient: APIClient;
 	socket: SocketClient;

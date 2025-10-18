@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import FormButton from '@/app/(auth)/components/UI/FormButton';
 import { toastError } from '@/app/components/CustomToast';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import OTPCodeInput from '@/app/(onsite)/[DEPRECATED]2fa/components/OTPCodeInput';
+import OTPCodeInput from '../../Form/OTPCodeInput';
 import AnimatedComponent from '../../UI/AnimatedComponent';
 import ResendCode from '../ResendCode';
 import { APIError } from '@/app/(api)/APIClient';
