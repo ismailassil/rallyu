@@ -12,6 +12,8 @@ export type GameProps = {
     user_username: string,
 	user_avatar_url: string,
     user_score: number,
+    user_xp_gain: number,
+    opp_xp_gain: number,
     opp_score: number,
     opponent_id: number,
     opponent_username: string,
@@ -39,6 +41,8 @@ export default function GameCard({
 	user_username,
 	user_avatar_url,
 	user_score,
+	user_xp_gain,
+	opp_xp_gain,
 	opp_score,
 	// opponent_id,
 	opponent_username,
@@ -89,7 +93,7 @@ export default function GameCard({
 
 			<p className="text-xl font-bold">{user_score}</p>
 
-			<div className="text-sm italic text-gray-500">{outcome === 'W' ? '+50' : outcome === 'L' ? '-50' : '0'} XP</div>
+			<div className="text-sm italic text-gray-500">+{user_xp_gain.toFixed(0)} XP</div>
 
 			<p className="text-xl font-bold">{opp_score}</p>
 

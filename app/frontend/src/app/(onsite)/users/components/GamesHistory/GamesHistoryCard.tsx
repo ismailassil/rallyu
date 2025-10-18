@@ -55,6 +55,8 @@ export default function GamesHistoryCard({ matches } : { matches: GameProps[] })
 							user_username={match.user_username}
 							user_avatar_url={match.user_avatar_url}
 							user_score={match.user_score}
+							user_xp_gain={match.user_xp_gain}
+							opp_xp_gain={match.opp_xp_gain}
 							opp_score={match.opp_score}
 							opponent_id={match.opponent_id}
 							opponent_username={match.opponent_username}
