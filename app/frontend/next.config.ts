@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "localhost",
+        hostname: "api-gateway",
         port: "4025",
         pathname: "/api/users/avatars/**",
       },

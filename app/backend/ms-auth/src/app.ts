@@ -35,6 +35,8 @@ import VerificationController from './controllers/VerificationController';
 import VerificationService from './services/Auth/VerificationService';
 import MatchesController from './controllers/MatchesController';
 import MatchesService from './services/GameAndStats/MatchesService';
+import fastifyStatic from '@fastify/static';
+import path from 'path';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
@@ -100,13 +102,18 @@ async function buildApp(): Promise<FastifyInstance> {
 	const verificationController = new VerificationController(verificationService);
 	const matchesController = new MatchesController(matchesService);
 
-	// REGISTER AUTH PLUGIN
+	// await fastify.register(fastifyStatic, {
+	// 	root: path.join(process.cwd(), 'uploads'),
+	// 	prefix: '/uploads'
+	// });
+
 	await fastify.register(natsPlugin, {
 		NATS_URL: process.env["NATS_URL"] || "",
 		NATS_USER: process.env["NATS_USER"] || "",
 		NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
 		userService: userService
 	});
+
 	await fastify.register(authRouter, {
 		prefix: '/auth',
 		authController,
@@ -114,7 +121,13 @@ async function buildApp(): Promise<FastifyInstance> {
 		verificationController,
 		passwordResetController
 	});
-	await fastify.register(userRouter, { prefix: '/users', userController, relationsController, matchesController });
+
+	await fastify.register(userRouter, {
+		prefix: '/users',
+		userController,
+		relationsController,
+		matchesController
+	});
 
 	return fastify;
 }

@@ -25,8 +25,8 @@ async function userRouter(fastify: FastifyInstance, opts: {
 	});
 
 	await fastify.register(fastifyStatic, {
-		root: path.join(__dirname, '../../','uploads', 'avatars'),
-		prefix: '/avatars/'
+		root: path.join(process.cwd(), 'uploads'),
+		prefix: '/avatars'
 	});
 
 	fastify.decorate('authenticate', Authenticate); // auth middleware for protected routes

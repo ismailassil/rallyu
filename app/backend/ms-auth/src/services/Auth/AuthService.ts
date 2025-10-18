@@ -20,8 +20,11 @@ import axios, { create } from 'axios';
 import { oauthConfig } from '../../config/oauth';
 import { UUID, randomBytes } from 'crypto';
 import { AuthChallengeMethod } from '../../repositories/AuthChallengesRepository';
+import CDNService from '../CDN/CDNService';
 
 class AuthService {
+	private cdnService: CDNService;
+
 	constructor(
 		private authConfig: AuthConfig,
 		private jwtUtils: JWTUtils,
@@ -31,7 +34,9 @@ class AuthService {
 		private twoFAChallengeService: TwoFactorChallengeService,
 		private mailingService: MailingService,
 		private smsService: WhatsAppService
-	) {}
+	) {
+		this.cdnService = new CDNService();
+	}
 
 	async SignUp(first_name: string, last_name: string, username: string, email: string, password: string) : Promise<void> {
 		if (await this.userService.isUsernameTaken(username))
@@ -197,7 +202,7 @@ class AuthService {
 			username: await this.generateUniqueUsername(intra42User.login),
 			first_name: intra42User.first_name || intra42User.usual_full_name.split(' ')[0] || 'Ismail',
 			last_name: intra42User.last_name || intra42User.usual_full_name.split(' ')[1] || 'Demnati',
-			avatar_url: intra42User.image.link,
+			avatar_url: '/users/avatars/' + (await this.cdnService.storeFromURL(intra42User.image.link)).split('/')[1],
 			auth_provider: '42'
 		};
 	}
@@ -266,7 +271,7 @@ class AuthService {
 			username: await this.generateUniqueUsername(payload.email.split('@')[0]),
 			first_name: payload.given_name || payload.name.split(' ')[0] || 'Ismail',
 			last_name: payload.family_name || payload.name.split(' ')[1] || 'Demnati',
-			avatar_url: payload.picture,
+			avatar_url: '/users/avatars/' + (await this.cdnService.storeFromURL(payload.picture)).split('/')[1],
 			auth_provider: 'Google'
 		};
 	}
@@ -323,6 +328,7 @@ class AuthService {
 
 		await this.userService.updateUser(user_id, { password: newHashedPassword });
 	}
+
 }
 
 export default AuthService;
