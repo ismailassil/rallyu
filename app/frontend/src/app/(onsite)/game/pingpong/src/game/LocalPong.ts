@@ -1,4 +1,4 @@
-import { PongState, Coords, BallState, PongEventHandlers } from '@/app/(onsite)/game/types/types';
+import { PongState, Coords, BallState, EventHandlers } from '@/app/(onsite)/game/types/types';
 import SocketProxy from '@/app/(onsite)/game/utils/socketProxy'
 import APong from "./APong";
 
@@ -16,7 +16,7 @@ class LocalPong extends APong {
     startTime: number | null = null;
     gamePlayStatus = 'countdown'; // pause, gameover, delay, play
     
-    constructor(private eventHandlers?: PongEventHandlers) {
+    constructor(private eventHandlers?: EventHandlers) {
         super();
         this.animationFrameId = null;
         const initialAngle = this.angles[Math.floor(Math.random() * this.angles.length)];
@@ -157,7 +157,7 @@ class LocalPong extends APong {
     setupInputHandlers = (canvas: HTMLCanvasElement): (() => void) => {
         let animationFrameId: number;
         const keys = new Set<string>();
-        const speed = 15;
+        const speed = 12;
     
         const handleKeyboardInput = () => {
             if (this.gamePlayStatus === 'pause')  {

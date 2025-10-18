@@ -8,6 +8,7 @@ import SocketProxy from "../../../utils/socketProxy";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import RemoteXO from "../../src/game/RemoteXO";
 import TicTacToe from "../../src/TicTacToe";
+import { XOSign } from "../../../types/types";
 
 const GameField = () => {
     const { apiClient, loggedInUser } = useAuth();
@@ -20,38 +21,44 @@ const GameField = () => {
 	const [ oppdisconnect, setOppdisconnect ] = useState(false);
     const [ overlayStatus, setOverlayStatus ] = useState('none');
     const [ currentRound, setCurrentRound ] = useState(1);
+    const [ score, setScore ] = useState<[number, number]>([0, 0]);
+    const [ result, setResult ] = useState<string | null>(null);
+	const [cells, setCells] = useState<XOSign[]>(Array(9).fill(''));
 	const tictactoe = useRef<RemoteXO>(new RemoteXO(socketProxy.current, {
         updateTimer: setTimeLeft,
         updateOverlayStatus: setOverlayStatus,
         updateConnection: setOppdisconnect,
-        updateRound: setCurrentRound
+        updateRound: setCurrentRound,
+        updateBoard: setCells,
+        updateScore: setScore,
+        updateDisplayedResult: setResult
     }));
 
-    // useEffect(() => {
-	// 	let disconnect: (() => void) | undefined;
-	// 	let isMounted = true;
-	// 	(async () => {
-	// 		try {
-	// 			const res = await apiClient.fetchGameRoomStatus(roomid);
+    useEffect(() => {
+		let disconnect: (() => void) | undefined;
+		let isMounted = true;
+		(async () => {
+			try {
+				const res = await apiClient.fetchGameRoomStatus(roomid);
 
-	// 			if (!isMounted) return;
+				if (!isMounted) return;
 
-	// 			setOpponentId(res.players.find(p => p.ID !== loggedInUser!.id)?.ID);
-	// 			setIsLoading(false);
-	// 			disconnect = socketProxy.current.connect(`/game/room/join/${roomid}?userid=${loggedInUser?.id}`, apiClient);
-	// 		} catch (err) {
-	// 			if (!isMounted) return;
+				setOpponentId(res.players.find(p => p.ID !== loggedInUser!.id)?.ID);
+				setIsLoading(false);
+				disconnect = socketProxy.current.connect(`/game/room/join/${roomid}?userid=${loggedInUser?.id}`, apiClient);
+			} catch (err) {
+				if (!isMounted) return;
 				
-	// 			setIsLoading(false);
-	// 			setNotFound(true);
-	// 			console.log(`Game Service: ${err}`);
-	// 		}
-	// 	})()
+				setIsLoading(false);
+				setNotFound(true);
+				console.log(`Game Service: ${err}`);
+			}
+		})()
 		
-	// 	return () => {
-    //         if (disconnect) disconnect();
-    //     }
-	// }, [])
+		return () => {
+            if (disconnect) disconnect();
+        }
+	}, [])
 
     const forfeitGame = () => {
         tictactoe.current.forfeit();
@@ -66,21 +73,22 @@ const GameField = () => {
                 <RoomNotFound />
             ) : (
 
-                    <div className="flex flex-col w-full max-w-[1200px] aspect-[4/3] items-center">
+                    <div className="flex flex-col w-full max-w-[1200px] aspect-[4/3] items-center justify-between">
                         <VersusCard
                             opponentId={opponentId}
                             timeLeft={timeLeft}
                             handleResign={forfeitGame}
                             disconnect={oppdisconnect}
                             round={currentRound}
+                            score={score}
+                            resignSwitch={overlayStatus === 'gameover' ? false : true}
                         />
-                        <div className="relative w-full h-auto">
-                            <TicTacToe tictactoe={tictactoe.current} />
-                            <Overlay status={overlayStatus} />
+                        <div className="relative w-auto h-auto">
+                            <TicTacToe tictactoe={tictactoe.current} board={cells} />
+                            <Overlay status={overlayStatus} result={result} round={currentRound} />
                         </div>
                     </div>
-            )
-			}
+            )}
         </div>
 	);
 };

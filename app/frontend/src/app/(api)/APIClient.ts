@@ -345,6 +345,7 @@ export class APIClient {
 	// }
 
 	async fetchPlayerStatus(user_id: number) : Promise<RemotePlayerStatus>{
+		console.log('user_id: ', user_id);
 		const res = await this.client.get(`/game/user/${user_id}/status`);
 		return res.data;
 	}

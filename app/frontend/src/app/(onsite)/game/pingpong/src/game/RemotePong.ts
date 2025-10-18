@@ -1,4 +1,4 @@
-import { PongEventHandlers, RemotePongState } from "@/app/(onsite)/game/types/types"
+import { EventHandlers, RemotePongState } from "@/app/(onsite)/game/types/types"
 import SocketProxy from '@/app/(onsite)/game/utils/socketProxy'
 import APong from "./APong";
 
@@ -6,7 +6,7 @@ class RemotePong extends APong {
     state: RemotePongState;
     animationFrameId: number | null;
     
-    constructor(private proxy: SocketProxy, private eventHandlers?: PongEventHandlers) {
+    constructor(private proxy: SocketProxy, private eventHandlers?: EventHandlers) {
         super();
         this.animationFrameId = null;
         this.state = {
@@ -54,7 +54,6 @@ class RemotePong extends APong {
     setupCommunications = (): (() => void) => {
         return this.proxy.subscribe((data: any): void => {
             this.state.gameStatus = data.type
-            console.log('data.type: ', data.type);
             switch (data.type) {
                 case 'opp_left':
                     console.log('opp disconnected');
@@ -90,7 +89,9 @@ class RemotePong extends APong {
                     this.proxy.disconnect();
                     this.state.players[0].score = data.score[this.state.index!]
                     this.state.players[1].score = data.score[this.state.index! ^ 1]
-                    this.eventHandlers?.updateOverlayStatus(data.result)
+                    const result = data.result === 'win' ? 'You Won!' : data.result === 'loss' ? 'You lost' : 'Draw'
+                    this.eventHandlers?.updateDisplayedResult!(result);
+                    this.eventHandlers?.updateOverlayStatus('gameover');
                     this.eventHandlers?.updateTimer!(0);
                     break;
             }

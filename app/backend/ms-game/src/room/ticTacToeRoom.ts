@@ -39,22 +39,18 @@ export class TicTacToePlayer implements Player<TicTacToeRoom> {
     }
 
     setupEventListeners(room: TicTacToeRoom): void {
+		console.log('Setup Event Listeners p.socket: ', this.socket);
         if (!this.socket) return;
 
         this.socket.on('message', (message: ws.RawData) => {
             try {
                 const data = JSON.parse(message.toString());
+				console.log("received message: ", data);
 				switch (data.type) {
 					case 'move':
 						if (room.state.currentPlayer !== this.sign || !room.playMove(data.move, this.sign)) {
 							return;
 						}
-						room.broadcastToPlayers({
-							type: 'move',
-							move: data.move,
-							sign: this.sign,
-							currentPlayer: room.state.currentPlayer
-						});
 						break;
 					case 'forfeit':
 						room.handleForfeit(this);
@@ -99,7 +95,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.state = {
 			cells: ['', '', '', '', '', '', '', '', ''],
 			currentRound: 1,
-			currentPlayer: 'X'
+			currentPlayer: Math.random() > 0.5 ? 'X' : 'O'
 		};
 	}
 
@@ -143,10 +139,10 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		forfeiter.score = 0;
 	
 		this.broadcastToPlayers({
-			type: 'forfeit',
+			type: 'gameover',
 			forfeitingPlayer: forfeiter.sign,
 			winner: winner.sign,
-			finalScores: this.players.map(p => p.score),
+			score: this.players.map(p => p.score),
 		});
 	
 		setTimeout(() => {
@@ -160,6 +156,13 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 
 		this.state.cells[move] = sign;
 		this.state.currentPlayer = this.state.currentPlayer === 'X' ? 'O' : 'X';
+		this.broadcastToPlayers({
+			type: 'move',
+			move: move,
+			sign: sign,
+			duration: MOVE_TIMEOUT,
+			currentPlayer: this.state.currentPlayer
+		});
 
 		const winner = this.checkWin();
 		if (winner) {
@@ -199,7 +202,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.broadcastToPlayers({
 			type: 'round_result',
 			winner: winner,
-			scores: this.players.map(p => p.score),
+			score: this.players.map(p => p.score),
 			currentRound: this.state.currentRound
 		});
 
@@ -236,7 +239,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.broadcastToPlayers({
 			type: 'gameover',
 			winner: overallWinner,
-			finalScores: this.players.map(p => p.score)
+			score: this.players.map(p => p.score)
 		});
 
 		closeRoom(this, 1003, 'GameOver');
@@ -249,7 +252,8 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 			round: this.state.currentRound
 		});
 	
-		setTimeout(() => {
+		clearTimeout(this.timeoutId)
+		this.timeoutId = setTimeout(() => {
 			this.resetBoard();
 			this.broadcastToPlayers({
 				type: 'round_start',
@@ -302,6 +306,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		if (player.socket?.readyState === WebSocket.OPEN) {
 			player.socket!.send(JSON.stringify({
 				type: 'reconnected',
+				cells: this.state.cells,
 				score: [this.players[0].score, this.players[1].score],
 				sign: player.sign,
 				currentPlayer: this.state.currentPlayer,
@@ -316,11 +321,11 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.running = true;
 		this.state.currentRound = 1;
 
-		this.setupPackets();
-		
 		this.players.forEach((p) => {
 			p.setupEventListeners(this);
 		});
+
+		this.setupPackets();
 
 		this.startRound();
 	}

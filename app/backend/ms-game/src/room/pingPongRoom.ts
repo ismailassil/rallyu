@@ -92,12 +92,12 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				{
 					coords: { x: 20, y: 450 },
 					movement: 'still',
-					speed: 15
+					speed: 12
 				},
 				{
 					coords: { x: 1580, y: 450 },
 					movement: 'still',
-					speed: 15
+					speed: 12
 				}
 			],
 			score: [0, 0],
@@ -152,8 +152,10 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	}
 
 	sendForfeitPacket = (yeilder: number) => {
-		console.log("forfeit: ", yeilder)
 		this.state.score = yeilder === 0 ? [0, 3] : [3, 0];
+
+		if (this.state.score[yeilder ^ 1] <= this.state.score[yeilder])
+			this.state.score[yeilder ^ 1] += this.state.score[yeilder] - this.state.score[yeilder ^ 1] + 4
 
 		this.players.forEach((player, i) => {
 			if (player.socket?.readyState === ws.OPEN) {

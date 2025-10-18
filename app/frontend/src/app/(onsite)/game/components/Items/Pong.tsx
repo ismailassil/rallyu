@@ -9,7 +9,7 @@ const Pong = () => {
 
     return (
         <div
-        className="absolute inset-0 flex items-center rounded-xl transition-all duration-150 border shadow-xl border-card bg-neutral-900/70 hover:bg-neutral-900/90 hover:scale-[101%] active:scale-[99%] cursor-pointer [clip-path:polygon(55%_0,100%_0,100%_100%,45%_100%)] group"
+        className="absolute inset-0 flex items-center rounded-xl transition-all duration-150 border shadow-xl border-card bg-neutral-900/70 hover:bg-neutral-900 hover:scale-[101%] active:scale-[99%] cursor-pointer [clip-path:polygon(55%_0,100%_0,100%_100%,45%_100%)] group"
         onClick={handleClick}
         >
             <div className="absolute flex flex-col justify-end items-center right-3/11 max-w-[400px] min-w-0 min-h-0 max-h-[200px] translate-x-1/2 ">

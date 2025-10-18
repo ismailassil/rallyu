@@ -30,7 +30,7 @@ class SocketProxy {
 	): (() => void) {
 		this.socket = api.connectWebSocket(url);
 		this.socket.onopen = (): void => {
-			console.log('Connected to Pong Server');
+			console.log('Connected to Game Server');
 		};
 
 		this.socket.onmessage = (message: MessageEvent): void => {
@@ -38,7 +38,7 @@ class SocketProxy {
 		}
 
 		this.socket.onclose = (event: CloseEvent): void => {
-			console.log("Disconnected from Pong Websocket", event.reason);
+			console.log("Disconnected from Game Server", event.reason);
 			return;
 		}
 
