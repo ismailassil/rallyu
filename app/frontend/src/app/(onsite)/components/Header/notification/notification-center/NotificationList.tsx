@@ -36,28 +36,19 @@ const NotificationList = () => {
 		};
 	}, [isNotif, handleScroll]);
 
-	function handleSingleUpdate(id: number, status: "read" | "dismissed") {
+	function handleSingleUpdate(id: number, status: "read" | "dismissed", state: "pending" | "finished") {
 		const data = {
-			updateAll: false,
-			notificationId: id,
-			status: status,
+			eventType: "UPDATE_ACTION",
+			data: {
+				updateAll: false,
+				notificationId: id,
+				status: status,
+				state: state,
+			}
 		};
 
-		socket.emit("notification_update_action", data);
+		socket.emit("notification", data);
 	}
-
-	function handleChatUpdate(id: number) {
-		const data = {
-			updateAll: false,
-			notificationId: id,
-			status: "read",
-			state: "finished",
-		};
-
-		socket.emit("notification_update_action", data);
-	}
-
-	console.log("isLoading: " + isLoading);
 
 	if (isLoading) return <Loading />;
 
@@ -75,7 +66,6 @@ const NotificationList = () => {
 									key={notif.id}
 									data={notif}
 									handler={handleSingleUpdate}
-									handleChatUpdate={handleChatUpdate}
 								/>
 							);
 						})}

@@ -1,13 +1,7 @@
-import 'fastify';
-import { Server } from 'socket.io';
-import type { ChatPayload, MessageType } from '../../types/chat.types.js';
-import type {
-	UPDATE_NOTIFICATION_DATA,
-	UPDATE_ON_TYPE_DATA,
-	USER_NOTIFICATION,
-} from '@/types/notification.types.js';
-
-declare module 'fastify' {
+import "fastify";
+import { Server } from "socket.io";
+import type { ChatPayload, MessageType } from "../../types/chat.types.js";
+declare module "fastify" {
 	export interface FastifyInstance {
 		io: Server<ClientToServerEvents, ServerToClientEvents>;
 		connectedUsers: Map<string, Set<string>>;
@@ -15,18 +9,18 @@ declare module 'fastify' {
 }
 
 interface ClientToServerEvents {
+	// Chat
 	chat_send_msg: (data: MessageType) => void;
-	notification_update_action: (data: UPDATE_NOTIFICATION_DATA) => void;
-	notification_update_on_type: (data: UPDATE_ON_TYPE_DATA) => void;
+	// Notification
+	notification: (data: any) => void;
 }
 
 interface ServerToClientEvents {
-	notification_update_on_type: (data: UPDATE_ON_TYPE_DATA) => void;
-	notification_update_action: (data: UPDATE_NOTIFICATION_DATA) => void;
-	notification_notify: (data: USER_NOTIFICATION) => void;
+	// Chat
 	chat_receive_msg: (data: ChatPayload) => void;
 	chat_update_msg: (data: ChatPayload) => void;
-	notification_game_init: (data: string) => void;
+	// Notification
+	notification: (data: any) => void;
 }
 
 export interface socketioOpts {

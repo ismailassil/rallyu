@@ -37,11 +37,17 @@
       "box": {
         "no_payload": "No Current Notifications",
         "description": {
-          "game": "challenged you to a game!",
-          "friend_request": "sent you a friend request!",
           "chat": "sent you a message.",
+          "game": "challenged you to a game!",
+          "pp_game": "challenged you to a Pong game!",
+          "xo_game": "challenged you to a Tic-Tac-Toe game!",
+          "friend_request": "sent you a friend request!",
           "tournament": "invited you to start a tournament!",
-          "status": "{type, select, decline_game {declined your challenge} other {}}"
+          "friend_accept": "accepted your friend request!",
+          "friend_reject": "rejected your friend request.",
+          "friend_cancel": "canceled your friend request.",
+          "game_accept": "accepted your game challenge!",
+          "game_reject": "declined your game challenge."
         }
       },
       "footer": {

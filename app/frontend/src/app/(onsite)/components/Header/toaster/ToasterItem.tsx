@@ -1,7 +1,6 @@
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { TOAST_PAYLOAD, ToastTypesDetails } from "./Toast.types";
+import { decisionOptions, TOAST_PAYLOAD, ToastTypesDetails } from "./Toast.types";
 import { useNotification } from "../notification/context/NotificationContext";
 import { useTranslations } from "next-intl";
 import Avatar from "@/app/(onsite)/users/components/Avatar";
@@ -15,7 +14,7 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 	const { image, senderUsername, type } = data;
 	const [progress, setProgress] = useState(100);
 	const router = useRouter();
-	const { handleRemove, handleAccept, handleDecline } = useNotification();
+	const { handleRemoveToast, handleAccept, handleDecline } = useNotification();
 	const t = useTranslations("");
 
 	useEffect(() => {
@@ -37,7 +36,7 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 	}, []);
 
 	function handleChat() {
-		handleRemove(data.id);
+		handleRemoveToast(data.id);
 		router.push("/chat/" + senderUsername);
 	}
 
@@ -55,12 +54,14 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 					/>
 					<div>
 						<p className="font-bold">{senderUsername}</p>
-						<p className="text-sm">{t("headers.notification.box.description." + type)}</p>
+						<p className="text-sm">
+							{t("headers.notification.box.description." + type)}
+						</p>
 					</div>
 				</div>
 				{ToastTypesDetails[type].icon}
 			</div>
-			{type === "status" ? null : type !== "chat" ? (
+			{decisionOptions.includes(type) ? (
 				<div className="*:transition-color flex h-8 justify-between divide-x divide-white/20 border-t-1 border-t-white/20 text-sm *:cursor-pointer *:duration-400">
 					<button
 						className="hover:bg-main w-full"
@@ -75,14 +76,14 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 						{t("states.decline")}
 					</button>
 				</div>
-			) : (
+			) : type === "chat" ? (
 				<button
 					className="transition-color flex h-8 w-full cursor-pointer items-center justify-center divide-x divide-white/20 border-t-1 border-t-white/20 text-sm duration-400 hover:bg-white/10"
 					onClick={handleChat}
 				>
 					{t("states.reply")}
 				</button>
-			)}
+			) : null}
 		</div>
 	);
 }

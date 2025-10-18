@@ -3,15 +3,14 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useHeaderContext } from "./context/HeaderContext";
-import { useRouter } from "next/navigation";
 import { useAuth } from "../../contexts/AuthContext";
 import Avatar from "../../users/components/Avatar";
 import Link from "next/link";
 
 interface SearchByUsernameResult {
-	id: number,
-	username: string,
-	avatar_url: string
+	id: number;
+	username: string;
+	avatar_url: string;
 }
 
 export default function Search() {
@@ -62,9 +61,9 @@ export default function Search() {
 	}, [isSearch, setIsSearch]);
 
 	useEffect(() => {
-		if (search === '') {
+		if (search === "") {
 			setResults([]);
-			return ;
+			return;
 		}
 
 		async function fetchUsersByUsername() {
@@ -77,23 +76,27 @@ export default function Search() {
 		}
 
 		fetchUsersByUsername();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [search]);
 
 	return (
 		<>
 			{/* <SearchButton /> */}
 			<div
-				className="md:bg-card flex items-center justify-center rounded-full pr-1
-				transition-all duration-200 hover:scale-102 hover:cursor-pointer hover:ring-1
-				hover:ring-white/30 md:h-[55px] md:w-[100px]
-				"
+				className="md:bg-card flex items-center justify-center rounded-full pr-1 transition-all duration-200 hover:scale-102 hover:cursor-pointer hover:ring-1 hover:ring-white/30 md:h-[55px] md:w-[100px]"
 				onClick={() => {
 					setIsNotif(false);
 					setIsProfile(false);
 					setIsSearch(!isSearch);
 				}}
 			>
-				<Image className="mr-2" src="/icons/search.svg" alt="Search Logo" width={20} height={20} />
+				<Image
+					className="mr-2"
+					src="/icons/search.svg"
+					alt="Search Logo"
+					width={20}
+					height={20}
+				/>
 				<div className="hidden md:flex">
 					<Image src="/icons/command.svg" alt="Command Logo" width={15} height={15} />
 					<span className={`text-lg`}>K</span>
@@ -106,17 +109,15 @@ export default function Search() {
 						animate={{ opacity: 1 }}
 						transition={{ duration: 0.2, ease: "easeInOut" }}
 						exit={{ opacity: 0 }}
-						className="md:10 fixed inset-0 z-50
-					flex w-full flex-col items-center bg-black/60 pb-5 pl-3 pr-3
-					pt-10 backdrop-blur-2xl md:p-20 lg:p-40 lg:pb-20"
+						className="md:10 fixed inset-0 z-50 flex w-full flex-col items-center bg-black/60 pt-10 pr-3 pb-5 pl-3 backdrop-blur-2xl md:p-20 lg:p-40 lg:pb-20"
 					>
-						<div className="max-w-220 h-full w-[100%] lg:w-[80%]">
+						<div className="h-full w-[100%] max-w-220 lg:w-[80%]">
 							<div
 								ref={div1Ref}
 								className="border-br-card relative rounded-lg border-2 bg-white/10"
 							>
 								<Image
-									className="absolute left-5 top-[19px] opacity-75"
+									className="absolute top-[19px] left-5 opacity-75"
 									src="/icons/search.svg"
 									alt="Search Logo"
 									width={0}
@@ -126,7 +127,7 @@ export default function Search() {
 								<input
 									ref={inputRef}
 									type="text"
-									className="focus:ring-main/80 h-16 w-full rounded-md pl-16 pr-20 outline-none focus:ring-2"
+									className="focus:ring-main/80 h-16 w-full rounded-md pr-20 pl-16 outline-none focus:ring-2"
 									autoComplete="off"
 									placeholder="Start Searching..."
 									value={search}
@@ -136,40 +137,44 @@ export default function Search() {
 								/>
 								<p
 									onClick={() => setSearch("")}
-									className="hover:text-main-ring-hover/70 absolute right-6 top-[19px] hover:cursor-pointer hover:underline"
+									className="hover:text-main-ring-hover/70 absolute top-[19px] right-6 hover:cursor-pointer hover:underline"
 								>
 									Clear
 								</p>
 							</div>
 							<div
 								ref={div2Ref}
-								className="min-h-90 max-h-118 border-br-card custom-scroll
-									mt-3 h-full w-full overflow-auto rounded-lg border-2 bg-white/10"
+								className="border-br-card custom-scroll mt-3 h-full max-h-118 min-h-90 w-full overflow-auto rounded-lg border-2 bg-white/10"
 							>
 								<ul>
 									{results.map((elem) => {
 										return (
-												<Link
-													href={`/users/${elem.username}`}
-													onClick={() => setIsSearch(false)}
-													key={elem.username}
-													className="w-full h-17 flex items-center gap-4 border-b-1
-														border-b-br-card pl-10 hover:bg-hbg/30 hover:cursor-pointer
-														"
-												>
-													<Avatar 
-														avatar={elem.avatar_url}
-														className="rounded-full h-10 w-10 border-2 border-white/20"
-													/>
-													{/* <Image src={`http://localhost:4025/api${elem.avatar_url}`} alt="Command Logo" width={42} height={42} className="rounded-full border-2 border-white/20"/> */}
-													<p>{elem.username}</p>
-												</Link>
+											<Link
+												href={`/users/${elem.username}`}
+												onClick={() => {
+													setIsSearch(false);
+													setSearch("");
+												}}
+												key={elem.username}
+												className="border-b-br-card hover:bg-hbg/30 flex h-17 w-full items-center gap-4 border-b-1 pl-10 hover:cursor-pointer"
+											>
+												<Avatar
+													avatar={elem.avatar_url}
+													className="h-10 w-10 rounded-full border-2 border-white/20"
+												/>
+												<p>{elem.username}</p>
+											</Link>
 										);
 									})}
 								</ul>
 								{!results.length && (
 									<div className="flex h-full w-full flex-col items-center justify-center gap-3">
-										<Image src="/meme/sad.png" height={12} width={120} alt="Sad Image" />
+										<Image
+											src="/meme/sad.png"
+											height={12}
+											width={120}
+											alt="Sad Image"
+										/>
 										<p className="text-gray-400">Help yourself...</p>
 									</div>
 								)}

@@ -3,13 +3,6 @@ import { Server, Socket } from "socket.io";
 import type { socketioOpts } from "@/plugin/socketio/socketio.types.js";
 import type { JWT_ACCESS_PAYLOAD } from "@/types/jwt.types.js";
 import type { MessageType } from "@/types/chat.types.js";
-import type {
-	UPDATE_GAME_DATA,
-	UPDATE_GAME_PAYLOAD,
-	UPDATE_NOTIFICATION_DATA,
-	UPDATE_ON_TYPE_DATA,
-	UPDATE_ON_TYPE_PAYLOAD,
-} from "@/types/notification.types.js";
 
 class SocketIOService {
 	private readonly io: Server;
@@ -23,7 +16,6 @@ class SocketIOService {
 		this.io = new Server(fastify.server, {
 			path: "/socketio-api",
 			cors: {
-				// origin: `http://localhost:${this.options.FRONT_PORT}`,
 				origin: "*",
 				methods: ["GET", "POST"],
 				credentials: true,
@@ -48,20 +40,8 @@ class SocketIOService {
 				this.handleChat(socket, data);
 			});
 
-			socket.on("notification_update_action", async (data: UPDATE_NOTIFICATION_DATA) => {
-				this.handleNotificationUpdateAction(socket, data);
-			});
-
-			socket.on("notification_update_on_type", async (data: UPDATE_ON_TYPE_DATA) => {
-				this.handleNotificationUpdateOnType(socket, data);
-			});
-
-			socket.on("notification_start_game", async (data: UPDATE_GAME_DATA) => {
-				this.handleNotificationStartGame(socket, data);
-			});
-
-			socket.on("notification_update_game", async (data: UPDATE_GAME_DATA) => {
-				this.handleNotificationUpdateGame(socket, data);
+			socket.on('notification', async(data: any) => {
+				this.handleIncomingNotification(socket, data);
 			});
 
 			socket.on("disconnecting", async () => {
@@ -70,77 +50,21 @@ class SocketIOService {
 		});
 	}
 
-	private handleNotificationStartGame(socket: Socket, data: UPDATE_GAME_DATA) {
-		this.fastify.log.info("[CLIENT][START_GAME] RECEIVED MSG");
-		this.fastify.log.info(data);
-		const payload = this.fastify.jsCodec.encode({
-			sender: {
-				userId: data.senderId,
-				userSocket: socket.id,
-			},
-			receiver: {
-				userId: data.receiverId,
-			},
-			status: "unread",
-			type: "game",
-		});
-		this.fastify.js.publish("notification.start_game", payload);
-	}
-
-	private handleNotificationUpdateGame(socket: Socket, data: UPDATE_GAME_DATA) {
-		this.fastify.log.info("[CLIENT][UPDATE_GAME] RECEIVED MSG");
-		this.fastify.log.info(data);
-		const payload = this.fastify.jsCodec.encode({
-			sender: {
-				userId: data.senderId,
-				userSocket: socket.id,
-			},
-			receiver: {
-				userId: data.receiverId,
-			},
-			status: data.status,
-			actionUrl: data.actionUrl,
-			stateAction: data.stateAction,
-			type: "game",
-		});
-		this.fastify.js.publish("notification.update_game", payload);
-	}
-
 	private handleChat(socket: Socket, data: MessageType) {
 		this.fastify.log.info("[CLIENT][CHAT] RECEIVED MSG");
 		this.fastify.log.info(data);
 		this.fastify.js.publish("chat.send_msg", this.fastify.jsCodec.encode(data));
 	}
 
-	private handleNotificationUpdateAction(socket: Socket, data: UPDATE_NOTIFICATION_DATA) {
-		this.fastify.log.info("[CLIENT][NOTIF] RECEIVED MSG");
-		this.fastify.log.info(data);
+	private handleIncomingNotification(socket: Socket, data: any) {
+		this.fastify.log.info("[CLIENT][NOTIFICATION] RECEIVED MSG");
 
 		const payload = {
 			userId: socket.data.userId,
-			data: data,
-		};
-
-		this.fastify.js.publish("notification.update_action", this.fastify.jsCodec.encode(payload));
-	}
-
-	private handleNotificationUpdateOnType(socket: Socket, data: UPDATE_ON_TYPE_DATA) {
-		this.fastify.log.info("[CLIENT][NOTIF] RECEIVED MSG");
-		this.fastify.log.info(data);
-
-		const payload: UPDATE_ON_TYPE_PAYLOAD = {
-			userId: socket.data.userId,
-			data: {
-				type: data.type,
-				state: data.state,
-				status: data.status,
-			},
-		};
-
-		this.fastify.js.publish(
-			"notification.update_on_type",
-			this.fastify.jsCodec.encode(payload),
-		);
+			userSocket: socket.id,
+			load: data,
+		}
+		this.fastify.js.publish('notification.gateway', this.fastify.jsCodec.encode(payload));
 	}
 
 	private async handleConnection(socket: Socket) {

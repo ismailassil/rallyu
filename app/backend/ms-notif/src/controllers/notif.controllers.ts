@@ -49,43 +49,6 @@ class NotifControllers {
 			});
 		}
 	}
-
-	notifyGame(req: FastifyRequest<{ Body: NOTIFY_GAME_BODY }>, res: FastifyReply) {
-		const sender_id = req.headers["x-user-id"] as string;
-		const receiverId = req.body.receiver_id as number;
-
-		if (!sender_id || !receiverId) {
-			return res.status(400).send({
-				status: "error",
-				message: "Error Occurred",
-				details: "x-user-id Empty or body doesn't have required input",
-			});
-		}
-
-		const senderId = parseInt(sender_id);
-
-		const payload: NOTIFY_USER_PAYLOAD = {
-			senderId: senderId,
-			receiverId: receiverId,
-			type: "game",
-			actionUrl: randomUUID(),
-		};
-
-		const currentTimestamp: number = new Date().getTime() * 1_000_000;
-		fastify.notifService.createAndDispatchNotification(payload, currentTimestamp);
-		fastify.gameUsers.set(
-			senderId,
-			setTimeout(() => {
-				fastify.notifService.updateGame({
-					sender: { userId: senderId },
-					receiver: { userId: receiverId },
-					status: "dismissed",
-					type: "game",
-					actionUrl: currentTimestamp.toString(),
-				});
-			}, 10 * 1000),
-		);
-	}
 }
 
 export default NotifControllers;

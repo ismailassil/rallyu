@@ -22,7 +22,20 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 			sender_username TEXT NOT NULL,
 			receiver_id INTEGER NOT NULL,
 			content TEXT,
-			type TEXT CHECK(type IN ('game', 'chat', 'friend_request', 'tournament', 'status')),
+			type TEXT CHECK(
+				type IN (
+					'pp_game',
+					'xo_game',
+					'chat',
+					'friend_request',
+					'tournament',
+					'friend_accept',
+					'friend_reject',
+					'friend_cancel',
+					'game_accept',
+					'game_reject'
+				)
+			),
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			status TEXT CHECK(status IN ('read', 'unread', 'dismissed')) DEFAULT 'unread',

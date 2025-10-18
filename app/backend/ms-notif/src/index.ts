@@ -23,6 +23,7 @@ fastify.register(fastifyRedis, {
 	connectionName: "Notification Client",
 	closeClient: true,
 })
+
 // fastify.register(CronJobPlugin); // TODO: Activate this in Production
 fastify.register(natsPlugin, {
 	NATS_URL: process.env.NATS_URL ?? undefined,

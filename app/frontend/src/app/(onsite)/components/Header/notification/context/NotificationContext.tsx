@@ -10,16 +10,18 @@ import {
 import { useHeaderContext } from "../../context/HeaderContext";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import {
-	USER_NOTIFICATION,
-	UPDATE_NOTIFICATION_DATA,
-	NOTIFICATION_CONTEXT,
+	Notification,
+	NotificationContext,
 	HistoryPayload,
+	ServerToClient,
+	UpdateNotification,
+	UpdateContext,
 } from "../types/notifications.types";
 import { TOAST_PAYLOAD } from "../../toaster/Toast.types";
 import { useRouter } from "next/navigation";
 
 // Create the Context
-export const NotifContext = createContext<NOTIFICATION_CONTEXT | undefined>(undefined);
+export const NotifContext = createContext<NotificationContext | undefined>(undefined);
 
 // Create a custom hook
 export function useNotification() {
@@ -32,7 +34,7 @@ export function useNotification() {
 	return context;
 }
 
-function getToastData(data: USER_NOTIFICATION): TOAST_PAYLOAD {
+function getToastData(data: Notification): TOAST_PAYLOAD {
 	console.log("Creating toast for notification:", data);
 	return {
 		id: data.id,
@@ -48,17 +50,13 @@ function getToastData(data: USER_NOTIFICATION): TOAST_PAYLOAD {
 export function NotificationProvider({ children }: Readonly<{ children: React.ReactNode }>) {
 	const DEFAULT_TIME = 3 * 1000;
 
-	const [notifications, setNotifications] = useState<USER_NOTIFICATION[]>([]);
+	const [notifications, setNotifications] = useState<Notification[]>([]);
 	const [toastNotifications, setToastNotifications] = useState<TOAST_PAYLOAD[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [notifLength, setNotifLength] = useState<number>(0);
 
 	const { isNotif, isBottom, isProfile, isSearch } = useHeaderContext();
-	const {
-		apiClient,
-		socket,
-		loggedInUser
-	} = useAuth();
+	const { apiClient, socket } = useAuth();
 	const router = useRouter();
 
 	const isNotifRef = useRef<boolean>(isNotif);
@@ -75,21 +73,24 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		});
 	}, []);
 
-	const handleRemove = useCallback((id: number) => {
+	const handleRemoveToast = useCallback((id: number) => {
 		setToastNotifications((prev) => prev.filter((notif) => notif.id !== id));
 	}, []);
 
 	const handleNotify = useCallback(
-		(data: USER_NOTIFICATION) => {
+		(data: Notification) => {
 			console.log(data);
 			if (data.type === "chat" && window.location.pathname.startsWith("/chat")) {
-				const payload: UPDATE_NOTIFICATION_DATA = {
-					updateAll: false,
-					notificationId: data.id,
-					status: "dismissed",
-					state: "finished",
+				const payload = {
+					eventType: "UPDATE_ACTION",
+					data: {
+						updateAll: false,
+						notificationId: data.id,
+						status: "dismissed",
+						state: "finished",
+					},
 				};
-				socket.emit("notification_update_action", payload);
+				socket.emit("notification", payload);
 				return;
 			}
 			setNotifications((prev) => [data, ...prev]);
@@ -102,18 +103,18 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 
 				playSound();
 
-				setTimeout(() => handleRemove(data.id), 3000);
+				setTimeout(() => handleRemoveToast(data.id), 3000);
 			}
 		},
-		[handleRemove, playSound, socket]
+		[handleRemoveToast, playSound, socket]
 	);
 
-	const handleUpdate = useCallback((payload: UPDATE_NOTIFICATION_DATA) => {
-		const { updateAll, status, state } = payload;
+	const handleUpdateAction = useCallback((payload: UpdateNotification) => {
+		const { updateAll, status } = payload;
 
 		setNotifications((prev) => {
 			if (!updateAll) {
-				const { notificationId } = payload;
+				const { notificationId, state } = payload;
 
 				if (status === "dismissed") {
 					return prev.filter((notif) => notificationId !== notif.id);
@@ -123,26 +124,102 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				);
 			}
 			if (status === "dismissed") return [];
-			return prev.map((notif) => ({ ...notif, status, state }));
+			return prev.map((notif) => ({ ...notif, status }));
 		});
 	}, []);
 
-	const handleGameInit = useCallback((gameId: string) => {
-		// TODO - FIX THIS WITH MMAILA
-		router.push("/game/" + gameId);
-	}, [router]);
+	const handleUpdateContext = useCallback((payload: UpdateContext) => {
+		const { type } = payload;
+
+		setNotifications((prev) =>
+			prev.filter((notif) => {
+				if (notif.type !== type) return notif;
+			})
+		);
+	}, []);
+
+	const handleGame = useCallback(
+		(payload: string) => {
+			router.push("/game/" + payload);
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
+
+	const handleAccept = useCallback(
+		async (data: Notification | TOAST_PAYLOAD, isToast: boolean) => {
+			const { id: notifId, senderId, type } = data;
+
+			if (isToast) {
+				handleRemoveToast(notifId);
+			}
+			try {
+				if (type === "friend_request") {
+					await apiClient.acceptFriendRequest(senderId);
+				} else if (type === "game") {
+					socket.emitGameResponse(senderId, true, data.actionUrl!);
+				} else if (type === "tournament") {
+				}
+			} catch (err) {
+				console.error(err);
+			}
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[handleRemoveToast, socket]
+	);
+
+	const handleDecline = useCallback(
+		async (data: Notification | TOAST_PAYLOAD, isToast: boolean) => {
+			const { id: notifId, senderId, type } = data;
+
+			if (isToast) {
+				handleRemoveToast(notifId);
+			}
+			try {
+				if (type === "friend_request") {
+					await apiClient.rejectFriendRequest(senderId);
+				} else if (type === "game") {
+					socket.emitGameResponse(senderId, false, data.actionUrl!);
+				} else if (type === "tournament") {
+				}
+			} catch (err) {
+				console.error(err);
+			}
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[handleRemoveToast, socket]
+	);
+
+	const handleAll = useCallback(
+		({ eventType, data }: ServerToClient) => {
+			socket.printAll(data);
+			switch (eventType) {
+				case "NOTIFY":
+					handleNotify(data);
+					break;
+				case "UPDATE_ACTION":
+					handleUpdateAction(data);
+					break;
+				case "UPDATE_CONTEXT":
+					handleUpdateContext(data);
+					break;
+				case "UPDATE_GAME":
+					handleGame(data);
+					break;
+				default:
+					console.error(eventType);
+			}
+		},
+		[handleGame, handleNotify, handleUpdateAction, handleUpdateContext, socket]
+	);
 
 	useEffect(() => {
-		socket.on("notification_notify", handleNotify);
-		socket.on("notification_update_action", handleUpdate);
-		socket.on("notification_game_init", handleGameInit);
-		
+		socket.on("notification", handleAll);
+
 		return () => {
-			socket.off("notification_notify", handleNotify);
-			socket.off("notification_update_action", handleUpdate);
-			socket.off("notification_game_init", handleGameInit);
+			socket.off("notification", handleAll);
 		};
-	}, [handleNotify, handleUpdate, socket, handleGameInit]);
+	}, [handleAll, socket]);
 
 	useEffect(() => {
 		if (!isBottom && pageRef.current > 0) return;
@@ -158,7 +235,8 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 			})
 			.catch((err) => console.log(err))
 			.finally(() => setIsLoading(false));
-	}, [isBottom, apiClient]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isBottom]);
 
 	useEffect(() => {
 		let length = 0;
@@ -175,85 +253,13 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		}
 	}, [isNotif, isProfile, isSearch]);
 
-	const handleAccept = useCallback(
-		async (data: USER_NOTIFICATION | TOAST_PAYLOAD, isToast: boolean) => {
-			const { id: notifId, actionUrl, senderId, type } = data;
-
-			if (isToast) {
-				handleRemove(notifId);
-			}
-			try {
-				if (type === "friend_request") {
-					await apiClient.acceptFriendRequest(senderId);
-				} else if (type === "game") {
-					const payload = {
-						senderId: data.senderId,
-						receiverId: loggedInUser?.id,
-						stateAction: "accept",
-						status: "read",
-					};
-					socket.emit("notification_update_game", payload);
-				} else if (type === "tournament") {
-					const payload: UPDATE_NOTIFICATION_DATA = {
-						notificationId: data.id,
-						updateAll: false,
-						status: "read",
-						state: "finished",
-					};
-					socket.emit("notification_update_action", payload);
-					router.push(actionUrl || "/tournament");
-				}
-			} catch (err) {
-				console.error(err);
-			}
-		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[apiClient, handleRemove, router, socket]
-	);
-
-	const handleDecline = useCallback(
-		async (data: USER_NOTIFICATION | TOAST_PAYLOAD, isToast: boolean) => {
-			const { id: notifId, senderId, type } = data;
-
-			if (isToast) {
-				handleRemove(notifId);
-			}
-			try {
-				if (type === "friend_request") {
-					await apiClient.rejectFriendRequest(senderId);
-				} else if (type === "game") {
-					const payload = {
-						senderId: data.senderId,
-						receiverId: loggedInUser?.id,
-						stateAction: "decline",
-						status: "dismissed",
-						actionUrl: data.actionUrl
-					};
-					socket.emit("notification_update_game", payload);
-				} else if (type === "tournament") {
-					const payload: UPDATE_NOTIFICATION_DATA = {
-						notificationId: data.id,
-						updateAll: false,
-						status: "read",
-						state: "finished",
-					};
-					socket.emit("notification_update_action", payload);
-				}
-			} catch (err) {
-				console.error(err);
-			}
-		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[apiClient, handleRemove, socket]
-	);
-
-	const values = useMemo<NOTIFICATION_CONTEXT>(
+	const values = useMemo<NotificationContext>(
 		() => ({
 			notifications,
 			setNotifications,
 			toastNotifications,
 			setToastNotifications,
-			handleRemove,
+			handleRemoveToast,
 			handleAccept,
 			handleDecline,
 			isLoading,
@@ -264,7 +270,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 			DEFAULT_TIME,
 			handleAccept,
 			handleDecline,
-			handleRemove,
+			handleRemoveToast,
 			isLoading,
 			notifLength,
 			notifications,

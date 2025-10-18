@@ -7,6 +7,9 @@ all: help
 env:
 	@bash ./env-script/spread-env.sh
 
+docker:
+	@if ! docker-compose -v | grep 2.30.0; then bash install-docker.sh; fi
+
 up: env
 	@docker-compose up --build --watch
 

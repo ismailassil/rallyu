@@ -47,7 +47,8 @@ services:
         develop:
           watch:
             - path: ./nginx/conf
-              action: rebuild
+              action: sync+restart
+              target: ./nginx/conf
 
 include:
     - ./app/compose.app.yaml

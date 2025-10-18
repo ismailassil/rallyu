@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { APIClient } from "@/app/(api)/APIClient";
 import { MessageType } from "../chat/types/chat.types";
 import SocketClient from "@/app/(api)/SocketClient";

@@ -105,16 +105,21 @@ class RelationsController {
 
 			await this.relationsService.cancelFriendRequest(user_id!, targetUserId);
 
-			// UPDATE THE NOTIFICATION
 			const jsCodec = JSONCodec();
 			const data = jsCodec.encode({
-				senderId: targetUserId,
-				receiverId: user_id,
-				status: 'dismissed',
-				type: 'friend_request',
-				state: 'finished'
+				load: {
+					eventType: "SERVICE_EVENT",
+					data: {
+						senderId: user_id,
+						receiverId: targetUserId,
+						load: {
+							type: 'friend_request',
+							status: 'cancel',
+						}
+					}
+				}
 			});
-			request.server.nc.publish("notification.update_status", data);
+			request.server.nc.publish("notification.gateway", data);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
@@ -133,25 +138,21 @@ class RelationsController {
 
 			await this.relationsService.acceptFriendRequest(targetUserId, user_id!);
 
-			// UPDATE THE NOTIFICATION
 			const jsCodec = JSONCodec();
 			const data = jsCodec.encode({
-				senderId: targetUserId,
-				receiverId: user_id,
-				status:'read',
-				type:'friend_request',
-				state: 'finished'
+				load: {
+					eventType: "SERVICE_EVENT",
+					data: {
+						senderId: targetUserId,
+						receiverId: user_id,
+						load: {
+							type: 'friend_request',
+							status: 'accept',
+						}
+					}
+				}
 			});
-			request.server.nc.publish("notification.update_status", data);
-			
-			// NOTIFY THE OTHER USER ABOUT IT
-			const payload = jsCodec.encode({
-				senderId: user_id,
-				receiverId: targetUserId,
-				type: 'status',
-				message: "has accepted your invitation",
-			});
-			request.server.nc.publish("notification.dispatch", payload);
+			request.server.nc.publish("notification.gateway", data);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
@@ -170,16 +171,22 @@ class RelationsController {
 			
 			await this.relationsService.rejectFriendRequest(targetUserId, user_id!);
 			
-			// UPDATE THE NOTIFICATION
 			const jsCodec = JSONCodec();
 			const data = jsCodec.encode({
-				senderId: targetUserId,
-				receiverId: user_id,
-				status:'read',
-				type:'friend_request',
-				state: 'finished'
+				load: {
+					eventType: "SERVICE_EVENT",
+					data: {
+						senderId: targetUserId,
+						receiverId: user_id,
+						load: {
+							type: 'friend_request',
+							status: 'reject',
+						}
+					}
+				}
 			});
-			request.server.nc.publish("notification.update_status", data);
+			request.server.nc.publish("notification.gateway", data);
+
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 

@@ -11,20 +11,26 @@ const Footer = () => {
 
 	const handleClearAll = useCallback(() => {
 		const data = {
-			updateAll: true,
-			status: "dismissed",
+			eventType: "UPDATE_ACTION",
+			data: {
+				updateAll: true,
+				status: "dismissed",
+			},
 		};
 
-		socket.emit("notification_update_action", data);
+		socket.emit("notification", data);
 	}, [socket]);
 
 	const handleMarkAll = useCallback(() => {
 		const data = {
-			updateAll: true,
-			status: "read",
+			eventType: "UPDATE_ACTION",
+			data: {
+				updateAll: true,
+				status: "read",
+			},
 		};
 
-		socket.emit("notification_update_action", data);
+		socket.emit("notification", data);
 	}, [socket]);
 
 	return (

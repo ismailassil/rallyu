@@ -5,9 +5,10 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN npm install
-
-# RUN npm install concurrently nodemon -g
+RUN npm install concurrently typescript nodemon -g
 
 COPY . .
 
-ENTRYPOINT [ "npm", "start" ]
+RUN tsc
+
+ENTRYPOINT [ "npm", "run", "dev", "--prefix", "/app/" ]

@@ -1,4 +1,18 @@
 /**
+ * [NATS] Gateway Subject
+ */
+export interface IncomingGatewayType {
+	userId: number;
+	userSocket: string;
+	load: { eventType: string; data: any };
+}
+
+export interface OutgoingGatewayType {
+	sockets?: string[];
+	userId: number;
+	load: any;
+}
+/**
  * Type of the Database
  */
 export interface RAW_NOTIFICATION {
@@ -48,20 +62,18 @@ export interface NOTIFY_USER_PAYLOAD {
 
 export type NOTIFICATION_STATUS = "read" | "unread" | "dismissed";
 export type NOTIFICATION_STATE = "pending" | "finished";
-
-export type NOTIFICATION_TYPE = "chat" | "game" | "friend_request" | "tournament" | "status";
-
-/**
- * When the user interacts with the notification to update it
- *
- * Used when **all** or **single** notification are updated
- *
- * `read` | `dismissed`, `pending` | `finished`
- */
-export interface UPDATE_ACTION_PAYLOAD {
-	userId: number;
-	data: UPDATE_NOTIFICATION_DATA;
-}
+export type GAME_TYPE = "pingpong" | "tictactoe";
+export type NOTIFICATION_TYPE =
+	| "chat"
+	| "pp_game"
+	| "xo_game"
+	| "friend_request"
+	| "tournament"
+	| "friend_accept"
+	| "friend_reject"
+	| "friend_cancel"
+	| "game_accept"
+	| "game_reject";
 
 /**
  * Payload of the `UPDATE_ACTION_PAYLOAD`
@@ -70,13 +82,12 @@ export type UPDATE_NOTIFICATION_DATA =
 	| {
 			updateAll: true;
 			status: NOTIFICATION_STATUS;
-			state?: NOTIFICATION_STATE;
 	  }
 	| {
 			updateAll: false;
 			notificationId: number;
 			status: NOTIFICATION_STATUS;
-			state?: NOTIFICATION_STATE;
+			state: NOTIFICATION_STATE;
 	  };
 
 /**
@@ -84,30 +95,22 @@ export type UPDATE_NOTIFICATION_DATA =
  *
  * Used by other microservices
  *
- * @param actionUrl (target: `game` | `tournament`) used to identify (duplicates)
  */
-export interface UPDATE_STATUS_PAYLOAD {
+export interface MICRO_ACTION_PAYLOAD {
 	senderId: number;
 	receiverId: number;
-	status: NOTIFICATION_STATUS;
-	type: NOTIFICATION_TYPE;
-	message?: string;
-	actionUrl?: string;
+	load:
+		| {
+				type: "friend_request";
+				status: "accept" | "reject" | "cancel";
+		  }
+		| {
+				type: "tournament";
+		  };
 }
 
-/**
- * When the enter the chat route
- * update all chat msg to be finished
- */
-export interface UPDATE_ON_TYPE_DATA {
+export interface UPDATE_CONTEXT_DATA {
 	type: NOTIFICATION_TYPE;
-	state: NOTIFICATION_STATE;
-	status: NOTIFICATION_STATUS;
-}
-
-export interface UPDATE_ON_TYPE_PAYLOAD {
-	userId: number;
-	data: UPDATE_ON_TYPE_DATA;
 }
 
 export interface USER_INFO {
@@ -115,12 +118,13 @@ export interface USER_INFO {
 	userSocket?: string | undefined;
 }
 
-export interface UPDATE_GAME_PAYLOAD {
-	sender: USER_INFO;
-	receiver: USER_INFO;
-	status: NOTIFICATION_STATUS;
+export interface UpdateGamePayload {
+	receiverId: number;
 	type: NOTIFICATION_TYPE;
-	stateAction?: "accept" | "decline";
-	message?: string;
-	actionUrl?: string;
+	actionUrl: string;
+}
+
+export interface CreateGamePayload {
+	targetId: number;
+	type: NOTIFICATION_TYPE;
 }

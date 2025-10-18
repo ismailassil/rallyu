@@ -2,32 +2,56 @@ import {
 	ChatsIcon,
 	CrownSimpleIcon,
 	GameControllerIcon,
-	InfoIcon,
 	UserPlusIcon,
 } from "@phosphor-icons/react";
 import { NOTIFICATION_STATE, NOTIFICATION_TYPE } from "../notification/types/notifications.types";
+import { UserMinusIcon } from "lucide-react";
 
 const classContent = `absolute -top-10 right-5 opacity-5 -z-1`;
 const iconSize = 190;
 
-const friend_request = {
-	icon: <UserPlusIcon className={classContent} size={iconSize} />,
+const chat = {
+	icon: <ChatsIcon className={classContent} size={iconSize} />,
 } as const;
 
 const game = {
 	icon: <GameControllerIcon className={classContent} size={iconSize} />,
 } as const;
 
-const chat = {
-	icon: <ChatsIcon className={classContent} size={iconSize} />,
+const game_accept = {
+	icon: <GameControllerIcon className={classContent} size={iconSize} />,
+} as const;
+
+const game_reject = {
+	icon: <GameControllerIcon className={classContent} size={iconSize} />,
+} as const;
+
+const pp_game = {
+	icon: <GameControllerIcon className={classContent} size={iconSize} />,
+} as const;
+
+const xo_game = {
+	icon: <GameControllerIcon className={classContent} size={iconSize} />,
+} as const;
+
+const friend_request = {
+	icon: <UserPlusIcon className={classContent} size={iconSize} />,
+} as const;
+
+const friend_accept = {
+	icon: <UserPlusIcon className={classContent} size={iconSize} />,
+} as const;
+
+const friend_reject = {
+	icon: <UserMinusIcon className={classContent} size={iconSize} />,
+} as const;
+
+const friend_cancel = {
+	icon: <UserMinusIcon className={classContent} size={iconSize} />,
 } as const;
 
 const tournament = {
 	icon: <CrownSimpleIcon className={classContent} size={iconSize} />,
-} as const;
-
-const status = {
-	icon: <InfoIcon className={classContent} size={iconSize} />,
 } as const;
 
 export const ToastTypesDetails = {
@@ -35,7 +59,13 @@ export const ToastTypesDetails = {
 	game,
 	chat,
 	tournament,
-	status,
+	game_accept,
+	game_reject,
+	pp_game,
+	xo_game,
+	friend_accept,
+	friend_reject,
+	friend_cancel,
 } as const;
 
 export type TOAST_PAYLOAD = {
@@ -47,3 +77,20 @@ export type TOAST_PAYLOAD = {
 	actionUrl: string;
 	state: NOTIFICATION_STATE;
 };
+
+/**
+ * export type NOTIFICATION_TYPE =
+	| "chat"
+	| "game"
+	| "pp_game"
+	| "xo_game"
+	| "friend_request"
+	| "tournament"
+	| "friend_accept"
+	| "friend_reject"
+	| "friend_cancel"
+	| "game_accept"
+	| "game_reject";
+ */
+
+export const decisionOptions = ["game", "tournament", "pp_game", "xo_game", "friend_request"];

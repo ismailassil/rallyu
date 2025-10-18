@@ -1,6 +1,6 @@
 import moment from "moment";
 import { motion } from "framer-motion";
-import { USER_NOTIFICATION } from "../types/notifications.types";
+import { Notification } from "../types/notifications.types";
 import Chat from "../items/Chat";
 import FriendRequest from "../items/FriendRequest";
 import GameOrTournament from "../items/GameOrTournament";
@@ -10,26 +10,21 @@ import { useTranslations } from "next-intl";
 import Avatar from "@/app/(onsite)/users/components/Avatar";
 
 interface Props {
-	data: USER_NOTIFICATION;
-	handler: (id: number, status: "read" | "dismissed") => void;
-	handleChatUpdate: (id: number) => void;
+	data: Notification;
+	handler: (id: number, status: "read" | "dismissed", state: "pending" | "finished") => void;
 }
 
-function NotificationCard({ data, handler, handleChatUpdate }: Props) {
+function NotificationCard({ data, handler }: Props) {
 	const { id, senderUsername, senderId, content, type, updatedAt, status, avatar, state } = data;
 	const t = useTranslations("headers.notification.box");
-	const textDescriptionRef =
-		type !== "status"
-			? t("description." + type)
-			: t("description.status", { type: data.content }) +
-				(data.content !== "decline_game" ? data.content : "");
+	const textDescriptionRef = t(`description.${type}`);
 	const dateRef = moment.utc(updatedAt).local().fromNow();
 	const { handleAccept, handleDecline } = useNotification();
 
 	return (
 		<motion.li
 			className="relative flex min-h-16 w-full flex-col gap-3 overflow-hidden px-2 py-4 text-start duration-300 hover:bg-black/10"
-			onHoverStart={() => status === "unread" && handler(id, "read")}
+			onHoverStart={() => status === "unread" && handler(id, "read", state)}
 		>
 			{status === "unread" && (
 				<div className="absolute top-5 left-9 size-2 -translate-1/2 rounded-full bg-yellow-400" />
@@ -51,26 +46,24 @@ function NotificationCard({ data, handler, handleChatUpdate }: Props) {
 				<XIcon
 					size={22}
 					className="relative cursor-pointer rounded-full p-0.5"
-					onClick={() => handler(id, "dismissed")}
+					onClick={() => handler(id, "dismissed", state)}
 				/>
 			</div>
-			{type === "status" ? null : type === "chat" ? (
+			{type === "chat" ? (
 				<Chat
 					message={content}
 					username={senderUsername}
 					receiverId={senderId}
 					state={state === "finished" ? true : false}
-					handler={() => handleChatUpdate(id)}
+					handler={() => handler(id, "read", "finished")}
 				/>
 			) : type === "friend_request" ? (
-				state === "pending" && (
 					<FriendRequest
 						handleAccept={() => handleAccept(data, false)}
 						handleDecline={() => handleDecline(data, false)}
 					/>
-				)
 			) : (
-				state === "pending" && (
+				type === 'tournament' || type == 'game' && (
 					<GameOrTournament
 						type={type}
 						handleAccept={() => handleAccept(data, false)}

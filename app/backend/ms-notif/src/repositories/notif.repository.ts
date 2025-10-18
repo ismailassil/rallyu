@@ -229,6 +229,23 @@ class NotifRepository {
 			throw error;
 		}
 	}
+	
+	async removeAllNotif(receiverId: number, type: NOTIFICATION_TYPE) {
+		try {
+			const stmt = fastify.database.prepare(`
+				DELETE FROM messages WHERE receiver_id = ? AND type = ?
+			`)
+
+			const res = stmt.run(receiverId, type);
+
+			if (res.changes === 0) {
+				fastify.log.info("NO AFFECTION");
+			}
+		} catch (error) {
+			fastify.log.error("DB ERROR: " + error);
+			throw error;
+		}
+	}
 
 	async updateNotifStatus(
 		notifId: number,

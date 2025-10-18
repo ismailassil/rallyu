@@ -36,46 +36,48 @@ const Chat = ({ state, receiverId, message, username, handler }: Props) => {
 		};
 		socket.emit("chat_send_msg", newMessage);
 		setShowInput(false);
-		setText('');
+		setText("");
 		handler();
 	}
 
 	return (
 		<div className="flex size-full items-center gap-2">
-			{!state && <div
-				className="bg-card cursor-pointer rounded-lg p-2 ring-1 ring-white/10 transition-all duration-300 hover:scale-101 hover:bg-white/10"
-				onClick={() => !state && setShowInput((prev) => !prev)}
-			>
-				<AnimatePresence mode="wait">
-					{showInput ? (
-						<motion.div
-							key="arrow-left"
-							initial={{ opacity: 0, scale: 0 }}
-							animate={{ opacity: 1, scale: 1 }}
-							exit={{ opacity: 0, scale: 0 }}
-							transition={{
-								duration: 0.2,
-								ease: "easeOut",
-							}}
-						>
-							<ArrowLeftIcon size={16} className="fill-white/80" />
-						</motion.div>
-					) : (
-						<motion.div
-							key="chat-dots"
-							initial={{ opacity: 0, scale: 0 }}
-							animate={{ opacity: 1, scale: 1 }}
-							exit={{ opacity: 0, scale: 0 }}
-							transition={{
-								duration: 0.2,
-								ease: "easeOut",
-							}}
-						>
-							<ChatCenteredDotsIcon size={16} className="fill-white/80" />
-						</motion.div>
-					)}
-				</AnimatePresence>
-			</div>}
+			{!state && (
+				<div
+					className="bg-card cursor-pointer rounded-lg p-2 ring-1 ring-white/10 transition-all duration-300 hover:scale-101 hover:bg-white/10"
+					onClick={() => !state && setShowInput((prev) => !prev)}
+				>
+					<AnimatePresence mode="wait">
+						{showInput ? (
+							<motion.div
+								key="arrow-left"
+								initial={{ opacity: 0, scale: 0 }}
+								animate={{ opacity: 1, scale: 1 }}
+								exit={{ opacity: 0, scale: 0 }}
+								transition={{
+									duration: 0.2,
+									ease: "easeOut",
+								}}
+							>
+								<ArrowLeftIcon size={16} className="fill-white/80" />
+							</motion.div>
+						) : (
+							<motion.div
+								key="chat-dots"
+								initial={{ opacity: 0, scale: 0 }}
+								animate={{ opacity: 1, scale: 1 }}
+								exit={{ opacity: 0, scale: 0 }}
+								transition={{
+									duration: 0.2,
+									ease: "easeOut",
+								}}
+							>
+								<ChatCenteredDotsIcon size={16} className="fill-white/80" />
+							</motion.div>
+						)}
+					</AnimatePresence>
+				</div>
+			)}
 			<div
 				className={`bg-card focus-within:ring-main flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg px-4 py-2 text-xs ring-1 transition-all duration-300 ease-in-out hover:scale-101 hover:bg-white/10 ${showInput ? "ring-white/15" : "ring-br-card"}`}
 			>

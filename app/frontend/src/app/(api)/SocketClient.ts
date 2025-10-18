@@ -9,10 +9,10 @@ class SocketClient {
 
 		this.socket = io(this.BaseURL, {
 			autoConnect: false,
-			reconnection: false,
+			reconnection: true,
 			withCredentials: true,
 			transports: ["polling"],
-			path: '/socketio-api'
+			path: "/socketio-api",
 		});
 	}
 
@@ -59,6 +59,39 @@ class SocketClient {
 		this.socket?.on("disconnect", () => {
 			console.log("[SocketIO] Disconnected");
 		});
+	}
+
+	/** Function Handlers */
+	createGame(targetId: number, gameType: "pingpong" | "tictactoe") {
+		const data = {
+			eventType: "CREATE_GAME",
+			data: {
+				targetId,
+				type: gameType === "pingpong" ? "pp_game" : "xo_game",
+			},
+		};
+
+		this.emit("notification", data);
+	}
+
+	emitGameResponse(targetId: number, accept: boolean, actionUrl: string) {
+		const data = {
+			eventType: "UPDATE_GAME",
+			data: {
+				receiverId: targetId,
+				type: accept ? "game_accept" : "game_reject",
+				actionUrl,
+			},
+		};
+
+		this.emit("notification", data);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	printAll(data: any) {
+		console.group("-------------NOTIFICATION-------------");
+		console.log(data);
+		console.groupEnd();
 	}
 }
 

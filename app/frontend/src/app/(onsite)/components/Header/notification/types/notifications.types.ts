@@ -1,28 +1,55 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Dispatch, SetStateAction } from "react";
 import { TOAST_PAYLOAD } from "../../toaster/Toast.types";
 
-export interface NOTIFICATION_CONTEXT {
-	notifications: USER_NOTIFICATION[];
-	setNotifications: Dispatch<SetStateAction<USER_NOTIFICATION[]>>;
+export type NOTIFICATION_STATUS = "read" | "unread" | "dismissed";
+export type NOTIFICATION_STATE = "pending" | "finished";
+export type NOTIFICATION_TYPE =
+	| "chat"
+	| "game"
+	| "pp_game"
+	| "xo_game"
+	| "friend_request"
+	| "tournament"
+	| "friend_accept"
+	| "friend_reject"
+	| "friend_cancel"
+	| "game_accept"
+	| "game_reject";
+
+export interface NotificationContext {
+	notifications: Notification[];
+	setNotifications: Dispatch<SetStateAction<Notification[]>>;
 	toastNotifications: TOAST_PAYLOAD[];
 	setToastNotifications: Dispatch<SetStateAction<TOAST_PAYLOAD[]>>;
-	handleRemove: (id: number) => void;
-	handleAccept: (data: USER_NOTIFICATION | TOAST_PAYLOAD, isToast: boolean) => Promise<void>;
-	handleDecline: (data: USER_NOTIFICATION | TOAST_PAYLOAD, isToast: boolean) => Promise<void>;
+	handleRemoveToast: (id: number) => void;
+	handleAccept: (data: Notification | TOAST_PAYLOAD, isToast: boolean) => Promise<void>;
+	handleDecline: (data: Notification | TOAST_PAYLOAD, isToast: boolean) => Promise<void>;
 	isLoading: boolean;
 	notifLength: number;
 	DEFAULT_TIME: number;
 }
 
-/************************************************************** */
-/************************* UPDATE EVENT *************************/
-/************************************************************** */
+export enum NOTIF_TYPE {
+	NOTIFY = "NOTIFY",
+	UPDATE_ACTION = "UPDATE_ACTION",
+	UPDATE_CONTEXT = "UPDATE_CONTEXT",
+	UPDATE_GAME = "UPDATE_GAME",
+}
 
-export type UPDATE_NOTIFICATION_DATA =
+export interface ServerToClient {
+	eventType: `${NOTIF_TYPE}`;
+	data: any;
+}
+
+// /************************************************************** */
+// /************************* UPDATE EVENT *************************/
+// /************************************************************** */
+
+export type UpdateNotification =
 	| {
 			updateAll: true;
 			status: NOTIFICATION_STATUS;
-			state: NOTIFICATION_STATE;
 	  }
 	| {
 			updateAll: false;
@@ -31,11 +58,17 @@ export type UPDATE_NOTIFICATION_DATA =
 			state: NOTIFICATION_STATE;
 	  };
 
-/************************************************************** */
-/************************* NOTIFY EVENT *************************/
-/************************************************************** */
+export type UpdateContext = {
+	type: NOTIFICATION_TYPE;
+	status: NOTIFICATION_STATUS;
+	state: NOTIFICATION_STATE;
+};
 
-export interface USER_NOTIFICATION {
+// /************************************************************** */
+// /************************* NOTIFY EVENT *************************/
+// /************************************************************** */
+
+export interface Notification {
 	id: number;
 	senderId: number;
 	senderUsername: string;
@@ -50,17 +83,11 @@ export interface USER_NOTIFICATION {
 	state: NOTIFICATION_STATE;
 }
 
-export type NOTIFICATION_STATUS = "read" | "unread" | "dismissed";
-
-export type NOTIFICATION_TYPE = "chat" | "game" | "friend_request" | "tournament" | "status";
-
-export type NOTIFICATION_STATE = "pending" | "finished";
-
-/************************************************************** */
-/********************** GET HISTORY REQUEST *********************/
-/************************************************************** */
+// /************************************************************** */
+// /********************** GET HISTORY REQUEST *********************/
+// /************************************************************** */
 
 export interface HistoryPayload {
 	status: "success" | "error";
-	message: USER_NOTIFICATION[];
+	message: Notification[];
 }

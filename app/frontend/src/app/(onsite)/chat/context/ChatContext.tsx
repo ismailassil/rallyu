@@ -1,9 +1,9 @@
-"use client"
-import { useContext, createContext, useState, ReactNode, useEffect, useCallback } from "react"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+import { useContext, createContext, useState, ReactNode, useEffect } from "react";
 import React from 'react';
 import { useAuth } from "../../contexts/AuthContext";
 import { LoggedUser, MessageType } from "../types/chat.types";
-import { AxiosError } from "axios";
 
 type ChatContextType = {
 	showConversation: boolean;
@@ -18,30 +18,30 @@ type ChatContextType = {
 	setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
 	selectedUser: LoggedUser | null;
 	setSelectedUser: React.Dispatch<React.SetStateAction<LoggedUser | null>>;
-	handleSendGame: (id: number) => Promise<void>;
+	handleSendGame: (targetId: number | undefined, gameType: "pingpong" | "tictactoe") => Promise<void>;
 }
 
-const ChatContext = createContext<ChatContextType | null>(null)
+const ChatContext = createContext<ChatContextType | null>(null);
 
 export const useChat = () => {
-	const context = useContext(ChatContext)
+	const context = useContext(ChatContext);
 	if (context === null) {
 		throw new Error("useChat must be used within a ChatProvider");
 	}
-	return context
-}
+	return context;
+};
 
 type ChatProviderProps = {
 	children: ReactNode;
 }
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
-	const [showConversation, setShowConversation] = useState(false)
-	const [friends, setFriends] = useState<LoggedUser[] | null>(null)
-	const [isLoadingFriends, setIsLoadingFriends] = useState(true)
-	const [messages, setMessages] = useState<MessageType[]>([])
-	const [selectedUser, setSelectedUser] = useState<LoggedUser | null>(null)
-	const { socket, apiClient, loggedInUser: BOSS } = useAuth()
+	const [showConversation, setShowConversation] = useState(false);
+	const [friends, setFriends] = useState<LoggedUser[] | null>(null);
+	const [isLoadingFriends, setIsLoadingFriends] = useState(true);
+	const [messages, setMessages] = useState<MessageType[]>([]);
+	const [selectedUser, setSelectedUser] = useState<LoggedUser | null>(null);
+	const { socket, apiClient, loggedInUser: BOSS } = useAuth();
 
 	useEffect(() => {
 		async function getAllFriends() {
@@ -55,6 +55,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			}
 		}
 		getAllFriends();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [showConversation, selectedUser]);
 
 	const playMessageSound = () => {
@@ -74,13 +75,13 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			setMessages((prev) => [...prev, data]);
 		}
 
-		socket.on('chat_receive_msg', handleMessage)
-		socket.on('chat_update_msg', handleUpdateMessage)
+		socket.on('chat_receive_msg', handleMessage);
+		socket.on('chat_update_msg', handleUpdateMessage);
 		return () => {
 			socket.off("chat_receive_msg", handleMessage);
 			socket.off("chat_update_msg", handleUpdateMessage);
-		}
-	}, [])
+		};
+	}, [socket]);
 
 
 	useEffect(() => {
@@ -88,19 +89,17 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
 		apiClient.instance.get('/chat/history')
 			.then((response: any) => {
-				setMessages(response?.data)
+				setMessages(response?.data);
 			})
 			.catch((error: any) => {
 				console.error("Error fetching chat history:", error);
 			});
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const handleSendGame = async (id: number) => {
-		if (id === undefined) return;
-		socket.emit("notification_start_game", {
-			senderId: BOSS?.id,
-			receiverId: id,
-		});
+	const handleSendGame = async (targetId: number | undefined, gameType: "pingpong" | "tictactoe") => {
+		if (targetId === undefined) return;
+		socket.createGame(targetId, gameType);
 	};
 
 	return (
@@ -121,5 +120,5 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 		}}>
 			{children}
 		</ChatContext.Provider>
-	)
-}
+	);
+};

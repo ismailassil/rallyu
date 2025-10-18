@@ -5,7 +5,8 @@ let timer: NodeJS.Timeout | undefined;
 const useRequestBattleFriend = function () {
     const { isBusy, setIsBusy } = useAuth();
 
-    const requestBattleFriend = function (event) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const requestBattleFriend = function (event: any) {
 		event.preventDefault();
 		if (isBusy)
 			return ;
