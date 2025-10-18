@@ -19,7 +19,7 @@ const Overlay = ({ pauseHandler, resetHandler, status }: { pauseHandler: () => v
             <div className={`absolute inset-0 rounded-lg transition-all duration-150 w-full h-full ${status === 'pause' || status === 'gameover' ? 'bg-neutral-800/30 ': ''}`}>
                 <PauseIcon className={`absolute inset-0 m-auto w-[clamp(50px,8%,100%)] h-[clamp(65px,15%,100%)] transition-all duration-100 ease-in-out ${status === 'pause' ? 'opacity-90 translate-y-0': 'translate-y-4 opacity-0'}`}/>
                 <div className={`absolute inset-0 m-auto p-3 flex flex-col justify-between w-[clamp(120px,20%,100%)] h-[clamp(70px,20%,100%)] border border-card bg-neutral-900 shadow-black shadow-2xl rounded-lg transition-all duration-300 ease-in-out ${status === 'gameover' ? 'opacity-100 translate-y-0': 'translate-y-20 opacity-0'}`}>
-                    <span className='flex flex-1 text-4xl font-funnel-display pb-5 font-bold justify-center items-center'>Player1 Wins</span>
+                    <span className='flex flex-1 text-3xl font-funnel-display pb-5 font-bold justify-center items-center'>Gameover</span>
                     <div className="flex gap-2">
                         <button
                             onClick={() => router.push('/game')}

@@ -92,12 +92,12 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				{
 					coords: { x: 20, y: 450 },
 					movement: 'still',
-					speed: 15
+					speed: 12
 				},
 				{
 					coords: { x: 1580, y: 450 },
 					movement: 'still',
-					speed: 15
+					speed: 12
 				}
 			],
 			score: [0, 0],

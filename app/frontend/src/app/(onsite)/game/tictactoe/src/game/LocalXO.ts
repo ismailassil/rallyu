@@ -1,4 +1,4 @@
-import { PongState, Coords, BallState, PongEventHandlers } from '@/app/(onsite)/game/types/types';
+import { PongState, Coords, BallState, EventHandlers } from '@/app/(onsite)/game/types/types';
 import SocketProxy from '@/app/(onsite)/game/utils/socketProxy'
 
 class LocalXO {
@@ -14,7 +14,7 @@ class LocalXO {
     startTime: number | null = null;
     gamePlayStatus = 'countdown'; // pause, gameover, delay, play
     
-    constructor(eventHandlers) {
+    constructor(private eventHandlers?: EventHandlers) {
         this.animationFrameId = null;
         this.state = {
             

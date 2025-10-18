@@ -18,11 +18,11 @@ const Overlay = ({ status }: { status: string }) => { // status: pause countdown
             <div className={`absolute inset-0  rounded-lg transition-all duration-150 w-full h-full ${status !== 'none' && 'bg-neutral-800/30'}`}>
                 <div className={`absolute inset-0 m-auto p-3 flex flex-col justify-between w-[clamp(170px,20%,100%)] h-[clamp(100px,20%,100%)] border border-card bg-neutral-900 shadow-black shadow-2xl rounded-lg transition-all duration-300 ease-in-out ${status !== 'none' ? 'opacity-100 translate-y-0': 'translate-y-20 opacity-0'}`}>
                     <span className='flex flex-1 text-4xl whitespace-nowrap mb-5 font-funnel-display font-bold justify-center items-center'>
-                        {status === 'win' ? (
-                            'You Win!'
-                        ): status === 'loss' ? (
+                        {status === 'X' ? (
+                            'X Wins!'
+                        ): status === 'O' ? (
                             'You lose'
-                        ) : status === 'tie' ? (
+                        ) : status === 'draw' ? (
                             'Draw'
                         ) : 'Gameover'}
                     </span>

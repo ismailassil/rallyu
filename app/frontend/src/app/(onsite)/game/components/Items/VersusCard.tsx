@@ -4,6 +4,7 @@ import inter from "@/app/fonts/inter";
 import GameTimer from "./GameTimer";
 import { useEffect, useRef, useState } from "react";
 import { Flag, Unplug } from "lucide-react";
+import unicaOne from "@/app/fonts/unicaOne";
 
 interface PlayerInfo {
     username: string,
@@ -12,9 +13,9 @@ interface PlayerInfo {
     level: number
 }
 
-const PlayerCard = ({ side, info, disconnect } : { side: string, info: PlayerInfo | null, disconnect?: boolean }) => {
+const PlayerCard = ({ side, info, disconnect, score } : { side: string, info: PlayerInfo | null, disconnect?: boolean, score?: number | null }) => {
     const avatar =  (
-        <div className="w-[100px] h-[100px] border border-white/18 rounded-lg">
+        <div className="sm:w-[60px] sm:h-[60px] md:w-[80px] md:h-[80px] xl:w-[100px] xl:h-[100px] border border-white/18 rounded-lg">
             {
             info
                 ? <Avatar avatar={info.avatar_url} className="h-full w-full rounded-lg" />
@@ -24,17 +25,17 @@ const PlayerCard = ({ side, info, disconnect } : { side: string, info: PlayerInf
     );
 
     const playerInfo = (
-        <div className={`flex min-w-[100px] ${inter.className}`}>
+        <div className={`flex w-auto h-full ${inter.className}`}>
             {
                 info
                     ? 
-                    <div className={`flex flex-col justify-between  ${side === 'right' ? 'items-end' : 'items-start' }`}>
-                        <span className={`text-${side} text-3xl font-bold shadow-2xl`}>{info?.username}</span>
-                        <span className={`inline-flex flex-none items-center justify-center px-2 text-md font-bold bg-white/90 rounded-full text-black`}>Rank {info.rank}</span>
-                        <span className={`text-${side} text-lg opacity-40 font-medium`}>LVL {info?.level}</span>
+                    <div className={`flex flex-col justify-between h-full gap-1  ${side === 'right' ? 'items-end' : 'items-start' }`}>
+                        <span className={`text-${side} md:text-lg lg:text-xl xl:text-3xl font-bold shadow-2xl`}>{info?.username}</span>
+                        <span className={`inline-flex flex-none text-xs xl:text-base whitespace-nowrap items-center justify-center px-3 text-md font-bold bg-white/90 rounded-full text-black`}>Rank {info.rank}</span>
+                        <span className={`text-${side} text-xs xl:text-lg opacity-40 font-medium`}>LVL {info?.level}</span>
                     </div>
                     :
-                    <div className={`flex flex-col ${side === 'right' && 'justify-end items-end' } pt-2  gap-3`}>
+                    <div className={`flex flex-col h-full justify-between ${side === 'right' && 'items-end' } py-2`}>
                         <div className="w-[120px] h-[20px] bg-card rounded-full animate-pulse"></div>
                         <div className="w-[60px] h-[20px] bg-card rounded-full animate-pulse"></div>
                         <div className="w-[50px] h-[20px] bg-card rounded-full animate-pulse"></div>
@@ -44,7 +45,7 @@ const PlayerCard = ({ side, info, disconnect } : { side: string, info: PlayerInf
     );
 
     return (
-        <div className={`flex flex-row ${side === 'right' ? 'justify-end' : ''} gap-4 shadow-xl py-2`}>
+        <div className={`flex flex-row items-center ${side === 'right' ? 'justify-end' : ''} gap-4 shadow-xl`}>
             {side === 'left' ? (
                 <>
                     {avatar}
@@ -61,7 +62,7 @@ const PlayerCard = ({ side, info, disconnect } : { side: string, info: PlayerInf
     )
 }
 
-const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
+const ResignButton = ({ handleResign, resignable }: { handleResign?: () => void, resignable?: boolean }) => {
     const [ popup, setPopup ] = useState(false);
     const popupRef = useRef<HTMLDivElement | null>(null);
 
@@ -82,14 +83,14 @@ const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
 
 
     return (
-        <div ref={popupRef} className="relative inline-block mt-3">
+        <div ref={popupRef} className="relative inline-block mt-1">
             <button 
                 onClick={() => setPopup(true)}
-                className={`inline-flex rounded-xl cursor-pointer shadow-black/40 shadow-xl bg-red-700
+                className={`inline-flex rounded-xl ${resignable ? 'cursor-pointer' : 'pointer-events-none hidden'} shadow-black/40 shadow-xl bg-red-700
                         transition-all duration-200 opacity-50 hover:opacity-80 ${popup ? 'opacity-80' : 'opacity-50'} hover:scale-103 active:scale-96 py-1 px-2 gap-1`}
             >
                 <Flag className="aspect-square w-[17px]" />
-                <span className="font-bold font-funnel-display">Resign</span>
+                <span className="font-bold lg:inline hidden font-funnel-display">Resign</span>
             </button>
 
             <div
@@ -99,7 +100,7 @@ const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
                     ? "opacity-100 translate-y-0 pointer-events-auto"
                     : "opacity-0 translate-y-3 pointer-events-none"}`}
             >
-                <span className="font-funnel-display font-extrabold text-xl whitespace-nowrap"> Are you sure you want to resign ?</span>
+                <span className="font-funnel-display font-extrabold md:text-lg lg:text-xl whitespace-nowrap"> Are you sure you want to resign ?</span>
                 <div className="inline-flex gap-4 mx-2">
                     <button 
                         className="border border-bg flex-1 py-1 transition-all duration-150 rounded-lg active:scale-95 bg-green-700 cursor-pointer font-extrabold text-xl"
@@ -119,10 +120,18 @@ const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
     );
 }
 
-const VersusCard = ({ opponentId, timeLeft, handleResign, disconnect, round }: { opponentId? : number | undefined, timeLeft: number, handleResign: () => void, disconnect?: boolean, round?: number }) => {
+const VersusCard = (
+    { opponentId, timeLeft, handleResign, disconnect, round, score, resignSwitch }:
+    { opponentId? : number | undefined,
+        timeLeft: number, handleResign: () => void,
+        disconnect?: boolean, round?: number,
+        score?: [number, number], resignSwitch?: boolean }
+) => {
     const { apiClient, loggedInUser } = useAuth();
     const [loggedInUserInfo, setLoggedInUserInfo] = useState<PlayerInfo | null>(null);
     const [opponentInfo, setOpponentInfo] = useState<PlayerInfo | null>(null);
+
+    console.log('newTime', timeLeft);
 
     useEffect(() => {
         (async () => {
@@ -157,19 +166,20 @@ const VersusCard = ({ opponentId, timeLeft, handleResign, disconnect, round }: {
         })()
     }, [opponentId]);
 
-    console.log('disconnect: ', disconnect);
-
     return (
-        <div className="flex min-h-0 w-full justify-between items-end">
-            
-            <div className="flex w-[400px] min-w-0 gap-3 items-start">
+        <div className="flex min-h-0 w-full justify-between ">
+            <div className="flex w-full min-w-0 gap-3 justify-start">
                 <PlayerCard side='left' info={loggedInUserInfo} />
-                <ResignButton handleResign={handleResign} />
+                <ResignButton handleResign={handleResign} resignable={true} />
+                {score && <span className={`self-center ml-auto mr-10 text-5xl lg:text-6xl font-extrabold font-funnel-display`}>{score[0]}</span>}
             </div>
-            {/* round */}
-            <GameTimer time={timeLeft} pause={null} />
-            <div className={`w-[400px] min-w-0`}>
-                <PlayerCard side='right' info={opponentInfo} disconnect={disconnect} />
+            <div className={`flex flex-col ${round ? 'justify-between py-2' : 'justify-end'} items-center h-full`}>
+                {round && <span className="text-md lg:text-lg xl:text-xl font-funnel-display font-extrabold italic">Round {round}</span> }
+                <GameTimer time={timeLeft} className={`${round && 'rounded-2xl'}`} />
+            </div>
+            <div className={`flex w-full min-w-0 justify-end`}>
+                {score && <span className={`self-center mr-auto ml-10 text-5xl lg:text-6xl font-extrabold font-funnel-display`}>{score[1]}</span>}
+                <PlayerCard side='right' info={opponentInfo} disconnect={disconnect}/>
             </div>
         </div>
     );

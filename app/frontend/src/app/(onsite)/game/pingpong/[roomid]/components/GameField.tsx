@@ -72,6 +72,7 @@ const GameField = () => {
                         timeLeft={timeLeft}
                         handleResign={forfeitGame}
                         disconnect={oppdisconnect}
+                        resignSwitch={true}
                     />
                     <div className="flex w-auto h-auto max-h-full max-w-full items-center justify-center">
                         <div className="relative inline-block">

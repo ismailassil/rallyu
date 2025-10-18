@@ -29,6 +29,10 @@ class RoomManager {
             ? new PingPongRoom(roomid)
             : new TicTacToeRoom(roomid);
 
+        const roomtype = room instanceof PingPongRoom ? "pong" : "xo";
+
+        console.log('Room Type', roomtype)
+
         this.rooms.set(roomid, room);
         return { roomid, room };
     }

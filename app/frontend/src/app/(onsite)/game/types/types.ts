@@ -39,10 +39,13 @@ export interface PongState {
 }
 
 export interface EventHandlers {
-	updateTimer: (timeLeft: number) => void;
-	updateOverlayStatus: (newStatus: string) => void;
-	updateConnection?: (disconnected: boolean) => void;
-	updateRound?: (round: number) => void;
+	updateTimer: React.Dispatch<React.SetStateAction<number>>;
+	updateOverlayStatus: React.Dispatch<React.SetStateAction<string>>;
+	updateConnection?: React.Dispatch<React.SetStateAction<boolean>>;
+	updateRound?: React.Dispatch<React.SetStateAction<number>>;
+	updateBoard?: React.Dispatch<React.SetStateAction<XOSign[]>>;
+	updateScore?: React.Dispatch<React.SetStateAction<[number, number]>>; 
+
 }
 
 export interface RemotePongState extends PongState {
