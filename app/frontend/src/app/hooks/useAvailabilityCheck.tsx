@@ -25,7 +25,7 @@ export default function useAvailabilityCheck(
 
 			try {
 				setStatus('checking');
-				const isAvailable = await executeAPICall(() => fieldName === 'username' ? apiClient.isUsernameAvailable(currentValue) : apiClient.isEmailAvailable(currentValue));
+				const isAvailable = await executeAPICall(() => fieldName === 'username' ? apiClient.auth.isUsernameAvailable(currentValue) : apiClient.auth.isEmailAvailable(currentValue));
 				setStatus(isAvailable ? 'available' : 'unavailable');
 			} catch {
 				setStatus('error');

@@ -195,8 +195,8 @@ class UserService {
 
 	/*----------------------------------------------- SEARCH -----------------------------------------------*/
 
-	async searchUserByUsername(requesterID: number, targetUsername: string) {
-		return await this.userRepository.search(requesterID, targetUsername);
+	async searchUsersByQuery(requesterID: number, query: string) {
+		return await this.userRepository.search(requesterID, query);
 	}
 
 	/*----------------------------------------------- CHECKS -----------------------------------------------*/

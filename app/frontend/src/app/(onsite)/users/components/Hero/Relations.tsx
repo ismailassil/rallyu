@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import Button from './Button';
 import { LocalChatIcon, LocalUserMinusIcon, LocalUserPlusIcon, LocalUserXIcon } from './LocalIcon';
@@ -20,7 +20,22 @@ export default function Relations({ userId, username, currentStatus } : Relation
 	const router = useRouter();
 
 	const [friendshipStatus, setFriendshipStatus] = useState<FriendshipStatus>(currentStatus);
-	const { apiClient } = useAuth();
+	const {
+		loggedInUser,
+		apiClient,
+		socket
+	} = useAuth();
+
+	// useEffect(() => {
+	// 	if (!loggedInUser || loggedInUser.id === userId)
+	// 		return ;
+
+	// 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// 	function handleRelationUpdate(data: any) {
+
+	// 	}
+
+	// }, [socket]);
 
 	if (!friendshipStatus)
 		return null;

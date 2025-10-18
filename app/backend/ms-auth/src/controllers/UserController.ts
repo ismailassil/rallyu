@@ -40,13 +40,13 @@ class UserController {
 		}
 	}
 
-	async searchUserByUsernameHandler(request: FastifyRequest, reply: FastifyReply) {
+	async lookupUsersHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			// TODO: ADD SCHEMA
 			const user_id = request.user?.sub;
-			const { username } = request.query as { username: string };
+			const { query } = request.query as { query: string };
 
-			const matchingUsers = await this.userService.searchUserByUsername(user_id!, username);
+			const matchingUsers = await this.userService.searchUsersByQuery(user_id!, query);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, matchingUsers);
 

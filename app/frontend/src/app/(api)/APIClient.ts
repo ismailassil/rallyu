@@ -55,7 +55,6 @@ export class APIClient {
 			withCredentials: true,
 		});
 
-		// Initialize services
 		this.user = new UserService(this.client);
 		this.auth = new AuthService(this.client, accessToken => this.setAccessToken(accessToken));
 		this.mfa = new MfaService(this.client);
@@ -133,7 +132,6 @@ export class APIClient {
 	}
 
 	setAccessToken(token: string) {
-		console.log('We are setting accessToken in the apiClient');
 		this.accessToken = token;
 	}
 
@@ -168,8 +166,8 @@ export class APIClient {
 		return this.user.fetchLeaderboard();
 	}
 
-	async searchUsersByUsername(username: string) {
-		return this.user.searchUsersByUsername(username);
+	async searchUsersByQuery(username: string) {
+		return this.user.searchUsersByQuery(username);
 	}
 
 	async getUserAvatarBlob(url: string) {
@@ -187,19 +185,19 @@ export class APIClient {
 	/*--------------------------------- Users Relations ---------------------------------*/
 
 	async getAllFriends() {
-		return this.user.getAllFriends();
+		return this.user.fetchFriends();
 	}
 
 	async getAllBlocked() {
-		return this.user.getAllBlocked();
+		return this.user.fetchBlocked();
 	}
 
 	async getAllIncomingFriendRequests() {
-		return this.user.getAllIncomingFriendRequests();
+		return this.user.fetchIncomingFriendRequests();
 	}
 
 	async getAllOutgoingFriendRequests() {
-		return this.user.getAllOutgoingFriendRequests();
+		return this.user.fetchOutgoingFriendRequests();
 	}
 
 	async sendFriendRequest(user_id: number) {
@@ -219,88 +217,62 @@ export class APIClient {
 	}
 
 	async blockUser(user_id: number) {
-		return this.user.blockUser(user_id);
+		return this.user.block(user_id);
 	}
 
 	async unblockUser(user_id: number) {
-		return this.user.unblockUser(user_id);
+		return this.user.unblock(user_id);
 	}
 
 	async unfriend(user_id: number) {
 		return this.user.unfriend(user_id);
 	}
 
-	/*-------------------------------------- 2FA --------------------------------------*/
-
-	// async mfaEnabledMethods() {
-	// 	return this.mfa.mfaEnabledMethods();
-	// }
-
-	// async mfaDisableMethod(method: string) {
-	// 	return this.mfa.mfaDisableMethod(method);
-	// }
-
-	// async mfaSetupInit(method: string) {
-	// 	return this.mfa.mfaSetupInit(method);
-	// }
-
-	// async mfaSetupVerify(token: string, code: string) {
-	// 	return this.mfa.mfaSetupVerify(token, code);
-	// }
-
 	/*--------------------------------- Authentication ---------------------------------*/
 
-	async isUsernameAvailable(username: string) {
-		return this.auth.isUsernameAvailable(username);
-	}
+	// async login(payload: { username: string, password: string }) {
+	// 	const result = await this.auth.login(payload);
+	// 	if (result._2FARequired) {
+	// 		return result;
+	// 	}
+	// 	this.setAccessToken(result.accessToken);
+	// 	return result;
+	// }
 
-	async isEmailAvailable(email: string) {
-		return this.auth.isEmailAvailable(email);
-	}
+	// async send2FACode(payload: { token: string, method: string }) {
+	// 	return this.auth.send2FACode(payload);
+	// }
 
-	async login(payload: { username: string, password: string }) {
-		const result = await this.auth.login(payload);
-		if (result._2FARequired) {
-			return result;
-		}
-		this.setAccessToken(result.accessToken);
-		return result;
-	}
+	// async verify2FACode(payload: { token: string, code: string }) : Promise<{
+	// 	user: any;
+	// 	accessToken: any;
+	// }> {
+	// 	const result = await this.auth.verify2FACode(payload);
+	// 	this.setAccessToken(result.accessToken);
+	// 	return result;
+	// }
 
-	async send2FACode(payload: { token: string, method: string }) {
-		return this.auth.send2FACode(payload);
-	}
+	// async logout() {
+	// 	console.log('APIClient::logout();');
+	// 	await this.auth.logout();
+	// 	this.setAccessToken('');
+	// }
 
-	async verify2FACode(payload: { token: string, code: string }) : Promise<{
-		user: any;
-		accessToken: any;
-	}> {
-		const result = await this.auth.verify2FACode(payload);
-		this.setAccessToken(result.accessToken);
-		return result;
-	}
+	// async refreshToken() {
+	// 	const result = await this.auth.refreshToken();
+	// 	this.setAccessToken(result.accessToken);
+	// 	return result;
+	// }
 
-	async logout() {
-		console.log('APIClient::logout();');
-		await this.auth.logout();
-		this.setAccessToken('');
-	}
-
-	async refreshToken() {
-		const result = await this.auth.refreshToken();
-		this.setAccessToken(result.accessToken);
-		return result;
-	}
-
-	async register(payload: {
-		first_name: string,
-		last_name: string,
-		username: string,
-		email: string,
-		password: string
-	}) {
-		return this.auth.register(payload);
-	}
+	// async register(payload: {
+	// 	first_name: string,
+	// 	last_name: string,
+	// 	username: string,
+	// 	email: string,
+	// 	password: string
+	// }) {
+	// 	return this.auth.register(payload);
+	// }
 
 	/*---------------------------------- Session Management ----------------------------------*/
 	async fetchActiveSessions() {
@@ -312,16 +284,16 @@ export class APIClient {
 	}
 
 	async revokeAllOtherSessions() {
-		return this.auth.revokeAllOtherSessions();
+		return this.auth.revokeOtherSessions();
 	}
 
 	/*--------------------------------- Password Management ---------------------------------*/
 
-	async changePassword(payload: {
+	async changePassword(
 		oldPassword: string,
 		newPassword: string
-	}) {
-		return this.auth.changePassword(payload);
+	) {
+		return this.auth.changePassword(oldPassword, newPassword);
 	}
 
 	async requestPasswordReset(email: string) {

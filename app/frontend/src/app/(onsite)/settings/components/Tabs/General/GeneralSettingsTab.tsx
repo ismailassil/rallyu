@@ -31,18 +31,19 @@ export interface FormDataState {
 export default function GeneralSettingsTab() {
 	const t = useTranslations('settings.general.cards.personal_infos');
 
-	const { apiClient, loggedInUser, updateLoggedInUserState } = useAuth();
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-	// const {
-	// 	executeAPICall
-	// } = useAPICall();
-
 	const {
 		personalInfoSettingsSchema
 	} = useValidationSchema();
+
+	const {
+		apiClient,
+		loggedInUser,
+		triggerLoggedInUserRefresh
+	} = useAuth();
 
 	const [
 		formData,
@@ -99,7 +100,7 @@ export default function GeneralSettingsTab() {
 			return ;
 
 		await apiClient.updateUser(loggedInUser!.id, payload);
-		updateLoggedInUserState(payload); // AuthContext
+		// updateLoggedInUserState(payload); // AuthContext
 	}
 
 	function getUpdatedFormPayload() {
@@ -126,8 +127,9 @@ export default function GeneralSettingsTab() {
 			setIsSubmitting(true);
 			await updateUserInfo();
 			await uploadAvatar();
+			triggerLoggedInUserRefresh();
 			toastSuccess('Changes saved successfully');
-			updateLoggedInUserState(getUpdatedFormPayload());
+			// updateLoggedInUserState(getUpdatedFormPayload());
 			resetForm(formData);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {

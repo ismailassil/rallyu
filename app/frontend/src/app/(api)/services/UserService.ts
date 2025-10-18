@@ -11,7 +11,7 @@ export class UserService {
 	constructor(private client: AxiosInstance) {}
 
 	/*--------------------------------- Users Profiles ---------------------------------*/
-	
+
 	async fetchUser(id: number) {
 		const { data: res } = await this.client.get(`/users/${id}`);
 		return res.data;
@@ -37,19 +37,19 @@ export class UserService {
 		const { data: res } = await this.client.get(`/users/${id}/analytics`);
 		return res.data;
 	}
-	
+
 	async fetchUserAnalyticsByDay(id: number) {
 		const { data: res } = await this.client.get(`/users/${id}/analytics-by-day`);
 		return res.data;
 	}
-	
+
 	async fetchLeaderboard() {
 		const { data: res } = await this.client.get(`/users/leaderboard?page=1&limit=10`);
 		return res.data;
 	}
 
-	async searchUsersByUsername(username: string) {
-		const { data: res } = await this.client.get(`/users/search-by-username?username=${username}`);
+	async searchUsersByQuery(query: string) {
+		const { data: res } = await this.client.get(`/users/lookup?query=${query}`);
 		return res.data;
 	}
 
@@ -59,14 +59,14 @@ export class UserService {
 		});
 		return data;
 	}
-	
+
 	async updateUserAvatar(id: number, avatarFile: FormData) {
 		const { data: res } = await this.client.post(`/users/${id}/avatar`, avatarFile, {
 			headers: { 'Content-Type': 'multipart/form-data' }
 		});
 		return res.data;
 	}
-	
+
 	async updateUser(id: number, payload: { first_name?: string, last_name?: string, username?: string, email?: string, bio?: string }) {
 		const { data: res } = await this.client.put(`/users/${id}`, payload);
 		return res.data;
@@ -74,22 +74,22 @@ export class UserService {
 
 	/*--------------------------------- Users Relations ---------------------------------*/
 
-	async getAllFriends(){
+	async fetchFriends(){
 		const { data: res } = await this.client.get(`/users/friends`);
 		return res.data;
 	}
-	
-	async getAllBlocked(){
+
+	async fetchBlocked(){
 		const { data: res } = await this.client.get(`/users/blocked`);
 		return res.data;
 	}
-	
-	async getAllIncomingFriendRequests(){
+
+	async fetchIncomingFriendRequests(){
 		const { data: res } = await this.client.get(`/users/friends/requests/incoming`);
 		return res.data;
 	}
-	
-	async getAllOutgoingFriendRequests(){
+
+	async fetchOutgoingFriendRequests(){
 		const { data: res } = await this.client.get(`/users/friends/requests/outgoing`);
 		return res.data;
 	}
@@ -114,12 +114,12 @@ export class UserService {
 		return res.data;
 	}
 
-	async blockUser(user_id: number) {
+	async block(user_id: number) {
 		const { data: res } = await this.client.post(`/users/${user_id}/block`);
 		return res.data;
 	}
 
-	async unblockUser(user_id: number) {
+	async unblock(user_id: number) {
 		const { data: res } = await this.client.delete(`/users/${user_id}/block`);
 		return res.data;
 	}

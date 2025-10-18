@@ -65,7 +65,11 @@ export default function ChangePasswordForm({ formId, setButtonDisabled, setButto
 
 		try {
 			setButtonDisabled(true);
-			await executeAPICall(() => apiClient.changePassword({ oldPassword: formData.current_password, newPassword: formData.new_password}));
+			await executeAPICall(() => apiClient.auth.changePassword(
+				formData.current_password,
+				formData.new_password
+			));
+
 			toastSuccess('Password changed successfully');
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {

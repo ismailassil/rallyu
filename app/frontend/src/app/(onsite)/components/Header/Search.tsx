@@ -67,17 +67,17 @@ export default function Search() {
 			return ;
 		}
 
-		async function fetchUsersByUsername() {
+		async function fetchUsersByQuery() {
 			try {
-				const data = await apiClient.searchUsersByUsername(search);
+				const data = await apiClient.user.searchUsersByQuery(search);
 				setResults(data);
 			} catch {
 				setResults([]);
 			}
 		}
 
-		fetchUsersByUsername();
-	}, [search]);
+		fetchUsersByQuery();
+	}, [apiClient.user, search]);
 
 	return (
 		<>
@@ -149,21 +149,20 @@ export default function Search() {
 								<ul>
 									{results.map((elem) => {
 										return (
-												<Link
-													href={`/users/${elem.username}`}
-													onClick={() => setIsSearch(false)}
-													key={elem.username}
-													className="w-full h-17 flex items-center gap-4 border-b-1
-														border-b-br-card pl-10 hover:bg-hbg/30 hover:cursor-pointer
-														"
-												>
-													<Avatar 
-														avatar={elem.avatar_url}
-														className="rounded-full h-10 w-10 border-2 border-white/20"
-													/>
-													{/* <Image src={`http://localhost:4025/api${elem.avatar_url}`} alt="Command Logo" width={42} height={42} className="rounded-full border-2 border-white/20"/> */}
-													<p>{elem.username}</p>
-												</Link>
+											<Link
+												href={`/users/${elem.username}`}
+												onClick={() => setIsSearch(false)}
+												key={elem.username}
+												className="w-full h-17 flex items-center gap-4 border-b-1
+													border-b-br-card pl-10 hover:bg-hbg/30 hover:cursor-pointer
+													"
+											>
+												<Avatar
+													avatar={elem.avatar_url}
+													className="rounded-full h-10 w-10 border-2 border-white/20"
+												/>
+												<p>{elem.username}</p>
+											</Link>
 										);
 									})}
 								</ul>

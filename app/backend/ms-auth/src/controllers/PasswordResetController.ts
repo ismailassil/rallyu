@@ -1,9 +1,7 @@
 import PasswordResetService from "../services/Auth/PasswordResetService";
 import { FastifyRequest, FastifyReply } from "fastify";
-import { z } from 'zod';
 import AuthResponseFactory from "./AuthResponseFactory";
 import { UUID } from "crypto";
-import { zodResendSchema, zodResetPasswordSchema, zodResetPasswordUpdateSchema, zodResetPasswordVerifySchema } from "../schemas/zod/auth.zod.schema";
 
 class PasswordResetController {
 	constructor(
@@ -12,7 +10,7 @@ class PasswordResetController {
 
 	async requestHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { email } = request.body as z.infer<typeof zodResetPasswordSchema>;
+			const { email } = request.body as { email: string };
 
 			const token = await this.passwordResetService.setup(email);
 
@@ -28,7 +26,7 @@ class PasswordResetController {
 
 	async verifyHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { token, code } = request.body as z.infer<typeof zodResetPasswordVerifySchema>;
+			const { token, code } = request.body as { token: string, code: string };
 
 			await this.passwordResetService.verify(token as UUID, code);
 
@@ -44,7 +42,7 @@ class PasswordResetController {
 
 	async useHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { token, newPassword } = request.body as z.infer<typeof zodResetPasswordUpdateSchema>;
+			const { token, newPassword } = request.body as { token: string, newPassword: string };;
 
 			await this.passwordResetService.update(token as UUID, newPassword);
 
@@ -60,7 +58,7 @@ class PasswordResetController {
 
 	async resendHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { token } = request.body as z.infer<typeof zodResendSchema>;
+			const { token } = request.body as { token: string };
 
 			await this.passwordResetService.resend(token as UUID);
 

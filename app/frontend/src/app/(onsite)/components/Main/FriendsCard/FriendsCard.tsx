@@ -26,7 +26,7 @@ export default function FriendsCard() {
 	useEffect(() => {
 		async function fetchFriends() {
 			try {
-				await executeAPICall(() => apiClient.user.getAllFriends());
+				await executeAPICall(() => apiClient.user.fetchFriends());
 			} catch (err) {
 
 			}

@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, QrCode } from "lucide-react";
 import FormButton from "@/app/(auth)/components/UI/FormButton";
 import { APITOTPSecrets } from "@/app/(api)/services/MfaService";
-import OTPCodeInput from "@/app/(onsite)/[DEPRECATED]2fa/components/OTPCodeInput";
+import OTPCodeInput from '../../Form/OTPCodeInput';
 import { toastError } from "@/app/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import useAPICall from "@/app/hooks/useAPICall";

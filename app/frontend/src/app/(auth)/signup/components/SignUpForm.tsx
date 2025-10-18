@@ -22,7 +22,7 @@ export default function SignUpForm() {
 	const router = useRouter();
 
 	const {
-		register
+		apiClient
 	} = useAuth();
 
 	const {
@@ -60,7 +60,7 @@ export default function SignUpForm() {
 			return ;
 
 		try {
-			await executeAPICall(() => register(
+			await executeAPICall(() => apiClient.auth.register(
 				formData.first_name,
 				formData.last_name,
 				formData.username,

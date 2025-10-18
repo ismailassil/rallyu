@@ -81,6 +81,14 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 
 	const handleNotify = useCallback(
 		(data: USER_NOTIFICATION) => {
+			console.log("🔔 Notification:", {
+				type: data.type,
+				state: data.state,
+				status: data.status,
+				senderId: data.senderId,
+				receiverId: data.receiverId,
+			});
+
 			console.log(data);
 			if (data.type === "chat" && window.location.pathname.startsWith("/chat")) {
 				const payload: UPDATE_NOTIFICATION_DATA = {
@@ -136,7 +144,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		socket.on("notification_notify", handleNotify);
 		socket.on("notification_update_action", handleUpdate);
 		socket.on("notification_game_init", handleGameInit);
-		
+
 		return () => {
 			socket.off("notification_notify", handleNotify);
 			socket.off("notification_update_action", handleUpdate);

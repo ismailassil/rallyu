@@ -4,7 +4,6 @@ import TwoFactorMethodService from "../services/TwoFactorAuth/TwoFactorMethodSer
 import z from "zod";
 import { UUID } from "crypto";
 import { AuthChallengeMethod } from "../repositories/AuthChallengesRepository";
-import { zodResendSchema, zodVerifyChallengeBodySchema } from "../schemas/zod/auth.zod.schema";
 
 class TwoFactorController {
 	constructor(
@@ -14,7 +13,6 @@ class TwoFactorController {
 	async setupTOTPHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub as number;
-			const { method } = request.query as { method: AuthChallengeMethod };
 
 			const tokenAndSecrets = await this.twoFactorService.setupTOTP('TOTP', user_id);
 
@@ -31,7 +29,7 @@ class TwoFactorController {
 
 	async verifyTOTPHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const { token, code } = request.body as z.infer<typeof zodVerifyChallengeBodySchema>;
+			const { token, code } = request.body as { token: string, code: string };
 
 			await this.twoFactorService.enableTOTP(token as UUID, code);
 

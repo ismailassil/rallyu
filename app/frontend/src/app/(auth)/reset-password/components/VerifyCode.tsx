@@ -1,6 +1,6 @@
 'use client';
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import OTPCodeInput from "@/app/(onsite)/[DEPRECATED]2fa/components/OTPCodeInput";
+import OTPCodeInput from "../../components/Form/OTPCodeInput";
 import { useRef, useState } from "react";
 import FormButton from "../../components/UI/FormButton";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
