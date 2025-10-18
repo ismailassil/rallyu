@@ -8,16 +8,16 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	//// AUTH & USERS //////////////////////////////////
 	const authProxyOptions = {
-		upstream: `http://ms-auth:${AUTH_PORT}`,
-		// upstream: `http://host.docker.internal:${AUTH_PORT}`,
+		// upstream: `http://ms-auth:${AUTH_PORT}`,
+		upstream: `http://host.docker.internal:${AUTH_PORT}`,
 		prefix: '/api/auth',
 		rewritePrefix: '/auth',
 		httpMethods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
 	};
 
 	const usersProxyOptions = {
-		upstream: `http://ms-auth:${AUTH_PORT}`,
-		// upstream: `http://host.docker.internal:${AUTH_PORT}`,
+		// upstream: `http://ms-auth:${AUTH_PORT}`,
+		upstream: `http://host.docker.internal:${AUTH_PORT}`,
 		prefix: '/api/users',
 		rewritePrefix: '/users',
 		httpMethods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
@@ -79,7 +79,7 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 		...commonMatchMakingOptions,
 		prefix: '/api-ws/v1/matchmaking',
 	}
-	
+
 	const gameProxyOptions = {
 		...commonGameOptions,
 		prefix: '/api/game',

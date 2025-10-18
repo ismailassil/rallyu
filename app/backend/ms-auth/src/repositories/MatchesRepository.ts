@@ -198,7 +198,8 @@ class MatchesRepository extends ARepository {
 
 		const params: any[] = [
 			userID, userID, userID, userID, userID,
-			userID, userID, userID, userID, userID
+			userID, userID, userID, userID, userID,
+			userID, userID
 		];
 
 		if (timeFilter !== 'all' && timeFilter !== '0d')
@@ -223,6 +224,8 @@ class MatchesRepository extends ARepository {
 					u_self.username AS user_username,
 					u_self.avatar_url AS user_avatar_url,
 					CASE WHEN m.player_home_id = ? THEN m.player_home_score ELSE m.player_away_score END AS user_score,
+					CASE WHEN m.player_home_id = ? THEN m.player_home_xp_gain ELSE m.player_away_xp_gain END AS user_xp_gain,
+					CASE WHEN m.player_home_id = ? THEN m.player_away_xp_gain ELSE m.player_home_xp_gain END AS opp_xp_gain,
 					CASE WHEN m.player_home_id = ? THEN m.player_away_score ELSE m.player_home_score END AS opp_score,
 					u_opp.id AS opponent_id,
 					u_opp.username AS opponent_username,
