@@ -1,46 +1,54 @@
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import React, { useState, useEffect } from "react";
-import UserList, { UserItem } from "./UserList";
+import React, { useEffect } from "react";
+import UserList from "./UserList";
 import { Check, X } from "lucide-react";
 import useAPICall from "@/app/hooks/useAPICall";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
-import LoadingComponent, { EmptyComponent } from "@/app/(auth)/components/UI/LoadingComponents";
+import LoadingComponent, { PlaceholderComponent } from "@/app/(auth)/components/UI/LoadingComponents";
+import useAPIQuery from "@/app/hooks/useAPIQuery";
 
 export default function IncomingFriendRequestsList() {
 	const {
-		apiClient
+		loggedInUser,
+		apiClient,
+		socket
 	} = useAuth();
+
+	const {
+		isLoading,
+		error,
+		data: incoming,
+		refetch
+	} = useAPIQuery(
+		() => apiClient.user.fetchIncomingFriendRequests()
+	);
 
 	const {
 		executeAPICall
 	} = useAPICall();
 
-	const [incoming, setIncoming] = useState<UserItem[]>([]);
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-
 	useEffect(() => {
-		async function fetchIncomingRequests() {
-			try {
-				setIsLoading(true);
-				const data = await executeAPICall(() => apiClient.user.fetchIncomingFriendRequests());
-				setIncoming(data);
-				setError(null);
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			} catch (err: any) {
-				toastError(err.message);
-				setError('Failed to load incoming friend requests.');
-			} finally {
-				setIsLoading(false);
-			}
+		function handleRelationUpdate(event: { eventType: string, data: Record<string, any> }) {
+			if (!socket || !loggedInUser)
+				return ;
+
+			if (event.eventType !== 'RELATION_UPDATE')
+				return ;
+
+			if ((event.data.requesterId === loggedInUser.id || event.data.receiverId === loggedInUser.id))
+				refetch();
 		}
-		fetchIncomingRequests();
-	}, [apiClient, executeAPICall]);
+
+		socket.on('user', handleRelationUpdate);
+
+		return () => {
+			socket.off('user', handleRelationUpdate);
+		};
+	}, []);
 
 	async function handleDecline(id: number) {
 		try {
-			await apiClient.rejectFriendRequest(id);
-			setIncoming(prev => prev.filter(item => item.id !== id));
+			await executeAPICall(() => apiClient.rejectFriendRequest(id));
 			toastSuccess('Rejected');
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
@@ -50,8 +58,7 @@ export default function IncomingFriendRequestsList() {
 
 	async function handleAccept(id: number) {
 		try {
-			await apiClient.acceptFriendRequest(id);
-			setIncoming(prev => prev.filter(item => item.id !== id));
+			await executeAPICall(() => apiClient.acceptFriendRequest(id));
 			toastSuccess('Accepted');
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
@@ -59,17 +66,16 @@ export default function IncomingFriendRequestsList() {
 		}
 	}
 
-	if (isLoading)
+	const showSkeleton = isLoading && !incoming;
+
+	if (showSkeleton)
 		return <LoadingComponent />;
 
 	if (error)
-		return <EmptyComponent content={error} />;
+		return <PlaceholderComponent content='Failed to load incoming friend requests. Try Again Later.' />;
 
-	if (!incoming)
-		return null;
-
-	if (incoming.length === 0)
-		return <EmptyComponent content='No incoming friend requests found. Go touch some grass.' />;
+	if (!incoming || incoming.length === 0)
+		return <PlaceholderComponent content='No incoming friend requests found. Go touch some grass.' />;
 
 	return (
 		<UserList

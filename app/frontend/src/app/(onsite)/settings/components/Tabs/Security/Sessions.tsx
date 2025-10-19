@@ -3,7 +3,7 @@ import { Monitor, Smartphone, Tablet, MapPin, Clock, LogOut } from 'lucide-react
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { relativeTimeAgoFromNow } from '@/app/(api)/utils';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
-import LoadingComponent, { EmptyComponent } from '@/app/(auth)/components/UI/LoadingComponents';
+import LoadingComponent, { PlaceholderComponent } from '@/app/(auth)/components/UI/LoadingComponents';
 import useAPICall from '@/app/hooks/useAPICall';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
@@ -180,13 +180,13 @@ export default function Sessions() {
 		return <LoadingComponent />;
 
 	if (error)
-		return <EmptyComponent content={error} />;
+		return <PlaceholderComponent content={error} />;
 
 	if (!sessions)
 		return null;
 
 	if (sessions.length === 0)
-		return <EmptyComponent content='No active sessions found.' />;
+		return <PlaceholderComponent content='No active sessions found.' />;
 
 	return (
 		<div className="flex flex-col gap-6 font-funnel-display">

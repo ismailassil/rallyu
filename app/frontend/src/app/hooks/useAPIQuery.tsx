@@ -1,16 +1,41 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from 'react';
-import useAPICall from './useAPICall';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function useAPIQuery(
-	apiCall: () => Promise<any>,
-	deps: React.DependencyList = []
+	queryFn: () => Promise<any>
 ) {
-	const { isLoading, data, error, executeAPICall } = useAPICall();
+	const [data, setData] = useState<any | null>(null);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isRefetching, setIsRefetching] = useState<boolean>(false);
+	const [error, setError] = useState<string | null>(null);
+
+	const executeAPICall = useCallback(async (isManualRefetch = false) => {
+		if (!isManualRefetch) {
+			setIsLoading(true);
+		} else {
+			setIsRefetching(true);
+		}
+		setError(null);
+		try {
+			const result = await queryFn();
+			setData(result);
+			return result;
+		} catch (err: any) {
+			const errorMessage = err?.message || 'Something went wrong';
+			setError(errorMessage);
+			err.message = errorMessage;
+			throw err;
+		} finally {
+			setIsLoading(false);
+			setIsRefetching(false);
+		}
+	}, [queryFn]);
 
 	useEffect(() => {
-		executeAPICall(apiCall);
-	}, deps); // eslint-disable-line react-hooks/exhaustive-deps
+		executeAPICall(false);
+	}, []);
 
-	return { isLoading, data, error, executeAPICall };
+	const refetch = useCallback(() => executeAPICall(true), [executeAPICall]);
+
+	return { isLoading, isRefetching, data, error, refetch };
 }
