@@ -21,6 +21,8 @@ interface ServerToClientEvents {
 	chat_update_msg: (data: ChatPayload) => void;
 	// Notification
 	notification: (data: any) => void;
+	// User
+	user: (data: any) => void;
 }
 
 export interface socketioOpts {

@@ -88,6 +88,25 @@ class RelationsController {
 			});
 			await request.server.js.publish(subject, payload);
 
+			request.server.nats.publish('gateway.user.relation', jsonC.encode({
+				eventType: 'RELATION_UPDATE',
+				recipientUserIds: [Number(user_id)],
+				data: {
+					requesterId: Number(user_id),
+					receiverId: Number(targetUserId),
+					status: 'OUTGOING'
+				}
+			}));
+			request.server.nats.publish('gateway.user.relation', jsonC.encode({
+				eventType: 'RELATION_UPDATE',
+				recipientUserIds: [Number(targetUserId)],
+				data: {
+					requesterId: Number(user_id),
+					receiverId: Number(targetUserId),
+					status: 'INCOMING'
+				}
+			}));
+
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
 			return reply.status(status).send(body);
@@ -119,7 +138,17 @@ class RelationsController {
 					}
 				}
 			});
-			request.server.nc.publish("notification.gateway", data);
+			request.server.nats.publish("notification.gateway", data);
+
+			request.server.nats.publish('gateway.user.relation', jsCodec.encode({
+				eventType: 'RELATION_UPDATE',
+				recipientUserIds: [Number(user_id), Number(targetUserId)],
+				data: {
+					requesterId: Number(user_id),
+					receiverId: Number(targetUserId),
+					status: 'NONE'
+				}
+			}));
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
@@ -152,7 +181,17 @@ class RelationsController {
 					}
 				}
 			});
-			request.server.nc.publish("notification.gateway", data);
+			request.server.nats.publish("notification.gateway", data);
+
+			request.server.nats.publish('gateway.user.relation', jsCodec.encode({
+				eventType: 'RELATION_UPDATE',
+				recipientUserIds: [Number(user_id), Number(targetUserId)],
+				data: {
+					requesterId: Number(user_id),
+					receiverId: Number(targetUserId),
+					status: 'FRIENDS'
+				}
+			}));
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
@@ -163,14 +202,14 @@ class RelationsController {
 			return reply.code(status).send(body);
 		}
 	}
-	
+
 	async rejectFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
-			
+
 			await this.relationsService.rejectFriendRequest(targetUserId, user_id!);
-			
+
 			const jsCodec = JSONCodec();
 			const data = jsCodec.encode({
 				load: {
@@ -185,7 +224,17 @@ class RelationsController {
 					}
 				}
 			});
-			request.server.nc.publish("notification.gateway", data);
+			request.server.nats.publish("notification.gateway", data);
+
+			request.server.nats.publish('gateway.user.relation', jsCodec.encode({
+				eventType: 'RELATION_UPDATE',
+				recipientUserIds: [Number(user_id), Number(targetUserId)],
+				data: {
+					requesterId: Number(user_id),
+					receiverId: Number(targetUserId),
+					status: 'NONE'
+				}
+			}));
 
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
@@ -205,6 +254,17 @@ class RelationsController {
 
 			await this.relationsService.blockUser(user_id!, targetUserId);
 
+			const jsCodec = JSONCodec();
+			request.server.nats.publish('gateway.user.relation', jsCodec.encode({
+				eventType: 'RELATION_UPDATE',
+				recipientUserIds: [Number(user_id), Number(targetUserId)],
+				data: {
+					requesterId: Number(user_id),
+					receiverId: Number(targetUserId),
+					status: 'BLOCKED'
+				}
+			}));
+
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
 			return reply.status(status).send(body);
@@ -222,6 +282,17 @@ class RelationsController {
 
 			await this.relationsService.unblockUser(user_id!, targetUserId);
 
+			const jsCodec = JSONCodec();
+			request.server.nats.publish('gateway.user.relation', jsCodec.encode({
+				eventType: 'RELATION_UPDATE',
+				recipientUserIds: [Number(user_id), Number(targetUserId)],
+				data: {
+					requesterId: Number(user_id),
+					receiverId: Number(targetUserId),
+					status: 'NONE'
+				}
+			}));
+
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
 			return reply.status(status).send(body);
@@ -238,6 +309,17 @@ class RelationsController {
 			const user_id = request.user?.sub;
 
 			await this.relationsService.unfriend(user_id!, targetUserId);
+
+			const jsCodec = JSONCodec();
+			request.server.nats.publish('gateway.user.relation', jsCodec.encode({
+				eventType: 'RELATION_UPDATE',
+				recipientUserIds: [Number(user_id), Number(targetUserId)],
+				data: {
+					requesterId: Number(user_id),
+					receiverId: Number(targetUserId),
+					status: 'NONE'
+				}
+			}));
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 

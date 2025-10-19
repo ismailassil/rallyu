@@ -132,17 +132,13 @@ declare module 'fastify' {
 		requireAuth: any,
 		authenticate: any,
 		js: JetStreamClient,
-		// jsonC: jsoncode,
-		nc: any
+		jsonC: any,
+		nats: any
 	}
 	interface FastifyRequest {
 		user: JWT_ACCESS_PAYLOAD | null,
 		refreshToken: string | null,
-		fingerprint: ISessionFingerprint | null,
-		// cookies: {
-		// 	[cookieName: string]: string
-		// }
-		// id: string
+		fingerprint: ISessionFingerprint | null
 	}
 }
 
