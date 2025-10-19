@@ -53,14 +53,6 @@ const GameField = () => {
         }
 	}, [])
 
-    const forfeitGame = () => {
-        pong.current.forfeit();
-
-        // if (pong.current.gamePlayStatus !== 'gameover' && pong.current.gamePlayStatus !== 'countdown')
-        //     setPause(!pause);
-    }
-
-
 	return (
         <div className="flex min-h-0 w-full px-10 flex-1 flex-col items-center justify-center">
             { isLoading ? (
@@ -72,7 +64,7 @@ const GameField = () => {
                     <VersusCard
                         opponentId={opponentId}
                         timeLeft={timeLeft}
-                        handleResign={forfeitGame}
+                        handleResign={() => pong.current.forfeit()}
                         disconnect={oppdisconnect}
                         resignSwitch={overlayStatus === 'gameover' ? false : true}
                     />

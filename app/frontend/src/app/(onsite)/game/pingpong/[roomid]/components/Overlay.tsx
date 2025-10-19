@@ -1,4 +1,4 @@
-import GameOver from "../../../components/Items/GameOver";
+import GameOver from "../../../components/Items/GameOverRemote";
 
 const Overlay = ({ status, result }: { status: string, result: string | null }) => { // status: pause countdown empty gameover
     return (

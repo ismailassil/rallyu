@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import GameOver from "../../../components/Items/GameOver";
+import GameOver from "../../../components/Items/GameOverRemote";
 
 const Countdown = ({ round }: { round: number }) => {
     const sequence = [3, 2, 1, `Round ${round}`];
@@ -20,7 +20,7 @@ const Countdown = ({ round }: { round: number }) => {
                     initial={{ scale: 0.4, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.4, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: "easeOut" }}
+                    transition={{ duration: 0.25, ease: "easeInOut" }}
                     className={`text-5xl lg:text-7xl font-funnel-display font-bold`}
                 >
                     {sequence[index]}

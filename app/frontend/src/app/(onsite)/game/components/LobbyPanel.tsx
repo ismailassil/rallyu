@@ -19,9 +19,6 @@ const LobbyPanel = () => {
 					<O/>
 				</div>
 			</div>
-			<div className="flex-1 border hidden xl:flex border-br-card bg-card rounded-xl h-full w-full">
-
-			</div>
 		</>
 	);
 }

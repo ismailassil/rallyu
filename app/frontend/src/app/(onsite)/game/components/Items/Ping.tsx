@@ -33,7 +33,7 @@ const MovingText = ({ dir }: { dir: 'left' | 'right' }) => {
 }
 
 const Ping = () => {
-    const { queueTime, isSearching, toggleSearch } = useMatchmaking('pingpong');
+    const { queueTime, isSearching, found, toggleSearch } = useMatchmaking('pingpong');
 
     const formatTime = (seconds: number) => {
 		const mins = Math.floor(seconds / 60);
@@ -60,12 +60,12 @@ const Ping = () => {
                     ${isSearching 
                         ? "scale-100 cursor-pointer pl-6 transition-transform duration-200"
                         : "scale-105 cursor-pointer pl-6 transition-transform duration-200"
-                    }`}
+                    } ${found && "animate-pulse"}`}
                     style={{
                         fontFamily: 'Serious2b'
                     }}
                 >
-                        {isSearching ? `In Queue ${formatTime(queueTime)}` :'remote play'}
+                        {isSearching ? `In Queue ${formatTime(queueTime)}` : found ? `Match Found` : 'remote play'}
                 </span>
             </div>
             <div className="absolute top-3/5 left-3 h-[15%] bg-white w-[10px] group-hover:-translate-y-50 transition-transform duration-600 ease-in-out delay-400 group-hover:delay-0" />

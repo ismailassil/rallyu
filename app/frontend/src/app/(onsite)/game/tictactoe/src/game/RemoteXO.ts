@@ -4,8 +4,10 @@ import SocketProxy from '@/app/(onsite)/game/utils/socketProxy'
 class RemoteXO {
     state: XOState;
     status: string = 'idle';
+    index: number | undefined;
     
     constructor(private proxy: SocketProxy, private eventHandlers?: EventHandlers) {
+        this.index = undefined
         this.state = {
             cells: ['', '', '', '', '', '', '', '', ''],
 			currentRound: 1,
@@ -22,6 +24,7 @@ class RemoteXO {
             switch (data.type) {
                 case 'ready':
                     this.state.mySign = data.sign
+                    this.index = data.index
                     break;
                 case 'opp_left':
                     this.eventHandlers?.updateConnection!(true);
@@ -32,12 +35,13 @@ class RemoteXO {
                 case 'reconnected':
                     this.state.cells = data.cells
 					this.state.mySign = data.sign;
-                    this.state.score = data.score;
+                    this.state.score[0] = data.score[this.index!];
+					this.state.score[1] = data.score[this.index! ^ 1];
 					this.state.currentPlayer = data.currentPlayer;
 					this.state.currentRound = data.currentRound;
                     this.eventHandlers?.updateBoard!(data.cells);
                     this.eventHandlers?.updateRound!(data.currentRound);
-                    this.eventHandlers?.updateScore!(data.score);
+                    this.eventHandlers?.updateScore!(this.state.score);
                     // this.eventHandlers?.updateTimer!(data.t);
                     break;
                 case 'countdown':
@@ -65,13 +69,15 @@ class RemoteXO {
                     this.eventHandlers?.updateTimer(prev => prev === data.duration ? prev - 1 : data.duration);
                     break;
                 case 'round_result':
-					this.state.score = data.score;
-					this.eventHandlers?.updateScore!(data.score);
+					this.state.score[0] = data.score[this.index!];
+					this.state.score[1] = data.score[this.index! ^ 1];
+					this.eventHandlers?.updateScore!(this.state.score);
                     break;
 				case 'gameover':
                     this.status = 'gameover';
-					this.state.score = data.score
-					this.eventHandlers?.updateScore!(data.score);
+					this.state.score[0] = data.score[this.index!];
+					this.state.score[1] = data.score[this.index! ^ 1];
+					this.eventHandlers?.updateScore!(this.state.score);
 					this.eventHandlers?.updateOverlayStatus(this.status)
                     const displayedResult = data.winner === this.state.mySign ? 'You Won!' : data.winner === 'draw' ? 'Draw' : data.winner === 'X' ? `Cross Wins` : 'Circle Wins'
                     this.eventHandlers?.updateDisplayedResult!(displayedResult);

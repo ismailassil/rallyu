@@ -2,6 +2,8 @@ import useMatchmaking from "@/app/hooks/useMatchMaking";
 import { GameType } from "../../types/types";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Plus } from "lucide-react";
+import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 const GameOver = ({ display, game }: { display: string, game: GameType }) => {
     const router = useRouter();
@@ -13,9 +15,21 @@ const GameOver = ({ display, game }: { display: string, game: GameType }) => {
 		return `${mins}:${secs.toString().padStart(2, '0')}`;
 	};
 
+    useEffect(() => console.log("Mounted motion.div"), []);
+
     return (
-        <div className={`absolute inset-0 m-auto flex flex-col lg:w-[300px] md:w-[250px] w-[230px] aspect-video justify-between border border-card bg-neutral-900 shadow-black shadow-2xl rounded-lg transition-all duration-300 ease-in-out`}>
-            <span className='flex bg-amber-950/3 pt-3 rounded-t-lg flex-1 text-2xl md:text-3xl lg:text-4xl whitespace-nowrap mb-5 font-funnel-display font-bold justify-center items-center'>
+        <motion.div
+            initial={{ y: 60, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 60, opacity: 0 }}
+            transition={{
+                duration: 0.45,
+                opacity: { duration: 0.6 },
+                ease: 'easeOut',
+            }}
+            className={`absolute inset-0 m-auto flex flex-col lg:w-[300px] md:w-[250px] w-[230px] aspect-video border border-card bg-neutral-900 shadow-black shadow-2xl rounded-lg`}
+        >
+            <span className='flex flex-1 bg-amber-950/3 pt-3 rounded-t-l text-3xl lg:text-4xl whitespace-nowrap font-funnel-display font-bold justify-center items-center'>
                 {display}
             </span>
             <div className="flex p-3 gap-2 ">
@@ -39,7 +53,7 @@ const GameOver = ({ display, game }: { display: string, game: GameType }) => {
                     </span>
                 </button>
             </div>
-        </div>
+        </motion.div>
     )
 }
 

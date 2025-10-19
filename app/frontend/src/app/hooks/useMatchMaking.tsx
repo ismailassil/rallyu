@@ -6,6 +6,7 @@ import { GameType } from "../(onsite)/game/types/types";
 const useMatchmaking = (gameType: GameType) => {
 		const [queueTime, setQueueTime] = useState(0);
 		const [isSearching, setIsSearching] = useState(false);
+		const [found, setFound] = useState(false);
 		const { apiClient, loggedInUser, isBusy, setIsBusy } = useAuth();
 		const wsRef = useRef<WebSocket | null>(null);
 		const router = useRouter();
@@ -31,6 +32,7 @@ const useMatchmaking = (gameType: GameType) => {
 					try {
 						const data = JSON.parse(event.data);
 						router.push(`/game/${gameType}/${data.roomId}`);
+						setFound(true);
 						setIsSearching(false);
 						setIsBusy(false);
 						ws.close();
@@ -63,7 +65,7 @@ const useMatchmaking = (gameType: GameType) => {
 		const stopSearch = () => setIsSearching(false);
 		const toggleSearch = () => setIsSearching(prev => !prev);
 	
-		return { queueTime, isSearching, startSearch, stopSearch, toggleSearch };
+		return { queueTime, isSearching, found, startSearch, stopSearch, toggleSearch };
 };
 
 export default useMatchmaking;

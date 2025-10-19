@@ -11,19 +11,22 @@ import TicTacToe from "../../src/TicTacToe";
 import { XOSign } from "../../../types/types";
 
 const GameField = () => {
-    const { apiClient, loggedInUser } = useAuth();
-	const socketProxy = useRef<SocketProxy>(new SocketProxy());
-	const [isLoading, setIsLoading ] = useState(false);
-	const [notFound, setNotFound ] = useState(false);
-	const [opponentId, setOpponentId] = useState<number | undefined>(undefined);
-    const { roomid }: { roomid: string} = useParams();
-	const [ timeLeft, setTimeLeft ] = useState(0);
-	const [ oppdisconnect, setOppdisconnect ] = useState(false);
+    const [ oppdisconnect, setOppdisconnect ] = useState(false);
+    const [ sign, setSign ] = useState<XOSign>('');
+    const [ currentPlayer, setCurrentPlayer ] = useState<XOSign>('');
     const [ overlayStatus, setOverlayStatus ] = useState('none');
     const [ currentRound, setCurrentRound ] = useState(1);
+	const [ isLoading, setIsLoading ] = useState(false);
+	const [ notFound, setNotFound ] = useState(false);
+	const [ opponentId, setOpponentId ] = useState<number | undefined>(undefined);
+	const [ timeLeft, setTimeLeft ] = useState(0);
     const [ score, setScore ] = useState<[number, number]>([0, 0]);
     const [ result, setResult ] = useState<string | null>(null);
-	const [cells, setCells] = useState<XOSign[]>(Array(9).fill(''));
+	const [ cells, setCells ] = useState<XOSign[]>(Array(9).fill(''));
+
+    const { roomid }: { roomid: string} = useParams();
+    const { apiClient, loggedInUser } = useAuth();
+	const socketProxy = useRef<SocketProxy>(new SocketProxy());
 	const tictactoe = useRef<RemoteXO>(new RemoteXO(socketProxy.current, {
         updateTimer: setTimeLeft,
         updateOverlayStatus: setOverlayStatus,
@@ -83,7 +86,7 @@ const GameField = () => {
                             score={score}
                             resignSwitch={overlayStatus === 'gameover' ? false : true}
                         />
-                        <div className="relative w-auto h-auto">
+                        <div className="relative w-full max-w-[750px]">
                             <TicTacToe tictactoe={tictactoe.current} board={cells} />
                             <Overlay status={overlayStatus} result={result} round={currentRound} />
                         </div>

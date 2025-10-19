@@ -13,27 +13,27 @@ const Cell = ({ index, sign, handleMove }: { index: number, sign: XOSign, handle
 		>
 			{sign === 'X' && (
 				<motion.div
-				key="X"
-				initial={{ scale: 0, rotate: -180, opacity: 0 }}
-				animate={{ scale: 1, rotate: 0, opacity: 0.8 }}
-				exit={{ scale: 0, opacity: 0 }}
-				transition={{ type: "spring", stiffness: 120, damping: 18 }}
-				className="w-2/3 h-2/3 flex items-center justify-center"
+					key="X"
+					initial={{ scale: 0, rotate: -180, opacity: 0 }}
+					animate={{ scale: 1, rotate: 0, opacity: 0.8 }}
+					exit={{ scale: 0, opacity: 0 }}
+					transition={{ type: "spring", stiffness: 120, damping: 18 }}
+					className="w-2/3 h-2/3 flex items-center justify-center"
 				>
-				<X className="w-full h-full" />
+					<X className="w-full h-full" />
 				</motion.div>
 			)}
 
 			{sign === 'O' && (
 				<motion.div
-				key="O"
-				initial={{ scale: 0, rotate: 180, opacity: 0 }}
-				animate={{ scale: 1, rotate: 0, opacity: 0.8 }}
-				exit={{ scale: 0, opacity: 0 }}
-				transition={{ type: "spring", stiffness: 120, damping: 18 }}
-				className="w-2/3 h-2/3 flex items-center justify-center"
+					key="O"
+					initial={{ scale: 0, rotate: 180, opacity: 0 }}
+					animate={{ scale: 1, rotate: 0, opacity: 0.8 }}
+					exit={{ scale: 0, opacity: 0 }}
+					transition={{ type: "spring", stiffness: 120, damping: 18 }}
+					className="w-2/3 h-2/3 flex items-center justify-center"
 				>
-				<Circle className="w-full h-full" />
+					<Circle className="w-full h-full" />
 				</motion.div>
 			)}
 		</div>

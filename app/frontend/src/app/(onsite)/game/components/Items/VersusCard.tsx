@@ -14,9 +14,9 @@ interface PlayerInfo {
     level: number
 }
 
-const PlayerCard = ({ side, info, disconnect, score } : { side: string, info: PlayerInfo | null, disconnect?: boolean, score?: number | null }) => {
+const PlayerCard = ({ side, info, disconnect } : { side: string, info: PlayerInfo | null, disconnect?: boolean }) => {
     const avatar =  (
-        <div className="sm:w-[60px] sm:h-[60px] md:w-[80px] md:h-[80px] xl:w-[100px] xl:h-[100px] border border-white/18 rounded-lg">
+        <div className="hidden md:flex sm:w-[60px] sm:h-[60px] md:w-[80px] md:h-[80px] xl:w-[100px] xl:h-[100px] border border-white/18 rounded-lg">
             {
             info
                 ? <Avatar avatar={info.avatar_url} className="h-full w-full rounded-lg" />

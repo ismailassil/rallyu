@@ -123,9 +123,9 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	}
 
 	private setupPackets(): void {
-        this.players.forEach(player => {
+        this.players.forEach((player, i) => {
             if (player.socket?.readyState === ws.OPEN)
-                player.socket.send(JSON.stringify({ type: 'ready', sign: player.sign }));
+                player.socket.send(JSON.stringify({ type: 'ready', sign: player.sign, index: i }));
 		})
     }
 
@@ -145,9 +145,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 			score: this.players.map(p => p.score),
 		});
 	
-		setTimeout(() => {
-			closeRoom(this, 1004, 'Forfeit');
-		}, 3000);
+		closeRoom(this, 1004, 'Forfeit');
 	}
 
 	playMove(move: number, sign: XOSign): boolean {

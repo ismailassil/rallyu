@@ -6,6 +6,7 @@ import LobbyPanel from "./components/LobbyPanel";
 import { useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import FriendsCard from "../components/Main/FriendsCard/FriendsCard";
 
 export default function Game() {
 	const { loggedInUser, apiClient } = useAuth();
@@ -42,6 +43,7 @@ export default function Game() {
 				>
 					<GameProvider>
 						<LobbyPanel />
+						<FriendsCard />
 					</GameProvider>
 				</motion.div>
 			</AnimatePresence>

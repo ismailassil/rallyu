@@ -14,6 +14,7 @@ export const closeRoom = (room: Room<any, any>, code: number, msg: string): void
 	})
 	room.cleanUp();
 	roomManager.deleteRoom(room.id);
+    console.log('Room Closed: ', room.id);
 }
 
 class RoomManager {
