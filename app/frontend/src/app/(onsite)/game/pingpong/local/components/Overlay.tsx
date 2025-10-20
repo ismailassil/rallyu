@@ -1,5 +1,5 @@
 import { Pause, Play, RotateCcw } from "lucide-react";
-import GameOver from "../../../components/Items/GameOverLocal";
+import { GameOverLocal } from "../../../components/Items/GameOver";
 
 const PauseIcon = ({ className }: { className: string }) => {
     return (
@@ -14,8 +14,8 @@ const Overlay = ({ pauseHandler, resetHandler, status }: { pauseHandler: () => v
     return (
         <div className="absolute inset-0 w-full h-full">
             <div className={`absolute inset-0 rounded-lg transition-all duration-150 w-full h-full ${status === 'pause' || status === 'gameover' ? 'bg-neutral-800/30 ': ''}`}>
-                {status === 'gameover' && <GameOver resetHandler={resetHandler} />}
-                <PauseIcon className={`absolute inset-0 m-auto w-[clamp(50px,8%,100%)] h-[clamp(65px,15%,100%)] transition-all duration-100 ease-in-out ${status === 'pause' ? 'opacity-90 translate-y-0': 'translate-y-4 opacity-0'}`}/>
+                <PauseIcon className={`absolute border inset-0 m-auto w-[clamp(50px,8%,100%)] h-[clamp(65px,15%,100%)] transition-all duration-100 ease-in-out ${status === 'pause' ? 'opacity-90 translate-y-0': 'translate-y-4 opacity-0'}`}/>
+                {status === 'gameover' && <GameOverLocal resetHandler={resetHandler} display="Game Over" />}
             </div>
 
             <div className="absolute flex justify-center items-center gap-3 right-2 top-1 md:right-4 md:top-2 lg:right-8 lg:top-5 w-[100px] h-[50px] xl:w-[120px] xl:h-[60px]">

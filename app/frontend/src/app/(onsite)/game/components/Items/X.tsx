@@ -1,8 +1,8 @@
 import useMatchmaking from "@/app/hooks/useMatchMaking";
-import { useMMContext } from "../context/matchmakingContext";
-import { GameType } from "../../types/types";
 
-const X = ({ handleQueue, inQueue, found, queueTime }: { handleQueue: (gameType: GameType) => void, inQueue: boolean, found: boolean, queueTime: number }) => {
+const X = () => {
+    const { queueTime, isSearching, found, toggleSearch } = useMatchmaking('tictactoe');
+
     const formatTime = (seconds: number) => {
 		const mins = Math.floor(seconds / 60);
 		const secs = seconds % 60;
@@ -15,10 +15,10 @@ const X = ({ handleQueue, inQueue, found, queueTime }: { handleQueue: (gameType:
             style={{
                 fontFamily: 'Serious2b'
             }}
-            onClick={() => handleQueue('tictactoe')}
+            onClick={toggleSearch}
         >
-            <span className="text-4xl uppercase">
-                {inQueue ? `in queue ${formatTime(queueTime)}` : found ? 'Match Found' : 'Remote Play'}
+            <span className={`text-4xl ${found && 'animate-pulse'} uppercase`}>
+                {isSearching ? `in queue ${formatTime(queueTime)}` : found ? 'Match Found' : 'Remote Play'}
             </span>
 		</div>
     )

@@ -1,7 +1,6 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { GameProvider } from "./contexts/gameContext";
 import LobbyPanel from "./components/LobbyPanel";
 import { useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
@@ -43,12 +42,8 @@ export default function Game() {
 					transition={{ duration: 0.4 }}
 					className="flex flex-row w-full h-full gap-4"
 				>
-					<GameProvider>
-						<MatchMakingProvider>
-							<LobbyPanel />
-						</MatchMakingProvider>
-						<FriendsCard />
-					</GameProvider>
+					<LobbyPanel />
+					<FriendsCard />
 				</motion.div>
 			</AnimatePresence>
 		</motion.main>

@@ -87,15 +87,17 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	expirationTimer: NodeJS.Timeout | undefined = undefined;
 	gameTimerId: NodeJS.Timeout | undefined = undefined;
 	state: TicTacToeGameState;
+	startOfRoundPlayer: XOSign;
 
 	constructor(id: string, ) {
 		this.id = id;
 		this.gameType = 'tictactoe';
+		this.startOfRoundPlayer = Math.random() > 0.5 ? 'X' : 'O'
 
 		this.state = {
 			cells: ['', '', '', '', '', '', '', '', ''],
 			currentRound: 1,
-			currentPlayer: Math.random() > 0.5 ? 'X' : 'O'
+			currentPlayer: this.startOfRoundPlayer
 		};
 	}
 
@@ -265,7 +267,8 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	
 	private resetBoard(): void {
 		this.state.cells = Array(9).fill('');
-		this.state.currentPlayer = 'X'; // Or alternate who starts
+		this.startOfRoundPlayer = this.startOfRoundPlayer === 'X' ? 'O' : 'X';
+		this.state.currentPlayer = this.startOfRoundPlayer;
 	}
 	
 	private resetTurnTimer(): void {
@@ -304,6 +307,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		if (player.socket?.readyState === WebSocket.OPEN) {
 			player.socket!.send(JSON.stringify({
 				type: 'reconnected',
+				index: this.players.indexOf(player),
 				cells: this.state.cells,
 				score: [this.players[0].score, this.players[1].score],
 				sign: player.sign,
@@ -316,8 +320,6 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 
 	startGame(): void {
 		this.startTime = Math.floor(Date.now() / 1000);
-		this.running = true;
-		this.state.currentRound = 1;
 
 		this.players.forEach((p) => {
 			p.setupEventListeners(this);

@@ -34,7 +34,9 @@ const GameField = () => {
         updateRound: setCurrentRound,
         updateBoard: setCells,
         updateScore: setScore,
-        updateDisplayedResult: setResult
+        updateDisplayedResult: setResult,
+        updateCurrentPlayer: setCurrentPlayer,
+        updateSign: setSign
     }));
 
     useEffect(() => {
@@ -85,6 +87,8 @@ const GameField = () => {
                             round={currentRound}
                             score={score}
                             resignSwitch={overlayStatus === 'gameover' ? false : true}
+                            playerSign={sign}
+                            currentPlayer={currentPlayer}
                         />
                         <div className="relative w-full max-w-[750px]">
                             <TicTacToe tictactoe={tictactoe.current} board={cells} />
