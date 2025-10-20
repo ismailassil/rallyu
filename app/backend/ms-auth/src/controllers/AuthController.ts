@@ -31,36 +31,28 @@ class AuthController {
 	}
 
 	async loginHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
-			const { username, password } = request.body as ILoginRequest;
+		const { username, password } = request.body as ILoginRequest;
 
-			const loginResult = await this.authService.LogIn(username, password, request.fingerprint!);
-			if (loginResult._2FARequired) {
-				const { _2FARequired, enabled2FAMethods, token } = loginResult;
-
-				const { status, body } = AuthResponseFactory.getSuccessResponse(200, { _2FARequired, enabled2FAMethods, token });
-
-				return reply.code(status).send(body);
-			}
-
-			const { user, refreshToken, accessToken } = loginResult;
-
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
-
-			return reply.code(status).setCookie(
-				'refreshToken', refreshToken!, {
-					path: '/',
-					httpOnly: true,
-					secure: false,
-					sameSite: 'lax'
-				}
-			).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
-
-			if (!reply.sent)
-				return reply.code(status).send(body);
+		const loginResult = await this.authService.LogIn(username, password, request.fingerprint!);
+		if (loginResult._2FARequired) {
+			const { _2FARequired, enabled2FAMethods, token } = loginResult;
+			return reply.send({
+				_2FARequired,
+				enabled2FAMethods,
+				token
+			});
 		}
+
+		const { user, refreshToken, accessToken } = loginResult;
+
+		return reply.setCookie(
+			'refreshToken', refreshToken!, {
+				path: '/',
+				httpOnly: true,
+				secure: false,
+				sameSite: 'lax'
+			}
+		).send({ user, accessToken });
 	}
 
 	async sendTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {

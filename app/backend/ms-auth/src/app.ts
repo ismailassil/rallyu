@@ -37,12 +37,15 @@ import MatchesController from './controllers/MatchesController';
 import MatchesService from './services/GameAndStats/MatchesService';
 import fastifyStatic from '@fastify/static';
 import path from 'path';
+import errorHandlerPlugin from './plugins/errorHandler';
+import AuthResponseFactory from './controllers/AuthResponseFactory';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
 		logger: { transport: { target: 'pino-pretty', options: { colorize: true, translateTime: 'SYS:standard', ignore: 'pid,hostname' } } },
 		ajv: { customOptions: { removeAdditional: false, allErrors: true }}
 	});
+
 
 	// REGISTER DATABASE PLUGIN
 	// fastify.register(SQLitePlugin);
@@ -51,6 +54,8 @@ async function buildApp(): Promise<FastifyInstance> {
 		credentials: true,
 		methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE']
 	});
+
+	await fastify.register(errorHandlerPlugin);
 
 	// INIT UTILS
 	const jwtUtils = new JWTUtils();
@@ -88,12 +93,12 @@ async function buildApp(): Promise<FastifyInstance> {
 	const verificationController = new VerificationController(verificationService);
 	const matchesController = new MatchesController(matchesService);
 
-	// await fastify.register(natsPlugin, {
-	// 	NATS_URL: process.env["NATS_URL"] || "",
-	// 	NATS_USER: process.env["NATS_USER"] || "",
-	// 	NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
-	// 	userService: userService
-	// });
+	await fastify.register(natsPlugin, {
+		NATS_URL: process.env["NATS_URL"] || "",
+		NATS_USER: process.env["NATS_USER"] || "",
+		NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
+		userService: userService
+	});
 
 	await fastify.register(authRouter, {
 		prefix: '/auth',
