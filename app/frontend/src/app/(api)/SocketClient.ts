@@ -1,5 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { GameType } from "../(onsite)/game/types/types";
+import { NOTIFICATION_TYPE } from "../(onsite)/components/Header/notification/types/notifications.types";
 
 class SocketClient {
 	private socket: Socket;
@@ -83,6 +84,17 @@ class SocketClient {
 				type: !accept ? "game_reject" : type,
 				actionUrl,
 			},
+		};
+
+		this.emit("notification", data);
+	}
+
+	updateContext(type: NOTIFICATION_TYPE) {
+		const data = {
+			eventType: "UPDATE_CONTEXT",
+			data: {
+				type
+			}
 		};
 
 		this.emit("notification", data);

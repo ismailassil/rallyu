@@ -301,7 +301,7 @@ class NotifSerives {
 	private async filterMessage(data: RAW_NOTIFICATION): Promise<USER_NOTIFICATION> {
 		const cachedAvatar = await fastify.redis.get(`avatar:${data.sender_id}`);
 		let avatar;
-		if (cachedAvatar !== null) {
+		if (cachedAvatar !== null && cachedAvatar.length !== 0) {
 			avatar = cachedAvatar;
 		} else {
 			const res = await fastify.nats.request(

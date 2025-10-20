@@ -8,7 +8,6 @@ import useIsOnline from "@/app/hooks/useIsOnline";
 import Image from "next/image";
 import useRequestBattleFriend from "@/app/hooks/useRequestBattleFriend";
 import { useState } from "react";
-import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { motion } from "framer-motion";
 
 interface FriendsCardItemProps {
@@ -22,12 +21,10 @@ export default function FriendsCardItem({ id, username, avatar }: FriendsCardIte
 	const t = useTranslations("common");
 	const [option, setOption] = useState(false);
 	const [timer, setTimer] = useState<boolean>(false);
-	const { socket } = useAuth();
 	const requestBattleFriend = useRequestBattleFriend();
 	function onPlay(event: any, gameType: "pingpong" | "tictactoe") {
 		setTimer(true);
-		requestBattleFriend(event);
-		socket.createGame(id, gameType);
+		requestBattleFriend(event, id, gameType);
 	}
 
 	return (
