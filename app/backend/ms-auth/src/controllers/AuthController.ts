@@ -36,23 +36,22 @@ class AuthController {
 		const loginResult = await this.authService.LogIn(username, password, request.fingerprint!);
 		if (loginResult._2FARequired) {
 			const { _2FARequired, enabled2FAMethods, token } = loginResult;
-			return reply.send({
-				_2FARequired,
-				enabled2FAMethods,
-				token
-			});
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { _2FARequired, enabled2FAMethods, token });
+			return reply.code(status).send(body);
 		}
 
 		const { user, refreshToken, accessToken } = loginResult;
 
-		return reply.setCookie(
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, { user, accessToken });
+		return reply.code(status).setCookie(
 			'refreshToken', refreshToken!, {
 				path: '/',
 				httpOnly: true,
 				secure: false,
 				sameSite: 'lax'
 			}
-		).send({ user, accessToken });
+		).send(body);
 	}
 
 	async sendTwoFAChallengeHandler(request: FastifyRequest, reply: FastifyReply) {
