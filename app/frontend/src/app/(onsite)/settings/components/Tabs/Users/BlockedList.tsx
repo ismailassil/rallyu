@@ -7,9 +7,12 @@ import useAPICall from "@/app/hooks/useAPICall";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
 import LoadingComponent, { PlaceholderComponent } from "@/app/(auth)/components/UI/LoadingComponents";
 import useAPIQuery from "@/app/hooks/useAPIQuery";
+import { useTranslations } from "next-intl";
 
 
 export default function BlockedList() {
+	const t = useTranslations('placeholders.data.blocked');
+
 	const {
 		loggedInUser,
 		apiClient,
@@ -63,10 +66,10 @@ export default function BlockedList() {
 		return <LoadingComponent />;
 
 	if (error)
-		return <PlaceholderComponent content='Failed to load blocked users. Try Again Later.' />;
+		return <PlaceholderComponent content={t('error')} />;
 
 	if (!blocked || blocked.length === 0)
-		return <PlaceholderComponent content='No blocked users found. Go touch some grass.' />;
+		return <PlaceholderComponent content={t('no-data')} />;
 
 	return (
 		<UserList

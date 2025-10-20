@@ -80,7 +80,7 @@ export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 				</button>
 				<div>
 					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('verification.input.title', { method: 'SMS' })}</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>{t('verification.input.title', { method: 'SMS' })}</p>
+					<p className='text-gray-300 text-sm sm:text-balance'>{t('verification.input.subtitle', { method: 'SMS' })}</p>
 				</div>
 			</div>
 

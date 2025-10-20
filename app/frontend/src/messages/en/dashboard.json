@@ -351,6 +351,30 @@
       }
     }
   },
+  "placeholders": {
+    "data": {
+      "generic": {
+        "no-data": "No data found.",
+        "error": "Failed to load data."
+      },
+      "friends": {
+        "no-data": "No friends found. Go touch some grass.",
+        "error": "Failed to load friends. Try again later."
+      },
+      "outgoing": {
+        "no-data": "No outgoing friend requests found. Go touch some grass.",
+        "error": "Failed to load outgoing friend requests. Try again later."
+      },
+      "incoming": {
+        "no-data": "No incoming friend requests found. Go touch some grass.",
+        "error": "Failed to load incoming friend requests. Try again later."
+      },
+      "blocked": {
+        "no-data": "No blocked users found. Go touch some grass.",
+        "error": "Failed to load blocked users. Try again later."
+      }
+    }
+  },
   "auth": {
     "common": {
       "first_name": "First Name",

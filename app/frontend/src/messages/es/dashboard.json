@@ -351,6 +351,30 @@
       }
     }
   },
+  "placeholders": {
+    "data": {
+      "generic": {
+        "no-data": "No se encontraron datos.",
+        "error": "No se pudieron cargar los datos."
+      },
+      "friends": {
+        "no-data": "No se encontraron amigos. Sal a tomar un poco de aire fresco.",
+        "error": "Error al cargar la lista de amigos. Inténtalo de nuevo más tarde."
+      },
+      "outgoing": {
+        "no-data": "No se encontraron solicitudes de amistad enviadas. Sal a tomar un poco de aire fresco.",
+        "error": "Error al cargar las solicitudes de amistad enviadas. Inténtalo de nuevo más tarde."
+      },
+      "incoming": {
+        "no-data": "No se encontraron solicitudes de amistad pendientes. Sal a tomar un poco de aire fresco.",
+        "error": "Error al cargar las solicitudes de amistad pendientes. Inténtalo de nuevo más tarde."
+      },
+      "blocked": {
+        "no-data": "No se encontraron usuarios bloqueados. Sal a tomar un poco de aire fresco.",
+        "error": "Error al cargar la lista de usuarios bloqueados. Inténtalo de nuevo más tarde."
+      }
+    }
+  },
   "auth": {
     "common": {
       "first_name": "Nombre",

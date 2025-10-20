@@ -118,7 +118,7 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 				</div>
 
 				<form className="flex flex-col gap-3 mt-8" onSubmit={handleSubmit}>
-					<p className="text-center text-gray-200 text-sm sm:text-base">{t('verification.verifyCode.subtitle')}</p>
+					<p className="text-center text-gray-200 text-sm sm:text-base">{t('verification.verifyCode.subtitle', { method: 'TOTP' })}</p>
 
 					<OTPCodeInput
 						code={code}

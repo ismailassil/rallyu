@@ -351,6 +351,30 @@
       }
     }
   },
+  "placeholders": {
+    "data": {
+      "generic": {
+        "no-data": "Keine Daten gefunden.",
+        "error": "Daten konnten nicht geladen werden."
+      },
+      "friends": {
+        "no-data": "Keine Freunde gefunden. Geh mal raus an die frische Luft.",
+        "error": "Freundesliste konnte nicht geladen werden. Versuche es später erneut."
+      },
+      "outgoing": {
+        "no-data": "Keine ausgehenden Freundschaftsanfragen gefunden. Geh mal raus an die frische Luft.",
+        "error": "Ausgehende Freundschaftsanfragen konnten nicht geladen werden. Versuche es später erneut."
+      },
+      "incoming": {
+        "no-data": "Keine eingehenden Freundschaftsanfragen gefunden. Geh mal raus an die frische Luft.",
+        "error": "Eingehende Freundschaftsanfragen konnten nicht geladen werden. Versuche es später erneut."
+      },
+      "blocked": {
+        "no-data": "Keine blockierten Benutzer gefunden. Geh mal raus an die frische Luft.",
+        "error": "Blockierte Benutzer konnten nicht geladen werden. Versuche es später erneut."
+      }
+    }
+  },
   "auth": {
     "common": {
       "first_name": "Vorname",

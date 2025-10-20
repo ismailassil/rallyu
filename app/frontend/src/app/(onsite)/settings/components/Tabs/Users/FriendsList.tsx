@@ -7,8 +7,11 @@ import useAPICall from "@/app/hooks/useAPICall";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
 import LoadingComponent, { PlaceholderComponent } from "@/app/(auth)/components/UI/LoadingComponents";
 import useAPIQuery from "@/app/hooks/useAPIQuery";
+import { useTranslations } from "next-intl";
 
 export default function FriendsList() {
+	const t = useTranslations('placeholders.data.friends');
+
 	const {
 		loggedInUser,
 		apiClient,
@@ -62,10 +65,10 @@ export default function FriendsList() {
 		return <LoadingComponent />;
 
 	if (error)
-		return <PlaceholderComponent content='Failed to load friends. Try Again Later.' />;
+		return <PlaceholderComponent content={t('error')} />;
 
 	if (!friends || friends.length === 0)
-		return <PlaceholderComponent content='No friends found. Go touch some grass.' />;
+		return <PlaceholderComponent content={t('no-data')} />;
 
 	return (
 		<UserList

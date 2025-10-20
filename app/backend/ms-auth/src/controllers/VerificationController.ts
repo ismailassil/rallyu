@@ -11,9 +11,9 @@ class VerificationController {
 	async requestHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
 			const user_id = request.user?.sub;
-			const { _for } = request.params as { _for: 'email' | 'phone' };
+			const { contact } = request.params as { contact: 'email' | 'phone' };
 
-			const token = await this.verificationService.request(_for, user_id!, (request.body as any)?.target);
+			const token = await this.verificationService.request(contact, user_id!, (request.body as any)?.target);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { token });
 
@@ -27,8 +27,6 @@ class VerificationController {
 
 	async verifyHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const user_id = request.user?.sub;
-			const { _for } = request.query as { _for: 'email' | 'phone' };
 			const { token, code } = request.body as { token: string, code: string };
 
 			await this.verificationService.verify(token as UUID, code);
@@ -45,9 +43,7 @@ class VerificationController {
 
 	async resendHandler(request: FastifyRequest, reply: FastifyReply) {
 		try {
-			const user_id = request.user?.sub;
-			const { _for } = request.query as { _for: 'email' | 'phone' };
-			const { token, code } = request.body as { token: string, code: string };
+			const { token } = request.body as { token: string };
 
 			await this.verificationService.resend(token as UUID);
 

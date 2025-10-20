@@ -10,6 +10,7 @@ import useAPIQuery from "@/app/hooks/useAPIQuery";
 
 export default function FriendsCard() {
 	const t = useTranslations("dashboard.titles");
+	const tp = useTranslations('placeholders.data.friends');
 
 	const {
 		loggedInUser,
@@ -53,9 +54,9 @@ export default function FriendsCard() {
 				{showSkeleton ? (
 					<LoadingSkeletonList count={12} />
 				) : error ? (
-					<PlaceholderComponent content='Failed to load friends. Try Again Later.' />
+					<PlaceholderComponent content={tp('error')} />
 				) : !friends || friends.length === 0 ? (
-					<PlaceholderComponent content='No friends found. Go touch some grass.' />
+					<PlaceholderComponent content={tp('no-data')} />
 				) : (
 					<AnimatePresence>
 						{friends.map((item, i) => (

@@ -1,14 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import React, { useState, useEffect } from "react";
-import UserList, { UserItem } from "./UserList";
+import React, { useEffect } from "react";
+import UserList from "./UserList";
 import { X } from "lucide-react";
 import useAPICall from "@/app/hooks/useAPICall";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
 import LoadingComponent, { PlaceholderComponent } from "@/app/(auth)/components/UI/LoadingComponents";
 import useAPIQuery from "@/app/hooks/useAPIQuery";
+import { useTranslations } from "next-intl";
 
 export default function OutgoingFriendRequestsList() {
+	const t = useTranslations('placeholders.data.incoming');
+
 	const {
 		loggedInUser,
 		apiClient,
@@ -62,10 +65,10 @@ export default function OutgoingFriendRequestsList() {
 		return <LoadingComponent />;
 
 	if (error)
-		return <PlaceholderComponent content='Failed to load outgoing friend requests. Try Again Later.' />;
+		return <PlaceholderComponent content={t('error')} />;
 
 	if (!outgoing || outgoing.length === 0)
-		return <PlaceholderComponent content='No outgoing friend requests found. Go touch some grass.' />;
+		return <PlaceholderComponent content={t('no-data')} />;
 
 	return (
 		<UserList
