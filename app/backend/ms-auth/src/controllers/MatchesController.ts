@@ -49,24 +49,6 @@ class MatchesController {
 			reply.code(status).send(body);
 		}
 	}
-
-	// async fetchGameHandler(request: FastifyRequest, reply: FastifyReply) {
-	// 	// we need to add some basic auth
-	// 	try {
-	// 		// const user_id = request.user?.sub;
-	// 		const { id } = request.params as any;
-
-	// 		const match = await this.matchesRepository.findById(id);
-
-	// 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, { match });
-
-	// 		reply.code(status).send(body);
-	// 	} catch (err: any) {
-	// 		const { status, body } = AuthResponseFactory.getErrorResponse(err);
-
-	// 		reply.code(status).send(body);
-	// 	}
-	// }
 }
 
 export default MatchesController;

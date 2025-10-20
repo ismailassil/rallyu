@@ -3,29 +3,27 @@ import fastify, { FastifyInstance, FastifyRequest, FastifyReply } from "fastify"
 import { env } from "./config/env";
 
 async function main() {
+	process.on('uncaughtException', err => {
+		console.error('Uncaught Exception:', err);
+		process.exit(1);
+	});
+
+	process.on('unhandledRejection', err => {
+		console.error('Unhandled Rejection:', err);
+		process.exit(1);
+	});
+
 	const fastify: FastifyInstance = await initializeApp();
 
-	// const mailService = new MailingService();
-
-	// await mailService.sendEmail({
-	// 	from: 'no-reply@rally.com',
-	// 	to: 'nabilos.fb@gmail.com',
-	// 	subject: 'Rallyu server just started!',
-	// 	text: 'This is a test email sent from the Rally authentication server.'
-	// });
-	
-
-
-
-
-	
-	fastify.get('/', (request: FastifyRequest, reply: FastifyReply) => {
-		reply.code(200).send('pong');
+	fastify.get('/ping', (request: FastifyRequest, reply: FastifyReply) => {
+		return reply.code(200).send('pong');
 	});
 
 	fastify.listen({ host: '0.0.0.0', port: env.PORT }, (err: Error | null, address: string) => {
-		if (err)
+		if (err) {
+			fastify.log.error({ err }, '[SERVER] Cannot start HTTP Server');
 			process.exit(1);
+		}
 		fastify.log.info(`Server listening at ${address}:${env.PORT}`);
 	});
 }

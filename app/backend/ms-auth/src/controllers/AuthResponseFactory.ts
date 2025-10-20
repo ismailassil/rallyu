@@ -14,14 +14,6 @@ import { AuthError } from "../types/exceptions/AAuthError";
 class AuthResponseFactory {
 
 	static getErrorResponse(error: Error, isDevelopment: boolean = true) : { status: number, body: ErrorResponse } {
-		console.error(`Auth Error: `, {
-			type: error.name,
-			message: error.message,
-			code: (error as AuthError).errorCode,
-			details: (error as AuthError).details
-		});
-		console.error(error);
-
 		switch(true) {
 			case error instanceof AuthError:
 				return {
@@ -43,7 +35,7 @@ class AuthResponseFactory {
 						success: false,
 						error: {
 							code: 'AUTH_INTERNAL_ERROR',
-							message: isDevelopment ? error.message : 'An unexpected error occured',
+							message: 'Something went wrong. Try again later.',
 							details: isDevelopment ? (error as AuthError).details : {}
 						}
 					}
@@ -52,14 +44,10 @@ class AuthResponseFactory {
 	}
 
 	static getSuccessResponse(statusCode: number, data?: any) : { status: number, body: SuccessResponse } {
-		console.log(`Auth Success: `, {
-			data
-		});
-
 		return {
 			status: statusCode,
 			body: { success: true, data: data ?? {} }
-		}
+		};
 	}
 }
 

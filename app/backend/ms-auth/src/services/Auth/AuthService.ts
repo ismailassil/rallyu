@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
-import { JWT_REFRESH_PAYLOAD } from '../../utils/auth/Auth'
+import { JWT_REFRESH_PAYLOAD } from '../../utils/auth/JWTUtils'
 import { ISessionFingerprint } from "../../types";
 import UserService from "../User/UserService";
 import SessionService from "./SessionsService";
 import { AuthConfig } from "../../config/auth";
-import JWTUtils from "../../utils/auth/Auth";
+import JWTUtils from "../../utils/auth/JWTUtils";
 import MailingService from '../Communication/MailingService';
 import WhatsAppService from '../Communication/WhatsAppService';
 import TwoFactorMethodService from '../TwoFactorAuth/TwoFactorMethodService';
@@ -56,7 +56,7 @@ class AuthService {
 		);
 	}
 
-	async LogIn(username: string, password: string, sessionFingerprint: ISessionFingerprint) {
+	async LogIn(username: string, password: string, reqFingerprint: ISessionFingerprint) {
 		const existingUser = await this.userService.getUserByUsername(username);
 		if (existingUser && existingUser.auth_provider !== 'Local')
 			throw new InvalidAuthProviderError(existingUser.auth_provider);
@@ -76,32 +76,32 @@ class AuthService {
 				token: await this.twoFAChallengeService.createChallenge(existingUser.id)
 			};
 
-		const sessionTokens = await this.sessionService.createSession(existingUser.id, sessionFingerprint);
+		const { accessToken, refreshToken } = await this.sessionService.createSession(existingUser.id, reqFingerprint);
 
 		const { password: _, ...userWithoutPassword } = existingUser;
 
-		return { user: userWithoutPassword, accessToken: sessionTokens.accessToken, refreshToken: sessionTokens.refreshToken };
+		return { user: userWithoutPassword, accessToken, refreshToken };
 	}
 
-	async LogOut(refreshToken: string) : Promise<void> {
-		const payload: JWT_REFRESH_PAYLOAD = this.jwtUtils.decodeJWT(refreshToken);
-
-		await this.sessionService.revokeSession(payload.session_id, 'Logout requested by user', payload.sub, refreshToken);
+	async LogOut(refreshTokenPayload: JWT_REFRESH_PAYLOAD & { iat: number, exp: number }) : Promise<void> {
+		await this.sessionService.revokeSession(
+			refreshTokenPayload.session_id,
+			refreshTokenPayload.sub,
+			'Logout requested by user'
+		);
 	}
 
-	async Refresh(refreshToken: string, sessionFingerprint: ISessionFingerprint) {
-		const refreshTokenPayload: JWT_REFRESH_PAYLOAD = this.jwtUtils.decodeJWT(refreshToken);
-
+	async Refresh(refreshTokenPayload: JWT_REFRESH_PAYLOAD & { iat: number, exp: number }, reqFingerprint: ISessionFingerprint) {
 		const existingUser = await this.userService.getUserById(refreshTokenPayload.sub);
 		if (!existingUser)
 			throw new UserNotFoundError();
 
-		const { newAccessToken, newRefreshToken }
-			= await this.sessionService.refreshSession(refreshToken, sessionFingerprint);
+		const { newAccessToken, rotatedRefreshToken }
+			= await this.sessionService.refreshSession(refreshTokenPayload, reqFingerprint);
 
 		const { password: _, ...userWithoutPassword } = existingUser;
 
-		return { user: userWithoutPassword, newAccessToken, newRefreshToken };
+		return { user: userWithoutPassword, newAccessToken, rotatedRefreshToken };
 	}
 
 	async sendTwoFAChallengeCode(token: UUID, method: AuthChallengeMethod, sessionFingerprint: ISessionFingerprint) {

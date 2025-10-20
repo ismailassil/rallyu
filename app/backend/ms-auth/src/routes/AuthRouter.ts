@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import AuthController from "../controllers/AuthController";
-import Authenticate from "../middleware/Authenticate";
 import { zodPreHandler } from "../utils/validation/zodFormValidator";
 import cookie from '@fastify/cookie';
 import TwoFactorController from "../controllers/TwoFactorController";
@@ -10,6 +9,8 @@ import { authRoutesZodSchemas as zodSchemas } from "../schemas/zod/auth.zod.sche
 import { UAParser } from "ua-parser-js";
 import { oauthConfig } from "../config/oauth";
 import VerificationController from "../controllers/VerificationController";
+import { requestFingerprintHook } from "../middleware/hooks/fingerprintHook";
+import { attachTokensHook } from "../middleware/hooks/attachTokensHook";
 
 async function authRouter(fastify: FastifyInstance, opts: {
 	authController: AuthController,
@@ -17,36 +18,7 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	verificationController: VerificationController,
 	passwordResetController: PasswordResetController
 }) {
-	fastify.decorate('authenticate', Authenticate); // auth middleware for protected routes
-	fastify.decorate('requireAuth', { preHandler: fastify.authenticate }); // preHandler hook
-	fastify.decorateRequest('user', null);
-	fastify.decorateRequest('refreshToken', null);
-	fastify.decorateRequest('fingerprint', null);
-	fastify.addHook('preHandler', async (request, reply) => {
-		const parser = new UAParser(request.headers['user-agent'] || '');
-
-		const device = parser.getDevice();
-		const browser = parser.getBrowser();
-		const os = parser.getOS();
-
-		request.fingerprint = {
-			device: device.type?.toString() || 'Desktop',
-			browser: `${browser.name?.toString() || 'Unknown Browser'} on ${os.name?.toString() || 'Unknown OS'}`,
-			ip_address: request.ip
-		}
-		console.log('Request Fingerprint: ', request.fingerprint);
-
-		if (request.cookies && request.cookies?.['refreshToken']) {
-			request.refreshToken = request.cookies?.['refreshToken'];
-		} else
-			request.refreshToken = null;
-
-		console.log('refreshToken from cookies: ', request.refreshToken);
-	});
-
-	fastify.register(cookie);
-
-
+	fastify.addHook('onRequest', requestFingerprintHook);
 
 	/*-------------------------------- Local Authentication --------------------------------*/
 	fastify.post('/register', {
@@ -130,28 +102,28 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	});
 
 	fastify.get('/2fa/enabled', {
-		preHandler: fastify.authenticate,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.twoFactorController.fetchEnabledMethodsHandler.bind(opts.twoFactorController)
 	});
 	fastify.post('/2fa/enabled/:method', {
 		schema: schemas.twoFactor.manage.enable,
-		preHandler: fastify.authenticate,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.twoFactorController.enableMethodHandler.bind(opts.twoFactorController)
 	});
 	fastify.delete('/2fa/enabled/:method', {
 		schema: schemas.twoFactor.manage.disable,
-		preHandler: fastify.authenticate,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.twoFactorController.disableMethodHandler.bind(opts.twoFactorController)
 	});
 
 	fastify.post('/2fa/setup-totp', {
 		schema: schemas.twoFactor.setup.totp.request,
-		preHandler: fastify.authenticate,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.twoFactorController.setupTOTPHandler.bind(opts.twoFactorController)
 	});
 	fastify.post('/2fa/setup-totp/verify', {
 		schema: schemas.twoFactor.setup.totp.verify,
-		preHandler: fastify.authenticate,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.twoFactorController.verifyTOTPHandler.bind(opts.twoFactorController)
 	});
 
@@ -161,7 +133,7 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	fastify.post('/change-password', {
 		schema: schemas.password.change,
 		preHandler: [
-			fastify.authenticate,
+			fastify.accessTokenAuth,
 			zodPreHandler(zodSchemas.password.change)
 		],
 		handler: opts.authController.changePasswordHandler.bind(opts.authController)
@@ -189,33 +161,33 @@ async function authRouter(fastify: FastifyInstance, opts: {
 
 	/*--------------------------------------------------- Sessions ---------------------------------------------------*/
 	fastify.get('/sessions', {
-		preHandler: fastify.authenticate,
-		handler: opts.authController.getActiveSessionsHandler.bind(opts.authController)
+		preHandler: fastify.accessTokenAuth,
+		handler: opts.authController.fetchSessionsHandler.bind(opts.authController)
 	});
 	fastify.delete('/sessions/:id', {
 		schema: schemas.session.delete,
-		preHandler: fastify.authenticate,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.authController.revokeSessionHandler.bind(opts.authController)
 	});
 	fastify.delete('/sessions', {
-		preHandler: fastify.authenticate,
-		handler: opts.authController.revokeAllSessionsHandler.bind(opts.authController)
+		preHandler: fastify.accessTokenAuth,
+		handler: opts.authController.revokeMassSessionsHandler.bind(opts.authController)
 	});
 
 	/*-------------------------------------------------- Verification --------------------------------------------------*/
 	fastify.post('/verify-:contact', {
 		schema: schemas.verifyContact.request,
-		preHandler: fastify.authenticate,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.verificationController.requestHandler.bind(opts.verificationController)
 	});
 	fastify.post('/verify-:contact/verify', {
 		schema: schemas.verifyContact.verify,
-		preHandler: fastify.authenticate,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.verificationController.verifyHandler.bind(opts.verificationController)
 	});
 	fastify.post('/verify-:contact/resend', {
 		schema: schemas.verifyContact.resend,
-		preHandler: fastify.authenticate,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.verificationController.resendHandler.bind(opts.verificationController)
 	});
 }
