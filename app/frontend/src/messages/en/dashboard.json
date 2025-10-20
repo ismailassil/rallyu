@@ -523,7 +523,7 @@
       },
       "note": {
         "title": "Note",
-        "first": "Updating this email will replace the existing contact information on your account.",
+        "first": "Updating this will replace the existing contact information on your account.",
         "second": "Please ensure the new information is correct, as it will be used for all future communications and verifications."
       }
     },

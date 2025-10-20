@@ -1,135 +1,152 @@
-import fs from 'fs';
-import pino from 'pino';
+import pino, { BaseLogger } from 'pino';
 import { ServiceUnavailableError } from '../../types/exceptions/AAuthError';
-const qrcodeinterminal = require('qrcode-terminal');
+import qrcodeTerminal from 'qrcode-terminal';
+import makeWASocket, { WASocket, useMultiFileAuthState, DisconnectReason } from '@whiskeysockets/baileys';
+import { FastifyBaseLogger } from 'fastify';
+import { rmSync } from 'fs';
+import path from 'path';
 
-class WhatsAppService {
-	private logger: any;
+export interface WhatsAppServiceOptions {
+	authDir?: string;
+	adminJid?: string;
+	logger?: BaseLogger;
+}
+
+export class WhatsAppService {
+	private logger: BaseLogger;
 	private authDir: string;
-	private WASocket: any;
-	private state: any;
-	private saveCreds: any;
-	private DisconnectReason: any;
-	public isReady: Promise<void>;
+	private adminJid: string | undefined;
+	private socket: WASocket | null = null;
+	public isReady = false;
 
-	constructor(logger: any, authDir?: string) {
-		this.logger = logger;
-		this.authDir = authDir || 'auth_info_baileys';
-		this.WASocket = null;
-		this.state = null;
-		this.saveCreds = null;
+	constructor(options: WhatsAppServiceOptions = {}) {
+		this.authDir = options.authDir || 'wp-session';
+		this.adminJid = options.adminJid;
+		this.logger = options.logger || pino({ transport: { target: 'pino-pretty', options: { colorize: true, translateTime: 'SYS:standard', ignore: 'pid,hostname' } } });
 
-		this.isReady = this.initWhatsappConnection();
+	  	// non-blocking
+	  	this.initializeInBackground();
 	}
 
-	private async initWhatsappConnection() {
-		const baileys = await import ('@whiskeysockets/baileys');
-
-		const baileysLogger = pino({
-			level: 'warn',
-			transport: {
-			target: 'pino-pretty',
-			options: {
-				colorize: true,
-				translateTime: 'SYS:standard',
-				ignore: 'pid,hostname'
-			}
-		}});
-
-		const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = baileys;
-		this.DisconnectReason = DisconnectReason;
-
-		const { state, saveCreds } = await useMultiFileAuthState(this.authDir);
-		this.state = state;
-		this.saveCreds = saveCreds;
-
-		this.WASocket = makeWASocket({
-			auth: this.state,
-			version: [2, 3000, 1025190524],
-			logger: baileysLogger
-		});
-
-		return new Promise<void>((resolve, reject) => {
-			this.WASocket.ev.on('connection.update', async (update: any) => {
-				await this.handleConnectionUpdate(update);
-				if (update.connection === 'open')
-					resolve();
-			});
-			this.WASocket.ev.on('creds.update', saveCreds);
-		});
+	private async initializeInBackground() {
+		await this.createSocket();
 	}
 
-	async handleConnectionUpdate(update: any) {
-		const { connection, lastDisconnect, qr } = update;
-
-		if (qr) {
-			this.logger.info('[SMS] Scan QRCode: ');
-			qrcodeinterminal.generate(qr, { small: true });
+	private async createSocket() {
+		this.logger.info('[WHATSAPP] Creating a new socket...');
+		if (this.isReady) {
+			this.logger.info('[WHATSAPP] Socket is already initialized...');
+			return ;
 		}
 
-		if (connection === 'close') {
-			const disconnectReason = (lastDisconnect.error)?.output?.statusCode;
+		try {
+			const { state, saveCreds } = await useMultiFileAuthState(this.authDir);
 
-			if (disconnectReason !== this.DisconnectReason.loggedOut) {
-				this.logger.warn('[SMS] Connection closed, reconnecting...');
-				await this.initWhatsappConnection();
-			} else {
-				this.logger.warn('[SMS] Connection logged out. QR Code scan is required...');
+			this.socket = makeWASocket({
+				auth: state,
+				version: [2, 3000, 1025190524],
+				logger: pino({ level: 'silent' })
+			});
+
+			const credsUpdateHandler = saveCreds;
+			const connectionUpdateHandler = (update: any) => {
+				const { connection, lastDisconnect, qr } = update;
+
+				if (qr) {
+					this.logger.info('[WHATSAPP] QR Code ready. Scan to authenticate.');
+					qrcodeTerminal.generate(qr, { small: true });
+				}
+
+				if (connection === 'close') {
+					this.isReady = false;
+
+					const statusCode = (lastDisconnect?.error as any)?.output?.statusCode;
+					const isLogout = statusCode === DisconnectReason.loggedOut;
+
+					if (!isLogout) {
+						this.logger.warn('[WHATSAPP] Connection lost. Attempting to reconnect...');
+						this.createSocket();
+					}
+					else {
+						try {
+							rmSync(path.resolve(this.authDir), { recursive: true, force: true });
+							this.logger.info('[WHATSAPP] Removed session files successfully...');
+						} catch (err) {
+							this.logger.error({ err }, '[WHATSAPP] Failed to remove session files...');
+						}
+						this.createSocket();
+					}
+				} else if (connection === 'open') {
+					this.isReady = true;
+					this.logger.info('[WHATSAPP] Service is up and running...');
+					this.sendReadyNotification().catch(() => {
+						/* im ignoring this */
+					});
+				}
 			}
-		} else if (connection === 'open') {
-			this.logger.info('[SMS] Service is up and running');
-			await this.sendReadyNotification();
+
+			this.socket.ev.on('connection.update', connectionUpdateHandler);
+       		this.socket.ev.on('creds.update', credsUpdateHandler);
+		} catch (err) {
+			this.logger.error({ err }, '[WHATSAPP] Failed to create socket');
 		}
 	}
 
 	private async sendReadyNotification() : Promise<void> {
-		if (!this.WASocket || !this.isReady) {
-			this.logger.error('[SMS] Service is not running yet!');
-			return ;
-		}
-
-		const ADMIN_JID = `${212636299820}@s.whatsapp.net`;
-		const READY_MSG = '🟢 WhatsApp service is up and running!';
-		const READY_IMG = './uploads/avatars/aibn_che.png';
+		if (!this.adminJid || !this.socket || !this.isReady)
+			return;
 
 		try {
-			if (!fs.existsSync(READY_IMG))
-				await this.WASocket.sendMessage(ADMIN_JID, { text: READY_MSG });
-			else {
-				const img = fs.readFileSync(READY_IMG);
-				await this.WASocket.sendMessage(ADMIN_JID, {
-					image: img,
-					caption: READY_MSG
-				});
-			}
-			this.logger.info('[SMS] Sent ready notification to Admin via WhatsApp');
+			await this.socket.sendMessage(this.adminJid, {
+				text: '🟢 WhatsApp service is up and running!',
+			});
+			this.logger.info('[WHATSAPP] Successfully sent ready notification to Admin');
 		} catch (err) {
-			this.logger.error({ err }, '[SMS] Failed to send ready notification to Admin via WhatsApp');
+		  	this.logger.warn({ err, to: this.adminJid }, '[WHATSAPP] Failed to send ready notification to Admin');
 		}
 	}
 
-	async sendMessage(receiverWANumber: string, message: string) {
-		if (!this.WASocket || !this.isReady) {
-			this.logger.error('[SMS] Service is not running yet!');
+	public async sendMessage(to: string, message: string) : Promise<void> {
+		if (!this.socket || !this.isReady)
 			throw new ServiceUnavailableError('SMS service is not available at the moment');
-		}
 
-		const sanitizedNumber = receiverWANumber.startsWith('+')
-			? receiverWANumber.slice(1)
-			: receiverWANumber;
+		const jid = this.numberToJid(to);
 
-		const jid = `${sanitizedNumber}@s.whatsapp.net`;
-
-		this.logger.info({ jid }, '[SMS] Sending WhatsApp message');
+		const exists = await this.isOnWhatsApp(to);
+		if (!exists)
+			throw new ServiceUnavailableError('Phone number is not registered on WhatsApp');
 
 		try {
-			await this.WASocket.sendMessage(jid, { text: message });
+			await this.socket.sendMessage(jid, {
+				text: message
+			});
+			this.logger.info({ to: jid }, '[WHATSAPP] Message sent!');
 		} catch (err) {
-			this.logger.error('[SMS] WhatsApp service error!', err);
-			throw new ServiceUnavailableError('SMS service is not available at the moment');
+			this.logger.info({ err, to }, '[WHATSAPP] Failed to send message!');
+			throw new ServiceUnavailableError('Failed to send WhatsApp message');
 		}
+	}
 
-		this.logger.info({ jid }, '[SMS] WhatsApp message sent');
+	public async isOnWhatsApp(number: string) {
+		if (!this.socket || !this.isReady)
+			throw new ServiceUnavailableError('SMS service is not available at the moment');
+
+		const jid = this.numberToJid(number);
+
+		try {
+			const result = await this.socket.onWhatsApp(jid);
+			return Array.isArray(result) && result.length > 0 && result[0]?.exists === true;
+		} catch (err) {
+			this.logger.warn({ err, number }, '[WHATSAPP] Failed to check number existence');
+			return false;
+		}
+	}
+
+	private numberToJid(number: string) {
+		const jid = number.endsWith('@s.whatsapp.net')
+			? number : `${number.replace(/^\+/, '')}@s.whatsapp.net`;
+
+		return jid;
 	}
 }
 

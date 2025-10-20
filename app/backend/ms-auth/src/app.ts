@@ -40,22 +40,8 @@ import path from 'path';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
-		logger: {
-		  transport: {
-			target: 'pino-pretty',
-			options: {
-			  colorize: true,
-			  translateTime: 'SYS:standard',
-			  ignore: 'pid,hostname'
-			}
-		  }
-		},
-		ajv: {
-			customOptions: {
-				removeAdditional: false,
-				allErrors: true
-			}
-		}
+		logger: { transport: { target: 'pino-pretty', options: { colorize: true, translateTime: 'SYS:standard', ignore: 'pid,hostname' } } },
+		ajv: { customOptions: { removeAdditional: false, allErrors: true }}
 	});
 
 	// REGISTER DATABASE PLUGIN
@@ -79,7 +65,7 @@ async function buildApp(): Promise<FastifyInstance> {
 	const resetPasswordRepository = new ResetPasswordRepository();
 
 	// INIT SERVICES
-	const whatsAppService = new WhatsAppService(fastify.log);
+	const whatsAppService = new WhatsAppService({ authDir: 'wp-session', adminJid: '212636299820@s.whatsapp.net', logger: fastify.log });
 	// await whatsAppService.isReady; // TODO: HANDLE ERRORS
 	const mailingService = new MailingService(appConfig.mailing);
 	const sessionsService = new SessionService(authConfig, jwtUtils, sessionsRepository);
@@ -102,12 +88,12 @@ async function buildApp(): Promise<FastifyInstance> {
 	const verificationController = new VerificationController(verificationService);
 	const matchesController = new MatchesController(matchesService);
 
-	await fastify.register(natsPlugin, {
-	 NATS_URL: process.env["NATS_URL"] || "",
-	 NATS_USER: process.env["NATS_USER"] || "",
-	 NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
-	 userService: userService
-	});
+	// await fastify.register(natsPlugin, {
+	// 	NATS_URL: process.env["NATS_URL"] || "",
+	// 	NATS_USER: process.env["NATS_USER"] || "",
+	// 	NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
+	// 	userService: userService
+	// });
 
 	await fastify.register(authRouter, {
 		prefix: '/auth',
