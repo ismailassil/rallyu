@@ -3,7 +3,7 @@ import Overlay from "./Overlay";
 import Pong from "../../src/Pong";
 import VersusCard from "@/app/(onsite)/game/components/Items/VersusCard";
 import LoadingComponent from "@/app/(auth)/components/UI/LoadingComponents";
-import RoomNotFound from "../../../utils/RoomNotFound";
+import RoomNotFound from "../../../components/Items/RoomNotFound";
 import { useParams } from "next/navigation";
 import SocketProxy from "../../../utils/socketProxy";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";

@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import FriendsCard from "../components/Main/FriendsCard/FriendsCard";
+import { MatchMakingProvider } from "./components/context/matchmakingContext";
 
 export default function Game() {
 	const { loggedInUser, apiClient } = useAuth();
@@ -18,6 +19,7 @@ export default function Game() {
 				if (!loggedInUser)
 					return;
 				const res = await apiClient.fetchPlayerStatus(loggedInUser.id);
+				console.log('Response from fetchPlayerStatus: ', res);
 				router.push(`/game/${res.gameType}/${res.roomId}`);
 			} catch (err) {
 				console.log(`Game Service Error: `, err);
@@ -42,7 +44,9 @@ export default function Game() {
 					className="flex flex-row w-full h-full gap-4"
 				>
 					<GameProvider>
-						<LobbyPanel />
+						<MatchMakingProvider>
+							<LobbyPanel />
+						</MatchMakingProvider>
 						<FriendsCard />
 					</GameProvider>
 				</motion.div>
