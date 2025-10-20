@@ -3,9 +3,10 @@ import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import inter from "@/app/fonts/inter";
 import GameTimer from "./GameTimer";
 import { useEffect, useRef, useState } from "react";
-import { Flag, Unplug } from "lucide-react";
+import { Circle, Flag, Unplug, X } from "lucide-react";
 import { AnimatePresence, motion } from 'framer-motion'
-import unicaOne from "@/app/fonts/unicaOne";
+import smoochSans from "@/app/fonts/smosh";
+import { XOSign } from "../../types/types";
 
 interface PlayerInfo {
     username: string,
@@ -59,6 +60,17 @@ const PlayerCard = ({ side, info, disconnect } : { side: string, info: PlayerInf
                     {avatar}
                 </>
             )}
+        </div>
+    )
+}
+
+const TurnIndicator = ({ indicator, currentPlayer }: { indicator: XOSign, currentPlayer: XOSign }) => {
+    
+    return (
+        <div className={`flex w-[26px] h-[26px] bg-white rounded-full transition-all duration-200 ${currentPlayer === indicator ? 'animate-pulse opacity-100' : 'opacity-60'}`}>
+            {indicator === 'X'
+            ? <X className="w-full h-full" color="black" />
+            : <Circle className="w-full h-full" color="black" />}
         </div>
     )
 }
@@ -129,11 +141,16 @@ const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
 }
 
 const VersusCard = (
-    { opponentId, timeLeft, handleResign, disconnect, round, score, resignSwitch }:
+    { opponentId, timeLeft, handleResign, disconnect, round, score, resignSwitch, currentPlayer, playerSign }:
     { opponentId? : number | undefined,
-        timeLeft: number, handleResign: () => void,
-        disconnect?: boolean, round?: number,
-        score?: [number, number], resignSwitch?: boolean }
+        timeLeft: number,
+        handleResign: () => void,
+        disconnect?: boolean,
+        round?: number,
+        score?: [number, number],
+        resignSwitch?: boolean,
+        currentPlayer?: XOSign
+        playerSign?: XOSign  }
 ) => {
     const { apiClient, loggedInUser } = useAuth();
     const [loggedInUserInfo, setLoggedInUserInfo] = useState<PlayerInfo | null>(null);
@@ -174,21 +191,39 @@ const VersusCard = (
     }, [opponentId]);
 
     return (
-        <div className="flex min-h-0 w-full justify-between ">
-            <div className="flex w-full min-w-0 gap-3 justify-start">
+        <div className="flex min-h-0 w-full justify-between">
+            <div className="flex w-full min-w-0 gap-3 justify-start items-center">
                 <PlayerCard side='left' info={loggedInUserInfo} />
-                <AnimatePresence>
-                    {resignSwitch && <ResignButton handleResign={handleResign} />}
-                </AnimatePresence>
-                {score && <span className={`self-center ml-auto mr-10 text-5xl lg:text-6xl font-extrabold font-funnel-display`}>{score[0]}</span>}
+                <div className="flex h-full w-auto flex-col py-1 justify-between">
+                    <AnimatePresence>
+                        {/* {resignSwitch && <ResignButton handleResign={handleResign} />} */}
+                        <ResignButton handleResign={handleResign}/>
+                    </AnimatePresence>
+                    <TurnIndicator indicator={playerSign!} currentPlayer={currentPlayer!} />
+                </div>
             </div>
-            <div className={`flex flex-col ${round ? 'justify-between py-2' : 'justify-end'} items-center h-full`}>
-                {round && <span className="text-md lg:text-lg xl:text-xl font-funnel-display font-extrabold italic">Round {round}</span> }
-                <GameTimer time={timeLeft} className={`${round && 'rounded-2xl'}`} />
+            <div className="flex items-center justify-center">
+                {score && (
+                    <span className={`${smoochSans.className} text-3xl pr-3 sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold font-funnel-display text-center truncate`}>
+                        {score[0]}
+                    </span>
+                )}
+                <div className={`flex flex-col ${round ? 'justify-between py-2' : 'justify-end'} items-center h-full shrink-0`}>
+                    {round && <span className="text-md lg:text-lg xl:text-xl font-funnel-display font-extrabold italic">Round {round}</span>}
+                    <GameTimer time={timeLeft} className={`${round && 'rounded-2xl'}`} />
+                </div>
+                {score && (
+                    <span className={`${smoochSans.className} self-center pl-3 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold font-funnel-display text-center truncate`}>
+                        {score[1]}
+                    </span>
+                )}
             </div>
-            <div className={`flex w-full min-w-0 justify-end`}>
-                {score && <span className={`self-center mr-auto ml-10 text-5xl lg:text-6xl font-extrabold font-funnel-display`}>{score[1]}</span>}
+            
+            <div className="flex w-full min-w-0 justify-end items-center">
                 <PlayerCard side='right' info={opponentInfo} disconnect={disconnect}/>
+                <div className="flex h-full w-auto flex-col py-1 justify-end">
+                    <TurnIndicator indicator={playerSign === 'X' ? 'O' : 'X'} currentPlayer={currentPlayer!} />
+                </div>
             </div>
         </div>
     );

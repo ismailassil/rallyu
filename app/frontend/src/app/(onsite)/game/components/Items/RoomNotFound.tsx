@@ -16,7 +16,7 @@ const RoomNotFound = () => {
                 text="Go Back To Lobby"
                 icon={<ArrowLeft size={16} />}
                 onClick={() => router.push('/game')}
-                className="bg-card min-w-[230px] h-[60px] hover:bg-blue-700/40 mt-7"
+                className="bg-card min-w-[230px] h-[60px] hover:bg-blue-800/40 mt-7"
             />
         </div>
     )

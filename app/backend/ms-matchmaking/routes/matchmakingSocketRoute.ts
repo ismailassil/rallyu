@@ -76,6 +76,8 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
         }
 
         connection.on('message', (message: RawData) => {
+            console.log('TicTacToeSTART: ', [...tictactoeQueue.keys()]);
+            console.log('PingPongSTART: ', [...pingpongQueue.keys()]);
             try {
                 const data = message.toString('utf-8');
                 const dataObj = JSON.parse(data);
@@ -97,6 +99,8 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
                     connection.close(1001, `Invalid JSON: ${err}`);
                 }
             }
+            console.log('TicTacToeEND: ', [...tictactoeQueue.keys()]);
+            console.log('PingPongEND: ', [...pingpongQueue.keys()]);
         })
 
         connection.on('close', () => {
