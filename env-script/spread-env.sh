@@ -18,7 +18,6 @@ ENV_MAPPINGS=(
 	"./env-script/.game.env:app/backend/ms-game/.game.env"
 	"./env-script/.matchmaking.env:app/backend/ms-matchmaking/.matchmaking.env"
 	"./env-script/.notif.env:app/backend/ms-notif/.notif.env"
-	"./env-script/.xo.env:app/backend/ms-xo/.xo.env"
 
 	## Logging & Monitoring
 	"./env-script/.logging.env:logging/.env"
