@@ -8,12 +8,14 @@ import FriendsList from "./FriendsList";
 import { AnimatePresence, motion } from "framer-motion";
 import { useChat } from "../context/ChatContext";
 import LoadingChat from "./LoadingChat";
+import { useTranslations } from "next-intl";
 
 
 const Chat = ({ username }: { username?: string }) => {
 
 	const { showConversation, setShowConversation, isLoadingFriends, friends, setSelectedUser, selectedUser } = useChat();
 	const route = useRouter();
+	const t=useTranslations("chat");
 
 	useEffect(() => {
 		if (!username || username.length === 0 || !friends || friends.length === 0) return;
@@ -56,8 +58,8 @@ const Chat = ({ username }: { username?: string }) => {
 										className="rounded-lg"
 										unoptimized
 									/>
-									<span className="text-lg mt-4 text-center">👋 Welcome to Chat!</span>
-									<span className="text-gray-400 text-center">Select a user from the sidebar to start chatting</span>
+									<span className="text-lg mt-4 text-center">{t("no_conv.title")}</span>
+									<span className="text-gray-400 text-center">{t("no_conv.sub")}</span>
 								</div>
 							</div>
 

@@ -6,6 +6,7 @@ import moment from 'moment';
 import { MessageType } from '../types/chat.types';
 import { AlertCircle } from 'lucide-react';
 import ConversationHeader from './ConversationHeader';
+import { useTranslations } from 'next-intl';
 
 /*
 	==== TO FIX ===
@@ -28,8 +29,11 @@ const ConversationBody = () => {
 	const { socket, BOSS, messages, selectedUser, apiClient, setMessages } = useChat();
 	const [filteredMessages, setfilteredMessages] = useState<MessageType[]>([]);
 	const messageRef = useRef<HTMLDivElement | null>(null);
+	const t=useTranslations("chat");
+
 
 	useEffect(() => {
+		setMessage("");
 		messageRef.current?.scrollIntoView({ behavior: 'auto' });
 	}, [filteredMessages]);
 
@@ -44,7 +48,6 @@ const ConversationBody = () => {
 
 		if (data !== "" && BOSS) {
 			const newMessage = {
-				id: Date.now(),
 				senderId: BOSS.id,
 				receiverId: selectedUser?.id,
 				text: data,
@@ -74,9 +77,9 @@ const ConversationBody = () => {
 		}
 
 		if (currentDate.isSame(moment(), "day")) {
-			return "Today";
+			return t("dates.today");
 		} else if (currentDate.isSame(moment().subtract(1, "day"), "day")) {
-			return "Yesterday";
+			return t("dates.yesterday");
 		} else {
 			return currentDate.format("MMMM DD, YYYY");
 		}
@@ -117,7 +120,7 @@ const ConversationBody = () => {
 					<input
 						id='input-text'
 						type='text'
-						placeholder="Enter your message"
+						placeholder={t("input_placeholder")}
 						value={message}
 						maxLength={300}
 						onChange={(e) => setMessage(e.target.value)}
@@ -126,7 +129,7 @@ const ConversationBody = () => {
 					{message.length >= 300 &&
 						<div className=' text-red-500 text-xs flex items-center whitespace-nowrap gap-1'>
 							<AlertCircle size={12} />
-							<p>Max 300</p>
+							<p>{t("maximum")} 300</p>
 						</div>}
 					<Image
 						width={20}

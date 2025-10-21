@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Swords, UserX } from "lucide-react";
 import useIsOnline from "@/app/hooks/useIsOnline";
+import { useTranslations } from "next-intl";
 
 const ConversationHeader = () => {
 	const [option, setOption] = useState(false);
@@ -20,6 +21,8 @@ const ConversationHeader = () => {
 	const { apiClient, isBusy } = useAuth();
 	const [timer, setTimer] = useState<boolean>(false);
 	const requestBattleFriend = useRequestBattleFriend();
+	const t=useTranslations("chat.status");
+
 
 	function onPlay(event: any, gameType: "pingpong" | "tictactoe") {
 		if (isBusy) return;
@@ -63,7 +66,7 @@ const ConversationHeader = () => {
 						className={`h-3 w-3 rounded-full ${isOnline ? "bg-green-400" : "bg-gray-400"}`}
 					/>
 					<span className="font-funnel-display text-gray-400">
-						{isOnline ? "Online" : "Offline"}
+						{isOnline ? t("online") : t("offline")}
 					</span>
 				</div>
 			</div>
