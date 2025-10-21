@@ -35,7 +35,7 @@ const PlayerCard = ({ side, info, disconnect } : { side: string, info: PlayerInf
                     <div className={`flex flex-col justify-between h-full gap-1  ${side === 'right' ? 'items-end' : 'items-start' }`}>
                         <span className={`text-${side} md:text-lg lg:text-xl xl:text-3xl font-bold shadow-2xl`}>{info?.username}</span>
                         <span className={`inline-flex flex-none text-xs xl:text-base whitespace-nowrap items-center justify-center px-3 text-md font-bold bg-white/90 rounded-full text-black`}>Rank {info.rank}</span>
-                        <span className={`text-${side} text-xs xl:text-lg opacity-40 font-medium`}>LVL {info?.level}</span>
+                        <span className={`text-${side} text-xs xl:text-lg opacity-40 font-medium`}>LVL {info?.level?.toFixed(2) || '0.00'}</span>
                     </div>
                     :
                     <div className={`flex flex-col h-full justify-between ${side === 'right' && 'items-end' } py-2`}>
@@ -163,10 +163,12 @@ const VersusCard = (
         })()
     }, []);
 
+    console.log('%cOpponentId', 'color: lime; font-size: 16px', opponentId);
     useEffect(() => {
         (async () => {
             if (!opponentId) return;
             try {
+                console.log('OpponentId', opponentId);
                 const res = await apiClient.fetchUser(opponentId);
                 setOpponentInfo({
                     username: res.user.username,

@@ -12,7 +12,7 @@ const LobbyPanel = () => {
 					<Ping />
 					<Pong />
 					<svg className="absolute inset-0 w-full h-full pointer-events-none">
-						<line x1="55%" y1="0%" x2="45%" y2="100%" stroke="white" strokeWidth="2" strokeDasharray="12 19"/>
+						<line x1="55%" y1="0%" x2="45%" y2="100%" stroke="white" strokeWidth="3" strokeDasharray="14 18"/>
 					</svg>
 				</div>
 				<div className="relative rounded-xl w-full h-full">

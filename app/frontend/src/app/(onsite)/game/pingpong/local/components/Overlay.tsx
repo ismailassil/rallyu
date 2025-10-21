@@ -14,7 +14,7 @@ const Overlay = ({ pauseHandler, resetHandler, status }: { pauseHandler: () => v
     return (
         <div className="absolute inset-0 w-full h-full">
             <div className={`absolute inset-0 rounded-lg transition-all duration-150 w-full h-full ${status === 'pause' || status === 'gameover' ? 'bg-neutral-800/30 ': ''}`}>
-                <PauseIcon className={`absolute border inset-0 m-auto w-[clamp(50px,8%,100%)] h-[clamp(65px,15%,100%)] transition-all duration-100 ease-in-out ${status === 'pause' ? 'opacity-90 translate-y-0': 'translate-y-4 opacity-0'}`}/>
+                <PauseIcon className={`absolute inset-0 m-auto w-[clamp(50px,8%,100%)] h-[clamp(65px,15%,100%)] transition-all duration-100 ease-in-out ${status === 'pause' ? 'opacity-90 translate-y-0': 'translate-y-4 opacity-0'}`}/>
                 {status === 'gameover' && <GameOverLocal resetHandler={resetHandler} display="Game Over" />}
             </div>
 

@@ -56,6 +56,11 @@ const useMatchmaking = (gameType: GameType) => {
 		}
 		
 		return () => {
+			if (wsRef.current){
+				wsRef.current.close();
+				wsRef.current = null;
+			}
+
 			if (isBusy) setIsBusy(false);
 			clearInterval(interval);
 		};

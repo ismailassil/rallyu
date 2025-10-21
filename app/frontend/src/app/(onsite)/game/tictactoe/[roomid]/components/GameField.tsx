@@ -16,7 +16,7 @@ const GameField = () => {
     const [ currentPlayer, setCurrentPlayer ] = useState<XOSign>('');
     const [ overlayStatus, setOverlayStatus ] = useState('none');
     const [ currentRound, setCurrentRound ] = useState(1);
-	const [ isLoading, setIsLoading ] = useState(false);
+	const [ isLoading, setIsLoading ] = useState(true);
 	const [ notFound, setNotFound ] = useState(false);
 	const [ opponentId, setOpponentId ] = useState<number | undefined>(undefined);
 	const [ timeLeft, setTimeLeft ] = useState(0);
@@ -56,7 +56,7 @@ const GameField = () => {
 				
 				setIsLoading(false);
 				setNotFound(true);
-				console.log(`Game Service: ${err}`);
+				console.log('Game Service: ',err);
 			}
 		})()
 		

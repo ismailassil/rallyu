@@ -1,5 +1,4 @@
 import useMatchmaking from "@/app/hooks/useMatchMaking";
-import { GameType } from "../../types/types";
 
 const Ping = () => {
     const { queueTime, isSearching, found, toggleSearch } = useMatchmaking('pingpong');
@@ -37,7 +36,7 @@ const Ping = () => {
                         {isSearching ? `In Queue ${formatTime(queueTime)}` : found ? `Match Found` : 'remote play'}
                 </span>
             </div>
-            <div className="absolute top-3/5 left-3 h-[15%] bg-white w-[10px] group-hover:-translate-y-50 transition-transform duration-600 ease-in-out delay-400 group-hover:delay-0" />
+            <div className="absolute top-3/5 left-3 h-[15%] bg-white w-[10px] group-hover:-translate-y-[265%] transition-transform duration-600 ease-in-out delay-400 group-hover:delay-0" />
         </div>
     )
 }
