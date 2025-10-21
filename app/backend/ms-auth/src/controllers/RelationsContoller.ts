@@ -15,7 +15,7 @@ class RelationsController {
 		const allFriends = await this.relationsService.getFriends(user_id!);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, allFriends);
-		return reply.status(status).send(body);
+		return reply.code(status).send(body);
 	}
 
 	async fetchBlockedHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -24,7 +24,7 @@ class RelationsController {
 		const allBlocked = await this.relationsService.getOutgoingBlocks(user_id!);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, allBlocked);
-		return reply.status(status).send(body);
+		return reply.code(status).send(body);
 	}
 
 	async fetchIncomingFriendRequestsHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -33,7 +33,7 @@ class RelationsController {
 		const allIncoming = await this.relationsService.getIncomingFriendRequests(user_id!);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, allIncoming);
-		return reply.status(status).send(body);
+		return reply.code(status).send(body);
 	}
 	async fetchOutgoingFriendRequestsHandler(request: FastifyRequest, reply: FastifyReply) {
 		const user_id = request.user?.sub;
@@ -41,7 +41,7 @@ class RelationsController {
 		const allOutgoing = await this.relationsService.getOutgoingFriendRequests(user_id!);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, allOutgoing);
-		return reply.status(status).send(body);
+		return reply.code(status).send(body);
 	}
 
 	async sendFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -79,7 +79,7 @@ class RelationsController {
 		}));
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
-		return reply.status(status).send(body);
+		return reply.code(status).send(body);
 	}
 
 	async cancelFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -115,7 +115,7 @@ class RelationsController {
 		}));
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
-		return reply.status(status).send(body);
+		return reply.code(status).send(body);
 	}
 
 	async acceptFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -151,7 +151,7 @@ class RelationsController {
 		}));
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
-		return reply.status(status).send(body);
+		return reply.code(status).send(body);
 	}
 
 	async rejectFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -188,7 +188,7 @@ class RelationsController {
 
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
-		return reply.status(status).send(body);
+		return reply.code(status).send(body);
 	}
 
 	async blockUserHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -209,7 +209,7 @@ class RelationsController {
 		}));
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
-		return reply.status(status).send(body);
+		return reply.code(status).send(body);
 	}
 
 	async unblockUserHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -231,7 +231,7 @@ class RelationsController {
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
-		return reply.status(status).send(body);
+		return reply.code(status).send(body);
 	}
 
 	async unfriendHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -253,7 +253,7 @@ class RelationsController {
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
-		return reply.status(status).send(body);
+		return reply.code(status).send(body);
 	}
 }
 
