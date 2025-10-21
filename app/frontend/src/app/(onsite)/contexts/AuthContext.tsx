@@ -1,7 +1,7 @@
 'use client';
 import { APIClient } from '@/app/(api)/APIClient';
 import SocketClient from '@/app/(api)/SocketClient';
-import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { AuthContextType, LoggedInUser } from './auth.context.types';
 
 const AuthContext = createContext<AuthContextType | null>(null);

@@ -33,6 +33,7 @@ export type AuthContextType = {
 	loginUsing2FA: (token: string, code: string) => Promise<any>;
 	logout: () => Promise<void>;
 	triggerLoggedInUserRefresh: () => Promise<void>;
+	triggerRefreshToken: () => Promise<void>;
 
 	apiClient: APIClient;
 	socket: SocketClient;

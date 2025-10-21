@@ -60,6 +60,7 @@ async function buildApp(): Promise<FastifyInstance> {
 	await fastify.register(cookie);
 	await fastify.register(errorHandlerPlugin);
 
+
 	fastify.addHook('preHandler', attachTokensHook);
 	fastify.decorate('accessTokenAuth', accessTokenAuth);
 	fastify.decorate('refreshTokenAuth', refreshTokenAuth);
@@ -99,15 +100,6 @@ async function buildApp(): Promise<FastifyInstance> {
 	const verificationService = new VerificationService(userService, mailingService, whatsAppService);
 	const matchesService = new MatchesService(statsService, matchesRepository);
 
-	// INIT CONTROLLERS
-	const passwordResetController = new PasswordResetController(passwordResetService);
-	const authController = new AuthController(authService, sessionsService);
-	const twoFactorController = new TwoFactorController(twoFAMethodService);
-	const userController = new UserController(userService);
-	const relationsController = new RelationsController(relationsService);
-	const verificationController = new VerificationController(verificationService);
-	const matchesController = new MatchesController(matchesService);
-
 	await fastify.register(natsPlugin, {
 		NATS_URL: process.env["NATS_URL"] || "",
 		NATS_USER: process.env["NATS_USER"] || "",
@@ -115,6 +107,15 @@ async function buildApp(): Promise<FastifyInstance> {
 		userService: userService,
 		relationsService: relationsService
 	});
+
+	// INIT CONTROLLERS
+	const passwordResetController = new PasswordResetController(passwordResetService);
+	const authController = new AuthController(authService, sessionsService);
+	const twoFactorController = new TwoFactorController(twoFAMethodService);
+	const userController = new UserController(userService);
+	const relationsController = new RelationsController(relationsService, fastify.nats, fastify.js);
+	const verificationController = new VerificationController(verificationService);
+	const matchesController = new MatchesController(matchesService);
 
 	await fastify.register(authRouter, {
 		prefix: '/auth',
