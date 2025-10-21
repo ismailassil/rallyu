@@ -1,4 +1,3 @@
-import moment from "moment";
 import { motion } from "framer-motion";
 import { Notification } from "../types/notifications.types";
 import Chat from "../items/Chat";
@@ -9,24 +8,27 @@ import { useNotification } from "../context/NotificationContext";
 import { useTranslations } from "next-intl";
 import Avatar from "@/app/(onsite)/users/components/Avatar";
 import { getLang } from "@/app/utils/getLang";
+import { enUS, de, es } from "date-fns/locale";
+import { formatDistanceToNow, parseISO } from "date-fns";
 
 interface Props {
 	data: Notification;
 	handler: (id: number, status: "read" | "dismissed", state: "pending" | "finished") => void;
 }
 
+const locales = { en: enUS, de, es };
 const decisionOptions = ["tournament", "game", "xo_game", "pp_game"];
 
 function NotificationCard({ data, handler }: Props) {
 	const { id, senderUsername, senderId, content, type, updatedAt, status, avatar, state } = data;
 	const t = useTranslations("headers.notification.box");
 	const textDescriptionRef = t(`description.${type}`);
-	const lang = getLang();
-	const dateRef = moment
-		.utc(updatedAt)
-		.local()
-		.locale(lang || "en")
-		.fromNow();
+	const lang = getLang() || "en";
+	const d = new Date(parseISO(updatedAt + "Z"));
+	const dateRef = formatDistanceToNow(d, {
+		includeSeconds: true,
+		locale: locales[lang] || enUS,
+	});
 
 	const { handleAccept, handleDecline } = useNotification();
 

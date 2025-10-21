@@ -2,10 +2,11 @@
 import React, { useState, useEffect, useRef, useContext } from 'react'
 import Image from "next/image"
 import { useChat } from '../context/ChatContext';
-import moment from 'moment';
+// import moment from 'moment';
 import { MessageType } from '../types/chat.types';
 import { AlertCircle } from 'lucide-react';
 import ConversationHeader from './ConversationHeader';
+import { parseISO } from 'date-fns';
 
 /*
 	==== TO FIX ===
@@ -65,7 +66,7 @@ const ConversationBody = () => {
 	}, [messages, selectedUser?.id, BOSS?.id]);
 
 	const setDate = (currentMsg: string, prevMsg?: string): string => {
-		const currentDate = moment(currentMsg);
+		const currentDate = parseISO(currentMsg);
 		const prevDate = prevMsg ? moment(prevMsg) : null;
 
 
