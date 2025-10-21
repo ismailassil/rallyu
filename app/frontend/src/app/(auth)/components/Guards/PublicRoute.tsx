@@ -9,6 +9,9 @@ export default function PublicRoute({ children }: { children: React.ReactNode })
 	const router = useRouter();
 
 	useEffect(() => {
+		console.group('PublicRouteAuthGuard');
+		console.log('isLoading?', isLoading, 'isAuthenticated?', isAuthenticated);
+		console.groupEnd();
 		if (!isLoading && isAuthenticated)
 			router.replace('/dashboard');
 	}, [isLoading, isAuthenticated]);

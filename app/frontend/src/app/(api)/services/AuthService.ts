@@ -67,8 +67,8 @@ export class AuthService {
 	}
 
 	async refreshToken() {
+		this.setAccessToken('');
 		const { data: res } = await this.client.get('/auth/refresh');
-
 		this.setAccessToken(res.data.accessToken);
 
 		return { user: res.data.user, accessToken: res.data.accessToken };

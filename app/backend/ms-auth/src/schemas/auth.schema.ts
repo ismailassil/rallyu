@@ -156,9 +156,9 @@ const sessioniddelete = {
 	params: {
 		type: 'object',
 		properties: {
-			id: { type: 'string' }
+			session_id: { type: 'string' }
 		},
-		required: ['id'],
+		required: ['session_id'],
 		additionalProperties: false
 	}
 }

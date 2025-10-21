@@ -191,7 +191,7 @@ class SessionsRepository extends ARepository {
 	 * @param reason - Reason for revocation.
 	 * @returns The number of sessions revoked.
 	 */
-	async revokeAllForUser(userID: number, reason: string, excludeSessionID?: string) : Promise<number> {
+	async revokeMassForUser(userID: number, reason: string, excludeSessionID?: string) : Promise<number> {
 		try {
 			const params = excludeSessionID ? [reason, userID, excludeSessionID] : [reason, userID];
 
@@ -215,9 +215,9 @@ class SessionsRepository extends ARepository {
 		try {
 			const runResult = await db.run(
 				`DELETE FROM sessions WHERE session_id = (
-					SELECT session_id FROM sessions 
-					WHERE user_id = ? 
-					ORDER BY updated_at ASC 
+					SELECT session_id FROM sessions
+					WHERE user_id = ?
+					ORDER BY updated_at ASC
 					LIMIT 1
 				)`,
 				[userID]
