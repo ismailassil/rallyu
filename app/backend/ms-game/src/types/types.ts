@@ -1,6 +1,6 @@
 import type { WebSocket } from "ws";
 
-export type GameType = 'pingpong' | 'tictactoe'
+export type GameType = 'PONG' | 'XO'
 export type XOSign = 'X' | 'O' | ''
 
 export interface PingPongStatus {
@@ -10,12 +10,14 @@ export interface PingPongStatus {
 		{
 			ID: number,
 			score: number,
-			coords: Coords
+			coords: Coords,
+			connected: boolean
 		},
 		{
 			ID: number,
 			score: number,
-			coords: Coords
+			coords: Coords,
+			connected: boolean
 		}
 	]
 }
@@ -29,10 +31,12 @@ export interface TicTacToeStatus {
 		{
 			ID: number,
 			score: number,
+			connected: boolean
 		},
 		{
 			ID: number,
 			score: number,
+			connected: boolean
 		}
 	]
 }

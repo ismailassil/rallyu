@@ -22,6 +22,7 @@ export type RemotePlayerStatus = {
 	roomId: string,
 	opponentId: number,
 	gameType: GameType,
+	connected: boolean
 }
 
 export type GameRoomStatus =

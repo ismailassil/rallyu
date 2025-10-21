@@ -35,6 +35,7 @@ const GameField = () => {
 				const res = await apiClient.fetchGameRoomStatus(roomid);
 
 				if (!isMounted) return;
+                console.log('%cResult: ', 'color: red; font-size: 20px', res);
 
 				setOpponentId(res.players.find(p => p.ID !== loggedInUser!.id)?.ID);
 				setIsLoading(false);
@@ -44,7 +45,7 @@ const GameField = () => {
 				
 				setIsLoading(false);
 				setNotFound(true);
-				console.log(`Game Service: ${err}`);
+				console.log('Game Service: ', err);
 			}
 		})()
 		

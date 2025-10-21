@@ -110,7 +110,20 @@ class LocalXO {
 		this.status = 'gameover'
 		this.eventHandlers?.updateOverlayStatus('gameover');
 		this.eventHandlers?.updateTimer(0);
-        const displayedResult = overallWinner === 'draw' ? 'Draw' : `${overallWinner} Wins`
+		let displayedResult;
+		switch (overallWinner) {
+			case 'draw':
+				displayedResult = 'Draw';
+				break;
+			case 'X':
+				displayedResult = 'Cross Wins';
+				break;
+			case 'O':
+				displayedResult = 'Circle Wins';
+				break;
+			default : 
+				displayedResult = 'Game Over';
+		}
 		this.eventHandlers?.updateDisplayedResult!(displayedResult);
 	}
 	

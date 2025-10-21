@@ -21,7 +21,6 @@ class RemoteXO {
 
     init = (): (() => void) => {
         return this.proxy.subscribe((data: any): void => {
-            console.log('ScooooreAaBBBBBB: ', this.state.score);
             switch (data.type) {
                 case 'ready':
                     this.state.mySign = data.sign
@@ -47,7 +46,7 @@ class RemoteXO {
                     this.eventHandlers?.updateBoard!(data.cells);
                     this.eventHandlers?.updateRound!(data.currentRound);
                     this.eventHandlers?.updateScore!(this.state.score!);
-                    // this.eventHandlers?.updateTimer!(data.t);
+                    this.eventHandlers?.updateTimer(data.t);
                     break;
                 case 'countdown':
 					this.state.currentRound = data.round;

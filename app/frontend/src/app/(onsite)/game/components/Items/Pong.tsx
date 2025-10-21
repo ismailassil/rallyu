@@ -30,7 +30,7 @@ const Pong = () => {
                         pong
                 </span>
             </div>
-            <div className="absolute top-1/5 right-3 h-[15%] bg-white w-[10px] group-hover:translate-y-50 transition-transform duration-600 ease-in-out delay-400 group-hover:delay-0" />
+            <div className="absolute top-1/5 right-3 h-[15%] bg-white w-[10px] group-hover:translate-y-[265%] transition-transform duration-600 ease-in-out delay-400 group-hover:delay-0" />
         </div>
     )
 }
