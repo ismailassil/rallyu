@@ -146,150 +146,75 @@ class RelationsController {
 		const SUBJECT = 'gateway.user.relation';
 		const _JSONCodec = JSONCodec();
 
+		const baseData = { requesterId: Number(userId), receiverId: Number(targetId) };
+		const publishFn = (recipientUserIds: number[], status: string) => {
+			this.nats.publish(SUBJECT, _JSONCodec.encode({
+				eventType: 'RELATION_UPDATE',
+				recipientUserIds,
+				data: { ...baseData, status },
+			}));
+		}
+
 		switch (relationEvent) {
-			case RELATION_EVENT_TYPE.SEND_FRIEND_REQ: {
-				this.nats.publish(SUBJECT, _JSONCodec.encode({
-					eventType: 'RELATION_UPDATE',
-					recipientUserIds: [Number(userId)],
-					data: {
-						requesterId: Number(userId),
-						receiverId: Number(targetId),
-						status: 'OUTGOING'
-					}
-				}));
-				this.nats.publish(SUBJECT, _JSONCodec.encode({
-					eventType: 'RELATION_UPDATE',
-					recipientUserIds: [Number(targetId)],
-					data: {
-						requesterId: Number(userId),
-						receiverId: Number(targetId),
-						status: 'INCOMING'
-					}
-				}));
+			case RELATION_EVENT_TYPE.SEND_FRIEND_REQ:
+				publishFn([userId], 'OUTGOING');
+				publishFn([targetId], 'INCOMING');
 				break;
-			} case RELATION_EVENT_TYPE.CANCEL_FRIEND_REQ: {
-				this.nats.publish(SUBJECT, _JSONCodec.encode({
-					eventType: 'RELATION_UPDATE',
-					recipientUserIds: [Number(userId), Number(targetId)],
-					data: {
-						requesterId: Number(userId),
-						receiverId: Number(targetId),
-						status: 'NONE'
-					}
-				}));
+
+			case RELATION_EVENT_TYPE.ACCEPT_FRIEND_REQ:
+				publishFn([userId, targetId], 'FRIENDS');
 				break;
-			} case RELATION_EVENT_TYPE.ACCEPT_FRIEND_REQ: {
-				this.nats.publish(SUBJECT, _JSONCodec.encode({
-					eventType: 'RELATION_UPDATE',
-					recipientUserIds: [Number(userId), Number(targetId)],
-					data: {
-						requesterId: Number(userId),
-						receiverId: Number(targetId),
-						status: 'FRIENDS'
-					}
-				}));
+
+			case RELATION_EVENT_TYPE.BLOCK_REQ:
+				publishFn([userId, targetId], 'BLOCKED');
 				break;
-			} case RELATION_EVENT_TYPE.REJECT_FRIEND_REQ: {
-				this.nats.publish(SUBJECT, _JSONCodec.encode({
-					eventType: 'RELATION_UPDATE',
-					recipientUserIds: [Number(userId), Number(targetId)],
-					data: {
-						requesterId: Number(userId),
-						receiverId: Number(targetId),
-						status: 'NONE'
-					}
-				}));
+
+			case RELATION_EVENT_TYPE.CANCEL_FRIEND_REQ:
+			case RELATION_EVENT_TYPE.REJECT_FRIEND_REQ:
+			case RELATION_EVENT_TYPE.UNBLOCK_REQ:
+			case RELATION_EVENT_TYPE.UNFRIEND_REQ:
+				publishFn([userId, targetId], 'NONE');
 				break;
-			} case RELATION_EVENT_TYPE.BLOCK_REQ: {
-				this.nats.publish(SUBJECT, _JSONCodec.encode({
-					eventType: 'RELATION_UPDATE',
-					recipientUserIds: [Number(userId), Number(targetId)],
-					data: {
-						requesterId: Number(userId),
-						receiverId: Number(targetId),
-						status: 'BLOCKED'
-					}
-				}));
-				break;
-			} case RELATION_EVENT_TYPE.UNBLOCK_REQ: {
-				this.nats.publish(SUBJECT, _JSONCodec.encode({
-					eventType: 'RELATION_UPDATE',
-					recipientUserIds: [Number(userId), Number(targetId)],
-					data: {
-						requesterId: Number(userId),
-						receiverId: Number(targetId),
-						status: 'NONE'
-					}
-				}));
-				break;
-			} case RELATION_EVENT_TYPE.UNFRIEND_REQ: {
-				this.nats.publish(SUBJECT, _JSONCodec.encode({
-					eventType: 'RELATION_UPDATE',
-					recipientUserIds: [Number(userId), Number(targetId)],
-					data: {
-						requesterId: Number(userId),
-						receiverId: Number(targetId),
-						status: 'NONE'
-					}
-				}));
-				break;
-			}
 		}
 	}
 
 	private async publishNotification(relationEvent: RELATION_EVENT_TYPE, userId: number, targetId: number) {
-		let meta = null;
+		const _JSONCodec = JSONCodec();
 
-		switch (relationEvent) {
-			case RELATION_EVENT_TYPE.SEND_FRIEND_REQ:
-			case RELATION_EVENT_TYPE.CANCEL_FRIEND_REQ:
-				meta = this.getNotificationPayloadFromEvent(relationEvent, userId, targetId);
-				break;
+		const actionsMap = {
+			[RELATION_EVENT_TYPE.SEND_FRIEND_REQ]: {
+				subject: 'notification.dispatch',
+				payload: _JSONCodec.encode({ senderId: userId, receiverId: targetId, type: 'friend_request' }),
+				useJS: true,
+			},
+			[RELATION_EVENT_TYPE.CANCEL_FRIEND_REQ]: {
+				subject: 'notification.gateway',
+				payload: _JSONCodec.encode({ load: { eventType: 'SERVICE_EVENT', data: { senderId: userId, receiverId: targetId, load: { type: 'friend_request', status: 'cancel' }, }, }, }),
+				useJS: false,
+			},
+			[RELATION_EVENT_TYPE.ACCEPT_FRIEND_REQ]: {
+				subject: 'notification.gateway',
+				payload: _JSONCodec.encode({ load: { eventType: 'SERVICE_EVENT', data: { senderId: targetId, receiverId: userId, load: { type: 'friend_request', status: 'accept' }, }, }, }),
+				useJS: false,
+			},
+			[RELATION_EVENT_TYPE.REJECT_FRIEND_REQ]: {
+				subject: 'notification.gateway',
+				payload: _JSONCodec.encode({ load: { eventType: 'SERVICE_EVENT', data: { senderId: targetId, receiverId: userId, load: { type: 'friend_request', status: 'reject' }, }, }, }),
+				useJS: false,
+			},
+			[RELATION_EVENT_TYPE.BLOCK_REQ]: undefined,
+			[RELATION_EVENT_TYPE.UNBLOCK_REQ]: undefined,
+			[RELATION_EVENT_TYPE.UNFRIEND_REQ]: undefined,
+		};
 
-			case RELATION_EVENT_TYPE.ACCEPT_FRIEND_REQ:
-			case RELATION_EVENT_TYPE.REJECT_FRIEND_REQ:
-				meta = this.getNotificationPayloadFromEvent(relationEvent, targetId, userId);
-				break;
-
-			default:
-				return ;
-		}
-
+		const meta = actionsMap[relationEvent];
 		if (!meta)
 			return ;
 
-		switch (relationEvent) {
-			case RELATION_EVENT_TYPE.SEND_FRIEND_REQ:
-				await this.js.publish(meta.subject, meta.payload);
-				break;
-
-			default:
-				this.nats.publish(meta.subject, meta.payload);
-				break;
-		}
-	}
-
-	private getNotificationPayloadFromEvent(relationEvent: RELATION_EVENT_TYPE, senderId: number, receiverId: number) {
-		const _JSONCodec = JSONCodec();
-
-		switch (relationEvent) {
-			case RELATION_EVENT_TYPE.SEND_FRIEND_REQ:
-				return { subject: 'notification.dispatch', payload: _JSONCodec.encode({ senderId, receiverId, type: 'friend_request' }) };
-			case RELATION_EVENT_TYPE.CANCEL_FRIEND_REQ:
-				return { subject: 'notification.gateway', payload: _JSONCodec.encode({ load: { eventType: "SERVICE_EVENT", data: { senderId, receiverId, load: { type: 'friend_request', status: 'cancel', } } } }) };
-			case RELATION_EVENT_TYPE.ACCEPT_FRIEND_REQ:
-				return { subject: 'notification.gateway', payload: _JSONCodec.encode({ load: { eventType: "SERVICE_EVENT", data: { senderId, receiverId, load: { type: 'friend_request', status: 'accept', } } } }) };
-			case RELATION_EVENT_TYPE.REJECT_FRIEND_REQ:
-				return { subject: 'notification.gateway', payload: _JSONCodec.encode({ load: { eventType: "SERVICE_EVENT", data: { senderId, receiverId, load: { type: 'friend_request', status: 'reject', } } } }) };
-			case RELATION_EVENT_TYPE.BLOCK_REQ:
-				return null;
-			case RELATION_EVENT_TYPE.UNBLOCK_REQ:
-				return null;
-			case RELATION_EVENT_TYPE.UNFRIEND_REQ:
-				return null;
-			default:
-				return null;
-		}
+		if (meta.useJS)
+			await this.js.publish(meta.subject, meta.payload);
+		else
+			await this.nats.publish(meta.subject, meta.payload);
 	}
 }
 
