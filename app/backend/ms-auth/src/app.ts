@@ -105,7 +105,8 @@ async function buildApp(): Promise<FastifyInstance> {
 		NATS_URL: process.env["NATS_URL"] || "",
 		NATS_USER: process.env["NATS_USER"] || "",
 		NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
-		userService: userService
+		userService: userService,
+		relationsService: relationsService
 	});
 	await fastify.register(authRouter, {
 		prefix: '/auth',

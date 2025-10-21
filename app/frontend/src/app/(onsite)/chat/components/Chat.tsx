@@ -57,7 +57,7 @@ const Chat = ({ username }: { username?: string }) => {
 										unoptimized
 									/>
 									<span className="text-lg mt-4 text-center">👋 Welcome to Chat!</span>
-									<span className="text-gray-400 text-center">Select a user from the sidebar to start chatting.</span>
+									<span className="text-gray-400 text-center">Select a user from the sidebar to start chatting</span>
 								</div>
 							</div>
 

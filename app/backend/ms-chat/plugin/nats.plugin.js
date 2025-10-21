@@ -29,9 +29,11 @@ async function natsPlugin(fastify, options) {
 			name: 'Chat',
 		});
 
+		fastify.decorate("nats", nc);
 		// ** Encoder and Decoder
 		const jsCodec = JSONCodec();
 
+		fastify.decorate("jc", jsCodec);
 		// ** This is a JetStream Client
 		const js = nc.jetstream();
 
