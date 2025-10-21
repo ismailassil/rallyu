@@ -156,6 +156,7 @@ async function userRouter(fastify: FastifyInstance, opts: {
 	/*-------------------------------------------- EXTERNAL ENDPOINTS --------------------------------------------*/
 	fastify.post('/matches', {
 		schema: schemas.matches.internal.create,
+		preHandler: fastify.apiKeyAuth,
 		handler: opts.matchesController.createGameHandler.bind(opts.matchesController)
 	});
 }

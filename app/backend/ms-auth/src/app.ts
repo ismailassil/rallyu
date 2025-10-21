@@ -40,6 +40,7 @@ import accessTokenAuth from './middleware/auth/accessTokenAuth';
 import refreshTokenAuth from './middleware/auth/refreshTokenAuth';
 import cookie from '@fastify/cookie';
 import { attachTokensHook } from './middleware/hooks/attachTokensHook';
+import apiKeyAuth from './middleware/auth/apiKeyAuth';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
@@ -62,6 +63,7 @@ async function buildApp(): Promise<FastifyInstance> {
 	fastify.addHook('preHandler', attachTokensHook);
 	fastify.decorate('accessTokenAuth', accessTokenAuth);
 	fastify.decorate('refreshTokenAuth', refreshTokenAuth);
+	fastify.decorate('apiKeyAuth', apiKeyAuth);
 	fastify.decorateRequest('bearerToken', null);
 	fastify.decorateRequest('accessToken', null);
 	fastify.decorateRequest('refreshToken', null);
@@ -106,12 +108,12 @@ async function buildApp(): Promise<FastifyInstance> {
 	const verificationController = new VerificationController(verificationService);
 	const matchesController = new MatchesController(matchesService);
 
-	await fastify.register(natsPlugin, {
-		NATS_URL: process.env["NATS_URL"] || "",
-		NATS_USER: process.env["NATS_USER"] || "",
-		NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
-		userService: userService
-	});
+	// await fastify.register(natsPlugin, {
+	// 	NATS_URL: process.env["NATS_URL"] || "",
+	// 	NATS_USER: process.env["NATS_USER"] || "",
+	// 	NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
+	// 	userService: userService
+	// });
 
 	await fastify.register(authRouter, {
 		prefix: '/auth',

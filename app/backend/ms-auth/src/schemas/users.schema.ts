@@ -126,22 +126,32 @@ const internalmatchespost = {
 	body: {
 		type: 'object',
 		required: [
-			'player_home_score',
-			'player_away_score',
-			'game_type',
-			'player_home_id',
-			'player_away_id',
-			'started_at',
-			'finished_at'
+			'player1',
+			'player2',
+			'gameType',
+			'gameStartedAt',
+			'gameFinishedAt'
 		],
 		properties: {
-			player_home_score: { type: 'number' },
-			player_away_score: { type: 'number' },
-			player_home_id: { type: 'number' },
-			player_away_id: { type: 'number' },
-			started_at: { type: 'number' },
-			finished_at: { type: 'number' },
-			game_type: { type: 'string', enum: ['XO', 'PONG'] }
+			player1: {
+				type: 'object',
+				properties: {
+					ID: { type: 'number' },
+					score: { type: 'number' }
+				},
+				required: ['ID', 'score']
+			},
+			player2: {
+				type: 'object',
+				properties: {
+					ID: { type: 'number' },
+					score: { type: 'number' }
+				},
+				required: ['ID', 'score']
+			},
+			gameStartedAt: { type: 'number' },
+			gameFinishedAt: { type: 'number' },
+			gameType: { type: 'string', enum: ['XO', 'PONG'] }
 		},
 		additionalProperties: false
 	}

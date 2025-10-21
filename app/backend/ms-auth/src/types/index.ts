@@ -131,6 +131,7 @@ declare module 'fastify' {
 	interface FastifyInstance {
 		accessTokenAuth: any,
 		refreshTokenAuth: any,
+		apiKeyAuth: any,
 		js: JetStreamClient,
 		jsonC: any,
 		nats: any

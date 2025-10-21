@@ -11,6 +11,9 @@ const errorHandlerPlugin: FastifyPluginAsync = async (fastify) => {
 			err: error,
 		}, `[HOOKS] ${error.message}`);
 
+		if (error.code?.includes('FST'))
+			throw error;
+
 		const { status, body } = AuthResponseFactory.getErrorResponse(error, false);
 		reply.code(status).send(body);
 	});
