@@ -4,6 +4,8 @@ import JWTUtils from "../../utils/auth/JWTUtils";
 import { authConfig } from "../../config/auth";
 
 export default async function refreshTokenAuth(request: FastifyRequest, reply: FastifyReply) {
+	request.server.log.trace('[HOOK] REFRESH TOKEN AUTH: STARTED');
+
 	const refreshToken = request.refreshToken;
 	if (!refreshToken)
 		throw new UnauthorizedError();
@@ -15,11 +17,11 @@ export default async function refreshTokenAuth(request: FastifyRequest, reply: F
 		request.refreshToken = refreshToken;
 		request.refreshTokenPayload = decodedJWTRefreshPayload;
 
-		request.server.log.debug({
+		request.server.log.trace({
 			refToken: request.refreshToken,
 			user: request.user,
 			refPayload: request.refreshTokenPayload
-		}, '[HOOK] refreshTokenAuth');
+		}, '[HOOK] REFRESH TOKEN AUTH: SUCCESS');
 	} catch {
 		throw new UnauthorizedError();
 	}

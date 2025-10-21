@@ -4,6 +4,8 @@ import JWTUtils from "../../utils/auth/JWTUtils";
 import { authConfig } from "../../config/auth";
 
 export default async function accessTokenAuth(request: FastifyRequest, reply: FastifyReply) {
+	request.server.log.trace('[HOOK] ACCESS TOKEN AUTH: STARTED');
+
 	const accessToken = request.bearerToken;
 	if (!accessToken)
 		throw new UnauthorizedError();
@@ -16,11 +18,11 @@ export default async function accessTokenAuth(request: FastifyRequest, reply: Fa
 		request.accessToken = accessToken;
 		request.accessTokenPayload = decodedJWTAccessPayload;
 
-		request.server.log.debug({
+		request.server.log.trace({
 			accToken: request.accessToken,
 			user: request.user,
 			accPayload: request.accessTokenPayload
-		}, '[HOOK] accessTokenAuth');
+		}, '[HOOK] ACCESS TOKEN AUTH: SUCCESS');
 	} catch {
 		throw new UnauthorizedError();
 	}

@@ -40,6 +40,7 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	});
 
 	fastify.get('/refresh', {
+		preHandler: fastify.refreshTokenAuth,
 		handler: opts.authController.refreshHandler.bind(opts.authController)
 	});
 
