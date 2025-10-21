@@ -68,6 +68,7 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
     app.get("/:gameType/join", { websocket: true, schema: matchMakingRouteSchema }, (connection: ws.WebSocket, req: FastifyRequest) => {
         const { gameType } = req.params as { gameType: string };
         let queue: Map<number, ws.WebSocket>;
+
         if (gameType === 'pingpong') queue = pingpongQueue;
         else if (gameType === 'tictactoe') queue = tictactoeQueue;
         else {
@@ -80,10 +81,13 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
                 const data = message.toString('utf-8');
                 const dataObj = JSON.parse(data);
                 
-                const prev = queue.get(dataObj.id);
-                if (prev) {
-                    prev.close(1002, 'account active on another device');
+                // removes previous connection before queuing again
+                const pongConn = pingpongQueue.get(dataObj.id);
+                const prevConn = !pongConn ? tictactoeQueue.get(dataObj.id) : pongConn
+                if (prevConn) {
+                    prevConn.close(1002, 'account active on another device');
                 }
+
                 queue.set(dataObj.id, connection);
                 if (queue.size >= 2)
                 {
@@ -97,6 +101,8 @@ const matchmakingSocketRoutes = async function (app: FastifyInstance) {
                     connection.close(1001, `Invalid JSON: ${err}`);
                 }
             }
+            console.log('TicTacToe: ', [...tictactoeQueue.keys()]);
+            console.log('PingPong: ', [...pingpongQueue.keys()]);
         })
 
         connection.on('close', () => {

@@ -1,69 +1,78 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import React, { useState, useEffect } from "react";
-import UserList, { UserItem } from "./UserList";
+import React, { useEffect } from "react";
+import UserList from "./UserList";
 import { X } from "lucide-react";
 import useAPICall from "@/app/hooks/useAPICall";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
-import LoadingComponent, { EmptyComponent } from "@/app/(auth)/components/UI/LoadingComponents";
+import LoadingComponent, { PlaceholderComponent } from "@/app/(auth)/components/UI/LoadingComponents";
+import useAPIQuery from "@/app/hooks/useAPIQuery";
+import { useTranslations } from "next-intl";
 
 
 export default function BlockedList() {
+	const t = useTranslations('placeholders.data.blocked');
+
 	const {
-		apiClient
+		loggedInUser,
+		apiClient,
+		socket
 	} = useAuth();
+
+	const {
+		isLoading,
+		error,
+		data: blocked,
+		refetch
+	} = useAPIQuery(
+		() => apiClient.user.fetchBlocked()
+	);
 
 	const {
 		executeAPICall
 	} = useAPICall();
 
-	const [blocked, setBlocked] = useState<UserItem[]>([]);
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-
 	useEffect(() => {
-		async function fetchBlockedUsers() {
-			try {
-				setIsLoading(true);
-				const data = await executeAPICall(() => apiClient.getAllBlocked());
-				// const data = await apiClient.getAllFriends();
-				setBlocked(data);
-				setError(null);
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			} catch (err: any) {
-				toastError(err.message);
-				setError('Failed to load blocked users.');
-			} finally {
-				setIsLoading(false);
-			}
+		function handleRelationUpdate(event: { eventType: string, data: Record<string, any> }) {
+			if (!socket || !loggedInUser)
+				return ;
+
+			if (event.eventType !== 'RELATION_UPDATE')
+				return ;
+
+			if ((event.data.requesterId === loggedInUser.id || event.data.receiverId === loggedInUser.id))
+				refetch();
 		}
-		fetchBlockedUsers();
-	}, [apiClient, executeAPICall]);
+
+		socket.on('user', handleRelationUpdate);
+
+		return () => {
+			socket.off('user', handleRelationUpdate);
+		};
+	}, []);
 
 	async function handleUnblock(id: number) {
 		try {
-			await apiClient.unblockUser(id);
-			setBlocked(prev => prev.filter(item => item.id !== id));
+			await executeAPICall(() => apiClient.unblockUser(id));
 			toastSuccess('Unblocked');
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
 			toastError(err.message);
 		}
 	}
 
-	if (isLoading)
+	const showSkeleton = isLoading && !blocked;
+
+	if (showSkeleton)
 		return <LoadingComponent />;
 
 	if (error)
-		return <EmptyComponent content={error} />;
+		return <PlaceholderComponent content={t('error')} />;
 
-	if (!blocked)
-		return null;
-
-	if (blocked.length === 0)
-		return <EmptyComponent content='No blocked users found. Go block some.' />;
+	if (!blocked || blocked.length === 0)
+		return <PlaceholderComponent content={t('no-data')} />;
 
 	return (
-		<UserList 
+		<UserList
 			users={blocked}
 			actions={[
 				{

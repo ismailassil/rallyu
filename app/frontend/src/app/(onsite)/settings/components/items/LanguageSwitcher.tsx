@@ -1,14 +1,17 @@
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const LanguageSwitcher = () => {
 	const [locale, setLocale] = useState("en");
 	const router = useRouter();
+	const t = useTranslations('auth.common');
+	
 
 	useEffect(() => {
 		const cookieLocale = document.cookie
 			.split("; ")
-			.find((row) => row.startsWith("NEXT_LOCALE="))
+			.find((row) => row.startsWith("NEXT_LOCALE_INT="))
 			?.split("=")[1];
 
 		const initialLocale = cookieLocale || navigator.language.slice(0, 2) || "en";
@@ -18,13 +21,13 @@ const LanguageSwitcher = () => {
 
 	function changeLocale(newLocale: string) {
 		setLocale(newLocale);
-		document.cookie = `NEXT_LOCALE=${newLocale};`;
+		document.cookie = `NEXT_LOCALE_INT=${newLocale};`;
 		router.refresh();
 	}
 
 	return (
 		<div className="flex h-21 flex-col justify-between gap-4 text-sm lg:text-base">
-			<h3 className="w-full flex-1">Language</h3>
+			<h3 className="w-full flex-1">{t("language")}</h3>
 			<ul className="bg-card border-br-card top-13 z-10 flex w-full rounded-md border-2 py-1 backdrop-blur-3xl *:mx-1 *:w-full *:cursor-pointer *:rounded-md *:px-4 *:py-1.5 *:text-center *:transition-colors *:duration-300 *:hover:bg-black/30">
 				<button
 					onClick={(e) => {

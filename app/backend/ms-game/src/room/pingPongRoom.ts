@@ -2,6 +2,8 @@ import { getVelocity, angles, updateState } from './physics'
 import type { Room, Player, PingPongGameState, TicTacToeGameState, PingPongStatus, GameType } from '../types/types'
 import ws from 'ws';
 import { closeRoom, userSessions } from './roomManager';
+import axios from 'axios';
+import { MS_AUTH_PORT, MS_AUTH_API_KEY } from '../plugins/game';
 
 const GAME_UPDATE_INTERVAL = 16.67; // 60hz
 const GAME_START_DELAY = 3000; // 3 sec
@@ -38,8 +40,6 @@ export class PingPongPlayer implements Player {
 						break;
 					case 'forfeit':
 						room.sendForfeitPacket(data.pid);
-						closeRoom(room, 1003, 'Game Over');
-						room.saveGameData();
 				}
 			} catch (e: any) {
 				console.log('JSON parse error:', e.message);
@@ -118,12 +118,14 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				{
 					ID: this.players[0]!.id,
 					score: this.state.score[0],
-					coords: this.state.players[0].coords
+					coords: this.state.players[0].coords,
+					connected: this.players[0].connected
 				},
 				{
 					ID: this.players[1]!.id,
 					score: this.state.score[1],
-					coords: this.state.players[1].coords
+					coords: this.state.players[1].coords,
+					connected: this.players[1].connected
 				}
 			]
 		}
@@ -149,11 +151,11 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				}))
 			}
 		})
+		closeRoom(this, 1003, 'Game Over');
+		this.saveGameData();
 	}
 
 	sendForfeitPacket = (yeilder: number) => {
-		this.state.score = yeilder === 0 ? [0, 3] : [3, 0];
-
 		if (this.state.score[yeilder ^ 1] <= this.state.score[yeilder])
 			this.state.score[yeilder ^ 1] += this.state.score[yeilder] - this.state.score[yeilder ^ 1] + 4
 
@@ -166,6 +168,8 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				}))
 			}
 		})
+		closeRoom(this, 1003, 'Forfeit');
+		this.saveGameData();
 	}
 
     private setupPackets(): NodeJS.Timeout {
@@ -183,22 +187,26 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 		}, GAME_START_DELAY);
     }
 
-	saveGameData() {
+	private async saveGameData() {
 		try {
-			// await axios.post(`http://ms-auth:${5005}/users/matches`, {
-			// 	players: [
-			// 		{ 
-			// 			ID: this.players[0].id, 
-			// 			score: this.state.score[0]
-			// 		},
-			// 		{
-			// 			ID: this.players[1].id, 
-			// 			score: this.state.score[1]
-			// 		}
-			// 	],
-			// 	gameStartedAt: this.startTime,
-			// 	gameFinishedAt: Math.floor(Date.now() / 1000)
-			// });
+			console.log('Sending Game Data to Database...');
+			await axios.post(`http://ms-auth:${MS_AUTH_PORT}/users/matches`, {
+				player1: {
+					ID: this.players[0].id, 
+					score: this.state.score[0]
+				},
+				player2: {
+					ID: this.players[1].id, 
+					score: this.state.score[1]
+				},
+				gameStartedAt: this.startTime,
+				gameFinishedAt: Math.floor(Date.now() / 1000),
+				gameType:  'PONG'
+			}, {
+				headers: {
+					'Authorization': `Bearer ${MS_AUTH_API_KEY}`
+			}});
+			console.log('Game Data sent successfully');
 		} catch (err) {
 			console.log("error from user management: ", err);
 		}
@@ -231,8 +239,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 		this.startTime = Math.floor(Date.now() / 1000);
 		this.gameTimerId = setTimeout(async () => {
 			this.handleGameOver();
-			closeRoom(this, 1003, 'Game Over');
-			this.saveGameData();
+			
 		}, GAME_TIME);
 
 		this.intervalId = setInterval(() => {

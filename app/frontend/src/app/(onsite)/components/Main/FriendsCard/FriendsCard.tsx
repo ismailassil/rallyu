@@ -3,60 +3,70 @@ import { useAuth } from "../../../contexts/AuthContext";
 import MainCardWithHeader from "../../UI/MainCardWithHeader";
 import { motion, AnimatePresence } from "framer-motion";
 import FriendsCardItem from "./FriendsCardItem";
-import useAPICall from "@/app/hooks/useAPICall";
-import { EmptyComponent } from "@/app/(auth)/components/UI/LoadingComponents";
+import { PlaceholderComponent } from "@/app/(auth)/components/UI/LoadingComponents";
 import { LoadingSkeletonList } from "./FriendsCardSkeleton";
 import { useTranslations } from "next-intl";
+import useAPIQuery from "@/app/hooks/useAPIQuery";
 
 export default function FriendsCard() {
 	const t = useTranslations("dashboard.titles");
+	const tp = useTranslations('placeholders.data.friends');
 
 	const {
-		apiClient
+		loggedInUser,
+		apiClient,
+		socket
 	} = useAuth();
 
 	const {
-		executeAPICall,
 		isLoading,
+		error,
 		data: friends,
-		error
-	} = useAPICall();
-
+		refetch
+	} = useAPIQuery(
+		() => apiClient.user.fetchFriends()
+	);
 
 	useEffect(() => {
-		async function fetchFriends() {
-			try {
-				await executeAPICall(() => apiClient.user.getAllFriends());
-			} catch (err) {
-				console.error(err);
-			}
+		function handleRelationUpdate(event: { eventType: string, data: Record<string, any> }) {
+			if (!socket || !loggedInUser)
+				return ;
+
+			if (event.eventType !== 'RELATION_UPDATE')
+				return ;
+
+			if ((event.data.status === 'FRIENDS' || event.data.status === 'NONE') && (event.data.requesterId === loggedInUser.id || event.data.receiverId === loggedInUser.id))
+				refetch();
 		}
-		fetchFriends();
+
+		socket.on('user', handleRelationUpdate);
+
+		return () => {
+			socket.off('user', handleRelationUpdate);
+		};
 	}, []);
+
+	const showSkeleton = isLoading && !friends; // first fetch
 
 	return (
 		<MainCardWithHeader headerName={t('friends')} className='font-funnel-display flex-2 scroll-smooth hidden xl:block'>
 			<div className="group flex flex-col gap-3 px-6 h-full">
-				{isLoading ? (
-					<LoadingSkeletonList
-						count={12}
-					/>
+				{showSkeleton ? (
+					<LoadingSkeletonList count={12} />
 				) : error ? (
-					<EmptyComponent content={error} />
-				) : !friends ? (
-					null
-				) : friends.length === 0 ? (
-					<EmptyComponent content={'No friends found. Go touch some grass.'} />
+					<PlaceholderComponent content={tp('error')} />
+				) : !friends || friends.length === 0 ? (
+					<PlaceholderComponent content={tp('no-data')} />
 				) : (
 					<AnimatePresence>
 						{friends.map((item, i) => (
 							<motion.div
-								key={item.username}
-								initial={{ opacity: 0, y: -40 }}
-								animate={{ opacity: 1, y: 0 }}
+								key={item.id}
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
 								transition={{ duration: 0.8, delay: i * 0.15 }}
 								style={{ zIndex: friends.length - i }}
-								className='bg-red-500/0'
 							>
 								<FriendsCardItem
 									id={item.id}

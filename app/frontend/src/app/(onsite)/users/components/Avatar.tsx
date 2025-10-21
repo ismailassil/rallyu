@@ -1,8 +1,6 @@
 'use client';
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { simulateBackendCall } from "@/app/(api)/utils";
 
 interface AvatarProps {
 	avatar: string | null | undefined;
@@ -12,51 +10,24 @@ interface AvatarProps {
 }
 
 export default function Avatar({ avatar, fallback = "/profile/image_1.jpg", className, alt } : AvatarProps)  {
-	const { apiClient } = useAuth();
-	const [src, setSrc] = useState<string>(fallback);
+	const [src, setSrc] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	useEffect(() => {
-		let blobUrl: string | null = null;
 
-		async function loadAvatar() {
-			try {
-				setIsLoading(true);
-
-				// If it's already a blob URL
-				if (avatar && avatar.startsWith("blob:")) {
-					setSrc(avatar);
-					return;
-				}
-
-				// External URL (e.g., Google)
-				if (avatar && (avatar.startsWith("http://") || avatar.startsWith("https://"))) {
-					setSrc(avatar);
-					return;
-				}
-
-				// Local avatar served from your server
-				if (avatar) {
-					const avatarBlob = await apiClient.getUserAvatarBlob(avatar);
-					blobUrl = URL.createObjectURL(avatarBlob);
-					setSrc(blobUrl);
-				} else {
-					setSrc(fallback);
-				}
-			} catch (err) {
-				console.error("Error loading avatar:", err);
-				setSrc(fallback);
-			} finally {
-				setIsLoading(false);
-			}
+		if (avatar && avatar.startsWith("blob:")) {
+			setSrc(avatar);
+		} else if (avatar && avatar.startsWith('/users/avatars/')) {
+			setSrc('http://api-gateway:4025/api' + avatar);
+		} else {
+			setSrc(fallback);
+			setIsLoading(false);
 		}
 
-		loadAvatar();
+	}, [avatar, fallback]);
 
-		return () => {
-			if (blobUrl) URL.revokeObjectURL(blobUrl); // cleanup
-		};
-	}, [avatar, apiClient, fallback]);
+	if (!src)
+		return null;
 
 	return (
 		<div className={`rounded-full overflow-hidden relative ${className || ''}`}>
@@ -65,20 +36,21 @@ export default function Avatar({ avatar, fallback = "/profile/image_1.jpg", clas
 					<div className="loader h-full w-full"></div>
 				</div>
 			)}
-			{!isLoading && (
-				<Image
-					fill
-					src={src}
-					alt={alt || "Avatar"}
-					className='h-full w-full object-cover'
-					onError={() => {
-						console.log('Error loading image, using fallback.');
-						setSrc(fallback);
-					}}
-					draggable={false}
-					unoptimized={true}
-				/>
-			)}
+			<Image
+				fill
+				quality={80}
+				src={src}
+				alt={alt || "Avatar"}
+				className='h-full w-full object-cover'
+				onLoad={() => {
+					setIsLoading(false);
+				}}
+				onError={() => {
+					setSrc(fallback);
+					setIsLoading(false);
+				}}
+				draggable={false}
+			/>
 		</div>
 	);
 };

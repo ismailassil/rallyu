@@ -1,65 +1,74 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import React, { useState, useEffect } from "react";
-import UserList, { UserItem } from "./UserList";
+import React, { useEffect } from "react";
+import UserList from "./UserList";
 import { X } from "lucide-react";
 import useAPICall from "@/app/hooks/useAPICall";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
-import LoadingComponent, { EmptyComponent } from "@/app/(auth)/components/UI/LoadingComponents";
+import LoadingComponent, { PlaceholderComponent } from "@/app/(auth)/components/UI/LoadingComponents";
+import useAPIQuery from "@/app/hooks/useAPIQuery";
+import { useTranslations } from "next-intl";
 
 export default function OutgoingFriendRequestsList() {
+	const t = useTranslations('placeholders.data.incoming');
+
 	const {
-		apiClient
+		loggedInUser,
+		apiClient,
+		socket
 	} = useAuth();
+
+	const {
+		isLoading,
+		error,
+		data: outgoing,
+		refetch
+	} = useAPIQuery(
+		() => apiClient.user.fetchOutgoingFriendRequests()
+	);
 
 	const {
 		executeAPICall
 	} = useAPICall();
 
-	const [outgoing, setOutgoing] = useState<UserItem[]>([]);
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-
 	useEffect(() => {
-		async function fetchOutgoingRequests() {
-			try {
-				setIsLoading(true);
-				const data = await executeAPICall(() => apiClient.getAllOutgoingFriendRequests());
-				// const data = await apiClient.getAllFriends();
-				setOutgoing(data);
-				setError(null);
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			} catch (err: any) {
-				toastError(err.message);
-				setError('Failed to load outgoing friend requests.');
-			} finally {
-				setIsLoading(false);
-			}
+		function handleRelationUpdate(event: { eventType: string, data: Record<string, any> }) {
+			if (!socket || !loggedInUser)
+				return ;
+
+			if (event.eventType !== 'RELATION_UPDATE')
+				return ;
+
+			if ((event.data.requesterId === loggedInUser.id || event.data.receiverId === loggedInUser.id))
+				refetch();
 		}
-		fetchOutgoingRequests();
-	}, [apiClient, executeAPICall]);
+
+		socket.on('user', handleRelationUpdate);
+
+		return () => {
+			socket.off('user', handleRelationUpdate);
+		};
+	}, []);
 
 	async function handleCancel(id: number) {
 		try {
-			await apiClient.cancelFriendRequest(id);
-			setOutgoing(prev => prev.filter(item => item.id !== id));
+			await executeAPICall(() => apiClient.cancelFriendRequest(id));
 			toastSuccess('Canceled');
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
 			toastError(err.message);
 		}
 	}
 
-	if (isLoading)
+	const showSkeleton = isLoading && !outgoing;
+
+	if (showSkeleton)
 		return <LoadingComponent />;
 
 	if (error)
-		return <EmptyComponent content={error} />;
+		return <PlaceholderComponent content={t('error')} />;
 
-	if (!outgoing)
-		return null;
-
-	if (outgoing.length === 0)
-		return <EmptyComponent content='No outgoing friend requests found. Go touch some grass.' />;
+	if (!outgoing || outgoing.length === 0)
+		return <PlaceholderComponent content={t('no-data')} />;
 
 	return (
 		<UserList

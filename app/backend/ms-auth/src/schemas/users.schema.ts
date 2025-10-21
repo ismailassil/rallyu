@@ -1,133 +1,184 @@
-// get user by id
-const userIdParams = {
-	type: 'object',
-	properties: {
-		id: { type: 'number' }
-	},
-	required: ['id'],
-	additionalProperties: false
+const usernameavailability = {
+	querystring: {
+		type: 'object',
+		properties: {
+			username: { type: 'string' }
+		},
+		required: ['username'],
+		additionalProperties: false
+	}
 };
 
-// get user by username
-const userUsernameQuery = {
-	type: 'object',
-	properties: {
-		username: { type: 'string' }
-	},
-	additionalProperties: false
+const emailavailability = {
+	querystring: {
+		type: 'object',
+		properties: {
+			email: { type: 'string' }
+		},
+		required: ['email'],
+		additionalProperties: false
+	}
+};
+
+const userusername = {
+	querystring: {
+		type: 'object',
+		properties: {
+			username: { type: 'string' }
+		},
+		required: ['username'],
+		additionalProperties: false
+	}
 }
 
-// update
-const userUpdateBody = {
-	type: 'object',
-	properties: {
-		first_name: { type: 'string' },
-		last_name: { type: 'string' },
-		email: { type: 'string' },
-		username: { type: 'string' },
-		bio: { type: 'string' },
-	},
-	additionalProperties: false,
-	minProperties: 1
+const useruserid = {
+	params: {
+		type: 'object',
+		properties: {
+			id: { type: 'number' }
+		},
+		required: ['id'],
+		additionalProperties: false
+	}
 }
 
-// availability
-const usernameAvailabilityQuery = {
-	type: 'object',
-	properties: {
-		username: { type: 'string' }
-	},
-	required: ['username'],
-	additionalProperties: false
-};
-
-const emailAvailabilityQuery = {
-	type: 'object',
-	properties: {
-		email: { type: 'string' }
-	},
-	required: ['email'],
-	additionalProperties: false
-};
-
-// relations
-const relationsRequestParams = {
-	type: 'object',
-	properties: {
-		targetUserId: { type: 'number' }
-	},
-	required: ['targetUserId'],
-	additionalProperties: false
-};
-
-// search user by username
-const userSearchByUsernameQuery = {
-	type: 'object',
-	properties: {
-		username: { type: 'string' }
-	},
-	required: ['username'],
-	additionalProperties: false
-};
-
-// matches
-const matchesRequestQuery = {
-	type: 'object',
-	properties: {
-		page: { type: 'number' },
-		limit: { type: 'number' },
-		gameTypeFilter: { type: 'string' },
-		timeFilter: { type: 'string' }
-	},
-	required: ['page', 'limit', 'gameTypeFilter', 'timeFilter'],
-	additionalProperties: false
-};
-
-// leaderboard
-const leaderboardQuery = {
-	type: 'object',
-	properties: {
-		page: { type: 'number' },
-		limit: { type: 'number' }
-	},
-	required: ['page', 'limit'],
-	additionalProperties: false
-};
-
-export const userUsernameSchema = {
-	querystring: userUsernameQuery
-};
-
-export const userIdSchema = {
-	params: userIdParams
-};
-
-export const leaderboardSchema = {
-	querystring: leaderboardQuery
-};
-
-export const userSearchByUsernameSchema = {
-	querystring: userSearchByUsernameQuery
-};
-
-export const usernameAvailabilitySchema = {
-	querystring: usernameAvailabilityQuery
-};
-
-export const emailAvailabilitySchema = {
-	querystring: emailAvailabilityQuery
-};
-
-export const userUpdateSchema = {
-	params: userIdParams,
-	body: userUpdateBody
+const usersearchbyquery = {
+	querystring: {
+		type: 'object',
+		properties: {
+			query: { type: 'string' }
+		},
+		required: ['query'],
+		additionalProperties: false
+	}
 }
 
-export const relationsRequestSchema = {
-	params: relationsRequestParams
+const userupdate = {
+	params: {
+		type: 'object',
+		properties: {
+			id: { type: 'number' }
+		},
+		required: ['id'],
+		additionalProperties: false
+	},
+	body: {
+		type: 'object',
+		properties: {
+			first_name: { type: 'string' },
+			last_name: { type: 'string' },
+			username: { type: 'string' },
+			email: { type: 'string' },
+			phone: { type: 'string' },
+			bio: { type: 'string' }
+		},
+		required: [],
+		additionalProperties: false
+	}
 };
 
-export const matchesRequestSchema = {
-	params: userIdParams,
-	querystring: matchesRequestQuery
+const usermatches = {
+	params: {
+		type: 'object',
+		properties: {
+			id: { type: 'number' }
+		},
+		required: ['id'],
+		additionalProperties: false
+	},
+	querystring: {
+		type: 'object',
+		properties: {
+			page: { type: 'number' },
+			limit: { type: 'number' },
+			gameTypeFilter: { type: 'string' },
+			timeFilter: { type: 'string' }
+		},
+		required: ['page', 'limit', 'gameTypeFilter', 'timeFilter'],
+		additionalProperties: false
+	}
+}
+
+const usersleaderboard = {
+	querystring: {
+		type: 'object',
+		properties: {
+			page: { type: 'number' },
+			limit: { type: 'number' }
+		},
+		required: ['page', 'limit'],
+		additionalProperties: false
+	}
+}
+
+const userrelations = {
+	params: {
+		type: 'object',
+		properties: {
+			targetUserId: { type: 'string' }
+		},
+		required: ['targetUserId'],
+		additionalProperties: false
+	}
+};
+
+const internalmatchespost = {
+	body: {
+		type: 'object',
+		required: [
+			'player1',
+			'player2',
+			'gameType',
+			'gameStartedAt',
+			'gameFinishedAt'
+		],
+		properties: {
+			player1: {
+				type: 'object',
+				properties: {
+					ID: { type: 'number' },
+					score: { type: 'number' }
+				},
+				required: ['ID', 'score']
+			},
+			player2: {
+				type: 'object',
+				properties: {
+					ID: { type: 'number' },
+					score: { type: 'number' }
+				},
+				required: ['ID', 'score']
+			},
+			gameStartedAt: { type: 'number' },
+			gameFinishedAt: { type: 'number' },
+			gameType: { type: 'string', enum: ['XO', 'PONG'] }
+		},
+		additionalProperties: false
+	}
+}
+
+export const usersRoutesSchemas = {
+	availability: {
+		username: usernameavailability,
+		email: emailavailability
+	},
+	users: {
+		fetch: {
+			byUsername: userusername,
+			byId: useruserid,
+			search: usersearchbyquery,
+			leaderboard: usersleaderboard,
+			matches: usermatches
+		},
+		update: userupdate,
+		delete: useruserid
+	},
+	relations: {
+		actions: userrelations
+	},
+	matches: {
+		internal: {
+			create: internalmatchespost
+		}
+	}
 };

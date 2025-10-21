@@ -6,7 +6,7 @@ import runMigrations from './database/migrations';
 import cors from '@fastify/cors';
 import userRouter from './routes/UserRouter';
 import { appConfig } from './config';
-import JWTUtils from './utils/auth/Auth';
+import JWTUtils from './utils/auth/JWTUtils';
 import UserRepository from './repositories/UserRepository';
 import TwoFactorRepository from './repositories/TwoFactorRepository';
 import UserService from './services/User/UserService';
@@ -35,26 +35,19 @@ import VerificationController from './controllers/VerificationController';
 import VerificationService from './services/Auth/VerificationService';
 import MatchesController from './controllers/MatchesController';
 import MatchesService from './services/GameAndStats/MatchesService';
+import errorHandlerPlugin from './plugins/errorHandler';
+import accessTokenAuth from './middleware/auth/accessTokenAuth';
+import refreshTokenAuth from './middleware/auth/refreshTokenAuth';
+import cookie from '@fastify/cookie';
+import { attachTokensHook } from './middleware/hooks/attachTokensHook';
+import apiKeyAuth from './middleware/auth/apiKeyAuth';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
-		logger: {
-		  transport: {
-			target: 'pino-pretty',
-			options: {
-			  colorize: true,
-			  translateTime: 'SYS:standard',
-			  ignore: 'pid,hostname'
-			}
-		  }
-		},
-		ajv: {
-			customOptions: {
-				removeAdditional: false,
-				allErrors: true
-			}
-		}
+		logger: { level: 'trace', transport: { target: 'pino-pretty', options: { colorize: true, translateTime: 'SYS:standard', ignore: 'pid,hostname' } } },
+		ajv: { customOptions: { removeAdditional: false, allErrors: true }}
 	});
+
 
 	// REGISTER DATABASE PLUGIN
 	// fastify.register(SQLitePlugin);
@@ -64,8 +57,24 @@ async function buildApp(): Promise<FastifyInstance> {
 		methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE']
 	});
 
+	await fastify.register(cookie);
+	await fastify.register(errorHandlerPlugin);
+
+	fastify.addHook('preHandler', attachTokensHook);
+	fastify.decorate('accessTokenAuth', accessTokenAuth);
+	fastify.decorate('refreshTokenAuth', refreshTokenAuth);
+	fastify.decorate('apiKeyAuth', apiKeyAuth);
+	fastify.decorateRequest('bearerToken', null);
+	fastify.decorateRequest('accessToken', null);
+	fastify.decorateRequest('refreshToken', null);
+	fastify.decorateRequest('apiKey', null);
+	fastify.decorateRequest('user', null);
+	fastify.decorateRequest('accessTokenPayload', null);
+	fastify.decorateRequest('refreshTokenPayload', null);
+	fastify.decorateRequest('fingerprint', null);
+
 	// INIT UTILS
-	const jwtUtils = new JWTUtils();
+	const jwtUtils = new JWTUtils(authConfig);
 
 	// INIT REPOSITORIES
 	const userRepository = new UserRepository();
@@ -77,8 +86,7 @@ async function buildApp(): Promise<FastifyInstance> {
 	const resetPasswordRepository = new ResetPasswordRepository();
 
 	// INIT SERVICES
-	const whatsAppService = new WhatsAppService(fastify.log);
-	// await whatsAppService.isReady; // TODO: HANDLE ERRORS
+	const whatsAppService = new WhatsAppService({ authDir: 'wp-session', adminJid: '212636299820@s.whatsapp.net', logger: fastify.log });
 	const mailingService = new MailingService(appConfig.mailing);
 	const sessionsService = new SessionService(authConfig, jwtUtils, sessionsRepository);
 	const statsService = new StatsService(userRepository, statsRepository);
@@ -100,7 +108,6 @@ async function buildApp(): Promise<FastifyInstance> {
 	const verificationController = new VerificationController(verificationService);
 	const matchesController = new MatchesController(matchesService);
 
-	// REGISTER AUTH PLUGIN
 	await fastify.register(natsPlugin, {
 		NATS_URL: process.env["NATS_URL"] || "",
 		NATS_USER: process.env["NATS_USER"] || "",
@@ -108,6 +115,7 @@ async function buildApp(): Promise<FastifyInstance> {
 		userService: userService,
 		relationsService: relationsService
 	});
+
 	await fastify.register(authRouter, {
 		prefix: '/auth',
 		authController,
@@ -115,7 +123,13 @@ async function buildApp(): Promise<FastifyInstance> {
 		verificationController,
 		passwordResetController
 	});
-	await fastify.register(userRouter, { prefix: '/users', userController, relationsController, matchesController });
+
+	await fastify.register(userRouter, {
+		prefix: '/users',
+		userController,
+		relationsController,
+		matchesController
+	});
 
 	return fastify;
 }

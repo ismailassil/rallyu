@@ -26,10 +26,9 @@ const GameField = () => {
     }
 
 	return (
-        <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center">
-            <GameTimer time={timeLeft} pause={pause}/>
-            {/* <VersusCard /> */}
-            <div className="flex w-auto h-auto max-h-full max-w-full items-center justify-center">
+        <div className="flex px-8 min-h-0 w-full flex-1 flex-col items-center justify-center">
+            <div className="flex flex-col w-auto h-auto max-h-full max-w-full items-center justify-center">
+                <GameTimer time={timeLeft} pause={pause}/>
                 <div className="relative inline-block">
                     <Pong
                         socketProxy={null}

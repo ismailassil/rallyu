@@ -10,12 +10,14 @@ export interface PingPongStatus {
 		{
 			ID: number,
 			score: number,
-			coords: Coords
+			coords: Coords,
+			connected: boolean
 		},
 		{
 			ID: number,
 			score: number,
-			coords: Coords
+			coords: Coords,
+			connected: boolean
 		}
 	]
 }
@@ -29,10 +31,12 @@ export interface TicTacToeStatus {
 		{
 			ID: number,
 			score: number,
+			connected: boolean
 		},
 		{
 			ID: number,
 			score: number,
+			connected: boolean
 		}
 	]
 }

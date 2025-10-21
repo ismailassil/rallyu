@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, QrCode } from "lucide-react";
 import FormButton from "@/app/(auth)/components/UI/FormButton";
 import { APITOTPSecrets } from "@/app/(api)/services/MfaService";
-import OTPCodeInput from "@/app/(onsite)/[DEPRECATED]2fa/components/OTPCodeInput";
+import OTPCodeInput from '../../Form/OTPCodeInput';
 import { toastError } from "@/app/components/CustomToast";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import useAPICall from "@/app/hooks/useAPICall";
@@ -118,7 +118,7 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 				</div>
 
 				<form className="flex flex-col gap-3 mt-8" onSubmit={handleSubmit}>
-					<p className="text-center text-gray-200 text-sm sm:text-base">{t('verification.verifyCode.subtitle')}</p>
+					<p className="text-center text-gray-200 text-sm sm:text-base">{t('verification.verifyCode.subtitle', { method: 'TOTP' })}</p>
 
 					<OTPCodeInput
 						code={code}

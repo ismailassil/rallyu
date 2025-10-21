@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyPluginOptions, FastifyRequest } from 'fastify';
 import WebSocket from 'ws'
 import jwt from 'jsonwebtoken'
-import type { GameType, Room } from '../types/types';
+import type { GameType } from '../types/types';
 import { createRoomSchema, joinRoomSchema, roomStatusSchema, userStatusSchema } from '../schemas/schemas';
 import { roomManager, userSessions, closeRoom } from '../room/roomManager';
 import dotenv from 'dotenv'
@@ -10,10 +10,11 @@ dotenv.config();
 const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
 const MS_NOTIF_API_KEY = process.env.MS_NOTIF_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
 const JWT_ACCESS_SECRET = process.env['JWT_ACCESS_SECRET'] || ''
+export const MS_AUTH_PORT = process.env.MS_AUTH_PORT
+export const MS_AUTH_API_KEY = process.env.MS_AUTH_API_KEY
 
 const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
-	const ROOM_EXPIRATION_TIME = 20000; // 20 sec
-    const GAME_TIME = 20000; // 20 seconds
+	const ROOM_EXPIRATION_TIME = 30000; // 30 sec
 
 	fastify.addHook('preHandler', async (req, res) => {
 		let token;
@@ -93,6 +94,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			roomId: session,
 			opponentId,
 			gameType: room!.gameType,
+			connected: room?.players.find(p => p.id === userid)?.connected
 		};
 	})
 
@@ -116,6 +118,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 		}
 
 		if (playersIds.some(id => userSessions.get(id))) {
+			console.log('403 player already in game');
 			return res.code(403).send({
 				message: 'player already in game'
 			})

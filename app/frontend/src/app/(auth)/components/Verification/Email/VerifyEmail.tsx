@@ -20,7 +20,7 @@ interface VerifyEmailProps {
 }
 
 export default function VerifyEmail({ onGoBack, onNext } : VerifyEmailProps) {
-	const t = useTranslations('auth.verification');
+	const t = useTranslations('auth');
 
 	const {
 		apiClient,
@@ -80,7 +80,7 @@ export default function VerifyEmail({ onGoBack, onNext } : VerifyEmailProps) {
 					</button>
 					<div>
 						<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('verification.input.title', { method: 'EMAIL' })}</h1>
-						<p className='text-gray-300 text-sm sm:text-balance'>{t('verification.input.title', { method: 'EMAIL' })}</p>
+						<p className='text-gray-300 text-sm sm:text-balance'>{t('verification.input.subtitle', { method: 'EMAIL' })}</p>
 					</div>
 				</div>
 

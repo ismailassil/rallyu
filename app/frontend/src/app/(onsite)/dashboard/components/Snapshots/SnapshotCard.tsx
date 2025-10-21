@@ -9,7 +9,7 @@ import { useTranslations } from 'next-intl';
 import CustomAreaChart from '../../../performance/components/Charts/CustomAreaChart';
 import { SnapshotSkeleton } from './SnapshotCardSkeleton';
 import useAPICall from '@/app/hooks/useAPICall';
-import { EmptyComponent } from '@/app/(auth)/components/UI/LoadingComponents';
+import { PlaceholderComponent } from '@/app/(auth)/components/UI/LoadingComponents';
 import { HalfWidthStatDisplay } from './components/HalfWidthStatDisplay';
 import { FullWidthStatDisplay } from './components/FullWidthStatDisplay';
 import { STAT_CONFIG } from './constants';
@@ -92,7 +92,7 @@ export default function SnapshotCard() {
 		return (
 			<MainCardWithHeader headerName={t("titles.snapshots")} color="notwhite" className="font-funnel-display flex-3 select-none">
 				<div className="group flex flex-col gap-4">
-				<EmptyComponent content={isError} />
+				<PlaceholderComponent content={isError} />
 				</div>
 			</MainCardWithHeader>
 		);
@@ -132,7 +132,7 @@ export default function SnapshotCard() {
 				</div>
 				)}
 
-				<div className="px-6 flex flex-col gap-4">
+				<div className="px-6 flex flex-col gap-3">
 					{currentRecord && (
 					<div className="profile-inner-stat-card-animated flex-1 relative">
 						<FullWidthStatDisplay stat={currentRecord} direction="left" />

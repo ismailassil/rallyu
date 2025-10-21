@@ -46,6 +46,8 @@ export interface EventHandlers {
 	updateBoard?: React.Dispatch<React.SetStateAction<XOSign[]>>;
 	updateScore?: React.Dispatch<React.SetStateAction<[number, number]>>; 
 	updateDisplayedResult?: React.Dispatch<React.SetStateAction<string | null>>; 
+	updateCurrentPlayer?: React.Dispatch<React.SetStateAction<XOSign>>; 
+	updateSign?: React.Dispatch<React.SetStateAction<XOSign>>; 
 
 }
 
@@ -62,6 +64,16 @@ export interface XOState {
 	cells: XOSign[];
 	currentRound: number;
 	currentPlayer: XOSign;
-	mySign: XOSign,
-	score: [number, number]
+	mySign?: XOSign,
+	score?: [number, number]
+	players?: [
+		{
+			sign: XOSign,
+			score: number
+		},
+		{
+			sign: XOSign,
+			score: number
+		},
+	]
 }

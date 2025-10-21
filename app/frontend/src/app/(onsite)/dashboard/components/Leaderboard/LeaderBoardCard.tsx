@@ -5,7 +5,7 @@ import MainCardWithHeader from '../../../components/UI/MainCardWithHeader';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAPICall from '@/app/hooks/useAPICall';
-import { EmptyComponent } from '@/app/(auth)/components/UI/LoadingComponents';
+import { PlaceholderComponent } from '@/app/(auth)/components/UI/LoadingComponents';
 import { LoadingSkeletonList } from './LeaderBoardSkeleton';
 
 export default function LeaderboardCard() {
@@ -41,11 +41,11 @@ export default function LeaderboardCard() {
 						count={10}
 					/>
 				) : error ? (
-					<EmptyComponent content={error} />
+					<PlaceholderComponent content={error} />
 				) : !leaderboard ? (
 					null
 				) : leaderboard.length === 0 ? (
-					<EmptyComponent content={'No leaderboard found. Go touch some grass.'} />
+					<PlaceholderComponent content={'No leaderboard found. Go touch some grass.'} />
 				) : (
 					<AnimatePresence>
 						{leaderboard.map((item, i) => (

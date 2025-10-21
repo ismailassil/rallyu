@@ -21,8 +21,8 @@ export const FullWidthStatDisplay = ({ stat, direction = 'left', delay = 0 }: Fu
         transition={{ duration: 0.5, ease: 'easeInOut', delay }}
         className="flex flex-row items-center justify-between lg:flex-row"
       >
-        <p className="text-2xl text-white/60 font-bold">{stat.label}</p>
-        <p className="text-3xl text-white/80 font-bold">
+        <p className="text-xl text-white/60 font-bold">{stat.label}</p>
+        <p className="text-2xl text-white/80 font-bold">
           <CountUp end={stat.value} suffix={stat.suffix} duration={5} useEasing />
         </p>
       </motion.div>

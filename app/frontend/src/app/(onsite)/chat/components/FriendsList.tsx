@@ -8,8 +8,7 @@ import { format, isToday, isYesterday, parseISO } from 'date-fns';
 
 
 const FriendsList = () => {
-
-	const [prefix, setPrefix] = useState('');
+	const [prefix, setPrefix] = useState("");
 	const [filteredSuggestions, setFilteredSuggestions] = useState<LoggedUser[]>([]);
 	const { apiClient, messages, BOSS, setShowConversation, showConversation, setSelectedUser, selectedUser, } = useChat();
 	const [displayUsers, setDisplayUsers] = useState<LoggedUser[]>([]);
@@ -61,26 +60,29 @@ const FriendsList = () => {
 		return format(date, 'dd/MM/yyyy');
 	};
 
-
 	return (
-		<div className=" flex flex-col size-full">
+		<div className="flex size-full flex-col">
 			<div>
-				<h2 className="text-4xl my-5 md:my-9 cursor-pointer">Chat</h2>
+				<h2 className="my-5 cursor-pointer text-4xl md:my-9">Chat</h2>
 				<div className="relative w-full">
-					<div className="w-full flex gap-2 border-white/30 rounded-full focus-within:bg-white/12
-													duration-200 transition-all bg-white/8 p-2 mb-6 focus-within:ring-2 focus-within:ring-white/18">
-						<Image width={22} height={22} src="/icons/user-search.svg" alt="search icon" />
+					<div className="mb-6 flex w-full gap-2 rounded-full border-white/30 bg-white/8 p-2 transition-all duration-200 focus-within:bg-white/12 focus-within:ring-2 focus-within:ring-white/18">
+						<Image
+							width={22}
+							height={22}
+							src="/icons/user-search.svg"
+							alt="search icon"
+						/>
 						<input
 							type="text"
 							value={prefix}
 							onChange={handleChange}
 							placeholder="Start Searching..."
-							className="bg-transparent focus:outline-none placeholder-gray-400 w-full"
+							className="w-full bg-transparent placeholder-gray-400 focus:outline-none"
 						/>
 					</div>
 				</div>
 			</div>
-			<div className="overflow-y-auto flex-1 custom-scrollbar">
+			<div className="custom-scrollbar flex-1 overflow-y-auto">
 				{hasFriends ? (
 					<ul>
 						{(prefix ? filteredSuggestions : displayUsers)?.map((user) => {
@@ -91,7 +93,7 @@ const FriendsList = () => {
 											<Avatar
 												avatar={user?.avatar_url}
 												alt={`${user?.first_name + " " + user?.last_name} avatar`}
-												className='w-full h-full'
+												className="h-full w-full"
 											/>
 										</div>
 										<div className='flex flex-col w-full gap-1 justify-between p-0.5 min-w-0'>
@@ -112,12 +114,12 @@ const FriendsList = () => {
 						})}
 					</ul>
 				) : (
-					<div className="flex items-center justify-center h-full">
-						<p className="text-sm md:text text-gray-400">No friends found</p>
+					<div className="flex h-full items-center justify-center">
+						<p className="md:text text-sm text-gray-400">No friends found</p>
 					</div>
 				)}
 			</div>
-		</div >
+		</div>
 	);
 };
 

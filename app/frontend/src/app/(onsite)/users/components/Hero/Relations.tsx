@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import Button from './Button';
 import { LocalChatIcon, LocalUserMinusIcon, LocalUserPlusIcon, LocalUserXIcon } from './LocalIcon';
@@ -20,7 +20,42 @@ export default function Relations({ userId, username, currentStatus } : Relation
 	const router = useRouter();
 
 	const [friendshipStatus, setFriendshipStatus] = useState<FriendshipStatus>(currentStatus);
-	const { apiClient } = useAuth();
+	const {
+		loggedInUser,
+		apiClient,
+		socket
+	} = useAuth();
+
+	useEffect(() => {
+		if (!loggedInUser || loggedInUser.id === userId)
+			return ;
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		function handleRelationUpdate(event: { eventType: string, data: Record<string, any> }) {
+			console.group('/********** RELATION UPDATE **********/');
+
+			console.log('EVENT: ', event);
+
+			if (event.eventType !== 'RELATION_UPDATE')
+				return ;
+			console.log('loggedInUserId', loggedInUser?.id);
+			if (event.data.status === 'BLOCKED' && event.data.receiverId === loggedInUser?.id) {
+				router.push('/404');
+				console.groupEnd();
+				return ;
+			}
+			setFriendshipStatus(event.data.status);
+
+
+			console.groupEnd();
+		}
+
+		socket.on('user', handleRelationUpdate);
+
+		return () => {
+			socket.off('user', handleRelationUpdate);
+		};
+	}, [loggedInUser, router, socket, userId]);
 
 	if (!friendshipStatus)
 		return null;

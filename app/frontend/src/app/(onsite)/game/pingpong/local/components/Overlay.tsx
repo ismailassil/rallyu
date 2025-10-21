@@ -1,5 +1,5 @@
-import { ArrowLeft, Pause, Play, RotateCcw } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Pause, Play, RotateCcw } from "lucide-react";
+import { GameOverLocal } from "../../../components/Items/GameOver";
 
 const PauseIcon = ({ className }: { className: string }) => {
     return (
@@ -11,51 +11,30 @@ const PauseIcon = ({ className }: { className: string }) => {
 }
 
 const Overlay = ({ pauseHandler, resetHandler, status }: { pauseHandler: () => void, resetHandler: () => void, status: string }) => { // status: pause countdown none gameover
-    const router = useRouter();
-
-
     return (
         <div className="absolute inset-0 w-full h-full">
             <div className={`absolute inset-0 rounded-lg transition-all duration-150 w-full h-full ${status === 'pause' || status === 'gameover' ? 'bg-neutral-800/30 ': ''}`}>
                 <PauseIcon className={`absolute inset-0 m-auto w-[clamp(50px,8%,100%)] h-[clamp(65px,15%,100%)] transition-all duration-100 ease-in-out ${status === 'pause' ? 'opacity-90 translate-y-0': 'translate-y-4 opacity-0'}`}/>
-                <div className={`absolute inset-0 m-auto p-3 flex flex-col justify-between w-[clamp(120px,20%,100%)] h-[clamp(70px,20%,100%)] border border-card bg-neutral-900 shadow-black shadow-2xl rounded-lg transition-all duration-300 ease-in-out ${status === 'gameover' ? 'opacity-100 translate-y-0': 'translate-y-20 opacity-0'}`}>
-                    <span className='flex flex-1 text-3xl font-funnel-display pb-5 font-bold justify-center items-center'>Gameover</span>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => router.push('/game')}
-                            className="inline-flex flex-1 justify-center py-4 items-center gap-2 rounded-lg text-xl font-extrabold font-funnel-display bg-neutral-800 shadow-black/40 shadow-xl transition-all duration-200 hover:cursor-pointer hover:scale-102 active:scale-99"
-                        >
-                            <ArrowLeft className="w-[20px] h-[20px]" />
-                            Lobby
-                        </button>
-                        <button
-                            onClick={resetHandler}
-                            className="inline-flex flex-1 justify-center py-4 items-center gap-2 rounded-lg text-xl font-extrabold font-funnel-display bg-green-800 shadow-black/40 shadow-xl transition-all duration-200 hover:cursor-pointer hover:scale-102 active:scale-99"
-                        >
-                            <RotateCcw className="w-[20px] h-[20px]" />
-                            Rematch
-                        </button>
-                    </div>
-                </div>
+                {status === 'gameover' && <GameOverLocal resetHandler={resetHandler} display="Game Over" />}
             </div>
 
-            <div className="absolute flex justify-center items-center gap-3 right-8 top-5 w-[120px] h-[60px]">
+            <div className="absolute flex justify-center items-center gap-3 right-2 top-1 md:right-4 md:top-2 lg:right-8 lg:top-5 w-[100px] h-[50px] xl:w-[120px] xl:h-[60px]">
                 <button 
                     className="rounded-xl border cursor-pointer border-card bg-card transition-all duration-200 hover:bg-white/6 hover:opacity-80 hover:scale-103 active:scale-96 p-2 opacity-50"
                     onClick={pauseHandler}
                 >
                     {status === 'pause' ? (
-                        <Play className="w-[35px] h-[35px] scale-105" />
+                        <Play className="w-[20px] h[20px] md:w-[25px] md:h-[25px] lg:w-[30px] lg:[h-30px] xl:w-[35px] xl:h-[35px] scale-105" />
                     ) : (
-                        <Pause className="w-[35px] h-[35px]" />
+                        <Pause className="w-[20px] h[20px] md:w-[25px] md:h-[25px] lg:w-[30px] lg:[h-30px] xl:w-[35px] xl:h-[35px]" />
                     )}
                 </button>
 
                 <button 
-                    className="rounded-xl border cursor-pointer border-card bg-card transition-all duration-200 hover:bg-white/6 hover:opacity-80 hover:scale-103 active:scale-96 p-2 opacity-50"
+                    className="rounded-xl  border cursor-pointer border-card bg-card transition-all duration-200 hover:bg-white/6 hover:opacity-80 hover:scale-103 active:scale-96 p-2 opacity-50"
                     onClick={resetHandler}
                 >
-                    <RotateCcw  className="w-[35px] h-[35px]" />
+                    <RotateCcw  className="w-[20px] h[20px] md:w-[25px] md:h-[25px] lg:w-[30px] lg:[h-30px] xl:w-[35px] xl:h-[35px]" />
                 </button>
             </div>
         </div>

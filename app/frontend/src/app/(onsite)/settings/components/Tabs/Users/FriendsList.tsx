@@ -1,69 +1,77 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import React, { useState, useEffect } from "react";
 import UserList, { UserItem } from "./UserList";
 import { X } from "lucide-react";
 import useAPICall from "@/app/hooks/useAPICall";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
-import LoadingComponent, { EmptyComponent } from "@/app/(auth)/components/UI/LoadingComponents";
+import LoadingComponent, { PlaceholderComponent } from "@/app/(auth)/components/UI/LoadingComponents";
+import useAPIQuery from "@/app/hooks/useAPIQuery";
+import { useTranslations } from "next-intl";
 
 export default function FriendsList() {
+	const t = useTranslations('placeholders.data.friends');
+
 	const {
-		apiClient
+		loggedInUser,
+		apiClient,
+		socket
 	} = useAuth();
+
+	const {
+		isLoading,
+		error,
+		data: friends,
+		refetch
+	} = useAPIQuery(
+		() => apiClient.user.fetchFriends()
+	);
 
 	const {
 		executeAPICall
 	} = useAPICall();
 
-	const [friends, setFriends] = useState<UserItem[]>([]);
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-
 	useEffect(() => {
-		async function fetchFriends() {
-			try {
-				setIsLoading(true);
-				const data = await executeAPICall(() => apiClient.getAllFriends());
-				// const data = await apiClient.getAllFriends();
-				setFriends(data);
-				setError(null);
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			} catch (err: any) {
-				toastError(err.message);
-				setError('Failed to load friends.');
-			} finally {
-				setIsLoading(false);
-			}
+		function handleRelationUpdate(event: { eventType: string, data: Record<string, any> }) {
+			if (!socket || !loggedInUser)
+				return ;
+
+			if (event.eventType !== 'RELATION_UPDATE')
+				return ;
+
+			if ((event.data.requesterId === loggedInUser.id || event.data.receiverId === loggedInUser.id))
+				refetch();
 		}
 
-		fetchFriends();
-	}, [apiClient, executeAPICall]);
+		socket.on('user', handleRelationUpdate);
+
+		return () => {
+			socket.off('user', handleRelationUpdate);
+		};
+	}, []);
 
 	async function handleUnfriend(id: number) {
 		try {
-			await apiClient.unfriend(id);
-			setFriends(prev => prev.filter(friend => friend.id !== id));
+			await executeAPICall(() => apiClient.user.unfriend(id));
 			toastSuccess('Unfriended');
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
 			toastError(err.message);
 		}
 	}
 
-	if (isLoading)
+	const showSkeleton = isLoading && !friends;
+
+	if (showSkeleton)
 		return <LoadingComponent />;
 
 	if (error)
-		return <EmptyComponent content={error} />;
+		return <PlaceholderComponent content={t('error')} />;
 
-	if (!friends)
-		return null;
-
-	if (friends.length === 0)
-		return <EmptyComponent content='No friends found. Go touch some grass.' />;
+	if (!friends || friends.length === 0)
+		return <PlaceholderComponent content={t('no-data')} />;
 
 	return (
-		<UserList 
+		<UserList
 			users={friends}
 			actions={[
 				{

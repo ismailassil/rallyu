@@ -7,7 +7,7 @@ import GamesHistoryCard from '../components/GamesHistory/GamesHistoryCard';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toastError } from '@/app/components/CustomToast';
 import { useRouter } from 'next/navigation';
-import { EmptyComponent, LoadingPage } from '@/app/(auth)/components/UI/LoadingComponents';
+import { PlaceholderComponent, LoadingPage } from '@/app/(auth)/components/UI/LoadingComponents';
 import useAPICall from '@/app/hooks/useAPICall';
 import FriendsCard from '../../components/Main/FriendsCard/FriendsCard';
 
@@ -62,7 +62,7 @@ export default function UserProfilePage({ params } : { params: Promise<{ usernam
 			<div className="flex h-full w-full gap-6 rounded-lg">
 				<article className="flex-5 flex h-full w-full flex-col gap-4">
 					{(!isLoading && error) ? (
-						<EmptyComponent content={error} />
+						<PlaceholderComponent content={error} />
 					) : (!isLoading && !userProfile) ? (
 						null
 					) : (

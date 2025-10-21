@@ -1,22 +1,13 @@
 import { FastifyInstance } from "fastify";
 import UserController from "../controllers/UserController";
 import RelationsController from "../controllers/RelationsContoller";
-import Authenticate from "../middleware/Authenticate";
 import fastifyMultipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import path from "path";
-import {
-	emailAvailabilitySchema,
-	leaderboardSchema,
-	matchesRequestSchema,
-	relationsRequestSchema,
-	userIdSchema,
-	userSearchByUsernameSchema,
-	userUpdateSchema,
-	userUsernameSchema,
-	usernameAvailabilitySchema
-} from "../schemas/users.schema";
+import { usersRoutesSchemas as schemas } from "../schemas/users.schema";
+import { usersRoutesZodSchemas as zodSchemas } from "../schemas/zod/users.zod.schema";
 import MatchesController from "../controllers/MatchesController";
+import { zodPreHandler } from "../utils/validation/zodFormValidator";
 
 async function userRouter(fastify: FastifyInstance, opts: {
 	userController: UserController,
@@ -33,164 +24,139 @@ async function userRouter(fastify: FastifyInstance, opts: {
 	});
 
 	await fastify.register(fastifyStatic, {
-		root: path.join(__dirname, '../../','uploads', 'avatars'),
+		root: path.join(process.cwd(),'uploads'),
 		prefix: '/avatars/'
 	});
 
-	fastify.decorate('authenticate', Authenticate); // auth middleware for protected routes
-	fastify.decorate('requireAuth', { preHandler: fastify.authenticate }); // preHandler hook
-	fastify.decorateRequest('user', null);
-
-
 	/*-------------------------------------------- AVAILABILITY --------------------------------------------*/
 	fastify.get('/username-available', {
-		schema: usernameAvailabilitySchema,
+		schema: schemas.availability.username,
 		handler: opts.userController.usernameAvailableHandler.bind(opts.userController)
 	});
 	fastify.get('/email-available', {
-		schema: emailAvailabilitySchema,
+		schema: schemas.availability.email,
 		handler: opts.userController.emailAvailableHandler.bind(opts.userController)
 	});
 
 
-
 	/*------------------------------------------------ USERS ------------------------------------------------*/
 	fastify.get('/', {
-		schema: userUsernameSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.users.fetch.byUsername,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.userController.fetchUserByUsernameQueryHandler.bind(opts.userController)
 	});
 	fastify.get('/:id', {
-		schema: userIdSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.users.fetch.byId,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.userController.fetchUserHandler.bind(opts.userController)
 	});
 	fastify.put('/:id', {
-		schema: userUpdateSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.users.update,
+		preHandler: [
+			fastify.accessTokenAuth,
+			zodPreHandler(zodSchemas.users.update)
+		],
 		handler: opts.userController.updateUserHandler.bind(opts.userController)
 	});
 	fastify.delete('/:id', {
-		schema: userIdSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.users.delete,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.userController.deleteUserHandler.bind(opts.userController)
 	});
 
 	fastify.get('/leaderboard', {
-		schema: leaderboardSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.users.fetch.leaderboard,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.userController.fetchRankLeaderboardHandler.bind(opts.userController)
 	});
 	fastify.get('/:id/matches', {
-		schema: matchesRequestSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.users.fetch.matches,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.userController.fetchUserMatchesHandler.bind(opts.userController)
 	});
 	fastify.get('/:id/analytics', {
-		schema: userIdSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.users.fetch.byId,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.userController.fetchUserAnalyticsHandler.bind(opts.userController)
 	});
 	fastify.get('/:id/analytics-by-day', {
-		schema: userIdSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.users.fetch.byId,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.userController.fetchUserAnalyticsByDayHandler.bind(opts.userController)
 	});
 
 	fastify.post('/:id/avatar', {
-		schema: userIdSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.users.fetch.byId,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.userController.uploadAvatarHandler.bind(opts.userController)
 	});
 
-	fastify.get('/search-by-username', {
-		schema: userSearchByUsernameSchema,
-		preHandler: fastify.authenticate,
-		handler: opts.userController.searchUserByUsernameHandler.bind(opts.userController)
+	fastify.get('/lookup', {
+		schema: schemas.users.fetch.search,
+		preHandler: fastify.accessTokenAuth,
+		handler: opts.userController.lookupUsersHandler.bind(opts.userController)
 	});
 
 
 
 	/*-------------------------------------------- USER RELATIONS --------------------------------------------*/
 	fastify.get('/friends', {
-		preHandler: fastify.authenticate,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.relationsController.fetchFriendsHandler.bind(opts.relationsController)
 	});
 	fastify.get('/blocked', {
-		preHandler: fastify.authenticate,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.relationsController.fetchBlockedHandler.bind(opts.relationsController)
 	});
 	fastify.get('/friends/requests/incoming', {
-		preHandler: fastify.authenticate,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.relationsController.fetchIncomingFriendRequestsHandler.bind(opts.relationsController)
 	});
 	fastify.get('/friends/requests/outgoing', {
-		preHandler: fastify.authenticate,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.relationsController.fetchOutgoingFriendRequestsHandler.bind(opts.relationsController)
 	});
 
 	fastify.post('/:targetUserId/friends/requests', {
-		schema: relationsRequestSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.relations.actions,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.relationsController.sendFriendRequestHandler.bind(opts.relationsController)
 	});
 	fastify.delete('/:targetUserId/friends/requests', {
-		schema: relationsRequestSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.relations.actions,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.relationsController.cancelFriendRequestHandler.bind(opts.relationsController)
 	});
 	fastify.put('/:targetUserId/friends/accept', {
-		schema: relationsRequestSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.relations.actions,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.relationsController.acceptFriendRequestHandler.bind(opts.relationsController)
 	});
 	fastify.put('/:targetUserId/friends/reject', {
-		schema: relationsRequestSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.relations.actions,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.relationsController.rejectFriendRequestHandler.bind(opts.relationsController)
 	});
 	fastify.delete('/:targetUserId/friends', {
-		schema: relationsRequestSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.relations.actions,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.relationsController.unfriendHandler.bind(opts.relationsController)
 	});
 	fastify.post('/:targetUserId/block', {
-		schema: relationsRequestSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.relations.actions,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.relationsController.blockUserHandler.bind(opts.relationsController)
 	});
 	fastify.delete('/:targetUserId/block', {
-		schema: relationsRequestSchema,
-		preHandler: fastify.authenticate,
+		schema: schemas.relations.actions,
+		preHandler: fastify.accessTokenAuth,
 		handler: opts.relationsController.unblockUserHandler.bind(opts.relationsController)
 	});
 
 	/*-------------------------------------------- EXTERNAL ENDPOINTS --------------------------------------------*/
 	fastify.post('/matches', {
-		schema: {
-			body: {
-				type: 'object',
-				required: [
-					'player_home_score',
-					'player_away_score',
-					'game_type',
-					'player_home_id',
-					'player_away_id',
-					'started_at',
-					'finished_at'
-				],
-				properties: {
-					player_home_score: { type: 'number' },
-					player_away_score: { type: 'number' },
-					player_home_id: { type: 'number' },
-					player_away_id: { type: 'number' },
-					started_at: { type: 'number' },
-					finished_at: { type: 'number' },
-					game_type: { type: 'string', enum: ['XO', 'PONG'] }
-				},
-				additionalProperties: false
-			}
-		},
+		schema: schemas.matches.internal.create,
+		preHandler: fastify.apiKeyAuth,
 		handler: opts.matchesController.createGameHandler.bind(opts.matchesController)
 	});
 }

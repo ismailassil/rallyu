@@ -110,20 +110,26 @@ class StatsService {
 			XP_P1,
 			XP_GAIN_P1
 		);
+		const UPDATE_CURRENT_STREAK_P1 = (SCORE_P1 > SCORE_P2) ? STATS_P1.current_streak + 1 : (SCORE_P1 < SCORE_P2) ? 0 : STATS_P1.current_streak;
 
 		const UPDATE_P2 = this.calculateXPLevelUpdate(
 			XP_P2,
 			XP_GAIN_P2
 		);
+		const UPDATE_CURRENT_STREAK_P2 = (SCORE_P2 > SCORE_P1) ? STATS_P2.current_streak + 1 : (SCORE_P2 < SCORE_P1) ? 0 : STATS_P2.current_streak;
 
 		await this.statsRepository.update(STATS_P1.id, {
 			level: UPDATE_P1.newLevel,
-			total_xp: UPDATE_P1.newXP
+			total_xp: UPDATE_P1.newXP,
+			current_streak: UPDATE_CURRENT_STREAK_P1,
+			longest_streak: Math.max(STATS_P1.longest_streak, UPDATE_CURRENT_STREAK_P1)
 		});
 
 		await this.statsRepository.update(STATS_P2.id, {
 			level: UPDATE_P2.newLevel,
-			total_xp: UPDATE_P2.newXP
+			total_xp: UPDATE_P2.newXP,
+			current_streak: UPDATE_CURRENT_STREAK_P2,
+			longest_streak: Math.max(STATS_P2.longest_streak, UPDATE_CURRENT_STREAK_P2)
 		});
 
 		return { UPDATE_P1, UPDATE_P2 };

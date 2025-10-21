@@ -6,6 +6,7 @@ export async function handleUserRequests(msg: any, userService: UserService, rel
 	const jsonC = JSONCodec();
 	const data = jsonC.decode(msg.data) as any;
 
+	console.log(`[NATS] Received a message on [${msg.subject}] subject`);
 	switch (msg.subject) {
 		case 'user.username': {
 			const targetUser = await userService.getUserById(data.user_id);
@@ -25,5 +26,5 @@ export async function handleUserRequests(msg: any, userService: UserService, rel
 		default:
 			break ;
 	}
-	console.log(`[NATS] Received a message on [${msg.subject}] subject`);
+	console.log(`[NATS] Replied to message on [${msg.subject}] subject`);
 }

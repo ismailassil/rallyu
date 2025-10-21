@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN npm install
-RUN npm install concurrently typescript nodemon -g
+RUN npm install concurrently typescript nodemon pm2 -g
 
 COPY . .
 

@@ -55,7 +55,7 @@ services:
     restart: always
     volumes:
       - ./ms-auth/src/database/database.db:/app/src/database/database.db
-      - ./ms-auth/uploads/avatars/:/app/uploads/avatars/
+      - ./ms-auth/uploads:/app/uploads
     networks:
       - backend
     env_file:
@@ -67,7 +67,8 @@ services:
           action: sync
           target: /app
           ignore:
-            - node_modules/
+            - ./ms-auth/node_modules/
+            - ./ms-auth/src/database/database.db
         - path: ./ms-auth/package.json
           action: rebuild
 
@@ -125,7 +126,8 @@ services:
           action: sync
           target: /app
           ignore:
-            - node_modules/
+            - ./ms-chat/node_modules/
+            - ./ms-chat/database/
 
   ms-tournament:
     build:
@@ -145,7 +147,7 @@ services:
           action: sync
           target: /app/src
           ignore:
-            - node_modules/
+            - ./ms-tournament/node_modules/
         - path: ./ms-tournament/src/package.json
           action: rebuild
 
@@ -170,7 +172,7 @@ services:
           action: sync
           target: /app
           ignore:
-            - node_modules/
+            - ./ms-matchmaking/node_modules/
         - path: ./ms-matchmaking/package.json
           action: rebuild
 
@@ -195,7 +197,7 @@ services:
           action: sync
           target: /app
           ignore:
-            - node_modules/
+            - ./ms-game/node_modules/
         - path: ./ms-game/package.json
           action: rebuild
 

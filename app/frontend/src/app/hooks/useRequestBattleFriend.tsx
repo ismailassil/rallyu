@@ -3,14 +3,15 @@ import { useAuth } from "../(onsite)/contexts/AuthContext";
 let timer: NodeJS.Timeout | undefined;
 
 const useRequestBattleFriend = function () {
-    const { isBusy, setIsBusy } = useAuth();
+    const { isBusy, setIsBusy, socket } = useAuth();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const requestBattleFriend = function (event: any) {
+    const requestBattleFriend = function (event: any, targetId: number | undefined, gameType: "pingpong" | "tictactoe") {
 		event.preventDefault();
-		if (isBusy)
+		if (isBusy || typeof targetId !== 'number')
 			return ;
 	
+		socket.createGame(targetId, gameType);
 		setIsBusy(true);
 		clearTimeout(timer);
 		timer = setTimeout(() => {

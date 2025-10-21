@@ -6,6 +6,7 @@ import { useHeaderContext } from "./context/HeaderContext";
 import { useAuth } from "../../contexts/AuthContext";
 import Avatar from "../../users/components/Avatar";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface SearchByUsernameResult {
 	id: number;
@@ -18,6 +19,7 @@ export default function Search() {
 	const [search, setSearch] = useState<string>("");
 	const div1Ref = useRef<HTMLDivElement>(null);
 	const div2Ref = useRef<HTMLDivElement>(null);
+	const t = useTranslations('header.search');
 
 	const [results, setResults] = useState<SearchByUsernameResult[]>([]);
 
@@ -66,18 +68,17 @@ export default function Search() {
 			return;
 		}
 
-		async function fetchUsersByUsername() {
+		async function fetchUsersByQuery() {
 			try {
-				const data = await apiClient.searchUsersByUsername(search);
+				const data = await apiClient.user.searchUsersByQuery(search);
 				setResults(data);
 			} catch {
 				setResults([]);
 			}
 		}
 
-		fetchUsersByUsername();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [search]);
+		fetchUsersByQuery();
+	}, [apiClient.user, search]);
 
 	return (
 		<>
@@ -129,7 +130,7 @@ export default function Search() {
 									type="text"
 									className="focus:ring-main/80 h-16 w-full rounded-md pr-20 pl-16 outline-none focus:ring-2"
 									autoComplete="off"
-									placeholder="Start Searching..."
+									placeholder={t("placeholder")}
 									value={search}
 									onChange={(e) => {
 										setSearch(e.target.value);
@@ -139,7 +140,7 @@ export default function Search() {
 									onClick={() => setSearch("")}
 									className="hover:text-main-ring-hover/70 absolute top-[19px] right-6 hover:cursor-pointer hover:underline"
 								>
-									Clear
+									{t("clear")}
 								</p>
 							</div>
 							<div
@@ -149,21 +150,21 @@ export default function Search() {
 								<ul>
 									{results.map((elem) => {
 										return (
-											<Link
-												href={`/users/${elem.username}`}
-												onClick={() => {
-													setIsSearch(false);
-													setSearch("");
-												}}
-												key={elem.username}
-												className="border-b-br-card hover:bg-hbg/30 flex h-17 w-full items-center gap-4 border-b-1 pl-10 hover:cursor-pointer"
-											>
-												<Avatar
-													avatar={elem.avatar_url}
-													className="h-10 w-10 rounded-full border-2 border-white/20"
-												/>
-												<p>{elem.username}</p>
-											</Link>
+												<Link
+													href={`/users/${elem.username}`}
+													onClick={() => {setIsSearch(false); setSearch("");}}
+													key={elem.username}
+													className="w-full h-17 flex items-center gap-4 border-b-1
+														border-b-br-card pl-10 hover:bg-hbg/30 hover:cursor-pointer
+														"
+												>
+													<Avatar
+														avatar={elem.avatar_url}
+														className="rounded-full h-10 w-10 border-2 border-white/20"
+													/>
+													{/* <Image src={`http://localhost:4025/api${elem.avatar_url}`} alt="Command Logo" width={42} height={42} className="rounded-full border-2 border-white/20"/> */}
+													<p>{elem.username}</p>
+												</Link>
 										);
 									})}
 								</ul>
@@ -175,7 +176,7 @@ export default function Search() {
 											width={120}
 											alt="Sad Image"
 										/>
-										<p className="text-gray-400">Help yourself...</p>
+										<p className="text-gray-400">{t("ide")}</p>
 									</div>
 								)}
 							</div>

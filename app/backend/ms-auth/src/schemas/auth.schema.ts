@@ -1,214 +1,256 @@
-/* ---------------- Body Schemas ---------------- */
+const register = {
+	body: {
+		type: 'object',
+		properties: {
+			first_name: { type: 'string' },
+			last_name: { type: 'string' },
+			username: { type: 'string' },
+			email: { type: 'string' },
+			password: { type: 'string' }
+		},
+		required: ['first_name', 'last_name', 'username', 'email', 'password'],
+		additionalProperties: false
+	}
+}
 
-// Local Auth
-const authRegisterBody = {
-	type: 'object',
-	properties: {
-		first_name: { type: 'string' },
-		last_name: { type: 'string' },
-		username: { type: 'string' },
-		email: { type: 'string' },
-		password: { type: 'string' }
+const login = {
+	body: {
+		type: 'object',
+		properties: {
+			username: { type: 'string' },
+			password: { type: 'string' }
+		},
+		required: ['username', 'password'],
+		additionalProperties: false
+	}
+}
+
+const login2faselect = {
+	body: {
+		type: 'object',
+		properties: {
+			token: { type: 'string' },
+			method: { type: 'string', enum: ['EMAIL', 'SMS', 'TOTP'] }
+		},
+		required: ['token', 'method'],
+		additionalProperties: false
+	}
+}
+
+const login2faverify = {
+	body: {
+		type: 'object',
+		properties: {
+			token: { type: 'string' },
+			code: { type: 'string' }
+		},
+		required: ['token', 'code'],
+		additionalProperties: false
+	}
+}
+
+const login2faresend = {
+	body: {
+		type: 'object',
+		properties: {
+			token: { type: 'string' }
+		},
+		required: ['token'],
+		additionalProperties: false
+	}
+}
+
+const _2faenabledpost = {
+	params: {
+		type: 'object',
+		properties: {
+			method: { type: 'string', enum: ['EMAIL', 'SMS'] }
+		},
+		required: ['method'],
+		additionalProperties: false
+	}
+}
+
+const _2faenableddelete = {
+	params: {
+		type: 'object',
+		properties: {
+			method: { type: 'string', enum: ['EMAIL', 'SMS', 'TOTP'] }
+		},
+		required: ['method'],
+		additionalProperties: false
+	}
+}
+
+const _2fasetuptotp = {}
+const _2fasetuptotpverify = {
+	body: {
+		type: 'object',
+		properties: {
+			token: { type: 'string' },
+			code: { type: 'string' }
+		},
+		required: ['token', 'code'],
+		additionalProperties: false
+	}
+}
+
+const changepassword = {
+	body: {
+		type: 'object',
+		properties: {
+			oldPassword: { type: 'string' },
+			newPassword: { type: 'string' }
+		},
+		required: ['oldPassword', 'newPassword'],
+		additionalProperties: false
+	}
+}
+
+const resetpassword = {
+	body: {
+		type: 'object',
+		properties: {
+			email: { type: 'string' }
+		},
+		required: ['email'],
+		additionalProperties: false
+	}
+}
+
+const resetpasswordverify = {
+	body: {
+		type: 'object',
+		properties: {
+			token: { type: 'string' },
+			code: { type: 'string' }
+		},
+		required: ['token', 'code'],
+		additionalProperties: false
+	}
+}
+
+const resetpasswordresend = {
+	body: {
+		type: 'object',
+		properties: {
+			token: { type: 'string' }
+		},
+		required: ['token'],
+		additionalProperties: false
+	}
+}
+
+const resetpasswordupdate = {
+	body: {
+		type: 'object',
+		properties: {
+			token: { type: 'string' }
+		},
+		required: ['token'],
+		additionalProperties: false
+	}
+}
+
+const sessioniddelete = {
+	params: {
+		type: 'object',
+		properties: {
+			session_id: { type: 'string' }
+		},
+		required: ['session_id'],
+		additionalProperties: false
+	}
+}
+
+const verifycontact = {
+	params: {
+		type: 'object',
+		properties: {
+			contact: { type: 'string', enum: ['email', 'phone'] }
+		},
+		required: ['contact'],
+		additionalProperties: false
+	}
+}
+
+const verifycontactverify = {
+	params: {
+		type: 'object',
+		properties: {
+			contact: { type: 'string', enum: ['email', 'phone'] }
+		},
+		required: ['contact'],
+		additionalProperties: false
 	},
-	required: ['first_name', 'last_name', 'username', 'email', 'password'],
-	additionalProperties: false
-};
+	body: {
+		type: 'object',
+		properties: {
+			token: { type: 'string' },
+			code: { type: 'string' }
+		},
+		required: ['token', 'code'],
+		additionalProperties: false
+	}
+}
 
-const authLoginBody = {
-	type: 'object',
-	properties: {
-		username: { type: 'string' },
-		password: { type: 'string' }
+const verifycontactresend = {
+	params: {
+		type: 'object',
+		properties: {
+			contact: { type: 'string', enum: ['email', 'phone'] }
+		},
+		required: ['contact'],
+		additionalProperties: false
 	},
-	required: ['username', 'password'],
-	additionalProperties: false
-};
+	body: {
+		type: 'object',
+		properties: {
+			token: { type: 'string' }
+		},
+		required: ['token'],
+		additionalProperties: false
+	}
+}
 
 
-// const authLogoutBody = {
-// 	type: 'object',
-// 	properties: {
-// 		access_token: { type: 'string' } // access token to blacklist
-// 	},
-// 	required: ['access_token'],
-// 	additionalProperties: false
-// }
-
-// 2FA login challenge
-const auth2FALoginChallengeBody = {
-	type: 'object',
-	properties: {
-		token: { type: 'string' },
-		method: {
-			type: 'string',
-			enum: ['EMAIL', 'SMS', 'TOTP']
+export const authRoutesSchemas = {
+	core: {
+		register: register,
+		login: login,
+	},
+	twoFactor: {
+		login: {
+			select: login2faselect,
+			verify: login2faverify,
+			resend: login2faresend
+		},
+		setup: {
+			totp: {
+				request: _2fasetuptotp,
+				verify: _2fasetuptotpverify
+			}
+		},
+		manage: {
+			enable: _2faenabledpost,
+			disable: _2faenableddelete
 		}
 	},
-	required: ['token', 'method'],
-	additionalProperties: false
-};
-
-const auth2FALoginChallengeVerifyCodeBody = {
-	type: 'object',
-	properties: {
-		token: { type: 'string' },
-		code: { type: 'string' }
-	},
-	required: ['token', 'code'],
-	additionalProperties: false
-};
-
-// const authBearerHeader = {
-// 	type: 'object',
-// 	properties: {
-// 		authorization: { type: 'string' }
-// 	},
-// 	required: ['authorization']
-// };
-
-// const authOAuthQueryString = {
-// 	type: 'object',
-// 	properties: {
-// 		code: { type: 'string' }
-// 	},
-// 	required: ['code']
-// };
-
-// 2FA management
-const auth2FAMethodInQuery = {
-	type: 'object',
-	properties: {
-		method: {
-			type: 'string',
-			enum: ['EMAIL', 'SMS', 'TOTP']
+	password: {
+		change: changepassword,
+		reset: {
+			request: resetpassword,
+			verify: resetpasswordverify,
+			resend: resetpasswordresend,
+			update: resetpasswordupdate
 		}
 	},
-	required: ['method']
-};
-const auth2FAMethodInParams = {
-	type: 'object',
-	properties: {
-		method: {
-			type: 'string',
-			enum: ['EMAIL', 'SMS', 'TOTP']
-		}
+	session: {
+		delete: sessioniddelete
 	},
-	required: ['method']
+	verifyContact: {
+		request: verifycontact,
+		verify: verifycontactverify,
+		resend: verifycontactresend
+	}
 };
-
-const authChallengeTokenInBody = {
-	type: 'object',
-	properties: {
-		token: {
-			type: 'string'
-		}
-	},
-	required: ['token']
-};
-
-const authVerifyChallengeBody = {
-	type: 'object',
-	properties: {
-		token: { type: 'string'},
-		code: { type: 'string' }
-	},
-	required: ['token', 'code'],
-	additionalProperties: false
-};
-
-// Password management
-const authResetPasswordBody = {
-	type: 'object',
-	properties: {
-		email: { type: 'string' }
-	},
-	required: ['email'],
-	additionalProperties: false
-};
-
-const authResetPasswordUpdateBody = {
-	type: 'object',
-	properties: {
-		token: { type: 'string' },
-		newPassword: { type: 'string' }
-	},
-	required: ['token', 'newPassword'],
-	additionalProperties: false
-};
-
-const authChangePasswordBody = {
-	type: 'object',
-	properties: {
-		oldPassword: { type: 'string' },
-		newPassword: { type: 'string' }
-	},
-	required: ['oldPassword', 'newPassword'],
-	additionalProperties: false
-};
-
-
-// Verify email/phone
-
-
-
-/* ---------------- Querystring Schemas ---------------- */
-
-const authOAuthQueryString = {
-	type: 'object',
-	properties: {
-		code: { type: 'string' }
-	},
-	required: ['code']
-};
-
-export const authRegisterSchema = {
-	body: authRegisterBody
-};
-
-export const authLoginSchema = {
-	body: authLoginBody
-};
-
-export const auth2FALoginChallengeSchema = {
-	body: auth2FALoginChallengeBody
-};
-
-export const auth2FALoginChallengeVerifyCodeSchema = {
-	body: auth2FALoginChallengeVerifyCodeBody
-};
-
-export const authChangePasswordSchema = {
-	body: authChangePasswordBody
-};
-
-export const authOAuthSchema = {
-	querystring: authOAuthQueryString
-}
-
-export const auth2FASetupSchema = {
-	querystring: auth2FAMethodInQuery
-}
-
-export const auth2FADisableSchema = {
-	params: auth2FAMethodInParams
-}
-
-export const auth2FAVerifySchema = {
-	body: authVerifyChallengeBody
-}
-
-export const authResetPasswordSchema = {
-	body: authResetPasswordBody
-}
-
-export const authResetPasswordVerifySchema = {
-	body: authVerifyChallengeBody
-}
-
-export const authResetPasswordUpdateSchema = {
-	body: authResetPasswordUpdateBody
-}
-
-export const authChallengeResendSchema = {
-	body: authChallengeTokenInBody
-}

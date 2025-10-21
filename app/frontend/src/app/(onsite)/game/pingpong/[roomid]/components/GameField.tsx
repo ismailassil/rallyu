@@ -3,7 +3,7 @@ import Overlay from "./Overlay";
 import Pong from "../../src/Pong";
 import VersusCard from "@/app/(onsite)/game/components/Items/VersusCard";
 import LoadingComponent from "@/app/(auth)/components/UI/LoadingComponents";
-import RoomNotFound from "../../../utils/RoomNotFound";
+import RoomNotFound from "../../../components/Items/RoomNotFound";
 import { useParams } from "next/navigation";
 import SocketProxy from "../../../utils/socketProxy";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
@@ -35,6 +35,7 @@ const GameField = () => {
 				const res = await apiClient.fetchGameRoomStatus(roomid);
 
 				if (!isMounted) return;
+                console.log('%cResult: ', 'color: red; font-size: 20px', res);
 
 				setOpponentId(res.players.find(p => p.ID !== loggedInUser!.id)?.ID);
 				setIsLoading(false);
@@ -44,7 +45,7 @@ const GameField = () => {
 				
 				setIsLoading(false);
 				setNotFound(true);
-				console.log(`Game Service: ${err}`);
+				console.log('Game Service: ', err);
 			}
 		})()
 		
@@ -52,14 +53,6 @@ const GameField = () => {
             if (disconnect) disconnect();
         }
 	}, [])
-
-    const forfeitGame = () => {
-        pong.current.forfeit();
-
-        // if (pong.current.gamePlayStatus !== 'gameover' && pong.current.gamePlayStatus !== 'countdown')
-        //     setPause(!pause);
-    }
-
 
 	return (
         <div className="flex min-h-0 w-full px-10 flex-1 flex-col items-center justify-center">
@@ -72,7 +65,7 @@ const GameField = () => {
                     <VersusCard
                         opponentId={opponentId}
                         timeLeft={timeLeft}
-                        handleResign={forfeitGame}
+                        handleResign={() => pong.current.forfeit()}
                         disconnect={oppdisconnect}
                         resignSwitch={overlayStatus === 'gameover' ? false : true}
                     />

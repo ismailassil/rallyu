@@ -13,7 +13,7 @@ class SocketProxy {
 			const data = JSON.parse(message);
 			this.subscribers.forEach(sub => sub(data));
 		} catch (e) {
-			console.error("Unable to parse Data from WebSocket: ", message);
+			console.log("Unable to parse Data from WebSocket: ", message);
 		}
 	}
 
@@ -49,7 +49,7 @@ class SocketProxy {
 	}
 
 	public disconnect(): void {
-		console.log('Disconnect Called');
+		console.log('%cSocketProxy Disconnect Called', 'color: lime; font-size: 16px');
 		this.socket?.close(1000, "Normal");
 		this.socket = null;
 	}

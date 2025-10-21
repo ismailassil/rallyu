@@ -17,9 +17,9 @@ export function LoadingPage() {
 	);
 }
 
-export function EmptyComponent({ content } : { content: string }) {
+export function PlaceholderComponent({ content } : { content: string }) {
 	return (
-		<div className='min-h-24 h-full w-full flex justify-center items-center text-white/75'>
+		<div className='h-full w-full flex justify-center items-center text-white/75 text-center'>
 			<p>{content}</p>
 		</div>
 	);

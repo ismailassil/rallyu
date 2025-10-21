@@ -1,4 +1,4 @@
-import OTPCodeInput from "@/app/(onsite)/[DEPRECATED]2fa/components/OTPCodeInput";
+import OTPCodeInput from '../../Form/OTPCodeInput';
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useRef, useState } from "react";
 import FormButton from "../../UI/FormButton";

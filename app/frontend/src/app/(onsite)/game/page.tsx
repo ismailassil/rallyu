@@ -1,14 +1,17 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { GameProvider } from "./contexts/gameContext";
 import LobbyPanel from "./components/LobbyPanel";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import FriendsCard from "../components/Main/FriendsCard/FriendsCard";
+import LoadingComponent from "@/app/(auth)/components/UI/LoadingComponents";
 
 export default function Game() {
 	const { loggedInUser, apiClient } = useAuth();
+	const [ isLoading, setIsLoading ] = useState(true);
+	const [ protectionWall, setProtectionWall ] = useState(false);
 	const router = useRouter();
 
 	useEffect(() => {
@@ -17,9 +20,14 @@ export default function Game() {
 				if (!loggedInUser)
 					return;
 				const res = await apiClient.fetchPlayerStatus(loggedInUser.id);
+				if (res.connected) {
+					setProtectionWall(true);
+					return;
+				}
 				router.push(`/game/${res.gameType}/${res.roomId}`);
 			} catch (err) {
-				console.log(`Game Service Error: `, err);
+				setIsLoading(false);
+				console.log('Game Service Error: ', err);
 			}
 		})()
 	}, []);
@@ -31,20 +39,23 @@ export default function Game() {
 			transition={{ duration: 0.5 }}
 			className="h-[100vh] pt-30 pr-6 pb-24 pl-6 sm:pb-6 sm:pl-30"
 		>
-			<AnimatePresence mode="wait">
-				<motion.div
-					key="lobby"
-					initial={{ opacity: 0, x: -20 }}
-					animate={{ opacity: 1, x: 0 }}
-					exit={{ opacity: 0, x: 30 }}
-					transition={{ duration: 0.4 }}
-					className="flex flex-row w-full h-full gap-4"
-				>
-					<GameProvider>
+			{ isLoading ? (
+				<LoadingComponent />
+			) : (
+				<AnimatePresence mode="wait">
+					<motion.div
+						key="lobby"
+						initial={{ opacity: 0, x: -20 }}
+						animate={{ opacity: 1, x: 0 }}
+						exit={{ opacity: 0, x: 30 }}
+						transition={{ duration: 0.4 }}
+						className="flex flex-row w-full h-full gap-4"
+					>
 						<LobbyPanel />
-					</GameProvider>
-				</motion.div>
-			</AnimatePresence>
+						<FriendsCard />
+					</motion.div>
+				</AnimatePresence>
+			)}
 		</motion.main>
 	);
 }

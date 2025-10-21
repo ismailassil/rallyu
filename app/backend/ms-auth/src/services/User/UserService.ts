@@ -6,14 +6,19 @@ import fs, { createWriteStream } from 'fs';
 import { pipeline } from "stream/promises";
 import MatchesRepository from "../../repositories/MatchesRepository";
 import RelationsService from "./RelationsService";
+import CDNService from "../CDN/CDNService";
 
 class UserService {
+	private cdnService: CDNService;
+
 	constructor(
 		private userRepository: UserRepository,
 		private relationsService: RelationsService,
 		private statsService: StatsService,
 		private matchesRepository: MatchesRepository
-	) {}
+	) {
+		this.cdnService = new CDNService();
+	}
 
 	/*----------------------------------------------- GETTERS -----------------------------------------------*/
 
@@ -195,8 +200,8 @@ class UserService {
 
 	/*----------------------------------------------- SEARCH -----------------------------------------------*/
 
-	async searchUserByUsername(requesterID: number, targetUsername: string) {
-		return await this.userRepository.search(requesterID, targetUsername);
+	async searchUsersByQuery(requesterID: number, query: string) {
+		return await this.userRepository.search(requesterID, query);
 	}
 
 	/*----------------------------------------------- CHECKS -----------------------------------------------*/
@@ -214,24 +219,28 @@ class UserService {
 		if (!targetUser)
 			throw new UserNotFoundError();
 
-		const allowedMimeTypes = ['images/jpg', 'image/jpeg', 'image/png'];
-		if (!allowedMimeTypes.includes(fileData.mimetype))
-			throw new Error('File type not allowed'); // need to change it to custom error class
+		await this.userRepository.update(user_id, {
+			avatar_url: '/users/avatars/' + (await this.cdnService.storeFromMultipart(fileData)).split('/')[1]
+		});
 
-		const fileExtension = fileData.mimetype.split('/')[1];
-		const fileName = `${targetUser.username}.${fileExtension}`;
-		const uploadDir = `./uploads/avatars`;
+		// const allowedMimeTypes = ['images/jpg', 'image/jpeg', 'image/png'];
+		// if (!allowedMimeTypes.includes(fileData.mimetype))
+		// 	throw new Error('File type not allowed'); // need to change it to custom error class
 
-		if (!fs.existsSync(uploadDir))
-			fs.mkdirSync(uploadDir, { recursive: true });
+		// const fileExtension = fileData.mimetype.split('/')[1];
+		// const fileName = `${targetUser.username}.${fileExtension}`;
+		// const uploadDir = `./uploads/avatars`;
 
-		const filepath = uploadDir + '/' + fileName;
+		// if (!fs.existsSync(uploadDir))
+		// 	fs.mkdirSync(uploadDir, { recursive: true });
 
-		await pipeline(fileData.file, createWriteStream(filepath));
+		// const filepath = uploadDir + '/' + fileName;
 
-		await this.userRepository.update(targetUser.id, { avatar_url: `/users/avatars/${fileName}` });
+		// await pipeline(fileData.file, createWriteStream(filepath));
 
-		return `/users/avatars/${fileName}`;
+		// await this.userRepository.update(targetUser.id, { avatar_url: `/users/avatars/${fileName}` });
+
+		// return `/users/avatars/${fileName}`;
 
 		// try {
 		// 	await pipeline(fileData.file, createWriteStream(filepath));

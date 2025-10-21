@@ -15,16 +15,18 @@ import useIsOnline from "@/app/hooks/useIsOnline";
 
 const ConversationHeader = () => {
 	const [option, setOption] = useState(false);
-	const { setShowConversation, setSelectedUser, selectedUser, handleSendGame } = useChat();
+	const { setShowConversation, setSelectedUser, selectedUser } = useChat();
 	const route = useRouter();
-	const { apiClient } = useAuth();
+	const { apiClient, isBusy } = useAuth();
 	const [timer, setTimer] = useState<boolean>(false);
 	const requestBattleFriend = useRequestBattleFriend();
 
 	function onPlay(event: any, gameType: "pingpong" | "tictactoe") {
+		if (isBusy) return;
+
+		setOption(false);
 		setTimer(true);
-		requestBattleFriend(event);
-		handleSendGame(selectedUser?.id, gameType);
+		requestBattleFriend(event, selectedUser?.id, gameType);
 	}
 
 	// online status
@@ -66,22 +68,23 @@ const ConversationHeader = () => {
 				</div>
 			</div>
 			<div className="relative my-auto ml-auto flex h-8 gap-4">
-				<div
-					className={`flex h-10 w-10 scale-100 cursor-pointer items-center overflow-hidden rounded-full border border-white/5 bg-white/4 p-[9px] transition-all duration-500 ease-in-out hover:w-20 hover:bg-white/8 active:scale-105`}
-					onMouseEnter={() => setOption(true)}
+				<button
+					className={`${isBusy ? "cursor-not-allowed" : "cursor-pointer hover:w-20"} flex h-10 w-10 scale-100 items-center overflow-hidden rounded-full border border-white/5 bg-white/4 p-[9px] transition-all duration-500 ease-in-out hover:bg-white/8 active:scale-105`}
+					onMouseEnter={() => !isBusy && setOption(true)}
 					onMouseLeave={() => setOption(false)}
+					disabled={isBusy}
 				>
 					<Swords className={`${option ? `hidden` : ``}`} />
 					{option && (
-						<div className="flex w-full items-center justify-around gap-1 *:hover:scale-120 *:duration-500">
+						<div className="flex w-full items-center justify-around gap-1 *:duration-500 *:hover:scale-120">
 							<Image
 								width={16}
 								height={16}
 								alt="XO icon"
-								className="filter brightness-0 invert"
+								className="brightness-0 invert filter"
 								src={`/design/tictactoe.svg`}
 								onClick={(e) => onPlay(e, "tictactoe")}
-								/>
+							/>
 							<Image
 								width={18}
 								height={18}
@@ -93,15 +96,15 @@ const ConversationHeader = () => {
 					)}
 					{timer && (
 						<motion.div
-							className="bg-accent absolute bottom-0 left-0 -z-1 h-1 w-full"
+							className="bg-accent absolute top-0 left-0 -z-1 size-full"
 							animate={{ width: 0 }}
-							transition={{ duration: 10.5 }}
+							transition={{ duration: 10 }}
 							onAnimationComplete={() => {
 								setTimer(false);
 							}}
 						/>
 					)}
-				</div>
+				</button>
 
 				<Link
 					href={`/chat`}

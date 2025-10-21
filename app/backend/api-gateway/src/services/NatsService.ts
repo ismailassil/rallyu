@@ -18,6 +18,7 @@ import chalk from 'chalk';
 import type { FastifyInstance } from 'fastify';
 import handleChatMsg from '../handlers/chat_events.js';
 import { handleOutgoingNotification } from '@/handlers/notification_events.js';
+import { handleUserEvents } from '@/handlers/user_events.js';
 
 class NatsService {
 	private nc!: NatsConnection;
@@ -153,12 +154,14 @@ class NatsService {
 		const iter = await this.consumer.consume();
 
 		for await (const m of iter) {
-			this.fastify.log.info('SOMEONE SENT A MSG TO GATEWAY');
+			this.fastify.log.info('[NATS] SOMEONE SENT A MSG TO GATEWAY');
 			this.fastify.log.info(m.subject);
 			if (m.subject.includes('chat')) {
 				handleChatMsg(m);
 			} else if (m.subject.includes('notification')) {
 				handleOutgoingNotification(m);
+			} else if (m.subject.startsWith('gateway.user')) {
+				handleUserEvents(m);
 			}
 			m.ack();
 		}

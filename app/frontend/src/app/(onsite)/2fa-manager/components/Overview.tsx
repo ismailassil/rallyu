@@ -16,7 +16,7 @@ interface OverviewProps {
 }
 
 export default function Overview({ onSetup }: OverviewProps) {
-	const t = useTranslations('auth');
+	const t = useTranslations('');
 
 	const {
 		loggedInUser,

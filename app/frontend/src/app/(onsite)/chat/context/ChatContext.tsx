@@ -18,7 +18,6 @@ type ChatContextType = {
 	setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
 	selectedUser: LoggedUser | null;
 	setSelectedUser: React.Dispatch<React.SetStateAction<LoggedUser | null>>;
-	handleSendGame: (targetId: number | undefined, gameType: "pingpong" | "tictactoe") => Promise<void>;
 }
 
 const ChatContext = createContext<ChatContextType | null>(null);
@@ -56,6 +55,11 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 		}
 		getAllFriends();
 	}, [showConversation, selectedUser, apiClient]);
+
+	useEffect(() => {
+		socket.updateContext("chat");
+	}, [socket]);
+	
 
 	const playMessageSound = () => {
 		const audio = new Audio("/message.mp3");
@@ -96,11 +100,6 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const handleSendGame = async (targetId: number | undefined, gameType: "pingpong" | "tictactoe") => {
-		if (targetId === undefined) return;
-		socket.createGame(targetId, gameType);
-	};
-
 	return (
 		<ChatContext.Provider value={{
 			showConversation,
@@ -115,7 +114,6 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			setMessages,
 			selectedUser,
 			setSelectedUser,
-			handleSendGame,
 		}}>
 			{children}
 		</ChatContext.Provider>
