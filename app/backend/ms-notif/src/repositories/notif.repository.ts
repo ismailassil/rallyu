@@ -223,12 +223,12 @@ class NotifRepository {
 			throw error;
 		}
 	}
-	
+
 	async removeAllNotif(receiverId: number, type: NOTIFICATION_TYPE) {
 		try {
 			const stmt = fastify.database.prepare(`
 				DELETE FROM messages WHERE receiver_id = ? AND type = ?
-			`)
+			`);
 
 			const res = stmt.run(receiverId, type);
 
@@ -259,6 +259,20 @@ class NotifRepository {
 			}
 		} catch (error) {
 			fastify.log.error(error);
+			throw error;
+		}
+	}
+
+	async removeRelatedMessages(senderId: number, receiverId: number, type: NOTIFICATION_TYPE) {
+		try {
+			const stmt = fastify.database.prepare(`
+				DELETE FROM messages 
+				WHERE receiver_id = ? AND sender_id = ? AND type = ?
+			`);
+
+			stmt.run(receiverId, senderId, type);
+		} catch (error) {
+			fastify.log.error("DB ERROR: " + error);
 			throw error;
 		}
 	}

@@ -106,7 +106,7 @@ export default function Profile() {
 								width={30}
 								height={30}
 							/>
-							<p className="ml-5">{t('logout')}</p>
+							<p className="ml-5 text-nowrap">{t('logout')}</p>
 						</div>
 					</motion.div>
 				)}

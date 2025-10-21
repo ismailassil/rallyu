@@ -17,7 +17,6 @@ interface Props {
 	handler: () => void;
 }
 
-// TODO | after read and certain time, return the state to `finished`
 const Chat = ({ state, receiverId, message, username, handler }: Props) => {
 	const [showInput, setShowInput] = useState(false);
 	const [text, setText] = useState("");

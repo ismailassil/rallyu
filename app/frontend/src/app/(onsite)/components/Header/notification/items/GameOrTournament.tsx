@@ -13,10 +13,11 @@ interface Props {
 
 const GameOrTournament = ({ handleAccept, handleDecline, type }: Props) => {
 	const t = useTranslations("states");
+	const Type = type === 'pp_game' || type === 'xo_game' ? "game" : "tournament";
 
 	return (
 		<div className="ml-10 flex gap-2">
-			<FilledButton onClick={handleAccept}>{t("join", { type })}</FilledButton>
+			<FilledButton onClick={handleAccept}>{t("join", { type: Type })}</FilledButton>
 			<OutlineButton onClick={handleDecline}>
 				<XIcon size={16} />
 			</OutlineButton>

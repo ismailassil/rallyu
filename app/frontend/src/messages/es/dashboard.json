@@ -390,6 +390,7 @@
       "bio": "Biografía",
       "max_resends": "Has alcanzado el límite de reenvíos",
       "retry": "¿Reintentar?",
+      "language": "Idioma",
       "didnt_receive_code": "¿No recibiste el código?",
       "resend_code": "Reenviar código",
       "resend_in": "Reenviar en",
@@ -559,13 +560,19 @@
         "subtitle": "Tienes {count, plural, =0 {ninguna notificación nueva} =1 {# notificación} other {# notificaciones}}"
       },
       "box": {
-        "no_payload": "Sin notificaciones actuales",
+        "no_payload": "No hay notificaciones actuales",
         "description": {
-          "game": "¡te ha desafiado a un juego!",
-          "friend_request": "¡te ha enviado una solicitud de amistad!",
-          "chat": "te ha enviado un mensaje.",
-          "tournament": "¡te ha invitado a comenzar un torneo!",
-          "status": ""
+          "chat": "te envió un mensaje.",
+          "game": "te desafió a un juego!",
+          "pp_game": "te desafió a un juego de Pong!",
+          "xo_game": "te desafió a un juego de Tic-Tac-Toe!",
+          "friend_request": "te envió una solicitud de amistad!",
+          "tournament": "te invitó a un torneo!",
+          "friend_accept": "aceptó tu solicitud de amistad!",
+          "friend_reject": "rechazó tu solicitud de amistad.",
+          "friend_cancel": "canceló tu solicitud de amistad.",
+          "game_accept": "aceptó tu desafío de juego!",
+          "game_reject": "rechazó tu desafío de juego."
         }
       },
       "footer": {
@@ -579,6 +586,6 @@
     "decline": "Rechazar",
     "reply": "Responder",
     "clear": "borrar",
-    "join": "Unirse al {type, select, Game {juego}, Tournament {torneo}}"
+    "join": "Unirse al {type, select, game {juego} tournament {torneo} other {juego}}"
   }
 }

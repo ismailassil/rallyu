@@ -132,7 +132,7 @@ export default function SnapshotCard() {
 				</div>
 				)}
 
-				<div className="px-6 flex flex-col gap-4">
+				<div className="px-6 flex flex-col gap-3">
 					{currentRecord && (
 					<div className="profile-inner-stat-card-animated flex-1 relative">
 						<FullWidthStatDisplay stat={currentRecord} direction="left" />

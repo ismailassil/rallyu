@@ -6,7 +6,7 @@ export default function MainCardWithHeader({ children, className, headerName } :
 	// const divColor = color ? `bg-${color}` : 'bg-white';
 
 	return (
-		<MainCardWrapper className={`${className || ''} min-h-130 max-h-full overflow-x-hidden`}>
+		<MainCardWrapper className={`${className || ''} min-h-130 overflow-x-hidden`}>
 			<div className="flex h-full flex-col">
 				{/* Header */}
 				<div className='group relative py-10 px-13 select-none *:transition-all *:duration-500 *:ease-in-out'>

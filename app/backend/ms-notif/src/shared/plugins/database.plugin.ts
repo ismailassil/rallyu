@@ -13,6 +13,7 @@ const databasePath = path.join(__dirname, '../../../database/database.sqlite');
 const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 	const db = new Database(databasePath, {
 		verbose: (sql) => fastify.log.info(chalk.yellowBright(`[SQL] ${sql}`)),
+		readonly: false
 	});
 
 	const createTable = `
@@ -42,6 +43,7 @@ const databasePlugin = fastifyPlugin(async (fastify: FastifyInstance) => {
 			state TEXT CHECK(state IN ('pending', 'finished')) DEFAULT 'pending',
 			action_url TEXT
 		);
+
 
 		CREATE TRIGGER IF NOT EXISTS trg_messages_update_timestamp
 		AFTER UPDATE OF status ON messages

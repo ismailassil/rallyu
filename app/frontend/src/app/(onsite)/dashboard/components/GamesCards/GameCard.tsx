@@ -12,6 +12,7 @@ interface GameCardProps {
 	subtextClass: string;
 	transform?: string;
 	opacity?: string;
+	onClick?: () => void
 }
 
 export default function GameCard({
@@ -25,6 +26,7 @@ export default function GameCard({
 	subtextClass,
 	transform = 'scale(1.2)',
 	opacity = '0.3',
+	onClick
 }: GameCardProps) {
 	return (
 		<div
@@ -32,6 +34,7 @@ export default function GameCard({
 					md:min-h-[290px] transform cursor-pointer items-center w-full
 					overflow-hidden transition-transform
 					duration-500 md:items-start md:justify-center"
+					onClick={onClick}
 		>
 			{isBackground && (
 				<div

@@ -9,6 +9,7 @@ import Image from "next/image";
 import useRequestBattleFriend from "@/app/hooks/useRequestBattleFriend";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 
 interface FriendsCardItemProps {
 	id: number;
@@ -18,11 +19,14 @@ interface FriendsCardItemProps {
 
 export default function FriendsCardItem({ id, username, avatar }: FriendsCardItemProps) {
 	const isOnline = useIsOnline(id);
+	const { isBusy } = useAuth();
 	const t = useTranslations("common");
 	const [option, setOption] = useState(false);
 	const [timer, setTimer] = useState<boolean>(false);
 	const requestBattleFriend = useRequestBattleFriend();
 	function onPlay(event: any, gameType: "pingpong" | "tictactoe") {
+		if (isBusy) return;
+		setOption(false);
 		setTimer(true);
 		requestBattleFriend(event, id, gameType);
 	}
@@ -46,9 +50,9 @@ export default function FriendsCardItem({ id, username, avatar }: FriendsCardIte
 
 			{/* CHAT BUTTON */}
 			<div className="flex gap-3">
-				<div
-					className={`flex h-10 w-10 scale-100 cursor-pointer items-center overflow-hidden rounded-full border border-white/5 bg-white/4 p-[9px] transition-all duration-500 ease-in-out hover:w-20 hover:bg-white/8 active:scale-105`}
-					onMouseEnter={() => setOption(true)}
+				<button
+					className={`${isBusy ? "cursor-not-allowed" : "hover:w-20 cursor-pointer"} flex h-10 w-10 scale-100 items-center overflow-hidden rounded-full border border-white/5 bg-white/4 p-[9px] transition-all duration-500 ease-in-out hover:bg-white/8 active:scale-105`}
+					onMouseEnter={() => !isBusy && setOption(true)}
 					onMouseLeave={() => setOption(false)}
 				>
 					<Swords className={`${option ? `hidden` : ``}`} />
@@ -73,15 +77,15 @@ export default function FriendsCardItem({ id, username, avatar }: FriendsCardIte
 					)}
 					{timer && (
 						<motion.div
-							className="bg-accent absolute bottom-0 left-0 -z-1 h-1 w-full"
+							className="bg-accent absolute top-0 left-0 -z-1 size-full"
 							animate={{ width: 0 }}
-							transition={{ duration: 10.5 }}
+							transition={{ duration: 10 }}
 							onAnimationComplete={() => {
 								setTimer(false);
 							}}
 						/>
 					)}
-				</div>
+				</button>
 
 				<Link
 					href={`/chat/${username}`}
