@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 export default function useAPIQuery(
 	queryFn: () => Promise<any>
 ) {
+	const router = useRouter();
 	const [data, setData] = useState<any | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [isRefetching, setIsRefetching] = useState<boolean>(false);
@@ -23,8 +25,11 @@ export default function useAPIQuery(
 		} catch (err: any) {
 			const errorMessage = err?.message || 'Something went wrong';
 			setError(errorMessage);
-			err.message = errorMessage;
-			throw err;
+			if (errorMessage.includes('not found'))
+				router.replace('/404');
+			// if (err && typeof err === 'object')
+			// 	err.message = errorMessage;
+			// throw err ?? new Error(errorMessage);
 		} finally {
 			setIsLoading(false);
 			setIsRefetching(false);

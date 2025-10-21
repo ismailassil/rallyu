@@ -30,43 +30,6 @@ export default function ProfileCard({ userId, fullName, username, bio, avatar, f
 
 	const isOnline = useIsOnline(userId);
 	const showOnline = friendshipStatus === 'FRIENDS';
-	// const { loggedInUser, socket } = useAuth();
-	// const [isOnline, setIsOnline] = useState(false);
-	// const [showOnlineToggle, setShowOnlineToggle] = useState(false);
-
-	// useEffect(() => {
-
-	// 	socket.emit("is_user_online", { userId }, (err, response) => {
-	// 		console.log('isOnline reponse: ', response.isOnline);
-	// 		setIsOnline(response.isOnline);
-	// 	});
-
-	// 	socket.on('user_online', (data) => {
-	// 		console.log('[SOCKET.IO] MESSAGE RECEIVED IN USER_ONLINE: ', data);
-
-	// 		const { userId: userID } = data;
-
-	// 		if (userId == userID) {
-	// 			console.log(`[SOCKET.IO] USER ${userID} IS ONLINE`);
-	// 			setIsOnline(true);
-	// 		}
-	// 	});
-
-	// 	socket.on('user_offline', (data) => {
-	// 		console.log('[SOCKET.IO] MESSAGE RECEIVED IN USER_OFFLINE: ', data);
-
-	// 		const { userId: userID } = data;
-
-	// 		if (userId == userID) {
-	// 			console.log(`[SOCKET.IO] USER ${userID} IS OFFLINE`);
-	// 			setIsOnline(false);
-	// 		}
-	// 	});
-
-	// 	return () => {
-	// 		socket.disconnect();
-	// 	};
-	// }, []);
 
 	return (
 		<MainCardWrapper className='flex flex-col items-center gap-8
@@ -82,7 +45,6 @@ export default function ProfileCard({ userId, fullName, username, bio, avatar, f
 					<div className="flex-5 flex flex-col gap-4">
 						<div>
 							<h1 className='text-2xl lg:text-5xl text-accent font-extrabold'>
-								{/* {fullName}{(<div className={`${isOnline ? 'bg-green-500 h-3 w-3 rounded-full' : 'bg-gray-500 h-3 w-3 rounded-full'}`}></div>)} */}
 								{fullName}
 								<p className='text-lg lg:text-2xl xl:text-3xl font-semibold text-white/50'>{`(${username})`}</p>
 							</h1>
