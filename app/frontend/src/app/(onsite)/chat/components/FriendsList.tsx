@@ -5,6 +5,7 @@ import { LoggedUser } from '../types/chat.types';
 import { useChat } from '../context/ChatContext';
 import Avatar from '../../users/components/Avatar';
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
+import { useTranslations } from 'next-intl';
 
 
 const FriendsList = () => {
@@ -13,6 +14,8 @@ const FriendsList = () => {
 	const { apiClient, messages, BOSS, setShowConversation, showConversation, setSelectedUser, selectedUser, } = useChat();
 	const [displayUsers, setDisplayUsers] = useState<LoggedUser[]>([]);
 	const hasFriends = prefix ? filteredSuggestions.length > 0 : displayUsers.length > 0;
+	const t=useTranslations("chat");
+
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const input = event.target.value;
@@ -32,7 +35,7 @@ const FriendsList = () => {
 		setShowConversation(true);
 		window.history.pushState(null, "", `/chat/${user.username}`);
 	};
-	
+
 
 
 	useEffect(() => {
@@ -55,7 +58,7 @@ const FriendsList = () => {
 			return format(date, 'HH:mm');
 		}
 		if (isYesterday(date)) {
-			return 'Yesterday';
+			return t('dates.yesterday');
 		}
 		return format(date, 'dd/MM/yyyy');
 	};
@@ -63,7 +66,7 @@ const FriendsList = () => {
 	return (
 		<div className="flex size-full flex-col">
 			<div>
-				<h2 className="my-5 cursor-pointer text-4xl md:my-9">Chat</h2>
+				<h2 className="my-5 cursor-pointer text-4xl md:my-9">{t("title")}</h2>
 				<div className="relative w-full">
 					<div className="mb-6 flex w-full gap-2 rounded-full border-white/30 bg-white/8 p-2 transition-all duration-200 focus-within:bg-white/12 focus-within:ring-2 focus-within:ring-white/18">
 						<Image
@@ -76,7 +79,7 @@ const FriendsList = () => {
 							type="text"
 							value={prefix}
 							onChange={handleChange}
-							placeholder="Start Searching..."
+							placeholder={t("search")}
 							className="w-full bg-transparent placeholder-gray-400 focus:outline-none"
 						/>
 					</div>
@@ -105,7 +108,7 @@ const FriendsList = () => {
 												<div className='text-gray-400 text-xs md:text-sm truncate flex-1'>
 													{user.last_message?.text || 'No messages yet'}
 												</div>
-												{/* {user.last_message.isSeen && <div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />} */}
+												{/* {<div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />} */}
 											</div>
 										</div>
 									</div>
@@ -115,7 +118,7 @@ const FriendsList = () => {
 					</ul>
 				) : (
 					<div className="flex h-full items-center justify-center">
-						<p className="md:text text-sm text-gray-400">No friends found</p>
+						<p className="md:text text-sm text-gray-400">{t("no_friends")}</p>
 					</div>
 				)}
 			</div>

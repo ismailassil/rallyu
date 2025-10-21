@@ -1,12 +1,12 @@
 "use client"
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import React, { useState, useEffect, useRef, } from 'react'
 import Image from "next/image"
 import { useChat } from '../context/ChatContext';
-// import moment from 'moment';
 import { MessageType } from '../types/chat.types';
 import { AlertCircle } from 'lucide-react';
 import ConversationHeader from './ConversationHeader';
-import { parseISO } from 'date-fns';
+import { useTranslations } from 'next-intl';
+import { isSameDay, isToday, isYesterday, parseISO, format } from "date-fns";
 
 /*
 	==== TO FIX ===
@@ -26,11 +26,14 @@ import { parseISO } from 'date-fns';
 
 const ConversationBody = () => {
 	const [message, setMessage] = useState("");
-	const { socket, BOSS, messages, selectedUser, apiClient, setMessages } = useChat();
+	const { socket, BOSS, messages, selectedUser } = useChat();
 	const [filteredMessages, setfilteredMessages] = useState<MessageType[]>([]);
 	const messageRef = useRef<HTMLDivElement | null>(null);
+	const t=useTranslations("chat");
+
 
 	useEffect(() => {
+		setMessage("");
 		messageRef.current?.scrollIntoView({ behavior: 'auto' });
 	}, [filteredMessages]);
 
@@ -45,7 +48,6 @@ const ConversationBody = () => {
 
 		if (data !== "" && BOSS) {
 			const newMessage = {
-				id: Date.now(),
 				senderId: BOSS.id,
 				receiverId: selectedUser?.id,
 				text: data,
@@ -65,23 +67,22 @@ const ConversationBody = () => {
 		setfilteredMessages(filtered);
 	}, [messages, selectedUser?.id, BOSS?.id]);
 
-	const setDate = (currentMsg: string, prevMsg?: string): string => {
-		const currentDate = parseISO(currentMsg);
-		const prevDate = prevMsg ? moment(prevMsg) : null;
+const setDate = (currentMsg: string, prevMsg?: string): string => {
+  const currentDate = parseISO(currentMsg);
+  const prevDate = prevMsg ? parseISO(prevMsg) : null;
 
+  if (prevDate && isSameDay(currentDate, prevDate)) {
+    return "";
+  }
 
-		if (prevDate && prevDate.isSame(currentDate, "day")) {
-			return "";
-		}
-
-		if (currentDate.isSame(moment(), "day")) {
-			return "Today";
-		} else if (currentDate.isSame(moment().subtract(1, "day"), "day")) {
-			return "Yesterday";
-		} else {
-			return currentDate.format("MMMM DD, YYYY");
-		}
-	};
+  if (isToday(currentDate)) {
+    return t("dates.today");
+  } else if (isYesterday(currentDate)) {
+    return t("dates.yesterday");
+  } else {
+    return format(currentDate, "MMMM dd, yyyy");
+  }
+};
 
 	return (
 		<div className={` size-full border border-white/30 rounded-lg flex flex-col md:bg-white/4 `}>
@@ -101,7 +102,8 @@ const ConversationBody = () => {
 								className={`flex ${msg.senderId === BOSS?.id ? 'justify-end' : 'justify-start'}`}>
 								<div className={`max-w-[75%] border-white/30 border px-3 py-1.5 min-w-0 flex flex-col rounded-lg  break-words ${msg.senderId === BOSS?.id ? 'bg-blue-600/20 rounded-br-sm' : 'bg-white/10 rounded-bl-sm'}`}>
 									<span>{msg.text}</span>
-									<span className='text-xs text-white/50 self-end'>{moment.utc(msg.created_at).local().format('HH:mm')}</span>
+									{/* <span className='text-xs text-white/50 self-end'>{format(parseISO(msg.created_at), "HH:mm")}</span> */}
+									<span className='text-xs text-white/50 self-end'>{format(new Date(msg.created_at), "HH:mm")}</span>
 								</div>
 							</div>
 
@@ -118,7 +120,7 @@ const ConversationBody = () => {
 					<input
 						id='input-text'
 						type='text'
-						placeholder="Enter your message"
+						placeholder={t("input_placeholder")}
 						value={message}
 						maxLength={300}
 						onChange={(e) => setMessage(e.target.value)}
@@ -127,7 +129,7 @@ const ConversationBody = () => {
 					{message.length >= 300 &&
 						<div className=' text-red-500 text-xs flex items-center whitespace-nowrap gap-1'>
 							<AlertCircle size={12} />
-							<p>Max 300</p>
+							<p>{t("maximum")} 300</p>
 						</div>}
 					<Image
 						width={20}

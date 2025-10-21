@@ -1,0 +1,21 @@
+{
+	"chat": {
+		"title": "Chat",
+		"search": "Start Searching...",
+		"no_conv": {
+			"title": "👋 Welcome to Chat!",
+			"sub": "Select a user from the sidebar to start chatting"
+		},
+		"status": {
+			"online": "Online",
+			"offline": "Offline"
+		},
+		"input_placeholder": "Enter your message",
+		"dates": {
+			"today": "Today",
+			"yesterday": "Yesterday"
+		},
+		"no_friends": "No friends found",
+		"maximum": "Maximum" 
+	}
+}
