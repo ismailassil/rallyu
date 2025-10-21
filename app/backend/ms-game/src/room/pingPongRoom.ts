@@ -76,7 +76,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 
 	constructor(id: string, ) {
 		this.id = id;
-		this.gameType = 'PONG';
+		this.gameType = 'pingpong';
 
 		const initialAngle = angles[Math.floor(Math.random() * angles.length)];
 		this.state = {
@@ -201,7 +201,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				},
 				gameStartedAt: this.startTime,
 				gameFinishedAt: Math.floor(Date.now() / 1000),
-				gameType:  this.gameType
+				gameType:  'PONG'
 			}, {
 				headers: {
 					'Authorization': `Bearer ${MS_AUTH_API_KEY}`

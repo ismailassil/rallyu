@@ -93,7 +93,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 
 	constructor(id: string, ) {
 		this.id = id;
-		this.gameType = 'XO';
+		this.gameType = 'tictactoe';
 		this.startOfRoundPlayer = Math.random() > 0.5 ? 'X' : 'O'
 
 		this.state = {
@@ -326,7 +326,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 				},
 				gameStartedAt: this.startTime,
 				gameFinishedAt: Math.floor(Date.now() / 1000),
-				gameType: this.gameType
+				gameType: 'XO'
 			}, {
 				headers: {
 					'Authorization': `Bearer ${MS_AUTH_API_KEY}`

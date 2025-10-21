@@ -1,6 +1,6 @@
 import type { WebSocket } from "ws";
 
-export type GameType = 'PONG' | 'XO'
+export type GameType = 'pingpong' | 'tictactoe'
 export type XOSign = 'X' | 'O' | ''
 
 export interface PingPongStatus {
