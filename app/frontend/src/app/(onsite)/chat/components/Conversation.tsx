@@ -1,12 +1,12 @@
 "use client"
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import React, { useState, useEffect, useRef, } from 'react'
 import Image from "next/image"
 import { useChat } from '../context/ChatContext';
-import moment from 'moment';
 import { MessageType } from '../types/chat.types';
 import { AlertCircle } from 'lucide-react';
 import ConversationHeader from './ConversationHeader';
 import { useTranslations } from 'next-intl';
+import { isSameDay, isToday, isYesterday, parseISO, format } from "date-fns";
 
 /*
 	==== TO FIX ===
@@ -26,7 +26,7 @@ import { useTranslations } from 'next-intl';
 
 const ConversationBody = () => {
 	const [message, setMessage] = useState("");
-	const { socket, BOSS, messages, selectedUser, apiClient, setMessages } = useChat();
+	const { socket, BOSS, messages, selectedUser } = useChat();
 	const [filteredMessages, setfilteredMessages] = useState<MessageType[]>([]);
 	const messageRef = useRef<HTMLDivElement | null>(null);
 	const t=useTranslations("chat");
@@ -67,23 +67,22 @@ const ConversationBody = () => {
 		setfilteredMessages(filtered);
 	}, [messages, selectedUser?.id, BOSS?.id]);
 
-	const setDate = (currentMsg: string, prevMsg?: string): string => {
-		const currentDate = moment(currentMsg);
-		const prevDate = prevMsg ? moment(prevMsg) : null;
+const setDate = (currentMsg: string, prevMsg?: string): string => {
+  const currentDate = parseISO(currentMsg);
+  const prevDate = prevMsg ? parseISO(prevMsg) : null;
 
+  if (prevDate && isSameDay(currentDate, prevDate)) {
+    return "";
+  }
 
-		if (prevDate && prevDate.isSame(currentDate, "day")) {
-			return "";
-		}
-
-		if (currentDate.isSame(moment(), "day")) {
-			return t("dates.today");
-		} else if (currentDate.isSame(moment().subtract(1, "day"), "day")) {
-			return t("dates.yesterday");
-		} else {
-			return currentDate.format("MMMM DD, YYYY");
-		}
-	};
+  if (isToday(currentDate)) {
+    return t("dates.today");
+  } else if (isYesterday(currentDate)) {
+    return t("dates.yesterday");
+  } else {
+    return format(currentDate, "MMMM dd, yyyy");
+  }
+};
 
 	return (
 		<div className={` size-full border border-white/30 rounded-lg flex flex-col md:bg-white/4 `}>
@@ -103,7 +102,8 @@ const ConversationBody = () => {
 								className={`flex ${msg.senderId === BOSS?.id ? 'justify-end' : 'justify-start'}`}>
 								<div className={`max-w-[75%] border-white/30 border px-3 py-1.5 min-w-0 flex flex-col rounded-lg  break-words ${msg.senderId === BOSS?.id ? 'bg-blue-600/20 rounded-br-sm' : 'bg-white/10 rounded-bl-sm'}`}>
 									<span>{msg.text}</span>
-									<span className='text-xs text-white/50 self-end'>{moment.utc(msg.created_at).local().format('HH:mm')}</span>
+									{/* <span className='text-xs text-white/50 self-end'>{format(parseISO(msg.created_at), "HH:mm")}</span> */}
+									<span className='text-xs text-white/50 self-end'>{format(new Date(msg.created_at), "HH:mm")}</span>
 								</div>
 							</div>
 
