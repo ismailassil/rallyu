@@ -119,13 +119,19 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				const { notificationId, state } = payload;
 
 				if (status === "dismissed") {
+					setToastNotifications((prev) => {
+						return prev.filter((toast) => toast.id !== notificationId);
+					});
 					return prev.filter((notif) => notificationId !== notif.id);
 				}
 				return prev.map((notif) =>
 					notif.id === notificationId ? { ...notif, status, state } : notif
 				);
 			}
-			if (status === "dismissed") return [];
+			if (status === "dismissed") {
+				setToastNotifications([]);
+				return [];
+			}
 			return prev.map((notif) => ({ ...notif, status }));
 		});
 	}, []);
