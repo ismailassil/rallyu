@@ -20,7 +20,7 @@ export default function ChartCardWrapper({
 				<h1 className='font-funnel-display font-bold text-xl text-white/50 select-none'>{chartTitle}</h1>
 			</div>
 			{isEmpty ? (
-				<div className='h-full flex flex-col justify-center items-center gap-2'>
+				<div className='h-full flex flex-col justify-center items-center gap-2 px-4'>
 				<Image
 					src={'/meme/thinking.gif'}
 					width={360}

@@ -390,6 +390,7 @@
       "bio": "Bio",
       "max_resends": "You've reached the resend limit",
       "retry": "Retry?",
+      "language": "Language",
       "didnt_receive_code": "Didn't receive the code?",
       "resend_code": "Resend code",
       "resend_in": "Resend in",

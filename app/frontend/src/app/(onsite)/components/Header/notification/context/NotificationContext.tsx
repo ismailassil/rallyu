@@ -16,6 +16,7 @@ import {
 	ServerToClient,
 	UpdateNotification,
 	UpdateContext,
+	UpdateAll,
 } from "../types/notifications.types";
 import { TOAST_PAYLOAD } from "../../toaster/Toast.types";
 import { useRouter } from "next/navigation";
@@ -139,6 +140,15 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		);
 	}, []);
 
+	const handleUpdateAll = useCallback((payload: UpdateAll) => {
+		const { type, senderId, status } = payload;
+
+		if (status !== "dismissed") return;
+		setNotifications((prev) =>
+			prev.filter((notif) => notif.senderId !== senderId || notif.type !== type)
+		);
+	}, []);
+
 	const handleGame = useCallback(
 		(payload: string) => {
 			router.push("/game/" + payload);
@@ -157,7 +167,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 			try {
 				if (type === "friend_request") {
 					await apiClient.acceptFriendRequest(senderId);
-				} else if (type === "game" || type === 'pp_game' || type === 'xo_game') {
+				} else if (type === "game" || type === "pp_game" || type === "xo_game") {
 					console.log(data.actionUrl);
 					socket.emitGameResponse(senderId, true, data.actionUrl!, type as GameType);
 				} else if (type === "tournament") {
@@ -180,7 +190,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 			try {
 				if (type === "friend_request") {
 					await apiClient.rejectFriendRequest(senderId);
-				} else if (type === "game" || type === 'pp_game' || type === 'xo_game') {
+				} else if (type === "game" || type === "pp_game" || type === "xo_game") {
 					socket.emitGameResponse(senderId, false, data.actionUrl!, type as GameType);
 				} else if (type === "tournament") {
 				}
@@ -208,11 +218,14 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				case "UPDATE_GAME":
 					handleGame(data);
 					break;
+				case "UPDATE_ALL":
+					handleUpdateAll(data);
+					break;
 				default:
 					console.error(eventType);
 			}
 		},
-		[handleGame, handleNotify, handleUpdateAction, handleUpdateContext, socket]
+		[handleGame, handleNotify, handleUpdateAction, handleUpdateAll, handleUpdateContext, socket]
 	);
 
 	useEffect(() => {

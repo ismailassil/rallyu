@@ -8,6 +8,7 @@ import { XIcon } from "@phosphor-icons/react";
 import { useNotification } from "../context/NotificationContext";
 import { useTranslations } from "next-intl";
 import Avatar from "@/app/(onsite)/users/components/Avatar";
+import { getLang } from "@/app/utils/getLang";
 
 interface Props {
 	data: Notification;
@@ -20,7 +21,13 @@ function NotificationCard({ data, handler }: Props) {
 	const { id, senderUsername, senderId, content, type, updatedAt, status, avatar, state } = data;
 	const t = useTranslations("headers.notification.box");
 	const textDescriptionRef = t(`description.${type}`);
-	const dateRef = moment.utc(updatedAt).local().fromNow();
+	const lang = getLang();
+	const dateRef = moment
+		.utc(updatedAt)
+		.local()
+		.locale(lang || "en")
+		.fromNow();
+
 	const { handleAccept, handleDecline } = useNotification();
 
 	return (
@@ -57,13 +64,13 @@ function NotificationCard({ data, handler }: Props) {
 					username={senderUsername}
 					receiverId={senderId}
 					state={state === "finished" ? true : false}
-					handler={() => handler(id, "read", "finished")}
+					handler={() => handler(id, "dismissed", "finished")}
 				/>
 			) : type === "friend_request" ? (
-					<FriendRequest
-						handleAccept={() => handleAccept(data, false)}
-						handleDecline={() => handleDecline(data, false)}
-					/>
+				<FriendRequest
+					handleAccept={() => handleAccept(data, false)}
+					handleDecline={() => handleDecline(data, false)}
+				/>
 			) : (
 				decisionOptions.includes(type) && (
 					<GameOrTournament

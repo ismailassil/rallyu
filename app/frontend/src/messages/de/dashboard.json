@@ -390,6 +390,7 @@
       "bio": "Bio",
       "max_resends": "Du hast das Limit für erneute Zusendungen erreicht",
       "retry": "Erneut versuchen?",
+      "language": "Sprache",
       "didnt_receive_code": "Code nicht erhalten?",
       "resend_code": "Code erneut senden",
       "resend_in": "Erneut senden in",
@@ -561,16 +562,22 @@
       "box": {
         "no_payload": "Keine aktuellen Benachrichtigungen",
         "description": {
-          "game": "hat dich zu einem Spiel herausgefordert!",
-          "friend_request": "hat dir eine Freundschaftsanfrage gesendet!",
           "chat": "hat dir eine Nachricht geschickt.",
-          "tournament": "hat dich eingeladen, ein Turnier zu starten!",
-          "status": ""
+          "game": "hat dich zu einem Spiel herausgefordert!",
+          "pp_game": "hat dich zu einem Pong-Spiel herausgefordert!",
+          "xo_game": "hat dich zu einem Tic-Tac-Toe-Spiel herausgefordert!",
+          "friend_request": "hat dir eine Freundschaftsanfrage geschickt!",
+          "tournament": "hat dich zu einem Turnier eingeladen!",
+          "friend_accept": "hat deine Freundschaftsanfrage akzeptiert!",
+          "friend_reject": "hat deine Freundschaftsanfrage abgelehnt.",
+          "friend_cancel": "hat deine Freundschaftsanfrage storniert.",
+          "game_accept": "hat deine Spielherausforderung akzeptiert!",
+          "game_reject": "hat deine Spielherausforderung abgelehnt."
         }
       },
       "footer": {
         "asread": "Alle als gelesen markieren",
-        "clear": "Alles löschen"
+        "clear": "Alle löschen"
       }
     }
   },
@@ -579,6 +586,6 @@
     "decline": "Ablehnen",
     "reply": "Antworten",
     "clear": "löschen",
-    "join": "{type, select, Game {Spiel}, Tournament {Turnier}} beitreten"
+    "join": "Dem {type, select, game {Spiel} tournament {Turnier} other {Spiel}} beitreten"
   }
 }

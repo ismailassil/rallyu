@@ -30,9 +30,10 @@ export interface NotificationContext {
 	DEFAULT_TIME: number;
 }
 
-export enum NOTIF_TYPE {
+enum NOTIF_TYPE {
 	NOTIFY = "NOTIFY",
 	UPDATE_ACTION = "UPDATE_ACTION",
+	UPDATE_ALL = "UPDATE_ALL",
 	UPDATE_CONTEXT = "UPDATE_CONTEXT",
 	UPDATE_GAME = "UPDATE_GAME",
 }
@@ -62,6 +63,12 @@ export type UpdateContext = {
 	type: NOTIFICATION_TYPE;
 	status: NOTIFICATION_STATUS;
 	state: NOTIFICATION_STATE;
+};
+
+export type UpdateAll = {
+	senderId: number;
+	type: NOTIFICATION_TYPE;
+	status: NOTIFICATION_STATUS;
 };
 
 // /************************************************************** */

@@ -6,6 +6,7 @@ import { useHeaderContext } from "./context/HeaderContext";
 import { useAuth } from "../../contexts/AuthContext";
 import Avatar from "../../users/components/Avatar";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface SearchByUsernameResult {
 	id: number;
@@ -18,6 +19,7 @@ export default function Search() {
 	const [search, setSearch] = useState<string>("");
 	const div1Ref = useRef<HTMLDivElement>(null);
 	const div2Ref = useRef<HTMLDivElement>(null);
+	const t = useTranslations('header.search');
 
 	const [results, setResults] = useState<SearchByUsernameResult[]>([]);
 
@@ -128,7 +130,7 @@ export default function Search() {
 									type="text"
 									className="focus:ring-main/80 h-16 w-full rounded-md pr-20 pl-16 outline-none focus:ring-2"
 									autoComplete="off"
-									placeholder="Start Searching..."
+									placeholder={t("placeholder")}
 									value={search}
 									onChange={(e) => {
 										setSearch(e.target.value);
@@ -138,7 +140,7 @@ export default function Search() {
 									onClick={() => setSearch("")}
 									className="hover:text-main-ring-hover/70 absolute top-[19px] right-6 hover:cursor-pointer hover:underline"
 								>
-									Clear
+									{t("clear")}
 								</p>
 							</div>
 							<div
@@ -150,7 +152,7 @@ export default function Search() {
 										return (
 												<Link
 													href={`/users/${elem.username}`}
-													onClick={() => setIsSearch(false)}
+													onClick={() => {setIsSearch(false); setSearch("");}}
 													key={elem.username}
 													className="w-full h-17 flex items-center gap-4 border-b-1
 														border-b-br-card pl-10 hover:bg-hbg/30 hover:cursor-pointer
@@ -174,7 +176,7 @@ export default function Search() {
 											width={120}
 											alt="Sad Image"
 										/>
-										<p className="text-gray-400">Help yourself...</p>
+										<p className="text-gray-400">{t("ide")}</p>
 									</div>
 								)}
 							</div>
