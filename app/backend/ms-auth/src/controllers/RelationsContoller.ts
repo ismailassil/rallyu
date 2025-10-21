@@ -45,7 +45,7 @@ class RelationsController {
 	}
 
 	async sendFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
+		// try {
 			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 
@@ -82,15 +82,15 @@ class RelationsController {
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
 			return reply.status(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+		// } catch (err: any) {
+		// 	const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			return reply.code(status).send(body);
-		}
+		// 	return reply.code(status).send(body);
+		// }
 	}
 
 	async cancelFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
+		// try {
 			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 
@@ -125,15 +125,15 @@ class RelationsController {
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
 			return reply.status(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+		// } catch (err: any) {
+		// 	const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			return reply.code(status).send(body);
-		}
+		// 	return reply.code(status).send(body);
+		// }
 	}
 
 	async acceptFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
+		// try {
 			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 
@@ -168,15 +168,15 @@ class RelationsController {
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
 			return reply.status(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+		// } catch (err: any) {
+		// 	const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			return reply.code(status).send(body);
-		}
+		// 	return reply.code(status).send(body);
+		// }
 	}
 
 	async rejectFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
+		// try {
 			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 
@@ -212,15 +212,15 @@ class RelationsController {
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
 			return reply.status(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+		// } catch (err: any) {
+		// 	const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			return reply.code(status).send(body);
-		}
+		// 	return reply.code(status).send(body);
+		// }
 	}
 
 	async blockUserHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
+		// try {
 			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 
@@ -240,15 +240,15 @@ class RelationsController {
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
 			return reply.status(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+		// } catch (err: any) {
+		// 	const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			return reply.code(status).send(body);
-		}
+		// 	return reply.code(status).send(body);
+		// }
 	}
 
 	async unblockUserHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
+		// try {
 			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 
@@ -268,15 +268,15 @@ class RelationsController {
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
 			return reply.status(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+		// } catch (err: any) {
+		// 	const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			return reply.code(status).send(body);
-		}
+		// 	return reply.code(status).send(body);
+		// }
 	}
 
 	async unfriendHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
+		// try {
 			const { targetUserId } = request.params as { targetUserId: number };
 			const user_id = request.user?.sub;
 
@@ -296,11 +296,11 @@ class RelationsController {
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 
 			return reply.status(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
+		// } catch (err: any) {
+		// 	const { status, body } = AuthResponseFactory.getErrorResponse(err);
 
-			return reply.code(status).send(body);
-		}
+		// 	return reply.code(status).send(body);
+		// }
 	}
 }
 
