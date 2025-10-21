@@ -6,6 +6,7 @@ import SessionsService from "../services/Auth/SessionsService";
 import { UUID } from "crypto";
 import { TokenRequiredError } from "../types/exceptions/auth.exceptions";
 import { AuthChallengeMethod } from "../repositories/AuthChallengesRepository";
+import { JSONCodec } from "nats";
 
 
 class AuthController {
@@ -91,7 +92,7 @@ class AuthController {
 	}
 
 	async logoutHandler(request: FastifyRequest, reply: FastifyReply) {
-		await this.authService.LogOut(request.refreshTokenPayload!); // TODO: DOUBLE CHECK THIS
+		await this.authService.LogOut(request.refreshTokenPayload!);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 		return reply.code(status).setCookie(
@@ -169,9 +170,7 @@ class AuthController {
 
 		const sessions = await this.sessionsService.getActiveSessions(
 			user_id!,
-			(request.refreshToken && request.refreshTokenPayload)
-			? { markCurrent: true, currentSessionID: request.refreshTokenPayload.session_id }
-			: undefined
+			request.refreshTokenPayload!.session_id
 		);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, sessions);
@@ -180,15 +179,37 @@ class AuthController {
 
 	async revokeSessionHandler(request: FastifyRequest, reply: FastifyReply) {
 		const user_id = request.user?.sub;
-		const { id } = request.params as { id: string };
+		const { session_id } = request.params as { session_id: string };
 
 		await this.sessionsService.revokeSession(
-			id,
+			session_id,
 			user_id!,
-			`Revoked by session owner`
+			`Revokation requested by user`
 		);
 
+		const jsCodec = JSONCodec();
+		request.server.nats.publish('gateway.user.session', jsCodec.encode({
+			eventType: 'SESSION_UPDATE',
+			recipientUserIds: [Number(user_id)],
+			data: {
+				requesterId: Number(user_id),
+				receiverId: Number(user_id),
+				status: 'REFRESH_REQUIRED'
+			}
+		}));
+
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+		if (session_id! === request.refreshTokenPayload!.session_id) {
+			reply.setCookie(
+				'refreshToken', '', {
+					path: '/',
+					httpOnly: true,
+					secure: false,
+					sameSite: 'lax',
+					expires: new Date(0)
+				}
+			);
+		}
 		return reply.code(status).send(body);
 	}
 
@@ -198,9 +219,7 @@ class AuthController {
 		await this.sessionsService.revokeMassSessions(
 			user_id!,
 			'Mass revokation requested by user',
-			(request.refreshToken && request.refreshTokenPayload)
-			? { execludeSession: true, toExcludeID: request.refreshTokenPayload.session_id }
-			: undefined
+			request.refreshTokenPayload!.session_id
 		);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});

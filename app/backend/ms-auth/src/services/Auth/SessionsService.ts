@@ -5,6 +5,7 @@ import SessionsRepository from "../../repositories/SessionsRepository";
 import { nowInSeconds } from "../TwoFactorAuth/utils";
 import { SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenInvalidError } from "../../types/exceptions/auth.exceptions";
 import { UnauthorizedError } from "../../types/exceptions/AAuthError";
+import { setEngine } from "crypto";
 
 class SessionsService {
 	constructor(
@@ -43,7 +44,7 @@ class SessionsService {
 		return { accessToken, refreshToken };
 	}
 
-	private async isValidSession_({ sub, session_id, version, iat, exp }: JWT_REFRESH_PAYLOAD & { iat: number, exp: number }, { device, browser, ip_address }: ISessionFingerprint) {
+	private async isValidSession({ sub, session_id, version, iat, exp }: JWT_REFRESH_PAYLOAD & { iat: number, exp: number }, { device, browser, ip_address }: ISessionFingerprint) {
 		const session = await this.sessionRepository.findOne(session_id, sub);
 		if (!session || session.is_revoked)
 			throw new UnauthorizedError();
@@ -65,7 +66,7 @@ class SessionsService {
 
 	async refreshSession(refreshTokenPayload: JWT_REFRESH_PAYLOAD & { iat: number, exp: number }, newFingerprint: ISessionFingerprint) {
 		// ENFORCE VALID SESSION
-		this.isValidSession_(refreshTokenPayload, newFingerprint);
+		await this.isValidSession(refreshTokenPayload, newFingerprint);
 
 		const { sub, session_id, version } = refreshTokenPayload;
 		const { accessToken: newAccessToken, refreshToken: rotatedRefreshToken } = await this.JWTUtils.generateTokenPair(
@@ -93,22 +94,18 @@ class SessionsService {
 		await this.sessionRepository.revoke(session_id, reason);
 	}
 
-	async revokeMassSessions(sub: number, reason: string = 'Mass Revokation by internal service', options?: { execludeSession: boolean, toExcludeID: string }) {
+	async revokeMassSessions(sub: number, reason: string = 'Mass Revokation by internal service', execludeSessionID: string) {
 		await this.sessionRepository.revokeMassForUser(
 			sub,
 			reason,
-			(options?.execludeSession && options?.toExcludeID)
-			? options.toExcludeID
-			: undefined
+			execludeSessionID
 		);
 	}
 
-	async getActiveSessions(sub: number, options?: { markCurrent: boolean, currentSessionID: string }) {
+	async getActiveSessions(sub: number, currentSessionID: string) {
 		const sessions = await this.sessionRepository.findAllActive(sub);
 
-		if (options?.markCurrent && options?.currentSessionID)
-			return sessions.map(session => ({ ...session, is_current: session.session_id === options.currentSessionID }));
-		return sessions;
+		return sessions.map(session => ({ ...session, is_current: session.session_id === currentSessionID }));
 	}
 
 	// /**

@@ -1,7 +1,7 @@
 'use client';
 import { APIClient } from '@/app/(api)/APIClient';
 import SocketClient from '@/app/(api)/SocketClient';
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { AuthContextType, LoggedInUser } from './auth.context.types';
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -33,25 +33,26 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		}
 	}, []);
 
+	const initializeAuth = async () => {
+		console.group('initializeAuth');
+		try {
+			const { user, accessToken } = await apiClient.auth.refreshToken();
+
+			socket.connect(accessToken);
+			setLoggedInUser(user);
+			setIsAuthenticated(true);
+		} catch {
+			setLoggedInUser(null);
+			setIsAuthenticated(false);
+		} finally {
+			setIsLoading(false);
+			console.groupEnd();
+		}
+	};
+
 	// THIS USE EFFECT WILL ONLY RUN ON PAGE FIRSTLOAD/REFRESH
 	useEffect(() => {
 		console.log('AuthProvider useEffect - Checking authentication status...');
-		async function initializeAuth() {
-			try {
-				const { user, accessToken } = await apiClient.auth.refreshToken();
-
-				socket.connect(accessToken);
-				setLoggedInUser(user);
-				setIsAuthenticated(true);
-			} catch {
-				console.log('No valid refresh token found!');
-				setLoggedInUser(null);
-				setIsAuthenticated(false);
-			} finally {
-				setIsLoading(false);
-			}
-		}
-
 		initializeAuth();
 	}, []);
 
@@ -139,6 +140,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		loginUsing2FA,
 		logout,
 		triggerLoggedInUserRefresh,
+		triggerRefreshToken: initializeAuth,
 
 		// INTERNALS
 		apiClient,

@@ -35,7 +35,9 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	});
 
 	fastify.post('/logout', {
-		// preHandler: fastify.authenticate,
+		preHandler: [
+			fastify.refreshTokenAuth
+		],
 		handler: opts.authController.logoutHandler.bind(opts.authController)
 	});
 
@@ -162,16 +164,25 @@ async function authRouter(fastify: FastifyInstance, opts: {
 
 	/*--------------------------------------------------- Sessions ---------------------------------------------------*/
 	fastify.get('/sessions', {
-		preHandler: fastify.accessTokenAuth,
+		preHandler: [
+			fastify.accessTokenAuth,
+			fastify.refreshTokenAuth
+		],
 		handler: opts.authController.fetchSessionsHandler.bind(opts.authController)
 	});
-	fastify.delete('/sessions/:id', {
+	fastify.delete('/sessions/:session_id', {
 		schema: schemas.session.delete,
-		preHandler: fastify.accessTokenAuth,
+		preHandler: [
+			fastify.accessTokenAuth,
+			fastify.refreshTokenAuth
+		],
 		handler: opts.authController.revokeSessionHandler.bind(opts.authController)
 	});
 	fastify.delete('/sessions', {
-		preHandler: fastify.accessTokenAuth,
+		preHandler: [
+			fastify.accessTokenAuth,
+			fastify.refreshTokenAuth
+		],
 		handler: opts.authController.revokeMassSessionsHandler.bind(opts.authController)
 	});
 

@@ -43,7 +43,7 @@ import { attachTokensHook } from './middleware/hooks/attachTokensHook';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
-		logger: { level: 'debug', transport: { target: 'pino-pretty', options: { colorize: true, translateTime: 'SYS:standard', ignore: 'pid,hostname' } } },
+		logger: { level: 'trace', transport: { target: 'pino-pretty', options: { colorize: true, translateTime: 'SYS:standard', ignore: 'pid,hostname' } } },
 		ajv: { customOptions: { removeAdditional: false, allErrors: true }}
 	});
 
