@@ -110,7 +110,10 @@ services:
     image: rallyu/ms-chat:v1.0
     container_name: ms-chat
     volumes:
-      - ./ms-chat/database/:/app/database/
+     - ./ms-chat/database:/app/database
+    # - ./ms-chat/database/database.sqlite:/app/database/database.sqlite 
+
+
     restart: always
     networks:
       - backend

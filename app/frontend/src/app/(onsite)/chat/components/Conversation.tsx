@@ -5,8 +5,6 @@ import { useChat } from '../context/ChatContext';
 import moment from 'moment';
 import { MessageType } from '../types/chat.types';
 import { AlertCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import FirstConversation from './FirstConversation';
 import ConversationHeader from './ConversationHeader';
 
 /*
@@ -84,10 +82,6 @@ const ConversationBody = () => {
 		}
 	};
 
-	const  handleLoadMore = () => {
-		
-	}
-
 	return (
 		<div className={` size-full border border-white/30 rounded-lg flex flex-col md:bg-white/4 `}>
 
@@ -97,7 +91,7 @@ const ConversationBody = () => {
 
 			{/* ----------------------------------------------------message body ---------------------------------------------------- */}
 
-			{filteredMessages.length > 0 ? (<div className='overflow-y-auto custom-scrollbar p-4 flex-1 overflow-x-hidden flex flex-col justify-end mb-2'>
+			<div className='overflow-y-auto custom-scrollbar p-4 flex-1 overflow-x-hidden flex flex-col justify-end mb-2'>
 				<div className='flex flex-col gap-4 min-h-0'>
 					{filteredMessages.map((msg, index) => (
 						<React.Fragment key={index}>
@@ -113,13 +107,8 @@ const ConversationBody = () => {
 						</React.Fragment>
 					))}
 					<div ref={messageRef} />
-					{/* <div className=' flex items-center justify-center'>
-						<button className=' w-fit text-xs text-white/50 border px-1.5 py-1 rounded-md hover:cursor-pointer' onClick={handleLoadMore}>Load more</button>
-					</div> */}
 				</div>
-			</div>) : (
-				<FirstConversation />
-			)}
+			</div>
 
 			{/* ----------------------------------------------------typing message and send ---------------------------------------------------- */}
 

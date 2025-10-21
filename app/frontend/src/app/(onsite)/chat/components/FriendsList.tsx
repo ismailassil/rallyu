@@ -1,69 +1,63 @@
 "use client";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { LoggedUser } from "../types/chat.types";
-import { useChat } from "../context/ChatContext";
-import moment from "moment";
-import Avatar from "../../users/components/Avatar";
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { LoggedUser } from '../types/chat.types';
+import { useChat } from '../context/ChatContext';
+import Avatar from '../../users/components/Avatar';
+import { format, isToday, isYesterday, parseISO } from 'date-fns';
+
 
 const FriendsList = () => {
 	const [prefix, setPrefix] = useState("");
 	const [filteredSuggestions, setFilteredSuggestions] = useState<LoggedUser[]>([]);
-	const { messages, BOSS, setShowConversation, friends, setSelectedUser, selectedUser } =
-		useChat();
-
-	const [displayUsers, setDisplayUsers] = useState<LoggedUser[] | null>(null);
-	const hasFriends = displayUsers?.length! > 0;
+	const { apiClient, messages, BOSS, setShowConversation, showConversation, setSelectedUser, selectedUser, } = useChat();
+	const [displayUsers, setDisplayUsers] = useState<LoggedUser[]>([]);
+	const hasFriends = prefix ? filteredSuggestions.length > 0 : displayUsers.length > 0;
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const input = event.target.value;
-		setPrefix(input);
-		const filtred = (friends as LoggedUser[]).filter((user) =>
-			(user.first_name + user.last_name).toLowerCase().includes(input.toLowerCase())
-		);
-		setFilteredSuggestions(filtred);
-	};
+		setPrefix(input)
+		if (displayUsers) {
+			const filtred = (displayUsers as LoggedUser[]).filter(user => (user.first_name + user.last_name).toLowerCase().includes(input.toLowerCase()))
+			setFilteredSuggestions(filtred)
+		}
+	}
 
-	const getLastMessage = (userId: number) => {
-		const userMessages = messages.filter(
-			(msg) =>
-				(msg.senderId === userId && msg.receiverId === BOSS?.id) ||
-				(msg.senderId === BOSS?.id && msg.receiverId === userId)
-		);
-
-		if (!userMessages.length) return null;
-		return userMessages.reduce((latest, current) =>
-			current.created_at > latest.created_at ? current : latest
-		);
+	const handleSelectUser = (user: LoggedUser) => {
+		if (!user?.id) return;
+	
+		setSelectedUser(user);
+		setFilteredSuggestions([]);
+		setPrefix("");
+		setShowConversation(true);
+		window.history.pushState(null, "", `/chat/${user.username}`);
 	};
+	
+
 
 	useEffect(() => {
-		const baseUsers = prefix ? filteredSuggestions : friends || [];
+		if (!BOSS?.id) return;
+		apiClient.instance.get('/chat/friend_list')
+			.then((response: any) => {
+				setDisplayUsers(response.data)
+			})
+			.catch((error: any) => {
+				console.error("Error fetching chat history:", error);
+			});
+	}, [BOSS?.id, apiClient, showConversation, messages]); // check this 
 
-		const sorted = [...baseUsers].sort((a, b) => {
-			const lastA = getLastMessage(a.id);
-			const lastB = getLastMessage(b.id);
 
-			if (!lastA) return 1;
-			if (!lastB) return -1;
 
-			return lastB.created_at.localeCompare(lastA.created_at);
-		});
+	const setDate = (dateString: string): string => {
+		const date = parseISO(dateString);
 
-		setDisplayUsers(sorted);
-	}, [prefix, filteredSuggestions, friends, messages]);
-
-	const setDate = (msg: string): string => {
-		const date = moment.utc(msg).local();
-		const now = moment();
-
-		if (date.isSame(now, "day")) {
-			return date.format("HH:mm");
+		if (isToday(date)) {
+			return format(date, 'HH:mm');
 		}
-		if (date.isSame(now.clone().subtract(1, "day"), "day")) {
-			return "Yesterday";
+		if (isYesterday(date)) {
+			return 'Yesterday';
 		}
-		return date.format("DD/MM/YYYY");
+		return format(date, 'dd/MM/yyyy');
 	};
 
 	return (
@@ -91,50 +85,27 @@ const FriendsList = () => {
 			<div className="custom-scrollbar flex-1 overflow-y-auto">
 				{hasFriends ? (
 					<ul>
-						{displayUsers?.map((user) => {
-							const lastMessage = getLastMessage(user.id);
+						{(prefix ? filteredSuggestions : displayUsers)?.map((user) => {
 							return (
-								<li
-									key={user?.id}
-									onClick={() => {
-										setSelectedUser(user);
-										setFilteredSuggestions([]);
-										setPrefix("");
-										setShowConversation(true);
-										window.history.pushState(
-											null,
-											"",
-											`/chat/${user?.username}`
-										); // ====> read more about this
-									}}
-								>
-									<div
-										className={`flex gap-4 p-2 hover:cursor-pointer hover:rounded-lg hover:bg-white/5 ${selectedUser?.id === user?.id ? "rounded-lg bg-white/15" : "bg-white/0"} w-full`}
-									>
-										<div className="size-[40] flex-shrink-0 overflow-hidden rounded-full border border-white/30 md:size-[50px]">
+								< li key={user?.id} onClick={() => handleSelectUser(user)}>
+									<div className={`flex gap-4 hover:cursor-pointer hover:bg-white/5 hover:rounded-lg p-2 ${selectedUser?.id === user?.id ? 'bg-white/15 rounded-lg' : 'bg-white/0'} w-full`}>
+										<div className=' size-[40] md:size-[50px] flex-shrink-0 overflow-hidden rounded-full border border-white/30'>
 											<Avatar
 												avatar={user?.avatar_url}
 												alt={`${user?.first_name + " " + user?.last_name} avatar`}
 												className="h-full w-full"
 											/>
 										</div>
-										<div className="flex w-full min-w-0 flex-col justify-between gap-1 p-0.5">
-											<div className="flex w-full items-center justify-between">
-												<div className="line-clamp-1 min-w-0 flex-1">
-													{user?.first_name + " " + user?.last_name}
-												</div>
-												{lastMessage && (
-													<div className="ml-2 min-w-0 flex-shrink-0 truncate text-xs text-gray-400">
-														{setDate(lastMessage.created_at)}
-													</div>
-												)}
+										<div className='flex flex-col w-full gap-1 justify-between p-0.5 min-w-0'>
+											<div className='flex w-full justify-between items-center'>
+												<div className='line-clamp-1 flex-1 min-w-0'>{user?.first_name + " " + user?.last_name}</div>
+												{user.last_message && <div className='text-gray-400 flex-shrink-0 ml-2 text-xs min-w-0 truncate'>{setDate(user.last_message.created_at)}</div>}
 											</div>
-											<div className="flex w-full items-center justify-between">
-												<div className="flex-1 truncate text-xs text-gray-400 md:text-sm">
-													{lastMessage?.text || "No messages yet"}
+											<div className='flex w-full justify-between items-center'>
+												<div className='text-gray-400 text-xs md:text-sm truncate flex-1'>
+													{user.last_message?.text || 'No messages yet'}
 												</div>
-												<div className="bg-main ml-2 size-2 flex-shrink-0 rounded-full" />
-												{/* {!lastMessage?.isSeen && <div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />} */}
+												{/* {user.last_message.isSeen && <div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />} */}
 											</div>
 										</div>
 									</div>

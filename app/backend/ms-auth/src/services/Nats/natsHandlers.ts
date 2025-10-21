@@ -1,7 +1,8 @@
 import { JSONCodec } from 'nats';
 import UserService from '../User/UserService';
+import RelationsService from '../User/RelationsService';
 
-export async function handleUserRequests(msg: any, userService: UserService) {
+export async function handleUserRequests(msg: any, userService: UserService, relationsService: RelationsService) {
 	const jsonC = JSONCodec();
 	const data = jsonC.decode(msg.data) as any;
 
@@ -15,6 +16,11 @@ export async function handleUserRequests(msg: any, userService: UserService) {
 		case 'user.avatar': {
 			const targetUser = await userService.getUserById(data.user_id);
 			msg.respond(jsonC.encode({ avatar_url: targetUser ? targetUser.avatar_url : null }));
+			break ;
+		}
+		case 'user.friends': {
+			const targetUserFriends = await relationsService.getFriends(data.user_id);
+			msg.respond(jsonC.encode({ friends: targetUserFriends }));
 			break ;
 		}
 		default:
