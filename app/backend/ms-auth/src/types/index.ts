@@ -1,5 +1,5 @@
 import { JetStreamClient } from "nats"
-import { JWT_ACCESS_PAYLOAD } from "../utils/auth/Auth"
+import { JWT_ACCESS_PAYLOAD, JWT_REFRESH_PAYLOAD } from "../utils/auth/JWTUtils"
 
 export interface User {
 	id: number,
@@ -129,15 +129,22 @@ export interface AuthenticatedRequest {
 
 declare module 'fastify' {
 	interface FastifyInstance {
-		requireAuth: any,
-		authenticate: any,
+		accessTokenAuth: any,
+		refreshTokenAuth: any,
+		apiKeyAuth: any,
 		js: JetStreamClient,
 		jsonC: any,
 		nats: any
 	}
 	interface FastifyRequest {
+		bearerToken: string | null;
+		accessToken: string | null;
+		refreshToken: string | null;
+		apiKey: string | null;
+
 		user: JWT_ACCESS_PAYLOAD | null,
-		refreshToken: string | null,
+		accessTokenPayload: JWT_ACCESS_PAYLOAD & { iat: number, exp: number } | null,
+		refreshTokenPayload: JWT_REFRESH_PAYLOAD & { iat: number, exp: number } | null,
 		fingerprint: ISessionFingerprint | null
 	}
 }

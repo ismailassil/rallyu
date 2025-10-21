@@ -20,7 +20,7 @@ async function natsPlugin(fastify: FastifyInstance, opts: NatsOpts) {
 		pass: NATS_PASSWORD,
 		name: 'User Management',
 	});
-	fastify.log.info('[NATS] Server is up on ' + nats.getServer());
+	fastify.log.info('[NATS] Connection established on ' + nats.getServer());
 
 	const js = nats.jetstream(); // JetStream Client
 	const jsonC = JSONCodec(); // for objects

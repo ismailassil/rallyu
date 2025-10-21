@@ -10,66 +10,38 @@ class RelationsController {
 	) {}
 
 	async fetchFriendsHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
-			const user_id = request.user?.sub;
+		const user_id = request.user?.sub;
 
-			const allFriends = await this.relationsService.getFriends(user_id!);
+		const allFriends = await this.relationsService.getFriends(user_id!);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, allFriends);
-
-			return reply.status(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
-
-			return reply.code(status).send(body);
-		}
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, allFriends);
+		return reply.status(status).send(body);
 	}
 
 	async fetchBlockedHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
-			const user_id = request.user?.sub;
+		const user_id = request.user?.sub;
 
-			const allBlocked = await this.relationsService.getOutgoingBlocks(user_id!);
+		const allBlocked = await this.relationsService.getOutgoingBlocks(user_id!);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, allBlocked);
-
-			return reply.status(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
-
-			return reply.code(status).send(body);
-		}
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, allBlocked);
+		return reply.status(status).send(body);
 	}
 
 	async fetchIncomingFriendRequestsHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
-			const user_id = request.user?.sub;
+		const user_id = request.user?.sub;
 
-			const allIncoming = await this.relationsService.getIncomingFriendRequests(user_id!);
+		const allIncoming = await this.relationsService.getIncomingFriendRequests(user_id!);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, allIncoming);
-
-			return reply.status(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
-
-			return reply.code(status).send(body);
-		}
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, allIncoming);
+		return reply.status(status).send(body);
 	}
 	async fetchOutgoingFriendRequestsHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
-			const user_id = request.user?.sub;
+		const user_id = request.user?.sub;
 
-			const allOutgoing = await this.relationsService.getOutgoingFriendRequests(user_id!);
+		const allOutgoing = await this.relationsService.getOutgoingFriendRequests(user_id!);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, allOutgoing);
-
-			return reply.status(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
-
-			return reply.code(status).send(body);
-		}
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, allOutgoing);
+		return reply.status(status).send(body);
 	}
 
 	async sendFriendRequestHandler(request: FastifyRequest, reply: FastifyReply) {

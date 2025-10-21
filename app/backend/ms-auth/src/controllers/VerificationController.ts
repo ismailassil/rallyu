@@ -9,52 +9,31 @@ class VerificationController {
 	) {}
 
 	async requestHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
-			const user_id = request.user?.sub;
-			const { contact } = request.params as { contact: 'email' | 'phone' };
+		const user_id = request.user?.sub;
+		const { contact } = request.params as { contact: 'email' | 'phone' };
 
-			const token = await this.verificationService.request(contact, user_id!, (request.body as any)?.target);
+		const token = await this.verificationService.request(contact, user_id!, (request.body as any)?.target);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(200, { token });
-
-			return reply.code(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
-
-			return reply.code(status).send(body);
-		}
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, { token });
+		return reply.code(status).send(body);
 	}
 
 	async verifyHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
-			const { token, code } = request.body as { token: string, code: string };
+		const { token, code } = request.body as { token: string, code: string };
 
-			await this.verificationService.verify(token as UUID, code);
+		await this.verificationService.verify(token as UUID, code);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(201, { token });
-
-			return reply.code(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
-
-			return reply.code(status).send(body);
-		}
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, { token });
+		return reply.code(status).send(body);
 	}
 
 	async resendHandler(request: FastifyRequest, reply: FastifyReply) {
-		try {
-			const { token } = request.body as { token: string };
+		const { token } = request.body as { token: string };
 
-			await this.verificationService.resend(token as UUID);
+		await this.verificationService.resend(token as UUID);
 
-			const { status, body } = AuthResponseFactory.getSuccessResponse(201, { token });
-
-			return reply.code(status).send(body);
-		} catch (err: any) {
-			const { status, body } = AuthResponseFactory.getErrorResponse(err);
-
-			return reply.code(status).send(body);
-		}
+		const { status, body } = AuthResponseFactory.getSuccessResponse(201, { token });
+		return reply.code(status).send(body);
 	}
 }
 
