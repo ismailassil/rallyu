@@ -65,14 +65,14 @@ const GameField = () => {
                 <RoomNotFound />
             ) : (
                 <>
-                    <VersusCard
-                        opponentId={opponentId}
-                        timeLeft={timeLeft}
-                        handleResign={() => pong.current.forfeit()}
-                        disconnect={oppdisconnect}
-                        resignSwitch={overlayStatus === 'gameover' ? false : true}
-                    />
-                    <div className="flex w-auto h-auto max-h-full max-w-full items-center justify-center">
+                    <div className="flex flex-col border w-auto h-auto max-h-full max-w-full items-center justify-center">
+                        <VersusCard
+                            opponentId={opponentId}
+                            timeLeft={timeLeft}
+                            handleResign={() => pong.current.forfeit()}
+                            disconnect={oppdisconnect}
+                            resignSwitch={overlayStatus === 'gameover' ? false : true}
+                        />
                         <div className="relative inline-block">
                             <Pong socketProxy={socketProxy.current} pong={pong.current} />
                             <Overlay status={overlayStatus} result={result} />
