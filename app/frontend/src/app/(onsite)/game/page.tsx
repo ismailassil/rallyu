@@ -11,7 +11,6 @@ import LoadingComponent from "@/app/(auth)/components/UI/LoadingComponents";
 export default function Game() {
 	const { loggedInUser, apiClient } = useAuth();
 	const [ isLoading, setIsLoading ] = useState(true);
-	const [ protectionWall, setProtectionWall ] = useState(false);
 	const router = useRouter();
 
 	useEffect(() => {
@@ -20,10 +19,6 @@ export default function Game() {
 				if (!loggedInUser)
 					return;
 				const res = await apiClient.fetchPlayerStatus(loggedInUser.id);
-				if (res.connected) {
-					setProtectionWall(true);
-					return;
-				}
 				router.push(`/game/${res.gameType}/${res.roomId}`);
 			} catch (err) {
 				setIsLoading(false);

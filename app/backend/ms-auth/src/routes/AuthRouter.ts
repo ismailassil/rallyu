@@ -1,16 +1,13 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import AuthController from "../controllers/AuthController";
 import { zodPreHandler } from "../utils/validation/zodFormValidator";
-import cookie from '@fastify/cookie';
 import TwoFactorController from "../controllers/TwoFactorController";
 import PasswordResetController from "../controllers/PasswordResetController";
 import { authRoutesSchemas as schemas } from "../schemas/auth.schema";
 import { authRoutesZodSchemas as zodSchemas } from "../schemas/zod/auth.zod.schema";
-import { UAParser } from "ua-parser-js";
 import { oauthConfig } from "../config/oauth";
 import VerificationController from "../controllers/VerificationController";
 import { requestFingerprintHook } from "../middleware/hooks/fingerprintHook";
-import { attachTokensHook } from "../middleware/hooks/attachTokensHook";
 
 async function authRouter(fastify: FastifyInstance, opts: {
 	authController: AuthController,

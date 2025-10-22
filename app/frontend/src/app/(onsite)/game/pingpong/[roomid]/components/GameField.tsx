@@ -4,14 +4,14 @@ import Pong from "../../src/Pong";
 import VersusCard from "@/app/(onsite)/game/components/Items/VersusCard";
 import LoadingComponent from "@/app/(auth)/components/UI/LoadingComponents";
 import RoomNotFound from "../../../components/Items/RoomNotFound";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import SocketProxy from "../../../utils/socketProxy";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import RemotePong from "../../src/game/RemotePong";
 
 const GameField = () => {
+    const router = useRouter();
     const { apiClient, loggedInUser } = useAuth();
-	const socketProxy = useRef<SocketProxy>(new SocketProxy());
 	const [isLoading, setIsLoading ] = useState(true);
 	const [notFound, setNotFound ] = useState(false);
 	const [opponentId, setOpponentId] = useState<number | undefined>(undefined);
@@ -20,6 +20,9 @@ const GameField = () => {
 	const [ oppdisconnect, setOppdisconnect ] = useState(false);
     const [ result, setResult ] = useState<string | null>(null);
     const [ overlayStatus, setOverlayStatus ] = useState('none');
+	const socketProxy = useRef<SocketProxy>(new SocketProxy((reason: string) => {
+        router.push(`/game/disconnected?reason=${reason}`)
+    }));
 	const pong = useRef<RemotePong>(new RemotePong(socketProxy.current, {
         updateTimer: setTimeLeft,
         updateOverlayStatus: setOverlayStatus,

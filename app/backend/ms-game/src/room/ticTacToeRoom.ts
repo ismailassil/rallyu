@@ -152,7 +152,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 			score: this.players.map(p => p.score),
 		});
 	
-		closeRoom(this, 1004, 'Forfeit');
+		closeRoom(this, 1000, 'Forfeit');
 		this.saveGameData();
 	}
 
@@ -252,7 +252,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 			score: this.players.map(p => p.score)
 		});
 
-		closeRoom(this, 1003, 'Game Over');
+		closeRoom(this, 1000, 'Game Over');
 	}
 	
 	private startRound(): void {

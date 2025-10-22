@@ -59,8 +59,11 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 
 			if (!player)
 				throw new Error("Player not in match room");
-			if (player.connected)
-				throw new Error("A connection already exits");
+
+			if (player.connected) {
+				player.socket?.close(1003, 'Same account launched game from different device, Reconnect if you prefer use this device.');
+				player.detachSocket();
+			}
 
 			player.attachSocket(socket);
 			if (room.running) {

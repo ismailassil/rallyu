@@ -1,7 +1,7 @@
 import { getVelocity, angles, updateState } from './physics'
 import type { Room, Player, PingPongGameState, TicTacToeGameState, PingPongStatus, GameType } from '../types/types'
 import ws from 'ws';
-import { closeRoom, userSessions } from './roomManager';
+import { closeRoom } from './roomManager';
 import axios from 'axios';
 import { MS_AUTH_PORT, MS_AUTH_API_KEY } from '../plugins/game';
 
@@ -151,7 +151,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				}))
 			}
 		})
-		closeRoom(this, 1003, 'Game Over');
+		closeRoom(this, 1000, 'Game Over');
 		this.saveGameData();
 	}
 
@@ -168,7 +168,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				}))
 			}
 		})
-		closeRoom(this, 1003, 'Forfeit');
+		closeRoom(this, 1000, 'Forfeit');
 		this.saveGameData();
 	}
 
