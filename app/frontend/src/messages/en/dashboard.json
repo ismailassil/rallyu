@@ -467,18 +467,19 @@
       "title": "Welcome Back!",
       "subtitle": "Please enter you details to sign in",
       "instruction": "Don't have an account yet?",
-      "errors": "{code, select, AUTH_INVALID_CREDENTIALS {Invalid username or password} AUTH_SERVICE_UNAVAILABLE {Auth service is down - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
+      "errors": "{code, select, AUTH_INVALID_CREDENTIALS {Invalid username or password} AUTH_SERVICE_UNAVAILABLE {Service is not available - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
     },
     "signup": {
       "title": "Create an account",
       "subtitle": "Please enter you details to sign up",
       "instruction": "Already have an account?",
-      "errors": "{code, select, AUTH_SERVICE_UNAVAILABLE {Auth service is down - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
+      "errors": "{code, select, AUTH_SERVICE_UNAVAILABLE {Service is not available - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
     },
     "twoFactorAtLogin": {
       "overview": {
         "title": "Two-Factor Authentication",
         "subtitle": "Select one of the following methods to complete verification",
+        "errors": "{code, select, AUTH_CHALLENGE_EXPIRED {Challenge expired - Try again} AUTH_2FA_NOT_ENABLED {Method not enabled - Try again} AUTH_SERVICE_UNAVAILABLE {Service is not available - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}",
         "cards": {
           "title": "{method, select, TOTP {Authenticator App} EMAIL {Email} SMS {SMS} other {Authentication Method}}",
           "subtitle": "{method, select, TOTP {Using Google Authenticator, Authy...} EMAIL {Receive codes via Email} SMS {Receive codes via SMS} other {Authentication Method}}"
@@ -488,13 +489,15 @@
         "title": "Two-Factor Authentication",
         "subtitle": "{method, select, TOTP {Enter the 6-digit code from your Authenticator App} EMAIL {We've sent a 6-digit code to your Email} SMS {We've sent a 6-digit code via SMS} other {Enter the 6-digit code to complete verification}}",
         "cannot_access": "{method, select, TOTP {Cannot access your Authenticator App?} EMAIL {Cannot access your Email?} SMS {Cannot access your Phone?} other {Can't access this method?}}",
-        "other_method": "Try other verification methods"
+        "other_method": "Try other verification methods",
+        "errors": "{code, select, AUTH_CHALLENGE_EXPIRED {Challenge expired - Try again} AUTH_TOO_MANY_ATTEMPTS {Too many attempts - Try again} AUTH_TOO_MANY_RESENDS {Too many resends - Try again} AUTH_SERVICE_UNAVAILABLE {Service is not available - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
       }
     },
     "twoFactorManager": {
       "overview": {
         "title": "Two-Factor Authentication",
         "subtitle": "Add an extra layer of security to your account by choosing your preferred verification method",
+        "errors": "{code, select, AUTH_SERVICE_UNAVAILABLE {Service is not available - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}",
         "cards": {
           "title": "{method, select, TOTP {Authenticator App} EMAIL {Email} SMS {SMS} other {Authentication Method}}",
           "subtitle": "{method, select, TOTP {Using Google Authenticator, Authy...} EMAIL {Receive codes via Email} SMS {Receive codes via SMS} other {Authentication Method}}"
@@ -520,17 +523,17 @@
         "subtitle": "{method, select, TOTP {Scan the QR code with your authenticator app} EMAIL {We'll send a 6-digit verification code to your Email} SMS {We'll send a 6-digit verification code to your phone} other {We'll send a 6-digit verification code}}",
         "cant_scan_qr": "Can't scan? Enter this code manually:",
         "errors": {
-          "email": "{code, select, AUTH_SERVICE_UNAVAILABLE {Auth service is down - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}",
-          "phone": "{code, select, AUTH_SERVICE_UNAVAILABLE {Auth service is down - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
+          "email": "{code, select, AUTH_SERVICE_UNAVAILABLE {Service is not available - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}",
+          "phone": "{code, select, AUTH_SERVICE_UNAVAILABLE {Service is not available - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
         }
       },
       "verifyCode": {
         "title": "{method, select, TOTP {Authenticator App} EMAIL {Email} SMS {SMS} other {Authentication Method}}",
         "subtitle": "{method, select, TOTP {Enter the 6-digit code from your Authenticator App} EMAIL {We've sent a 6-digit code to your Email} SMS {We've sent a 6-digit code via SMS} other {Enter the 6-digit code to complete verification}}",
         "errors": {
-          "email": "{code, select, AUTH_CHALLENGE_EXPIRED {Challenge expired - Try again} AUTH_TOO_MANY_ATTEMPTS {Too many attempts - Try again} AUTH_TOO_MANY_RESENDS {Too many resends - Try again} AUTH_SERVICE_UNAVAILABLE {Auth service is down - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}",
-          "phone": "{code, select, AUTH_CHALLENGE_EXPIRED {Challenge expired - Try again} AUTH_TOO_MANY_ATTEMPTS {Too many attempts - Try again} AUTH_TOO_MANY_RESENDS {Too many resends - Try again}} AUTH_SERVICE_UNAVAILABLE {Auth service is down - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}",
-          "totp": "{code, select, AUTH_CHALLENGE_EXPIRED {Challenge expired - Try again} AUTH_TOO_MANY_ATTEMPTS {Too many attempts - Try again} AUTH_TOO_MANY_RESENDS {Too many resends - Try again}} AUTH_SERVICE_UNAVAILABLE {Auth service is down - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
+          "email": "{code, select, AUTH_CHALLENGE_EXPIRED {Challenge expired - Try again} AUTH_TOO_MANY_ATTEMPTS {Too many attempts - Try again} AUTH_TOO_MANY_RESENDS {Too many resends - Try again} AUTH_SERVICE_UNAVAILABLE {Service is not available - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}",
+          "phone": "{code, select, AUTH_CHALLENGE_EXPIRED {Challenge expired - Try again} AUTH_TOO_MANY_ATTEMPTS {Too many attempts - Try again} AUTH_TOO_MANY_RESENDS {Too many resends - Try again} AUTH_SERVICE_UNAVAILABLE {Service is not available - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}",
+          "totp": "{code, select, AUTH_CHALLENGE_EXPIRED {Challenge expired - Try again} AUTH_TOO_MANY_ATTEMPTS {Too many attempts - Try again} AUTH_TOO_MANY_RESENDS {Too many resends - Try again} AUTH_SERVICE_UNAVAILABLE {Service is not available - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
         }
       },
       "note": {
@@ -544,19 +547,19 @@
         "title": "Forgot your password?",
         "subtitle": "We've sent a 6-digit code to your Email",
         "instruction": "Remember your password?",
-        "errors": "{code, select, AUTH_NO_EMAIL_ASSOCIATED {No email is associated with this account} AUTH_SERVICE_UNAVAILABLE {Auth service is down - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
+        "errors": "{code, select, AUTH_NO_EMAIL_ASSOCIATED {No email is associated with this account} AUTH_SERVICE_UNAVAILABLE {Service is not available - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
       },
       "verifyCode": {
         "title": "Check your Email!",
         "subtitle": "We've sent a 6-digit code to your Email",
         "instruction": "Remember your password?",
-        "errors": "{code, select, AUTH_CHALLENGE_EXPIRED {Challenge expired - Try again} AUTH_TOO_MANY_ATTEMPTS {Too many attempts - Try again} AUTH_TOO_MANY_RESENDS {Too many resends - Try again} AUTH_SERVICE_UNAVAILABLE {Auth service is down - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
+        "errors": "{code, select, AUTH_CHALLENGE_EXPIRED {Challenge expired - Try again} AUTH_TOO_MANY_ATTEMPTS {Too many attempts - Try again} AUTH_TOO_MANY_RESENDS {Too many resends - Try again} AUTH_SERVICE_UNAVAILABLE {Service is not available - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
       },
       "setNewPassword": {
         "title": "Create a New Password",
         "subtitle": "Please enter and confirm your new password",
         "instruction": "Remember your password?",
-        "errors": "{code, select, AUTH_CHALLENGE_EXPIRED {Challenge expired - Try again} AUTH_SERVICE_UNAVAILABLE {Auth service is down - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
+        "errors": "{code, select, AUTH_CHALLENGE_EXPIRED {Challenge expired - Try again} AUTH_SERVICE_UNAVAILABLE {Service is not available - Try again later} AUTH_NETWORK_ERR {Please check your connection} other {Something went wrong - Try again}}"
       }
     }
   },

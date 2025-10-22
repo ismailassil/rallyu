@@ -17,6 +17,7 @@ interface OverviewProps {
 
 export default function Overview({ onSetup }: OverviewProps) {
 	const t = useTranslations('');
+	const t2fao = useTranslations('auth.twoFactorManager.overview');
 
 	const {
 		loggedInUser,
@@ -53,10 +54,11 @@ export default function Overview({ onSetup }: OverviewProps) {
 			});
 
 			await executeAPICall(() => apiClient.mfa.enableMethod(m));
-
 		} catch (err: any) {
-			toastError(err.message);
+			if (err.message === 'AUTH_2FA_ALREADY_ENABLED')
+				return ;
 
+			toastError(t2fao('errors', { code: err.message }));
 			setEnabledMethods(prev => {
 				if (prev === null) return null;
 				if (prev.includes(m)) return prev.filter((value) => value != m);
@@ -74,10 +76,11 @@ export default function Overview({ onSetup }: OverviewProps) {
 			});
 
 			await executeAPICall(() => apiClient.mfa.disableMethod(m));
-
 		} catch (err: any) {
-			toastError(err.message);
+			if (err.message === 'AUTH_2FA_NOT_ENABLED')
+				return ;
 
+			toastError(t2fao('errors', { code: err.message }));
 			setEnabledMethods(prev => {
 				if (prev === null) return null;
 				if (prev.includes(m)) return prev;

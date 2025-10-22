@@ -78,7 +78,7 @@ class TwoFactorChallengeService {
 	}
 
 	async selectMethod(token: UUID, method: AuthChallengeMethod) {
-		let targetChall = await this.challengeRepository.findByQuery(
+		const targetChall = await this.challengeRepository.findByQuery(
 			token,
 			'PENDING',
 			'2fa_login'

@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import MethodsOverview from "./components/Overview";
-import { toastSuccess, toastError } from "@/app/components/CustomToast";
 import MainCardWrapper from "../components/UI/MainCardWrapper";
 import { motion } from "framer-motion";
 import PhoneVerification from "@/app/(auth)/components/Verification/Phone/PhoneVerification";
@@ -52,12 +50,7 @@ export default function TwoFAManagerPage() {
 	}
 
 	async function handleEnableAfterVerification(m: 'TOTP' | 'SMS' | 'EMAIL') {
-		try {
-			await executeAPICall(() => apiClient.mfa.enableMethod(m));
-			toastSuccess(`2FA via ${m} enabled`);
-		} catch (err: any) {
-			toastError(err.message);
-		}
+		try { await executeAPICall(() => apiClient.mfa.enableMethod(m)); } catch {}
 	}
 
 	function renderCurrentStep() {
@@ -73,7 +66,6 @@ export default function TwoFAManagerPage() {
 					<TOTPVerification
 						onReset={() => setCurrentStep(STEP.OVERVIEW)}
 						onSuccess={() => {
-							// handleEnableAfterVerification('TOTP');
 							setCurrentStep(STEP.DONE);
 						}}
 						onFailure={() => {

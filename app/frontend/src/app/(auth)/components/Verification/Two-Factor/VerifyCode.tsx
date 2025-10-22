@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import OTPCodeInput from '../../Form/OTPCodeInput';
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useRef, useState } from "react";
@@ -20,6 +21,7 @@ interface VerifyCodeProps {
 
 export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess, onFailure, onGoBack } : VerifyCodeProps) {
 	const t = useTranslations('auth');
+	const t2fav = useTranslations('auth.twoFactorAtLogin.verifyCode');
 
 	const {
 		apiClient,
@@ -39,12 +41,8 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 	const [hasError, setHasError] = useState(false);
 	const inputRefs = useRef([]);
 
-	async function handleSubmit() {
-		// if (!['TOTP', 'SMS', 'EMAIL'].includes(method)) {
-		// 	toastError('Please sign in again.');
-		// 	router.replace('/login');
-		// 	return ;
-		// }
+	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
 
 		const OTPJoined = code.join('');
 		if (OTPJoined.length !== 6) {
@@ -61,24 +59,18 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 				OTPJoined
 			));
 			onSuccess();
-		} catch (err) {
-			setHasError(true);
-			setTimeout(() => {
-				setHasError(false);
-				if ((err as APIError).code !== 'AUTH_INVALID_CODE')
-					onFailure();
-			}, 1000);
-			toastError((err as APIError).message);
+		} catch (err: any) {
+			if (err.message === 'AUTH_INVALID_CODE') {
+				setHasError(true);
+				setTimeout(() => setHasError(false), 1000);
+			} else {
+				toastError(t2fav('errors', { code: err.message }));
+				onFailure();
+			}
 		}
 	}
 
 	async function handleResend() {
-		// if (!['TOTP', 'SMS', 'EMAIL'].includes(method)) {
-		// 	toastError('Please sign in again.');
-		// 	router.replace('/login');
-		// 	return ;
-		// }
-
 		try {
 			await resendCode(() => apiClient.auth.resend2FACode(
 				loginSessionMeta.token,
@@ -105,7 +97,7 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 			</div>
 
 			{/* OTP Input + Verify Button + Resend Button */}
-			<div className="flex flex-col gap-3">
+			<form className="flex flex-col gap-3" onSubmit={handleSubmit}>
 				<OTPCodeInput
 					code={code}
 					setCode={setCode}
@@ -116,9 +108,9 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 
 				<FormButton
 					text={t('common.continue')}
+					type='submit'
 					icon={<ArrowRight size={16} />}
-					onClick={handleSubmit}
-					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '')}
+					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '') || hasError}
 					isSubmitting={isVerifyingCode}
 				/>
 
@@ -129,7 +121,7 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 						onMaxResends={onFailure}
 					/>
 				)}
-			</div>
+			</form>
 
 			{loginSessionMeta.enabledMethods.length > 1 && <p className='mt-12 self-center text-center'>{t('twoFactorAtLogin.verifyCode.cannot_access', { method: selectedMethod })}<br></br><a onClick={onGoBack} className="font-semibold text-blue-500 hover:underline cursor-pointer">{t('twoFactorAtLogin.verifyCode.other_method')}</a></p>}
 		</AnimatedComponent>

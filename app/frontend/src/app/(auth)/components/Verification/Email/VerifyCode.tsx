@@ -109,7 +109,7 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 					text={t('common.continue')}
 					type='submit'
 					icon={<ArrowRight size={16} />}
-					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '')}
+					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '') || hasError}
 					isSubmitting={isVerifyingCode}
 				/>
 
