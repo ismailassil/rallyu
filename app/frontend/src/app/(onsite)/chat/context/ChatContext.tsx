@@ -4,6 +4,9 @@ import { useContext, createContext, useState, ReactNode, useEffect } from "react
 import React from 'react';
 import { useAuth } from "../../contexts/AuthContext";
 import { LoggedUser, MessageType } from "../types/chat.types";
+import { format, isToday, isYesterday, parseISO, isSameDay } from 'date-fns';
+import { useTranslations } from "next-intl";
+
 
 type ChatContextType = {
 	showConversation: boolean;
@@ -18,6 +21,11 @@ type ChatContextType = {
 	setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
 	selectedUser: LoggedUser | null;
 	setSelectedUser: React.Dispatch<React.SetStateAction<LoggedUser | null>>;
+	formatMessageDateTime: (
+		currentMsg: string,
+		mode: 'conversation' | 'list',
+		prevMsg?: string | undefined,
+	) => { date: string; time: string };
 }
 
 const ChatContext = createContext<ChatContextType | null>(null);
@@ -41,6 +49,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	const [messages, setMessages] = useState<MessageType[]>([]);
 	const [selectedUser, setSelectedUser] = useState<LoggedUser | null>(null);
 	const { socket, apiClient, loggedInUser: BOSS } = useAuth();
+	const t = useTranslations("chat");
 
 	useEffect(() => {
 		async function getAllFriends() {
@@ -59,7 +68,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	useEffect(() => {
 		socket.updateContext("chat");
 	}, [socket]);
-	
+
 
 	const playMessageSound = () => {
 		const audio = new Audio("/message.mp3");
@@ -97,8 +106,41 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			.catch((error: any) => {
 				console.error("Error fetching chat history:", error);
 			});
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	const formatMessageDateTime = (currentMsg: string, mode: 'conversation' | 'list', prevMsg?: string,) => {
+		
+		if (!currentMsg) return {date: "", time: ""}
+		
+		const currentDate = parseISO(currentMsg + "Z");
+		const prevDate = prevMsg ? parseISO(prevMsg + "Z") : null;
+
+		let date = "";
+		const time = format(currentDate, "HH:mm");
+
+		if (mode === 'conversation') {
+			if (prevDate && isSameDay(currentDate, prevDate)) {
+				date = "";
+			} else if (isToday(currentDate)) {
+				date = t("dates.today");
+			} else if (isYesterday(currentDate)) {
+				date = t("dates.yesterday");
+			} else {
+				date = format(currentDate, "dd/MM/yyyy");
+			}
+		} else if (mode === 'list') {
+			if (isToday(currentDate)) {
+				date = time;
+			} else if (isYesterday(currentDate)) {
+				date = t("dates.yesterday");
+			} else {
+				date = format(currentDate, "dd/MM/yyyy");
+			}
+		}
+
+		return { date, time };
+	};
 
 	return (
 		<ChatContext.Provider value={{
@@ -114,6 +156,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			setMessages,
 			selectedUser,
 			setSelectedUser,
+			formatMessageDateTime,
 		}}>
 			{children}
 		</ChatContext.Provider>
