@@ -1,11 +1,11 @@
-"use client"
-import React, { useState, useEffect, useRef, useContext } from 'react'
-import Image from "next/image"
+"use client";
+import React, { useState, useEffect, useRef, } from 'react';
+import Image from "next/image";
 import { useChat } from '../context/ChatContext';
-import moment from 'moment';
 import { MessageType } from '../types/chat.types';
 import { AlertCircle } from 'lucide-react';
 import ConversationHeader from './ConversationHeader';
+import { useTranslations } from 'next-intl';
 
 /*
 	==== TO FIX ===
@@ -25,11 +25,14 @@ import ConversationHeader from './ConversationHeader';
 
 const ConversationBody = () => {
 	const [message, setMessage] = useState("");
-	const { socket, BOSS, messages, selectedUser, apiClient, setMessages } = useChat();
+	const { socket, BOSS, messages, selectedUser, formatMessageDateTime } = useChat();
 	const [filteredMessages, setfilteredMessages] = useState<MessageType[]>([]);
 	const messageRef = useRef<HTMLDivElement | null>(null);
+	const t = useTranslations("chat");
+
 
 	useEffect(() => {
+		setMessage("");
 		messageRef.current?.scrollIntoView({ behavior: 'auto' });
 	}, [filteredMessages]);
 
@@ -38,13 +41,12 @@ const ConversationBody = () => {
 			e.preventDefault();
 			sendData();
 		}
-	}
+	};
 	const sendData = () => {
 		const data = message.trim();
 
 		if (data !== "" && BOSS) {
 			const newMessage = {
-				id: Date.now(),
 				senderId: BOSS.id,
 				receiverId: selectedUser?.id,
 				text: data,
@@ -55,7 +57,7 @@ const ConversationBody = () => {
 	};
 
 	useEffect(() => {
-		if (!BOSS || !selectedUser) return;
+		if (!BOSS?.id || !selectedUser?.id) return;
 
 		const filtered = messages.filter((msg) =>
 			(msg.senderId === BOSS.id && msg.receiverId === selectedUser.id) ||
@@ -63,24 +65,6 @@ const ConversationBody = () => {
 		);
 		setfilteredMessages(filtered);
 	}, [messages, selectedUser?.id, BOSS?.id]);
-
-	const setDate = (currentMsg: string, prevMsg?: string): string => {
-		const currentDate = moment(currentMsg);
-		const prevDate = prevMsg ? moment(prevMsg) : null;
-
-
-		if (prevDate && prevDate.isSame(currentDate, "day")) {
-			return "";
-		}
-
-		if (currentDate.isSame(moment(), "day")) {
-			return "Today";
-		} else if (currentDate.isSame(moment().subtract(1, "day"), "day")) {
-			return "Yesterday";
-		} else {
-			return currentDate.format("MMMM DD, YYYY");
-		}
-	};
 
 	return (
 		<div className={` size-full border border-white/30 rounded-lg flex flex-col md:bg-white/4 `}>
@@ -93,19 +77,23 @@ const ConversationBody = () => {
 
 			<div className='overflow-y-auto custom-scrollbar p-4 flex-1 overflow-x-hidden flex flex-col justify-end mb-2'>
 				<div className='flex flex-col gap-4 min-h-0'>
-					{filteredMessages.map((msg, index) => (
-						<React.Fragment key={index}>
-							<span className='text-xs text-white/50 m-auto'>{setDate(msg.created_at, filteredMessages[index - 1]?.created_at)}</span>
-							<div
-								className={`flex ${msg.senderId === BOSS?.id ? 'justify-end' : 'justify-start'}`}>
-								<div className={`max-w-[75%] border-white/30 border px-3 py-1.5 min-w-0 flex flex-col rounded-lg  break-words ${msg.senderId === BOSS?.id ? 'bg-blue-600/20 rounded-br-sm' : 'bg-white/10 rounded-bl-sm'}`}>
-									<span>{msg.text}</span>
-									<span className='text-xs text-white/50 self-end'>{moment.utc(msg.created_at).local().format('HH:mm')}</span>
-								</div>
-							</div>
+					{filteredMessages.map((msg, index) => {
+						const { date, time } = formatMessageDateTime(msg.created_at, "conversation", filteredMessages[index - 1]?.created_at);
 
-						</React.Fragment>
-					))}
+						return (
+							<React.Fragment key={index}>
+								<span className='text-xs text-white/50 m-auto'>{date}</span>
+								<div
+									className={`flex ${msg.senderId === BOSS?.id ? 'justify-end' : 'justify-start'}`}>
+									<div className={`max-w-[75%] border-white/30 border px-3 py-1.5 min-w-0 flex flex-col rounded-lg  break-words ${msg.senderId === BOSS?.id ? 'bg-blue-600/20 rounded-br-sm' : 'bg-white/10 rounded-bl-sm'}`}>
+										<span>{msg.text}</span>
+										<span className='text-xs text-white/50 self-end'>{time}</span>
+									</div>
+								</div>
+							</React.Fragment>
+						);
+					}
+					)}
 					<div ref={messageRef} />
 				</div>
 			</div>
@@ -117,7 +105,7 @@ const ConversationBody = () => {
 					<input
 						id='input-text'
 						type='text'
-						placeholder="Enter your message"
+						placeholder={t("input_placeholder")}
 						value={message}
 						maxLength={300}
 						onChange={(e) => setMessage(e.target.value)}
@@ -126,7 +114,7 @@ const ConversationBody = () => {
 					{message.length >= 300 &&
 						<div className=' text-red-500 text-xs flex items-center whitespace-nowrap gap-1'>
 							<AlertCircle size={12} />
-							<p>Max 300</p>
+							<p>{t("maximum")} 300</p>
 						</div>}
 					<Image
 						width={20}
@@ -139,8 +127,7 @@ const ConversationBody = () => {
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-
-export default ConversationBody
+export default ConversationBody;

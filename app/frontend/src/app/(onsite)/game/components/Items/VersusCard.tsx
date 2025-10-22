@@ -48,7 +48,7 @@ const PlayerCard = ({ side, info, disconnect } : { side: string, info: PlayerInf
     );
 
     return (
-        <div className={`flex flex-row items-center ${side === 'right' ? 'justify-end' : ''} gap-4 shadow-xl`}>
+        <div className={`flex flex-row mb-2 items-center ${side === 'right' ? 'justify-end' : ''} gap-4 shadow-xl`}>
             {side === 'left' ? (
                 <>
                     {avatar}

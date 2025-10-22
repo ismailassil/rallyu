@@ -9,6 +9,7 @@ export default getRequestConfig(async () => {
     messages: {
       ...(await import(`../src/messages/${locale}/dashboard.json`)),
       ...(await import(`../src/messages/${locale}/header.json`)),
+      ...(await import(`../src/messages/${locale}/chat.json`)),
     },
   };
 });

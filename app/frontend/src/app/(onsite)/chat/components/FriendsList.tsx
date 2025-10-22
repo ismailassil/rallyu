@@ -4,24 +4,24 @@ import { useEffect, useState } from 'react';
 import { LoggedUser } from '../types/chat.types';
 import { useChat } from '../context/ChatContext';
 import Avatar from '../../users/components/Avatar';
-import { format, isToday, isYesterday, parseISO } from 'date-fns';
-
+import { useTranslations } from 'next-intl';
 
 const FriendsList = () => {
 	const [prefix, setPrefix] = useState("");
 	const [filteredSuggestions, setFilteredSuggestions] = useState<LoggedUser[]>([]);
-	const { apiClient, messages, BOSS, setShowConversation, showConversation, setSelectedUser, selectedUser, } = useChat();
+	const { apiClient, messages, BOSS, setShowConversation, showConversation, setSelectedUser, selectedUser, formatMessageDateTime} = useChat();
 	const [displayUsers, setDisplayUsers] = useState<LoggedUser[]>([]);
 	const hasFriends = prefix ? filteredSuggestions.length > 0 : displayUsers.length > 0;
+	const t=useTranslations("chat");
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const input = event.target.value;
-		setPrefix(input)
+		setPrefix(input);
 		if (displayUsers) {
-			const filtred = (displayUsers as LoggedUser[]).filter(user => (user.first_name + user.last_name).toLowerCase().includes(input.toLowerCase()))
-			setFilteredSuggestions(filtred)
+			const filtred = (displayUsers as LoggedUser[]).filter(user => (user.first_name + user.last_name).toLowerCase().includes(input.toLowerCase()));
+			setFilteredSuggestions(filtred);
 		}
-	}
+	};
 
 	const handleSelectUser = (user: LoggedUser) => {
 		if (!user?.id) return;
@@ -32,38 +32,22 @@ const FriendsList = () => {
 		setShowConversation(true);
 		window.history.pushState(null, "", `/chat/${user.username}`);
 	};
-	
-
 
 	useEffect(() => {
 		if (!BOSS?.id) return;
 		apiClient.instance.get('/chat/friend_list')
-			.then((response: any) => {
-				setDisplayUsers(response.data)
+			.then((response : any) => { // check this
+				setDisplayUsers(response.data);
 			})
-			.catch((error: any) => {
+			.catch((error: Error) => {
 				console.error("Error fetching chat history:", error);
 			});
 	}, [BOSS?.id, apiClient, showConversation, messages]); // check this 
 
-
-
-	const setDate = (dateString: string): string => {
-		const date = parseISO(dateString);
-
-		if (isToday(date)) {
-			return format(date, 'HH:mm');
-		}
-		if (isYesterday(date)) {
-			return 'Yesterday';
-		}
-		return format(date, 'dd/MM/yyyy');
-	};
-
 	return (
 		<div className="flex size-full flex-col">
 			<div>
-				<h2 className="my-5 cursor-pointer text-4xl md:my-9">Chat</h2>
+				<h2 className="my-5 cursor-pointer text-4xl md:my-9">{t("title")}</h2>
 				<div className="relative w-full">
 					<div className="mb-6 flex w-full gap-2 rounded-full border-white/30 bg-white/8 p-2 transition-all duration-200 focus-within:bg-white/12 focus-within:ring-2 focus-within:ring-white/18">
 						<Image
@@ -76,7 +60,7 @@ const FriendsList = () => {
 							type="text"
 							value={prefix}
 							onChange={handleChange}
-							placeholder="Start Searching..."
+							placeholder={t("search")}
 							className="w-full bg-transparent placeholder-gray-400 focus:outline-none"
 						/>
 					</div>
@@ -86,6 +70,8 @@ const FriendsList = () => {
 				{hasFriends ? (
 					<ul>
 						{(prefix ? filteredSuggestions : displayUsers)?.map((user) => {
+						const { date } = formatMessageDateTime(user?.last_message.created_at, "list");
+
 							return (
 								< li key={user?.id} onClick={() => handleSelectUser(user)}>
 									<div className={`flex gap-4 hover:cursor-pointer hover:bg-white/5 hover:rounded-lg p-2 ${selectedUser?.id === user?.id ? 'bg-white/15 rounded-lg' : 'bg-white/0'} w-full`}>
@@ -99,13 +85,13 @@ const FriendsList = () => {
 										<div className='flex flex-col w-full gap-1 justify-between p-0.5 min-w-0'>
 											<div className='flex w-full justify-between items-center'>
 												<div className='line-clamp-1 flex-1 min-w-0'>{user?.first_name + " " + user?.last_name}</div>
-												{user.last_message && <div className='text-gray-400 flex-shrink-0 ml-2 text-xs min-w-0 truncate'>{setDate(user.last_message.created_at)}</div>}
+												{user.last_message && <div className='text-gray-400 flex-shrink-0 ml-2 text-xs min-w-0 truncate'>{date}</div>}
 											</div>
 											<div className='flex w-full justify-between items-center'>
 												<div className='text-gray-400 text-xs md:text-sm truncate flex-1'>
 													{user.last_message?.text || 'No messages yet'}
 												</div>
-												{/* {user.last_message.isSeen && <div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />} */}
+												{/* {<div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />} */}
 											</div>
 										</div>
 									</div>
@@ -115,7 +101,7 @@ const FriendsList = () => {
 					</ul>
 				) : (
 					<div className="flex h-full items-center justify-center">
-						<p className="md:text text-sm text-gray-400">No friends found</p>
+						<p className="md:text text-sm text-gray-400">{t("no_friends")}</p>
 					</div>
 				)}
 			</div>

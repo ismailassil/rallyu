@@ -6,7 +6,7 @@ class SocketProxy {
 	private socket: WebSocket | null = null;
 	private subscribers: MessageCallBack[] = [];
 
-	constructor() {};
+	constructor(private disconnectHandler: (reasong: string) => void) {}
 
 	private notifySubscribers(message: any) {
 		try {
@@ -38,7 +38,10 @@ class SocketProxy {
 		}
 
 		this.socket.onclose = (event: CloseEvent): void => {
-			console.log("Disconnected from Game Server", event.reason);
+			if (event.code > 1000 ) {
+				this.disconnectHandler(event.reason);
+			}
+			console.log("Disconnected from Game Server", event.code ,event.reason);
 			return;
 		}
 
