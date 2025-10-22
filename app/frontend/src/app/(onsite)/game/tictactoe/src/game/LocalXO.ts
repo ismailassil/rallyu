@@ -5,6 +5,11 @@ class LocalXO {
     TOTAL_ROUNDS: number = 3;
     TURN_TIMEOUT: number = 15000;
     COUNTDOWN_TIME: number = 3000;
+	NUM_PAD = {
+		7: 0, 8: 1, 9: 2,
+		4: 3, 5: 4, 6: 5,
+		1: 6, 2: 7, 3: 8
+	}
     WINNING_COMBOS: number[][] = [
         [0, 1, 2],
         [3, 4, 5],
@@ -170,8 +175,28 @@ class LocalXO {
 		return 'draw';
 	}
 
-	init(): void {
+	setupInputHandlers() {
+		const handleKeyDown = (ev: KeyboardEvent) => {
+			if (ev.key >= '1' && ev.key <= '9') {
+				const key = Number(ev.key) as keyof typeof this.NUM_PAD;
+				this.markCell(this.NUM_PAD[key]);
+			}
+		}
+
+		window.addEventListener('keydown', handleKeyDown);
+		return (() => {
+			window.removeEventListener('keydown', handleKeyDown);
+		})
+	}
+
+	init() {
+		const cleanUpInput = this.setupInputHandlers();
 		this.startRound();
+
+		return (() => {
+			cleanUpInput();
+			this.cleanUp();
+		})
 	}
 
 	cleanUp(): void {

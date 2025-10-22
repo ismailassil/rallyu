@@ -2,6 +2,11 @@ import { EventHandlers, XOState } from "@/app/(onsite)/game/types/types"
 import SocketProxy from '@/app/(onsite)/game/utils/socketProxy'
 
 class RemoteXO {
+    NUM_PAD = {
+		7: 0, 8: 1, 9: 2,
+		4: 3, 5: 4, 6: 5,
+		1: 6, 2: 7, 3: 8
+	}
     state: XOState;
     status: string = 'idle';
     index: number | undefined;
@@ -19,7 +24,7 @@ class RemoteXO {
         this.markCell = this.markCell.bind(this)
     }
 
-    init = (): (() => void) => {
+    setupCommunications = () => {
         return this.proxy.subscribe((data: any): void => {
             switch (data.type) {
                 case 'ready':
@@ -94,7 +99,31 @@ class RemoteXO {
             }
         })
     }
-	
+
+    private setupInputHandlers() {
+        const handleKeyDown = (ev: KeyboardEvent) => {
+			if (ev.key >= '1' && ev.key <= '9') {
+				const key = Number(ev.key) as keyof typeof this.NUM_PAD;
+				this.markCell(this.NUM_PAD[key]);
+			}
+		}
+
+        window.addEventListener('keydown', handleKeyDown);
+        return (() => {
+            window.removeEventListener('keydown', handleKeyDown);
+        })
+    }
+
+    init = () => {
+        const disconnect = this.setupCommunications();
+        const cleanupInput = this.setupInputHandlers();
+
+        return () => {
+            if(disconnect) disconnect();
+            cleanupInput();
+        }
+    }
+
 	forfeit = () => {
 		this.proxy.send(JSON.stringify({ type: 'forfeit' }));
 	}

@@ -1,4 +1,4 @@
-import { getVelocity, angles, updateState } from './physics'
+import { getVelocity, angles, updateState } from './pongPhysics'
 import type { Room, Player, PingPongGameState, PingPongStatus, GameType } from '../types/types'
 import ws from 'ws';
 import { closeRoom } from './roomManager';
@@ -7,7 +7,7 @@ import { MS_AUTH_PORT, MS_AUTH_API_KEY } from '../plugins/game';
 
 const GAME_UPDATE_INTERVAL = 16.67; // 60hz
 const GAME_START_DELAY = 3000; // 3 sec
-const GAME_TIME = 20000;
+const GAME_TIME = 30000;
 
 export class PingPongPlayer implements Player {
     id: number;
