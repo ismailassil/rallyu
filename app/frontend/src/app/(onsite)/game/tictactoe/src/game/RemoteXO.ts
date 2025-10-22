@@ -31,6 +31,7 @@ class RemoteXO {
                     this.eventHandlers?.updateConnection!(true);
                     break;
                 case 'opp_joined':
+                    console.log('%cOPP_JOINED', ' font-color: red;')
                     this.eventHandlers?.updateConnection!(false);
                     break;
                 case 'reconnected':

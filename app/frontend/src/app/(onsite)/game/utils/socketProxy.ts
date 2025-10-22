@@ -41,7 +41,7 @@ class SocketProxy {
 			if (event.code > 1000 ) {
 				this.disconnectHandler(event.reason);
 			}
-			console.log("Disconnected from Game Server", event.reason);
+			console.log("Disconnected from Game Server", event.code ,event.reason);
 			return;
 		}
 

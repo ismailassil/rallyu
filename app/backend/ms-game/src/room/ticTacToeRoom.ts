@@ -46,7 +46,6 @@ export class TicTacToePlayer implements Player<TicTacToeRoom> {
 
         this.socket.on('message', (message: ws.RawData) => {
             try {
-				console.log("received message: ", message);
                 const data = JSON.parse(message.toString());
 				switch (data.type) {
 					case 'move':
@@ -366,6 +365,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	}
 
 	startGame(): void {
+		this.running = true;
 		this.startTime = Math.floor(Date.now() / 1000);
 
 		this.players.forEach((p) => {
