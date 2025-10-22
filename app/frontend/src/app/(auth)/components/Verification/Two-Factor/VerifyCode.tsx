@@ -48,7 +48,6 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 
 		const OTPJoined = code.join('');
 		if (OTPJoined.length !== 6) {
-			toastError('Code is required');
 			setHasError(true);
 			setTimeout(() => {
 				setHasError(false);

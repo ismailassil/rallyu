@@ -348,18 +348,23 @@ export class APIClient {
 		return (ws);
 	}
 
-	private classifyError(err: any) : APIError {
-		if (!err.response) {
-			return {
-				code: 'NETWORK_ERR',
-				message: 'Network Error - Try again later!'
-			};
-		}
+	private classifyError(err: any) {
+		throw err;
+		// if (!err.response) {
+		// 	return {
+		// 		code: 'NETWORK_ERR',
+		// 		message: 'Network Error - Try again later!'
+		// 	};
+		// }
 
-		return {
-			code: err.response.data.error.code || 'ERROR',
-			message: err.response.data.error.message || 'Something Went Wrong! - Coming from ClassifyError',
-			details: err
-		};
+		// console.group('classifyError');
+		// console.log('err', err);
+		// console.groupEnd();
+
+		// return {
+		// 	code: err.response.data.error.code || 'ERROR',
+		// 	message: err.response.data.error.message || 'Something Went Wrong! - Coming from ClassifyError',
+		// 	details: err
+		// };
 	}
 }

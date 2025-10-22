@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, QrCode } from "lucide-react";
@@ -19,6 +20,7 @@ interface TOTPVerification {
 
 export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTPVerification) {
 	const t = useTranslations('auth');
+	const tvt = useTranslations('auth.verification.verifyCode');
 
 	const [token, setToken] = useState('');
 	const [TOTPSecrets, setTOTPSecrets] = useState<APITOTPSecrets | null>(null);
@@ -55,7 +57,6 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 
 		const OTPJoined = code.join('');
 		if (OTPJoined.length !== 6) {
-			toastError('Code is required');
 			setHasError(true);
 			setTimeout(() => {
 				setHasError(false);
@@ -70,14 +71,14 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 			));
 			triggerLoggedInUserRefresh();
 			onSuccess();
-		} catch (err) {
-			setHasError(true);
-			setTimeout(() => {
-				setHasError(false);
-				if ((err as APIError).code !== 'AUTH_INVALID_CODE')
-					onFailure();
-			}, 1000);
-			toastError((err as APIError).message);
+		} catch (err: any) {
+			if (err.message === 'AUTH_INVALID_CODE') {
+				setHasError(true);
+				setTimeout(() => setHasError(false), 1000);
+			} else {
+				toastError(tvt('errors.totp', { code: err.message }));
+				onFailure();
+			}
 		}
 	}
 

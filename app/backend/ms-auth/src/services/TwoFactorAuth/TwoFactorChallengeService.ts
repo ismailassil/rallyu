@@ -8,7 +8,7 @@ import AuthChallengesRepository, { AuthChallengeMethod } from '../../repositorie
 import { UUID } from 'crypto';
 import { NoEmailIsAssociated, NoPhoneIsAssociated, UserNotFoundError } from '../../types/exceptions/user.exceptions';
 import { TwoFANotEnabledError } from '../../types/exceptions/twofa.exception';
-import { AuthChallengeExpired, ExpiredCodeError, InvalidCodeError, TooManyAttemptsError, TooManyResendsError } from '../../types/exceptions/verification.exceptions';
+import { AuthChallengeExpired, InvalidCodeError, TooManyAttemptsError, TooManyResendsError } from '../../types/exceptions/verification.exceptions';
 import { BadRequestError } from '../../types/exceptions/AAuthError';
 
 const twoFAConfig = {
@@ -132,13 +132,13 @@ class TwoFactorChallengeService {
 		);
 
 		if (!targetChall)
-			throw new ExpiredCodeError();
+			throw new AuthChallengeExpired();
 
 		if (nowInSeconds() > targetChall.expires_at) {
 			await this.challengeRepository.update(targetChall.id, {
 				status: 'EXPIRED'
 			});
-			throw new ExpiredCodeError();
+			throw new AuthChallengeExpired();
 		}
 
 		const verifyFunc = targetChall.method === 'TOTP'
