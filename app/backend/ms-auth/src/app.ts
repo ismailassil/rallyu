@@ -110,7 +110,7 @@ async function buildApp(): Promise<FastifyInstance> {
 
 	// INIT CONTROLLERS
 	const passwordResetController = new PasswordResetController(passwordResetService);
-	const authController = new AuthController(authService, sessionsService);
+	const authController = new AuthController(authService, sessionsService, fastify.nats, fastify.js);
 	const twoFactorController = new TwoFactorController(twoFAMethodService);
 	const userController = new UserController(userService);
 	const relationsController = new RelationsController(relationsService, fastify.nats, fastify.js);
