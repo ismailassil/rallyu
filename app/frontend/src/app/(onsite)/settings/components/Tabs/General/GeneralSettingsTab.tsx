@@ -30,6 +30,7 @@ export interface FormDataState {
 
 export default function GeneralSettingsTab() {
 	const t = useTranslations('settings.general.cards.personal_infos');
+	const tautherr = useTranslations('auth');
 
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -60,8 +61,8 @@ export default function GeneralSettingsTab() {
 		{ debounceMs: { email: 1200, username: 1200 } }
 	);
 
-	const usernameStatus = useAvailabilityCheck('username', formData.username, loggedInUser!.username, debounced.username, errors.username);
-	const emailStatus = useAvailabilityCheck('email', formData.email, loggedInUser!.email, debounced.email, errors.email);
+	const { status: usernameStatus, setStatus: setUsernameStatus } = useAvailabilityCheck('username', formData.username, loggedInUser!.username, debounced.username, errors.username);
+	const { status: emailStatus, setStatus: setEmailStatus } = useAvailabilityCheck('email', formData.email, loggedInUser!.email, debounced.email, errors.email);
 	const canSave = useCanSave(formData, debounced, errors, avatarFile, usernameStatus, emailStatus, loggedInUser!, getValidationErrors);
 
 	function handleAvatarFileChange(e: ChangeEvent<HTMLInputElement>) {
@@ -133,7 +134,9 @@ export default function GeneralSettingsTab() {
 			resetForm(formData);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
-			toastError(err.message || 'Something went wrong, please try again later');
+			if (err.message === 'AUTH_USERNAME_TAKEN') setUsernameStatus('unavailable');
+			else if (err.message === 'AUTH_EMAIL_TAKEN') setEmailStatus('unavailable');
+			else toastError(tautherr('errorCodes', { code: err.message }));
 		} finally {
 			setIsSubmitting(false);
 		}
