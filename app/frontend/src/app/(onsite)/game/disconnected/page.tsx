@@ -3,10 +3,13 @@
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 const ConnectionRefused = () => {
     const query = useSearchParams();
     const reason = query.get('reason') || 'Somthing went wrong';
+    const t = useTranslations("game");
+    
 
     console.log('Reason: ', reason);
 
@@ -27,7 +30,7 @@ const ConnectionRefused = () => {
                     className="opacity-60"
                 />
                 <span className="max-w-[1000px] h-auto text-center break-words whitespace-pre-line text-3xl lg:text-4xl font-funnel-display font-bold opacity-60">
-                    {reason}
+                    {t("logs.error_codes", {code: reason})}
                 </span>
 			</article>
 		</motion.main>

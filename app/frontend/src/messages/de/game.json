@@ -1,0 +1,34 @@
+{
+    "game": {
+      "buttons": {
+        "play_again": "Nochmal Spielen",
+        "lobby": "Lobby",
+        "rematch": "Rematch",
+        "back": "Zurück zur Lobby"
+      },
+      "lobby": {
+        "in_queue": "In Warteschlange",
+        "match_found": "Match Gefunden",
+        "remote_play": "Remote-Spiel",
+        "local_play": "Lokales Spiel"
+      },
+      "gameover": {
+        "display": "{text, select, gameover {Spiel Beendet} win {Du Hast Gewonnen!} loss {Du Hast Verloren} draw {Unentschieden} cross {Kreuz Gewinnt} circle {Kreis Gewinnt} other {Spiel Beendet}}"
+      },
+      "logs": {
+        "room_not_found": "Raum Nicht Gefunden",
+        "error_codes": "{code, select, error_code_1 {Session- und Raum-ID stimmen nicht überein} error_code_2 {Match-Raum nicht gefunden} error_code_3 {Spieler ist nicht im Match-Raum} error_code_4 {Dasselbe Konto wurde von einem anderen Gerät gestartet. Verbinde dich erneut, wenn du dieses Gerät verwenden möchtest.} error_code_5 {Match-Raum Abgelaufen} other {Etwas ist schiefgelaufen}}"
+      },
+      "ingame": {
+        "round": "Runde",
+        "resign": "Aufgeben",
+        "resignmsg": "Bist du sicher, dass du aufgeben möchtest?",
+        "restart": "Neustart",
+        "rank": "Rang",
+        "lvl": "LVL"
+      },
+    "yes": "Ja",
+    "no": "Nein"
+    }
+}
+  

@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import smoochSans from "@/app/fonts/smosh";
 import { XOSign } from "../../types/types";
 import TurnIndicator from "./TurnIndicator";
+import { useTranslations } from "next-intl";
 
 interface PlayerInfo {
     username: string,
@@ -17,6 +18,8 @@ interface PlayerInfo {
 }
 
 const PlayerCard = ({ side, info, disconnect } : { side: string, info: PlayerInfo | null, disconnect?: boolean }) => {
+    const t = useTranslations("game");
+    
     const avatar =  (
         <div className="hidden md:flex sm:w-[60px] sm:h-[60px] md:w-[80px] md:h-[80px] xl:w-[100px] xl:h-[100px] border border-white/18 rounded-lg">
             {
@@ -34,8 +37,8 @@ const PlayerCard = ({ side, info, disconnect } : { side: string, info: PlayerInf
                     ? 
                     <div className={`flex flex-col justify-between h-full gap-1  ${side === 'right' ? 'items-end' : 'items-start' }`}>
                         <span className={`text-${side} md:text-lg lg:text-xl xl:text-3xl font-bold shadow-2xl`}>{info?.username}</span>
-                        <span className={`inline-flex flex-none text-xs xl:text-base whitespace-nowrap items-center justify-center px-3 text-md font-bold bg-white/90 rounded-full text-black`}>Rank {info.rank}</span>
-                        <span className={`text-${side} text-xs xl:text-lg opacity-40 font-medium`}>LVL {info?.level?.toFixed(2) || '0.00'}</span>
+                        <span className={`inline-flex flex-none text-xs xl:text-base whitespace-nowrap items-center justify-center px-3 text-md font-bold bg-white/90 rounded-full text-black`}>{t("ingame.rank")} {info.rank}</span>
+                        <span className={`text-${side} text-xs xl:text-lg opacity-40 font-medium`}>{t("ingame.lvl")} {info?.level?.toFixed(2) || '0.00'}</span>
                     </div>
                     :
                     <div className={`flex flex-col h-full justify-between ${side === 'right' && 'items-end' } py-2`}>
@@ -68,6 +71,7 @@ const PlayerCard = ({ side, info, disconnect } : { side: string, info: PlayerInf
 const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
     const [ popup, setPopup ] = useState(false);
     const popupRef = useRef<HTMLDivElement | null>(null);
+    const t = useTranslations("game");
 
     useEffect(() => {
         const handleClickOutside = (ev: PointerEvent) => {
@@ -100,7 +104,7 @@ const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
                         transition-all duration-200 opacity-50 hover:opacity-80 ${popup ? 'opacity-80' : 'opacity-50'} hover:scale-103 active:scale-96 py-1 px-2 gap-1`}
             >
                 <Flag className="aspect-square w-[17px]" />
-                <span className="font-bold lg:inline hidden font-funnel-display">Resign</span>
+                <span className="font-bold lg:inline hidden font-funnel-display">{t("ingame.resign")}</span>
             </button>
 
             <div
@@ -110,7 +114,7 @@ const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
                     ? "opacity-100 translate-y-0 pointer-events-auto"
                     : "opacity-0 translate-y-3 pointer-events-none"}`}
             >
-                <span className="font-funnel-display font-extrabold md:text-lg lg:text-xl whitespace-nowrap"> Are you sure you want to resign ?</span>
+                <span className="font-funnel-display font-extrabold md:text-lg lg:text-xl whitespace-nowrap">{t("ingame.resignmsg")}</span>
                 <div className="inline-flex gap-4 mx-2">
                     <button 
                         className="border border-bg flex-1 py-1 transition-all duration-150 rounded-lg active:scale-95 bg-green-700 cursor-pointer font-extrabold text-xl"
@@ -118,11 +122,11 @@ const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
                             if (handleResign) handleResign();
                             setPopup(false);
                         }}
-                    >Yes</button>
+                    >{t("yes")}</button>
                     <button
                         className="border border-bg flex-1 py-2 transition-all duration-150 rounded-lg active:scale-95 bg-neutral-700 cursor-pointer font-extrabold text-xl"
                         onClick={() => setPopup(false)}
-                    >No</button>
+                    >{t("no")}</button>
                 </div>
             </div>
         </motion.div>
@@ -145,6 +149,7 @@ const VersusCard = (
     const { apiClient, loggedInUser } = useAuth();
     const [loggedInUserInfo, setLoggedInUserInfo] = useState<PlayerInfo | null>(null);
     const [opponentInfo, setOpponentInfo] = useState<PlayerInfo | null>(null);
+    const t = useTranslations("game");
 
 
     useEffect(() => {
@@ -201,7 +206,7 @@ const VersusCard = (
                 </div>
 
                 <div className={`flex flex-col ${round ? 'justify-between py-2' : 'justify-end'} items-center h-full shrink-0`}>
-                    {round && <span className="text-md lg:text-lg xl:text-xl font-funnel-display font-extrabold italic">Round {round}</span>}
+                    {round && <span className="text-md lg:text-lg xl:text-xl font-funnel-display font-extrabold italic">{t("ingame.round")} {round}</span>}
                     <GameTimer time={timeLeft} className={`${round && 'rounded-2xl'}`} />
                 </div>
                 <div className="flex h-full w-auto flex-col py-2 justify-end items-center">

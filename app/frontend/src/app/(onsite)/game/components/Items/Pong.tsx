@@ -1,7 +1,9 @@
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
 const Pong = () => {
     const router = useRouter();
+    const t = useTranslations("game");
 
     const handleClick = async () => {
         router.push('/game/pingpong/local');
@@ -19,7 +21,7 @@ const Pong = () => {
                         fontFamily: 'Serious2b'
                     }}
                 >
-                        Local Play
+                    {t("lobby.local_play")}
                 </span>
                 <span
                     className="uppercase pl-7 pt-2 text-4xl sm:text-5xl md:text-6xl lg:text-7xl 2xl:text-8xl 4xl:text-9xl whitespace-nowrap"
@@ -27,7 +29,7 @@ const Pong = () => {
                         fontFamily: 'Serious2b'
                     }}
                 >
-                        pong
+                    pong
                 </span>
             </div>
             <div className="absolute top-1/5 right-3 h-[15%] bg-white w-[10px] group-hover:translate-y-[265%] transition-transform duration-600 ease-in-out delay-400 group-hover:delay-0" />

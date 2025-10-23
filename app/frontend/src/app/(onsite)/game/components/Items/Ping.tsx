@@ -1,7 +1,9 @@
 import useMatchmaking from "@/app/hooks/useMatchMaking";
+import { useTranslations } from "next-intl";
 
 const Ping = () => {
     const { queueTime, isSearching, found, toggleSearch } = useMatchmaking('pingpong');
+    const t = useTranslations("game");
 
     const formatTime = (seconds: number) => {
 		const mins = Math.floor(seconds / 60);
@@ -33,7 +35,7 @@ const Ping = () => {
                         fontFamily: 'Serious2b'
                     }}
                 >
-                        {isSearching ? `In Queue ${formatTime(queueTime)}` : found ? `Match Found` : 'remote play'}
+                        {isSearching ? `${t("lobby.in_queue")} ${formatTime(queueTime)}` : found ? `${t("lobby.match_found")}` : `${t("lobby.remote_play")}`}
                 </span>
             </div>
             <div className="absolute top-3/5 left-3 h-[15%] bg-white w-[10px] group-hover:-translate-y-[265%] transition-transform duration-600 ease-in-out delay-400 group-hover:delay-0" />
