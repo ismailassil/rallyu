@@ -7,6 +7,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import Avatar from "../../users/components/Avatar";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { ArrowFatUpIcon } from "@phosphor-icons/react";
 
 interface SearchByUsernameResult {
 	id: number;
@@ -31,7 +32,7 @@ export default function Search() {
 		function handleClick(event: MouseEvent | KeyboardEvent) {
 			if (
 				event instanceof KeyboardEvent &&
-				(event.key === "Escape" || (event.metaKey && event.key === "k"))
+				(event.key === "Escape" || (event.metaKey && event.key === "k" && event.shiftKey))
 			) {
 				if (event.key === "Escape" && !isSearch) return;
 				setIsSearch(!isSearch);
@@ -98,8 +99,9 @@ export default function Search() {
 					width={20}
 					height={20}
 				/>
-				<div className="hidden md:flex">
+				<div className="hidden md:flex items-center">
 					<Image src="/icons/command.svg" alt="Command Logo" width={15} height={15} />
+					<ArrowFatUpIcon size={18} />
 					<span className={`text-lg`}>K</span>
 				</div>
 			</div>
@@ -110,7 +112,7 @@ export default function Search() {
 						animate={{ opacity: 1 }}
 						transition={{ duration: 0.2, ease: "easeInOut" }}
 						exit={{ opacity: 0 }}
-						className="md:10 fixed inset-0 z-50 flex w-full flex-col items-center bg-black/60 pt-10 pr-3 pb-5 pl-3 backdrop-blur-2xl md:p-20 lg:p-40 lg:pb-20"
+						className="fixed inset-0 z-50 flex w-full h-screen flex-col items-center pt-10 pr-3 pb-5 pl-3 backdrop-blur-md md:p-20 lg:p-40 lg:pb-20"
 					>
 						<div className="h-full w-[100%] max-w-220 lg:w-[80%]">
 							<div
