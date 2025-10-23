@@ -1,6 +1,9 @@
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
 const LandingPageFooter = () => {
+	const t = useTranslations("landing");
+
 	return (
 		<div className="flex justify-between">
 			<Image
@@ -11,7 +14,7 @@ const LandingPageFooter = () => {
 				priority={true}
 				className={`cursor-pointer transition-transform duration-500`}
 			/>
-			<p className='text-xs md:text-sm text-right'>© 2025 RALLYU. All rights reserved.</p>
+			<p className='text-xs md:text-sm text-right'>{t('footer.copyright')}</p>
 		</div>
 	);
 };

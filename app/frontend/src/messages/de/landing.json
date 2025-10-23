@@ -1,0 +1,47 @@
+{
+  "landing": {
+    "headline": "Betritt die Arena mit RALLYU!",
+    "subheadline": "Wo klassische Spiele auf Echtzeit-Herausforderung treffen. Spiele temporeiches <strong>Ping Pong</strong> und cleveres <strong>Tic Tac Toe</strong> — direkt im Browser.",
+    "description": {
+      "pingpong": "Duelliere dich in blitzschnellen Ping-Pong-Matches oder überliste Rivalen im Tic Tac Toe — alles in Echtzeit."
+    },
+    "buttons": {
+      "login": "Anmelden",
+      "signup": "Registrieren",
+      "play_now": "Jetzt spielen!",
+      "get_started": "Loslegen"
+    },
+    "features": {
+      "title": "Kernfunktionen",
+      "items": {
+        "feature_1": {
+          "title": "Echtzeit-Matches",
+          "description": "Fordere Freunde heraus oder finde zufällige Gegner weltweit."
+        },
+        "feature_2": {
+          "title": "Blitzschnelles Ping Pong",
+          "description": "Schnelle Ballwechsel, spannende Matches und epischer Aufstieg in den Bestenlisten."
+        },
+        "feature_3": {
+          "title": "Strategisches Tic Tac Toe",
+          "description": "Einfach zu lernen, strategisch zu meistern — jeder Zug zählt."
+        },
+        "feature_4": {
+          "title": "Live-Chat",
+          "description": "Rede, lache und plane deinen nächsten Zug mit Gegnern und Freunden."
+        },
+        "feature_5": {
+          "title": "Überall spielbar",
+          "description": "Spiele jederzeit und überall mit einer reibungslosen, nahtlosen Erfahrung auf jedem Gerät."
+        },
+        "feature_6": {
+          "title": "Schlanke, moderne UI",
+          "description": "Ein sauberes und intuitives Design — ideal für Freizeit- und Wettkampfspieler."
+        }
+      }
+    },
+    "footer": {
+      "copyright": "© 2025 RALLYU. Alle Rechte vorbehalten."
+    }
+  }
+}

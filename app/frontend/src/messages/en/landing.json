@@ -1,0 +1,47 @@
+{
+  "landing": {
+    "headline": "Step into the arena with RALLYU!",
+    "subheadline": "Where classic games meet real-time challenge. Play fast-paced <strong>Ping Pong</strong> and clever <strong>Tic Tac Toe</strong> — all in your browser.",
+    "description": {
+      "pingpong": "Duel in lightning-fast Ping Pong matches or outsmart rivals in Tic Tac Toe — all in real time."
+    },
+    "buttons": {
+      "login": "Login",
+      "signup": "Sign up",
+      "play_now": "Play Now!",
+      "get_started": "Get Started"
+    },
+    "features": {
+      "title": "Core Features",
+      "items": {
+        "feature_1": {
+          "title": "Real-Time Matches",
+          "description": "Challenge friends or find random opponents from around the world."
+        },
+        "feature_2": {
+          "title": "Lightning-Fast Ping Pong",
+          "description": "Fast-paced rallies, thrilling matches, and epic leaderboard climbing excitement."
+        },
+        "feature_3": {
+          "title": "Strategic Tic Tac Toe",
+          "description": "Simple to learn, strategic to master—every move counts."
+        },
+        "feature_4": {
+          "title": "Live Chat",
+          "description": "Talk, laugh, and plan your next move with opponents and friends."
+        },
+        "feature_5": {
+          "title": "Play Anywhere",
+          "description": "Play anytime, anywhere with a smooth and seamless experience on any device."
+        },
+        "feature_6": {
+          "title": "Sleek, Modern UI",
+          "description": "Clean and intuitive design for casual and competitive players alike."
+        }
+      }
+    },
+    "footer": {
+      "copyright": "© 2025 RALLYU. All rights reserved."
+    }
+  }
+}

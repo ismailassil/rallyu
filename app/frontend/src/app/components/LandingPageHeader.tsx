@@ -1,37 +1,40 @@
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import LangSwitcher from "../(auth)/components/UI/LangSwitcher";
+import { useTranslations } from "next-intl";
 
 const LandingPageHeader = () => {
 	const [logo, setLogo] = useState(false);
 	const router = useRouter();
+	const t = useTranslations("landing.buttons");
 
 	return (
-		<header
-			className="h-30 fixed left-0 top-0 flex w-full
-					py-6 px-16 sm:justify-between items-center sm:items-center flex-col gap-4 sm:gap-0 sm:flex-row"
-		>
+		<header className="fixed top-0 left-0 flex h-30 w-full flex-col items-center gap-4 px-16 py-6 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
 			<Image
-				src={!logo ? '/logo/rallyu-logo.svg' : '/logo/rallyu-jp.svg'}
+				src={!logo ? "/logo/rallyu-logo.svg" : "/logo/rallyu-jp.svg"}
 				alt="Logo"
 				width={138}
 				height={38}
 				priority={true}
-				className={`cursor-pointer pl-0 sm:pl-6 transition-transform duration-500
-						${logo ? 'scale-105' : 'scale-100'}`}
+				className={`cursor-pointer pl-0 transition-transform duration-500 sm:pl-6 ${logo ? "scale-105" : "scale-100"}`}
 				onClick={() => setLogo(!logo)}
 			/>
 
-			<div className="flex justify-between h-12 w-58 gap-7 *:cursor-pointer *:hover:scale-102 *:duration-400">
-				<button onClick={() => router.push('/login')} className='border bg-white/3 border-card flex-1 rounded-md hover:scale-102 duration-400 hover:ring-2 ring-white/10'>Login</button>
+			<div className="flex h-13 w-auto justify-between gap-7 *:cursor-pointer *:duration-400 *:hover:scale-102">
 				<button
-					onClick={() => router.push('/signup')}
-					className="bg-main flex-1 rounded-md whitespace-nowrap 
-						hover:bg-main-hover hover:ring-2 ring-white/10
-						hover:scale-102 duration-400"
+					onClick={() => router.push("/login")}
+					className="border-card text-nowrap px-7 flex-1 rounded-md border bg-white/3 ring-white/10 duration-400 hover:scale-102 hover:ring-2"
 				>
-					Sign up
+					{t('login')}
 				</button>
+				<button
+					onClick={() => router.push("/signup")}
+					className="bg-main text-nowrap hover:bg-main-hover px-7 flex-1 rounded-md whitespace-nowrap ring-white/10 duration-400 hover:scale-102 hover:ring-2"
+					>
+					{t('signup')}
+				</button>
+				<LangSwitcher />
 			</div>
 		</header>
 	);
