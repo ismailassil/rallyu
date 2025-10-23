@@ -1,10 +1,9 @@
-import fastify, { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import AuthService from "../services/Auth/AuthService";
 import { ILoginRequest, IRegisterRequest } from "../types";
 import AuthResponseFactory from "./AuthResponseFactory";
 import SessionsService from "../services/Auth/SessionsService";
 import { UUID } from "crypto";
-import { TokenRequiredError } from "../types/exceptions/auth.exceptions";
 import { AuthChallengeMethod } from "../repositories/AuthChallengesRepository";
 import { JSONCodec } from "nats";
 

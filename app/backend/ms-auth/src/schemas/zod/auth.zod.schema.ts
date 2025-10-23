@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { emailField, firstNameField, lastNameField, passwordField, usernameField } from './shared';
+import { emailField, firstNameField, lastNameField, passwordField, phoneNumberField, usernameField } from './shared';
 
 const register = z.object({
 	first_name: firstNameField,
@@ -17,6 +17,14 @@ const resetpassword = z.object({
 	email: emailField
 });
 
+const verifyemail = z.object({
+	target: emailField
+});
+
+const verifyphone = z.object({
+	target: phoneNumberField
+});
+
 export const authRoutesZodSchemas = {
 	core: {
 		register: register
@@ -26,5 +34,9 @@ export const authRoutesZodSchemas = {
 		reset: {
 			request: resetpassword
 		}
+	},
+	verify: {
+		email: verifyemail,
+		phone: verifyphone
 	}
 }

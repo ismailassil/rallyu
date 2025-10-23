@@ -96,18 +96,18 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	}, [socket]);
 
 
-	useEffect(() => {
-		if (!BOSS?.id) return;
+	// useEffect(() => {
+	// 	if (!BOSS?.id) return;
 
-		apiClient.instance.get('/chat/history')
-			.then((response: any) => {
-				setMessages(response?.data);
-			})
-			.catch((error: any) => {
-				console.error("Error fetching chat history:", error);
-			});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	// 	apiClient.instance.get('/chat/history')
+	// 		.then((response: any) => {
+	// 			setMessages(response?.data);
+	// 		})
+	// 		.catch((error: any) => {
+	// 			console.error("Error fetching chat history:", error);
+	// 		});
+	// 	// eslint-disable-next-line react-hooks/exhaustive-deps
+	// }, []);
 
 	const formatMessageDateTime = (currentMsg: string | undefined, mode: 'conversation' | 'list', prevMsg?: string,) => {
 		

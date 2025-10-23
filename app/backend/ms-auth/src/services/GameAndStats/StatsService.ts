@@ -11,13 +11,13 @@ class StatsService {
 		private statsRepository: StatsRepository
 	) {}
 
-	async createUserRecords(userID: number) {
-		const existingUser = await this.userRepository.findOne(userID);
-		if (!existingUser)
-			throw new UserNotFoundError();
+	// async createUserRecords(userID: number) {
+	// 	const existingUser = await this.userRepository.findOne(userID);
+	// 	if (!existingUser)
+	// 		throw new UserNotFoundError();
 
-		await this.statsRepository.create(userID);
-	}
+	// 	await this.statsRepository.create(userID);
+	// }
 
 	async getUserRecords(userID: number) : Promise<any | null> {
 		const existingUser = await this.userRepository.findOne(userID);

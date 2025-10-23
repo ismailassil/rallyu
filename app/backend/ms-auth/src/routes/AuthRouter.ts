@@ -188,9 +188,20 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	});
 
 	/*-------------------------------------------------- Verification --------------------------------------------------*/
-	fastify.post('/verify-:contact', {
+	fastify.post('/verify-email', {
 		schema: schemas.verifyContact.request,
-		preHandler: fastify.accessTokenAuth,
+		preHandler: [
+			fastify.accessTokenAuth,
+			zodPreHandler(zodSchemas.verify.email)
+		],
+		handler: opts.verificationController.requestHandler.bind(opts.verificationController)
+	});
+	fastify.post('/verify-phone', {
+		schema: schemas.verifyContact.request,
+		preHandler: [
+			fastify.accessTokenAuth,
+			zodPreHandler(zodSchemas.verify.phone)
+		],
 		handler: opts.verificationController.requestHandler.bind(opts.verificationController)
 	});
 	fastify.post('/verify-:contact/verify', {
