@@ -19,7 +19,7 @@ export default function Overview({ loginSessionMeta, onSuccess, onFailure }: Met
 	const router = useRouter();
 
 	const t = useTranslations('auth.twoFactorAtLogin.overview');
-	const t2fao = useTranslations('auth.twoFactorAtLogin.overview');
+	const tautherr = useTranslations('auth');
 
 	const {
 		apiClient
@@ -47,7 +47,7 @@ export default function Overview({ loginSessionMeta, onSuccess, onFailure }: Met
 			));
 			onSuccess(m);
 		} catch (err: any) {
-			toastError(t2fao('errors', { code: err.message }));
+			toastError(tautherr('errorCodes', { code: err.message }));
 			onFailure();
 		}
 		setSelectedMethod(null);

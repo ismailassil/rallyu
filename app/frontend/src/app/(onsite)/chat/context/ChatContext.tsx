@@ -109,7 +109,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	// 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	// }, []);
 
-	const formatMessageDateTime = (currentMsg: string, mode: 'conversation' | 'list', prevMsg?: string,) => {
+	const formatMessageDateTime = (currentMsg: string | undefined, mode: 'conversation' | 'list', prevMsg?: string,) => {
 		
 		if (!currentMsg) return {date: "", time: ""}
 		

@@ -46,6 +46,8 @@ async function authRouter(fastify: FastifyInstance, opts: {
 
 	/*---------------------------------------- OAuth ----------------------------------------*/
 	fastify.get('/google', (request: FastifyRequest, reply: FastifyReply) => {
+		const { frontendOrigin } = request.query as { frontendOrigin: string };
+
 		const scope = ['openid', 'profile', 'email'];
 
 		const googleOAuthConsentURL = oauthConfig.google.auth_uri + '?' +
@@ -55,10 +57,12 @@ async function authRouter(fastify: FastifyInstance, opts: {
 			response_type: 'code',
 			scope: scope.join(' '),
 			access_type: 'offline',
-			prompt: 'consent'
+			prompt: 'consent',
+			state: frontendOrigin
 		});
 
-		console.log('googleOAuthConsentURL: ', googleOAuthConsentURL);
+		fastify.log.trace({ googleOAuthConsentURL, frontendOrigin }, '[OAUTH] GoogleOAuthConsent Redirect');
+
 		reply.redirect(googleOAuthConsentURL);
 	});
 

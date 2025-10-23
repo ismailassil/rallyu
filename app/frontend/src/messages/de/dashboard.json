@@ -15,8 +15,8 @@
         "subtext": "Turnier"
       },
       "one_vs_one": {
-        "text": "1v1",
-        "subtext": "Kämpfe um Ruhm"
+        "text": "Erobere die",
+        "subtext": "Herausforderung"
       },
       "training": {
         "text": "Starten",
@@ -403,6 +403,7 @@
       "current": "Aktuell",
       "continue": "Weitermachen"
     },
+    "errorCodes": "{code, select, AUTH_TOO_MANY_ATTEMPTS {Zu viele Versuche – Versuchen Sie es erneut} AUTH_TOO_MANY_RESENDS {Zu viele erneute Sendungen – Versuchen Sie es erneut} AUTH_CHALLENGE_EXPIRED {Herausforderung abgelaufen – Versuchen Sie es erneut} AUTH_2FA_NOT_ENABLED {Methode nicht aktiviert – Versuchen Sie es erneut} AUTH_INVALID_CREDENTIALS {Ungültiger Benutzername oder Passwort} AUTH_SERVICE_UNAVAILABLE {Dienst ist nicht verfügbar – Versuchen Sie es später erneut} AUTH_NETWORK_ERR {Bitte überprüfen Sie Ihre Verbindung} other {Etwas ist schiefgelaufen – Versuchen Sie es erneut}}",
     "validation": {
       "common": {
         "availability": {

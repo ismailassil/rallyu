@@ -9,11 +9,13 @@ import { useRouter } from 'next/navigation';
 import LandingPageFooter from './components/LandingPageFooter';
 import unicaOne from './fonts/unicaOne';
 import PublicRoute from './(auth)/components/Guards/PublicRoute';
+import { useTranslations } from 'next-intl';
 
 const Page = function () {
 	const router = useRouter();
 	const [image, setImage] = useState('/image_pp.png');
 	const [fade, setFade] = useState(true);
+	const t = useTranslations("landing");
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -40,20 +42,13 @@ const Page = function () {
 						<div className="flex mt-40 gap-15 w-full">
 							<div>
 								<h1 className={`text-6xl mb-10 uppercase ${unicaOne.className}`}>
-									<span className='font-bold'>Step into the arena with RALLYU!</span>
+									<span className='font-bold'>{t('headline')}</span>
 								</h1>
 								<div className=" w-full flex flex-col gap-5">
-									<p>
-										Where classic games meet real-time challenge.
-										Play fast-paced <strong>Ping Pong</strong>{' '}
-										and clever <strong>Tic Tac Toe</strong> — all
-										in your browser.
-									</p>
+									<p dangerouslySetInnerHTML={{__html: t.raw('subheadline')}}/>
 									<div className="text-md flex flex-col gap-5">
 										<p>
-											Duel in lightning-fast Ping Pong matches
-											or outsmart rivals in Tic Tac Toe — all
-											in real time.
+											{t("description.pingpong")}
 										</p>
 									</div>
 									<div className="flex gap-4 mt-10">
@@ -63,15 +58,15 @@ const Page = function () {
 											duration-500 hover:scale-105 cursor-pointer w-fit"
 											onClick={() => router.push('/login')}
 										>
-											Play Now!
+											{t("buttons.play_now")}
 										</button>
 										<button
 											className="rounded-lg py-3 px-8 bg-main 
 											hover:bg-main-hover hover:ring-2 ring-white/10
 											duration-500 hover:scale-105 cursor-pointer w-fit"
 											onClick={() => router.push('/signup')}
-										>
-											Get Started
+											>
+											{t("buttons.get_started")}
 										</button>
 									</div>
 								</div>
@@ -86,13 +81,13 @@ const Page = function () {
 							/>
 						</div>
 						<section className="flex flex-col gap-5">
-							<h2 className="text-2xl font-black">Core Features</h2>
+							<h2 className="text-2xl font-black">{t("features.title")}</h2>
 							<div className="grid md:grid-cols-2 gap-6">
-								{rallyuFeatures.map((feature, i) => (
+								{rallyuFeatures.map((feature) => (
 									<Card
-										key={i}
-										title={feature.title}
-										text={feature.description}
+										key={feature.id}
+										title={t("features.items." + feature.id + ".title")}
+										text={t("features.items." + feature.id + ".description")}
 										Icon={feature.icon}
 									/>
 								))}

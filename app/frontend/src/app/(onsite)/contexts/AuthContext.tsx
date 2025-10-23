@@ -110,8 +110,10 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			socket.disconnect();
 			setLoggedInUser(null);
 			setIsAuthenticated(false);
-		} catch (err) {
-			throw err;
+		} catch {
+			socket.disconnect();
+			setLoggedInUser(null);
+			setIsAuthenticated(false);
 		}
 	}
 

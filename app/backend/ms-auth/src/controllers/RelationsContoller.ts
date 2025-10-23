@@ -1,6 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import RelationsService from "../services/User/RelationsService";
-import { IRelationsRequest } from "../types";
 import { JSONCodec } from "nats";
 import AuthResponseFactory from "./AuthResponseFactory";
 
@@ -60,11 +59,13 @@ class RelationsController {
 		const { targetUserId } = request.params as { targetUserId: number };
 		const user_id = request.user?.sub;
 
-		await this.relationsService.sendFriendRequest(user_id!, targetUserId);
-		await this.publishNotification(RELATION_EVENT_TYPE.SEND_FRIEND_REQ, user_id!, targetUserId);
-		await this.publishRelationUpdate(RELATION_EVENT_TYPE.SEND_FRIEND_REQ, user_id!, targetUserId);
+		const result = await this.relationsService.sendFriendRequest(user_id!, targetUserId);
+		if (result === 'CREATED') {
+			await this.publishNotification(RELATION_EVENT_TYPE.SEND_FRIEND_REQ, user_id!, targetUserId);
+			await this.publishRelationUpdate(RELATION_EVENT_TYPE.SEND_FRIEND_REQ, user_id!, targetUserId);
+		}
 
-		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, { message: result });
 		return reply.code(status).send(body);
 	}
 
@@ -108,11 +109,13 @@ class RelationsController {
 		const { targetUserId } = request.params as { targetUserId: number };
 		const user_id = request.user?.sub;
 
-		await this.relationsService.blockUser(user_id!, targetUserId);
-		await this.publishNotification(RELATION_EVENT_TYPE.BLOCK_REQ, user_id!, targetUserId);
-		await this.publishRelationUpdate(RELATION_EVENT_TYPE.BLOCK_REQ, user_id!, targetUserId);
+		const result = await this.relationsService.blockUser(user_id!, targetUserId);
+		if (result === 'CREATED') {
+			await this.publishNotification(RELATION_EVENT_TYPE.BLOCK_REQ, user_id!, targetUserId);
+			await this.publishRelationUpdate(RELATION_EVENT_TYPE.BLOCK_REQ, user_id!, targetUserId);
+		}
 
-		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, { message: result });
 		return reply.code(status).send(body);
 	}
 
@@ -120,11 +123,13 @@ class RelationsController {
 		const { targetUserId } = request.params as { targetUserId: number };
 		const user_id = request.user?.sub;
 
-		await this.relationsService.unblockUser(user_id!, targetUserId);
-		await this.publishNotification(RELATION_EVENT_TYPE.UNBLOCK_REQ, user_id!, targetUserId);
-		await this.publishRelationUpdate(RELATION_EVENT_TYPE.UNBLOCK_REQ, user_id!, targetUserId);
+		const result = await this.relationsService.unblockUser(user_id!, targetUserId);
+		if (result === 'DELETED') {
+			await this.publishNotification(RELATION_EVENT_TYPE.UNBLOCK_REQ, user_id!, targetUserId);
+			await this.publishRelationUpdate(RELATION_EVENT_TYPE.UNBLOCK_REQ, user_id!, targetUserId);
+		}
 
-		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, { message: result });
 
 		return reply.code(status).send(body);
 	}
@@ -133,11 +138,13 @@ class RelationsController {
 		const { targetUserId } = request.params as { targetUserId: number };
 		const user_id = request.user?.sub;
 
-		await this.relationsService.unfriend(user_id!, targetUserId);
-		await this.publishNotification(RELATION_EVENT_TYPE.UNFRIEND_REQ, user_id!, targetUserId);
-		await this.publishRelationUpdate(RELATION_EVENT_TYPE.UNFRIEND_REQ, user_id!, targetUserId);
+		const result = await this.relationsService.unfriend(user_id!, targetUserId);
+		if (result === 'DELETED') {
+			await this.publishNotification(RELATION_EVENT_TYPE.UNFRIEND_REQ, user_id!, targetUserId);
+			await this.publishRelationUpdate(RELATION_EVENT_TYPE.UNFRIEND_REQ, user_id!, targetUserId);
+		}
 
-		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, { message: result });
 
 		return reply.code(status).send(body);
 	}

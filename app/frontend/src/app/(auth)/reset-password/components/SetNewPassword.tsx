@@ -14,7 +14,7 @@ import useValidationSchema from "@/app/hooks/useValidationSchema";
 
 export function SetNewPassword({ token, onSuccess } : { token: string, onSuccess: () => void }) {
 	const t = useTranslations('');
-	const trp = useTranslations('auth.reset_password.setNewPassword');
+	const tautherr = useTranslations('auth');
 
 	const router = useRouter();
 
@@ -60,7 +60,7 @@ export function SetNewPassword({ token, onSuccess } : { token: string, onSuccess
 			));
 			onSuccess();
 		} catch (err: any) {
-			toastError(trp('errors', { code: err.message }));
+			toastError(tautherr('errorCodes', { code: err.message }));
 			router.push('/login');
 		}
 	}

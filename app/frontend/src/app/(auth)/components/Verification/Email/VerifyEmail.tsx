@@ -21,7 +21,7 @@ interface VerifyEmailProps {
 
 export default function VerifyEmail({ onGoBack, onNext } : VerifyEmailProps) {
 	const t = useTranslations('auth');
-	const tve = useTranslations('auth.verification.input');
+	const tautherr = useTranslations('auth');
 
 	const {
 		apiClient,
@@ -65,7 +65,7 @@ export default function VerifyEmail({ onGoBack, onNext } : VerifyEmailProps) {
 			));
 			onNext(token);
 		} catch (err: any) {
-			toastError(tve('errors.email', { code: err.message }));
+			toastError(tautherr('errorCodes', { code: err.message }));
 		}
 	}
 

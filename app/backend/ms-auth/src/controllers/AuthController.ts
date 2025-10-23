@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import fastify, { FastifyReply, FastifyRequest } from "fastify";
 import AuthService from "../services/Auth/AuthService";
 import { ILoginRequest, IRegisterRequest } from "../types";
 import AuthResponseFactory from "./AuthResponseFactory";
@@ -12,7 +12,9 @@ import { JSONCodec } from "nats";
 class AuthController {
 	constructor(
 		private authService: AuthService,
-		private sessionsService: SessionsService
+		private sessionsService: SessionsService,
+		private nats: any,
+		private js: any
 	) {}
 
 	async registerHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -92,7 +94,12 @@ class AuthController {
 	}
 
 	async logoutHandler(request: FastifyRequest, reply: FastifyReply) {
-		await this.authService.LogOut(request.refreshTokenPayload!);
+		// await this.authService.LogOut(request.refreshTokenPayload!);
+		await this.sessionsService.revokeSession(
+			request.refreshTokenPayload!.session_id!,
+			request.refreshTokenPayload!.sub!,
+			`Logout requested by user`
+		); this.publishRefreshRequiredToUser(request.refreshTokenPayload!.sub!);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 		return reply.code(status).setCookie(
@@ -134,7 +141,9 @@ class AuthController {
 	}
 
 	async googleOAuthCallbackHandler(request: FastifyRequest, reply: FastifyReply) {
-		const { code } = request.query as { code: string }; // TODO: ADD SCHEMA
+		const { code, state: frontendOrigin } = request.query as { code: string, state: string }; // TODO: ADD SCHEMA
+
+		console.log({ frontendOrigin }, '[OAUTH] GoogleOAuthConsent Callback Handler');
 
 		const { user, accessToken, refreshToken } = await this.authService.loginGoogleOAuth(code, request.fingerprint!);
 
@@ -146,7 +155,7 @@ class AuthController {
 				secure: false,
 				sameSite: 'lax'
 			}
-		).redirect(`${process.env['FRONTEND_URL']}`);
+		).redirect(`${frontendOrigin}`);
 	}
 
 	async intra42OAuthCallbackHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -185,18 +194,7 @@ class AuthController {
 			session_id,
 			user_id!,
 			`Revokation requested by user`
-		);
-
-		const jsCodec = JSONCodec();
-		request.server.nats.publish('gateway.user.session', jsCodec.encode({
-			eventType: 'SESSION_UPDATE',
-			recipientUserIds: [Number(user_id)],
-			data: {
-				requesterId: Number(user_id),
-				receiverId: Number(user_id),
-				status: 'REFRESH_REQUIRED'
-			}
-		}));
+		); this.publishRefreshRequiredToUser(user_id!);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 		if (session_id! === request.refreshTokenPayload!.session_id) {
@@ -234,6 +232,19 @@ class AuthController {
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 		return reply.code(status).send(body);
+	}
+
+	private publishRefreshRequiredToUser(userId: number) {
+		const _JSONCodec = JSONCodec();
+		this.nats.publish('gateway.user.session', _JSONCodec.encode({
+			eventType: 'SESSION_UPDATE',
+			recipientUserIds: [userId],
+			data: {
+				requesterId: userId,
+				receiverId: userId,
+				status: 'REFRESH_REQUIRED'
+			}
+		}));
 	}
 }
 

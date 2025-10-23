@@ -17,7 +17,7 @@ export default function LoginPage() {
 	}, []);
 
 	async function handleGoogleLogin() {
-		window.location.href = `${window.location.origin}/api/auth/google`;
+		window.location.href = `${window.location.origin}/api/auth/google?frontendOrigin=${window.location.origin}`;
 	}
 	async function handleIntra42Login() {
 		window.location.href = `${window.location.origin}/api/auth/42`;

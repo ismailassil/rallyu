@@ -63,7 +63,7 @@ export default function SettingsPage() {
 			initial={{ opacity: 0, x: -20 }}
 			animate={{ opacity: 1, x: 0 }}
 			transition={{ duration: 0.5 }}
-			className="pt-30 sm:pl-30 h-screen w-screen pb-24 pl-6 pr-6 sm:pb-6 overflow-hidden font-funnel-display"
+			className="pt-30 sm:pl-30 h-screen pb-24 pl-6 pr-6 sm:pb-6 overflow-hidden font-funnel-display"
 		>
 			<div className="flex gap-4 size-full">
 				<div className="sm:h-[calc(100vh-9rem)] h-[calc(100vh-14rem)] overflow-hidden flex-5">

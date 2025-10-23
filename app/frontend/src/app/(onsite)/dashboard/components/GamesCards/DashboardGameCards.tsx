@@ -9,52 +9,32 @@ const DashboardGameCards = () => {
 	return (
 		<div className="flex gap-4 flex-col md:flex-row">
 			<GameCard
-				isBackground={false}
 				src={'/design/tourn_cup.png'}
 				position="absolute 
-					h-auto left-1/2 -z-1 -bottom-40
+					h-auto left-1/2 -z-1 -bottom-25 group-hover:opacity-90
 					md:block md:-bottom-20 md:translate-x-8 md:w-[260px]
-					lg:-translate-x-1/2 lg:-bottom-40 lg:w-[300px]
-					transform group-hover:-translate-y-5 group-hover:scale-105
+					lg:-translate-x-1/2 lg:-bottom-30 lg:w-[300px]
+					transform group-hover:-translate-y-7 group-hover:scale-105 group-hover:z-1
 					transition-transform duration-500"
 				text={t('tournament.text')}
-				textClass="lg:text-2xl text-base"
+				textClass="lg:text-2xl text-base group-hover:opacity-50 duration-300"
 				subtext={t('tournament.subtext')}
-				subtextClass="text-4xl md:text-3xl lg:text-4xl"
-				transform="scale(1.1)"
-				opacity="0.5"
+				subtextClass="text-4xl md:text-3xl lg:text-4xl group-hover:opacity-50 duration-300"
 				onClick={() => router.push("/tournament")}
 				/>
 			<GameCard
-				src={'/design/racket_r.png'}
+				src={'/dashboard/pp_xo.png'}
 				background="/background/side/1vs1-dock.svg"
-				position="absolute 
-					h-auto left-1/2 -z-1 -bottom-10
-					md:block md:bottom-0 md:translate-x-8 md:w-[260px]
-					lg:-translate-x-1/2 lg:-bottom-14 lg:w-[300px]
-					transform group-hover:-translate-y-5 group-hover:scale-105
+				position="absolute brightness-150
+					h-auto left-1/2 -z-1 -bottom-40 size-full
+					md:block md:bottom-0 md:translate-x-8 max-w-120
+					lg:-translate-x-1/2 lg:-bottom-35 group-hover:z-1
+					transform group-hover:-translate-y-10 group-hover:scale-105
 					transition-transform duration-500"
 				text={t('one_vs_one.text')}
-				textClass="text-4xl lg:text-2xl"
+				textClass="lg:text-2xl text-base group-hover:opacity-50 duration-300"
 				subtext={t('one_vs_one.subtext')}
-				subtextClass="text-2xl lg:text-3xl"
-				onClick={() => router.push("/game")}
-				/>
-			<GameCard
-				src={'/design/single.svg'}
-				background="/background/side/training-dock.svg"
-				position="absolute 
-				h-auto left-1/2 -z-1 -bottom-18
-					md:block md:bottom-0 md:translate-x-8 md:w-[260px]
-					lg:-translate-x-1/2 lg:-bottom-21 lg:w-[300px]
-					transform group-hover:-translate-y-5 group-hover:scale-105
-					transition-transform duration-500"
-					text={t('training.text')}
-					textClass="text-2xl lg:text-2xl"
-					subtext={t("training.subtext")}
-				subtextClass="text-4xl lg:text-4xl"
-				transform="scale(1.1)"
-				opacity="0.5"
+				subtextClass="text-4xl md:text-3xl lg:text-4xl group-hover:opacity-50 duration-300"
 				onClick={() => router.push("/game")}
 				/>
 		</div>

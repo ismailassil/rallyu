@@ -21,7 +21,7 @@ interface VerifyCodeProps {
 // EMAIL
 export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : VerifyCodeProps) {
 	const t = useTranslations('auth');
-	const tvp = useTranslations('auth.verification.verifyCode');
+	const tautherr = useTranslations('auth');
 
 	const {
 		apiClient
@@ -63,7 +63,7 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 				setHasError(true);
 				setTimeout(() => setHasError(false), 1000);
 			} else {
-				toastError(tvp('errors.phone', { code: err.message }));
+				toastError(tautherr('errorCodes', { code: err.message }));
 				onFailure();
 			}
 		}
