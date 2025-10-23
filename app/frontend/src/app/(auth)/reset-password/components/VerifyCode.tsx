@@ -22,7 +22,7 @@ interface VerifyCodeProps {
 
 export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCodeProps) {
 	const t = useTranslations('');
-	const trp = useTranslations('auth.reset_password.verifyCode');
+	const tautherr = useTranslations('auth');
 
 	const router = useRouter();
 
@@ -66,7 +66,7 @@ export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCod
 				setHasError(true);
 				setTimeout(() => setHasError(false), 1000);
 			} else {
-				toastError(trp('errors', { code: err.message }));
+				toastError(tautherr('errorCodes', { code: err.message }));
 				onFailure();
 			}
 		}

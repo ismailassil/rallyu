@@ -21,7 +21,7 @@ interface VerifyCodeProps {
 
 export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess, onFailure, onGoBack } : VerifyCodeProps) {
 	const t = useTranslations('auth');
-	const t2fav = useTranslations('auth.twoFactorAtLogin.verifyCode');
+	const tautherr = useTranslations('auth');
 
 	const {
 		apiClient,
@@ -64,7 +64,7 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 				setHasError(true);
 				setTimeout(() => setHasError(false), 1000);
 			} else {
-				toastError(t2fav('errors', { code: err.message }));
+				toastError(tautherr('errorCodes', { code: err.message }));
 				onFailure();
 			}
 		}

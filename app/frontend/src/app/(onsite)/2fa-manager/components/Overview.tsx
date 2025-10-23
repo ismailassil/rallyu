@@ -17,7 +17,7 @@ interface OverviewProps {
 
 export default function Overview({ onSetup }: OverviewProps) {
 	const t = useTranslations('');
-	const t2fao = useTranslations('auth.twoFactorManager.overview');
+	const tautherr = useTranslations('auth');
 
 	const {
 		loggedInUser,
@@ -58,7 +58,7 @@ export default function Overview({ onSetup }: OverviewProps) {
 			if (err.message === 'AUTH_2FA_ALREADY_ENABLED')
 				return ;
 
-			toastError(t2fao('errors', { code: err.message }));
+			toastError(tautherr('errorCodes', { code: err.message }));
 			setEnabledMethods(prev => {
 				if (prev === null) return null;
 				if (prev.includes(m)) return prev.filter((value) => value != m);
@@ -80,7 +80,7 @@ export default function Overview({ onSetup }: OverviewProps) {
 			if (err.message === 'AUTH_2FA_NOT_ENABLED')
 				return ;
 
-			toastError(t2fao('errors', { code: err.message }));
+			toastError(tautherr('errorCodes', { code: err.message }));
 			setEnabledMethods(prev => {
 				if (prev === null) return null;
 				if (prev.includes(m)) return prev;

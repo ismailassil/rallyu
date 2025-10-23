@@ -15,7 +15,7 @@ import useValidationSchema from "@/app/hooks/useValidationSchema";
 
 export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) => void, onGoBack: () => void }) {
 	const t = useTranslations('');
-	const trp = useTranslations('auth.reset_password.forgotPassword');
+	const tautherr = useTranslations('auth');
 
 	const router = useRouter();
 
@@ -60,7 +60,7 @@ export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) 
 			));
 			onNext(token);
 		} catch (err: any) {
-			toastError(trp('errors',  { code: err.message }));
+			toastError(tautherr('errorCodes',  { code: err.message }));
 		}
 	}
 
