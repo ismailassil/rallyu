@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import dbConnector from './plugin/database.plugin.js';
 import natsPlugin from './plugin/nats.plugin.js';
 import dotenv from '@dotenvx/dotenvx';
+import chalk from "chalk";
 
 
 dotenv.config();
@@ -25,21 +26,20 @@ await fastify.register(natsPlugin, {
 });
 
 fastify.get('/chat/history', async (req, res) => {
-  const userId = Number(req.headers['x-user-id']);
+  const { senderId, receiverId, limit = 10, offset = 0 } = req.query;
 
-  if (!userId) {
-    return res.status(400).send({ error: 'Missing or invalid user ID' });
-  }
-
+  
   try {
     const statement = fastify.db.prepare(
-      `SELECT * FROM message 
-			 WHERE senderId = ? OR receiverId = ?
-			 ORDER BY created_at ASC`
+      `SELECT * FROM message
+       WHERE ((senderId = ? AND receiverId = ?) OR (senderId = ? AND receiverId = ?))
+       ORDER BY created_at DESC
+       LIMIT ? OFFSET ?`
     );
-
-    const result = statement.all(userId, userId);
-    res.send(result);
+    
+    const result = statement.all(senderId, receiverId, receiverId, senderId, limit, offset);
+    
+    res.send(result.reverse()); // Reverse to show oldest first
   } catch (error) {
     console.error('Error fetching messages:', error);
     res.status(500).send({ error: 'Failed to retrieve messages' });
@@ -59,36 +59,56 @@ fastify.get('/chat/friend_list', async (req, res) => {
       { timeout: 3000 }
     );
     const friendsOfUserId = fastify.jc.decode(friendsResponse.data).friends;
-    
+
+    console.log(chalk.red(`11111245============3\n${JSON.stringify(friendsOfUserId, null, 2)}\n==================`));
+
     if (!friendsOfUserId || friendsOfUserId.length === 0) {
       return res.send([]);
     }
 
-    const friendsWithMessages = await Promise.all(
-      friendsOfUserId.map(async (friend) => {
-        try {
-          const result = await fastify.db.prepare(`
-            SELECT * FROM message
-            WHERE (senderId = ? AND receiverId = ?)
-               OR (senderId = ? AND receiverId = ?)
-            ORDER BY created_at DESC
-            LIMIT 1
-          `);
-          const last_message = result.get(userId, friend.id, friend.id, userId);
-          
-          return {
-            ...friend,
-            last_message: last_message || null
-          };
-        } catch (error) {
-          console.error(`Error fetching last message for friend ${friend.id}:`, error);
-          return {
-            ...friend,
-            last_message: null 
-          };
-        }
-      }) 
-    );
+// Get all friend IDs
+const friendIds = friendsOfUserId.map(f => f.id);
+
+if (friendIds.length === 0) {
+  return [];
+}
+
+// Single query to get all last messages
+const placeholders = friendIds.map(() => '?').join(',');
+
+const lastMessages = fastify.db.prepare(`
+  WITH ranked_messages AS (
+    SELECT 
+      *,
+      CASE 
+        WHEN senderId = ? THEN receiverId 
+        ELSE senderId 
+      END as friend_id,
+      ROW_NUMBER() OVER (
+        PARTITION BY 
+          CASE 
+            WHEN senderId = ? THEN receiverId 
+            ELSE senderId 
+          END
+        ORDER BY created_at DESC
+      ) as rn
+    FROM message
+    WHERE (senderId = ? AND receiverId IN (${placeholders}))
+       OR (receiverId = ? AND senderId IN (${placeholders}))
+  )
+  SELECT * FROM ranked_messages WHERE rn = 1
+`).all(userId, userId, userId, ...friendIds, userId, ...friendIds);
+
+// Create a map for quick lookup
+const messageMap = new Map(
+  lastMessages.map(msg => [msg.friend_id, msg])
+);
+
+// Combine friends with their last messages
+const friendsWithMessages = friendsOfUserId.map(friend => ({
+  ...friend,
+  last_message: messageMap.get(friend.id) || null
+}));
 
     const friendsWithConversations = friendsWithMessages.filter(
       friend => friend.last_message !== null
