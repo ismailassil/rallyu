@@ -159,11 +159,6 @@ class UserService {
 		role?: string,
 		bio?: string
 	) {
-		if (await this.isUsernameTaken(username))
-			throw new UserAlreadyExistsError('Username');
-		if (await this.isEmailTaken(email))
-			throw new UserAlreadyExistsError('Email');
-
 		try {
 			const createdUserID = await this.userRepository.create(
 				username,
@@ -178,18 +173,14 @@ class UserService {
 				bio
 			);
 
-			await this.statsService.createUserRecords(createdUserID);
+			// await this.statsService.createUserRecords(createdUserID);
 
 			return createdUserID;
 		} catch (err) {
 			if (err instanceof DatabaseQueryError) {
 				const parsed = err.details.error;
-				if (parsed?.code === 'SQLITE_CONSTRAINT') {
-					if (parsed.column === 'username')
-						throw new UserAlreadyExistsError('Username');
-					if (parsed.column === 'email')
-						throw new UserAlreadyExistsError('Email');
-				}
+				if (parsed?.code === 'SQLITE_CONSTRAINT')
+					this.throwIfUniqueConstraint(parsed);
 			}
 			throw err;
 		}
@@ -234,39 +225,14 @@ class UserService {
 		await this.userRepository.update(user_id, {
 			avatar_url: '/users/avatars/' + (await this.cdnService.storeFromMultipart(fileData)).split('/')[1]
 		});
+	}
 
-		// const allowedMimeTypes = ['images/jpg', 'image/jpeg', 'image/png'];
-		// if (!allowedMimeTypes.includes(fileData.mimetype))
-		// 	throw new Error('File type not allowed'); // need to change it to custom error class
-
-		// const fileExtension = fileData.mimetype.split('/')[1];
-		// const fileName = `${targetUser.username}.${fileExtension}`;
-		// const uploadDir = `./uploads/avatars`;
-
-		// if (!fs.existsSync(uploadDir))
-		// 	fs.mkdirSync(uploadDir, { recursive: true });
-
-		// const filepath = uploadDir + '/' + fileName;
-
-		// await pipeline(fileData.file, createWriteStream(filepath));
-
-		// await this.userRepository.update(targetUser.id, { avatar_url: `/users/avatars/${fileName}` });
-
-		// return `/users/avatars/${fileName}`;
-
-		// try {
-		// 	await pipeline(fileData.file, createWriteStream(filepath));
-
-		// 	await this.userRepository.updateAvatar(user_id, fileName);
-
-		// 	return `/avatars/${fileName}`;
-		// } catch (err: any) {
-		// 	try {
-		// 		await fs.unlink(filepath, (err) => { if (err) throw err } ); // need to check this
-		// 	} catch {}
-
-		// 	throw err;
-		// }
+	private throwIfUniqueConstraint(parsed: any) {
+		switch (parsed.column) {
+			case 'username':
+			case 'email':
+				throw new UserAlreadyExistsError(parsed.column);
+		}
 	}
 }
 

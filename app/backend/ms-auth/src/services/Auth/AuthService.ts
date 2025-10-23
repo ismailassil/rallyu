@@ -39,11 +39,6 @@ class AuthService {
 	}
 
 	async SignUp(first_name: string, last_name: string, username: string, email: string, password: string) : Promise<void> {
-		// if (await this.userService.isUsernameTaken(username))
-		// 	throw new UserAlreadyExistsError('Username');
-		// if (await this.userService.isEmailTaken(email))
-		// 	throw new UserAlreadyExistsError('Email');
-
 		const hashedPassword = await bcrypt.hash(password!, this.authConfig.bcryptHashRounds);
 
 		await this.userService.createUser(
