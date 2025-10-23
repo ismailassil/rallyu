@@ -403,6 +403,7 @@
       "current": "Actual",
       "continue": "Continuar"
     },
+    "errorCodes": "{code, select, AUTH_TOO_MANY_ATTEMPTS {Demasiados intentos - Inténtalo de nuevo} AUTH_TOO_MANY_RESENDS {Demasiados reenvíos - Inténtalo de nuevo} AUTH_CHALLENGE_EXPIRED {Desafío caducado - Inténtalo de nuevo} AUTH_2FA_NOT_ENABLED {Método no habilitado - Inténtalo de nuevo} AUTH_INVALID_CREDENTIALS {Nombre de usuario o contraseña incorrectos} AUTH_SERVICE_UNAVAILABLE {El servicio no está disponible - Inténtalo más tarde} AUTH_NETWORK_ERR {Por favor, comprueba tu conexión} other {Algo salió mal - Inténtalo de nuevo}}",
     "validation": {
       "common": {
         "availability": {

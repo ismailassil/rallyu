@@ -16,7 +16,7 @@ import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export default function LoginForm() {
 	const t = useTranslations('auth.common');
-	const tlogin = useTranslations('auth.login');
+	const tautherr = useTranslations('auth');
 
 	const router = useRouter();
 
@@ -59,7 +59,7 @@ export default function LoginForm() {
 			if (result._2FARequired)
 				router.push('/2fa');
 		} catch (err: any) {
-			toastError(tlogin('errors', { code: err.message }));
+			toastError(tautherr('errorCodes', { code: err.message }));
 		}
 	}
 

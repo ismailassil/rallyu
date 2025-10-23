@@ -18,7 +18,7 @@ import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export default function SignUpForm() {
 	const t = useTranslations('auth.common');
-	const tsignup = useTranslations('auth.signup');
+	const tautherr = useTranslations('auth');
 
 	const router = useRouter();
 
@@ -74,7 +74,7 @@ export default function SignUpForm() {
 		} catch (err: any) {
 			if (err.message === 'AUTH_USERNAME_TAKEN') setUsernameStatus('unavailable');
 			else if (err.message === 'AUTH_EMAIL_TAKEN') setEmailStatus('unavailable');
-			else toastError(tsignup('errors', { code: err.message }));
+			else toastError(tautherr('errorCodes', { code: err.message }));
 		}
 	}
 

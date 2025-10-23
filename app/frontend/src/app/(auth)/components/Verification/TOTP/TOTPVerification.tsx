@@ -20,7 +20,7 @@ interface TOTPVerification {
 
 export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTPVerification) {
 	const t = useTranslations('auth');
-	const tvt = useTranslations('auth.verification.verifyCode');
+	const tautherr = useTranslations('auth');
 
 	const [token, setToken] = useState('');
 	const [TOTPSecrets, setTOTPSecrets] = useState<APITOTPSecrets | null>(null);
@@ -76,7 +76,7 @@ export default function TOTPVerification({ onReset, onSuccess, onFailure }: TOTP
 				setHasError(true);
 				setTimeout(() => setHasError(false), 1000);
 			} else {
-				toastError(tvt('errors.totp', { code: err.message }));
+				toastError(tautherr('errorCodes', { code: err.message }));
 				onFailure();
 			}
 		}

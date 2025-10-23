@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import fastify, { FastifyReply, FastifyRequest } from "fastify";
 import AuthService from "../services/Auth/AuthService";
 import { ILoginRequest, IRegisterRequest } from "../types";
 import AuthResponseFactory from "./AuthResponseFactory";
@@ -141,7 +141,9 @@ class AuthController {
 	}
 
 	async googleOAuthCallbackHandler(request: FastifyRequest, reply: FastifyReply) {
-		const { code } = request.query as { code: string }; // TODO: ADD SCHEMA
+		const { code, state: frontendOrigin } = request.query as { code: string, state: string }; // TODO: ADD SCHEMA
+
+		console.log({ frontendOrigin }, '[OAUTH] GoogleOAuthConsent Callback Handler');
 
 		const { user, accessToken, refreshToken } = await this.authService.loginGoogleOAuth(code, request.fingerprint!);
 
@@ -153,7 +155,7 @@ class AuthController {
 				secure: false,
 				sameSite: 'lax'
 			}
-		).redirect(`${process.env['FRONTEND_URL']}`);
+		).redirect(`${frontendOrigin}`);
 	}
 
 	async intra42OAuthCallbackHandler(request: FastifyRequest, reply: FastifyReply) {

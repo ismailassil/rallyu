@@ -21,7 +21,7 @@ interface VerifyPhoneProps {
 
 export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 	const t = useTranslations('auth');
-	const tvp = useTranslations('auth.verification.input');
+	const tautherr = useTranslations('auth');
 
 	const {
 		apiClient,
@@ -65,7 +65,7 @@ export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 			));
 			onNext(token);
 		} catch (err: any) {
-			toastError(tvp('errors.phone', { code: err.message }));
+			toastError(tautherr('errorCodes', { code: err.message }));
 		}
 	}
 
