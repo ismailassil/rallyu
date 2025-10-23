@@ -8,7 +8,7 @@ import { generateOTP, generateUUID, nowInSeconds, nowPlusSeconds, verifyOTP } fr
 import AuthChallengesRepository from "../../repositories/AuthChallengesRepository";
 import { UUID } from "crypto";
 import { NoEmailIsAssociated, UserNotFoundError } from "../../types/exceptions/user.exceptions";
-import { AuthChallengeExpired, ExpiredCodeError, InvalidCodeError, TooManyAttemptsError, TooManyResendsError } from "../../types/exceptions/verification.exceptions";
+import { AuthChallengeExpired, InvalidCodeError, TooManyAttemptsError, TooManyResendsError } from "../../types/exceptions/verification.exceptions";
 
 const passwordResetConfig = {
 	codeExpirySeconds: 5 * 60, // 5 minutes
@@ -72,13 +72,13 @@ class PasswordResetService {
 		);
 
 		if (!targetChall)
-			throw new ExpiredCodeError();
+			throw new AuthChallengeExpired();
 
 		if (nowInSeconds() > targetChall.expires_at) {
 			await this.challengeRepository.update(targetChall.id, {
 				status: 'EXPIRED'
 			});
-			throw new ExpiredCodeError();
+			throw new AuthChallengeExpired();
 		}
 
 		if (!verifyOTP(targetChall.secret!, code)) {
@@ -106,13 +106,13 @@ class PasswordResetService {
 		);
 
 		if (!targetChall)
-			throw new ExpiredCodeError();
+			throw new AuthChallengeExpired();
 
 		if (nowInSeconds() > targetChall.expires_at) {
 			await this.challengeRepository.update(targetChall.id, {
 				status: 'EXPIRED'
 			});
-			throw new ExpiredCodeError();
+			throw new AuthChallengeExpired();
 		}
 
 		const newHashedPassword = await bcrypt.hash(newPassword!, this.authConfig.bcryptHashRounds);

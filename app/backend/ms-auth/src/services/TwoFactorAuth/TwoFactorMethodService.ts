@@ -8,7 +8,7 @@ import AuthChallengesRepository, { AuthChallengeMethod } from '../../repositorie
 import { UUID } from 'crypto';
 import { NoEmailIsAssociated, NoPhoneIsAssociated, UserNotFoundError } from '../../types/exceptions/user.exceptions';
 import { TwoFAAlreadyEnabled, TwoFANotEnabledError } from '../../types/exceptions/twofa.exception';
-import { ExpiredCodeError, InvalidCodeError, TooManyAttemptsError } from '../../types/exceptions/verification.exceptions';
+import { AuthChallengeExpired, InvalidCodeError, TooManyAttemptsError } from '../../types/exceptions/verification.exceptions';
 import { BadRequestError } from '../../types/exceptions/AAuthError';
 
 const twoFAConfig = {
@@ -78,13 +78,13 @@ class TwoFactorMethodService {
 		);
 
 		if (!targetChall)
-			throw new ExpiredCodeError();
+			throw new AuthChallengeExpired();
 
 		if (nowInSeconds() > targetChall.expires_at) {
 			await this.challengeRepository.update(targetChall.id, {
 				status: 'EXPIRED'
 			});
-			throw new ExpiredCodeError();
+			throw new AuthChallengeExpired();
 		}
 
 		if (!verifyTOTP(targetChall.secret!, code)) {
@@ -219,13 +219,13 @@ class TwoFactorMethodService {
 	// 	);
 
 	// 	if (!targetChall)
-	// 		throw new ExpiredCodeError();
+	// 		throw new AuthChallengeExpired();
 
 	// 	if (nowInSeconds() > targetChall.expires_at) {
 	// 		await this.challengeRepository.update(targetChall.id, {
 	// 			status: 'EXPIRED'
 	// 		});
-	// 		throw new ExpiredCodeError();
+	// 		throw new AuthChallengeExpired();
 	// 	}
 
 	// 	const verifyFunc = targetChall.method === 'TOTP'

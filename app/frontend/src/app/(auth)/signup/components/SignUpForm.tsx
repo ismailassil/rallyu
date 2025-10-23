@@ -2,7 +2,7 @@
 'use client';
 import React from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { toastError, toastSuccess } from '../../../components/CustomToast';
+import { toastError } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import InputField from '../../components/Form/InputField';
 import useForm from '@/app/hooks/useForm';
@@ -18,6 +18,7 @@ import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export default function SignUpForm() {
 	const t = useTranslations('auth.common');
+	const tsignup = useTranslations('auth.signup');
 
 	const router = useRouter();
 
@@ -49,14 +50,16 @@ export default function SignUpForm() {
 		{ debounceMs: { email: 1200, username: 1200, password: 1200 } }
 	);
 
-	const usernameStatus = useAvailabilityCheck('username', formData.username, null, debounced.username, errors.username);
-	const emailStatus = useAvailabilityCheck('email', formData.email, null, debounced.email, errors.email);
+	const { status: usernameStatus, setStatus: setUsernameStatus } = useAvailabilityCheck('username', formData.username, null, debounced.username, errors.username);
+	const { status: emailStatus, setStatus: setEmailStatus } = useAvailabilityCheck('email', formData.email, null, debounced.email, errors.email);
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 
 		const isValid = validateAll();
 		if (!isValid)
+			return ;
+		if (!(debounced.username && usernameStatus === 'available' && debounced.email && emailStatus === 'available'))
 			return ;
 
 		try {
@@ -67,10 +70,11 @@ export default function SignUpForm() {
 				formData.email,
 				formData.password
 			));
-			toastSuccess('Account created successfully...');
 			router.push('/login');
 		} catch (err: any) {
-			toastError(err.message);
+			if (err.message === 'AUTH_USERNAME_TAKEN') setUsernameStatus('unavailable');
+			else if (err.message === 'AUTH_EMAIL_TAKEN') setEmailStatus('unavailable');
+			else toastError(tsignup('errors', { code: err.message }));
 		}
 	}
 
@@ -119,7 +123,7 @@ export default function SignUpForm() {
 					field='email'
 					inputPlaceholder='iassil@1337.student.ma'
 				>
-					{debounced.username && !errors.username && <AvailabilityIndicator key="email-availability" label={t('email')} status={emailStatus} />}
+					{debounced.email && !errors.email && <AvailabilityIndicator key="email-availability" label={t('email')} status={emailStatus} />}
 				</InputField>
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'

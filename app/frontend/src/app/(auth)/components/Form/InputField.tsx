@@ -62,8 +62,8 @@ function InputField({
 				}
 			</div>
 			<AnimatePresence>
-				{debounced[field] && errors[field] && <InputFieldError error={errors[field]} />}
-				{children}
+				{debounced[field] && errors[field] && <InputFieldError key={`${field}-error`}  error={errors[field]} />}
+				{children && <div key={`${field}-child`}>{children}</div>}
 			</AnimatePresence>
 		</div>
 	);

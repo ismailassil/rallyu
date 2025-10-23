@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormProvider } from '@/app/(auth)/components/Form/FormContext';
 import InputField from '@/app/(auth)/components/Form/InputField';
 import FormButton from '@/app/(auth)/components/UI/FormButton';
@@ -5,10 +6,9 @@ import useForm from '@/app/hooks/useForm';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import React from 'react';
 import useAPICall from '@/app/hooks/useAPICall';
-import { toastError, toastSuccess } from '@/app/components/CustomToast';
+import { toastError } from '@/app/components/CustomToast';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import AnimatedComponent from '../../UI/AnimatedComponent';
-import { APIError } from '@/app/(api)/APIClient';
 import NoteBox from '@/app/components/NoteBox';
 import { useTranslations } from 'next-intl';
 import useValidationSchema from '@/app/hooks/useValidationSchema';
@@ -21,6 +21,7 @@ interface VerifyPhoneProps {
 
 export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 	const t = useTranslations('auth');
+	const tvp = useTranslations('auth.verification.input');
 
 	const {
 		apiClient,
@@ -62,10 +63,9 @@ export default function VerifyPhone({ onGoBack, onNext } : VerifyPhoneProps) {
 			const { token } = await executeAPICall(() => apiClient.verify.requestPhone(
 				formData.phone
 			));
-			toastSuccess('Code sent');
 			onNext(token);
-		} catch (err) {
-			toastError((err as APIError).message);
+		} catch (err: any) {
+			toastError(tvp('errors.phone', { code: err.message }));
 		}
 	}
 

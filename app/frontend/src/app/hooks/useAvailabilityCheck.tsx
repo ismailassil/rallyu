@@ -36,5 +36,5 @@ export default function useAvailabilityCheck(
 			checkAvailability();
 	}, [currentValue, debounced, error, loggedInUserValue, apiClient, executeAPICall, fieldName]);
 
-	return status;
+	return { status, setStatus };
 }

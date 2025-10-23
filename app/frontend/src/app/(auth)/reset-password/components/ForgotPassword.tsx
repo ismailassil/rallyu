@@ -6,7 +6,7 @@ import FormButton from "../../components/UI/FormButton";
 import InputField from "../../components/Form/InputField";
 import useAPICall from "@/app/hooks/useAPICall";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { toastError, toastSuccess } from "@/app/components/CustomToast";
+import { toastError } from "@/app/components/CustomToast";
 import useForm from "@/app/hooks/useForm";
 import { FormProvider } from "../../components/Form/FormContext";
 import AnimatedComponent from "../../components/UI/AnimatedComponent";
@@ -15,6 +15,7 @@ import useValidationSchema from "@/app/hooks/useValidationSchema";
 
 export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) => void, onGoBack: () => void }) {
 	const t = useTranslations('');
+	const trp = useTranslations('auth.reset_password.forgotPassword');
 
 	const router = useRouter();
 
@@ -57,10 +58,9 @@ export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) 
 			const { token } = await executeAPICall(() => apiClient.auth.requestPasswordReset(
 				formData.email
 			));
-			toastSuccess('Code sent');
 			onNext(token);
 		} catch (err: any) {
-			toastError(err.message);
+			toastError(trp('errors',  { code: err.message }));
 		}
 	}
 

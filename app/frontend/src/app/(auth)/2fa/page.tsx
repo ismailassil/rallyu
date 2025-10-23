@@ -58,7 +58,6 @@ export default function TwoFaChallengePage() {
 	const [session] = useState(() => getTwoFAChallengeSession());
 
 	useEffect(() => {
-		console.log('running session useEffect');
 		if (!session) {
 			toastError('Please sign in again.');
 			router.replace('/login');

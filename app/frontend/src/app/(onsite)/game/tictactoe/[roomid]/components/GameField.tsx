@@ -3,7 +3,7 @@ import Overlay from "./Overlay";
 import VersusCard from "@/app/(onsite)/game/components/Items/VersusCard";
 import LoadingComponent from "@/app/(auth)/components/UI/LoadingComponents";
 import RoomNotFound from "../../../components/Items/RoomNotFound";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import SocketProxy from "../../../utils/socketProxy";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import RemoteXO from "../../src/game/RemoteXO";
@@ -23,10 +23,13 @@ const GameField = () => {
     const [ score, setScore ] = useState<[number, number]>([0, 0]);
     const [ result, setResult ] = useState<string | null>(null);
 	const [ cells, setCells ] = useState<XOSign[]>(Array(9).fill(''));
+    const router = useRouter();
 
     const { roomid }: { roomid: string} = useParams();
     const { apiClient, loggedInUser } = useAuth();
-	const socketProxy = useRef<SocketProxy>(new SocketProxy());
+	const socketProxy = useRef<SocketProxy>(new SocketProxy((reason: string) => {
+        router.push(`/game/disconnected?reason=${reason}`);
+    }));
 	const tictactoe = useRef<RemoteXO>(new RemoteXO(socketProxy.current, {
         updateTimer: setTimeLeft,
         updateOverlayStatus: setOverlayStatus,

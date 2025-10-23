@@ -43,10 +43,10 @@ const Cell = ({ index, sign, handleMove }: { index: number, sign: XOSign, handle
 const TicTacToe = ({ tictactoe, board }: { tictactoe: RemoteXO | LocalXO, board: XOSign[] }) => {
 
 	useEffect(() => {
-		const unsubscribe = tictactoe.init();
+		const cleanup = tictactoe.init();
 
 		return () => {
-			if (unsubscribe) unsubscribe();
+			if (cleanup) cleanup();
 		}
 	}, []);
 

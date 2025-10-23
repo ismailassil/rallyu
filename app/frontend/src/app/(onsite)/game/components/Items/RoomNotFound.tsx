@@ -1,6 +1,8 @@
 import FormButton from "@/app/(auth)/components/UI/FormButton";
 import { ArrowLeft, Search } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
+import Image from "next/image";
 
 const RoomNotFound = () => {
     const router = useRouter();
@@ -22,4 +24,4 @@ const RoomNotFound = () => {
     )
 }
 
-export default RoomNotFound;
+export default RoomNotFound

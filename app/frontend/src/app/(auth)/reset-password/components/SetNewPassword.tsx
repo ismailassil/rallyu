@@ -5,7 +5,7 @@ import FormButton from "../../components/UI/FormButton";
 import { RotateCw } from "lucide-react";
 import useAPICall from "@/app/hooks/useAPICall";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { toastError, toastSuccess } from "@/app/components/CustomToast";
+import { toastError } from "@/app/components/CustomToast";
 import useForm from "@/app/hooks/useForm";
 import { FormProvider } from "../../components/Form/FormContext";
 import AnimatedComponent from "../../components/UI/AnimatedComponent";
@@ -14,6 +14,7 @@ import useValidationSchema from "@/app/hooks/useValidationSchema";
 
 export function SetNewPassword({ token, onSuccess } : { token: string, onSuccess: () => void }) {
 	const t = useTranslations('');
+	const trp = useTranslations('auth.reset_password.setNewPassword');
 
 	const router = useRouter();
 
@@ -57,10 +58,10 @@ export function SetNewPassword({ token, onSuccess } : { token: string, onSuccess
 				token,
 				formData.password
 			));
-			toastSuccess('Password updated successfully!');
 			onSuccess();
 		} catch (err: any) {
-			toastError(err.message);
+			toastError(trp('errors', { code: err.message }));
+			router.push('/login');
 		}
 	}
 

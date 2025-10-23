@@ -7,7 +7,7 @@ import MailingService from "../Communication/MailingService";
 import WhatsAppService from "../Communication/WhatsAppService";
 import { mailingConfig } from "../../config/mailing";
 import { NoEmailIsAssociated, NoPhoneIsAssociated, UserNotFoundError } from "../../types/exceptions/user.exceptions";
-import { AuthChallengeExpired, ExpiredCodeError, InvalidCodeError, TooManyAttemptsError, TooManyResendsError } from "../../types/exceptions/verification.exceptions";
+import { AuthChallengeExpired, InvalidCodeError, TooManyAttemptsError, TooManyResendsError } from "../../types/exceptions/verification.exceptions";
 
 const verificationConfig = {
 	expirySeconds: 5 * 60,
@@ -79,7 +79,7 @@ class VerificationService {
 			await this.challengeRepository.update(targetChall.id, {
 				status: 'EXPIRED'
 			});
-			throw new ExpiredCodeError();
+			throw new AuthChallengeExpired();
 		}
 
 		if (!verifyOTP(targetChall.secret!, code)) {

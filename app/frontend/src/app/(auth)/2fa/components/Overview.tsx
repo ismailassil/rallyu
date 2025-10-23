@@ -1,11 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { METHODS_META } from './constants';
 import { Fingerprint, LoaderCircle, ChevronRight } from 'lucide-react';
-import { toastError, toastSuccess } from '@/app/components/CustomToast';
+import { toastError } from '@/app/components/CustomToast';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import useAPICall from '@/app/hooks/useAPICall';
-import { APIError } from '@/app/(api)/APIClient';
 import AnimatedComponent from '../../components/UI/AnimatedComponent';
 import { useTranslations } from 'next-intl';
 
@@ -19,6 +19,7 @@ export default function Overview({ loginSessionMeta, onSuccess, onFailure }: Met
 	const router = useRouter();
 
 	const t = useTranslations('auth.twoFactorAtLogin.overview');
+	const t2fao = useTranslations('auth.twoFactorAtLogin.overview');
 
 	const {
 		apiClient
@@ -44,12 +45,9 @@ export default function Overview({ loginSessionMeta, onSuccess, onFailure }: Met
 				loginSessionMeta.token,
 				m
 			));
-			if (m !== 'TOTP')
-				toastSuccess('Code sent');
 			onSuccess(m);
-		} catch (err) {
-			const apiErr = err as APIError;
-			toastError(apiErr.message);
+		} catch (err: any) {
+			toastError(t2fao('errors', { code: err.message }));
 			onFailure();
 		}
 		setSelectedMethod(null);

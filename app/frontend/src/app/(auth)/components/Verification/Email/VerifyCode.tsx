@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useRef, useState } from 'react';
 import useAPICall from '@/app/hooks/useAPICall';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -20,6 +21,7 @@ interface VerifyCodeProps {
 // EMAIL
 export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : VerifyCodeProps) {
 	const t = useTranslations('auth');
+	const tve = useTranslations('auth.verification.verifyCode');
 
 	const {
 		apiClient
@@ -43,7 +45,6 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 
 		const OTPJoined = code.join('');
 		if (OTPJoined.length !== 6) {
-			toastError('Code is required');
 			setHasError(true);
 			setTimeout(() => {
 				setHasError(false);
@@ -57,14 +58,14 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 				OTPJoined
 			));
 			onSuccess();
-		} catch (err) {
-			setHasError(true);
-			setTimeout(() => {
-				setHasError(false);
-				if ((err as APIError).code !== 'AUTH_INVALID_CODE')
-					onFailure();
-			}, 1000);
-			toastError((err as APIError).message);
+		} catch (err: any) {
+			if (err.message === 'AUTH_INVALID_CODE') {
+				setHasError(true);
+				setTimeout(() => setHasError(false), 1000);
+			} else {
+				toastError(tve('errors.email', { code: err.message }));
+				onFailure();
+			}
 		}
 	}
 
@@ -108,7 +109,7 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 					text={t('common.continue')}
 					type='submit'
 					icon={<ArrowRight size={16} />}
-					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '')}
+					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '') || hasError}
 					isSubmitting={isVerifyingCode}
 				/>
 

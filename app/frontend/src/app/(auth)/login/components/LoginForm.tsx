@@ -2,7 +2,7 @@
 'use client';
 import React from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { toastError, toastSuccess } from '../../../components/CustomToast';
+import { toastError } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import InputField from '../../components/Form/InputField';
 import useForm from '@/app/hooks/useForm';
@@ -16,6 +16,7 @@ import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export default function LoginForm() {
 	const t = useTranslations('auth.common');
+	const tlogin = useTranslations('auth.login');
 
 	const router = useRouter();
 
@@ -55,14 +56,10 @@ export default function LoginForm() {
 
 		try {
 			const result = await executeAPICall(() => login(formData.username, formData.password));
-			if (result._2FARequired) {
-				toastSuccess('Two Factor Authentication is required!');
+			if (result._2FARequired)
 				router.push('/2fa');
-			}
-			else
-				toastSuccess('Logged in successfully');
 		} catch (err: any) {
-			toastError(err.message || 'Something went wrong, please try again later');
+			toastError(tlogin('errors', { code: err.message }));
 		}
 	}
 

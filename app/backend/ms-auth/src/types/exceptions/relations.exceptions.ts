@@ -6,18 +6,6 @@ export class CannotSendFriendRequestError extends AuthError {
 	}
 }
 
-export class FriendRequestAlreadySentError extends AuthError {
-	constructor(message: string = 'Friend request already sent', details: any = {}) {
-		super(message, 400, 'AUTH_FRIEND_REQUEST_ALREADY_SENT', details);
-	}
-}
-
-export class AlreadyFriendsError extends AuthError {
-	constructor(message: string = 'Users are already friends', details: any = {}) {
-		super(message, 400, 'AUTH_ALREADY_FRIENDS', details);
-	}
-}
-
 export class NoPendingRequestError extends AuthError {
 	constructor(message: string = 'No pending request', details: any = {}) {
 		super(message, 400, 'AUTH_NO_PENDING_REQUEST', details);
@@ -51,11 +39,5 @@ export class CannotBlockError extends AuthError {
 export class CannotUnblockError extends AuthError {
 	constructor(message: string = 'Unable to unblock user', details: any = {}) {
 		super(message, 400, 'AUTH_CANNOT_UNBLOCK', details);
-	}
-}
-
-export class CannotUnfriendError extends AuthError {
-	constructor(message: string = 'Unable to unfriend user', details: any = {}) {
-		super(message, 400, 'AUTH_CANNOT_UNFRIEND', details);
 	}
 }

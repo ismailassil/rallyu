@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import OTPCodeInput from "../../components/Form/OTPCodeInput";
@@ -21,6 +22,7 @@ interface VerifyCodeProps {
 
 export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCodeProps) {
 	const t = useTranslations('');
+	const trp = useTranslations('auth.reset_password.verifyCode');
 
 	const router = useRouter();
 
@@ -46,7 +48,6 @@ export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCod
 
 		const OTPJoined = code.join('');
 		if (OTPJoined.length !== 6) {
-			toastError('Code is required');
 			setHasError(true);
 			setTimeout(() => {
 				setHasError(false);
@@ -60,14 +61,14 @@ export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCod
 				OTPJoined
 			));
 			onSuccess();
-		} catch (err) {
-			setHasError(true);
-			setTimeout(() => {
-				setHasError(false);
-				if ((err as APIError).code !== 'AUTH_INVALID_CODE')
-					onFailure();
-			}, 1000);
-			toastError((err as APIError).message);
+		} catch (err: any) {
+			if (err.message === 'AUTH_INVALID_CODE') {
+				setHasError(true);
+				setTimeout(() => setHasError(false), 1000);
+			} else {
+				toastError(trp('errors', { code: err.message }));
+				onFailure();
+			}
 		}
 	}
 
@@ -111,7 +112,7 @@ export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCod
 					text={t('auth.common.continue')}
 					type="submit"
 					icon={<ArrowRight size={16} />}
-					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '')}
+					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '') || hasError}
 					isSubmitting={isVerifyingCode}
 				/>
 

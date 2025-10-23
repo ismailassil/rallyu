@@ -161,5 +161,4 @@ export class AuthService {
 		const { data: res } = await this.client.post(`/auth/verify-phone/verify`, { token, code });
 		return res.data;
 	}
-
 }

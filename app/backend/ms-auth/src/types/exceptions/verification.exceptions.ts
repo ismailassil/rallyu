@@ -25,8 +25,8 @@ export class InvalidCodeError extends BadRequestError {
 	}
 }
 
-export class ExpiredCodeError extends BadRequestError {
-	constructor(message: string = 'Code expired', details: any = {}) {
-		super(message, 'AUTH_CODE_EXPIRED', details);
-	}
-}
+// export class ExpiredCodeError extends BadRequestError {
+// 	constructor(message: string = 'Code expired', details: any = {}) {
+// 		super(message, 'AUTH_CODE_EXPIRED', details);
+// 	}
+// }
