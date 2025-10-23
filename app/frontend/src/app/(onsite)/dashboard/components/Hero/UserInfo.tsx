@@ -10,7 +10,7 @@ export default function UserInfo({ firstname }: UserInfoProps) {
 
 	return (
 		<header
-			className="main-card-wrapper flex px-13 py-10 
+			className="main-card-wrapper flex px-13 py-10 min-h-30 sm:min-h-auto
 				w-full items-center overflow-hidden rounded-lg border-2"
 		>
 			<h1 className={`${unicaOne.className} text-4xl font-semibold lg:text-4xl`}>

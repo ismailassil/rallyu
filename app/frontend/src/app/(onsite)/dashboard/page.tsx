@@ -22,7 +22,7 @@ export default function Dashboard() {
 					<UserInfo firstname={loggedInUser?.username || ""} />
 					<section className="hide-scrollbar flex flex-1 flex-col gap-4 md:overflow-x-hidden">
 						<DashboardGameCards />
-						<div className="hide-scrollbar flex flex-1 flex-col gap-4 overflow-scroll overflow-x-hidden lg:flex-row">
+						<div className="hide-scrollbar flex flex-1 flex-col gap-4 overflow-scroll overflow-x-hidden lg:flex-row mb-25 sm:mb-0">
 							<LeaderboardCard />
 							<SnapshotCard />
 						</div>

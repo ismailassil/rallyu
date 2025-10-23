@@ -230,7 +230,7 @@ class NotifSerives {
 	/**
 	 * [A -> B] (users)
 	 *
-	 * Create a Notification and Dispatch it to [B]
+	 * Notification and Dispatch it to [B]
 	 *
 	 * After a period of time, if 10 seconds passed,
 	 * make the notification finished for [B]
@@ -269,6 +269,17 @@ class NotifSerives {
 		}
 	}
 
+	/**
+	 * [A -> B] (users)
+	 *
+	 * Responds to the [A] notification or dismiss it
+	 * 
+	 * Remove the Notif and Create GameId if user applied with joining
+	 *
+	 * After a period of time, if 10 seconds passed,
+	 * make the notification finished for [B]
+	 *
+	* */
 	async updateGame(userId: number, socketId: string, payload: UpdateGamePayload) {
 		fastify.log.warn("-----------------[UPDATE_GAME]-----------------");
 		try {

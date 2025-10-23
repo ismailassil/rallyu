@@ -12,23 +12,21 @@ const DashboardGameCards = () => {
 				src={'/design/tourn_cup.png'}
 				position="absolute 
 					h-auto left-1/2 -z-1 -bottom-25 group-hover:opacity-90
-					md:block md:-bottom-20 md:translate-x-8 md:w-[260px]
-					lg:-translate-x-1/2 lg:-bottom-30 lg:w-[300px]
+					md:-translate-x-1/2 md:-bottom-30 md:w-[300px]
 					transform group-hover:-translate-y-7 group-hover:scale-105 group-hover:z-1
 					transition-transform duration-500"
 				text={t('tournament.text')}
-				textClass="lg:text-2xl text-base group-hover:opacity-50 duration-300"
+				textClass="sm:text-2xl text-base group-hover:opacity-50 duration-300"
 				subtext={t('tournament.subtext')}
-				subtextClass="text-4xl md:text-3xl lg:text-4xl group-hover:opacity-50 duration-300"
+				subtextClass="text-4xl sm:text-3xl lg:text-4xl group-hover:opacity-50 duration-300"
 				onClick={() => router.push("/tournament")}
 				/>
 			<GameCard
 				src={'/dashboard/pp_xo.png'}
 				background="/background/side/1vs1-dock.svg"
 				position="absolute brightness-150
-					h-auto left-1/2 -z-1 -bottom-40 size-full
-					md:block md:bottom-0 md:translate-x-8 max-w-120
-					lg:-translate-x-1/2 lg:-bottom-35 group-hover:z-1
+					h-auto left-1/2 -z-1 -bottom-40 size-full w-120
+					md:-translate-x-1/2 md:-bottom-35 group-hover:z-1 overflow-hidden
 					transform group-hover:-translate-y-10 group-hover:scale-105
 					transition-transform duration-500"
 				text={t('one_vs_one.text')}

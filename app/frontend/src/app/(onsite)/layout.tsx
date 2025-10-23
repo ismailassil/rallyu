@@ -14,7 +14,7 @@ export default function OnsiteLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<div className="mx-auto max-w-500">
+		<div className="mx-auto max-w-500 relative">
 			<ProtectedRoute>
 				<HeaderProvider>
 					<NotificationProvider>
