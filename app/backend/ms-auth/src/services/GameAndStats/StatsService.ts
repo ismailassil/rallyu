@@ -143,7 +143,7 @@ class StatsService {
 		const SCORE_FACTOR = Math.max(Math.min(1 + Math.abs(playerScore - oppScore) * 0.05, 2), 0.5);
 		const XP_GAIN = BASE_XP * RESULT_FACTOR * DIFFICULTY_FACTOR * SCORE_FACTOR;
 
-		return XP_GAIN;
+		return Math.round(XP_GAIN);
 	}
 
 	private XPFromLevel(level: number) {
