@@ -14,17 +14,19 @@ export default function OnsiteLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<ProtectedRoute>
-			<HeaderProvider>
-				<NotificationProvider>
-					<Header />
-					<ToasterCenter />
-				</NotificationProvider>
-			</HeaderProvider>
-			<PresenceProvider>
-				<SideBar />
-				{children}
-			</PresenceProvider>
-		</ProtectedRoute>
+		<div className="mx-auto max-w-500">
+			<ProtectedRoute>
+				<HeaderProvider>
+					<NotificationProvider>
+						<Header />
+						<ToasterCenter />
+					</NotificationProvider>
+				</HeaderProvider>
+				<PresenceProvider>
+					<SideBar />
+					{children}
+				</PresenceProvider>
+			</ProtectedRoute>
+		</div>
 	);
 }

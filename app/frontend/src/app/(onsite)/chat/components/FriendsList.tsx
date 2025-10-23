@@ -70,7 +70,7 @@ const FriendsList = () => {
 				{hasFriends ? (
 					<ul>
 						{(prefix ? filteredSuggestions : displayUsers)?.map((user) => {
-						const { date } = formatMessageDateTime(user?.last_message.created_at, "list");
+							const { date } = formatMessageDateTime(user?.last_message?.created_at, "list");
 
 							return (
 								< li key={user?.id} onClick={() => handleSelectUser(user)}>
