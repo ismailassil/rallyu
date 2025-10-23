@@ -11,7 +11,6 @@ const MIGRATIONS = [
 			CREATE TABLE IF NOT EXISTS users (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-				-- PROFILE
 				first_name TEXT NOT NULL,
 				last_name TEXT NOT NULL,
 				email TEXT UNIQUE NOT NULL,
@@ -20,8 +19,13 @@ const MIGRATIONS = [
 				bio TEXT DEFAULT 'DFK',
 				avatar_url TEXT DEFAULT '/users/avatars/default.png',
 
-				-- EXTRA
+				phone TEXT,
+
+				email_verified INTEGER DEFAULT 0,
+				phone_verified INTEGER DEFAULT 0,
+
 				auth_provider TEXT DEFAULT 'Local',
+				auth_provider_id INTEGER,
 				role TEXT DEFAULT 'user',
 
 				created_at INTEGER DEFAULT (strftime('%s','now')),

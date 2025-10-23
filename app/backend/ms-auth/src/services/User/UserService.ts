@@ -194,7 +194,19 @@ class UserService {
 		if (!targetUser)
 			throw new UserNotFoundError();
 
-		await this.userRepository.update(userID, updates);
+		if (updates.email && updates.email !== targetUser.email && updates.email_verified !== true) updates = { ...updates, email_verified: false };
+		if (updates.phone && updates.phone !== targetUser.phone && updates.phone_verified !== true) updates = { ...updates, phone_verified: false };
+
+		try {
+			await this.userRepository.update(userID, updates);
+		} catch (err) {
+			if (err instanceof DatabaseQueryError) {
+				const parsed = err.details.error;
+				if (parsed?.code === 'SQLITE_CONSTRAINT')
+					this.throwIfUniqueConstraint(parsed);
+			}
+			throw err;
+		}
 	}
 
 	// TODO: UPDATE AVATAR
@@ -229,6 +241,7 @@ class UserService {
 
 	private throwIfUniqueConstraint(parsed: any) {
 		switch (parsed.column) {
+			// case 'phone':
 			case 'username':
 			case 'email':
 				throw new UserAlreadyExistsError(parsed.column);
