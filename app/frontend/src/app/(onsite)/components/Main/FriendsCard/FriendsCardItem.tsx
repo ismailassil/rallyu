@@ -33,7 +33,7 @@ export default function FriendsCardItem({ id, username, avatar }: FriendsCardIte
 
 	return (
 		<div className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/2 px-5 py-3 select-none">
-			<Link href={`/users/${username}`} className="flex items-center gap-5">
+			<Link href={`/users/${username}`} className="flex overflow-hidden items-center gap-5">
 				{/* AVATAR */}
 				<div className="ring-accent/20 flex aspect-square h-[40px] w-[40px] items-center justify-center rounded-full ring-2 lg:h-[40px] lg:w-[40px]">
 					<Avatar avatar={avatar} className="h-full w-full" />

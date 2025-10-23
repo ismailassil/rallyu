@@ -49,7 +49,7 @@ export default function FriendsCard() {
 	const showSkeleton = isLoading && !friends; // first fetch
 
 	return (
-		<MainCardWithHeader headerName={t('friends')} className='font-funnel-display flex-2 scroll-smooth hidden 2xl:block'>
+		<MainCardWithHeader headerName={t('friends')} className='font-funnel-display flex-2 scroll-smooth hidden xl:block'>
 			<div className="group flex flex-col gap-3 px-6 h-full">
 				{showSkeleton ? (
 					<LoadingSkeletonList count={12} />
