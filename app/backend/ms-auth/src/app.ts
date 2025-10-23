@@ -100,13 +100,13 @@ async function buildApp(): Promise<FastifyInstance> {
 	const verificationService = new VerificationService(userService, mailingService, whatsAppService);
 	const matchesService = new MatchesService(statsService, matchesRepository);
 
-	await fastify.register(natsPlugin, {
-		NATS_URL: process.env["NATS_URL"] || "",
-		NATS_USER: process.env["NATS_USER"] || "",
-		NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
-		userService: userService,
-		relationsService: relationsService
-	});
+	// await fastify.register(natsPlugin, {
+	// 	NATS_URL: process.env["NATS_URL"] || "",
+	// 	NATS_USER: process.env["NATS_USER"] || "",
+	// 	NATS_PASSWORD: process.env["NATS_PASSWORD"] || "",
+	// 	userService: userService,
+	// 	relationsService: relationsService
+	// });
 
 	// INIT CONTROLLERS
 	const passwordResetController = new PasswordResetController(passwordResetService);

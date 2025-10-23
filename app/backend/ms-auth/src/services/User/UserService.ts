@@ -2,11 +2,10 @@ import { MultipartFile } from "@fastify/multipart";
 import UserRepository from "../../repositories/UserRepository";
 import { UserAlreadyExistsError, UserNotFoundError } from "../../types/exceptions/user.exceptions";
 import StatsService from "../GameAndStats/StatsService";
-import fs, { createWriteStream } from 'fs';
-import { pipeline } from "stream/promises";
 import MatchesRepository from "../../repositories/MatchesRepository";
 import RelationsService from "./RelationsService";
 import CDNService from "../CDN/CDNService";
+import { DatabaseQueryError } from "../../types/exceptions/database.exceptions";
 
 class UserService {
 	private cdnService: CDNService;
@@ -165,22 +164,35 @@ class UserService {
 		if (await this.isEmailTaken(email))
 			throw new UserAlreadyExistsError('Email');
 
-		const createdUserID = await this.userRepository.create(
-			username,
-			hashedPassword,
-			email,
-			first_name,
-			last_name,
-			avatar_url,
-			auth_provider,
-			auth_provider_id,
-			role,
-			bio
-		);
+		try {
+			const createdUserID = await this.userRepository.create(
+				username,
+				hashedPassword,
+				email,
+				first_name,
+				last_name,
+				avatar_url,
+				auth_provider,
+				auth_provider_id,
+				role,
+				bio
+			);
 
-		await this.statsService.createUserRecords(createdUserID);
+			await this.statsService.createUserRecords(createdUserID);
 
-		return createdUserID;
+			return createdUserID;
+		} catch (err) {
+			if (err instanceof DatabaseQueryError) {
+				const parsed = err.details.error;
+				if (parsed?.code === 'SQLITE_CONSTRAINT') {
+					if (parsed.column === 'username')
+						throw new UserAlreadyExistsError('Username');
+					if (parsed.column === 'email')
+						throw new UserAlreadyExistsError('Email');
+				}
+			}
+			throw err;
+		}
 	}
 
 

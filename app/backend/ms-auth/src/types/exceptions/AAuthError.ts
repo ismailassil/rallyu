@@ -1,7 +1,7 @@
 export abstract class AuthError extends Error {
 	public readonly statusCode: number;
 	public readonly errorCode: string;
-	public readonly details: string;
+	public readonly details: any;
 	public readonly timestamp: string;
 
 	constructor(message: string, statusCode: number, errorCode: string, details: any = {}) {
