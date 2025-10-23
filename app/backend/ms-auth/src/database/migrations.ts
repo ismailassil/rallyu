@@ -11,7 +11,6 @@ const MIGRATIONS = [
 			CREATE TABLE IF NOT EXISTS users (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-				-- PROFILE
 				first_name TEXT NOT NULL,
 				last_name TEXT NOT NULL,
 				email TEXT UNIQUE NOT NULL,
@@ -20,8 +19,13 @@ const MIGRATIONS = [
 				bio TEXT DEFAULT 'DFK',
 				avatar_url TEXT DEFAULT '/users/avatars/default.png',
 
-				-- EXTRA
+				phone TEXT,
+
+				email_verified INTEGER DEFAULT 0,
+				phone_verified INTEGER DEFAULT 0,
+
 				auth_provider TEXT DEFAULT 'Local',
+				auth_provider_id INTEGER,
 				role TEXT DEFAULT 'user',
 
 				created_at INTEGER DEFAULT (strftime('%s','now')),
@@ -231,27 +235,22 @@ const MIGRATIONS = [
 	},
 ];
 
-// {
-// 	id: 2,
-// 	name: 'create-refresh-tokens-table',
-// 	sql: `
-// 		CREATE TABLE refresh_tokens (
-// 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-// 			token_hash TEXT NOT NULL,
-// 			device_name TEXT DEFAULT NULL,
-// 			ip_address TEXT DEFAULT NULL,
-// 			user_agent TEXT DEFAULT NULL,
-// 			is_revoked BOOLEAN DEFAULT FALSE,
-// 			created_at INTEGER DEFAULT (strftime('%s','now')),
-// 			expires_at INTEGER NOT NULL,
-// 			last_used INTEGER DEFAULT (strftime('%s','now')),
-
-// 			user_id INTEGER NOT NULL,
-// 			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-// 		)
-// 	`
-// }
+const TRIGGERS = [
+	{
+		id: 1,
+		name: 'trigger-create_user_stats_after_insert',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS create_user_stats_after_insert
+			AFTER INSERT
+			ON users
+			FOR EACH ROW
+			BEGIN
+				INSERT INTO users_stats (user_id)
+				VALUES (NEW.id);
+			END;
+		`
+	}
+];
 
 async function runMigrations() {
 
@@ -260,8 +259,13 @@ async function runMigrations() {
 			await db.run(migration.sql);
 			console.log(`Completed migration: ${migration.name}`);
 		}
-
 		console.log(`Completed all migrations successfully.`);
+
+		for (const trigger of TRIGGERS) {
+			await db.run(trigger.sql);
+			console.log(`Completed trigger: ${trigger.name}`);
+		}
+		console.log(`Completed all trigger successfully.`);
 	} catch (err) {
 		await db.close();
 		console.log(`Migration failed: ${err}`);

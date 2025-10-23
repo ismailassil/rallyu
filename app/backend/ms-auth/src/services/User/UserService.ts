@@ -2,11 +2,10 @@ import { MultipartFile } from "@fastify/multipart";
 import UserRepository from "../../repositories/UserRepository";
 import { UserAlreadyExistsError, UserNotFoundError } from "../../types/exceptions/user.exceptions";
 import StatsService from "../GameAndStats/StatsService";
-import fs, { createWriteStream } from 'fs';
-import { pipeline } from "stream/promises";
 import MatchesRepository from "../../repositories/MatchesRepository";
 import RelationsService from "./RelationsService";
 import CDNService from "../CDN/CDNService";
+import { DatabaseQueryError } from "../../types/exceptions/database.exceptions";
 
 class UserService {
 	private cdnService: CDNService;
@@ -160,27 +159,31 @@ class UserService {
 		role?: string,
 		bio?: string
 	) {
-		if (await this.isUsernameTaken(username))
-			throw new UserAlreadyExistsError('Username');
-		if (await this.isEmailTaken(email))
-			throw new UserAlreadyExistsError('Email');
+		try {
+			const createdUserID = await this.userRepository.create(
+				username,
+				hashedPassword,
+				email,
+				first_name,
+				last_name,
+				avatar_url,
+				auth_provider,
+				auth_provider_id,
+				role,
+				bio
+			);
 
-		const createdUserID = await this.userRepository.create(
-			username,
-			hashedPassword,
-			email,
-			first_name,
-			last_name,
-			avatar_url,
-			auth_provider,
-			auth_provider_id,
-			role,
-			bio
-		);
+			// await this.statsService.createUserRecords(createdUserID);
 
-		await this.statsService.createUserRecords(createdUserID);
-
-		return createdUserID;
+			return createdUserID;
+		} catch (err) {
+			if (err instanceof DatabaseQueryError) {
+				const parsed = err.details.error;
+				if (parsed?.code === 'SQLITE_CONSTRAINT')
+					this.throwIfUniqueConstraint(parsed);
+			}
+			throw err;
+		}
 	}
 
 
@@ -191,7 +194,19 @@ class UserService {
 		if (!targetUser)
 			throw new UserNotFoundError();
 
-		await this.userRepository.update(userID, updates);
+		if (updates.email && updates.email !== targetUser.email && updates.email_verified !== true) updates = { ...updates, email_verified: false };
+		if (updates.phone && updates.phone !== targetUser.phone && updates.phone_verified !== true) updates = { ...updates, phone_verified: false };
+
+		try {
+			await this.userRepository.update(userID, updates);
+		} catch (err) {
+			if (err instanceof DatabaseQueryError) {
+				const parsed = err.details.error;
+				if (parsed?.code === 'SQLITE_CONSTRAINT')
+					this.throwIfUniqueConstraint(parsed);
+			}
+			throw err;
+		}
 	}
 
 	// TODO: UPDATE AVATAR
@@ -222,39 +237,15 @@ class UserService {
 		await this.userRepository.update(user_id, {
 			avatar_url: '/users/avatars/' + (await this.cdnService.storeFromMultipart(fileData)).split('/')[1]
 		});
+	}
 
-		// const allowedMimeTypes = ['images/jpg', 'image/jpeg', 'image/png'];
-		// if (!allowedMimeTypes.includes(fileData.mimetype))
-		// 	throw new Error('File type not allowed'); // need to change it to custom error class
-
-		// const fileExtension = fileData.mimetype.split('/')[1];
-		// const fileName = `${targetUser.username}.${fileExtension}`;
-		// const uploadDir = `./uploads/avatars`;
-
-		// if (!fs.existsSync(uploadDir))
-		// 	fs.mkdirSync(uploadDir, { recursive: true });
-
-		// const filepath = uploadDir + '/' + fileName;
-
-		// await pipeline(fileData.file, createWriteStream(filepath));
-
-		// await this.userRepository.update(targetUser.id, { avatar_url: `/users/avatars/${fileName}` });
-
-		// return `/users/avatars/${fileName}`;
-
-		// try {
-		// 	await pipeline(fileData.file, createWriteStream(filepath));
-
-		// 	await this.userRepository.updateAvatar(user_id, fileName);
-
-		// 	return `/avatars/${fileName}`;
-		// } catch (err: any) {
-		// 	try {
-		// 		await fs.unlink(filepath, (err) => { if (err) throw err } ); // need to check this
-		// 	} catch {}
-
-		// 	throw err;
-		// }
+	private throwIfUniqueConstraint(parsed: any) {
+		switch (parsed.column) {
+			// case 'phone':
+			case 'username':
+			case 'email':
+				throw new UserAlreadyExistsError(parsed.column);
+		}
 	}
 }
 
