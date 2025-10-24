@@ -11,6 +11,7 @@ export default getRequestConfig(async () => {
       ...(await import(`../src/messages/${locale}/dashboard.json`)),
       ...(await import(`../src/messages/${locale}/header.json`)),
       ...(await import(`../src/messages/${locale}/chat.json`)),
+      ...(await import(`../src/messages/${locale}/game.json`)),
     },
   };
 });

@@ -1,9 +1,11 @@
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 const Countdown = ({ round }: { round: number }) => {
-    const sequence = [3, 2, 1, `Round ${round}`];
+    const t = useTranslations("game");
+    const sequence = [3, 2, 1, `${t("ingame.round")} ${round}`];
     const [index, setIndex] = useState(0);
 
     useEffect(() => {

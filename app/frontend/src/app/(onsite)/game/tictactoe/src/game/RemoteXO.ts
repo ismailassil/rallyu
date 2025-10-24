@@ -91,7 +91,7 @@ class RemoteXO {
 					this.state.score![1] = data.score[this.index! ^ 1];
 					this.eventHandlers?.updateScore!(this.state.score!);
 					this.eventHandlers?.updateOverlayStatus(this.status)
-                    const displayedResult = data.winner === this.state.mySign ? 'You Won!' : data.winner === 'draw' ? 'Draw' : data.winner === 'X' ? `Cross Wins` : 'Circle Wins'
+                    const displayedResult = data.winner === this.state.mySign ? 'win' : data.winner === 'draw' ? 'draw' : data.winner === 'X' ? `cross` : 'circle'
                     this.eventHandlers?.updateDisplayedResult!(displayedResult);
 					this.eventHandlers?.updateTimer(0);
 					this.proxy.disconnect();

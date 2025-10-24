@@ -7,8 +7,10 @@ import TurnIndicator from "../../../components/Items/TurnIndicator";
 import TicTacToe from "../../src/TicTacToe";
 import LocalXO from "../../src/game/LocalXO";
 import { RotateCcw } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const GameField = () => {
+    const t = useTranslations("game");
     const [ currentPlayer, setCurrentPlayer ] = useState<XOSign>('');
     const [ currentRound, setCurrentRound ] = useState(1);
     const [ score, setScore ] = useState<[number, number]>([0, 0]);
@@ -44,7 +46,7 @@ const GameField = () => {
                             </div>
 
                             <div className={`flex flex-col ${currentRound ? 'justify-between py-2' : 'justify-end'} items-center h-full shrink-0`}>
-                                <span className="text-md lg:text-lg xl:text-xl font-funnel-display font-extrabold italic">Round {currentRound}</span>
+                                <span className="text-md lg:text-lg xl:text-xl font-funnel-display font-extrabold italic">{t("ingame.round")} {currentRound}</span>
                                 <GameTimer time={timeLeft} className='rounded-2xl' />
                             </div>
                             <div className="flex h-full w-auto flex-col py-2 justify-end items-center">
@@ -60,7 +62,7 @@ const GameField = () => {
                             onClick={overlayStatus === 'countdown' ? undefined : resetGame}
                         >
                             <RotateCcw className="w-[15px]" />
-                            <span className="font-funnel-display font-bold">Restart</span>
+                            <span className="font-funnel-display font-bold">{t("ingame.restart")}</span>
                         </button>
                     </div>
                     <div className="relative inline-block">
