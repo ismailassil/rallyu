@@ -120,7 +120,7 @@ class SessionsRepository extends ARepository {
 			values.push(sessionID);
 
 			const runResult = await db.run(
-				`UPDATE sessions SET ${setClause}, updated_at = (strftime('%s','now')) WHERE session_id = ?`,
+				`UPDATE sessions SET ${setClause} WHERE session_id = ?`,
 				values
 			);
 			return runResult.changes > 0;
@@ -175,7 +175,7 @@ class SessionsRepository extends ARepository {
 	async revoke(sessionID: string, reason: string) : Promise<boolean> {
 		try {
 			const runResult = await db.run(
-				`UPDATE sessions SET is_revoked = true, reason = ?, updated_at = (strftime('%s','now')) WHERE session_id = ?`,
+				`UPDATE sessions SET is_revoked = true, reason = ? WHERE session_id = ?`,
 				[reason, sessionID]
 			);
 			return runResult.changes > 0;
@@ -196,7 +196,7 @@ class SessionsRepository extends ARepository {
 			const params = excludeSessionID ? [reason, userID, excludeSessionID] : [reason, userID];
 
 			const runResult = await db.run(
-				`UPDATE sessions SET is_revoked = true, reason = ?, updated_at = (strftime('%s','now')) WHERE user_id = ? AND is_revoked = false ${excludeSessionID ? 'AND session_id != ?' : ''}`,
+				`UPDATE sessions SET is_revoked = true, reason = ? WHERE user_id = ? AND is_revoked = false ${excludeSessionID ? 'AND session_id != ?' : ''}`,
 				params
 			);
 			return runResult.changes;

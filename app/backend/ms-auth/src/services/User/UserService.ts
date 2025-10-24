@@ -194,9 +194,6 @@ class UserService {
 		if (!targetUser)
 			throw new UserNotFoundError();
 
-		if (updates.email && updates.email !== targetUser.email && updates.email_verified !== true) updates = { ...updates, email_verified: false };
-		if (updates.phone && updates.phone !== targetUser.phone && updates.phone_verified !== true) updates = { ...updates, phone_verified: false };
-
 		try {
 			await this.userRepository.update(userID, updates);
 		} catch (err) {
@@ -222,11 +219,11 @@ class UserService {
 	/*----------------------------------------------- CHECKS -----------------------------------------------*/
 
 	async isEmailTaken(email: string) {
-		return await this.userRepository.findByEmail(email) != null;
+		return await this.getUserByEmail(email) != null;
 	}
 
 	async isUsernameTaken(username: string) {
-		return await this.userRepository.findByUsername(username) != null;
+		return await this.getUserByUsername(username) != null;
 	}
 
 	async updateAvatar(user_id: number, fileData: MultipartFile) {

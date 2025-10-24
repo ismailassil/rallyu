@@ -96,20 +96,22 @@ class VerificationService {
 			throw new InvalidCodeError();
 		}
 
-		await this.challengeRepository.update(targetChall.id, {
-			status: 'VERIFIED'
-		});
-
-		if (targetChall.challenge_type === 'email_verification')
+		if (targetChall.challenge_type === 'email_verification') {
 			await this.userService.updateUser(targetChall.user_id, {
-				email: targetChall.target,
+				email: targetChall.target
+			});
+			await this.userService.updateUser(targetChall.user_id, {
 				email_verified: true
 			});
-		else if (targetChall.challenge_type === 'phone_verification')
+		}
+		else if (targetChall.challenge_type === 'phone_verification') {
 			await this.userService.updateUser(targetChall.user_id, {
-				phone: targetChall.target,
+				phone: targetChall.target
+			});
+			await this.userService.updateUser(targetChall.user_id, {
 				phone_verified: true
 			});
+		}
 
 		await this.challengeRepository.update(targetChall.id, {
 			status: 'COMPLETED'

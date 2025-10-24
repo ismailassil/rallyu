@@ -20,7 +20,7 @@ class UserController {
 	async emailAvailableHandler(request: FastifyRequest, reply: FastifyReply) {
 		const { email } = request.query as { email: string };
 
-		const isTaken = await this.userService.isEmailTaken(email);
+		const isTaken = await this.userService.isEmailTaken(email.trim().toLowerCase());
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, !isTaken);
 		return reply.code(status).send(body);
