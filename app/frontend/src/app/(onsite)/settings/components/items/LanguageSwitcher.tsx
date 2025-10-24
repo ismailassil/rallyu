@@ -50,11 +50,11 @@ const LanguageSwitcher = () => {
 				<button
 					onClick={(e) => {
 						e.preventDefault();
-						changeLocale("de");
+						changeLocale("it");
 					}}
-					className={`${locale === "de" ? "bg-black/10 ring-2" : "ring-0"} ring-white/30`}
+					className={`${locale === "it" ? "bg-black/10 ring-2" : "ring-0"} ring-white/30`}
 				>
-					🇩🇪 <span className="pl-3">Deutsch</span>
+					🇮🇹 <span className="pl-3">Italian</span>
 				</button>
 			</ul>
 		</div>

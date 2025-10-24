@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { APIClient } from "@/app/(api)/APIClient";
 import { MessageType } from "../chat/types/chat.types";
 import SocketClient from "@/app/(api)/SocketClient";
@@ -11,16 +10,16 @@ export type LoggedInUser = {
 	last_name: string;
 	bio: string;
 	avatar_url: string;
-	auth_provider: 'Local' | 'Google' | '42';
-	role: 'user' | 'mod' | 'admin' | string;
+	auth_provider: "Local" | "Google" | "42";
+	role: "user" | "mod" | "admin" | string;
 	created_at: number;
 	updated_at: number;
 	phone: string | null;
 	auth_provider_id: string | null;
 	email_verified: 0 | 1;
 	phone_verified: 0 | 1;
-	last_message : MessageType
-}
+	last_message: MessageType;
+};
 
 export type AuthContextType = {
 	loggedInUser: LoggedInUser | null;
@@ -37,4 +36,4 @@ export type AuthContextType = {
 
 	apiClient: APIClient;
 	socket: SocketClient;
-}
+};

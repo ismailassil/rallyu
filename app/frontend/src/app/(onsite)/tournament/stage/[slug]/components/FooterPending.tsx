@@ -8,7 +8,7 @@ import { Toaster } from "sonner";
 
 const FooterPending = function (
     { joined, setJoined, slug, title, full }:
-    { joined: boolean | undefined, setJoined: Dispatch<SetStateAction<boolean | undefined>>, slug: ParamValue, title: string, full: boolean }
+    { joined: boolean | undefined, setJoined: Dispatch<SetStateAction<boolean>>, slug: ParamValue, title: string, full: boolean }
 ) {
     const { apiClient, loggedInUser } = useAuth();
     const [error, setError] = useState({

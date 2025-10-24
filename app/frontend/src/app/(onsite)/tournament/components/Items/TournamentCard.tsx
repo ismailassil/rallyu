@@ -1,10 +1,8 @@
 import { ArrowUUpRight, Check, HourglassSimpleMediumIcon, MaskSad, SmileyXEyesIcon, TrophyIcon } from "@phosphor-icons/react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { button, div } from "framer-motion/client";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { AxiosResponse } from "axios";
 
@@ -45,7 +43,8 @@ function TournamentCard({
 			}
 			return;
 		}
-		if (["entered-id", "full-id", "ongoing-id", "finished-id", "cancelled-id"].includes(target.closest("div")?.id))
+		const id_ = target.closest("div")?.id;
+		if (id_ && ["entered-id", "full-id", "ongoing-id", "finished-id", "cancelled-id"].includes(id_))
 			return;
 		router.push(`tournament/stage/${id}`);
 	};

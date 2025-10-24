@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import React, { useEffect } from "react";
 import UserList from "./UserList";

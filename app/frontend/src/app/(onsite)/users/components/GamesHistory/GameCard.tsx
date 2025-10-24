@@ -51,6 +51,7 @@ export default function GameCard({
 	outcome,
 } : GameProps) {
 	const t = useTranslations('');
+	void opp_xp_gain;
 
 	const outcomeStyles: Record<Outcome, { bg: string; ring: string; label: string }> = {
 		W: { bg: 'bg-green-600', ring: 'ring-3 ring-green-500', label: t('common.victory') },

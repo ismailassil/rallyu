@@ -11,6 +11,9 @@ ENV_MAPPINGS=(
 	## Backend
 	"./env-script/.backend.env:app/backend/.env"
 
+	# Frontend
+	"./env-script/.frontend.env:app/frontend/.env"
+
 	## Microservices
 	"./env-script/.api-gateway.env:app/backend/api-gateway/.api-gateway.env"
 	"./env-script/.auth.env:app/backend/ms-auth/.auth.env"

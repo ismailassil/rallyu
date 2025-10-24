@@ -30,7 +30,6 @@ export default function Relations({ userId, username, currentStatus } : Relation
 		if (!loggedInUser || loggedInUser.id === userId)
 			return ;
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		function handleRelationUpdate(event: { eventType: string, data: Record<string, any> }) {
 			console.group('/********** RELATION UPDATE **********/');
 
@@ -65,7 +64,6 @@ export default function Relations({ userId, username, currentStatus } : Relation
 			await action();
 			setFriendshipStatus(next);
 			toastSuccess(message);
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
 			toastError(err.message);
 		}

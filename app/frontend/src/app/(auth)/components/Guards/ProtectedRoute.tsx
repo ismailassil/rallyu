@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-'use client';
+"use client";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -9,44 +8,38 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 	const router = useRouter();
 
 	useEffect(() => {
-		if (!socket)
-			return ;
+		if (!socket) return;
 
-		async function handleSessionUpdate(event: { eventType: string, data: Record<string, any> }) {
-			console.group('/********** SESSION UPDATE **********/');
+		async function handleSessionUpdate(event: {
+			eventType: string;
+			data: Record<string, any>;
+		}) {
+			console.group("/********** SESSION UPDATE **********/");
 
-			console.log('EVENT: ', event);
+			console.log("EVENT: ", event);
 
-			if (event.eventType !== 'SESSION_UPDATE')
-				return ;
+			if (event.eventType !== "SESSION_UPDATE") return;
 
-			if (event.data.status === 'REFRESH_REQUIRED')
-				await triggerRefreshToken();
+			if (event.data.status === "REFRESH_REQUIRED") await triggerRefreshToken();
 
 			console.groupEnd();
 		}
 
-		socket.on('user', handleSessionUpdate);
+		socket.on("user", handleSessionUpdate);
 
 		return () => {
-			socket.off('user', handleSessionUpdate);
+			socket.off("user", handleSessionUpdate);
 		};
 	}, []);
 
 	useEffect(() => {
-		console.group('ProtectedRouteAuthGuard');
-		console.log('isLoading?', isLoading, 'isAuthenticated?', isAuthenticated);
+		console.group("ProtectedRouteAuthGuard");
+		console.log("isLoading?", isLoading, "isAuthenticated?", isAuthenticated);
 		console.groupEnd();
-		if (!isLoading && !isAuthenticated)
-			router.replace('/login');
+		if (!isLoading && !isAuthenticated) router.replace("/login");
 	}, [isLoading, isAuthenticated]);
 
-	if (isLoading || !isAuthenticated)
-		return null;
+	if (isLoading || !isAuthenticated) return null;
 
-	return (
-		<>
-			{ children }
-		</>
-	);
+	return <>{children}</>;
 }

@@ -1,4 +1,3 @@
-import { RotateCcw } from "lucide-react";
 import Countdown from "../../../components/Items/CountDown";
 import { GameOverLocal } from "../../../components/Items/GameOver";
 

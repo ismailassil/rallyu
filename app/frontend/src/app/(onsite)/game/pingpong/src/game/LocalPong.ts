@@ -262,6 +262,7 @@ class LocalPong extends APong {
     }
 
     initGame = (canvas : HTMLCanvasElement, proxy? : SocketProxy | null) => {
+        void proxy;
         const ctx = canvas.getContext('2d');
         if (!ctx) {
             console.log('Failed to get context from canvas.');

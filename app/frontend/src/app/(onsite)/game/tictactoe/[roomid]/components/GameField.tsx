@@ -64,6 +64,7 @@ const GameField = () => {
 		})()
 		
 		return () => {
+            isMounted = false;
             if (disconnect) disconnect();
         }
 	}, [])

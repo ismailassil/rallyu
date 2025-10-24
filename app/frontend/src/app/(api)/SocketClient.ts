@@ -41,17 +41,14 @@ class SocketClient {
 		return this.socket;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	on(event: string, handler: (...args: any[]) => void) {
 		this.socket?.on(event, handler);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	off(event: string, handler: (...args: any[]) => void) {
 		this.socket?.off(event, handler);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	emit(event: string, data: any) {
 		this.socket?.emit(event, data);
 	}
@@ -93,14 +90,13 @@ class SocketClient {
 		const data = {
 			eventType: "UPDATE_CONTEXT",
 			data: {
-				type
-			}
+				type,
+			},
 		};
 
 		this.emit("notification", data);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	printAll(data: any) {
 		console.group("-------------NOTIFICATION-------------");
 		console.log(data);

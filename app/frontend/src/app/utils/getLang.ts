@@ -1,4 +1,4 @@
-export type Langs = "en" | "es" | "de";
+export type Langs = "en" | "es" | "it";
 
 export const getLang = (): Langs | null => {
 	if (typeof document === "undefined") return null; // SSR safe

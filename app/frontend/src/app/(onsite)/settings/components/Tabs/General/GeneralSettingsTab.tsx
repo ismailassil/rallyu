@@ -1,18 +1,18 @@
-import React, { useState, ChangeEvent } from 'react';
-import SettingsCard from '../../SettingsCard';
-import { useAuth } from '../../../../contexts/AuthContext';
-import ProfilePreview from './ProfilePreview';
-import PersonalInformationsForm from './PersonalInformationsForm';
-import useForm from '@/app/hooks/useForm';
-import { toastError, toastSuccess } from '@/app/components/CustomToast';
-import { LoaderCircle } from 'lucide-react';
-import { FormProvider } from '@/app/(auth)/components/Form/FormContext';
-import { motion } from 'framer-motion';
+import React, { useState, ChangeEvent } from "react";
+import SettingsCard from "../../SettingsCard";
+import { useAuth } from "../../../../contexts/AuthContext";
+import ProfilePreview from "./ProfilePreview";
+import PersonalInformationsForm from "./PersonalInformationsForm";
+import useForm from "@/app/hooks/useForm";
+import { toastError, toastSuccess } from "@/app/components/CustomToast";
+import { LoaderCircle } from "lucide-react";
+import { FormProvider } from "@/app/(auth)/components/Form/FormContext";
+import { motion } from "framer-motion";
 // import useAPICall from '@/app/hooks/useAPICall';
-import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
-import useCanSave from '@/app/hooks/useCanSave';
-import { useTranslations } from 'next-intl';
-import useValidationSchema from '@/app/hooks/useValidationSchema';
+import useAvailabilityCheck from "@/app/hooks/useAvailabilityCheck";
+import useCanSave from "@/app/hooks/useCanSave";
+import { useTranslations } from "next-intl";
+import useValidationSchema from "@/app/hooks/useValidationSchema";
 
 export interface FormDataState {
 	first_name: string;
@@ -29,22 +29,16 @@ export interface FormDataState {
 */
 
 export default function GeneralSettingsTab() {
-	const t = useTranslations('settings.general.cards.personal_infos');
-	const tautherr = useTranslations('auth');
+	const t = useTranslations("settings.general.cards.personal_infos");
+	const tautherr = useTranslations("auth");
 
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-	const {
-		personalInfoSettingsSchema
-	} = useValidationSchema();
+	const { personalInfoSettingsSchema } = useValidationSchema();
 
-	const {
-		apiClient,
-		loggedInUser,
-		triggerLoggedInUserRefresh
-	} = useAuth();
+	const { apiClient, loggedInUser, triggerLoggedInUserRefresh } = useAuth();
 
 	const [
 		formData,
@@ -54,39 +48,63 @@ export default function GeneralSettingsTab() {
 		handleChange,
 		validateAll,
 		getValidationErrors,
-		resetForm
+		resetForm,
 	] = useForm(
 		personalInfoSettingsSchema,
-		{ first_name: loggedInUser!.first_name, last_name: loggedInUser!.last_name, username: loggedInUser!.username, email: loggedInUser!.email, bio: loggedInUser!.bio },
+		{
+			first_name: loggedInUser!.first_name,
+			last_name: loggedInUser!.last_name,
+			username: loggedInUser!.username,
+			email: loggedInUser!.email,
+			bio: loggedInUser!.bio,
+		},
 		{ debounceMs: { email: 1200, username: 1200 } }
 	);
 
-	const { status: usernameStatus, setStatus: setUsernameStatus } = useAvailabilityCheck('username', formData.username, loggedInUser!.username, debounced.username, errors.username);
-	const { status: emailStatus, setStatus: setEmailStatus } = useAvailabilityCheck('email', formData.email, loggedInUser!.email, debounced.email, errors.email);
-	const canSave = useCanSave(formData, debounced, errors, avatarFile, usernameStatus, emailStatus, loggedInUser!, getValidationErrors);
+	const { status: usernameStatus, setStatus: setUsernameStatus } = useAvailabilityCheck(
+		"username",
+		formData.username,
+		loggedInUser!.username,
+		debounced.username,
+		errors.username
+	);
+	const { status: emailStatus, setStatus: setEmailStatus } = useAvailabilityCheck(
+		"email",
+		formData.email,
+		loggedInUser!.email,
+		debounced.email,
+		errors.email
+	);
+	const canSave = useCanSave(
+		formData,
+		debounced,
+		errors,
+		avatarFile,
+		usernameStatus,
+		emailStatus,
+		loggedInUser!,
+		getValidationErrors
+	);
 
 	function handleAvatarFileChange(e: ChangeEvent<HTMLInputElement>) {
 		const selectedFile = e.target.files?.[0];
-		if (!selectedFile)
-			return ;
+		if (!selectedFile) return;
 		setAvatarPreview(URL.createObjectURL(selectedFile));
 		setAvatarFile(selectedFile);
 	}
 
 	function handleAvatarFileRemove() {
-		const fileInput = document.getElementById('profile-upload') as HTMLInputElement;
-		if (fileInput)
-			fileInput.value = '';
+		const fileInput = document.getElementById("profile-upload") as HTMLInputElement;
+		if (fileInput) fileInput.value = "";
 		setAvatarFile(null);
 		setAvatarPreview(null);
 	}
 
 	async function uploadAvatar() {
-		if (!avatarFile)
-			return ;
+		if (!avatarFile) return;
 
 		const form = new FormData();
-		form.append('file', avatarFile);
+		form.append("file", avatarFile);
 
 		await apiClient.updateUserAvatar(loggedInUser!.id, form);
 		setAvatarFile(null);
@@ -97,8 +115,7 @@ export default function GeneralSettingsTab() {
 		const payload = getUpdatedFormPayload();
 		const errors = getValidationErrors();
 
-		if (Object.keys(payload).length === 0 || errors)
-			return ;
+		if (Object.keys(payload).length === 0 || errors) return;
 
 		await apiClient.updateUser(loggedInUser!.id, payload);
 		// updateLoggedInUserState(payload); // AuthContext
@@ -111,7 +128,7 @@ export default function GeneralSettingsTab() {
 			const oldValue = loggedInUser![key as keyof typeof loggedInUser];
 			const newValue = formData[key as keyof FormDataState];
 
-			if (newValue !== '' && newValue !== oldValue) {
+			if (newValue !== "" && newValue !== oldValue) {
 				payload[key as keyof FormDataState] = newValue;
 			}
 		}
@@ -121,18 +138,16 @@ export default function GeneralSettingsTab() {
 
 	async function handleSubmit() {
 		const isValid = validateAll();
-		if (!isValid)
-			return ;
+		if (!isValid) return;
 
 		try {
 			setIsSubmitting(true);
 			await updateUserInfo();
 			await uploadAvatar();
 			triggerLoggedInUserRefresh();
-			toastSuccess('Changes saved successfully');
+			toastSuccess("Changes saved successfully");
 			// updateLoggedInUserState(getUpdatedFormPayload());
 			resetForm(formData);
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
 			console.group('handleSubmit in personalInfoForm');
 			console.log(err);
@@ -145,48 +160,49 @@ export default function GeneralSettingsTab() {
 		}
 	}
 
-
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: 15 }}
 			animate={{ opacity: 1, x: 0 }}
 			exit={{ opacity: 1, x: -15 }}
 			transition={{ duration: 0.5 }}
-			className='h-full'
+			className="h-full"
 		>
-		<SettingsCard
-			title={t('title')}
-			subtitle={t('subtitle')}
-			actionIcon={isSubmitting ? <LoaderCircle size={16} className='animate-spin' /> : undefined}
-			onAction={handleSubmit}
-			isButtonHidden={!canSave}
-			isButtonDisabled={isSubmitting}
-			className='h-full overflow-auto hide-scrollbar'
-		>
-			<div className="flex flex-col gap-8">
-				<FormProvider
-					formData={formData}
-					touched={touched}
-					errors={errors}
-					debounced={debounced}
-					handleChange={handleChange}
-					validateAll={validateAll}
-					getValidationErrors={getValidationErrors}
-					resetForm={resetForm}
-				>
-					<ProfilePreview
-						avatarFile={avatarFile}
-						avatarBlobPreview={avatarPreview}
-						onAddAvatarFile={handleAvatarFileChange}
-						onRemoveAvatarFile={handleAvatarFileRemove}
-					/>
-					<PersonalInformationsForm
-						usernameStatus={usernameStatus}
-						emailStatus={emailStatus}
-					/>
-				</FormProvider>
-			</div>
-		</SettingsCard>
+			<SettingsCard
+				title={t("title")}
+				subtitle={t("subtitle")}
+				actionIcon={
+					isSubmitting ? <LoaderCircle size={16} className="animate-spin" /> : undefined
+				}
+				onAction={handleSubmit}
+				isButtonHidden={!canSave}
+				isButtonDisabled={isSubmitting}
+				className="hide-scrollbar h-full overflow-auto"
+			>
+				<div className="flex flex-col gap-8">
+					<FormProvider
+						formData={formData}
+						touched={touched}
+						errors={errors}
+						debounced={debounced}
+						handleChange={handleChange}
+						validateAll={validateAll}
+						getValidationErrors={getValidationErrors}
+						resetForm={resetForm}
+					>
+						<ProfilePreview
+							avatarFile={avatarFile}
+							avatarBlobPreview={avatarPreview}
+							onAddAvatarFile={handleAvatarFileChange}
+							onRemoveAvatarFile={handleAvatarFileRemove}
+						/>
+						<PersonalInformationsForm
+							usernameStatus={usernameStatus}
+							emailStatus={emailStatus}
+						/>
+					</FormProvider>
+				</div>
+			</SettingsCard>
 		</motion.div>
 	);
 }

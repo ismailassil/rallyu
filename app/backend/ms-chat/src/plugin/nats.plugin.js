@@ -64,7 +64,7 @@ async function natsPlugin(fastify, options) {
 				const result = stmt.get(data.senderId, data.receiverId, data.text);
 
 				const textValue = String(data.text);
-				if (textValue.length > 300) {c
+				if (textValue.length > 300) {
 					throw new Error('Message text too long');
 				}
 
