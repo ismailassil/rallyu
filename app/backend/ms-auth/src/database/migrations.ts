@@ -156,7 +156,7 @@ const MIGRATIONS = [
 		sql: `
 			CREATE TABLE IF NOT EXISTS auth_challenges (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				user_id INTEGER NOT NULL,
+
 				challenge_type TEXT NOT NULL,
 				method TEXT CHECK (method IN ('SMS', 'EMAIL', 'TOTP')),
 				status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'VERIFIED', 'COMPLETED', 'EXPIRED', 'FAILED')),
@@ -170,7 +170,10 @@ const MIGRATIONS = [
 
 				created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
 				updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-				expires_at INTEGER NOT NULL
+				expires_at INTEGER NOT NULL,
+
+				user_id INTEGER NOT NULL,
+				FOREIGN KEY (user_id) REFERENCES users(id) -- ON DELETE CASCADE?
 			);
 
 			CREATE TRIGGER IF NOT EXISTS trg_auth_challenges_update_timestamp

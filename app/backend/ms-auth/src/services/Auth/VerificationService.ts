@@ -117,7 +117,7 @@ class VerificationService {
 			status: 'COMPLETED'
 		});
 
-		return ;
+		return targetChall.user_id;
 	}
 
 	async resend(token: UUID) {

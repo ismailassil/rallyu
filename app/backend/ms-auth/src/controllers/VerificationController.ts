@@ -4,10 +4,13 @@ import AuthResponseFactory from "./AuthResponseFactory";
 import { UUID } from "crypto";
 import { authRoutesZodSchemas as zodSchemas } from "../schemas/zod/auth.zod.schema";
 import logger from "../utils/misc/logger";
+import { JSONCodec } from "nats";
 
 class VerificationController {
 	constructor(
-		private verificationService: VerificationService
+		private verificationService: VerificationService,
+		private nats: any,
+		private js: any
 	) {}
 
 	async requestHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -24,7 +27,8 @@ class VerificationController {
 	async verifyHandler(request: FastifyRequest, reply: FastifyReply) {
 		const { token, code } = request.body as { token: string, code: string };
 
-		await this.verificationService.verify(token as UUID, code);
+		const verifiedUserId = await this.verificationService.verify(token as UUID, code);
+		this.publishRefreshRequiredToUser(verifiedUserId);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 		return reply.code(status).send(body);
@@ -37,6 +41,19 @@ class VerificationController {
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(201, {});
 		return reply.code(status).send(body);
+	}
+
+	private publishRefreshRequiredToUser(userId: number) {
+		const _JSONCodec = JSONCodec();
+		this.nats.publish('gateway.user.data', _JSONCodec.encode({
+			eventType: 'USER_UPDATE',
+			recipientUserIds: [userId],
+			data: {
+				requesterId: userId,
+				receiverId: userId,
+				status: 'REFRESH_REQUIRED'
+			}
+		}));
 	}
 }
 
