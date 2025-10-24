@@ -134,6 +134,9 @@ export default function GeneralSettingsTab() {
 			resetForm(formData);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
+			console.group('handleSubmit in personalInfoForm');
+			console.log(err);
+			console.groupEnd();
 			if (err.message === 'AUTH_USERNAME_TAKEN') setUsernameStatus('unavailable');
 			else if (err.message === 'AUTH_EMAIL_TAKEN') setEmailStatus('unavailable');
 			else toastError(tautherr('errorCodes', { code: err.message }));
