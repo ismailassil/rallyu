@@ -54,7 +54,10 @@ export default function VerifyEmail({ onGoBack, onNext }: VerifyEmailProps) {
 			);
 			onNext(token);
 		} catch (err: any) {
-			toastError(tautherr("errorCodes", { code: err.message }));
+			console.group('handleSubmit in VerifyEmail');
+			console.log(err.message);
+			console.groupEnd();
+			toastError(tautherr('errorCodes', { code: err.message }));
 		}
 	}
 

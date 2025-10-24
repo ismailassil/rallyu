@@ -1,18 +1,18 @@
-import React, { useState, ChangeEvent } from "react";
-import SettingsCard from "../../SettingsCard";
-import { useAuth } from "../../../../contexts/AuthContext";
-import ProfilePreview from "./ProfilePreview";
-import PersonalInformationsForm from "./PersonalInformationsForm";
-import useForm from "@/app/hooks/useForm";
-import { toastError, toastSuccess } from "@/app/components/CustomToast";
-import { LoaderCircle } from "lucide-react";
-import { FormProvider } from "@/app/(auth)/components/Form/FormContext";
-import { motion } from "framer-motion";
-// import useAPICall from '@/app/hooks/useAPICall';
-import useAvailabilityCheck from "@/app/hooks/useAvailabilityCheck";
-import useCanSave from "@/app/hooks/useCanSave";
-import { useTranslations } from "next-intl";
-import useValidationSchema from "@/app/hooks/useValidationSchema";
+import React, { useState, ChangeEvent, useEffect } from 'react';
+import SettingsCard from '../../SettingsCard';
+import { useAuth } from '../../../../contexts/AuthContext';
+import ProfilePreview from './ProfilePreview';
+import PersonalInformationsForm from './PersonalInformationsForm';
+import useForm from '@/app/hooks/useForm';
+import { toastError, toastSuccess } from '@/app/components/CustomToast';
+import { LoaderCircle } from 'lucide-react';
+import { FormProvider } from '@/app/(auth)/components/Form/FormContext';
+import { motion } from 'framer-motion';
+import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
+import useCanSave from '@/app/hooks/useCanSave';
+import { useTranslations } from 'next-intl';
+import useValidationSchema from '@/app/hooks/useValidationSchema';
+import useAPICall from '@/app/hooks/useAPICall';
 
 export interface FormDataState {
 	first_name: string;
@@ -36,7 +36,14 @@ export default function GeneralSettingsTab() {
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-	const { personalInfoSettingsSchema } = useValidationSchema();
+
+	const {
+		personalInfoSettingsSchema
+	} = useValidationSchema();
+
+	const {
+		executeAPICall
+	} = useAPICall();
 
 	const { apiClient, loggedInUser, triggerLoggedInUserRefresh } = useAuth();
 
@@ -61,30 +68,26 @@ export default function GeneralSettingsTab() {
 		{ debounceMs: { email: 1200, username: 1200 } }
 	);
 
-	const { status: usernameStatus, setStatus: setUsernameStatus } = useAvailabilityCheck(
-		"username",
-		formData.username,
-		loggedInUser!.username,
-		debounced.username,
-		errors.username
-	);
-	const { status: emailStatus, setStatus: setEmailStatus } = useAvailabilityCheck(
-		"email",
-		formData.email,
-		loggedInUser!.email,
-		debounced.email,
-		errors.email
-	);
-	const canSave = useCanSave(
-		formData,
-		debounced,
-		errors,
-		avatarFile,
-		usernameStatus,
-		emailStatus,
-		loggedInUser!,
-		getValidationErrors
-	);
+	useEffect(() => {
+		if (!loggedInUser)
+			return ;
+
+		console.group('useEffect on loggedInUser change');
+		console.log(loggedInUser);
+		console.groupEnd();
+
+		resetForm({
+			first_name: loggedInUser.first_name,
+			last_name: loggedInUser.last_name,
+			username: loggedInUser.username,
+			email: loggedInUser.email,
+			bio: loggedInUser.bio
+		});
+	}, [loggedInUser]);
+
+	const { status: usernameStatus, setStatus: setUsernameStatus } = useAvailabilityCheck('username', formData.username, loggedInUser!.username, debounced.username, errors.username);
+	const { status: emailStatus, setStatus: setEmailStatus } = useAvailabilityCheck('email', formData.email, loggedInUser!.email, debounced.email, errors.email);
+	const canSave = useCanSave(formData, debounced, errors, avatarFile, usernameStatus, emailStatus, loggedInUser!, getValidationErrors);
 
 	function handleAvatarFileChange(e: ChangeEvent<HTMLInputElement>) {
 		const selectedFile = e.target.files?.[0];
@@ -106,7 +109,7 @@ export default function GeneralSettingsTab() {
 		const form = new FormData();
 		form.append("file", avatarFile);
 
-		await apiClient.updateUserAvatar(loggedInUser!.id, form);
+		await executeAPICall(() => apiClient.updateUserAvatar(loggedInUser!.id, form));
 		setAvatarFile(null);
 	}
 
@@ -117,8 +120,7 @@ export default function GeneralSettingsTab() {
 
 		if (Object.keys(payload).length === 0 || errors) return;
 
-		await apiClient.updateUser(loggedInUser!.id, payload);
-		// updateLoggedInUserState(payload); // AuthContext
+		await executeAPICall(() => apiClient.updateUser(loggedInUser!.id, payload));
 	}
 
 	function getUpdatedFormPayload() {
@@ -144,14 +146,11 @@ export default function GeneralSettingsTab() {
 			setIsSubmitting(true);
 			await updateUserInfo();
 			await uploadAvatar();
+			// router.refresh();
 			triggerLoggedInUserRefresh();
-			toastSuccess("Changes saved successfully");
-			// updateLoggedInUserState(getUpdatedFormPayload());
+			toastSuccess('Changes saved successfully');
 			resetForm(formData);
 		} catch (err: any) {
-			console.group('handleSubmit in personalInfoForm');
-			console.log(err);
-			console.groupEnd();
 			if (err.message === 'AUTH_USERNAME_TAKEN') setUsernameStatus('unavailable');
 			else if (err.message === 'AUTH_EMAIL_TAKEN') setEmailStatus('unavailable');
 			else toastError(tautherr('errorCodes', { code: err.message }));

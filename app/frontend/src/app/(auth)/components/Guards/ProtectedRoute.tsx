@@ -4,31 +4,29 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-	const { isAuthenticated, isLoading, triggerRefreshToken, socket } = useAuth();
+	const { isAuthenticated, isLoading, triggerRefreshToken, triggerLoggedInUserRefresh, socket } = useAuth();
 	const router = useRouter();
 
 	useEffect(() => {
 		if (!socket) return;
 
-		async function handleSessionUpdate(event: {
-			eventType: string;
-			data: Record<string, any>;
-		}) {
-			console.group("/********** SESSION UPDATE **********/");
+		async function handleUpdate(event: { eventType: string, data: Record<string, any> }) {
+			console.group('/********** USER UPDATE **********/');
 
 			console.log("EVENT: ", event);
 
-			if (event.eventType !== "SESSION_UPDATE") return;
-
-			if (event.data.status === "REFRESH_REQUIRED") await triggerRefreshToken();
+			if (event.eventType !== 'USER_UPDATE' && event.data.status === 'REFRESH_REQUIRED')
+				await triggerLoggedInUserRefresh();
+			else if (event.eventType !== 'SESSION_UPDATE' && event.data.status === 'REFRESH_REQUIRED')
+				await triggerRefreshToken();
 
 			console.groupEnd();
 		}
 
-		socket.on("user", handleSessionUpdate);
+		socket.on('user', handleUpdate);
 
 		return () => {
-			socket.off("user", handleSessionUpdate);
+			socket.off('user', handleUpdate);
 		};
 	}, []);
 

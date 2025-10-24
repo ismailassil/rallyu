@@ -38,7 +38,7 @@ export default function Overview({ onSetup }: OverviewProps) {
 		}
 
 		fetchEnabledMethods();
-	}, [apiClient.mfa, executeAPICall]);
+	}, [apiClient.mfa, executeAPICall, loggedInUser]);
 
 	async function handleEnable(m: "TOTP" | "EMAIL" | "SMS") {
 		try {
