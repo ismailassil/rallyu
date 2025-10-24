@@ -32,7 +32,6 @@ function ToasterItem({ data, time: DEFAULT_TIME }: Props) {
 		return () => {
 			clearInterval(timer);
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	function handleChat() {

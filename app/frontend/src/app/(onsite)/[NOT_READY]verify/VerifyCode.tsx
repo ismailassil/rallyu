@@ -3,7 +3,6 @@ import { useAuth } from '../contexts/AuthContext';
 import useAPICall from '@/app/hooks/useAPICall';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import OTPCodeInput from '@/app/(auth)/components/Form/OTPCodeInput';
-import { AnimatePresence } from 'framer-motion';
 import FormButton from '@/app/(auth)/components/UI/FormButton';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
 

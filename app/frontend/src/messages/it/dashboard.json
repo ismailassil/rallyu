@@ -1,0 +1,592 @@
+{
+  "dashboard": {
+    "common": {
+      "time_spent": "Tempo trascorso sulla piattaforma"
+    },
+    "titles": {
+      "greetings": "Bentornato,",
+      "leaderboard": "Classifica",
+      "snapshots": "Panoramica",
+      "friends": "Amici"
+    },
+    "game": {
+      "tournament": {
+        "text": "Conquista il",
+        "subtext": "Torneo"
+      },
+      "one_vs_one": {
+        "text": "Conquista la",
+        "subtext": "Sfida"
+      },
+      "training": {
+        "text": "Inizia",
+        "subtext": "Allenamento"
+      }
+    },
+    "snapshots": "{statKey, select, total_xp {XP Totali} win_rate {Tasso di vincita} current_streak {Serie attuale} longest_streak {Serie più lunga} matches {Partite giocate} wins {Partite vinte} losses {Partite perse} draws {Partite pareggiate} total_user_score {Punteggio totale} max_user_score {Punteggio più alto} min_user_score {Punteggio più basso} avg_user_score {Punteggio medio} total_duration {Tempo di gioco totale} max_duration {Partita più lunga} min_duration {Partita più breve} avg_duration {Partita media} other {Statistica sconosciuta}}"
+  },
+  "common": {
+    "play": "Gioca",
+    "chat": "Chat",
+    "online": "Online",
+    "offline": "Offline",
+    "victory": "Vittoria",
+    "defeat": "Sconfitta",
+    "draw": "Pareggio"
+  },
+  "profile": {
+    "common": {
+      "level": "Livello",
+      "time_spent": "Tempo trascorso sulla piattaforma"
+    },
+    "cards": {
+      "global_rank": {
+        "part1": "Rango",
+        "part2": "Globale"
+      },
+      "win_rate": {
+        "part1": "Tasso di",
+        "part2": "Vincita"
+      },
+      "current_streak": {
+        "part1": "Serie",
+        "part2": "Attuale"
+      },
+      "games_history": {
+        "title": "Cronologia partite"
+      },
+      "performance": {
+        "title": "Prestazioni",
+        "cards": {
+          "total_xp": "XP Totali",
+          "games_played": {
+            "part1": "Partite",
+            "part2": "Giocate"
+          },
+          "longest_streak": {
+            "part1": "Serie più",
+            "part2": "Lunga"
+          },
+          "wins": "Vittorie",
+          "losses": "Sconfitte",
+          "draws": "Pareggi"
+        }
+      }
+    },
+    "buttons": {
+      "edit_profile": "Modifica profilo",
+      "view_performance": "Vedi prestazioni"
+    }
+  },
+  "relations": {
+    "common": {
+      "chat": "Chat",
+      "sent": "Inviata",
+      "accepted": "Accettata",
+      "canceled": "Annullata",
+      "declined": "Rifiutata",
+      "unfriended": "Rimosso dagli amici",
+      "blocked": "Bloccato",
+      "unblocked": "Sbloccato",
+      "add": "Aggiungi",
+      "cancel": "Annulla",
+      "accept": "Accetta",
+      "decline": "Rifiuta",
+      "unfriend": "Rimuovi amico",
+      "block": "Blocca",
+      "unblock": "Sblocca"
+    }
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "subtitle": "Gestisci le preferenze del tuo account e le impostazioni di sicurezza",
+    "general": {
+      "title": "Generali",
+      "cards": {
+        "personal_infos": {
+          "title": "Informazioni personali",
+          "subtitle": "Aggiorna le informazioni del tuo profilo e l'indirizzo email"
+        }
+      }
+    },
+    "users": {
+      "title": "Utenti",
+      "cards": {
+        "friends": {
+          "title": "Amici",
+          "subtitle": "Visualizza e gestisci le relazioni con tutti i tuoi amici"
+        },
+        "incoming": {
+          "title": "Richieste di amicizia in entrata",
+          "subtitle": "Visualizza e rifiuta tutte le richieste di amicizia in sospeso che hai ricevuto"
+        },
+        "outgoing": {
+          "title": "Richieste di amicizia in uscita",
+          "subtitle": "Visualizza e annulla tutte le richieste di amicizia in sospeso che hai inviato"
+        },
+        "blocked": {
+          "title": "Utenti bloccati",
+          "subtitle": "Visualizza e sblocca tutti gli utenti che hai bloccato"
+        }
+      }
+    },
+    "security": {
+      "title": "Sicurezza",
+      "cards": {
+        "twoFactor": {
+          "title": "Autenticazione a due fattori",
+          "subtitle": "Aggiungi un ulteriore livello di sicurezza al tuo account scegliendo il metodo di verifica preferito",
+          "button": "Gestisci 2FA"
+        },
+        "change_password_form": {
+          "title": "Cambia password",
+          "subtitle": "Modifica la tua password attuale",
+          "sidecard": {
+            "title": "Requisiti della password",
+            "text1": "Per creare una nuova password,",
+            "text2": "devi soddisfare tutti i seguenti requisiti:",
+            "text3": "Lunghezza minima 8 caratteri",
+            "text4": "Almeno una lettera minuscola",
+            "text5": "Almeno una lettera maiuscola",
+            "text6": "Almeno un numero"
+          },
+          "button": "Salva modifiche"
+        },
+        "sessions": {
+          "title": "Browser e dispositivi",
+          "subtitle": "Questi browser e dispositivi sono attualmente connessi al tuo account. Rimuovi eventuali dispositivi non autorizzati"
+        },
+        "delete_account": {
+          "title": "Elimina account",
+          "subtitle": "Questo eliminerà permanentemente il tuo account e tutti i dati associati. Questa azione è irreversibile",
+          "button": "Elimina account"
+        }
+      }
+    }
+  },
+  "performance_dashboard": {
+    "title": "Prestazioni",
+    "subtitle": "Visualizza statistiche dettagliate e dati storici delle tue partite",
+    "common": {
+      "games": "{count, plural, one {# partita} other {# partite}}",
+      "points": "{count, plural, one {# punto} other {# punti}}"
+    },
+    "overview": {
+      "title": "Panoramica",
+      "cards": {
+        "your_statistics": {
+          "title": "Le tue statistiche",
+          "cards": {
+            "total_matches": {
+              "title": "Partite totali",
+              "subtitle": ""
+            },
+            "win_rate": {
+              "title": "Tasso di vincita",
+              "subtitle": ""
+            },
+            "points_scored": {
+              "title": "Punti segnati",
+              "subtitle": "differenziale netto"
+            },
+            "time_played": {
+              "title": "Tempo di gioco",
+              "subtitle": "{count, plural, one {# minuto totali} other {# minuti totali}}"
+            },
+            "score_records": {
+              "title": "Record punteggio",
+              "1st": "Punteggio più alto",
+              "2nd": "Punteggio più basso",
+              "3rd": "Punteggio medio"
+            },
+            "avg_p_by_outcome": {
+              "title": "Punteggio medio per risultato",
+              "1st": "Per vittoria",
+              "2nd": "Per sconfitta",
+              "3rd": "Per pareggio"
+            },
+            "charts": {
+              "win_rate_trends": {
+                "title": "Andamento tasso di vincita",
+                "subtitle": "Tasso di vincita negli ultimi 7 giorni"
+              },
+              "wins_vs_losses": {
+                "title": "Vittorie / Sconfitte",
+                "subtitle": "Distribuzione vittorie / sconfitte nel tempo",
+                "common": {
+                  "wins": "Vittorie",
+                  "losses": "Sconfitte",
+                  "draws": "Pareggi"
+                }
+              },
+              "avg_score_trends": {
+                "title": "Andamento punteggio medio",
+                "subtitle": "Punteggio medio negli ultimi 7 giorni"
+              }
+            }
+          }
+        }
+      }
+    },
+    "opponent": {
+      "title": "Avversario",
+      "cards": {
+        "opp_analysis": {
+          "title": "Analisi avversario",
+          "cards": {
+            "most_wins": {
+              "title": "Più vittorie",
+              "subtitle": "{count, plural, one {hai vinto # partita} other {hai vinto # partite}}"
+            },
+            "most_freq": {
+              "title": "Più frequente",
+              "subtitle": "{count, plural, one {# partita} other {# partite}}"
+            },
+            "most_losses": {
+              "title": "Più sconfitte",
+              "subtitle": "{count, plural, one {hai perso # partita} other {hai perso # partite}}"
+            },
+            "unique_players": {
+              "title": "Avversari",
+              "subtitle": "{count, plural, one {# giocatore unico} other {# giocatori unici}}"
+            },
+            "score_records": {
+              "title": "Record punteggio",
+              "1st": "Punteggio più alto",
+              "2nd": "Punteggio più basso",
+              "3rd": "Punteggio medio"
+            },
+            "avg_p_by_outcome": {
+              "title": "Punteggio medio per risultato",
+              "1st": "Per vittoria",
+              "2nd": "Per sconfitta",
+              "3rd": "Per pareggio"
+            },
+            "charts": {
+              "opp_score_trends": {
+                "title": "Andamento punteggio avversari",
+                "subtitle": "Punteggio dei tuoi avversari negli ultimi 7 giorni"
+              },
+              "you_vs_opp_score": {
+                "title": "Differenza punteggio avversario",
+                "subtitle": "Tuo vs Differenza punteggio avversari",
+                "common": {
+                  "you": "Tu",
+                  "your_opponents": "I tuoi avversari"
+                }
+              },
+              "opp_avg_score_trends": {
+                "title": "Andamento punteggio medio avversari",
+                "subtitle": "Punteggio medio dei tuoi avversari negli ultimi 7 giorni"
+              }
+            }
+          }
+        }
+      }
+    },
+    "games": {
+      "title": "Partite",
+      "cards": {
+        "games_history": {
+          "title": "Cronologia partite",
+          "selectors": {
+            "alltime": "Sempre",
+            "1d": "Ultimo giorno",
+            "7d": "Ultimi 7 giorni",
+            "30d": "Ultimi 30 giorni",
+            "90d": "Ultimi 90 giorni",
+            "year": "Ultimo anno",
+            "alltypes": "Tutti i tipi",
+            "pong": "Ping Pong",
+            "xo": "Tris"
+          },
+          "pagination": {
+            "page": "Pagina",
+            "prev": "Precedente",
+            "next": "Successiva"
+          },
+          "columns": {
+            "opp": "Avversario",
+            "type": "Tipo",
+            "mode": "Modalità",
+            "result": "Risultato",
+            "score": "Punteggio",
+            "duration": "Durata",
+            "date": "Data"
+          },
+          "common": {
+            "ranked1v1": "Classificata 1v1",
+            "win": "Vittoria",
+            "loss": "Sconfitta",
+            "draw": "Pareggio"
+          }
+        },
+        "time_analysis": {
+          "title": "Analisi del tempo",
+          "cards": {
+            "duration_records": {
+              "title": "Record durata",
+              "1st": "Partita più lunga",
+              "2nd": "Partita più breve",
+              "3rd": "Partita media"
+            },
+            "avg_d_by_outcome": {
+              "title": "Durata per risultato",
+              "1st": "Vittoria media",
+              "2nd": "Sconfitta media",
+              "3rd": "Pareggio medio"
+            },
+            "charts": {
+              "time_spent": {
+                "title": "Tempo trascorso",
+                "subtitle": "Tempo di gioco giornaliero negli ultimi 7 giorni"
+              },
+              "games_per_day": {
+                "title": "Partite al giorno",
+                "subtitle": "Tempo di gioco giornaliero negli ultimi 7 giorni"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "placeholders": {
+    "data": {
+      "generic": {
+        "no-data": "Nessun dato trovato.",
+        "error": "Caricamento dati fallito."
+      },
+      "friends": {
+        "no-data": "Nessun amico trovato. Vai a toccare un po' d'erba.",
+        "error": "Caricamento amici fallito. Riprova più tardi."
+      },
+      "outgoing": {
+        "no-data": "Nessuna richiesta di amicizia in uscita trovata. Vai a toccare un po' d'erba.",
+        "error": "Caricamento richieste in uscita fallito. Riprova più tardi."
+      },
+      "incoming": {
+        "no-data": "Nessuna richiesta di amicizia in entrata trovata. Vai a toccare un po' d'erba.",
+        "error": "Caricamento richieste in entrata fallito. Riprova più tardi."
+      },
+      "blocked": {
+        "no-data": "Nessun utente bloccato trovato. Vai a toccare un po' d'erba.",
+        "error": "Caricamento utenti bloccati fallito. Riprova più tardi."
+      }
+    }
+  },
+  "auth": {
+    "common": {
+      "first_name": "Nome",
+      "last_name": "Cognome",
+      "email": "Email",
+      "username": "Nome utente",
+      "password": "Password",
+      "confirm_password": "Conferma password",
+      "current_password": "Password attuale",
+      "new_password": "Nuova password",
+      "forgot_password": "Password dimenticata",
+      "reset_password": "Reimposta password",
+      "bio": "Bio",
+      "max_resends": "Hai raggiunto il limite di reinvii",
+      "retry": "Riprova?",
+      "language": "Lingua",
+      "didnt_receive_code": "Non hai ricevuto il codice?",
+      "resend_code": "Reinvia codice",
+      "resend_in": "Reinvia tra",
+      "or": "O",
+      "signup": "Registrati",
+      "signin": "Accedi",
+      "login": "Accedi",
+      "remove_pic": "Rimuovi immagine",
+      "change_pic": "Cambia immagine",
+      "current": "Attuale",
+      "continue": "Continua"
+    },
+    "errorCodes": "{code, select, AUTH_TOO_MANY_ATTEMPTS {Troppi tentativi - Riprova} AUTH_TOO_MANY_RESENDS {Troppi reinvii - Riprova} AUTH_CHALLENGE_EXPIRED {Richiesta scaduta - Riprova} AUTH_2FA_NOT_ENABLED {Metodo non abilitato - Riprova} AUTH_INVALID_CREDENTIALS {Nome utente o password non validi} AUTH_SERVICE_UNAVAILABLE {Servizio non disponibile - Riprova più tardi} AUTH_NETWORK_ERR {Controlla la tua connessione} other {Qualcosa è andato storto - Riprova}}",
+    "validation": {
+      "common": {
+        "availability": {
+          "checking": "Verifica disponibilità...",
+          "available": "è disponibile!",
+          "unavailable": "è già in uso!",
+          "error": "verifica fallita!"
+        }
+      },
+      "first_name": {
+        "required": "Il nome è obbligatorio",
+        "min": "Il nome deve contenere almeno 2 caratteri",
+        "max": "Il nome deve contenere al massimo 15 caratteri",
+        "format": "Il nome può contenere solo lettere, spazi, trattini e apostrofi"
+      },
+      "last_name": {
+        "required": "Il cognome è obbligatorio",
+        "min": "Il cognome deve contenere almeno 2 caratteri",
+        "max": "Il cognome deve contenere al massimo 15 caratteri",
+        "format": "Il cognome può contenere solo lettere, spazi, trattini e apostrofi"
+      },
+      "username": {
+        "required": "Il nome utente è obbligatorio",
+        "min": "Il nome utente deve contenere almeno 3 caratteri",
+        "max": "Il nome utente deve contenere al massimo 10 caratteri",
+        "format": "Il nome utente può contenere solo lettere, numeri e trattini bassi"
+      },
+      "email": {
+        "required": "L'email è obbligatoria",
+        "invalid": "Inserisci un indirizzo email valido"
+      },
+      "password": {
+        "required": "La password è obbligatoria",
+        "min": "La password deve contenere almeno 8 caratteri",
+        "lowercase": "La password deve contenere almeno una lettera minuscola",
+        "uppercase": "La password deve contenere almeno una lettera maiuscola",
+        "digit": "La password deve contenere almeno un numero",
+        "no_match": "Le password non corrispondono",
+        "same_as_current": "La nuova password deve essere diversa da quella attuale"
+      },
+      "current_password": {
+        "required": "La password attuale è obbligatoria"
+      },
+      "confirm_password": {
+        "required": "Conferma la tua password"
+      },
+      "bio": {
+        "required": "La bio è obbligatoria",
+        "min": "La bio deve contenere almeno 3 caratteri",
+        "max": "La bio deve contenere al massimo 50 caratteri"
+      },
+      "phone": {
+        "required": "Il numero di telefono è obbligatorio",
+        "format": "Inserisci un numero di telefono valido (es. +393331234567)"
+      },
+      "code": {
+        "required": "Il codice di verifica è obbligatorio",
+        "format": "Il codice deve contenere esattamente 6 cifre"
+      }
+    },
+    "login": {
+      "title": "Bentornato!",
+      "subtitle": "Inserisci i tuoi dati per accedere",
+      "instruction": "Non hai ancora un account?"
+    },
+    "signup": {
+      "title": "Crea un account",
+      "subtitle": "Inserisci i tuoi dati per registrarti",
+      "instruction": "Hai già un account?"
+    },
+    "twoFactorAtLogin": {
+      "overview": {
+        "title": "Autenticazione a due fattori",
+        "subtitle": "Seleziona uno dei seguenti metodi per completare la verifica",
+        "cards": {
+          "title": "{method, select, TOTP {App di autenticazione} EMAIL {Email} SMS {SMS} other {Metodo di autenticazione}}",
+          "subtitle": "{method, select, TOTP {Usa Google Authenticator, Authy...} EMAIL {Ricevi codici via Email} SMS {Ricevi codici via SMS} other {Metodo di autenticazione}}"
+        }
+      },
+      "verifyCode": {
+        "title": "Autenticazione a due fattori",
+        "subtitle": "{method, select, TOTP {Inserisci il codice a 6 cifre dalla tua app di autenticazione} EMAIL {Abbiamo inviato un codice a 6 cifre alla tua Email} SMS {Abbiamo inviato un codice a 6 cifre via SMS} other {Inserisci il codice a 6 cifre per completare la verifica}}",
+        "cannot_access": "{method, select, TOTP {Non puoi accedere alla tua app di autenticazione?} EMAIL {Non puoi accedere alla tua Email?} SMS {Non puoi accedere al tuo telefono?} other {Non puoi accedere a questo metodo?}}",
+        "other_method": "Prova altri metodi di verifica"
+      }
+    },
+    "twoFactorManager": {
+      "overview": {
+        "title": "Autenticazione a due fattori",
+        "subtitle": "Aggiungi un ulteriore livello di sicurezza al tuo account scegliendo il metodo di verifica preferito",
+        "cards": {
+          "title": "{method, select, TOTP {App di autenticazione} EMAIL {Email} SMS {SMS} other {Metodo di autenticazione}}",
+          "subtitle": "{method, select, TOTP {Usa Google Authenticator, Authy...} EMAIL {Ricevi codici via Email} SMS {Ricevi codici via SMS} other {Metodo di autenticazione}}"
+        },
+        "note": {
+          "title": "Consigliato",
+          "text": "Le app di autenticazione forniscono la massima sicurezza e funzionano senza connessione Internet."
+        }
+      },
+      "done": {
+        "title": "Autenticazione a due fattori",
+        "subtitle": "Configurazione completata",
+        "2nd_subtitle": "Il tuo account è ora protetto con l'autenticazione a due fattori.",
+        "buttons": {
+          "goback": "Torna al gestore 2FA",
+          "continue": "Continua alla dashboard"
+        }
+      }
+    },
+    "verification": {
+      "input": {
+        "title": "{method, select, TOTP {App di autenticazione} EMAIL {Email} SMS {SMS} other {Metodo di autenticazione}}",
+        "subtitle": "{method, select, TOTP {Scansiona il codice QR con la tua app di autenticazione} EMAIL {Invieremo un codice di verifica a 6 cifre alla tua Email} SMS {Invieremo un codice di verifica a 6 cifre al tuo telefono} other {Invieremo un codice di verifica a 6 cifre}}",
+        "cant_scan_qr": "Non puoi scansionare? Inserisci questo codice manualmente:"
+      },
+      "verifyCode": {
+        "title": "{method, select, TOTP {App di autenticazione} EMAIL {Email} SMS {SMS} other {Metodo di autenticazione}}",
+        "subtitle": "{method, select, TOTP {Inserisci il codice a 6 cifre dalla tua app di autenticazione} EMAIL {Abbiamo inviato un codice a 6 cifre alla tua Email} SMS {Abbiamo inviato un codice a 6 cifre via SMS} other {Inserisci il codice a 6 cifre per completare la verifica}}"
+      },
+      "note": {
+        "title": "Nota",
+        "first": "L'aggiornamento di queste informazioni sostituirà le informazioni di contatto esistenti sul tuo account.",
+        "second": "Assicurati che le nuove informazioni siano corrette, poiché verranno utilizzate per tutte le comunicazioni e verifiche future."
+      }
+    },
+    "reset_password": {
+      "forgotPassword": {
+        "title": "Hai dimenticato la password?",
+        "subtitle": "Abbiamo inviato un codice a 6 cifre alla tua Email",
+        "instruction": "Ricordi la password?"
+      },
+      "verifyCode": {
+        "title": "Controlla la tua Email!",
+        "subtitle": "Abbiamo inviato un codice a 6 cifre alla tua Email",
+        "instruction": "Ricordi la password?"
+      },
+      "setNewPassword": {
+        "title": "Crea una nuova password",
+        "subtitle": "Inserisci e conferma la tua nuova password",
+        "instruction": "Ricordi la password?"
+      }
+    }
+  },
+  "headers": {
+    "profile": {
+      "titles": {
+        "profile": "Profilo",
+        "settings": "Impostazioni",
+        "logout": "Esci"
+      }
+    },
+    "notification": {
+      "header": {
+        "title": "Notifiche",
+        "subtitle": "Hai {count, plural, =0 {nessuna nuova notifica} =1 {# notifica} other {# notifiche}}"
+      },
+      "box": {
+        "no_payload": "Nessuna notifica attuale",
+        "description": {
+          "chat": "ti ha inviato un messaggio.",
+          "game": "ti ha sfidato a una partita!",
+          "pp_game": "ti ha sfidato a una partita di Ping Pong!",
+          "xo_game": "ti ha sfidato a una partita di Tris!",
+          "friend_request": "ti ha inviato una richiesta di amicizia!",
+          "tournament": "ti ha invitato a iniziare un torneo!",
+          "friend_accept": "ha accettato la tua richiesta di amicizia!",
+          "friend_reject": "ha rifiutato la tua richiesta di amicizia.",
+          "friend_cancel": "ha annullato la tua richiesta di amicizia.",
+          "game_accept": "ha accettato la tua sfida di gioco!",
+          "game_reject": "ha rifiutato la tua sfida di gioco."
+        }
+      },
+      "footer": {
+        "asread": "Segna tutte come lette",
+        "clear": "Cancella tutto"
+      }
+    }
+  },
+  "states": {
+    "accept": "Accetta",
+    "decline": "Rifiuta",
+    "reply": "Rispondi",
+    "clear": "Cancella",
+    "join": "Unisciti {type, select, game {alla partita} tournament {al torneo} other {al gioco}}"
+  }
+}

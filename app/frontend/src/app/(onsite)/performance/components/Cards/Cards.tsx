@@ -82,6 +82,7 @@ export function ChartCard({
 						alt="No data available"
 						className="rounded-2xl blur-[1.25px] hover:blur-none transition-all duration-500 hover:scale-102 cursor-grab"
 						draggable={false}
+						unoptimized
 					/>
 					<h1 className="text-white/60">No data available</h1>
 				</div>

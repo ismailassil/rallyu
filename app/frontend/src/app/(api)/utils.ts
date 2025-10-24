@@ -5,7 +5,7 @@ export function secondsToHMS(seconds: number) {
 	const m = Math.floor((seconds % 3600) / 60);
 	const s = Math.floor(seconds % 60);
 
-	const parts = [];
+	const parts: string[] = [];
 	if (h > 0) parts.push(h + "h");
 	if (m > 0) parts.push(m + "m");
 	if (s > 0 || parts.length === 0) parts.push(s + "s"); // include 0s if nothing else

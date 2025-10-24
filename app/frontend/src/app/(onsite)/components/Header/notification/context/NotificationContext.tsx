@@ -155,13 +155,9 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		);
 	}, []);
 
-	const handleGame = useCallback(
-		(payload: string) => {
-			router.push("/game/" + payload);
-		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[]
-	);
+	const handleGame = useCallback((payload: string) => {
+		router.push("/game/" + payload);
+	}, []);
 
 	const handleAccept = useCallback(
 		async (data: Notification | TOAST_PAYLOAD, isToast: boolean) => {
@@ -182,7 +178,6 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				console.error(err);
 			}
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[handleRemoveToast, socket]
 	);
 
@@ -204,7 +199,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				console.error(err);
 			}
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+
 		[handleRemoveToast, socket]
 	);
 
@@ -256,7 +251,6 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 			})
 			.catch((err) => console.log(err))
 			.finally(() => setIsLoading(false));
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isBottom]);
 
 	useEffect(() => {

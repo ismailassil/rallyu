@@ -25,7 +25,9 @@ import { useTranslations } from 'next-intl';
 
 const ConversationBody = () => {
 	const [message, setMessage] = useState("");
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { socket, BOSS, messages, selectedUser, formatMessageDateTime, setMessages, apiClient } = useChat();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [filteredMessages, setfilteredMessages] = useState<MessageType[]>([]);
 	const messageRef = useRef<HTMLDivElement | null>(null);
 	const t = useTranslations("chat");

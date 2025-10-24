@@ -3,7 +3,7 @@ import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import inter from "@/app/fonts/inter";
 import GameTimer from "./GameTimer";
 import { useEffect, useRef, useState } from "react";
-import { Circle, Flag, Unplug, X } from "lucide-react";
+import { Flag, Unplug } from "lucide-react";
 import { AnimatePresence, motion } from 'framer-motion'
 import smoochSans from "@/app/fonts/smosh";
 import { XOSign } from "../../types/types";

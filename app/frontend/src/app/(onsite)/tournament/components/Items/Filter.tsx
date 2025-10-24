@@ -16,35 +16,36 @@ function Filter(
 	const { apiClient } = useAuth();
 	const router = useRouter();
 
-	const filterTournaments = async function (e) {
+	const filterTournaments = async (
+		e,
+		mode: number
+	) => {
 		e.preventDefault();
 		try {
-			if (filter === 0 || filter !== this) {
+			if (filter === 0 || filter !== mode) {
 				const req = await apiClient.instance.get(
-					`/v1/tournament/tournaments?mode=${this === 1 ? "ping-pong" : "tic-tac-toe"}`
+					`/v1/tournament/tournaments?mode=${mode === 1 ? "ping-pong" : "tic-tac-toe"}`
 				);
-
+	
 				const data = req.data;
-				
 				setTournaments(data.data);
-				setFilter(this);
-				router.push(`/tournament?mode=${this === 1 ? "ping-pong" : "tic-tac-toe"}`);
+				setFilter(mode);
+				router.push(`/tournament?mode=${mode === 1 ? "ping-pong" : "tic-tac-toe"}`);
 			} else {
 				const req = await apiClient.instance.get(`/v1/tournament/tournaments`);
-
 				const data = req.data;
-
 				setTournaments(data.data);
 				setFilter(0);
 				router.push("/tournament");
 			}
-		} catch(err: unknown) {
+		} catch {
 			setError({
 				status: true,
-				message: "Something went wrong"
+				message: "Something went wrong",
 			});
 		}
 	};
+	
 
 	return (
 		<div
@@ -57,12 +58,12 @@ function Filter(
 			<PingPongIcon
 				size={10}
 				className={filter === 1 ? "bg-white text-black" : ""}
-				onClick={filterTournaments.bind(1)}
+				onClick={(e) => filterTournaments(e, 1)}
 			/>
 			<HashIcon
 				size={10}
 				className={filter === 2 ? "bg-white text-black" : ""}
-				onClick={filterTournaments.bind(2)}
+				onClick={(e) => filterTournaments(e, 2)}
 			/>
 		</div>
 	);

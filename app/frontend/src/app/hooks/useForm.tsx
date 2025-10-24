@@ -143,7 +143,6 @@ function validateField(
   staleValues: Record<string, string>
 ) : string {
   try {
-    /* eslint-disable @typescript-eslint/no-explicit-any */
     // const fieldSchema = (zodSchema as any).shape?.[fieldName];
     // console.log('fieldSchema:', fieldSchema);
     // if (fieldSchema)

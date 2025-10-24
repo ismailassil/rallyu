@@ -1,5 +1,4 @@
-import random from "@/app/(onsite)/game/components/Utils/random";
-import { DiceFive, Trash } from "@phosphor-icons/react";
+import { Trash } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 
 function TournamentTitle({ value, setValue, error, setError }) {

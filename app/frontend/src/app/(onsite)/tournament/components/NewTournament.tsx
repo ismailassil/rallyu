@@ -1,18 +1,15 @@
 import unicaOne from "@/app/fonts/unicaOne";
 import { ArrowLeft } from "@phosphor-icons/react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState } from "react";
 import GameChoice from "./Items/GameChoice";
 import TournamentTitle from "./Items/TournamentTitle";
 import StartDate from "./Items/StartDate";
 import StartButtonTournament from "./Items/StartButtonTournament";
-import Access from "./Items/AccessChoice";
 import { useAuth } from "../../contexts/AuthContext";
 import { AxiosResponse } from "axios";
-import { toast } from "sonner";
 import { Toaster } from "sonner";
 import { toastSuccess } from '@/app/components/CustomToast';
-import { useRouter } from "next/navigation";
 import HostIn from "./Items/HostIn";
 
 function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {

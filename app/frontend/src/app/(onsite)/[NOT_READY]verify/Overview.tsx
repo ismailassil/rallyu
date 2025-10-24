@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
@@ -10,7 +11,7 @@ export default function Overview() {
 			await apiClient.auth.requestVerifyEmail();
 			toastSuccess('Code sent to email');
 		} catch (err) {
-			toastError(err.message);
+			toastError((err as Error).message);
 		}
 	}
 
@@ -19,7 +20,7 @@ export default function Overview() {
 			await apiClient.auth.requestVerifyPhone();
 			toastSuccess('Code sent to phone');
 		} catch (err) {
-			toastError(err.message);
+			toastError((err as Error).message);
 		}
 	}
 
