@@ -149,9 +149,12 @@ export default function GeneralSettingsTab() {
 			// updateLoggedInUserState(getUpdatedFormPayload());
 			resetForm(formData);
 		} catch (err: any) {
-			if (err.message === "AUTH_USERNAME_TAKEN") setUsernameStatus("unavailable");
-			else if (err.message === "AUTH_EMAIL_TAKEN") setEmailStatus("unavailable");
-			else toastError(tautherr("errorCodes", { code: err.message }));
+			console.group('handleSubmit in personalInfoForm');
+			console.log(err);
+			console.groupEnd();
+			if (err.message === 'AUTH_USERNAME_TAKEN') setUsernameStatus('unavailable');
+			else if (err.message === 'AUTH_EMAIL_TAKEN') setEmailStatus('unavailable');
+			else toastError(tautherr('errorCodes', { code: err.message }));
 		} finally {
 			setIsSubmitting(false);
 		}

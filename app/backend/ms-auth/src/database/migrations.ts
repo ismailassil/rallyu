@@ -221,7 +221,7 @@ const TRIGGERS = [
 			CREATE TRIGGER IF NOT EXISTS trg_on_email_change
 			BEFORE UPDATE OF email ON users
 			FOR EACH ROW
-			WHEN OLD.email != NEW.email
+			WHEN OLD.email IS NOT NEW.email
 			BEGIN
 				UPDATE users
 				SET email_verified = FALSE
@@ -245,9 +245,9 @@ const TRIGGERS = [
 		name: 'trg_on_phone_change',
 		sql: `
 			CREATE TRIGGER IF NOT EXISTS trg_on_phone_change
-			AFTER UPDATE OF phone ON users
+			BEFORE UPDATE OF phone ON users
 			FOR EACH ROW
-			WHEN OLD.phone != NEW.phone
+			WHEN OLD.phone IS NOT NEW.phone
 			BEGIN
 				UPDATE users
 				SET phone_verified = FALSE
