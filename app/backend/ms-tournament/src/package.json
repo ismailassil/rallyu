@@ -8,8 +8,7 @@
   "main": "index.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "tsx watch index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsx watch index.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.13",

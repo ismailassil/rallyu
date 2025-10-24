@@ -6,7 +6,8 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.json && tsc-alias",
 		"dev": "concurrently \"tsc -w\" \"tsc-alias -w\" \"nodemon ./dist/index.js\"",
-		"start": "npm run build && node ./dist/index.js"
+		"start": "npm run build && pm2-runtime ./dist/index.js",
+		"serve": "if [ \"$ENV_NODE\" = \"prod\" ]; then npm run start; else npm run dev; fi"
 	},
 	"keywords": [],
 	"author": "",

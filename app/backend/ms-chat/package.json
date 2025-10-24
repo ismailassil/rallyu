@@ -5,7 +5,9 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon ./src/server.js"
+    "dev": "nodemon ./src/server.js",
+    "start": "pm2-runtime ./src/server.js",
+    "serve": "if [ \"$ENV_NODE\" = \"prod\" ]; then npm run start; else npm run dev; fi"
   },
   "keywords": [],
   "author": "",

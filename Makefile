@@ -10,7 +10,7 @@ env:
 docker:
 	@if ! docker-compose -v | grep 2.30.0; then bash install-docker.sh; fi
 
-up: env
+up: docker env
 	@docker-compose up --build --watch
 
 down:
@@ -30,7 +30,7 @@ fclean:
 re: clean up
 
 prune: fclean
-	@docer system prune -a --volumes -f
+	@docker system prune -a --volumes -f
 
 .PHONY: all up clean fclean re prune
 
@@ -38,8 +38,10 @@ help:
 	@echo "Makefile for RALLYU Deployment"
 	@echo "Usage:"
 	@echo "  make env      - Set up environment variables"
-	@echo "  make up       - Start the containers in detached mode"
-	@echo "  make clean    - Stop and remove the containers and volumes"
-	@echo "  make fclean   - Stop and remove the containers, volumes, and images"
-	@echo "  make re       - Clean and then start the containers"
+	@echo "  make docker   - Set up docker-compose with compatible version [2.30]"
+	@echo "  make up       - Start all services in detached mode"
+	@echo "  make ps       - List all none-run & running containers"
+	@echo "  make clean    - Stop and remove all containers and volumes"
+	@echo "  make fclean   - Stop and remove all containers, volumes, and images"
+	@echo "  make re       - Clean, then start the all services"
 	@echo "  make prune    - Clean and remove unused images and volumes"

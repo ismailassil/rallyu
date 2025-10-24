@@ -8,8 +8,9 @@
   "main": "index.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "tsx watch index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:dev": "tsx watch index.ts",
+    "start:prod": "npm run build && pm2-runtime ./dist/index.js",
+    "serve": "if [ \"$ENV_NODE\" = \"prod\" ]; then npm run start:prod; else npm run start:dev; fi"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",

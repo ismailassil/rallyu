@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
-    "start": "npm run build && node build/server.js"
+    "start": "npm run build && pm2-runtime build/server.js",
+    "serve": "if [ \"$ENV_NODE\" = \"prod\" ]; then npm run start; else npm run dev; fi"
   },
   "keywords": [],
   "author": "",
