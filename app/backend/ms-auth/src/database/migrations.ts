@@ -27,7 +27,14 @@ const MIGRATIONS = [
 
 				created_at INTEGER DEFAULT (strftime('%s','now')),
 				updated_at INTEGER DEFAULT (strftime('%s','now'))
-			)
+			);
+
+			CREATE TRIGGER IF NOT EXISTS trg_users_update_timestamp
+			AFTER UPDATE ON users
+			FOR EACH ROW
+			BEGIN
+				UPDATE users SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
+			END;
 		`
 	},
 	{
@@ -51,7 +58,14 @@ const MIGRATIONS = [
 
 				user_id INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id)
-			)
+			);
+
+			CREATE TRIGGER IF NOT EXISTS trg_sessions_update_timestamp
+			AFTER UPDATE ON sessions
+			FOR EACH ROW
+			BEGIN
+				UPDATE sessions SET updated_at = (strftime('%s','now')) WHERE session_id = OLD.session_id;
+			END;
 		`
 	},
 	{
@@ -66,7 +80,7 @@ const MIGRATIONS = [
 
 				user_id INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id)
-			)
+			);
 		`
 	},
 	{
@@ -86,7 +100,14 @@ const MIGRATIONS = [
 
 				FOREIGN KEY (requester_user_id) REFERENCES users(id), -- ON DELETE CASCADE?
 				FOREIGN KEY (receiver_user_id) REFERENCES users(id)   -- ON DELETE CASCADE?
-			)
+			);
+
+			CREATE TRIGGER IF NOT EXISTS trg_relations_update_timestamp
+			AFTER UPDATE ON relations
+			FOR EACH ROW
+			BEGIN
+				UPDATE relations SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
+			END;
 		`
 	},
 	{
@@ -103,7 +124,7 @@ const MIGRATIONS = [
 
 				user_id INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id)
-			)
+			);
 		`
 	},
 	{
@@ -119,14 +140,14 @@ const MIGRATIONS = [
 				player_away_xp_gain INTEGER NOT NULL,
 
 				game_type TEXT NOT NULL,
-				started_at INTEGER DEFAULT (strftime('%s','now')),
-				finished_at INTEGER DEFAULT (strftime('%s','now')),
+				started_at INTEGER DEFAULT ((strftime('%s','now'))),
+				finished_at INTEGER DEFAULT ((strftime('%s','now'))),
 
 				player_home_id INTEGER NOT NULL,
 				player_away_id INTEGER NOT NULL,
 				FOREIGN KEY (player_home_id) REFERENCES users(id), -- ON DELETE CASCADE?
 				FOREIGN KEY (player_away_id) REFERENCES users(id)   -- ON DELETE CASCADE?
-			)
+			);
 		`
 	},
 	{
@@ -151,6 +172,13 @@ const MIGRATIONS = [
 				updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
 				expires_at INTEGER NOT NULL
 			);
+
+			CREATE TRIGGER IF NOT EXISTS trg_auth_challenges_update_timestamp
+			AFTER UPDATE ON auth_challenges
+			FOR EACH ROW
+			BEGIN
+				UPDATE auth_challenges SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
+			END;
 		`
 	},
 ];
@@ -158,11 +186,10 @@ const MIGRATIONS = [
 const TRIGGERS = [
 	{
 		id: 1,
-		name: 'trigger_create_user_stats_after_insert',
+		name: 'trg_create_user_stats_after_insert',
 		sql: `
-			CREATE TRIGGER IF NOT EXISTS create_user_stats_after_insert
-			AFTER INSERT
-			ON users
+			CREATE TRIGGER IF NOT EXISTS trg_create_user_stats_after_insert
+			AFTER INSERT ON users
 			FOR EACH ROW
 			BEGIN
 				INSERT INTO users_stats (user_id)
@@ -172,16 +199,14 @@ const TRIGGERS = [
 	},
 	{
 		id: 2,
-		name: 'trigger_invalidate_2fa_challenges_on_method_delete',
+		name: 'trg_on_2fa_delete',
 		sql: `
-			CREATE TRIGGER IF NOT EXISTS invalidate_2fa_challenges_on_method_delete
-			AFTER DELETE
-			ON _2fa_methods
+			CREATE TRIGGER IF NOT EXISTS trg_on_2fa_delete
+			AFTER DELETE ON _2fa_methods
 			FOR EACH ROW
 			BEGIN
 				UPDATE auth_challenges
-				SET status = 'FAILED',
-					updated_at = strftime('%s', 'now')
+				SET status = 'FAILED'
 				WHERE user_id = OLD.user_id
 					AND method = OLD.method
 					AND challenge_type = '2fa_login'
@@ -191,20 +216,101 @@ const TRIGGERS = [
 	},
 	{
 		id: 3,
-		name: 'trigger_invalidate_password_reset_on_email_change',
+		name: 'trg_on_email_change',
 		sql: `
-			CREATE TRIGGER IF NOT EXISTS invalidate_password_reset_on_email_change
-			AFTER UPDATE ON users
+			CREATE TRIGGER IF NOT EXISTS trg_on_email_change
+			BEFORE UPDATE OF email ON users
 			FOR EACH ROW
 			WHEN OLD.email != NEW.email
 			BEGIN
+				UPDATE users
+				SET email_verified = FALSE
+				WHERE id = NEW.id;
+
 				UPDATE auth_challenges
-				SET status = 'FAILED',
-					updated_at = strftime('%s','now')
+				SET status = 'EXPIRED'
 				WHERE user_id = NEW.id
-					AND method = 'EMAIL'
-					AND challenge_type = 'password_reset'
-					AND (status = 'PENDING' OR status = 'VERIFIED');
+				AND challenge_type != 'email_verification'
+				AND method = 'EMAIL'
+				AND (status = 'PENDING' OR status = 'VERIFIED');
+
+				DELETE FROM _2fa_methods
+				WHERE user_id = NEW.id
+				AND method = 'EMAIL';
+			END;
+		`
+	},
+	{
+		id: 4,
+		name: 'trg_on_phone_change',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_on_phone_change
+			AFTER UPDATE OF phone ON users
+			FOR EACH ROW
+			WHEN OLD.phone != NEW.phone
+			BEGIN
+				UPDATE users
+				SET phone_verified = FALSE
+				WHERE id = NEW.id;
+
+				UPDATE auth_challenges
+				SET status = 'EXPIRED'
+				WHERE user_id = NEW.id
+				AND challenge_type != 'phone_verification'
+				AND method = 'SMS'
+				AND (status = 'PENDING' OR status = 'VERIFIED');
+
+				DELETE FROM _2fa_methods
+				WHERE user_id = NEW.id
+				AND method = 'SMS';
+			END;
+		`
+	},
+	{
+		id: 5,
+		name: 'trg_users_update_timestamp',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_users_update_timestamp
+			AFTER UPDATE ON users
+			FOR EACH ROW
+			BEGIN
+				UPDATE users SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
+			END;
+		`
+	},
+	{
+		id: 6,
+		name: 'trg_sessions_update_timestamp',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_sessions_update_timestamp
+			AFTER UPDATE ON sessions
+			FOR EACH ROW
+			BEGIN
+				UPDATE sessions SET updated_at = (strftime('%s','now')) WHERE session_id = OLD.session_id;
+			END;
+		`
+	},
+	{
+		id: 7,
+		name: 'trg_relations_update_timestamp',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_relations_update_timestamp
+			AFTER UPDATE ON relations
+			FOR EACH ROW
+			BEGIN
+				UPDATE relations SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
+			END;
+		`
+	},
+	{
+		id: 8,
+		name: 'trg_auth_challenges_update_timestamp',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_auth_challenges_update_timestamp
+			AFTER UPDATE ON auth_challenges
+			FOR EACH ROW
+			BEGIN
+				UPDATE auth_challenges SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
 			END;
 		`
 	}
