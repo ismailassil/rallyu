@@ -3,23 +3,15 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import TournamentPanel from "./components/TournamentPanel";
-// import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 import Loading from "./components/Items/Loading";
 
 export default function Dashboard() {
 	const [start, setStart] = useState(false);
-	// const { socket } = useAuth();
+	const { socket } = useAuth();
 
 	useEffect(() => {
-		// ** This is used to mark all the notification from tournament to dismissed
-		// const payload = {
-		// 	type: "tournament",
-		// 	state: "finished",
-		// 	status: "read",
-		// };
-
-		// TODO | FIX THE EMIT
-		// socket.emit('notification_update_on_type', payload);
+		socket.updateContext("tournament");
 	}, []);
 
 	return (

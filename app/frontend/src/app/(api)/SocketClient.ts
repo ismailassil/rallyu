@@ -1,6 +1,10 @@
 import { io, Socket } from "socket.io-client";
 import { GameType } from "../(onsite)/game/types/types";
-import { NOTIFICATION_TYPE } from "../(onsite)/components/Header/notification/types/notifications.types";
+import {
+	NOTIFICATION_STATE,
+	NOTIFICATION_STATUS,
+	NOTIFICATION_TYPE,
+} from "../(onsite)/components/Header/notification/types/notifications.types";
 
 class SocketClient {
 	private socket: Socket;
@@ -60,7 +64,10 @@ class SocketClient {
 		});
 	}
 
+	/******************** */
 	/** Function Handlers */
+	/******************** */
+
 	createGame(targetId: number, gameType: "pingpong" | "tictactoe") {
 		const data = {
 			eventType: "CREATE_GAME",
@@ -95,6 +102,35 @@ class SocketClient {
 		};
 
 		this.emit("notification", data);
+	}
+
+	emitUpdateAction(
+		updateAll: boolean,
+		data: { id?: number; status: NOTIFICATION_STATUS; state?: NOTIFICATION_STATE }
+	) {
+		let payload: any;
+		const eventType = "UPDATE_ACTION";
+
+		if (!updateAll) {
+			payload = {
+				eventType,
+				data: {
+					updateAll: false,
+					notificationId: data.id,
+					status: data.status,
+					state: data.state,
+				},
+			};
+		} else {
+			payload = {
+				eventType,
+				data: {
+					status: data.status,
+				},
+			};
+		}
+
+		this.emit("notification", payload);
 	}
 
 	printAll(data: any) {

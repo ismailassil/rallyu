@@ -343,7 +343,7 @@ export class APIClient {
 	connectWebSocket(path: string) {
 		const origin = window.location.origin.replace("http", "ws");
 
-		const url = `${origin}/api-ws${path}`; // TODO Change to dynamic
+		const url = `${origin}/api-ws${path}`;
 		const ws = new WebSocket(
 			`${url}${url.includes("?") ? "&" : "?"}accessToken=${this.accessToken}`
 		);

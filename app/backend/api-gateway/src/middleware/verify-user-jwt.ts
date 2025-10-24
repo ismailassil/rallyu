@@ -64,7 +64,6 @@ function shouldIgnorePath(path: string): boolean {
 	const usernameAvailablePath = '/api/users/username-available';
 	const emailAvailablePath = '/api/users/email-available';
 	const resetPath = 'api/auth/reset';
-	const searchTEMP = '/api/users/search'; // TODO - Need to be removed
 	const googleOAuth = '/api/auth/google';
 	const intra42OAuth = '/api/auth/42';
 
@@ -74,7 +73,6 @@ function shouldIgnorePath(path: string): boolean {
 		path.startsWith(usernameAvailablePath) ||
 		path.startsWith(emailAvailablePath) ||
 		path.startsWith(resetPath) ||
-		path.startsWith(searchTEMP) ||
 		path.startsWith(googleOAuth) ||
 		path.startsWith(intra42OAuth)
 	);
