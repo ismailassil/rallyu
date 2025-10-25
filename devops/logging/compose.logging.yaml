@@ -123,7 +123,7 @@ services:
         volumes:
             - logstash-data:/usr/share/logstash/data
             - ./logstash/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
-            - ../nginx/logs/access.log:/usr/share/logstash/data/access.log:ro
+            - ../../nginx/logs/access.log:/usr/share/logstash/data/access.log:ro
         env_file:
             - .env
         environment:

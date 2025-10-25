@@ -149,6 +149,7 @@ services:
           target: /app/
           ignore:
             - ./ms-tournament/node_modules/
+            - ./ms-tournament/database
         - path: ./ms-tournament/src/package.json
           action: rebuild
 
