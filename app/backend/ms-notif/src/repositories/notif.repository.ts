@@ -224,13 +224,30 @@ class NotifRepository {
 		}
 	}
 
-	async removeAllNotif(receiverId: number, type: NOTIFICATION_TYPE) {
+	async removeAllNotifByType(receiverId: number, type: NOTIFICATION_TYPE) {
 		try {
 			const stmt = fastify.database.prepare(`
 				DELETE FROM messages WHERE receiver_id = ? AND type = ?
 			`);
 
 			const res = stmt.run(receiverId, type);
+
+			if (res.changes === 0) {
+				fastify.log.warn("NO AFFECTION");
+			}
+		} catch (error) {
+			fastify.log.error("DB ERROR: " + error);
+			throw error;
+		}
+	}
+
+	async removeAllNotif(receiverId: number) {
+		try {
+			const stmt = fastify.database.prepare(`
+				DELETE FROM messages WHERE receiver_id = ?
+			`);
+
+			const res = stmt.run(receiverId);
 
 			if (res.changes === 0) {
 				fastify.log.warn("NO AFFECTION");

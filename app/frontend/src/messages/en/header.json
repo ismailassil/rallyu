@@ -1,9 +1,9 @@
 {
-	"header": {
-		"search": {
-			"ide": "Help yourself..",
-			"placeholder": "Start Searching...",
-			"clear": "Clear"
-		}
-	}
+  "header": {
+    "search": {
+      "ide": "Help yourself..",
+      "placeholder": "Start Searching...",
+      "clear": "Clear"
+    }
+  }
 }

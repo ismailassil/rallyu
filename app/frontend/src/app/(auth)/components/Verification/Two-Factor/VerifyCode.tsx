@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import OTPCodeInput from '../../Form/OTPCodeInput';
+import OTPCodeInput from "../../Form/OTPCodeInput";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useRef, useState } from "react";
 import FormButton from "../../UI/FormButton";
@@ -13,58 +12,52 @@ import { useTranslations } from "next-intl";
 
 interface VerifyCodeProps {
 	selectedMethod: string;
-	loginSessionMeta: { token: string, enabledMethods: string[] };
+	loginSessionMeta: { token: string; enabledMethods: string[] };
 	onSuccess: () => void;
 	onFailure: () => void;
 	onGoBack: () => void;
 }
 
-export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess, onFailure, onGoBack } : VerifyCodeProps) {
-	const t = useTranslations('auth');
-	const t2fav = useTranslations('auth.twoFactorAtLogin.verifyCode');
+export default function VerifyCode({
+	selectedMethod,
+	loginSessionMeta,
+	onSuccess,
+	onFailure,
+	onGoBack,
+}: VerifyCodeProps) {
+	const t = useTranslations("auth");
+	const tautherr = useTranslations("auth");
 
-	const {
-		apiClient,
-		loginUsing2FA
-	} = useAuth();
+	const { apiClient, loginUsing2FA } = useAuth();
 
-	const {
-		isLoading: isVerifyingCode,
-		executeAPICall: verifyCode
-	} = useAPICall();
-	const {
-		isLoading: isResendingCode,
-		executeAPICall: resendCode
-	} = useAPICall();
+	const { isLoading: isVerifyingCode, executeAPICall: verifyCode } = useAPICall();
+	const { isLoading: isResendingCode, executeAPICall: resendCode } = useAPICall();
 
-	const [code, setCode] = useState(['', '', '', '', '', '']);
+	const [code, setCode] = useState(["", "", "", "", "", ""]);
 	const [hasError, setHasError] = useState(false);
 	const inputRefs = useRef([]);
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 
-		const OTPJoined = code.join('');
+		const OTPJoined = code.join("");
 		if (OTPJoined.length !== 6) {
 			setHasError(true);
 			setTimeout(() => {
 				setHasError(false);
 			}, 1000);
-			return ;
+			return;
 		}
 
 		try {
-			await verifyCode(() => loginUsing2FA(
-				loginSessionMeta.token,
-				OTPJoined
-			));
+			await verifyCode(() => loginUsing2FA(loginSessionMeta.token, OTPJoined));
 			onSuccess();
 		} catch (err: any) {
-			if (err.message === 'AUTH_INVALID_CODE') {
+			if (err.message === "AUTH_INVALID_CODE") {
 				setHasError(true);
 				setTimeout(() => setHasError(false), 1000);
 			} else {
-				toastError(t2fav('errors', { code: err.message }));
+				toastError(tautherr("errorCodes", { code: err.message }));
 				onFailure();
 			}
 		}
@@ -72,9 +65,7 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 
 	async function handleResend() {
 		try {
-			await resendCode(() => apiClient.auth.resend2FACode(
-				loginSessionMeta.token,
-			));
+			await resendCode(() => apiClient.auth.resend2FACode(loginSessionMeta.token));
 		} catch (err) {
 			onFailure();
 			toastError((err as APIError).message);
@@ -82,17 +73,25 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 	}
 
 	return (
-		<AnimatedComponent componentKey='2fa-chall-verify' className='w-full max-w-lg p-11 flex flex-col gap-5'>
+		<AnimatedComponent
+			componentKey="2fa-chall-verify"
+			className="flex w-full max-w-lg flex-col gap-5 p-11"
+		>
 			{/* Header + Go Back */}
-			<div className="flex gap-4 items-center mb-2">
+			<div className="mb-2 flex items-center gap-4">
 				<button
 					onClick={onGoBack}
-					className="bg-blue-500/25 rounded-2xl p-2 hover:bg-blue-500/90 transition-all duration-300 cursor-pointer">
+					className="cursor-pointer rounded-2xl bg-blue-500/25 p-2 transition-all duration-300 hover:bg-blue-500/90"
+				>
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-[27px] inline-block'>{t('twoFactorAtLogin.verifyCode.title')}</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>{t('twoFactorAtLogin.verifyCode.subtitle', { method: selectedMethod })}</p>
+					<h1 className="inline-block text-lg font-semibold sm:text-[27px]">
+						{t("twoFactorAtLogin.verifyCode.title")}
+					</h1>
+					<p className="text-sm text-gray-300 sm:text-balance">
+						{t("twoFactorAtLogin.verifyCode.subtitle", { method: selectedMethod })}
+					</p>
 				</div>
 			</div>
 
@@ -107,14 +106,16 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 				/>
 
 				<FormButton
-					text={t('common.continue')}
-					type='submit'
+					text={t("common.continue")}
+					type="submit"
 					icon={<ArrowRight size={16} />}
-					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '') || hasError}
+					disabled={
+						isResendingCode || isVerifyingCode || code.some((d) => d === "") || hasError
+					}
 					isSubmitting={isVerifyingCode}
 				/>
 
-				{selectedMethod !== 'TOTP' && (
+				{selectedMethod !== "TOTP" && (
 					<ResendCode
 						isDisabled={isVerifyingCode || isResendingCode}
 						onResend={handleResend}
@@ -123,7 +124,18 @@ export default function VerifyCode({ selectedMethod, loginSessionMeta, onSuccess
 				)}
 			</form>
 
-			{loginSessionMeta.enabledMethods.length > 1 && <p className='mt-12 self-center text-center'>{t('twoFactorAtLogin.verifyCode.cannot_access', { method: selectedMethod })}<br></br><a onClick={onGoBack} className="font-semibold text-blue-500 hover:underline cursor-pointer">{t('twoFactorAtLogin.verifyCode.other_method')}</a></p>}
+			{loginSessionMeta.enabledMethods.length > 1 && (
+				<p className="mt-12 self-center text-center">
+					{t("twoFactorAtLogin.verifyCode.cannot_access", { method: selectedMethod })}
+					<br></br>
+					<a
+						onClick={onGoBack}
+						className="cursor-pointer font-semibold text-blue-500 hover:underline"
+					>
+						{t("twoFactorAtLogin.verifyCode.other_method")}
+					</a>
+				</p>
+			)}
 		</AnimatedComponent>
 	);
 }

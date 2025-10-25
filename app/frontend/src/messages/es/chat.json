@@ -1,21 +1,21 @@
 {
-	"chat": {
-		"title": "Chat",
-		"search": "Comienza a buscar...",
-		"no_conv": {
-			"title": "👋 ¡Bienvenido al chat!",
-			"sub": "Selecciona un usuario de la barra lateral para empezar a chatear"
-		},
-		"status": {
-			"online": "En línea",
-			"offline": "Desconectado"
-		},
-		"input_placeholder": "Escribe tu mensaje",
-		"dates": {
-			"today": "Hoy",
-			"yesterday": "Ayer"
-		},
-		"no_friends": "No se encontraron amigos",
-		"maximum": "Máximo"
-	}
+  "chat": {
+    "title": "Chat",
+    "search": "Comienza a buscar...",
+    "no_conv": {
+      "title": "👋 ¡Bienvenido al chat!",
+      "sub": "Selecciona un usuario de la barra lateral para empezar a chatear"
+    },
+    "status": {
+      "online": "En línea",
+      "offline": "Desconectado"
+    },
+    "input_placeholder": "Escribe tu mensaje",
+    "dates": {
+      "today": "Hoy",
+      "yesterday": "Ayer"
+    },
+    "no_friends": "No se encontraron amigos",
+    "maximum": "Máximo"
+  }
 }

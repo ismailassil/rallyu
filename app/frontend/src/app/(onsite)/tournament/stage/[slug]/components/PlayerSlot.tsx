@@ -1,6 +1,6 @@
 import AnimateLink from "./AnimateLink";
 
-const PlayerSlot = function ({ match, playerNumber }: { playerNumber: number }) {
+const PlayerSlot = function ({ match, playerNumber }: { match: any, playerNumber: number }) {
 
     const winnerStyle = (player: number) => {
 		if (!match.winner) return "";

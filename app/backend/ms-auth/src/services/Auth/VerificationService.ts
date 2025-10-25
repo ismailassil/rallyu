@@ -6,7 +6,7 @@ import { generateOTP, generateUUID, nowInSeconds, nowPlusSeconds, verifyOTP } fr
 import MailingService from "../Communication/MailingService";
 import WhatsAppService from "../Communication/WhatsAppService";
 import { mailingConfig } from "../../config/mailing";
-import { NoEmailIsAssociated, NoPhoneIsAssociated, UserNotFoundError } from "../../types/exceptions/user.exceptions";
+import { NoEmailIsAssociated, NoPhoneIsAssociated, UserAlreadyExistsError, UserNotFoundError } from "../../types/exceptions/user.exceptions";
 import { AuthChallengeExpired, InvalidCodeError, TooManyAttemptsError, TooManyResendsError } from "../../types/exceptions/verification.exceptions";
 
 const verificationConfig = {
@@ -26,15 +26,18 @@ class VerificationService {
 		this.challengeRepository = new AuthChallengesRepository();
 	}
 
-	async request(_for: 'email' | 'phone', userID: number, providedTarget: string | undefined) {
+	async request(_for: 'email' | 'phone', userID: number, providedTarget: string) {
 		const targetUser = await this.userService.getUserById(userID);
 		if (!targetUser)
 			throw new UserNotFoundError();
-
-		if (_for === 'email' && !providedTarget && !targetUser.email)
-			throw new NoEmailIsAssociated();
-		if (_for === 'phone' && !providedTarget && !targetUser.phone)
-			throw new NoPhoneIsAssociated();
+		if (_for === 'email') {
+			const emailUser = await this.userService.getUserByEmail(providedTarget);
+			if (emailUser && emailUser.id !== userID) throw new UserAlreadyExistsError('Email');
+		}
+		// else if (_for === 'phone') {
+		// 	const phoneUser = await this.userService.getUserByPhone(providedTarget);
+		// 	if (phoneUser && phoneUser.id !== userID) throw new UserAlreadyExistsError('Phone');
+		// }
 
 		// CLEANUP PENDING
 		await this.challengeRepository.cleanupPendingByUserID(
@@ -42,7 +45,7 @@ class VerificationService {
 			_for === 'email' ? 'email_verification' : 'phone_verification'
 		);
 
-		const TARGET = providedTarget || (_for === 'email' ? targetUser.email : targetUser.phone);
+		const TARGET = providedTarget;
 		const METHOD = _for === 'email' ? 'EMAIL' : 'SMS';
 		const OTP = generateOTP();
 		const TOKEN = generateUUID();
@@ -93,26 +96,28 @@ class VerificationService {
 			throw new InvalidCodeError();
 		}
 
-		await this.challengeRepository.update(targetChall.id, {
-			status: 'VERIFIED'
-		});
-
-		if (targetChall.challenge_type === 'email_verification')
+		if (targetChall.challenge_type === 'email_verification') {
 			await this.userService.updateUser(targetChall.user_id, {
-				email: targetChall.target,
+				email: targetChall.target
+			});
+			await this.userService.updateUser(targetChall.user_id, {
 				email_verified: true
 			});
-		else if (targetChall.challenge_type === 'phone_verification')
+		}
+		else if (targetChall.challenge_type === 'phone_verification') {
 			await this.userService.updateUser(targetChall.user_id, {
-				phone: targetChall.target,
+				phone: targetChall.target
+			});
+			await this.userService.updateUser(targetChall.user_id, {
 				phone_verified: true
 			});
+		}
 
 		await this.challengeRepository.update(targetChall.id, {
 			status: 'COMPLETED'
 		});
 
-		return ;
+		return targetChall.user_id;
 	}
 
 	async resend(token: UUID) {

@@ -83,16 +83,11 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		(data: Notification) => {
 			console.log(data);
 			if (data.type === "chat" && window.location.pathname.startsWith("/chat")) {
-				const payload = {
-					eventType: "UPDATE_ACTION",
-					data: {
-						updateAll: false,
-						notificationId: data.id,
-						status: "dismissed",
-						state: "finished",
-					},
-				};
-				socket.emit("notification", payload);
+				socket.emitUpdateAction(false, {
+					id: data.id,
+					status: "dismissed",
+					state: "finished",
+				});
 				return;
 			}
 			setNotifications((prev) => [data, ...prev]);
@@ -155,13 +150,9 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 		);
 	}, []);
 
-	const handleGame = useCallback(
-		(payload: string) => {
-			router.push("/game/" + payload);
-		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[]
-	);
+	const handleGame = useCallback((payload: string) => {
+		router.push("/game/" + payload);
+	}, []);
 
 	const handleAccept = useCallback(
 		async (data: Notification | TOAST_PAYLOAD, isToast: boolean) => {
@@ -174,15 +165,18 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				if (type === "friend_request") {
 					await apiClient.acceptFriendRequest(senderId);
 				} else if (type === "game" || type === "pp_game" || type === "xo_game") {
-					console.log(data.actionUrl);
 					socket.emitGameResponse(senderId, true, data.actionUrl!, type as GameType);
 				} else if (type === "tournament") {
+					socket.emitUpdateAction(false, {
+						id: data.id,
+						status: "dismissed",
+						state: "finished",
+					});
 				}
 			} catch (err) {
 				console.error(err);
 			}
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[handleRemoveToast, socket]
 	);
 
@@ -199,12 +193,17 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 				} else if (type === "game" || type === "pp_game" || type === "xo_game") {
 					socket.emitGameResponse(senderId, false, data.actionUrl!, type as GameType);
 				} else if (type === "tournament") {
+					socket.emitUpdateAction(false, {
+						id: data.id,
+						status: "dismissed",
+						state: "finished",
+					});
 				}
 			} catch (err) {
 				console.error(err);
 			}
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+
 		[handleRemoveToast, socket]
 	);
 
@@ -256,7 +255,6 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 			})
 			.catch((err) => console.log(err))
 			.finally(() => setIsLoading(false));
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isBottom]);
 
 	useEffect(() => {

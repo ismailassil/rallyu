@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 import { ArrowLeft, RotateCw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import FormButton from "../../components/UI/FormButton";
@@ -13,15 +12,19 @@ import AnimatedComponent from "../../components/UI/AnimatedComponent";
 import { useTranslations } from "next-intl";
 import useValidationSchema from "@/app/hooks/useValidationSchema";
 
-export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) => void, onGoBack: () => void }) {
-	const t = useTranslations('');
-	const trp = useTranslations('auth.reset_password.forgotPassword');
+export function ForgotPassword({
+	onNext,
+	onGoBack,
+}: {
+	onNext: (token: string) => void;
+	onGoBack: () => void;
+}) {
+	const t = useTranslations("");
+	const tautherr = useTranslations("auth");
 
 	const router = useRouter();
 
-	const {
-		emailOnlySchema
-	} = useValidationSchema();
+	const { emailOnlySchema } = useValidationSchema();
 
 	const [
 		formData,
@@ -31,51 +34,49 @@ export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) 
 		handleChange,
 		validateAll,
 		getValidationErrors,
-		resetForm
-	] = useForm(
-		emailOnlySchema,
-		{ email: '' },
-		{ debounceMs: { email: 1200 } }
-	);
+		resetForm,
+	] = useForm(emailOnlySchema, { email: "" }, { debounceMs: { email: 1200 } });
 
-	const {
-		apiClient
-	} = useAuth();
+	const { apiClient } = useAuth();
 
-	const {
-		isLoading,
-		executeAPICall
-	} = useAPICall();
+	const { isLoading, executeAPICall } = useAPICall();
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 
 		const isValid = validateAll();
-		if (!isValid)
-			return ;
+		if (!isValid) return;
 
 		try {
-			const { token } = await executeAPICall(() => apiClient.auth.requestPasswordReset(
-				formData.email
-			));
+			const { token } = await executeAPICall(() =>
+				apiClient.auth.requestPasswordReset(formData.email)
+			);
 			onNext(token);
 		} catch (err: any) {
-			toastError(trp('errors',  { code: err.message }));
+			toastError(tautherr("errorCodes", { code: err.message }));
 		}
 	}
 
 	return (
-		<AnimatedComponent componentKey="forgot-password" className='w-full max-w-lg p-11 flex flex-col gap-5'>
+		<AnimatedComponent
+			componentKey="forgot-password"
+			className="flex w-full max-w-lg flex-col gap-5 p-11"
+		>
 			{/* Header + Go Back */}
-			<div className="flex gap-4 items-center mb-2">
+			<div className="mb-2 flex items-center gap-4">
 				<button
 					onClick={onGoBack}
-					className="bg-blue-500/25 rounded-2xl p-2 hover:bg-blue-500/90 transition-all duration-300 cursor-pointer">
+					className="cursor-pointer rounded-2xl bg-blue-500/25 p-2 transition-all duration-300 hover:bg-blue-500/90"
+				>
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('auth.reset_password.forgotPassword.title')}</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>{t('auth.reset_password.forgotPassword.subtitle')}</p>
+					<h1 className="inline-block text-lg font-semibold sm:text-3xl">
+						{t("auth.reset_password.forgotPassword.title")}
+					</h1>
+					<p className="text-sm text-gray-300 sm:text-balance">
+						{t("auth.reset_password.forgotPassword.subtitle")}
+					</p>
 				</div>
 			</div>
 
@@ -91,23 +92,31 @@ export function ForgotPassword({ onNext, onGoBack } : { onNext: (token: string) 
 					getValidationErrors={getValidationErrors}
 					resetForm={resetForm}
 				>
-				<InputField
-					className='field flex flex-col gap-0.5 min-w-0 flex-1'
-					iconSrc='/icons/mail.svg'
-					label=''
-					field='email'
-					inputPlaceholder='iassil@1337.student.ma'
-					autoFocus
-				/>
+					<InputField
+						className="field flex min-w-0 flex-1 flex-col gap-0.5"
+						iconSrc="/icons/mail.svg"
+						label=""
+						field="email"
+						inputPlaceholder="iassil@1337.student.ma"
+						autoFocus
+					/>
 				</FormProvider>
 				<FormButton
-					text={t('auth.common.reset_password')}
+					text={t("auth.common.reset_password")}
 					type="submit"
 					icon={<RotateCw size={16} />}
 					isSubmitting={isLoading}
 				/>
 			</form>
-			<p className='self-center mt-2'>{t('auth.reset_password.forgotPassword.instruction')} <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>{t('auth.common.signin')}</span></p>
+			<p className="mt-2 self-center">
+				{t("auth.reset_password.forgotPassword.instruction")}{" "}
+				<span
+					onClick={() => router.push("/signup")}
+					className="cursor-pointer font-semibold text-blue-500 hover:underline"
+				>
+					{t("auth.common.signin")}
+				</span>
+			</p>
 		</AnimatedComponent>
 	);
 }

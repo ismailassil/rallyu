@@ -164,12 +164,12 @@ const sessioniddelete = {
 }
 
 const verifycontact = {
-	params: {
+	body: {
 		type: 'object',
 		properties: {
-			contact: { type: 'string', enum: ['email', 'phone'] }
+			target: { type: 'string' }
 		},
-		required: ['contact'],
+		required: ['target'],
 		additionalProperties: false
 	}
 }

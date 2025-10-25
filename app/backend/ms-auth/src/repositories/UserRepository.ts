@@ -150,7 +150,7 @@ class UserRepository extends ARepository {
 			values.push(id);
 
 			const runResult = await db.run(
-				`UPDATE users SET ${setClause}, updated_at = (strftime('%s','now')) WHERE id = ?`,
+				`UPDATE users SET ${setClause} WHERE id = ?`,
 				values
 			);
 			return runResult.changes > 0;

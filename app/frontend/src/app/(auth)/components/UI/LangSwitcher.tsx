@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 const langs: { lg: Langs; flag: string }[] = [
 	{ lg: "en", flag: "🇬🇧" },
 	{ lg: "es", flag: "🇪🇸" },
-	{ lg: "de", flag: "🇩🇪" },
+	{ lg: "it", flag: "🇮🇹" },
 ];
 
 export default function LangSwitcher() {
@@ -41,7 +41,7 @@ export default function LangSwitcher() {
 			className="relative flex h-13 w-22 cursor-pointer items-center justify-center gap-2 rounded-lg border border-white/10 duration-500 hover:bg-white/5"
 		>
 			<Globe />
-			{lang}
+			{lang?.toUpperCase()}
 			<AnimatePresence>
 				{open && (
 					<motion.div
@@ -55,7 +55,7 @@ export default function LangSwitcher() {
 							if (lang !== lg) {
 								return (
 									<p key={lg} onClick={() => handleSwitch(lg)}>
-										{flag}&nbsp;&nbsp;{lg}
+										{flag}&nbsp;&nbsp;{lg.toUpperCase()}
 									</p>
 								);
 							}

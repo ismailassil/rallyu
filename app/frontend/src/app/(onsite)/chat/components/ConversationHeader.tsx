@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
@@ -21,8 +20,7 @@ const ConversationHeader = () => {
 	const { apiClient, isBusy } = useAuth();
 	const [timer, setTimer] = useState<boolean>(false);
 	const requestBattleFriend = useRequestBattleFriend();
-	const t=useTranslations("chat.status");
-
+	const t = useTranslations("chat.status");
 
 	function onPlay(event: any, gameType: "pingpong" | "tictactoe") {
 		if (isBusy) return;

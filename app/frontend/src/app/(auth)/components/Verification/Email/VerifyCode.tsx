@@ -1,69 +1,57 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useRef, useState } from 'react';
-import useAPICall from '@/app/hooks/useAPICall';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import FormButton from '@/app/(auth)/components/UI/FormButton';
-import { toastError } from '@/app/components/CustomToast';
-import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import OTPCodeInput from '../../Form/OTPCodeInput';
-import AnimatedComponent from '../../UI/AnimatedComponent';
-import ResendCode from '../ResendCode';
-import { APIError } from '@/app/(api)/APIClient';
-import { useTranslations } from 'next-intl';
+import React, { useRef, useState } from "react";
+import useAPICall from "@/app/hooks/useAPICall";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import FormButton from "@/app/(auth)/components/UI/FormButton";
+import { toastError } from "@/app/components/CustomToast";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import OTPCodeInput from "../../Form/OTPCodeInput";
+import AnimatedComponent from "../../UI/AnimatedComponent";
+import ResendCode from "../ResendCode";
+import { APIError } from "@/app/(api)/APIClient";
+import { useTranslations } from "next-intl";
 
 interface VerifyCodeProps {
-	token: string,
+	token: string;
 	onSuccess: () => void;
 	onFailure: () => void;
 	onGoBack: () => void;
 }
 
 // EMAIL
-export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : VerifyCodeProps) {
-	const t = useTranslations('auth');
-	const tve = useTranslations('auth.verification.verifyCode');
+export default function VerifyCode({ token, onGoBack, onSuccess, onFailure }: VerifyCodeProps) {
+	const t = useTranslations("auth");
+	const tautherr = useTranslations("auth");
 
-	const {
-		apiClient
-	} = useAuth();
+	const { apiClient } = useAuth();
 
-	const {
-		isLoading: isVerifyingCode,
-		executeAPICall: verifyCode
-	} = useAPICall();
-	const {
-		isLoading: isResendingCode,
-		executeAPICall: resendCode
-	} = useAPICall();
+	const { isLoading: isVerifyingCode, executeAPICall: verifyCode } = useAPICall();
+	const { isLoading: isResendingCode, executeAPICall: resendCode } = useAPICall();
 
-	const [code, setCode] = useState(['', '', '', '', '', '']);
+	const [code, setCode] = useState(["", "", "", "", "", ""]);
 	const [hasError, setHasError] = useState(false);
 	const inputRefs = useRef([]);
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 
-		const OTPJoined = code.join('');
+		const OTPJoined = code.join("");
 		if (OTPJoined.length !== 6) {
 			setHasError(true);
 			setTimeout(() => {
 				setHasError(false);
 			}, 1000);
-			return ;
+			return;
 		}
 
 		try {
-			await verifyCode(() => apiClient.verify.verifyEmail(
-				token,
-				OTPJoined
-			));
+			await verifyCode(() => apiClient.verify.verifyEmail(token, OTPJoined));
 			onSuccess();
 		} catch (err: any) {
-			if (err.message === 'AUTH_INVALID_CODE') {
+			if (err.message === "AUTH_INVALID_CODE") {
 				setHasError(true);
 				setTimeout(() => setHasError(false), 1000);
 			} else {
-				toastError(tve('errors.email', { code: err.message }));
+				toastError(tautherr("errorCodes", { code: err.message }));
 				onFailure();
 			}
 		}
@@ -71,9 +59,7 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 
 	async function handleResend() {
 		try {
-			await resendCode(() => apiClient.verify.resendEmail(
-				token
-			));
+			await resendCode(() => apiClient.verify.resendEmail(token));
 		} catch (err) {
 			onFailure();
 			toastError((err as APIError).message);
@@ -81,17 +67,25 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 	}
 
 	return (
-		<AnimatedComponent componentKey='verify-email-verify' className='w-full max-w-lg p-11 flex flex-col gap-5 select-none'>
+		<AnimatedComponent
+			componentKey="verify-email-verify"
+			className="flex w-full max-w-lg flex-col gap-5 p-11 select-none"
+		>
 			{/* Header + Go Back */}
-			<div className="flex gap-4 items-center mb-2">
+			<div className="mb-2 flex items-center gap-4">
 				<button
 					onClick={onGoBack}
-					className="bg-blue-500/25 rounded-2xl p-2 hover:bg-blue-500/90 transition-all duration-300 cursor-pointer">
+					className="cursor-pointer rounded-2xl bg-blue-500/25 p-2 transition-all duration-300 hover:bg-blue-500/90"
+				>
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('verification.verifyCode.title', { method: 'EMAIL' })}</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>{t('verification.verifyCode.subtitle', { method: 'EMAIL' })}</p>
+					<h1 className="inline-block text-lg font-semibold sm:text-3xl">
+						{t("verification.verifyCode.title", { method: "EMAIL" })}
+					</h1>
+					<p className="text-sm text-gray-300 sm:text-balance">
+						{t("verification.verifyCode.subtitle", { method: "EMAIL" })}
+					</p>
 				</div>
 			</div>
 
@@ -106,10 +100,12 @@ export default function VerifyCode({ token, onGoBack, onSuccess, onFailure } : V
 				/>
 
 				<FormButton
-					text={t('common.continue')}
-					type='submit'
+					text={t("common.continue")}
+					type="submit"
 					icon={<ArrowRight size={16} />}
-					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '') || hasError}
+					disabled={
+						isResendingCode || isVerifyingCode || code.some((d) => d === "") || hasError
+					}
 					isSubmitting={isVerifyingCode}
 				/>
 

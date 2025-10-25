@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import FooterPending from "./components/FooterPending";
@@ -52,7 +52,7 @@ const currentUserMatch = function(matches, player) {
 const Brackets = function (props) {
 	const { loggedInUser, apiClient } = useAuth();
 	const { slug } = useParams();
-	const [tournament, setTournament] = useState({});
+	const [tournament, setTournament] = useState<any>({});
 	const [joined, setJoined] = useState<boolean>(false);
 	const [ready, setReady] = useState<boolean>(false);
 	const [error, setError] = useState({ status: false, message: "" });
@@ -163,12 +163,11 @@ const Brackets = function (props) {
 									{
 										tournament.tournament.state == "pending" &&
 											<FooterPending 
-												joined={joined}
-												setJoined={setJoined}
-												slug={slug}
-												title={tournament?.tournament.title} 
-												full={tournament.tournament.contenders_size === tournament.tournament.contenders_joined}
-											/>
+											joined={joined}
+											setJoined={setJoined}
+											slug={slug}
+											title={tournament?.tournament.title}
+											full={tournament.tournament.contenders_size === tournament.tournament.contenders_joined}										/>
 									}
 								</>
 								<>

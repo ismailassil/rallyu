@@ -1,0 +1,46 @@
+{
+  "profile": {
+    "common": {
+      "level": "Livello",
+      "time_spent": "Tempo trascorso sulla piattaforma"
+    },
+    "cards": {
+      "global_rank": {
+        "part1": "Posizione",
+        "part2": "Globale"
+      },
+      "win_rate": {
+        "part1": "Percentuale",
+        "part2": "Vittorie"
+      },
+      "current_streak": {
+        "part1": "Serie",
+        "part2": "Attuale"
+      },
+      "games_history": {
+        "title": "Cronologia partite"
+      },
+      "performance": {
+        "title": "Prestazioni",
+        "cards": {
+          "total_xp": "XP Totale",
+          "games_played": {
+            "part1": "Partite",
+            "part2": "Giocate"
+          },
+          "longest_streak": {
+            "part1": "Serie",
+            "part2": "Più Lunga"
+          },
+          "wins": "Vittorie",
+          "losses": "Sconfitte",
+          "draws": "Pareggi"
+        }
+      }
+    },
+    "buttons": {
+      "edit_profile": "Modifica profilo",
+      "view_performance": "Visualizza prestazioni"
+    }
+  }
+}

@@ -1,16 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, { AxiosInstance } from 'axios';
-import { UserService } from './services/UserService';
-import { AuthService } from './services/AuthService';
-import { MfaService } from './services/MfaService';
-import { VerifyService } from './services/VerifyService';
-import { GameType } from '../(onsite)/game/types/types';
+import axios, { AxiosInstance } from "axios";
+import { UserService } from "./services/UserService";
+import { AuthService } from "./services/AuthService";
+import { MfaService } from "./services/MfaService";
+import { VerifyService } from "./services/VerifyService";
+import { GameType } from "../(onsite)/game/types/types";
 
 export type APIError = {
 	code: string;
 	message: string;
 	details?: any;
-}
+};
 
 export type PlayerState = {
 	ID: number;
@@ -19,28 +18,28 @@ export type PlayerState = {
 };
 
 export type RemotePlayerStatus = {
-	roomId: string,
-	opponentId: number,
-	gameType: GameType,
-	connected: boolean
-}
+	roomId: string;
+	opponentId: number;
+	gameType: GameType;
+	connected: boolean;
+};
 
 export type GameRoomStatus =
 	| {
-		gameType: 'pingpong' | 'tictactoe',
-		cells: any[];
-		currentRound: number;
-		players: PlayerState[];
+			gameType: "pingpong" | "tictactoe";
+			cells: any[];
+			currentRound: number;
+			players: PlayerState[];
 	  }
 	| {
-		gameType: 'pingpong' | 'tictactoe',
-		ball: any;
-		players: PlayerState[];
+			gameType: "pingpong" | "tictactoe";
+			ball: any;
+			players: PlayerState[];
 	  };
 
 export class APIClient {
 	private client: AxiosInstance;
-	private accessToken: string = '';
+	private accessToken: string = "";
 	private isRefreshing: boolean = false;
 	private failedQueue: any[] = [];
 
@@ -57,12 +56,12 @@ export class APIClient {
 		});
 
 		this.user = new UserService(this.client);
-		this.auth = new AuthService(this.client, accessToken => this.setAccessToken(accessToken));
+		this.auth = new AuthService(this.client, (accessToken) => this.setAccessToken(accessToken));
 		this.mfa = new MfaService(this.client);
 		this.verify = new VerifyService(this.client);
 
-		this.client.interceptors.request.use(config => {
-			console.log('in interceptor, accessToken: ', this.accessToken);
+		this.client.interceptors.request.use((config) => {
+			console.log("in interceptor, accessToken: ", this.accessToken);
 			if (this.accessToken) {
 				config.headers.Authorization = `Bearer ${this.accessToken}`;
 			}
@@ -70,14 +69,14 @@ export class APIClient {
 		});
 
 		this.client.interceptors.response.use(
-			res => res,
-			err => this.handleResponseError(err)
+			(res) => res,
+			(err) => this.handleResponseError(err)
 		);
 	}
 
 	private processQueue(error: any, token: string | null) {
-		console.log('APIClient::processQueue();');
-		this.failedQueue.forEach(prom => {
+		console.log("APIClient::processQueue();");
+		this.failedQueue.forEach((prom) => {
 			if (token) prom.resolve(token);
 			else prom.reject(error);
 		});
@@ -85,17 +84,17 @@ export class APIClient {
 	}
 
 	private async handleResponseError(err: any) {
-		console.log('APIClient::handleResponseError();');
+		console.log("APIClient::handleResponseError();");
 		const originalRequest = err.config;
 
-		console.log('Error: ', err);
-		console.log('Response status: ', err.response?.status);
-		console.log('_retry: ', originalRequest._retry);
-		console.log('isRefreshing: ', this.isRefreshing);
-		console.log('failedQueue: ', this.failedQueue);
+		console.log("Error: ", err);
+		console.log("Response status: ", err.response?.status);
+		console.log("_retry: ", originalRequest._retry);
+		console.log("isRefreshing: ", this.isRefreshing);
+		console.log("failedQueue: ", this.failedQueue);
 		if (err.response?.status === 401 && !originalRequest._retry && this.accessToken) {
 			if (this.isRefreshing) {
-				console.log('pushing to failed queue');
+				console.log("pushing to failed queue");
 				return new Promise((resolve, reject) => {
 					this.failedQueue.push({
 						resolve: (token: string) => {
@@ -111,18 +110,16 @@ export class APIClient {
 			this.isRefreshing = true;
 
 			try {
-				const { data } = await this.client.get('/auth/refresh');
+				const { data } = await this.client.get("/auth/refresh");
 				this.setAccessToken(data.data.accessToken);
 				this.processQueue(null, data.accessToken);
 				originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
 				return this.client(originalRequest);
-
 			} catch (refreshError: any) {
-				console.log('refreshError: ', refreshError);
+				console.log("refreshError: ", refreshError);
 				this.processQueue(refreshError, null);
 				throw this.classifyError(refreshError);
 				// return Promise.reject(refreshError);
-
 			} finally {
 				this.isRefreshing = false;
 			}
@@ -179,7 +176,16 @@ export class APIClient {
 		return this.user.updateUserAvatar(id, avatarFile);
 	}
 
-	async updateUser(id: number, payload: { first_name?: string, last_name?: string, username?: string, email?: string, bio?: string }) {
+	async updateUser(
+		id: number,
+		payload: {
+			first_name?: string;
+			last_name?: string;
+			username?: string;
+			email?: string;
+			bio?: string;
+		}
+	) {
 		return this.user.updateUser(id, payload);
 	}
 
@@ -290,10 +296,7 @@ export class APIClient {
 
 	/*--------------------------------- Password Management ---------------------------------*/
 
-	async changePassword(
-		oldPassword: string,
-		newPassword: string
-	) {
+	async changePassword(oldPassword: string, newPassword: string) {
 		return this.auth.changePassword(oldPassword, newPassword);
 	}
 
@@ -317,35 +320,35 @@ export class APIClient {
 	// 	return this.auth.resetPasswordResend(token);
 	// }
 
-	async fetchPlayerStatus(user_id: number) : Promise<RemotePlayerStatus>{
-		console.log('user_id: ', user_id);
+	async fetchPlayerStatus(user_id: number): Promise<RemotePlayerStatus> {
+		console.log("user_id: ", user_id);
 		const res = await this.client.get(`/game/user/${user_id}/status`);
 		return res.data;
 	}
 
-	async fetchGameRoomStatus(room_id: string) : Promise<GameRoomStatus> {
+	async fetchGameRoomStatus(room_id: string): Promise<GameRoomStatus> {
 		const res = await this.client.get(`/game/room/${room_id}/status`);
 		return res.data;
 	}
 
 	async createGameRoom(playersIds: number[], gameType: string, gameMode: string) {
-		const res = await this.client.post(`/game/room/create`,
-			{
-				playersIds,
-				gameType,
-				gameMode
-			},
-		);
+		const res = await this.client.post(`/game/room/create`, {
+			playersIds,
+			gameType,
+			gameMode,
+		});
 		return res.data;
 	}
 
 	connectWebSocket(path: string) {
-		const origin = window.location.origin.replace('http', 'ws');
+		const origin = window.location.origin.replace("http", "ws");
 
-		const url = `${origin}/api-ws${path}`; // TODO Change to dynamic
-		const ws = new WebSocket(`${url}${url.includes('?') ? '&' : '?'}accessToken=${this.accessToken}`);
+		const url = `${origin}/api-ws${path}`;
+		const ws = new WebSocket(
+			`${url}${url.includes("?") ? "&" : "?"}accessToken=${this.accessToken}`
+		);
 
-		return (ws);
+		return ws;
 	}
 
 	private classifyError(err: any) {

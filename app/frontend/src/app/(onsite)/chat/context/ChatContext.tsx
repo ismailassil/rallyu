@@ -1,19 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useContext, createContext, useState, ReactNode, useEffect } from "react";
-import React from 'react';
+import React from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { LoggedUser, MessageType } from "../types/chat.types";
-import { format, isToday, isYesterday, parseISO, isSameDay } from 'date-fns';
+import { format, isToday, isYesterday, parseISO, isSameDay } from "date-fns";
 import { useTranslations } from "next-intl";
-
+import { simulateBackendCall } from "@/app/(api)/utils";
 
 type ChatContextType = {
 	showConversation: boolean;
 	setShowConversation: (show: boolean) => void;
 	isLoadingFriends: boolean;
 	setIsLoadingFriends: (show: boolean) => void;
-	friends: any[] | null;
 	BOSS: LoggedUser | null;
 	socket: any;
 	apiClient: any;
@@ -23,9 +21,11 @@ type ChatContextType = {
 	setSelectedUser: React.Dispatch<React.SetStateAction<LoggedUser | null>>;
 	formatMessageDateTime: (
 		currentMsg: string,
-		mode: 'conversation' | 'list',
-		prevMsg?: string | undefined,
+		mode: "conversation" | "list",
+		prevMsg?: string | undefined
 	) => { date: string; time: string };
+	displayUsers: LoggedUser[];
+	setDisplayUsers: React.Dispatch<React.SetStateAction<LoggedUser[]>>;
 }
 
 const ChatContext = createContext<ChatContextType | null>(null);
@@ -40,35 +40,35 @@ export const useChat = () => {
 
 type ChatProviderProps = {
 	children: ReactNode;
-}
+};
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	const [showConversation, setShowConversation] = useState(false);
-	const [friends, setFriends] = useState<LoggedUser[] | null>(null);
 	const [isLoadingFriends, setIsLoadingFriends] = useState(true);
 	const [messages, setMessages] = useState<MessageType[]>([]);
 	const [selectedUser, setSelectedUser] = useState<LoggedUser | null>(null);
 	const { socket, apiClient, loggedInUser: BOSS } = useAuth();
+	const [displayUsers, setDisplayUsers] = useState<LoggedUser[]>([]);
 	const t = useTranslations("chat");
+	const [lastMessages, setLastMessages] = useState<Record<number, string>>({});
+
 
 	useEffect(() => {
-		async function getAllFriends() {
-			try {
-				const allFriends = await apiClient.getAllFriends();
-				setFriends(allFriends);
-			} catch (err: any) {
-				console.log(err);
-			} finally {
+		if (!BOSS?.id) return;
+		apiClient.instance.get('/chat/friend_list')
+			.then((response: any) => { // check this
+				setDisplayUsers(response.data);
+			})
+			.catch((error: Error) => {
+				console.error("Error fetching chat history:", error);
+			}).finally(() => {
 				setIsLoadingFriends(false);
-			}
-		}
-		getAllFriends();
-	}, [showConversation, selectedUser, apiClient]);
+			});
+	}, [BOSS?.id, apiClient]); // check this 
 
 	useEffect(() => {
 		socket.updateContext("chat");
 	}, [socket]);
-
 
 	const playMessageSound = () => {
 		const audio = new Audio("/message.mp3");
@@ -87,8 +87,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			setMessages((prev) => [...prev, data]);
 		}
 
-		socket.on('chat_receive_msg', handleMessage);
-		socket.on('chat_update_msg', handleUpdateMessage);
+		socket.on("chat_receive_msg", handleMessage);
+		socket.on("chat_update_msg", handleUpdateMessage);
 		return () => {
 			socket.off("chat_receive_msg", handleMessage);
 			socket.off("chat_update_msg", handleUpdateMessage);
@@ -96,22 +96,9 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	}, [socket]);
 
 
-	useEffect(() => {
-		if (!BOSS?.id) return;
+	const formatMessageDateTime = (currentMsg: string | undefined, mode: 'conversation' | 'list', prevMsg?: string,) => {
 
-		apiClient.instance.get('/chat/history')
-			.then((response: any) => {
-				setMessages(response?.data);
-			})
-			.catch((error: any) => {
-				console.error("Error fetching chat history:", error);
-			});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	const formatMessageDateTime = (currentMsg: string, mode: 'conversation' | 'list', prevMsg?: string,) => {
-		
-		if (!currentMsg) return {date: "", time: ""}
+		if (!currentMsg) return { date: "", time: "" };
 		
 		const currentDate = parseISO(currentMsg + "Z");
 		const prevDate = prevMsg ? parseISO(prevMsg + "Z") : null;
@@ -119,7 +106,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 		let date = "";
 		const time = format(currentDate, "HH:mm");
 
-		if (mode === 'conversation') {
+		if (mode === "conversation") {
 			if (prevDate && isSameDay(currentDate, prevDate)) {
 				date = "";
 			} else if (isToday(currentDate)) {
@@ -129,7 +116,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			} else {
 				date = format(currentDate, "dd/MM/yyyy");
 			}
-		} else if (mode === 'list') {
+		} else if (mode === "list") {
 			if (isToday(currentDate)) {
 				date = time;
 			} else if (isYesterday(currentDate)) {
@@ -149,7 +136,6 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			isLoadingFriends,
 			setIsLoadingFriends,
 			apiClient,
-			friends,
 			socket,
 			BOSS,
 			messages,
@@ -157,6 +143,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			selectedUser,
 			setSelectedUser,
 			formatMessageDateTime,
+			displayUsers,
+			setDisplayUsers,
 		}}>
 			{children}
 		</ChatContext.Provider>

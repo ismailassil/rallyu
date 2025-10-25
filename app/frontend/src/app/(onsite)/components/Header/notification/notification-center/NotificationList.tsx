@@ -36,18 +36,12 @@ const NotificationList = () => {
 		};
 	}, [isNotif, handleScroll]);
 
-	function handleSingleUpdate(id: number, status: "read" | "dismissed", state: "pending" | "finished") {
-		const data = {
-			eventType: "UPDATE_ACTION",
-			data: {
-				updateAll: false,
-				notificationId: id,
-				status: status,
-				state: state,
-			}
-		};
-
-		socket.emit("notification", data);
+	function handleSingleUpdate(
+		id: number,
+		status: "read" | "dismissed",
+		state: "pending" | "finished"
+	) {
+		socket.emitUpdateAction(false, { id, status, state });
 	}
 
 	if (isLoading) return <Loading />;

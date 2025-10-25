@@ -11,6 +11,12 @@ export default getRequestConfig(async () => {
       ...(await import(`../src/messages/${locale}/dashboard.json`)),
       ...(await import(`../src/messages/${locale}/header.json`)),
       ...(await import(`../src/messages/${locale}/chat.json`)),
+      ...(await import(`../src/messages/${locale}/game.json`)),
+      ...(await import(`../src/messages/${locale}/auth/auth.json`)),
+      ...(await import(`../src/messages/${locale}/pages/performance.json`)),
+      ...(await import(`../src/messages/${locale}/pages/profile.json`)),
+      ...(await import(`../src/messages/${locale}/pages/settings.json`)),
+      ...(await import(`../src/messages/${locale}/placeholders/placeholders.json`)),
     },
   };
 });

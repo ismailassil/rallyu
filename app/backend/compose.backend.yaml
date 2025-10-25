@@ -138,6 +138,10 @@ services:
     restart: always
     networks:
       - backend
+    volumes:
+      - ./ms-tournament/database/tournament.db:/app/database/tournament.db
+    env_file:
+      - .env
     develop:
       watch:
         - path: ./ms-tournament/
@@ -242,15 +246,3 @@ services:
       interval: 5s
       timeout: 10s
       retries: 10
-
-  # nats_ui:
-  #   image: mdawar/nats-dashboard
-  #   container_name: nats_ui
-  #   # ports:
-  #   #   - 8571:80
-  #   restart: always
-  #   networks:
-  #     - backend
-  #     - web-app
-  #   volumes:
-  #     - ./nats_ui_config/config.json:/srv/config.json

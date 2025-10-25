@@ -5,7 +5,6 @@ let timer: NodeJS.Timeout | undefined;
 const useRequestBattleFriend = function () {
     const { isBusy, setIsBusy, socket } = useAuth();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const requestBattleFriend = function (event: any, targetId: number | undefined, gameType: "pingpong" | "tictactoe") {
 		event.preventDefault();
 		if (isBusy || typeof targetId !== 'number')

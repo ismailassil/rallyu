@@ -1,0 +1,47 @@
+{
+  "landing": {
+    "headline": "Entra nell'arena con RALLYU!",
+    "subheadline": "Dove i giochi classici incontrano la sfida in tempo reale. Gioca a <strong>Ping Pong</strong> frenetico e all'intelligente <strong>Tris</strong> — tutto nel tuo browser.",
+    "description": {
+      "pingpong": "Duella in partite di Ping Pong fulminee o supera in astuzia i rivali a Tris — tutto in tempo reale."
+    },
+    "buttons": {
+      "login": "Accedi",
+      "signup": "Registrati",
+      "play_now": "Gioca ora!",
+      "get_started": "Inizia"
+    },
+    "features": {
+      "title": "Funzionalità principali",
+      "items": {
+        "feature_1": {
+          "title": "Partite in tempo reale",
+          "description": "Sfida amici o trova avversari casuali da tutto il mondo."
+        },
+        "feature_2": {
+          "title": "Ping Pong fulmineo",
+          "description": "Scambi veloci, partite elettrizzanti ed epiche scalate della classifica."
+        },
+        "feature_3": {
+          "title": "Tris strategico",
+          "description": "Semplice da imparare, strategico da padroneggiare: ogni mossa conta."
+        },
+        "feature_4": {
+          "title": "Chat dal vivo",
+          "description": "Parla, ridi e pianifica la tua prossima mossa con avversari e amici."
+        },
+        "feature_5": {
+          "title": "Gioca ovunque",
+          "description": "Gioca sempre e ovunque con un'esperienza fluida e senza interruzioni su qualsiasi dispositivo."
+        },
+        "feature_6": {
+          "title": "Interfaccia utente elegante e moderna",
+          "description": "Design pulito e intuitivo per giocatori occasionali e competitivi."
+        }
+      }
+    },
+    "footer": {
+      "copyright": "© 2025 RALLYU. Tutti i diritti riservati."
+    }
+  }
+}

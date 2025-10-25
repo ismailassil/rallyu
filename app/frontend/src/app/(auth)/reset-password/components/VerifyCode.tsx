@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import OTPCodeInput from "../../components/Form/OTPCodeInput";
 import { useRef, useState } from "react";
@@ -20,53 +19,42 @@ interface VerifyCodeProps {
 	onGoBack: () => void;
 }
 
-export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCodeProps) {
-	const t = useTranslations('');
-	const trp = useTranslations('auth.reset_password.verifyCode');
+export function VerifyCode({ token, onSuccess, onFailure, onGoBack }: VerifyCodeProps) {
+	const t = useTranslations("");
+	const tautherr = useTranslations("auth");
 
 	const router = useRouter();
 
-	const {
-		apiClient
-	} = useAuth();
+	const { apiClient } = useAuth();
 
-	const {
-		isLoading: isVerifyingCode,
-		executeAPICall: verifyCode
-	} = useAPICall();
-	const {
-		isLoading: isResendingCode,
-		executeAPICall: resendCode
-	} = useAPICall();
+	const { isLoading: isVerifyingCode, executeAPICall: verifyCode } = useAPICall();
+	const { isLoading: isResendingCode, executeAPICall: resendCode } = useAPICall();
 
-	const [code, setCode] = useState(['', '', '', '', '', '']);
+	const [code, setCode] = useState(["", "", "", "", "", ""]);
 	const [hasError, setHasError] = useState(false);
 	const inputRefs = useRef([]);
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 
-		const OTPJoined = code.join('');
+		const OTPJoined = code.join("");
 		if (OTPJoined.length !== 6) {
 			setHasError(true);
 			setTimeout(() => {
 				setHasError(false);
 			}, 1000);
-			return ;
+			return;
 		}
 
 		try {
-			await verifyCode(() => apiClient.verifyPasswordResetCode(
-				token,
-				OTPJoined
-			));
+			await verifyCode(() => apiClient.verifyPasswordResetCode(token, OTPJoined));
 			onSuccess();
 		} catch (err: any) {
-			if (err.message === 'AUTH_INVALID_CODE') {
+			if (err.message === "AUTH_INVALID_CODE") {
 				setHasError(true);
 				setTimeout(() => setHasError(false), 1000);
 			} else {
-				toastError(trp('errors', { code: err.message }));
+				toastError(tautherr("errorCodes", { code: err.message }));
 				onFailure();
 			}
 		}
@@ -74,9 +62,7 @@ export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCod
 
 	async function handleResend() {
 		try {
-			await resendCode(() => apiClient.resetPasswordResend(
-				token
-			));
+			await resendCode(() => apiClient.resetPasswordResend(token));
 		} catch (err) {
 			onFailure();
 			toastError((err as APIError).message);
@@ -84,17 +70,25 @@ export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCod
 	}
 
 	return (
-		<AnimatedComponent componentKey="reset-password-verify" className='w-full max-w-lg p-11 flex flex-col gap-5'>
+		<AnimatedComponent
+			componentKey="reset-password-verify"
+			className="flex w-full max-w-lg flex-col gap-5 p-11"
+		>
 			{/* Header + Go Back */}
-			<div className="flex gap-4 items-center mb-2">
+			<div className="mb-2 flex items-center gap-4">
 				<button
 					onClick={onGoBack}
-					className="bg-blue-500/25 rounded-2xl p-2 hover:bg-blue-500/90 transition-all duration-300 cursor-pointer">
+					className="cursor-pointer rounded-2xl bg-blue-500/25 p-2 transition-all duration-300 hover:bg-blue-500/90"
+				>
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('auth.reset_password.verifyCode.title')}</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>{t('auth.reset_password.verifyCode.subtitle')}</p>
+					<h1 className="inline-block text-lg font-semibold sm:text-3xl">
+						{t("auth.reset_password.verifyCode.title")}
+					</h1>
+					<p className="text-sm text-gray-300 sm:text-balance">
+						{t("auth.reset_password.verifyCode.subtitle")}
+					</p>
 				</div>
 			</div>
 
@@ -109,10 +103,12 @@ export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCod
 				/>
 
 				<FormButton
-					text={t('auth.common.continue')}
+					text={t("auth.common.continue")}
 					type="submit"
 					icon={<ArrowRight size={16} />}
-					disabled={isResendingCode || isVerifyingCode || code.some(d => d === '') || hasError}
+					disabled={
+						isResendingCode || isVerifyingCode || code.some((d) => d === "") || hasError
+					}
 					isSubmitting={isVerifyingCode}
 				/>
 
@@ -122,7 +118,15 @@ export function VerifyCode({ token, onSuccess, onFailure, onGoBack } : VerifyCod
 					onMaxResends={onFailure}
 				/>
 			</form>
-			<p className='self-center mt-2'>{t('auth.reset_password.verifyCode.instruction')} <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>{t('auth.common.signin')}</span></p>
+			<p className="mt-2 self-center">
+				{t("auth.reset_password.verifyCode.instruction")}{" "}
+				<span
+					onClick={() => router.push("/signup")}
+					className="cursor-pointer font-semibold text-blue-500 hover:underline"
+				>
+					{t("auth.common.signin")}
+				</span>
+			</p>
 		</AnimatedComponent>
 	);
 }

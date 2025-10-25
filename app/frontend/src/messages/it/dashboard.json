@@ -1,0 +1,98 @@
+{
+  "dashboard": {
+    "common": {
+      "time_spent": "Tempo trascorso sulla piattaforma"
+    },
+    "titles": {
+      "greetings": "Bentornato,",
+      "leaderboard": "Classifica",
+      "snapshots": "Panoramica",
+      "friends": "Amici"
+    },
+    "game": {
+      "tournament": {
+        "text": "Conquista il",
+        "subtext": "Torneo"
+      },
+      "one_vs_one": {
+        "text": "Conquista la",
+        "subtext": "Sfida"
+      },
+      "training": {
+        "text": "Inizia",
+        "subtext": "Allenamento"
+      }
+    },
+    "snapshots": "{statKey, select, total_xp {XP Totale} win_rate {Percentuale vittorie} current_streak {Serie attuale} longest_streak {Serie più lunga} matches {Partite giocate} wins {Partite vinte} losses {Partite perse} draws {Pareggi} total_user_score {Punteggio totale} max_user_score {Punteggio massimo} min_user_score {Punteggio minimo} avg_user_score {Punteggio medio} total_duration {Tempo totale di gioco} max_duration {Partita più lunga} min_duration {Partita più breve} avg_duration {Durata media} other {Statistica sconosciuta}}"
+  },
+  "common": {
+    "play": "Gioca",
+    "chat": "Chat",
+    "online": "Online",
+    "offline": "Offline",
+    "victory": "Vittoria",
+    "defeat": "Sconfitta",
+    "draw": "Pareggio"
+  },
+  "relations": {
+    "common": {
+      "chat": "Chat",
+      "sent": "Inviato",
+      "accepted": "Accettato",
+      "canceled": "Annullato",
+      "declined": "Rifiutato",
+      "unfriended": "Rimosso dagli amici",
+      "blocked": "Bloccato",
+      "unblocked": "Sbloccato",
+      "add": "Aggiungi",
+      "cancel": "Annulla",
+      "accept": "Accetta",
+      "decline": "Rifiuta",
+      "unfriend": "Rimuovi amico",
+      "block": "Blocca",
+      "unblock": "Sblocca"
+    }
+  },
+  "headers": {
+    "profile": {
+      "titles": {
+        "profile": "Profilo",
+        "settings": "Impostazioni",
+        "logout": "Esci"
+      }
+    },
+    "notification": {
+      "header": {
+        "title": "Notifiche",
+        "subtitle": "Hai {count, plural, =0 {nessuna nuova notifica} =1 {# notifica} other {# notifiche}}"
+      },
+      "box": {
+        "no_payload": "Nessuna notifica attuale",
+        "description": {
+          "chat": "ti ha inviato un messaggio.",
+          "game": "ti ha sfidato a una partita!",
+          "pp_game": "ti ha sfidato a una partita di Pong!",
+          "xo_game": "ti ha sfidato a una partita di Tris!",
+          "friend_request": "ti ha inviato una richiesta di amicizia!",
+          "tournament": "ti ha invitato a iniziare un torneo!",
+          "friend_accept": "ha accettato la tua richiesta di amicizia!",
+          "friend_reject": "ha rifiutato la tua richiesta di amicizia.",
+          "friend_cancel": "ha annullato la tua richiesta di amicizia.",
+          "game_accept": "ha accettato la tua sfida!",
+          "game_reject": "ha rifiutato la tua sfida."
+        }
+      },
+      "footer": {
+        "asread": "Segna tutte come lette",
+        "clear": "Cancella tutto"
+      }
+    }
+  },
+  "states": {
+    "accept": "Accetta",
+    "decline": "Rifiuta",
+    "reply": "Rispondi",
+    "clear": "cancella",
+    "join": "Partecipa a {type, select, game {partita} tournament {torneo} other {partita}}"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "game": {
+    "buttons": {
+      "play_again": "Gioca ancora",
+      "lobby": "Lobby",
+      "rematch": "Rivincita",
+      "back": "Torna alla lobby"
+    },
+    "lobby": {
+      "in_queue": "In coda",
+      "match_found": "Partita trovata",
+      "remote_play": "Gioco online",
+      "local_play": "Gioco locale"
+    },
+    "gameover": {
+      "display": "{text, select, gameover {Partita finita} win {Hai vinto!} loss {Hai perso} draw {Pareggio} cross {Vince la X} circle {Vince la O} other {Partita finita}}"
+    },
+    "logs": {
+      "room_not_found": "Stanza non trovata",
+      "error_codes": "{code, select, error_code_1 {ID sessione e stanza non corrispondenti} error_code_2 {Stanza della partita non trovata} error_code_3 {Giocatore non nella stanza della partita} error_code_4 {Lo stesso account ha avviato il gioco da un dispositivo diverso. Riconnettiti se preferisci usare questo dispositivo.} error_code_5 {Stanza della partita scaduta} other {Qualcosa è andato storto}}"
+    },
+    "ingame": {
+      "round": "Round",
+      "resign": "Abbandona",
+      "resignmsg": "Sei sicuro di voler abbandonare?",
+      "restart": "Riavvia",
+      "rank": "Rango",
+      "lvl": "LIV"
+    },
+    "yes": "Sì",
+    "no": "No"
+  }
+}

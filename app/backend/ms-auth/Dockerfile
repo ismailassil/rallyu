@@ -2,12 +2,12 @@ FROM node:lts-alpine3.22
 
 WORKDIR /app
 
+RUN npm install concurrently nodemon pm2 -g
+
 COPY package*.json ./
 
 RUN npm install
 
-# RUN npm install concurrently nodemon
-
 COPY . .
 
-ENTRYPOINT [ "npm", "run", "dev" ]
+ENTRYPOINT [ "npm", "run", "serve" ]

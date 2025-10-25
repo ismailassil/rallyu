@@ -10,27 +10,11 @@ const Footer = () => {
 	const t = useTranslations("headers.notification.footer");
 
 	const handleClearAll = useCallback(() => {
-		const data = {
-			eventType: "UPDATE_ACTION",
-			data: {
-				updateAll: true,
-				status: "dismissed",
-			},
-		};
-
-		socket.emit("notification", data);
+		socket.emitUpdateAction(true, { status: "dismissed" });
 	}, [socket]);
-
+	
 	const handleMarkAll = useCallback(() => {
-		const data = {
-			eventType: "UPDATE_ACTION",
-			data: {
-				updateAll: true,
-				status: "read",
-			},
-		};
-
-		socket.emit("notification", data);
+		socket.emitUpdateAction(true, { status: "read" });
 	}, [socket]);
 
 	return (

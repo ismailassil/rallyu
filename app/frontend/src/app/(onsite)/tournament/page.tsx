@@ -11,15 +11,7 @@ export default function Dashboard() {
 	const { socket } = useAuth();
 
 	useEffect(() => {
-		// ** This is used to mark all the notification from tournament to dismissed
-		const payload = {
-			type: "tournament",
-			state: "finished",
-			status: "read",
-		};
-
-		socket.emit('notification_update_on_type', payload);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		socket.updateContext("tournament");
 	}, []);
 
 	return (
@@ -36,7 +28,7 @@ export default function Dashboard() {
 							initial={{ opacity: 0, y: -50 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 1, delay: 0.2 }}
-							className="max-w-300 hide-scrollbar flex h-full w-full flex-col gap-3 overflow-y-scroll p-4 pl-3 md:gap-5"
+							className="hide-scrollbar flex h-full w-full flex-col gap-3 overflow-y-scroll p-4 pl-3 md:gap-5"
 						>
 							<TournamentPanel />
 						</motion.div>

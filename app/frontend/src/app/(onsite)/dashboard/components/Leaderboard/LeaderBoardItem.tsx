@@ -19,6 +19,7 @@ export default function LeaderboardItem({
 	img,
 	position,
 }: LeaderboardProps) {
+	void userId;
 	return (
 		<div
 			className="single-leaderboard-item-card"
