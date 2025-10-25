@@ -181,7 +181,7 @@ class TournamentMatchesModel {
 			try {
 				const data: any = await new Promise((resolve, reject) => {
 					this.DB.all(`SELECT m.player_1, m.player_2, m.id, t.mode FROM ${this.modelName} AS m
-								INNER JOIN Tournaments AS t ON m.tournamnet_id=t.id
+								INNER JOIN Tournaments AS t ON m.tournament_id=t.id
 								WHERE m.player_1_ready=1 AND m.player_2_ready=1 AND m.results IS NULL AND m.match_id IS NULL`,
 						[],
 						(err, rows) => !err ? resolve(rows) : reject(err)
@@ -197,7 +197,9 @@ class TournamentMatchesModel {
 							body: JSON.stringify({
 								playersIds: [match.player_1, match.player_2],
 								gameType: match.mode === "ping-pong" ? "pingpong" : "tictactoe",
-								gameId: match.id
+								tournament: {
+									gameId: match.id
+								}
 							}),
 							headers: {
 								'Content-Type': 'application/json',

@@ -254,6 +254,8 @@ class TournamentController {
 				id: data.gameId
 			}
 
+			// Handle auth token Bearer
+
 			await req.server.tournamentMatchesModel.progressMatchTournament(progress);
 
 			return rep.code(201).send({ status: true, message: "Tournament updated!" });
