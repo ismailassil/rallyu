@@ -75,7 +75,7 @@ const FriendsList = () => {
 											</div>
 											<div className='flex flex-col w-full gap-1 justify-between p-0.5 min-w-0'>
 												<div className='flex w-full justify-between items-center'>
-													<div className='line-clamp-1 flex-1 min-w-0'>{user?.first_name + " " + user?.last_name+ user.id}</div>
+													<div className='line-clamp-1 flex-1 min-w-0'>{user?.first_name + " " + user?.last_name}</div>
 													{user.last_message && <div className='text-gray-400 flex-shrink-0 ml-2 text-xs min-w-0 truncate'>{date}</div>}
 												</div>
 												<div className='flex w-full justify-between items-center'>

@@ -10,8 +10,6 @@ dotenv.config();
 const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
 const MS_NOTIF_API_KEY = process.env.MS_NOTIF_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
 const JWT_ACCESS_SECRET = process.env['JWT_ACCESS_SECRET'] || ''
-export const MS_AUTH_PORT = process.env.MS_AUTH_PORT
-export const MS_AUTH_API_KEY = process.env.MS_AUTH_API_KEY
 
 const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
 	const ROOM_EXPIRATION_TIME = 30000; // 30 sec
@@ -114,7 +112,8 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 	})
 
 	fastify.post('/room/create', { schema: createRoomSchema}, (req, res) => {
-		const { playersIds, gameType } = req.body as { playersIds: number[], gameType: GameType };
+		const { playersIds, gameType, tournament } = req.body as { playersIds: number[], gameType: GameType, tournament: { gameId: number } };
+		const tournGameId = tournament?.gameId;
 		if (!playersIds) {
 			return res.code(400).send({
 				message: 'players ids not provided.'
@@ -128,7 +127,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			})
 		}
 
-		const { roomid, room }  = roomManager.createRoom(gameType);
+		const { roomid, room }  = roomManager.createRoom(gameType, tournGameId);
 		room.attachPlayers(playersIds);
 
 		room.expirationTimer = setTimeout(() => {

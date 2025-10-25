@@ -5,7 +5,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { LoggedUser, MessageType } from "../types/chat.types";
 import { format, isToday, isYesterday, parseISO, isSameDay } from "date-fns";
 import { useTranslations } from "next-intl";
-import { simulateBackendCall } from "@/app/(api)/utils";
 
 type ChatContextType = {
 	showConversation: boolean;
@@ -44,19 +43,17 @@ type ChatProviderProps = {
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	const [showConversation, setShowConversation] = useState(false);
-	const [isLoadingFriends, setIsLoadingFriends] = useState(true);
 	const [messages, setMessages] = useState<MessageType[]>([]);
 	const [selectedUser, setSelectedUser] = useState<LoggedUser | null>(null);
 	const { socket, apiClient, loggedInUser: BOSS } = useAuth();
 	const [displayUsers, setDisplayUsers] = useState<LoggedUser[]>([]);
+	const [isLoadingFriends, setIsLoadingFriends] = useState(true);
 	const t = useTranslations("chat");
-	const [lastMessages, setLastMessages] = useState<Record<number, string>>({});
-
 
 	useEffect(() => {
 		if (!BOSS?.id) return;
 		apiClient.instance.get('/chat/friend_list')
-			.then((response: any) => { // check this
+			.then((response: any) => {
 				setDisplayUsers(response.data);
 			})
 			.catch((error: Error) => {
@@ -64,7 +61,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			}).finally(() => {
 				setIsLoadingFriends(false);
 			});
-	}, [BOSS?.id, apiClient]); // check this 
+	}, [BOSS?.id, apiClient]);
 
 	useEffect(() => {
 		socket.updateContext("chat");
@@ -79,8 +76,26 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
 	useEffect(() => {
 		function handleMessage(data: MessageType) {
+
+			if (!data || !data.senderId || !data.receiverId || !data.text) {
+				console.error('Invalid message data received:', data);
+				return;
+			}
+
 			playMessageSound();
 			setMessages((prev) => [...prev, data]);
+
+			const friendId = data.senderId === BOSS?.id ? data.receiverId : data.senderId;
+
+			setDisplayUsers(prevUsers => {
+				const updatedFriend = prevUsers.find(user => user.id === friendId);
+				if (!updatedFriend) return prevUsers;
+
+				return [
+					{ ...updatedFriend, last_message: data },
+					...prevUsers.filter(user => user.id !== friendId)
+				];
+			});
 		}
 
 		function handleUpdateMessage(data: MessageType) {
@@ -93,13 +108,13 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			socket.off("chat_receive_msg", handleMessage);
 			socket.off("chat_update_msg", handleUpdateMessage);
 		};
-	}, [socket]);
+	}, [socket, BOSS?.id]);
 
 
 	const formatMessageDateTime = (currentMsg: string | undefined, mode: 'conversation' | 'list', prevMsg?: string,) => {
 
 		if (!currentMsg) return { date: "", time: "" };
-		
+
 		const currentDate = parseISO(currentMsg + "Z");
 		const prevDate = prevMsg ? parseISO(prevMsg + "Z") : null;
 
