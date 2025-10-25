@@ -1,0 +1,189 @@
+{
+  "performance_dashboard": {
+    "title": "Performance",
+    "subtitle": "View detailed stats and historical data of your games",
+    "common": {
+      "games": "{count, plural, one {# game} other {# games}}",
+      "points": "{count, plural, one {# point} other {# points}}"
+    },
+    "overview": {
+      "title": "Overview",
+      "cards": {
+        "your_statistics": {
+          "title": "Your Statistics",
+          "cards": {
+            "total_matches": {
+              "title": "Total Games",
+              "subtitle": ""
+            },
+            "win_rate": {
+              "title": "Win Rate",
+              "subtitle": ""
+            },
+            "points_scored": {
+              "title": "Points Scored",
+              "subtitle": "net differential"
+            },
+            "time_played": {
+              "title": "Time Played",
+              "subtitle": "{count, plural, one {# minute total} other {# minutes total}}"
+            },
+            "score_records": {
+              "title": "Score Records",
+              "1st": "Highest Score",
+              "2nd": "Lowest Score",
+              "3rd": "Average Score"
+            },
+            "avg_p_by_outcome": {
+              "title": "Average Score by Outcome",
+              "1st": "Per Win",
+              "2nd": "Per Loss",
+              "3rd": "Per Draw"
+            },
+            "charts": {
+              "win_rate_trends": {
+                "title": "Win Rate Trends",
+                "subtitle": "Win rate over the last 7 days"
+              },
+              "wins_vs_losses": {
+                "title": "Wins / Losses",
+                "subtitle": "Wins / Losses distribution over time",
+                "common": {
+                  "wins": "Wins",
+                  "losses": "Losses",
+                  "draws": "Draws"
+                }
+              },
+              "avg_score_trends": {
+                "title": "Average Score Trends",
+                "subtitle": "Average score over the last 7 days"
+              }
+            }
+          }
+        }
+      }
+    },
+    "opponent": {
+      "title": "Opponent",
+      "cards": {
+        "opp_analysis": {
+          "title": "Opponent Analysis",
+          "cards": {
+            "most_wins": {
+              "title": "Most Wins",
+              "subtitle": "{count, plural, one {you won # game} other {you won # games}}"
+            },
+            "most_freq": {
+              "title": "Most Frequent",
+              "subtitle": "{count, plural, one {# game} other {# games}}"
+            },
+            "most_losses": {
+              "title": "Most Losses",
+              "subtitle": "{count, plural, one {you lost # game} other {you lost # games}}"
+            },
+            "unique_players": {
+              "title": "Opponents",
+              "subtitle": "{count, plural, one {# unique player} other {# unique players}}"
+            },
+            "score_records": {
+              "title": "Score Records",
+              "1st": "Highest Score",
+              "2nd": "Lowest Score",
+              "3rd": "Average Score"
+            },
+            "avg_p_by_outcome": {
+              "title": "Average Score by Outcome",
+              "1st": "Per Win",
+              "2nd": "Per Loss",
+              "3rd": "Per Draw"
+            },
+            "charts": {
+              "opp_score_trends": {
+                "title": "Opponents Score Trends",
+                "subtitle": "Score of your opponents over the last 7 days"
+              },
+              "you_vs_opp_score": {
+                "title": "Opponent Score Difference",
+                "subtitle": "Your vs Your Opponents Score Diff",
+                "common": {
+                  "you": "You",
+                  "your_opponents": "Your Opponents"
+                }
+              },
+              "opp_avg_score_trends": {
+                "title": "Opponents Average Score Trends",
+                "subtitle": "Average score of your opponents over the last 7 days"
+              }
+            }
+          }
+        }
+      }
+    },
+    "games": {
+      "title": "Games",
+      "cards": {
+        "games_history": {
+          "title": "Games History",
+          "selectors": {
+            "alltime": "All Time",
+            "1d": "Last 1 day",
+            "7d": "Last 7 days",
+            "30d": "Last 30 days",
+            "90d": "Last 90 days",
+            "year": "Last year",
+            "alltypes": "All Types",
+            "pong": "Ping Pong",
+            "xo": "XO"
+          },
+          "pagination": {
+            "page": "Page",
+            "prev": "Previous",
+            "next": "Next"
+          },
+          "columns": {
+            "opp": "Opponent",
+            "type": "Type",
+            "mode": "Mode",
+            "result": "Result",
+            "score": "Score",
+            "duration": "Duration",
+            "date": "Date"
+          },
+          "common": {
+            "ranked1v1": "Ranked 1v1",
+            "win": "Win",
+            "loss": "Loss",
+            "draw": "Draw"
+          }
+        },
+        "time_analysis": {
+          "title": "Time Analysis",
+          "cards": {
+            "duration_records": {
+              "title": "Duration Records",
+              "1st": "Longest Game",
+              "2nd": "Shortest Game",
+              "3rd": "Average Game"
+            },
+            "avg_d_by_outcome": {
+              "title": "Duration by Outcome",
+              "1st": "Average Win",
+              "2nd": "Average Loss",
+              "3rd": "Average Draw"
+            },
+            "charts": {
+              "time_spent": {
+                "title": "Time Spent",
+                "subtitle": "Daily Playtime over the last 7 days"
+              },
+              "games_per_day": {
+                "title": "Games Per Day",
+                "subtitle": "Daily Games over the last 7 days"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

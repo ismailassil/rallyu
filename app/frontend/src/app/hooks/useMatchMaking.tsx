@@ -52,7 +52,6 @@ const useMatchmaking = (gameType: GameType) => {
 		} else if (wsRef.current) {
 			wsRef.current.close();
 			wsRef.current = null;
-			setQueueTime(0);
 		}
 		
 		return () => {
@@ -62,6 +61,7 @@ const useMatchmaking = (gameType: GameType) => {
 			}
 
 			if (isBusy) setIsBusy(false);
+			setQueueTime(0);
 			clearInterval(interval);
 		};
 	}, [isSearching, gameType]);

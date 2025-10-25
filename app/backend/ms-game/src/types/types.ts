@@ -90,6 +90,8 @@ export interface Player<TRoom = Room<any, any>> {
 
 export interface Room<TState, TStatus> {
 	id: string;
+	isTournament: boolean;
+	tournGameId?: number;
 	gameType: GameType;
 	startTime: number | null;
 	players: Player<any>[];

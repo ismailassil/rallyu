@@ -18,6 +18,7 @@ class TournamentMatchesModel {
 				stage varchar(255) NOT NULL,
 				stage_number INTEGER NOT NULL,
 				start_time varchar(255) DEFAULT NULL,
+				match_id INTEGER DEFAULT NULL,
 				FOREIGN KEY (tournament_id) REFERENCES Tournaments(id)
         	);
 			CREATE TRIGGER IF NOT EXISTS tournament_progress AFTER UPDATE ON TournamentMatches
@@ -164,23 +165,66 @@ class TournamentMatchesModel {
         });
     }
 
+    async getMatchRoomId(id: number) {
+        return (await new Promise((resolve, reject) => {
+			this.DB.get(`SELECT match_id FROM ${this.modelName} WHERE id = ?`,
+				[id],
+				(err, rows) => {
+					if (err) reject(err)
+						else resolve(rows)
+				});
+        }))
+    }
+
 	async monitorReadyMatches() {
 		setInterval(async () => {
 			try {
-				console.log("Interval for ready");
-				const data: TournamentMatchesSchema[] = await new Promise<TournamentMatchesSchema []>((resolve, reject) => {
-						this.DB.all(`SELECT * FROM ${this.modelName} WHERE player_1_ready=1 AND player_2_ready=1 AND results IS NULL`,
+				const data: any = await new Promise((resolve, reject) => {
+					this.DB.all(`SELECT m.player_1, m.player_2, m.id, t.mode FROM ${this.modelName} AS m
+								INNER JOIN Tournaments AS t ON m.tournament_id=t.id
+								WHERE m.player_1_ready=1 AND m.player_2_ready=1 AND m.results IS NULL AND m.match_id IS NULL`,
 						[],
-						(err, rows: TournamentMatchesSchema []) => err ? resolve(rows) : reject(err)
+						(err, rows) => !err ? resolve(rows) : reject(err)
 					);
 				});
+
+				console.log(data);
 			
-				// Notify everysingle user here that their match is ready to play!
-				data.forEach(async (match: TournamentMatchesSchema) => {
-					// Notify every single user;
+				data.forEach(async (match: any) => {
+					const game_room = await fetch(`http://ms-game:${process.env.MS_GAME_PORT ?? '5010'}/game/room/create`, 
+						{
+							method: "POST",
+							body: JSON.stringify({
+								playersIds: [match.player_1, match.player_2],
+								gameType: match.mode === "ping-pong" ? "pingpong" : "tictactoe",
+								tournament: {
+									gameId: match.id
+								}
+							}),
+							headers: {
+								'Content-Type': 'application/json',
+								'Authorization': `Bearer acb7e300b5f196fd19ed978e32d3bf60365f0186fa420de7624aa14eaa90d143`
+							}
+						}
+					);
+					// Unauthorized ms-game 3andak tansah
+					if (!game_room.ok) {
+						throw new Error("Something went wrong")
+					}
+
+					const data = await game_room.json();
+					
+					if (!data || !data.roomId) {
+						throw new Error('Game room created but no roomId returned');
+					}
+					
+					this.DB.run(`UPDATE ${this.modelName} SET match_id=? WHERE id=?`,
+						[data.roomId, match.id],
+						(err) => app.log.fatal(err)
+					)
 				});
 			} catch (err) {
-				console.log(err);
+				app.log.fatal(err);
 			}
 		}, 1000 * 10);
     }
@@ -208,10 +252,9 @@ class TournamentMatchesModel {
 				if (!match.player_1_ready && !match.player_2_ready) {
 					this.DB.run(`UPDATE ${this.modelName} SET results='F|F' WHERE id=?`, [match.id], (err) => app.log.fatal(err));
 
-					// Add cancel reason later
 					this.DB.run(
 						`UPDATE Tournaments SET state='cancelled', cancellation_reason=? WHERE id=? AND state='ongoing'`,
-						[this.app.tournamentModel.cancellation_reason['match-cancel'], match.tournament_id],
+						[this.app.tournamentModel.cancellation_reason.get('match-cancel'), match.tournament_id],
 						(err) => app.log.fatal(err)
 					);
 					continue ;

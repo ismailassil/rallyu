@@ -2,3 +2,4 @@ node_modules/
 all.rest
 auth.rest
 sqlite3.notes
+Dockerfile

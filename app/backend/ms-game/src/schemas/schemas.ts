@@ -35,6 +35,14 @@ export const createRoomSchema = {
                 type: 'string',
                 enum: ['pingpong', 'tictactoe']
             },
+            tournament: {
+                type: 'object',
+                properties: {
+                    gameId: {
+                        type: 'number',
+                    }
+                }
+            }
         },
         required: ['playersIds', 'gameType'],
         additionalProperties: false

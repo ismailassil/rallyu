@@ -123,12 +123,6 @@ class TournamentController {
 				hostIn
 			});
 
-			console.log("=====================================")
-			console.log("=====================================")
-			console.log(req.body)
-			console.log("=====================================")
-			console.log("=====================================")
-
 			await req.server.tournamentMatchesModel.createTournamentMatches(newTournament.id, hostIn, host_id as number);
 
 			return rep.code(201).send({
@@ -172,6 +166,7 @@ class TournamentController {
 
 			return rep.code(201).send({ status: true, message: "Player joined the tournament." });
 		} catch (err) {
+			req.server.log.fatal(err)
 			return rep.code(500).send({ status: false, message: "Something went wrong." });
 		}
 	}
@@ -223,6 +218,7 @@ class TournamentController {
 			if (!playerId || !matchId)
 				return rep.code(400).send({ status: false, message: "Bad request!" });
 
+			console.log("==============")
 			await req.server.tournamentMatchesModel.playerReadyMatch(matchId, playerId);
 
 			return rep.code(201).send({ status: true, message: "Ready for match!" });
@@ -234,15 +230,48 @@ class TournamentController {
 
 	// Procced with the tournament process
 	static async progressMatch(
-		req: FastifyRequest<{ Body: { match_id: number; winner: number; results: any } }>,
+		req: FastifyRequest,
 		rep: FastifyReply
 	) {
-		// *? Need
-		// *? match_id - winner - results;
+		// {
+		// 	player1: {
+		// 		ID: this.players[0].id, 
+		// 		score: this.state.score[0]
+		// 	},
+		// 	player2: {
+		// 		ID: this.players[1].id, 
+		// 		score: this.state.score[1]
+		// 	},
+		// 	gameStartedAt: Math.floor(this.startTime / 1000),
+		// 	gameFinishedAt: Math.floor(Date.now() / 1000),
+		// 	gameType:  'PONG'
+		// }
 		try {
-			await req.server.tournamentMatchesModel.progressMatchTournament(req.body);
+			const data = req.body;
+			const progress = {
+				winner: data.player1.score > data.player2.score ? data.player1.ID : data.player2.ID,
+				results: `${data.player1.score}|${data.player2.score}`,
+				id: data.gameId
+			}
+
+			// Handle auth token Bearer
+
+			await req.server.tournamentMatchesModel.progressMatchTournament(progress);
 
 			return rep.code(201).send({ status: true, message: "Tournament updated!" });
+		} catch (err) {
+			return rep.code(500).send({ status: false, message: "Something went wrong." });
+		}
+	}
+
+	static async getMatchId(
+		req: FastifyRequest,
+		rep: FastifyReply
+	) {
+		try {
+			const data = await req.server.tournamentMatchesModel.getMatchRoomId(req.query.match_id);
+
+			return rep.code(201).send({ status: true, match_id: data });
 		} catch (err) {
 			return rep.code(500).send({ status: false, message: "Something went wrong." });
 		}
