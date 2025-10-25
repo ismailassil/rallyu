@@ -29,8 +29,8 @@ export default function GameCard({
 					duration-500 md:items-start md:justify-center"
 					onClick={onClick}
 		>
-			<div className="text-wrap text-left lg:mb-5 lg:mt-5 lg:text-center h-full 
-					flex items-center lg:items-start">
+			<div className="text-wrap text-left sm:mb-5 sm:mt-5 sm:text-center h-full 
+					flex items-center sm:items-start">
 				<h1
 					className="md:p-13 leading-13 text-shadow-lg/30
 						hover:scale-102 origin-bottom p-8 transition-transform duration-500"

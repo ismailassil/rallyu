@@ -39,8 +39,8 @@ class RelationsRepository extends ARepository {
 	async findBetweenUsers(userAID: number, userBID: number) : Promise<Relation | null> {
 		try {
 			const getResult = await db.get(
-				`SELECT * FROM relations 
-					WHERE (requester_user_id = ? AND receiver_user_id = ?) 
+				`SELECT * FROM relations
+					WHERE (requester_user_id = ? AND receiver_user_id = ?)
 					OR (requester_user_id = ? AND receiver_user_id = ?)`,
 				[userAID, userBID, userBID, userAID]
 			);
@@ -59,7 +59,7 @@ class RelationsRepository extends ARepository {
 	async findAllFriends(userID: number) {
 		try {
 			const allFriends = await db.all(`
-				SELECT 
+				SELECT
 					users.id,
 					users.username,
 					users.first_name,
@@ -90,7 +90,7 @@ class RelationsRepository extends ARepository {
 	async findIncomingFriendRequests(userID: number) {
 		try {
 			const incomingFriendRequests = await db.all(`
-				SELECT 
+				SELECT
 					users.id,
 					users.username,
 					users.first_name,
@@ -118,7 +118,7 @@ class RelationsRepository extends ARepository {
 	async findOutgoingFriendRequests(userID: number) {
 		try {
 			const outgoingFriendRequests = await db.all(`
-				SELECT 
+				SELECT
 					users.id,
 					users.username,
 					users.first_name,
@@ -146,7 +146,7 @@ class RelationsRepository extends ARepository {
 	async findBlockedUsers(userID: number) {
 		try {
 			const outgoingBlocks = await db.all(`
-				SELECT 
+				SELECT
 					users.id,
 					users.username,
 					users.first_name,
@@ -174,7 +174,7 @@ class RelationsRepository extends ARepository {
 	async findUsersWhoBlocked(userID: number) {
 		try {
 			const incomingBlocks = await db.all(`
-				SELECT 
+				SELECT
 					users.id,
 					users.username,
 					users.first_name,
@@ -204,7 +204,7 @@ class RelationsRepository extends ARepository {
 	async create(requesterID: number, receiverID: number, status: 'PENDING' | 'ACCEPTED' | 'BLOCKED') : Promise<number | null> {
 		try {
 			const runResult = await db.run(
-				`INSERT INTO relations (requester_user_id, receiver_user_id, relation_status) 
+				`INSERT INTO relations (requester_user_id, receiver_user_id, relation_status)
 					VALUES (?, ?, ?)`,
 				[requesterID, receiverID, status]
 			);
@@ -225,7 +225,7 @@ class RelationsRepository extends ARepository {
 		try {
 			const runResult = await db.run(`
 				UPDATE relations
-				SET relation_status = ?, updated_at = (strftime('%s','now'))
+				SET relation_status = ?
 				WHERE id = ?
 			`, [status, id]);
 			return runResult.changes > 0;
@@ -262,8 +262,8 @@ class RelationsRepository extends ARepository {
 	async deleteBetweenUsers(userAID: number, userBID: number) : Promise<boolean> {
 		try {
 			const runResult = await db.run(
-				`DELETE FROM relations 
-					WHERE (requester_user_id = ? AND receiver_user_id = ?) 
+				`DELETE FROM relations
+					WHERE (requester_user_id = ? AND receiver_user_id = ?)
 					OR (requester_user_id = ? AND receiver_user_id = ?)`,
 				[userAID, userBID, userBID, userAID]
 			);

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRouter } from "next/navigation";
 import InputField from "../../components/Form/InputField";
 import FormButton from "../../components/UI/FormButton";
@@ -12,15 +11,13 @@ import AnimatedComponent from "../../components/UI/AnimatedComponent";
 import { useTranslations } from "next-intl";
 import useValidationSchema from "@/app/hooks/useValidationSchema";
 
-export function SetNewPassword({ token, onSuccess } : { token: string, onSuccess: () => void }) {
-	const t = useTranslations('');
-	const tautherr = useTranslations('auth');
+export function SetNewPassword({ token, onSuccess }: { token: string; onSuccess: () => void }) {
+	const t = useTranslations("");
+	const tautherr = useTranslations("auth");
 
 	const router = useRouter();
 
-	const {
-		resetPasswordUpdateSchema
-	} = useValidationSchema();
+	const { resetPasswordUpdateSchema } = useValidationSchema();
 
 	const [
 		formData,
@@ -30,48 +27,46 @@ export function SetNewPassword({ token, onSuccess } : { token: string, onSuccess
 		handleChange,
 		validateAll,
 		getValidationErrors,
-		resetForm
+		resetForm,
 	] = useForm(
 		resetPasswordUpdateSchema,
-		{ password: '', confirm_password: '' },
+		{ password: "", confirm_password: "" },
 		{ debounceMs: { password: 1200, confirm_password: 1200 } }
 	);
 
-	const {
-		apiClient
-	} = useAuth();
+	const { apiClient } = useAuth();
 
-	const {
-		isLoading,
-		executeAPICall
-	} = useAPICall();
+	const { isLoading, executeAPICall } = useAPICall();
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 
 		const isValid = validateAll();
-		if (!isValid)
-			return ;
+		if (!isValid) return;
 
 		try {
-			await executeAPICall(() => apiClient.resetPassword(
-				token,
-				formData.password
-			));
+			await executeAPICall(() => apiClient.resetPassword(token, formData.password));
 			onSuccess();
 		} catch (err: any) {
-			toastError(tautherr('errorCodes', { code: err.message }));
-			router.push('/login');
+			toastError(tautherr("errorCodes", { code: err.message }));
+			router.push("/login");
 		}
 	}
 
 	return (
-		<AnimatedComponent componentKey="set-new-password" className='w-full max-w-lg p-11 flex flex-col gap-5'>
+		<AnimatedComponent
+			componentKey="set-new-password"
+			className="flex w-full max-w-lg flex-col gap-5 p-11"
+		>
 			{/* Header */}
-			<div className="flex gap-4 items-center mb-4">
+			<div className="mb-4 flex items-center gap-4">
 				<div>
-					<h1 className='font-semibold text-lg sm:text-3xl inline-block'>{t('auth.reset_password.setNewPassword.title')}</h1>
-					<p className='text-gray-300 text-sm sm:text-balance'>{t('auth.reset_password.setNewPassword.subtitle')}</p>
+					<h1 className="inline-block text-lg font-semibold sm:text-3xl">
+						{t("auth.reset_password.setNewPassword.title")}
+					</h1>
+					<p className="text-sm text-gray-300 sm:text-balance">
+						{t("auth.reset_password.setNewPassword.subtitle")}
+					</p>
 				</div>
 			</div>
 
@@ -86,34 +81,41 @@ export function SetNewPassword({ token, onSuccess } : { token: string, onSuccess
 					getValidationErrors={getValidationErrors}
 					resetForm={resetForm}
 				>
-				<InputField
-					className='field flex flex-col gap-0.5 box-border'
-					iconSrc='/icons/lock.svg'
-					label={t('auth.common.password')}
-					field='password'
-					inputPlaceholder='••••••••••••••••'
-					inputHidden={true}
-					autoFocus
-				/>
-				<InputField
-					className='field flex flex-col gap-0.5 box-border'
-					iconSrc='/icons/lock.svg'
-					label={t('auth.common.confirm_password')}
-					field='confirm_password'
-					inputPlaceholder='••••••••••••••••'
-					inputHidden={true}
-				/>
+					<InputField
+						className="field box-border flex flex-col gap-0.5"
+						iconSrc="/icons/lock.svg"
+						label={t("auth.common.password")}
+						field="password"
+						inputPlaceholder="••••••••••••••••"
+						inputHidden={true}
+						autoFocus
+					/>
+					<InputField
+						className="field box-border flex flex-col gap-0.5"
+						iconSrc="/icons/lock.svg"
+						label={t("auth.common.confirm_password")}
+						field="confirm_password"
+						inputPlaceholder="••••••••••••••••"
+						inputHidden={true}
+					/>
 				</FormProvider>
 				<FormButton
-					text={t('auth.common.reset_password')}
+					text={t("auth.common.reset_password")}
 					type="submit"
 					icon={<RotateCw size={16} />}
 					isSubmitting={isLoading}
 				/>
 			</form>
 
-
-			<p className='self-center'>{t('auth.reset_password.setNewPassword.instruction')} <span onClick={() => router.push('/signup')} className='font-semibold text-blue-500 hover:underline cursor-pointer'>{t('auth.common.signin')}</span></p>
+			<p className="self-center">
+				{t("auth.reset_password.setNewPassword.instruction")}{" "}
+				<span
+					onClick={() => router.push("/signup")}
+					className="cursor-pointer font-semibold text-blue-500 hover:underline"
+				>
+					{t("auth.common.signin")}
+				</span>
+			</p>
 		</AnimatedComponent>
 	);
 }

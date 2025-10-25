@@ -4,56 +4,50 @@ import UserList from "./UserList";
 import { Check, X } from "lucide-react";
 import useAPICall from "@/app/hooks/useAPICall";
 import { toastError, toastSuccess } from "@/app/components/CustomToast";
-import LoadingComponent, { PlaceholderComponent } from "@/app/(auth)/components/UI/LoadingComponents";
+import LoadingComponent, {
+	PlaceholderComponent,
+} from "@/app/(auth)/components/UI/LoadingComponents";
 import useAPIQuery from "@/app/hooks/useAPIQuery";
 import { useTranslations } from "next-intl";
 
 export default function IncomingFriendRequestsList() {
-	const t = useTranslations('placeholders.data.incoming');
+	const t = useTranslations("placeholders.data.incoming");
 
-	const {
-		loggedInUser,
-		apiClient,
-		socket
-	} = useAuth();
+	const { loggedInUser, apiClient, socket } = useAuth();
 
 	const {
 		isLoading,
 		error,
 		data: incoming,
-		refetch
-	} = useAPIQuery(
-		() => apiClient.user.fetchIncomingFriendRequests()
-	);
+		refetch,
+	} = useAPIQuery(() => apiClient.user.fetchIncomingFriendRequests());
 
-	const {
-		executeAPICall
-	} = useAPICall();
+	const { executeAPICall } = useAPICall();
 
 	useEffect(() => {
-		function handleRelationUpdate(event: { eventType: string, data: Record<string, any> }) {
-			if (!socket || !loggedInUser)
-				return ;
+		function handleRelationUpdate(event: { eventType: string; data: Record<string, any> }) {
+			if (!socket || !loggedInUser) return;
 
-			if (event.eventType !== 'RELATION_UPDATE')
-				return ;
+			if (event.eventType !== "RELATION_UPDATE") return;
 
-			if ((event.data.requesterId === loggedInUser.id || event.data.receiverId === loggedInUser.id))
+			if (
+				event.data.requesterId === loggedInUser.id ||
+				event.data.receiverId === loggedInUser.id
+			)
 				refetch();
 		}
 
-		socket.on('user', handleRelationUpdate);
+		socket.on("user", handleRelationUpdate);
 
 		return () => {
-			socket.off('user', handleRelationUpdate);
+			socket.off("user", handleRelationUpdate);
 		};
 	}, []);
 
 	async function handleDecline(id: number) {
 		try {
 			await executeAPICall(() => apiClient.rejectFriendRequest(id));
-			toastSuccess('Rejected');
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			toastSuccess("Rejected");
 		} catch (err: any) {
 			toastError(err.message);
 		}
@@ -62,8 +56,7 @@ export default function IncomingFriendRequestsList() {
 	async function handleAccept(id: number) {
 		try {
 			await executeAPICall(() => apiClient.acceptFriendRequest(id));
-			toastSuccess('Accepted');
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			toastSuccess("Accepted");
 		} catch (err: any) {
 			toastError(err.message);
 		}
@@ -71,28 +64,32 @@ export default function IncomingFriendRequestsList() {
 
 	const showSkeleton = isLoading && !incoming;
 
-	if (showSkeleton)
-		return <LoadingComponent />;
+	if (showSkeleton) return <LoadingComponent />;
 
-	if (error)
-		return <PlaceholderComponent content={t('error')} />;
+	if (error) return <PlaceholderComponent content={t("error")} />;
 
-	if (!incoming || incoming.length === 0)
-		return <PlaceholderComponent content={t('no-data')} />;
+	if (!incoming || incoming.length === 0) return <PlaceholderComponent content={t("no-data")} />;
 
 	return (
 		<UserList
 			users={incoming}
 			actions={[
 				{
-					icon: <Check size={22} className="hover:text-blue-400 transition-all duration-300" />,
+					icon: (
+						<Check
+							size={22}
+							className="transition-all duration-300 hover:text-blue-400"
+						/>
+					),
 					onClick: handleAccept,
 					title: "Accept",
 				},
 				{
-					icon: <X size={22} className="hover:text-red-400 transition-all duration-300" />,
+					icon: (
+						<X size={22} className="transition-all duration-300 hover:text-red-400" />
+					),
 					onClick: handleDecline,
-					title: "Decline"
+					title: "Decline",
 				},
 			]}
 		/>

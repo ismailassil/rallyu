@@ -1,9 +1,7 @@
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { AxiosResponse } from "axios";
-import { ParamValue } from "next/dist/server/request/params";
 import { useState } from "react";
 import MatchTimer from "./MatchTimer";
-import { p } from "framer-motion/client";
 import unicaOne from "@/app/fonts/unicaOne";
 
 const FooterGoing = function (

@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 const langs: { lg: Langs; flag: string }[] = [
 	{ lg: "en", flag: "🇬🇧" },
 	{ lg: "es", flag: "🇪🇸" },
-	{ lg: "de", flag: "🇩🇪" },
+	{ lg: "it", flag: "🇮🇹" },
 ];
 
 export default function LangSwitcher() {

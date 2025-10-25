@@ -2,10 +2,13 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import UserService from "../services/User/UserService";
 import { IProfileRequest } from "../types";
 import AuthResponseFactory from "./AuthResponseFactory";
+import { JSONCodec } from "nats";
 
 class UserController {
 	constructor(
-		private userService: UserService
+		private userService: UserService,
+		private nats: any,
+		private js: any
 	) {}
 
 	async usernameAvailableHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -20,7 +23,7 @@ class UserController {
 	async emailAvailableHandler(request: FastifyRequest, reply: FastifyReply) {
 		const { email } = request.query as { email: string };
 
-		const isTaken = await this.userService.isEmailTaken(email);
+		const isTaken = await this.userService.isEmailTaken(email.trim().toLowerCase());
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, !isTaken);
 		return reply.code(status).send(body);
@@ -127,6 +130,7 @@ class UserController {
 		console.log('REQUEST BODY: ', request.body);
 
 		const newUser = await this.userService.updateUser(user_id!, updates);
+		this.publishRefreshRequiredToUser(user_id!);
 
 		return reply.code(200).send({ success: true, data: newUser });
 	}
@@ -146,6 +150,19 @@ class UserController {
 		const avatarUrl = await this.userService.updateAvatar(user_id!, fileData!);
 
 		return reply.code(201).send({ success: true, data: avatarUrl });
+	}
+
+	private publishRefreshRequiredToUser(userId: number) {
+		const _JSONCodec = JSONCodec();
+		this.nats.publish('gateway.user.data', _JSONCodec.encode({
+			eventType: 'USER_UPDATE',
+			recipientUserIds: [userId],
+			data: {
+				requesterId: userId,
+				receiverId: userId,
+				status: 'REFRESH_REQUIRED'
+			}
+		}));
 	}
 }
 

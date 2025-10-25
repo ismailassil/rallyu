@@ -13,7 +13,7 @@ class SocketProxy {
 			const data = JSON.parse(message);
 			this.subscribers.forEach(sub => sub(data));
 		} catch (e) {
-			console.log("Unable to parse Data from WebSocket: ", message);
+			console.log("Unable to parse Data from WebSocket: ", (e as Error).message);
 		}
 	}
 

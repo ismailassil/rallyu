@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useContext, createContext, useState, ReactNode, useEffect } from "react";
-import React from 'react';
+import React from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { LoggedUser, MessageType } from "../types/chat.types";
-import { format, isToday, isYesterday, parseISO, isSameDay } from 'date-fns';
+import { format, isToday, isYesterday, parseISO, isSameDay } from "date-fns";
 import { useTranslations } from "next-intl";
 import { simulateBackendCall } from "@/app/(api)/utils";
-
 
 type ChatContextType = {
 	showConversation: boolean;
@@ -23,8 +21,8 @@ type ChatContextType = {
 	setSelectedUser: React.Dispatch<React.SetStateAction<LoggedUser | null>>;
 	formatMessageDateTime: (
 		currentMsg: string,
-		mode: 'conversation' | 'list',
-		prevMsg?: string | undefined,
+		mode: "conversation" | "list",
+		prevMsg?: string | undefined
 	) => { date: string; time: string };
 	displayUsers: LoggedUser[];
 	setDisplayUsers: React.Dispatch<React.SetStateAction<LoggedUser[]>>;
@@ -42,7 +40,7 @@ export const useChat = () => {
 
 type ChatProviderProps = {
 	children: ReactNode;
-}
+};
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	const [showConversation, setShowConversation] = useState(false);
@@ -72,7 +70,6 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 		socket.updateContext("chat");
 	}, [socket]);
 
-
 	const playMessageSound = () => {
 		const audio = new Audio("/message.mp3");
 		audio.play().catch((e) => {
@@ -90,8 +87,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			setMessages((prev) => [...prev, data]);
 		}
 
-		socket.on('chat_receive_msg', handleMessage);
-		socket.on('chat_update_msg', handleUpdateMessage);
+		socket.on("chat_receive_msg", handleMessage);
+		socket.on("chat_update_msg", handleUpdateMessage);
 		return () => {
 			socket.off("chat_receive_msg", handleMessage);
 			socket.off("chat_update_msg", handleUpdateMessage);
@@ -109,7 +106,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 		let date = "";
 		const time = format(currentDate, "HH:mm");
 
-		if (mode === 'conversation') {
+		if (mode === "conversation") {
 			if (prevDate && isSameDay(currentDate, prevDate)) {
 				date = "";
 			} else if (isToday(currentDate)) {
@@ -119,7 +116,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			} else {
 				date = format(currentDate, "dd/MM/yyyy");
 			}
-		} else if (mode === 'list') {
+		} else if (mode === "list") {
 			if (isToday(currentDate)) {
 				date = time;
 			} else if (isYesterday(currentDate)) {

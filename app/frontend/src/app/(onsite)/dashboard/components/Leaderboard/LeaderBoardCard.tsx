@@ -27,7 +27,7 @@ export default function LeaderboardCard() {
 			try {
 				await executeAPICall(() => apiClient.user.fetchLeaderboard());
 			} catch (err) {
-
+				void err;
 			}
 		}
 		fetchLeaderboard();

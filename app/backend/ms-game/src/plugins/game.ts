@@ -49,20 +49,20 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			const sessionId = userSessions.get(userid);
 
 			if (sessionId != roomid) 
-				throw new Error("Session and room ID mismatch");
+				throw new Error("1");
 
 			const room = roomManager.getRoom(roomid);
 			if (!room)
-				throw new Error("Match room not found");
+				throw new Error("2");
 
 			const player = room.players.find(player => player.id === userid);
 
 			if (!player)
-				throw new Error("Player not in match room");
+				throw new Error("3");
 
 			if (player.connected) {
 				player.socket?.removeAllListeners('close');
-				player.socket?.close(1003, 'Same account launched game from different device Reconnect if you prefer to use this device.');
+				player.socket?.close(1003, 'error_code_4');
 				player.detachSocket();
 			}
 
@@ -79,7 +79,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			const err = e as Error;
 			console.error("Match room error: ", err);
 
-			return socket.close(1001, `Access denied: ${err.message}`);
+			return socket.close(1001, `error_code_${err.message}`);
 		}
 	})
 
@@ -133,7 +133,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 
 		room.expirationTimer = setTimeout(() => {
 			console.log('Match Room Expired!');
-			closeRoom(room, 1002, "Match room expired");
+			closeRoom(room, 1002, "error_code_5");
 		}, ROOM_EXPIRATION_TIME)
 
 		playersIds.forEach(id => {

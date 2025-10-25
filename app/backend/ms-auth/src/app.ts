@@ -112,9 +112,9 @@ async function buildApp(): Promise<FastifyInstance> {
 	const passwordResetController = new PasswordResetController(passwordResetService);
 	const authController = new AuthController(authService, sessionsService, fastify.nats, fastify.js);
 	const twoFactorController = new TwoFactorController(twoFAMethodService);
-	const userController = new UserController(userService);
+	const userController = new UserController(userService, fastify.nats, fastify.js);
 	const relationsController = new RelationsController(relationsService, fastify.nats, fastify.js);
-	const verificationController = new VerificationController(verificationService);
+	const verificationController = new VerificationController(verificationService, fastify.nats, fastify.js);
 	const matchesController = new MatchesController(matchesService);
 
 	await fastify.register(authRouter, {

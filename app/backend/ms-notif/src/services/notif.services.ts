@@ -207,7 +207,7 @@ class NotifSerives {
 		const { type } = payload;
 		try {
 			// if (status === "dismissed") {
-			await this.notifRepository.removeAllNotif(userId, type);
+			await this.notifRepository.removeAllNotifByType(userId, type);
 			// } else {
 			// 	await this.notifRepository.updateAllNotifOnType(userId, status, state, type);
 			// }
@@ -230,7 +230,7 @@ class NotifSerives {
 	/**
 	 * [A -> B] (users)
 	 *
-	 * Create a Notification and Dispatch it to [B]
+	 * Notification and Dispatch it to [B]
 	 *
 	 * After a period of time, if 10 seconds passed,
 	 * make the notification finished for [B]
@@ -269,6 +269,17 @@ class NotifSerives {
 		}
 	}
 
+	/**
+	 * [A -> B] (users)
+	 *
+	 * Responds to the [A] notification or dismiss it
+	 *
+	 * Remove the Notif and Create GameId if user applied with joining
+	 *
+	 * After a period of time, if 10 seconds passed,
+	 * make the notification finished for [B]
+	 *
+	 * */
 	async updateGame(userId: number, socketId: string, payload: UpdateGamePayload) {
 		fastify.log.warn("-----------------[UPDATE_GAME]-----------------");
 		try {
@@ -386,9 +397,23 @@ class NotifSerives {
 			const { updateAll, status } = payload;
 
 			if (updateAll === true) {
-				await this.notifRepository.updateAllNotif(userId, status);
+				if (status === "dismissed") {
+					await this.notifRepository.removeAllNotif(userId);
+				} else {
+					await this.notifRepository.updateAllNotif(userId, status);
+				}
 			} else {
 				const { state, notificationId } = payload;
+
+				if (status === "dismissed") {
+					await this.notifRepository.removeNotif(notificationId);
+
+					return {
+						id: notificationId,
+						status: status,
+						state: "finished",
+					};
+				}
 
 				return await this.notifRepository.updateNotif(
 					notificationId,

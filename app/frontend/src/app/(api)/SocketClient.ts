@@ -1,6 +1,10 @@
 import { io, Socket } from "socket.io-client";
 import { GameType } from "../(onsite)/game/types/types";
-import { NOTIFICATION_TYPE } from "../(onsite)/components/Header/notification/types/notifications.types";
+import {
+	NOTIFICATION_STATE,
+	NOTIFICATION_STATUS,
+	NOTIFICATION_TYPE,
+} from "../(onsite)/components/Header/notification/types/notifications.types";
 
 class SocketClient {
 	private socket: Socket;
@@ -41,17 +45,14 @@ class SocketClient {
 		return this.socket;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	on(event: string, handler: (...args: any[]) => void) {
 		this.socket?.on(event, handler);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	off(event: string, handler: (...args: any[]) => void) {
 		this.socket?.off(event, handler);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	emit(event: string, data: any) {
 		this.socket?.emit(event, data);
 	}
@@ -63,7 +64,10 @@ class SocketClient {
 		});
 	}
 
+	/******************** */
 	/** Function Handlers */
+	/******************** */
+
 	createGame(targetId: number, gameType: "pingpong" | "tictactoe") {
 		const data = {
 			eventType: "CREATE_GAME",
@@ -93,14 +97,42 @@ class SocketClient {
 		const data = {
 			eventType: "UPDATE_CONTEXT",
 			data: {
-				type
-			}
+				type,
+			},
 		};
 
 		this.emit("notification", data);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	emitUpdateAction(
+		updateAll: boolean,
+		data: { id?: number; status: NOTIFICATION_STATUS; state?: NOTIFICATION_STATE }
+	) {
+		let payload: any;
+		const eventType = "UPDATE_ACTION";
+
+		if (!updateAll) {
+			payload = {
+				eventType,
+				data: {
+					updateAll: false,
+					notificationId: data.id,
+					status: data.status,
+					state: data.state,
+				},
+			};
+		} else {
+			payload = {
+				eventType,
+				data: {
+					status: data.status,
+				},
+			};
+		}
+
+		this.emit("notification", payload);
+	}
+
 	printAll(data: any) {
 		console.group("-------------NOTIFICATION-------------");
 		console.log(data);

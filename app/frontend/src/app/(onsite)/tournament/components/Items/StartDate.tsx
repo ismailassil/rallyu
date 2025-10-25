@@ -20,7 +20,7 @@ const StartDate = function ({
 	setError: (value: boolean) => void;
 }) {
 	const [minDate, setMinDate] = useState<Date>(getDateByHour());
-	const inputDate = useRef(null);
+	const inputDate = useRef<HTMLInputElement | null>(null);
 	const [isOpen, setIsOpen] = useState(false);
 
 	useEffect(() => {
@@ -45,8 +45,8 @@ const StartDate = function ({
 
 	const openCalendar = function (e) {
 		setIsOpen(!isOpen);
-		if (!isOpen) inputDate.current.showPicker();
-		else inputDate.current.blur();
+		if (!isOpen) inputDate.current?.showPicker();
+		else inputDate.current?.blur();
 	};
 
 	const blurDateHandler = function (e) {

@@ -12,6 +12,7 @@ const userupdate = z.object({
 	message: "update.min"
 });
 
+
 export const usersRoutesZodSchemas = {
 	users: {
 		update: userupdate

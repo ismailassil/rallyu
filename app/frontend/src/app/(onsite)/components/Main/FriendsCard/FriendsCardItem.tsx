@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Send, Swords } from "lucide-react";
 import Avatar from "../../../users/components/Avatar";
@@ -33,7 +32,7 @@ export default function FriendsCardItem({ id, username, avatar }: FriendsCardIte
 
 	return (
 		<div className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/2 px-5 py-3 select-none">
-			<Link href={`/users/${username}`} className="flex overflow-hidden items-center gap-5">
+			<Link href={`/users/${username}`} className="flex items-center gap-5 overflow-hidden">
 				{/* AVATAR */}
 				<div className="ring-accent/20 flex aspect-square h-[40px] w-[40px] items-center justify-center rounded-full ring-2 lg:h-[40px] lg:w-[40px]">
 					<Avatar avatar={avatar} className="h-full w-full" />
@@ -51,7 +50,7 @@ export default function FriendsCardItem({ id, username, avatar }: FriendsCardIte
 			{/* CHAT BUTTON */}
 			<div className="flex gap-3">
 				<button
-					className={`${isBusy ? "cursor-not-allowed" : "hover:w-20 cursor-pointer"} flex h-10 w-10 scale-100 items-center overflow-hidden rounded-full border border-white/5 bg-white/4 p-[9px] transition-all duration-500 ease-in-out hover:bg-white/8 active:scale-105`}
+					className={`${isBusy ? "cursor-not-allowed" : "cursor-pointer hover:w-20"} flex h-10 w-10 scale-100 items-center overflow-hidden rounded-full border border-white/5 bg-white/4 p-[9px] transition-all duration-500 ease-in-out hover:bg-white/8 active:scale-105`}
 					onMouseEnter={() => !isBusy && setOption(true)}
 					onMouseLeave={() => setOption(false)}
 				>

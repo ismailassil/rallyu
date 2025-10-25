@@ -118,16 +118,16 @@ class LocalXO {
 		let displayedResult;
 		switch (overallWinner) {
 			case 'draw':
-				displayedResult = 'Draw';
+				displayedResult = 'draw';
 				break;
 			case 'X':
-				displayedResult = 'Cross Wins';
+				displayedResult = 'cross';
 				break;
 			case 'O':
-				displayedResult = 'Circle Wins';
+				displayedResult = 'circle';
 				break;
 			default : 
-				displayedResult = 'Game Over';
+				displayedResult = 'gameover';
 		}
 		this.eventHandlers?.updateDisplayedResult!(displayedResult);
 	}

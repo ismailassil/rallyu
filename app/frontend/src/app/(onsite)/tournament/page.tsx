@@ -11,15 +11,7 @@ export default function Dashboard() {
 	const { socket } = useAuth();
 
 	useEffect(() => {
-		// ** This is used to mark all the notification from tournament to dismissed
-		const payload = {
-			type: "tournament",
-			state: "finished",
-			status: "read",
-		};
-
-		socket.emit('notification_update_on_type', payload);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		socket.updateContext("tournament");
 	}, []);
 
 	return (

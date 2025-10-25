@@ -1,5 +1,4 @@
 import Banner from "./Items/Banner";
-import Stats from "./Items/Stats";
 import { useState } from "react";
 import OpenArenas from "./OpenArenas";
 import NewTournament from "./NewTournament";

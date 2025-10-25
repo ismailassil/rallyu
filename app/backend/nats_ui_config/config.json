@@ -1,7 +1,0 @@
-{
-  "server": {
-    "name": "(RALLYU) NATS Backend",
-    "url": "http://localhost:8222"
-  },
-  "hideServerInput": false
-}

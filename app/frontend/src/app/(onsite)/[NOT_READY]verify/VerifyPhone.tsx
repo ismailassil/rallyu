@@ -3,22 +3,11 @@ import { FormProvider } from '@/app/(auth)/components/Form/FormContext';
 import InputField from '@/app/(auth)/components/Form/InputField';
 import FormButton from '@/app/(auth)/components/UI/FormButton';
 import useForm from '@/app/hooks/useForm';
-import { ArrowLeft, ArrowRight, RotateCw } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import useAPICall from '@/app/hooks/useAPICall';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
-
-const META = {
-	PHONE: {
-		title: 'SMS',
-		description: 'Receive codes via SMS'
-	},
-	EMAIL: {
-		title: 'Email',
-		description: 'Receive codes via Email'
-	}
-};
 
 interface VerifyPhoneProps {
 	onNext: (token: string) => void;

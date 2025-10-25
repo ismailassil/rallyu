@@ -11,13 +11,13 @@ class StatsService {
 		private statsRepository: StatsRepository
 	) {}
 
-	async createUserRecords(userID: number) {
-		const existingUser = await this.userRepository.findOne(userID);
-		if (!existingUser)
-			throw new UserNotFoundError();
+	// async createUserRecords(userID: number) {
+	// 	const existingUser = await this.userRepository.findOne(userID);
+	// 	if (!existingUser)
+	// 		throw new UserNotFoundError();
 
-		await this.statsRepository.create(userID);
-	}
+	// 	await this.statsRepository.create(userID);
+	// }
 
 	async getUserRecords(userID: number) : Promise<any | null> {
 		const existingUser = await this.userRepository.findOne(userID);
@@ -143,7 +143,7 @@ class StatsService {
 		const SCORE_FACTOR = Math.max(Math.min(1 + Math.abs(playerScore - oppScore) * 0.05, 2), 0.5);
 		const XP_GAIN = BASE_XP * RESULT_FACTOR * DIFFICULTY_FACTOR * SCORE_FACTOR;
 
-		return XP_GAIN;
+		return Math.round(XP_GAIN);
 	}
 
 	private XPFromLevel(level: number) {

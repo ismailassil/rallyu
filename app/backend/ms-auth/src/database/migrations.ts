@@ -2,16 +2,12 @@ import { db } from "./index";
 
 const MIGRATIONS = [
 	{
-		// TODO
-			// ACCOUNT STATUS
-			// IS DELETED
 		id: 1,
 		name: 'create-users-table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS users (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-				-- PROFILE
 				first_name TEXT NOT NULL,
 				last_name TEXT NOT NULL,
 				email TEXT UNIQUE NOT NULL,
@@ -20,13 +16,25 @@ const MIGRATIONS = [
 				bio TEXT DEFAULT 'DFK',
 				avatar_url TEXT DEFAULT '/users/avatars/default.png',
 
-				-- EXTRA
+				phone TEXT,
+
+				email_verified BOOLEAN DEFAULT FALSE,
+				phone_verified BOOLEAN DEFAULT FALSE,
+
 				auth_provider TEXT DEFAULT 'Local',
+				auth_provider_id INTEGER,
 				role TEXT DEFAULT 'user',
 
 				created_at INTEGER DEFAULT (strftime('%s','now')),
 				updated_at INTEGER DEFAULT (strftime('%s','now'))
-			)
+			);
+
+			CREATE TRIGGER IF NOT EXISTS trg_users_update_timestamp
+			AFTER UPDATE ON users
+			FOR EACH ROW
+			BEGIN
+				UPDATE users SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
+			END;
 		`
 	},
 	{
@@ -34,7 +42,7 @@ const MIGRATIONS = [
 		name: 'create-sessions-table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS sessions (
-				session_id TEXT PRIMARY KEY,
+				session_id TEXT PRIMARY KEY NOT NULL,
 
 				version INTEGER DEFAULT 1,
 				is_revoked BOOLEAN DEFAULT FALSE,
@@ -45,13 +53,19 @@ const MIGRATIONS = [
 				ip_address TEXT NOT NULL,
 
 				created_at INTEGER DEFAULT (strftime('%s','now')),
-				expires_at INTEGER NOT NULL,
-
 				updated_at INTEGER DEFAULT (strftime('%s','now')),
+				expires_at INTEGER NOT NULL,
 
 				user_id INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id)
-			)
+			);
+
+			CREATE TRIGGER IF NOT EXISTS trg_sessions_update_timestamp
+			AFTER UPDATE ON sessions
+			FOR EACH ROW
+			BEGIN
+				UPDATE sessions SET updated_at = (strftime('%s','now')) WHERE session_id = OLD.session_id;
+			END;
 		`
 	},
 	{
@@ -59,48 +73,14 @@ const MIGRATIONS = [
 		name: 'create-two-factor-auth-table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS _2fa_methods (
-				id INTEGER PRIMARY KEY AUTOINCREMENT, -- 2FA ID
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-				method TEXT NOT NULL, -- email, sms, totp,
+				method TEXT NOT NULL,
 				totp_secret TEXT,
 
 				user_id INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id)
-			)
-		`
-	},
-	{
-		id: 4,
-		name: 'create-pending-2fa-table',
-		sql: `
-			CREATE TABLE IF NOT EXISTS pending_2fa (
-				id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-				method TEXT NOT NULL,
-				temp_value TEXT,
-
-				expires_at INTEGER,
-
-				user_id INTEGER NOT NULL,
-				FOREIGN KEY (user_id) REFERENCES users(id)
 			);
-		`
-	},
-	{
-		id: 5,
-		name: 'create-otps-table',
-		sql: `
-			CREATE TABLE IF NOT EXISTS otps (
-				id INTEGER PRIMARY KEY AUTOINCREMENT, -- OTP ID
-
-				method TEXT NOT NULL, -- email, sms,
-				code TEXT,
-
-				expires_at INTEGER,
-
-				user_id INTEGER NOT NULL,
-				FOREIGN KEY (user_id) REFERENCES users(id)
-			)
 		`
 	},
 	{
@@ -115,35 +95,19 @@ const MIGRATIONS = [
 
 				relation_status TEXT NOT NULL,    -- VALUES (PENDING, ACCEPTED, BLOCKED)
 
-				updated_by_user_id INTEGER,         -- USER WHO PERFORMED LAST ACTION
-																							-- EX:
-																								-- ADD FRIEND => PENDING
-																								-- UNFRIEND   => DELETE
-																								-- BLOCK      => BLOCKED
-
 				created_at INTEGER DEFAULT (strftime('%s','now')),
 				updated_at INTEGER DEFAULT (strftime('%s','now')),
 
 				FOREIGN KEY (requester_user_id) REFERENCES users(id), -- ON DELETE CASCADE?
-				FOREIGN KEY (receiver_user_id) REFERENCES users(id),   -- ON DELETE CASCADE?
-  				FOREIGN KEY (updated_by_user_id) REFERENCES users(id) -- ON DELETE CASCADE?
-			)
-		`
-	},
-	{
-		id: 7,
-		name: 'create-reset-password-table',
-		sql: `
-			CREATE TABLE IF NOT EXISTS reset_password (
-				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				FOREIGN KEY (receiver_user_id) REFERENCES users(id)   -- ON DELETE CASCADE?
+			);
 
-				code TEXT,
-
-				expires_at INTEGER,
-
-				user_id INTEGER NOT NULL,
-				FOREIGN KEY (user_id) REFERENCES users(id)
-			)
+			CREATE TRIGGER IF NOT EXISTS trg_relations_update_timestamp
+			AFTER UPDATE ON relations
+			FOR EACH ROW
+			BEGIN
+				UPDATE relations SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
+			END;
 		`
 	},
 	{
@@ -160,7 +124,7 @@ const MIGRATIONS = [
 
 				user_id INTEGER NOT NULL,
 				FOREIGN KEY (user_id) REFERENCES users(id)
-			)
+			);
 		`
 	},
 	{
@@ -172,35 +136,18 @@ const MIGRATIONS = [
 
 				player_home_score INTEGER NOT NULL,
 				player_away_score INTEGER NOT NULL,
+				player_home_xp_gain INTEGER NOT NULL,
+				player_away_xp_gain INTEGER NOT NULL,
 
-				game_type TEXT NOT NULL, -- (CHECK PONG OR XO)
-				started_at INTEGER DEFAULT (strftime('%s','now')),
-				finished_at INTEGER DEFAULT (strftime('%s','now')),
+				game_type TEXT NOT NULL,
+				started_at INTEGER DEFAULT ((strftime('%s','now'))),
+				finished_at INTEGER DEFAULT ((strftime('%s','now'))),
 
 				player_home_id INTEGER NOT NULL,
 				player_away_id INTEGER NOT NULL,
 				FOREIGN KEY (player_home_id) REFERENCES users(id), -- ON DELETE CASCADE?
 				FOREIGN KEY (player_away_id) REFERENCES users(id)   -- ON DELETE CASCADE?
-			)
-		`
-	},
-	{
-		id: 10,
-		name: 'create-pending-2fa-login-table',
-		sql: `
-			CREATE TABLE IF NOT EXISTS pending_2fa_login (
-				id INTEGER PRIMARY KEY AUTOINCREMENT, -- 2FA ID
-
-				method TEXT, -- email, sms, totp,
-				code TEXT,
-				remaining_attempts INTEGER,
-				remaining_resends INTEGER,
-
-				expires_at INTEGER,
-
-				user_id INTEGER NOT NULL,
-				FOREIGN KEY (user_id) REFERENCES users(id)
-			)
+			);
 		`
 	},
 	{
@@ -209,10 +156,8 @@ const MIGRATIONS = [
 		sql: `
 			CREATE TABLE IF NOT EXISTS auth_challenges (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				user_id INTEGER NOT NULL,
-				challenge_type TEXT NOT NULL CHECK (
-					challenge_type IN ('2fa_setup', '2fa_login', 'password_reset')
-				),
+
+				challenge_type TEXT NOT NULL,
 				method TEXT CHECK (method IN ('SMS', 'EMAIL', 'TOTP')),
 				status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'VERIFIED', 'COMPLETED', 'EXPIRED', 'FAILED')),
 
@@ -225,33 +170,154 @@ const MIGRATIONS = [
 
 				created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
 				updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-				expires_at INTEGER NOT NULL
+				expires_at INTEGER NOT NULL,
+
+				user_id INTEGER NOT NULL,
+				FOREIGN KEY (user_id) REFERENCES users(id) -- ON DELETE CASCADE?
 			);
+
+			CREATE TRIGGER IF NOT EXISTS trg_auth_challenges_update_timestamp
+			AFTER UPDATE ON auth_challenges
+			FOR EACH ROW
+			BEGIN
+				UPDATE auth_challenges SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
+			END;
 		`
 	},
 ];
 
-// {
-// 	id: 2,
-// 	name: 'create-refresh-tokens-table',
-// 	sql: `
-// 		CREATE TABLE refresh_tokens (
-// 			id INTEGER PRIMARY KEY AUTOINCREMENT,
+const TRIGGERS = [
+	{
+		id: 1,
+		name: 'trg_create_user_stats_after_insert',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_create_user_stats_after_insert
+			AFTER INSERT ON users
+			FOR EACH ROW
+			BEGIN
+				INSERT INTO users_stats (user_id)
+				VALUES (NEW.id);
+			END;
+		`
+	},
+	{
+		id: 2,
+		name: 'trg_on_2fa_delete',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_on_2fa_delete
+			AFTER DELETE ON _2fa_methods
+			FOR EACH ROW
+			BEGIN
+				UPDATE auth_challenges
+				SET status = 'FAILED'
+				WHERE user_id = OLD.user_id
+					AND method = OLD.method
+					AND challenge_type = '2fa_login'
+					AND (status = 'PENDING' OR status = 'VERIFIED');
+			END;
+		`
+	},
+	{
+		id: 3,
+		name: 'trg_on_email_change',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_on_email_change
+			BEFORE UPDATE OF email ON users
+			FOR EACH ROW
+			WHEN OLD.email IS NOT NEW.email
+			BEGIN
+				UPDATE users
+				SET email_verified = FALSE
+				WHERE id = NEW.id;
 
-// 			token_hash TEXT NOT NULL,
-// 			device_name TEXT DEFAULT NULL,
-// 			ip_address TEXT DEFAULT NULL,
-// 			user_agent TEXT DEFAULT NULL,
-// 			is_revoked BOOLEAN DEFAULT FALSE,
-// 			created_at INTEGER DEFAULT (strftime('%s','now')),
-// 			expires_at INTEGER NOT NULL,
-// 			last_used INTEGER DEFAULT (strftime('%s','now')),
+				UPDATE auth_challenges
+				SET status = 'EXPIRED'
+				WHERE user_id = NEW.id
+				AND challenge_type != 'email_verification'
+				AND method = 'EMAIL'
+				AND (status = 'PENDING' OR status = 'VERIFIED');
 
-// 			user_id INTEGER NOT NULL,
-// 			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-// 		)
-// 	`
-// }
+				DELETE FROM _2fa_methods
+				WHERE user_id = NEW.id
+				AND method = 'EMAIL';
+			END;
+		`
+	},
+	{
+		id: 4,
+		name: 'trg_on_phone_change',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_on_phone_change
+			BEFORE UPDATE OF phone ON users
+			FOR EACH ROW
+			WHEN OLD.phone IS NOT NEW.phone
+			BEGIN
+				UPDATE users
+				SET phone_verified = FALSE
+				WHERE id = NEW.id;
+
+				UPDATE auth_challenges
+				SET status = 'EXPIRED'
+				WHERE user_id = NEW.id
+				AND challenge_type != 'phone_verification'
+				AND method = 'SMS'
+				AND (status = 'PENDING' OR status = 'VERIFIED');
+
+				DELETE FROM _2fa_methods
+				WHERE user_id = NEW.id
+				AND method = 'SMS';
+			END;
+		`
+	},
+	{
+		id: 5,
+		name: 'trg_users_update_timestamp',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_users_update_timestamp
+			AFTER UPDATE ON users
+			FOR EACH ROW
+			BEGIN
+				UPDATE users SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
+			END;
+		`
+	},
+	{
+		id: 6,
+		name: 'trg_sessions_update_timestamp',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_sessions_update_timestamp
+			AFTER UPDATE ON sessions
+			FOR EACH ROW
+			BEGIN
+				UPDATE sessions SET updated_at = (strftime('%s','now')) WHERE session_id = OLD.session_id;
+			END;
+		`
+	},
+	{
+		id: 7,
+		name: 'trg_relations_update_timestamp',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_relations_update_timestamp
+			AFTER UPDATE ON relations
+			FOR EACH ROW
+			BEGIN
+				UPDATE relations SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
+			END;
+		`
+	},
+	{
+		id: 8,
+		name: 'trg_auth_challenges_update_timestamp',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_auth_challenges_update_timestamp
+			AFTER UPDATE ON auth_challenges
+			FOR EACH ROW
+			BEGIN
+				UPDATE auth_challenges SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
+			END;
+		`
+	}
+];
 
 async function runMigrations() {
 
@@ -260,8 +326,13 @@ async function runMigrations() {
 			await db.run(migration.sql);
 			console.log(`Completed migration: ${migration.name}`);
 		}
-
 		console.log(`Completed all migrations successfully.`);
+
+		for (const trigger of TRIGGERS) {
+			await db.run(trigger.sql);
+			console.log(`Completed trigger: ${trigger.name}`);
+		}
+		console.log(`Completed all trigger successfully.`);
 	} catch (err) {
 		await db.close();
 		console.log(`Migration failed: ${err}`);

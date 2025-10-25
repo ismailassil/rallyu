@@ -18,7 +18,7 @@ export default function Avatar({ avatar, fallback = "/profile/image_1.jpg", clas
 		if (avatar && avatar.startsWith("blob:")) {
 			setSrc(avatar);
 		} else if (avatar && avatar.startsWith('/users/avatars/')) {
-			setSrc('http://api-gateway:4025/api' + avatar);
+			setSrc('http://api-gateway:4025/api' + avatar); // TODO | Into a secret way!?
 		} else {
 			setSrc(fallback);
 			setIsLoading(false);
