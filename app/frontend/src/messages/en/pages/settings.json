@@ -1,0 +1,69 @@
+{
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account preferences and security settings",
+    "general": {
+      "title": "General",
+      "cards": {
+        "personal_infos": {
+          "title": "Personal Informations",
+          "subtitle": "Update your account profile information and email address"
+        }
+      }
+    },
+    "users": {
+      "title": "Users",
+      "cards": {
+        "friends": {
+          "title": "Friends",
+          "subtitle": "View and manage relationship with all of your friends"
+        },
+        "incoming": {
+          "title": "Incoming Friend Requests",
+          "subtitle": "View and decline all the pending friend requests you've received"
+        },
+        "outgoing": {
+          "title": "Outgoing Friend Requests",
+          "subtitle": "View and cancel all the pending friend requests you've sent"
+        },
+        "blocked": {
+          "title": "Blocked Users",
+          "subtitle": "View and unblock all the users you have blocked"
+        }
+      }
+    },
+    "security": {
+      "title": "Security",
+      "cards": {
+        "twoFactor": {
+          "title": "Two-factor Authentication",
+          "subtitle": "Add an extra layer of security to your account by choosing your preferred verification method",
+          "button": "Manage 2FA"
+        },
+        "change_password_form": {
+          "title": "Change Password",
+          "subtitle": "Modify your current password",
+          "sidecard": {
+            "title": "Password Requirements",
+            "text1": "To create a new password,",
+            "text2": "you have to meet all of the following requirements:",
+            "text3": "Minimum 8 characters long",
+            "text4": "At least one lowercase letter",
+            "text5": "At least one uppercase letter",
+            "text6": "At least one digit"
+          },
+          "button": "Save Changes"
+        },
+        "sessions": {
+          "title": "Browsers and devices",
+          "subtitle": "These browsers and devices are currently signed in to you account. Remove any unauthorized devices"
+        },
+        "delete_account": {
+          "title": "Delete Account",
+          "subtitle": "This will permanently delete your account and all associated data. This action is irreversible",
+          "button": "Delete Account"
+        }
+      }
+    }
+  }
+}

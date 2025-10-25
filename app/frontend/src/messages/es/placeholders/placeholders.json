@@ -1,0 +1,26 @@
+{
+  "placeholders": {
+    "data": {
+      "generic": {
+        "no-data": "No se encontraron datos.",
+        "error": "Error al cargar los datos."
+      },
+      "friends": {
+        "no-data": "No tienes amigos. Sal a tomar el aire.",
+        "error": "Error al cargar amigos. Inténtalo más tarde."
+      },
+      "outgoing": {
+        "no-data": "No hay solicitudes de amistad salientes. Sal a tomar el aire.",
+        "error": "Error al cargar solicitudes salientes. Inténtalo más tarde."
+      },
+      "incoming": {
+        "no-data": "No hay solicitudes de amistad entrantes. Sal a tomar el aire.",
+        "error": "Error al cargar solicitudes entrantes. Inténtalo más tarde."
+      },
+      "blocked": {
+        "no-data": "No hay usuarios bloqueados. Sal a tomar el aire.",
+        "error": "Error al cargar usuarios bloqueados. Inténtalo más tarde."
+      }
+    }
+  }
+}

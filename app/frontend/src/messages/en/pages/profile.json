@@ -1,0 +1,46 @@
+{
+  "profile": {
+    "common": {
+      "level": "Level",
+      "time_spent": "Time Spent in the Platform"
+    },
+    "cards": {
+      "global_rank": {
+        "part1": "Global",
+        "part2": "Rank"
+      },
+      "win_rate": {
+        "part1": "Win",
+        "part2": "Rate"
+      },
+      "current_streak": {
+        "part1": "Current",
+        "part2": "Streak"
+      },
+      "games_history": {
+        "title": "Games History"
+      },
+      "performance": {
+        "title": "Performance",
+        "cards": {
+          "total_xp": "Total XP",
+          "games_played": {
+            "part1": "Games",
+            "part2": "Played"
+          },
+          "longest_streak": {
+            "part1": "Longest",
+            "part2": "Streak"
+          },
+          "wins": "Wins",
+          "losses": "Losses",
+          "draws": "Draws"
+        }
+      }
+    },
+    "buttons": {
+      "edit_profile": "Edit Profile",
+      "view_performance": "View Performance"
+    }
+  }
+}

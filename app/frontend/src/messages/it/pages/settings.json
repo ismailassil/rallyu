@@ -1,0 +1,69 @@
+{
+  "settings": {
+    "title": "Impostazioni",
+    "subtitle": "Gestisci le preferenze del tuo account e le impostazioni di sicurezza",
+    "general": {
+      "title": "Generale",
+      "cards": {
+        "personal_infos": {
+          "title": "Informazioni personali",
+          "subtitle": "Aggiorna le informazioni del tuo profilo e l'indirizzo email"
+        }
+      }
+    },
+    "users": {
+      "title": "Utenti",
+      "cards": {
+        "friends": {
+          "title": "Amici",
+          "subtitle": "Visualizza e gestisci i rapporti con tutti i tuoi amici"
+        },
+        "incoming": {
+          "title": "Richieste di amicizia in arrivo",
+          "subtitle": "Visualizza e rifiuta tutte le richieste di amicizia in sospeso ricevute"
+        },
+        "outgoing": {
+          "title": "Richieste di amicizia inviate",
+          "subtitle": "Visualizza e annulla tutte le richieste di amicizia in sospeso inviate"
+        },
+        "blocked": {
+          "title": "Utenti bloccati",
+          "subtitle": "Visualizza e sblocca tutti gli utenti che hai bloccato"
+        }
+      }
+    },
+    "security": {
+      "title": "Sicurezza",
+      "cards": {
+        "twoFactor": {
+          "title": "Autenticazione a due fattori",
+          "subtitle": "Aggiungi un ulteriore livello di sicurezza al tuo account scegliendo il tuo metodo di verifica preferito",
+          "button": "Gestisci 2FA"
+        },
+        "change_password_form": {
+          "title": "Cambia password",
+          "subtitle": "Modifica la tua password attuale",
+          "sidecard": {
+            "title": "Requisiti password",
+            "text1": "Per creare una nuova password,",
+            "text2": "devi soddisfare tutti i seguenti requisiti:",
+            "text3": "Minimo 8 caratteri",
+            "text4": "Almeno una lettera minuscola",
+            "text5": "Almeno una lettera maiuscola",
+            "text6": "Almeno una cifra"
+          },
+          "button": "Salva modifiche"
+        },
+        "sessions": {
+          "title": "Browser e dispositivi",
+          "subtitle": "Questi browser e dispositivi sono attualmente connessi al tuo account. Rimuovi quelli non autorizzati"
+        },
+        "delete_account": {
+          "title": "Elimina account",
+          "subtitle": "Questa azione eliminerà permanentemente il tuo account e tutti i dati associati. È irreversibile",
+          "button": "Elimina account"
+        }
+      }
+    }
+  }
+}

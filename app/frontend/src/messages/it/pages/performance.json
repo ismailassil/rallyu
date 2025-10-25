@@ -1,0 +1,189 @@
+{
+  "performance_dashboard": {
+    "title": "Prestazioni",
+    "subtitle": "Visualizza statistiche dettagliate e dati storici delle tue partite",
+    "common": {
+      "games": "{count, plural, one {# partita} other {# partite}}",
+      "points": "{count, plural, one {# punto} other {# punti}}"
+    },
+    "overview": {
+      "title": "Panoramica",
+      "cards": {
+        "your_statistics": {
+          "title": "Le tue statistiche",
+          "cards": {
+            "total_matches": {
+              "title": "Partite totali",
+              "subtitle": ""
+            },
+            "win_rate": {
+              "title": "Percentuale vittorie",
+              "subtitle": ""
+            },
+            "points_scored": {
+              "title": "Punti segnati",
+              "subtitle": "differenza netta"
+            },
+            "time_played": {
+              "title": "Tempo giocato",
+              "subtitle": "{count, plural, one {# minuto totale} other {# minuti totali}}"
+            },
+            "score_records": {
+              "title": "Record punteggio",
+              "1st": "Punteggio massimo",
+              "2nd": "Punteggio minimo",
+              "3rd": "Punteggio medio"
+            },
+            "avg_p_by_outcome": {
+              "title": "Punteggio medio per esito",
+              "1st": "Per vittoria",
+              "2nd": "Per sconfitta",
+              "3rd": "Per pareggio"
+            },
+            "charts": {
+              "win_rate_trends": {
+                "title": "Andamento percentuale vittorie",
+                "subtitle": "Percentuale vittorie negli ultimi 7 giorni"
+              },
+              "wins_vs_losses": {
+                "title": "Vittorie / Sconfitte",
+                "subtitle": "Distribuzione di vittorie e sconfitte nel tempo",
+                "common": {
+                  "wins": "Vittorie",
+                  "losses": "Sconfitte",
+                  "draws": "Pareggi"
+                }
+              },
+              "avg_score_trends": {
+                "title": "Andamento punteggio medio",
+                "subtitle": "Punteggio medio negli ultimi 7 giorni"
+              }
+            }
+          }
+        }
+      }
+    },
+    "opponent": {
+      "title": "Avversario",
+      "cards": {
+        "opp_analysis": {
+          "title": "Analisi avversari",
+          "cards": {
+            "most_wins": {
+              "title": "Più vittorie",
+              "subtitle": "{count, plural, one {hai vinto # partita} other {hai vinto # partite}}"
+            },
+            "most_freq": {
+              "title": "Più frequente",
+              "subtitle": "{count, plural, one {# partita} other {# partite}}"
+            },
+            "most_losses": {
+              "title": "Più sconfitte",
+              "subtitle": "{count, plural, one {hai perso # partita} other {hai perso # partite}}"
+            },
+            "unique_players": {
+              "title": "Avversari",
+              "subtitle": "{count, plural, one {# giocatore unico} other {# giocatori unici}}"
+            },
+            "score_records": {
+              "title": "Record punteggio",
+              "1st": "Punteggio massimo",
+              "2nd": "Punteggio minimo",
+              "3rd": "Punteggio medio"
+            },
+            "avg_p_by_outcome": {
+              "title": "Punteggio medio per esito",
+              "1st": "Per vittoria",
+              "2nd": "Per sconfitta",
+              "3rd": "Per pareggio"
+            },
+            "charts": {
+              "opp_score_trends": {
+                "title": "Andamento punteggio avversari",
+                "subtitle": "Punteggio dei tuoi avversari negli ultimi 7 giorni"
+              },
+              "you_vs_opp_score": {
+                "title": "Differenza punteggio",
+                "subtitle": "Il tuo punteggio vs. quello dei tuoi avversari",
+                "common": {
+                  "you": "Tu",
+                  "your_opponents": "I tuoi avversari"
+                }
+              },
+              "opp_avg_score_trends": {
+                "title": "Andamento punteggio medio avversari",
+                "subtitle": "Punteggio medio dei tuoi avversari negli ultimi 7 giorni"
+              }
+            }
+          }
+        }
+      }
+    },
+    "games": {
+      "title": "Partite",
+      "cards": {
+        "games_history": {
+          "title": "Cronologia partite",
+          "selectors": {
+            "alltime": "Sempre",
+            "1d": "Ultimo giorno",
+            "7d": "Ultimi 7 giorni",
+            "30d": "Ultimi 30 giorni",
+            "90d": "Ultimi 90 giorni",
+            "year": "Ultimo anno",
+            "alltypes": "Tutti i tipi",
+            "pong": "Ping Pong",
+            "xo": "Tris"
+          },
+          "pagination": {
+            "page": "Pagina",
+            "prev": "Precedente",
+            "next": "Successivo"
+          },
+          "columns": {
+            "opp": "Avversario",
+            "type": "Tipo",
+            "mode": "Modalità",
+            "result": "Risultato",
+            "score": "Punteggio",
+            "duration": "Durata",
+            "date": "Data"
+          },
+          "common": {
+            "ranked1v1": "1v1 Classificata",
+            "win": "Vittoria",
+            "loss": "Sconfitta",
+            "draw": "Pareggio"
+          }
+        },
+        "time_analysis": {
+          "title": "Analisi del tempo",
+          "cards": {
+            "duration_records": {
+              "title": "Record durata",
+              "1st": "Partita più lunga",
+              "2nd": "Partita più breve",
+              "3rd": "Durata media"
+            },
+            "avg_d_by_outcome": {
+              "title": "Durata per esito",
+              "1st": "Media vittorie",
+              "2nd": "Media sconfitte",
+              "3rd": "Media pareggi"
+            },
+            "charts": {
+              "time_spent": {
+                "title": "Tempo trascorso",
+                "subtitle": "Tempo di gioco giornaliero negli ultimi 7 giorni"
+              },
+              "games_per_day": {
+                "title": "Partite al giorno",
+                "subtitle": "Partite giornaliere negli ultimi 7 giorni"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
