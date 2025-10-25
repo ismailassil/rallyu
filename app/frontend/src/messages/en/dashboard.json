@@ -322,7 +322,7 @@
           }
         },
         "time_analysis": {
-          "title": "Opponent Analysis",
+          "title": "Time Analysis",
           "cards": {
             "duration_records": {
               "title": "Duration Records",
@@ -343,7 +343,7 @@
               },
               "games_per_day": {
                 "title": "Games Per Day",
-                "subtitle": "Daily Playtime over the last 7 days"
+                "subtitle": "Daily Games over the last 7 days"
               }
             }
           }
@@ -466,12 +466,12 @@
     },
     "login": {
       "title": "Welcome Back!",
-      "subtitle": "Please enter you details to sign in",
+      "subtitle": "Please enter your details to sign in",
       "instruction": "Don't have an account yet?"
     },
     "signup": {
       "title": "Create an account",
-      "subtitle": "Please enter you details to sign up",
+      "subtitle": "Please enter your details to sign up",
       "instruction": "Already have an account?"
     },
     "twoFactorAtLogin": {

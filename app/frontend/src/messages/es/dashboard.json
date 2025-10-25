@@ -1,7 +1,7 @@
 {
   "dashboard": {
     "common": {
-      "time_spent": "Tiempo Pasado en la Plataforma"
+      "time_spent": "Tiempo en la plataforma"
     },
     "titles": {
       "greetings": "Bienvenido de nuevo,",
@@ -23,7 +23,7 @@
         "subtext": "Entrenamiento"
       }
     },
-    "snapshots": "{statKey, select, total_xp {Experiencia total} win_rate {Porcentaje victorias} current_streak {Racha actual} longest_streak {Racha larga} matches {Partidas jugadas} wins {Partidas ganadas} losses {Partidas perdidas} draws {Empates} total_user_score {Puntuación total} max_user_score {Puntuación alta} min_user_score {Puntuación baja} avg_user_score {Puntuación promedio} total_duration {Tiempo total} max_duration {Partida larga} min_duration {Partida corta} avg_duration {Duración promedio} other {Estadística desconocida}}"
+    "snapshots": "{statKey, select, total_xp {XP Total} win_rate {Porcentaje victorias} current_streak {Racha actual} longest_streak {Racha larga} matches {Partidas jugadas} wins {Partidas ganadas} losses {Partidas perdidas} draws {Empates} total_user_score {Puntuación total} max_user_score {Puntuación alta} min_user_score {Puntuación baja} avg_user_score {Puntuación promedio} total_duration {Tiempo total} max_duration {Partida larga} min_duration {Partida corta} avg_duration {Duración promedio} other {Estadística desconocida}}"
   },
   "common": {
     "play": "Jugar",
@@ -37,7 +37,7 @@
   "profile": {
     "common": {
       "level": "Nivel",
-      "time_spent": "Tiempo Pasado en la Plataforma"
+      "time_spent": "Tiempo en la plataforma"
     },
     "cards": {
       "global_rank": {
@@ -56,9 +56,9 @@
         "title": "Historial de juegos"
       },
       "performance": {
-        "title": "Actuación",
+        "title": "Rendimiento",
         "cards": {
-          "total_xp": "Experiencia total",
+          "total_xp": "XP Total",
           "games_played": {
             "part1": "Partidas",
             "part2": "jugadas"
@@ -229,10 +229,10 @@
       }
     },
     "opponent": {
-      "title": "Contrincante",
+      "title": "Oponente",
       "cards": {
         "opp_analysis": {
-          "title": "Análisis de contrincantes",
+          "title": "Análisis de oponentes",
           "cards": {
             "most_wins": {
               "title": "Más victorias",
@@ -247,7 +247,7 @@
               "subtitle": "{count, plural, one {perdiste # partida} other {perdiste # partidas}}"
             },
             "unique_players": {
-              "title": "Contrincantes",
+              "title": "Oponentes",
               "subtitle": "{count, plural, one {# jugador único} other {# jugadores únicos}}"
             },
             "score_records": {
@@ -264,19 +264,19 @@
             },
             "charts": {
               "opp_score_trends": {
-                "title": "Tendencias de la puntuación de los oponentes",
+                "title": "Tendencia de puntuación de oponentes",
                 "subtitle": "Puntuación de tus oponentes en los últimos 7 días"
               },
               "you_vs_opp_score": {
-                "title": "Diferencia de puntuación con los oponentes",
-                "subtitle": "Diferencia entre tu puntuación y la de tus oponentes",
+                "title": "Diferencia de puntuación",
+                "subtitle": "Tu puntuación vs. la de tus oponentes",
                 "common": {
                   "you": "Tú",
                   "your_opponents": "Tus oponentes"
                 }
               },
               "opp_avg_score_trends": {
-                "title": "Tendencias de la puntuación promedio de los oponentes",
+                "title": "Tendencia de puntuación promedio de oponentes",
                 "subtitle": "Puntuación promedio de tus oponentes en los últimos 7 días"
               }
             }
@@ -291,7 +291,7 @@
           "title": "Historial de partidas",
           "selectors": {
             "alltime": "Todo el tiempo",
-            "1d": "Último día",
+            "1d": "Últimas 24 horas",
             "7d": "Últimos 7 días",
             "30d": "Últimos 30 días",
             "90d": "Últimos 90 días",
@@ -306,7 +306,7 @@
             "next": "Siguiente"
           },
           "columns": {
-            "opp": "Contrincante",
+            "opp": "Oponente",
             "type": "Tipo",
             "mode": "Modo",
             "result": "Resultado",
@@ -315,7 +315,7 @@
             "date": "Fecha"
           },
           "common": {
-            "ranked1v1": "1v1 clasificatorio",
+            "ranked1v1": "1v1 Clasificatorio",
             "win": "Victoria",
             "loss": "Derrota",
             "draw": "Empate"
@@ -343,7 +343,7 @@
               },
               "games_per_day": {
                 "title": "Partidas por día",
-                "subtitle": "Número de partidas diarias en los últimos 7 días"
+                "subtitle": "Partidas diarias en los últimos 7 días"
               }
             }
           }
@@ -355,23 +355,23 @@
     "data": {
       "generic": {
         "no-data": "No se encontraron datos.",
-        "error": "No se pudieron cargar los datos."
+        "error": "Error al cargar los datos."
       },
       "friends": {
-        "no-data": "No se encontraron amigos. Sal a tomar un poco de aire fresco.",
-        "error": "Error al cargar la lista de amigos. Inténtalo de nuevo más tarde."
+        "no-data": "No tienes amigos. Sal a tomar el aire.",
+        "error": "Error al cargar amigos. Inténtalo más tarde."
       },
       "outgoing": {
-        "no-data": "No se encontraron solicitudes de amistad enviadas. Sal a tomar un poco de aire fresco.",
-        "error": "Error al cargar las solicitudes de amistad enviadas. Inténtalo de nuevo más tarde."
+        "no-data": "No hay solicitudes de amistad salientes. Sal a tomar el aire.",
+        "error": "Error al cargar solicitudes salientes. Inténtalo más tarde."
       },
       "incoming": {
-        "no-data": "No se encontraron solicitudes de amistad pendientes. Sal a tomar un poco de aire fresco.",
-        "error": "Error al cargar las solicitudes de amistad pendientes. Inténtalo de nuevo más tarde."
+        "no-data": "No hay solicitudes de amistad entrantes. Sal a tomar el aire.",
+        "error": "Error al cargar solicitudes entrantes. Inténtalo más tarde."
       },
       "blocked": {
-        "no-data": "No se encontraron usuarios bloqueados. Sal a tomar un poco de aire fresco.",
-        "error": "Error al cargar la lista de usuarios bloqueados. Inténtalo de nuevo más tarde."
+        "no-data": "No hay usuarios bloqueados. Sal a tomar el aire.",
+        "error": "Error al cargar usuarios bloqueados. Inténtalo más tarde."
       }
     }
   },
@@ -403,14 +403,14 @@
       "current": "Actual",
       "continue": "Continuar"
     },
-    "errorCodes": "{code, select, AUTH_TOO_MANY_ATTEMPTS {Demasiados intentos - Inténtalo de nuevo} AUTH_TOO_MANY_RESENDS {Demasiados reenvíos - Inténtalo de nuevo} AUTH_CHALLENGE_EXPIRED {Desafío caducado - Inténtalo de nuevo} AUTH_2FA_NOT_ENABLED {Método no habilitado - Inténtalo de nuevo} AUTH_INVALID_CREDENTIALS {Nombre de usuario o contraseña incorrectos} AUTH_SERVICE_UNAVAILABLE {El servicio no está disponible - Inténtalo más tarde} AUTH_NETWORK_ERR {Por favor, comprueba tu conexión} other {Algo salió mal - Inténtalo de nuevo}}",
+    "errorCodes": "{code, select, AUTH_EMAIL_TAKEN {El correo ya está en uso} AUTH_USERNAME_TAKEN {El nombre de usuario ya está en uso} AUTH_TOO_MANY_ATTEMPTS {Demasiados intentos - Inténtalo más tarde} AUTH_TOO_MANY_RESENDS {Demasiados reenvíos - Inténtalo más tarde} AUTH_CHALLENGE_EXPIRED {Desafío caducado - Inténtalo de nuevo} AUTH_2FA_NOT_ENABLED {Método no habilitado - Inténtalo de nuevo} AUTH_INVALID_CREDENTIALS {Usuario o contraseña incorrectos} AUTH_SERVICE_UNAVAILABLE {Servicio no disponible - Inténtalo más tarde} AUTH_NETWORK_ERR {Verifica tu conexión} other {Algo salió mal - Inténtalo de nuevo}}",
     "validation": {
       "common": {
         "availability": {
-          "checking": "Comprobando disponibilidad...",
+          "checking": "Verificando disponibilidad...",
           "available": "¡está disponible!",
-          "unavailable": "¡ya está ocupado!",
-          "error": "¡Error al comprobar!"
+          "unavailable": "¡ya está en uso!",
+          "error": "¡la verificación falló!"
         }
       },
       "first_name": {
@@ -467,7 +467,7 @@
     "login": {
       "title": "¡Bienvenido de nuevo!",
       "subtitle": "Introduce tus datos para iniciar sesión",
-      "instruction": "¿Aún no tienes una cuenta?"
+      "instruction": "¿No tienes una cuenta aún?"
     },
     "signup": {
       "title": "Crear una cuenta",
@@ -480,13 +480,13 @@
         "subtitle": "Selecciona uno de los siguientes métodos para completar la verificación",
         "cards": {
           "title": "{method, select, TOTP {Aplicación de autenticación} EMAIL {Correo electrónico} SMS {SMS} other {Método de autenticación}}",
-          "subtitle": "{method, select, TOTP {Usando Google Authenticator, Authy...} EMAIL {Recibe códigos por correo electrónico} SMS {Recibe códigos por SMS} other {Método de autenticación}}"
+          "subtitle": "{method, select, TOTP {Usa Google Authenticator, Authy...} EMAIL {Recibe códigos por correo} SMS {Recibe códigos por SMS} other {Método de autenticación}}"
         }
       },
       "verifyCode": {
         "title": "Autenticación en dos pasos",
-        "subtitle": "{method, select, TOTP {Ingresa el código de 6 dígitos de tu aplicación de autenticación} EMAIL {Hemos enviado un código de 6 dígitos a tu correo electrónico} SMS {Hemos enviado un código de 6 dígitos por SMS} other {Ingresa el código de 6 dígitos para completar la verificación}}",
-        "cannot_access": "{method, select, TOTP {¿No puedes acceder a tu aplicación de autenticación?} EMAIL {¿No puedes acceder a tu correo electrónico?} SMS {¿No puedes acceder a tu teléfono?} other {¿No puedes acceder a este método?}}",
+        "subtitle": "{method, select, TOTP {Introduce el código de 6 dígitos de tu aplicación de autenticación} EMAIL {Hemos enviado un código de 6 dígitos a tu correo} SMS {Hemos enviado un código de 6 dígitos por SMS} other {Introduce el código de 6 dígitos para completar la verificación}}",
+        "cannot_access": "{method, select, TOTP {¿No puedes acceder a tu aplicación de autenticación?} EMAIL {¿No puedes acceder a tu correo?} SMS {¿No puedes acceder a tu teléfono?} other {¿No puedes acceder a este método?}}",
         "other_method": "Probar otros métodos de verificación"
       }
     },
@@ -496,7 +496,7 @@
         "subtitle": "Añade una capa adicional de seguridad a tu cuenta eligiendo tu método de verificación preferido",
         "cards": {
           "title": "{method, select, TOTP {Aplicación de autenticación} EMAIL {Correo electrónico} SMS {SMS} other {Método de autenticación}}",
-          "subtitle": "{method, select, TOTP {Usando Google Authenticator, Authy...} EMAIL {Recibe códigos por correo electrónico} SMS {Recibe códigos por SMS} other {Método de autenticación}}"
+          "subtitle": "{method, select, TOTP {Usa Google Authenticator, Authy...} EMAIL {Recibe códigos por correo} SMS {Recibe códigos por SMS} other {Método de autenticación}}"
         },
         "note": {
           "title": "Recomendado",
@@ -516,34 +516,34 @@
     "verification": {
       "input": {
         "title": "{method, select, TOTP {Aplicación de autenticación} EMAIL {Correo electrónico} SMS {SMS} other {Método de autenticación}}",
-        "subtitle": "{method, select, TOTP {Escanea el código QR con tu aplicación de autenticación} EMAIL {Te enviaremos un código de verificación de 6 dígitos a tu correo electrónico} SMS {Te enviaremos un código de verificación de 6 dígitos a tu teléfono} other {Te enviaremos un código de verificación de 6 dígitos}}",
+        "subtitle": "{method, select, TOTP {Escanea el código QR con tu aplicación de autenticación} EMAIL {Te enviaremos un código de verificación de 6 dígitos a tu correo} SMS {Te enviaremos un código de verificación de 6 dígitos a tu teléfono} other {Te enviaremos un código de verificación de 6 dígitos}}",
         "cant_scan_qr": "¿No puedes escanearlo? Ingresa este código manualmente:"
       },
       "verifyCode": {
         "title": "{method, select, TOTP {Aplicación de autenticación} EMAIL {Correo electrónico} SMS {SMS} other {Método de autenticación}}",
-        "subtitle": "{method, select, TOTP {Ingresa el código de 6 dígitos de tu aplicación de autenticación} EMAIL {Hemos enviado un código de 6 dígitos a tu correo electrónico} SMS {Hemos enviado un código de 6 dígitos por SMS} other {Ingresa el código de 6 dígitos para completar la verificación}}"
+        "subtitle": "{method, select, TOTP {Introduce el código de 6 dígitos de tu aplicación de autenticación} EMAIL {Hemos enviado un código de 6 dígitos a tu correo} SMS {Hemos enviado un código de 6 dígitos por SMS} other {Introduce el código de 6 dígitos para completar la verificación}}"
       },
       "note": {
         "title": "Nota",
-        "first": "Actualizar este correo reemplazará la información de contacto existente en tu cuenta.",
-        "second": "Asegúrate de que la nueva información sea correcta, ya que se utilizará para todas las comunicaciones y verificaciones futuras."
+        "first": "Actualizar esto reemplazará la información de contacto existente en tu cuenta.",
+        "second": "Asegúrate de que la nueva información sea correcta, ya que se usará para todas las comunicaciones y verificaciones futuras."
       }
     },
     "reset_password": {
       "forgotPassword": {
         "title": "¿Olvidaste tu contraseña?",
-        "subtitle": "Hemos enviado un código de 6 dígitos a tu correo electrónico",
-        "instruction": "¿Recuperaste tu contraseña?"
+        "subtitle": "Hemos enviado un código de 6 dígitos a tu correo",
+        "instruction": "¿Recuerdas tu contraseña?"
       },
       "verifyCode": {
-        "title": "¡Revisa tu correo electrónico!",
-        "subtitle": "Hemos enviado un código de 6 dígitos a tu correo electrónico",
-        "instruction": "¿Recuperaste tu contraseña?"
+        "title": "¡Revisa tu correo!",
+        "subtitle": "Hemos enviado un código de 6 dígitos a tu correo",
+        "instruction": "¿Recuerdas tu contraseña?"
       },
       "setNewPassword": {
-        "title": "Crear una nueva contraseña",
+        "title": "Crea una nueva contraseña",
         "subtitle": "Introduce y confirma tu nueva contraseña",
-        "instruction": "¿Recuperaste tu contraseña?"
+        "instruction": "¿Recuerdas tu contraseña?"
       }
     }
   },
@@ -564,16 +564,16 @@
         "no_payload": "No hay notificaciones actuales",
         "description": {
           "chat": "te envió un mensaje.",
-          "game": "te desafió a un juego!",
-          "pp_game": "te desafió a un juego de Pong!",
-          "xo_game": "te desafió a un juego de Tic-Tac-Toe!",
-          "friend_request": "te envió una solicitud de amistad!",
-          "tournament": "te invitó a un torneo!",
-          "friend_accept": "aceptó tu solicitud de amistad!",
+          "game": "¡te retó a una partida!",
+          "pp_game": "¡te retó a una partida de Pong!",
+          "xo_game": "¡te retó a una partida de Tres en raya!",
+          "friend_request": "¡te envió una solicitud de amistad!",
+          "tournament": "¡te invitó a comenzar un torneo!",
+          "friend_accept": "¡aceptó tu solicitud de amistad!",
           "friend_reject": "rechazó tu solicitud de amistad.",
           "friend_cancel": "canceló tu solicitud de amistad.",
-          "game_accept": "aceptó tu desafío de juego!",
-          "game_reject": "rechazó tu desafío de juego."
+          "game_accept": "¡aceptó tu reto de partida!",
+          "game_reject": "rechazó tu reto de partida."
         }
       },
       "footer": {
@@ -587,6 +587,6 @@
     "decline": "Rechazar",
     "reply": "Responder",
     "clear": "borrar",
-    "join": "Unirse al {type, select, game {juego} tournament {torneo} other {juego}}"
+    "join": "Unirse a {type, select, game {partida} tournament {torneo} other {partida}}"
   }
 }

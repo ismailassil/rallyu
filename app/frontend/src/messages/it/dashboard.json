@@ -23,7 +23,7 @@
         "subtext": "Allenamento"
       }
     },
-    "snapshots": "{statKey, select, total_xp {XP Totali} win_rate {Tasso di vincita} current_streak {Serie attuale} longest_streak {Serie più lunga} matches {Partite giocate} wins {Partite vinte} losses {Partite perse} draws {Partite pareggiate} total_user_score {Punteggio totale} max_user_score {Punteggio più alto} min_user_score {Punteggio più basso} avg_user_score {Punteggio medio} total_duration {Tempo di gioco totale} max_duration {Partita più lunga} min_duration {Partita più breve} avg_duration {Partita media} other {Statistica sconosciuta}}"
+    "snapshots": "{statKey, select, total_xp {XP Totale} win_rate {Percentuale vittorie} current_streak {Serie attuale} longest_streak {Serie più lunga} matches {Partite giocate} wins {Partite vinte} losses {Partite perse} draws {Pareggi} total_user_score {Punteggio totale} max_user_score {Punteggio massimo} min_user_score {Punteggio minimo} avg_user_score {Punteggio medio} total_duration {Tempo totale di gioco} max_duration {Partita più lunga} min_duration {Partita più breve} avg_duration {Durata media} other {Statistica sconosciuta}}"
   },
   "common": {
     "play": "Gioca",
@@ -41,12 +41,12 @@
     },
     "cards": {
       "global_rank": {
-        "part1": "Rango",
+        "part1": "Posizione",
         "part2": "Globale"
       },
       "win_rate": {
-        "part1": "Tasso di",
-        "part2": "Vincita"
+        "part1": "Percentuale",
+        "part2": "Vittorie"
       },
       "current_streak": {
         "part1": "Serie",
@@ -58,14 +58,14 @@
       "performance": {
         "title": "Prestazioni",
         "cards": {
-          "total_xp": "XP Totali",
+          "total_xp": "XP Totale",
           "games_played": {
             "part1": "Partite",
             "part2": "Giocate"
           },
           "longest_streak": {
-            "part1": "Serie più",
-            "part2": "Lunga"
+            "part1": "Serie",
+            "part2": "Più Lunga"
           },
           "wins": "Vittorie",
           "losses": "Sconfitte",
@@ -75,16 +75,16 @@
     },
     "buttons": {
       "edit_profile": "Modifica profilo",
-      "view_performance": "Vedi prestazioni"
+      "view_performance": "Visualizza prestazioni"
     }
   },
   "relations": {
     "common": {
       "chat": "Chat",
-      "sent": "Inviata",
-      "accepted": "Accettata",
-      "canceled": "Annullata",
-      "declined": "Rifiutata",
+      "sent": "Inviato",
+      "accepted": "Accettato",
+      "canceled": "Annullato",
+      "declined": "Rifiutato",
       "unfriended": "Rimosso dagli amici",
       "blocked": "Bloccato",
       "unblocked": "Sbloccato",
@@ -101,7 +101,7 @@
     "title": "Impostazioni",
     "subtitle": "Gestisci le preferenze del tuo account e le impostazioni di sicurezza",
     "general": {
-      "title": "Generali",
+      "title": "Generale",
       "cards": {
         "personal_infos": {
           "title": "Informazioni personali",
@@ -114,15 +114,15 @@
       "cards": {
         "friends": {
           "title": "Amici",
-          "subtitle": "Visualizza e gestisci le relazioni con tutti i tuoi amici"
+          "subtitle": "Visualizza e gestisci i rapporti con tutti i tuoi amici"
         },
         "incoming": {
-          "title": "Richieste di amicizia in entrata",
-          "subtitle": "Visualizza e rifiuta tutte le richieste di amicizia in sospeso che hai ricevuto"
+          "title": "Richieste di amicizia in arrivo",
+          "subtitle": "Visualizza e rifiuta tutte le richieste di amicizia in sospeso ricevute"
         },
         "outgoing": {
-          "title": "Richieste di amicizia in uscita",
-          "subtitle": "Visualizza e annulla tutte le richieste di amicizia in sospeso che hai inviato"
+          "title": "Richieste di amicizia inviate",
+          "subtitle": "Visualizza e annulla tutte le richieste di amicizia in sospeso inviate"
         },
         "blocked": {
           "title": "Utenti bloccati",
@@ -135,30 +135,30 @@
       "cards": {
         "twoFactor": {
           "title": "Autenticazione a due fattori",
-          "subtitle": "Aggiungi un ulteriore livello di sicurezza al tuo account scegliendo il metodo di verifica preferito",
+          "subtitle": "Aggiungi un ulteriore livello di sicurezza al tuo account scegliendo il tuo metodo di verifica preferito",
           "button": "Gestisci 2FA"
         },
         "change_password_form": {
           "title": "Cambia password",
           "subtitle": "Modifica la tua password attuale",
           "sidecard": {
-            "title": "Requisiti della password",
+            "title": "Requisiti password",
             "text1": "Per creare una nuova password,",
             "text2": "devi soddisfare tutti i seguenti requisiti:",
-            "text3": "Lunghezza minima 8 caratteri",
+            "text3": "Minimo 8 caratteri",
             "text4": "Almeno una lettera minuscola",
             "text5": "Almeno una lettera maiuscola",
-            "text6": "Almeno un numero"
+            "text6": "Almeno una cifra"
           },
           "button": "Salva modifiche"
         },
         "sessions": {
           "title": "Browser e dispositivi",
-          "subtitle": "Questi browser e dispositivi sono attualmente connessi al tuo account. Rimuovi eventuali dispositivi non autorizzati"
+          "subtitle": "Questi browser e dispositivi sono attualmente connessi al tuo account. Rimuovi quelli non autorizzati"
         },
         "delete_account": {
           "title": "Elimina account",
-          "subtitle": "Questo eliminerà permanentemente il tuo account e tutti i dati associati. Questa azione è irreversibile",
+          "subtitle": "Questa azione eliminerà permanentemente il tuo account e tutti i dati associati. È irreversibile",
           "button": "Elimina account"
         }
       }
@@ -182,37 +182,37 @@
               "subtitle": ""
             },
             "win_rate": {
-              "title": "Tasso di vincita",
+              "title": "Percentuale vittorie",
               "subtitle": ""
             },
             "points_scored": {
               "title": "Punti segnati",
-              "subtitle": "differenziale netto"
+              "subtitle": "differenza netta"
             },
             "time_played": {
-              "title": "Tempo di gioco",
-              "subtitle": "{count, plural, one {# minuto totali} other {# minuti totali}}"
+              "title": "Tempo giocato",
+              "subtitle": "{count, plural, one {# minuto totale} other {# minuti totali}}"
             },
             "score_records": {
               "title": "Record punteggio",
-              "1st": "Punteggio più alto",
-              "2nd": "Punteggio più basso",
+              "1st": "Punteggio massimo",
+              "2nd": "Punteggio minimo",
               "3rd": "Punteggio medio"
             },
             "avg_p_by_outcome": {
-              "title": "Punteggio medio per risultato",
+              "title": "Punteggio medio per esito",
               "1st": "Per vittoria",
               "2nd": "Per sconfitta",
               "3rd": "Per pareggio"
             },
             "charts": {
               "win_rate_trends": {
-                "title": "Andamento tasso di vincita",
-                "subtitle": "Tasso di vincita negli ultimi 7 giorni"
+                "title": "Andamento percentuale vittorie",
+                "subtitle": "Percentuale vittorie negli ultimi 7 giorni"
               },
               "wins_vs_losses": {
                 "title": "Vittorie / Sconfitte",
-                "subtitle": "Distribuzione vittorie / sconfitte nel tempo",
+                "subtitle": "Distribuzione di vittorie e sconfitte nel tempo",
                 "common": {
                   "wins": "Vittorie",
                   "losses": "Sconfitte",
@@ -232,7 +232,7 @@
       "title": "Avversario",
       "cards": {
         "opp_analysis": {
-          "title": "Analisi avversario",
+          "title": "Analisi avversari",
           "cards": {
             "most_wins": {
               "title": "Più vittorie",
@@ -252,12 +252,12 @@
             },
             "score_records": {
               "title": "Record punteggio",
-              "1st": "Punteggio più alto",
-              "2nd": "Punteggio più basso",
+              "1st": "Punteggio massimo",
+              "2nd": "Punteggio minimo",
               "3rd": "Punteggio medio"
             },
             "avg_p_by_outcome": {
-              "title": "Punteggio medio per risultato",
+              "title": "Punteggio medio per esito",
               "1st": "Per vittoria",
               "2nd": "Per sconfitta",
               "3rd": "Per pareggio"
@@ -268,8 +268,8 @@
                 "subtitle": "Punteggio dei tuoi avversari negli ultimi 7 giorni"
               },
               "you_vs_opp_score": {
-                "title": "Differenza punteggio avversario",
-                "subtitle": "Tuo vs Differenza punteggio avversari",
+                "title": "Differenza punteggio",
+                "subtitle": "Il tuo punteggio vs. quello dei tuoi avversari",
                 "common": {
                   "you": "Tu",
                   "your_opponents": "I tuoi avversari"
@@ -303,7 +303,7 @@
           "pagination": {
             "page": "Pagina",
             "prev": "Precedente",
-            "next": "Successiva"
+            "next": "Successivo"
           },
           "columns": {
             "opp": "Avversario",
@@ -315,7 +315,7 @@
             "date": "Data"
           },
           "common": {
-            "ranked1v1": "Classificata 1v1",
+            "ranked1v1": "1v1 Classificata",
             "win": "Vittoria",
             "loss": "Sconfitta",
             "draw": "Pareggio"
@@ -328,13 +328,13 @@
               "title": "Record durata",
               "1st": "Partita più lunga",
               "2nd": "Partita più breve",
-              "3rd": "Partita media"
+              "3rd": "Durata media"
             },
             "avg_d_by_outcome": {
-              "title": "Durata per risultato",
-              "1st": "Vittoria media",
-              "2nd": "Sconfitta media",
-              "3rd": "Pareggio medio"
+              "title": "Durata per esito",
+              "1st": "Media vittorie",
+              "2nd": "Media sconfitte",
+              "3rd": "Media pareggi"
             },
             "charts": {
               "time_spent": {
@@ -343,7 +343,7 @@
               },
               "games_per_day": {
                 "title": "Partite al giorno",
-                "subtitle": "Tempo di gioco giornaliero negli ultimi 7 giorni"
+                "subtitle": "Partite giornaliere negli ultimi 7 giorni"
               }
             }
           }
@@ -355,23 +355,23 @@
     "data": {
       "generic": {
         "no-data": "Nessun dato trovato.",
-        "error": "Caricamento dati fallito."
+        "error": "Impossibile caricare i dati."
       },
       "friends": {
-        "no-data": "Nessun amico trovato. Vai a toccare un po' d'erba.",
-        "error": "Caricamento amici fallito. Riprova più tardi."
+        "no-data": "Nessun amico trovato. Vai a prendere una boccata d’aria.",
+        "error": "Impossibile caricare gli amici. Riprova più tardi."
       },
       "outgoing": {
-        "no-data": "Nessuna richiesta di amicizia in uscita trovata. Vai a toccare un po' d'erba.",
-        "error": "Caricamento richieste in uscita fallito. Riprova più tardi."
+        "no-data": "Nessuna richiesta di amicizia inviata. Vai a prendere una boccata d’aria.",
+        "error": "Impossibile caricare le richieste inviate. Riprova più tardi."
       },
       "incoming": {
-        "no-data": "Nessuna richiesta di amicizia in entrata trovata. Vai a toccare un po' d'erba.",
-        "error": "Caricamento richieste in entrata fallito. Riprova più tardi."
+        "no-data": "Nessuna richiesta di amicizia ricevuta. Vai a prendere una boccata d’aria.",
+        "error": "Impossibile caricare le richieste ricevute. Riprova più tardi."
       },
       "blocked": {
-        "no-data": "Nessun utente bloccato trovato. Vai a toccare un po' d'erba.",
-        "error": "Caricamento utenti bloccati fallito. Riprova più tardi."
+        "no-data": "Nessun utente bloccato. Vai a prendere una boccata d’aria.",
+        "error": "Impossibile caricare gli utenti bloccati. Riprova più tardi."
       }
     }
   },
@@ -385,25 +385,25 @@
       "confirm_password": "Conferma password",
       "current_password": "Password attuale",
       "new_password": "Nuova password",
-      "forgot_password": "Password dimenticata",
+      "forgot_password": "Hai dimenticato la password?",
       "reset_password": "Reimposta password",
-      "bio": "Bio",
-      "max_resends": "Hai raggiunto il limite di reinvii",
+      "bio": "Biografia",
+      "max_resends": "Hai raggiunto il limite di invii",
       "retry": "Riprova?",
       "language": "Lingua",
       "didnt_receive_code": "Non hai ricevuto il codice?",
-      "resend_code": "Reinvia codice",
-      "resend_in": "Reinvia tra",
-      "or": "O",
+      "resend_code": "Invia nuovamente il codice",
+      "resend_in": "Invia tra",
+      "or": "OPPURE",
       "signup": "Registrati",
       "signin": "Accedi",
       "login": "Accedi",
-      "remove_pic": "Rimuovi immagine",
-      "change_pic": "Cambia immagine",
+      "remove_pic": "Rimuovi foto",
+      "change_pic": "Cambia foto",
       "current": "Attuale",
       "continue": "Continua"
     },
-    "errorCodes": "{code, select, AUTH_TOO_MANY_ATTEMPTS {Troppi tentativi - Riprova} AUTH_TOO_MANY_RESENDS {Troppi reinvii - Riprova} AUTH_CHALLENGE_EXPIRED {Richiesta scaduta - Riprova} AUTH_2FA_NOT_ENABLED {Metodo non abilitato - Riprova} AUTH_INVALID_CREDENTIALS {Nome utente o password non validi} AUTH_SERVICE_UNAVAILABLE {Servizio non disponibile - Riprova più tardi} AUTH_NETWORK_ERR {Controlla la tua connessione} other {Qualcosa è andato storto - Riprova}}",
+    "errorCodes": "{code, select, AUTH_EMAIL_TAKEN {Email già in uso} AUTH_USERNAME_TAKEN {Nome utente già in uso} AUTH_TOO_MANY_ATTEMPTS {Troppi tentativi - Riprova più tardi} AUTH_TOO_MANY_RESENDS {Troppi invii - Riprova più tardi} AUTH_CHALLENGE_EXPIRED {Sfida scaduta - Riprova} AUTH_2FA_NOT_ENABLED {Metodo non abilitato - Riprova} AUTH_INVALID_CREDENTIALS {Credenziali non valide} AUTH_SERVICE_UNAVAILABLE {Servizio non disponibile - Riprova più tardi} AUTH_NETWORK_ERR {Controlla la connessione} other {Qualcosa è andato storto - Riprova}}",
     "validation": {
       "common": {
         "availability": {
@@ -429,10 +429,10 @@
         "required": "Il nome utente è obbligatorio",
         "min": "Il nome utente deve contenere almeno 3 caratteri",
         "max": "Il nome utente deve contenere al massimo 10 caratteri",
-        "format": "Il nome utente può contenere solo lettere, numeri e trattini bassi"
+        "format": "Il nome utente può contenere solo lettere, numeri e underscore"
       },
       "email": {
-        "required": "L'email è obbligatoria",
+        "required": "L’email è obbligatoria",
         "invalid": "Inserisci un indirizzo email valido"
       },
       "password": {
@@ -440,7 +440,7 @@
         "min": "La password deve contenere almeno 8 caratteri",
         "lowercase": "La password deve contenere almeno una lettera minuscola",
         "uppercase": "La password deve contenere almeno una lettera maiuscola",
-        "digit": "La password deve contenere almeno un numero",
+        "digit": "La password deve contenere almeno una cifra",
         "no_match": "Le password non corrispondono",
         "same_as_current": "La nuova password deve essere diversa da quella attuale"
       },
@@ -451,17 +451,17 @@
         "required": "Conferma la tua password"
       },
       "bio": {
-        "required": "La bio è obbligatoria",
-        "min": "La bio deve contenere almeno 3 caratteri",
-        "max": "La bio deve contenere al massimo 50 caratteri"
+        "required": "La biografia è obbligatoria",
+        "min": "La biografia deve contenere almeno 3 caratteri",
+        "max": "La biografia deve contenere al massimo 50 caratteri"
       },
       "phone": {
         "required": "Il numero di telefono è obbligatorio",
-        "format": "Inserisci un numero di telefono valido (es. +393331234567)"
+        "format": "Inserisci un numero di telefono valido (es. +212659871356)"
       },
       "code": {
         "required": "Il codice di verifica è obbligatorio",
-        "format": "Il codice deve contenere esattamente 6 cifre"
+        "format": "Il codice deve essere esattamente di 6 cifre"
       }
     },
     "login": {
@@ -480,27 +480,27 @@
         "subtitle": "Seleziona uno dei seguenti metodi per completare la verifica",
         "cards": {
           "title": "{method, select, TOTP {App di autenticazione} EMAIL {Email} SMS {SMS} other {Metodo di autenticazione}}",
-          "subtitle": "{method, select, TOTP {Usa Google Authenticator, Authy...} EMAIL {Ricevi codici via Email} SMS {Ricevi codici via SMS} other {Metodo di autenticazione}}"
+          "subtitle": "{method, select, TOTP {Usa Google Authenticator, Authy...} EMAIL {Ricevi codici via email} SMS {Ricevi codici via SMS} other {Metodo di autenticazione}}"
         }
       },
       "verifyCode": {
         "title": "Autenticazione a due fattori",
-        "subtitle": "{method, select, TOTP {Inserisci il codice a 6 cifre dalla tua app di autenticazione} EMAIL {Abbiamo inviato un codice a 6 cifre alla tua Email} SMS {Abbiamo inviato un codice a 6 cifre via SMS} other {Inserisci il codice a 6 cifre per completare la verifica}}",
-        "cannot_access": "{method, select, TOTP {Non puoi accedere alla tua app di autenticazione?} EMAIL {Non puoi accedere alla tua Email?} SMS {Non puoi accedere al tuo telefono?} other {Non puoi accedere a questo metodo?}}",
+        "subtitle": "{method, select, TOTP {Inserisci il codice di 6 cifre dalla tua app di autenticazione} EMAIL {Abbiamo inviato un codice di 6 cifre alla tua email} SMS {Abbiamo inviato un codice di 6 cifre via SMS} other {Inserisci il codice di 6 cifre per completare la verifica}}",
+        "cannot_access": "{method, select, TOTP {Non puoi accedere alla tua app di autenticazione?} EMAIL {Non puoi accedere alla tua email?} SMS {Non puoi accedere al telefono?} other {Non puoi accedere a questo metodo?}}",
         "other_method": "Prova altri metodi di verifica"
       }
     },
     "twoFactorManager": {
       "overview": {
         "title": "Autenticazione a due fattori",
-        "subtitle": "Aggiungi un ulteriore livello di sicurezza al tuo account scegliendo il metodo di verifica preferito",
+        "subtitle": "Aggiungi un ulteriore livello di sicurezza al tuo account scegliendo il tuo metodo di verifica preferito",
         "cards": {
           "title": "{method, select, TOTP {App di autenticazione} EMAIL {Email} SMS {SMS} other {Metodo di autenticazione}}",
-          "subtitle": "{method, select, TOTP {Usa Google Authenticator, Authy...} EMAIL {Ricevi codici via Email} SMS {Ricevi codici via SMS} other {Metodo di autenticazione}}"
+          "subtitle": "{method, select, TOTP {Usa Google Authenticator, Authy...} EMAIL {Ricevi codici via email} SMS {Ricevi codici via SMS} other {Metodo di autenticazione}}"
         },
         "note": {
           "title": "Consigliato",
-          "text": "Le app di autenticazione forniscono la massima sicurezza e funzionano senza connessione Internet."
+          "text": "Le app di autenticazione offrono la massima sicurezza e funzionano senza connessione internet."
         }
       },
       "done": {
@@ -509,41 +509,41 @@
         "2nd_subtitle": "Il tuo account è ora protetto con l'autenticazione a due fattori.",
         "buttons": {
           "goback": "Torna al gestore 2FA",
-          "continue": "Continua alla dashboard"
+          "continue": "Vai alla dashboard"
         }
       }
     },
     "verification": {
       "input": {
         "title": "{method, select, TOTP {App di autenticazione} EMAIL {Email} SMS {SMS} other {Metodo di autenticazione}}",
-        "subtitle": "{method, select, TOTP {Scansiona il codice QR con la tua app di autenticazione} EMAIL {Invieremo un codice di verifica a 6 cifre alla tua Email} SMS {Invieremo un codice di verifica a 6 cifre al tuo telefono} other {Invieremo un codice di verifica a 6 cifre}}",
-        "cant_scan_qr": "Non puoi scansionare? Inserisci questo codice manualmente:"
+        "subtitle": "{method, select, TOTP {Scansiona il codice QR con la tua app di autenticazione} EMAIL {Ti invieremo un codice di verifica di 6 cifre via email} SMS {Ti invieremo un codice di verifica di 6 cifre al telefono} other {Ti invieremo un codice di verifica di 6 cifre}}",
+        "cant_scan_qr": "Non riesci a scansionare? Inserisci manualmente questo codice:"
       },
       "verifyCode": {
         "title": "{method, select, TOTP {App di autenticazione} EMAIL {Email} SMS {SMS} other {Metodo di autenticazione}}",
-        "subtitle": "{method, select, TOTP {Inserisci il codice a 6 cifre dalla tua app di autenticazione} EMAIL {Abbiamo inviato un codice a 6 cifre alla tua Email} SMS {Abbiamo inviato un codice a 6 cifre via SMS} other {Inserisci il codice a 6 cifre per completare la verifica}}"
+        "subtitle": "{method, select, TOTP {Inserisci il codice di 6 cifre dalla tua app di autenticazione} EMAIL {Abbiamo inviato un codice di 6 cifre alla tua email} SMS {Abbiamo inviato un codice di 6 cifre via SMS} other {Inserisci il codice di 6 cifre per completare la verifica}}"
       },
       "note": {
         "title": "Nota",
-        "first": "L'aggiornamento di queste informazioni sostituirà le informazioni di contatto esistenti sul tuo account.",
-        "second": "Assicurati che le nuove informazioni siano corrette, poiché verranno utilizzate per tutte le comunicazioni e verifiche future."
+        "first": "L'aggiornamento sostituirà le informazioni di contatto esistenti sul tuo account.",
+        "second": "Assicurati che le nuove informazioni siano corrette, poiché saranno utilizzate per tutte le comunicazioni e verifiche future."
       }
     },
     "reset_password": {
       "forgotPassword": {
         "title": "Hai dimenticato la password?",
-        "subtitle": "Abbiamo inviato un codice a 6 cifre alla tua Email",
-        "instruction": "Ricordi la password?"
+        "subtitle": "Abbiamo inviato un codice di 6 cifre alla tua email",
+        "instruction": "Ricordi la tua password?"
       },
       "verifyCode": {
-        "title": "Controlla la tua Email!",
-        "subtitle": "Abbiamo inviato un codice a 6 cifre alla tua Email",
-        "instruction": "Ricordi la password?"
+        "title": "Controlla la tua email!",
+        "subtitle": "Abbiamo inviato un codice di 6 cifre alla tua email",
+        "instruction": "Ricordi la tua password?"
       },
       "setNewPassword": {
         "title": "Crea una nuova password",
         "subtitle": "Inserisci e conferma la tua nuova password",
-        "instruction": "Ricordi la password?"
+        "instruction": "Ricordi la tua password?"
       }
     }
   },
@@ -565,15 +565,15 @@
         "description": {
           "chat": "ti ha inviato un messaggio.",
           "game": "ti ha sfidato a una partita!",
-          "pp_game": "ti ha sfidato a una partita di Ping Pong!",
+          "pp_game": "ti ha sfidato a una partita di Pong!",
           "xo_game": "ti ha sfidato a una partita di Tris!",
           "friend_request": "ti ha inviato una richiesta di amicizia!",
           "tournament": "ti ha invitato a iniziare un torneo!",
           "friend_accept": "ha accettato la tua richiesta di amicizia!",
           "friend_reject": "ha rifiutato la tua richiesta di amicizia.",
           "friend_cancel": "ha annullato la tua richiesta di amicizia.",
-          "game_accept": "ha accettato la tua sfida di gioco!",
-          "game_reject": "ha rifiutato la tua sfida di gioco."
+          "game_accept": "ha accettato la tua sfida!",
+          "game_reject": "ha rifiutato la tua sfida."
         }
       },
       "footer": {
@@ -586,7 +586,7 @@
     "accept": "Accetta",
     "decline": "Rifiuta",
     "reply": "Rispondi",
-    "clear": "Cancella",
-    "join": "Unisciti {type, select, game {alla partita} tournament {al torneo} other {al gioco}}"
+    "clear": "cancella",
+    "join": "Partecipa a {type, select, game {partita} tournament {torneo} other {partita}}"
   }
 }
