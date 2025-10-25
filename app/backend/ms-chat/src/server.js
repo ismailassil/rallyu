@@ -26,9 +26,7 @@ await fastify.register(natsPlugin, {
 });
 
 fastify.get('/chat/history', async (req, res) => {
-  const { senderId, receiverId, limit = 10, offset = 0 } = req.query;
-
-  
+  const { senderId, receiverId, limit = 30, offset = 0 } = req.query;
   try {
     const statement = fastify.db.prepare(
       `SELECT * FROM message
@@ -39,7 +37,7 @@ fastify.get('/chat/history', async (req, res) => {
     
     const result = statement.all(senderId, receiverId, receiverId, senderId, limit, offset);
     
-    res.send(result.reverse()); // Reverse to show oldest first
+    res.send(result.reverse());
   } catch (error) {
     console.error('Error fetching messages:', error);
     res.status(500).send({ error: 'Failed to retrieve messages' });

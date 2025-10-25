@@ -144,9 +144,9 @@ services:
       - .env
     develop:
       watch:
-        - path: ./ms-tournament/src/
+        - path: ./ms-tournament/
           action: sync
-          target: /app/src
+          target: /app/
           ignore:
             - ./ms-tournament/node_modules/
         - path: ./ms-tournament/src/package.json

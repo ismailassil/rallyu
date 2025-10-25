@@ -1,0 +1,26 @@
+{
+  "placeholders": {
+    "data": {
+      "generic": {
+        "no-data": "Nessun dato trovato.",
+        "error": "Impossibile caricare i dati."
+      },
+      "friends": {
+        "no-data": "Nessun amico trovato. Vai a prendere una boccata d’aria.",
+        "error": "Impossibile caricare gli amici. Riprova più tardi."
+      },
+      "outgoing": {
+        "no-data": "Nessuna richiesta di amicizia inviata. Vai a prendere una boccata d’aria.",
+        "error": "Impossibile caricare le richieste inviate. Riprova più tardi."
+      },
+      "incoming": {
+        "no-data": "Nessuna richiesta di amicizia ricevuta. Vai a prendere una boccata d’aria.",
+        "error": "Impossibile caricare le richieste ricevute. Riprova più tardi."
+      },
+      "blocked": {
+        "no-data": "Nessun utente bloccato. Vai a prendere una boccata d’aria.",
+        "error": "Impossibile caricare gli utenti bloccati. Riprova più tardi."
+      }
+    }
+  }
+}

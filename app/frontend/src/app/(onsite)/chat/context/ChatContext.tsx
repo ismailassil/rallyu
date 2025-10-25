@@ -5,13 +5,13 @@ import { useAuth } from "../../contexts/AuthContext";
 import { LoggedUser, MessageType } from "../types/chat.types";
 import { format, isToday, isYesterday, parseISO, isSameDay } from "date-fns";
 import { useTranslations } from "next-intl";
+import { simulateBackendCall } from "@/app/(api)/utils";
 
 type ChatContextType = {
 	showConversation: boolean;
 	setShowConversation: (show: boolean) => void;
 	isLoadingFriends: boolean;
 	setIsLoadingFriends: (show: boolean) => void;
-	friends: any[] | null;
 	BOSS: LoggedUser | null;
 	socket: any;
 	apiClient: any;
@@ -24,7 +24,9 @@ type ChatContextType = {
 		mode: "conversation" | "list",
 		prevMsg?: string | undefined
 	) => { date: string; time: string };
-};
+	displayUsers: LoggedUser[];
+	setDisplayUsers: React.Dispatch<React.SetStateAction<LoggedUser[]>>;
+}
 
 const ChatContext = createContext<ChatContextType | null>(null);
 
@@ -42,26 +44,27 @@ type ChatProviderProps = {
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	const [showConversation, setShowConversation] = useState(false);
-	const [friends, setFriends] = useState<LoggedUser[] | null>(null);
 	const [isLoadingFriends, setIsLoadingFriends] = useState(true);
 	const [messages, setMessages] = useState<MessageType[]>([]);
 	const [selectedUser, setSelectedUser] = useState<LoggedUser | null>(null);
 	const { socket, apiClient, loggedInUser: BOSS } = useAuth();
+	const [displayUsers, setDisplayUsers] = useState<LoggedUser[]>([]);
 	const t = useTranslations("chat");
+	const [lastMessages, setLastMessages] = useState<Record<number, string>>({});
+
 
 	useEffect(() => {
-		async function getAllFriends() {
-			try {
-				const allFriends = await apiClient.getAllFriends();
-				setFriends(allFriends);
-			} catch (err: any) {
-				console.log(err);
-			} finally {
+		if (!BOSS?.id) return;
+		apiClient.instance.get('/chat/friend_list')
+			.then((response: any) => { // check this
+				setDisplayUsers(response.data);
+			})
+			.catch((error: Error) => {
+				console.error("Error fetching chat history:", error);
+			}).finally(() => {
 				setIsLoadingFriends(false);
-			}
-		}
-		getAllFriends();
-	}, [showConversation, selectedUser, apiClient]);
+			});
+	}, [BOSS?.id, apiClient]); // check this 
 
 	useEffect(() => {
 		socket.updateContext("chat");
@@ -92,26 +95,11 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 		};
 	}, [socket]);
 
-	// useEffect(() => {
-	// 	if (!BOSS?.id) return;
 
-	// 	apiClient.instance.get('/chat/history')
-	// 		.then((response: any) => {
-	// 			setMessages(response?.data);
-	// 		})
-	// 		.catch((error: any) => {
-	// 			console.error("Error fetching chat history:", error);
-	// 		});
-	//
-	// }, []);
+	const formatMessageDateTime = (currentMsg: string | undefined, mode: 'conversation' | 'list', prevMsg?: string,) => {
 
-	const formatMessageDateTime = (
-		currentMsg: string | undefined,
-		mode: "conversation" | "list",
-		prevMsg?: string
-	) => {
 		if (!currentMsg) return { date: "", time: "" };
-
+		
 		const currentDate = parseISO(currentMsg + "Z");
 		const prevDate = prevMsg ? parseISO(prevMsg + "Z") : null;
 
@@ -142,23 +130,22 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	};
 
 	return (
-		<ChatContext.Provider
-			value={{
-				showConversation,
-				setShowConversation,
-				isLoadingFriends,
-				setIsLoadingFriends,
-				apiClient,
-				friends,
-				socket,
-				BOSS,
-				messages,
-				setMessages,
-				selectedUser,
-				setSelectedUser,
-				formatMessageDateTime,
-			}}
-		>
+		<ChatContext.Provider value={{
+			showConversation,
+			setShowConversation,
+			isLoadingFriends,
+			setIsLoadingFriends,
+			apiClient,
+			socket,
+			BOSS,
+			messages,
+			setMessages,
+			selectedUser,
+			setSelectedUser,
+			formatMessageDateTime,
+			displayUsers,
+			setDisplayUsers,
+		}}>
 			{children}
 		</ChatContext.Provider>
 	);

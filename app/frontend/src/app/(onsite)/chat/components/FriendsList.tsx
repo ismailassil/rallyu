@@ -5,14 +5,15 @@ import { LoggedUser } from '../types/chat.types';
 import { useChat } from '../context/ChatContext';
 import Avatar from '../../users/components/Avatar';
 import { useTranslations } from 'next-intl';
+import LoadingComponent from '@/app/(auth)/components/UI/LoadingComponents';
+import { simulateBackendCall } from '@/app/(api)/utils';
 
 const FriendsList = () => {
 	const [prefix, setPrefix] = useState("");
 	const [filteredSuggestions, setFilteredSuggestions] = useState<LoggedUser[]>([]);
-	const { apiClient, messages, BOSS, setShowConversation, showConversation, setSelectedUser, selectedUser, formatMessageDateTime} = useChat();
-	const [displayUsers, setDisplayUsers] = useState<LoggedUser[]>([]);
+	const {isLoadingFriends, displayUsers, setShowConversation, setSelectedUser, selectedUser, formatMessageDateTime } = useChat();
 	const hasFriends = prefix ? filteredSuggestions.length > 0 : displayUsers.length > 0;
-	const t=useTranslations("chat");
+	const t = useTranslations("chat");
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const input = event.target.value;
@@ -32,17 +33,6 @@ const FriendsList = () => {
 		setShowConversation(true);
 		window.history.pushState(null, "", `/chat/${user.username}`);
 	};
-
-	useEffect(() => {
-		if (!BOSS?.id) return;
-		apiClient.instance.get('/chat/friend_list')
-			.then((response : any) => { // check this
-				setDisplayUsers(response.data);
-			})
-			.catch((error: Error) => {
-				console.error("Error fetching chat history:", error);
-			});
-	}, [BOSS?.id, apiClient, showConversation, messages]); // check this 
 
 	return (
 		<div className="flex size-full flex-col">
@@ -67,43 +57,46 @@ const FriendsList = () => {
 				</div>
 			</div>
 			<div className="custom-scrollbar flex-1 overflow-y-auto">
-				{hasFriends ? (
-					<ul>
-						{(prefix ? filteredSuggestions : displayUsers)?.map((user) => {
-							const { date } = formatMessageDateTime(user?.last_message?.created_at, "list");
+				{!isLoadingFriends ? (
+					hasFriends ? (
+						<ul>
+							{(prefix ? filteredSuggestions : displayUsers)?.map((user) => {
+								const { date } = formatMessageDateTime(user?.last_message?.created_at, "list");
 
-							return (
-								< li key={user?.id} onClick={() => handleSelectUser(user)}>
-									<div className={`flex gap-4 hover:cursor-pointer hover:bg-white/5 hover:rounded-lg p-2 ${selectedUser?.id === user?.id ? 'bg-white/15 rounded-lg' : 'bg-white/0'} w-full`}>
-										<div className=' size-[40] md:size-[50px] flex-shrink-0 overflow-hidden rounded-full border border-white/30'>
-											<Avatar
-												avatar={user?.avatar_url}
-												alt={`${user?.first_name + " " + user?.last_name} avatar`}
-												className="h-full w-full"
-											/>
-										</div>
-										<div className='flex flex-col w-full gap-1 justify-between p-0.5 min-w-0'>
-											<div className='flex w-full justify-between items-center'>
-												<div className='line-clamp-1 flex-1 min-w-0'>{user?.first_name + " " + user?.last_name}</div>
-												{user.last_message && <div className='text-gray-400 flex-shrink-0 ml-2 text-xs min-w-0 truncate'>{date}</div>}
+								return (
+									< li key={user?.id} onClick={() => handleSelectUser(user)}>
+										<div className={`flex gap-4 hover:cursor-pointer hover:bg-white/5 hover:rounded-lg p-2 ${selectedUser?.id === user?.id ? 'bg-white/15 rounded-lg' : 'bg-white/0'} w-full`}>
+											<div className=' size-[40] md:size-[50px] flex-shrink-0 overflow-hidden rounded-full border border-white/30'>
+												<Avatar
+													avatar={user?.avatar_url}
+													alt={`${user?.first_name + " " + user?.last_name} avatar`}
+													className="h-full w-full"
+												/>
 											</div>
-											<div className='flex w-full justify-between items-center'>
-												<div className='text-gray-400 text-xs md:text-sm truncate flex-1'>
-													{user.last_message?.text || 'No messages yet'}
+											<div className='flex flex-col w-full gap-1 justify-between p-0.5 min-w-0'>
+												<div className='flex w-full justify-between items-center'>
+													<div className='line-clamp-1 flex-1 min-w-0'>{user?.first_name + " " + user?.last_name+ user.id}</div>
+													{user.last_message && <div className='text-gray-400 flex-shrink-0 ml-2 text-xs min-w-0 truncate'>{date}</div>}
 												</div>
-												{/* {<div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />} */}
+												<div className='flex w-full justify-between items-center'>
+													<div className='text-gray-400 text-xs md:text-sm truncate flex-1'>
+														{user.last_message?.text || 'No messages yet'}
+													</div>
+													{/* {<div className='size-2 flex-shrink-0 ml-2 rounded-full bg-main' />} */}
+												</div>
 											</div>
 										</div>
-									</div>
-								</li>
-							);
-						})}
-					</ul>
-				) : (
-					<div className="flex h-full items-center justify-center">
-						<p className="md:text text-sm text-gray-400">{t("no_friends")}</p>
-					</div>
-				)}
+									</li>
+								);
+							})}
+						</ul>
+					) : (
+						<div className="flex h-full items-center justify-center">
+							<p className="md:text text-sm text-gray-400">{t("no_friends")}</p>
+						</div>
+					)
+				) : (<LoadingComponent />)}
+
 			</div>
 		</div>
 	);

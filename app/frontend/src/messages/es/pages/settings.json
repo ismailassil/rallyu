@@ -1,0 +1,69 @@
+{
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Gestiona las preferencias de tu cuenta y la configuración de seguridad",
+    "general": {
+      "title": "General",
+      "cards": {
+        "personal_infos": {
+          "title": "Información personal",
+          "subtitle": "Actualiza la información de tu perfil y tu dirección de correo electrónico"
+        }
+      }
+    },
+    "users": {
+      "title": "Usuarios",
+      "cards": {
+        "friends": {
+          "title": "Amigos",
+          "subtitle": "Ver y gestionar tus relaciones con todos tus amigos"
+        },
+        "incoming": {
+          "title": "Solicitudes de amistad recibidas",
+          "subtitle": "Ver y rechazar todas las solicitudes de amistad pendientes que has recibido"
+        },
+        "outgoing": {
+          "title": "Solicitudes de amistad enviadas",
+          "subtitle": "Ver y cancelar todas las solicitudes de amistad pendientes que has enviado"
+        },
+        "blocked": {
+          "title": "Usuarios bloqueados",
+          "subtitle": "Ver y desbloquear a todos los usuarios que has bloqueado"
+        }
+      }
+    },
+    "security": {
+      "title": "Seguridad",
+      "cards": {
+        "twoFactor": {
+          "title": "Autenticación en dos pasos",
+          "subtitle": "Añade una capa adicional de seguridad a tu cuenta eligiendo tu método de verificación preferido",
+          "button": "Gestionar 2FA"
+        },
+        "change_password_form": {
+          "title": "Cambiar contraseña",
+          "subtitle": "Modifica tu contraseña actual",
+          "sidecard": {
+            "title": "Requisitos de la contraseña",
+            "text1": "Para crear una nueva contraseña,",
+            "text2": "debes cumplir con todos los siguientes requisitos:",
+            "text3": "Mínimo 8 caracteres",
+            "text4": "Al menos una letra minúscula",
+            "text5": "Al menos una letra mayúscula",
+            "text6": "Al menos un dígito"
+          },
+          "button": "Guardar cambios"
+        },
+        "sessions": {
+          "title": "Navegadores y dispositivos",
+          "subtitle": "Estos navegadores y dispositivos están actualmente conectados a tu cuenta. Elimina cualquier dispositivo no autorizado"
+        },
+        "delete_account": {
+          "title": "Eliminar cuenta",
+          "subtitle": "Esto eliminará permanentemente tu cuenta y todos los datos asociados. Esta acción es irreversible",
+          "button": "Eliminar cuenta"
+        }
+      }
+    }
+  }
+}

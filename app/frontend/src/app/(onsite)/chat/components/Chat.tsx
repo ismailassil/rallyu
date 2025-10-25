@@ -1,32 +1,29 @@
-"use client"
+"use client";
 
-import Image from "next/image"
+import Image from "next/image";
 import { useRouter } from 'next/navigation';
-import { useEffect } from "react"
+import { useEffect } from "react";
 import Conversation from "./Conversation";
 import FriendsList from "./FriendsList";
 import { AnimatePresence, motion } from "framer-motion";
 import { useChat } from "../context/ChatContext";
-import LoadingChat from "./LoadingChat";
 import { useTranslations } from "next-intl";
-
 
 const Chat = ({ username }: { username?: string }) => {
 
-	const { showConversation, setShowConversation, isLoadingFriends, friends, setSelectedUser, selectedUser } = useChat();
+	const { showConversation, setShowConversation, displayUsers, setSelectedUser, selectedUser } = useChat();
 	const route = useRouter();
-	const t=useTranslations("chat");
+	const t = useTranslations("chat");
 
 	useEffect(() => {
-		if (!username || username.length === 0 || !friends || friends.length === 0) return;
-		const match = friends.find((element) => element.username === username);
+		if (!username || username.length === 0 || !displayUsers || displayUsers.length === 0) return;
+		const match = displayUsers.find((element) => element.username === username);
 		if (match) {
 			setSelectedUser(match);
 			setShowConversation(true);
 		} else
 			route.replace('/chat/');
-	}, [username, route, friends?.length]);
-
+	}, [username, route, displayUsers?.length]);
 
 	return (
 		<AnimatePresence>
@@ -38,39 +35,37 @@ const Chat = ({ username }: { username?: string }) => {
 			>
 				<div className="bg-card border-br-card flex size-full justify-center w-full
 							rounded-2xl border-2 p-4 gap-4 text-sm md:text-base">
-
-					{!isLoadingFriends ?
-						(<>
-							{/* ---------------------------------------user's list--------------------------------------- */}
-							<div className={`${showConversation ? 'hidden md:flex' : 'flex'} flex-col size-full md:max-w-[35%] md:min-w-[35%] md:w-[35%]`}>
-								<FriendsList />
-							</div>
-
-							{/* ---------------------------------------thinking image--------------------------------------- */}
-
-							<div className={!showConversation ? `hidden md:flex md:w-[63%] border h-full border-white/30 rounded-lg bg-white/4` : ` hidden`}>
-								<div className="flex size-full flex-col items-center justify-center">
-									<Image
-										width={300}
-										height={300}
-										src="/meme/thinking.gif"
-										alt="thinking image"
-										className="rounded-lg"
-										unoptimized
-									/>
-									<span className="text-lg mt-4 text-center">{t("no_conv.title")}</span>
-									<span className="text-gray-400 text-center">{t("no_conv.sub")}</span>
+							<>
+								{/* ---------------------------------------user's list--------------------------------------- */}
+								<div className={`${showConversation ? 'hidden md:flex' : 'flex'} flex-col size-full md:max-w-[35%] md:min-w-[35%] md:w-[35%]`}>
+									<FriendsList />
 								</div>
-							</div>
 
-							{/* ---------------------------------------conversation area--------------------------------------- */}
+								{/* ---------------------------------------thinking image--------------------------------------- */}
 
-							{selectedUser && (
-								<div className={`${showConversation ? `flex` : `hidden md:flex`} size-full md:max-w-[63%] md:min-w-[63%] md:w-[63%]`}>
-									<Conversation />
+								<div className={!showConversation ? `hidden md:flex md:w-[63%] border h-full border-white/30 rounded-lg bg-white/4` : ` hidden`}>
+									<div className="flex size-full flex-col items-center justify-center">
+										<Image
+											width={300}
+											height={300}
+											src="/meme/thinking.gif"
+											alt="thinking image"
+											className="rounded-lg"
+											unoptimized
+										/>
+										<span className="text-lg mt-4 text-center">{t("no_conv.title")}</span>
+										<span className="text-gray-400 text-center">{t("no_conv.sub")}</span>
+									</div>
 								</div>
-							)}
-						</>) : (<LoadingChat />)}
+
+								{/* ---------------------------------------conversation area--------------------------------------- */}
+
+								{selectedUser && (
+									<div className={`${showConversation ? `flex` : `hidden md:flex`} size-full md:max-w-[63%] md:min-w-[63%] md:w-[63%]`}>
+										<Conversation />
+									</div>
+								)}
+							</>
 				</div>
 			</motion.main>
 		</AnimatePresence>
