@@ -37,7 +37,7 @@ export default function useAPICall() {
 		setError(null);
 		setIsLoading(true);
 		try {
-			// await simulateBackendCall(2000);
+			await simulateBackendCall(6000);
 			const result = await apiCall();
 			setData(result);
 			return result;

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { RefObject, useEffect } from "react";
 import InputField from "@/app/(auth)/components/Form/InputField";
 import { FormProvider } from "@/app/(auth)/components/Form/FormContext";
 import useForm from "@/app/hooks/useForm";
@@ -8,18 +8,22 @@ import { Check, Lock } from "lucide-react";
 import useAPICall from "@/app/hooks/useAPICall";
 import { useTranslations } from "next-intl";
 import useValidationSchema from "@/app/hooks/useValidationSchema";
+import { simulateBackendCall } from "@/app/(api)/utils";
+import { motion } from "framer-motion";
 
 interface ChangePasswordFormProps {
-	formId: string;
-	setButtonDisabled: (disabled: boolean) => void;
-	setButtonHidden: (hidden: boolean) => void;
+	formRef: RefObject<HTMLFormElement | null>;
+	setIsSubmitting: (bool: boolean) => void;
+	setCanSave: (bool: boolean) => void;
+	onSuccess: () => void;
 }
 
 export default function ChangePasswordForm({
-	formId,
-	setButtonDisabled,
-	setButtonHidden,
-}: ChangePasswordFormProps) {
+	formRef,
+	setCanSave,
+	setIsSubmitting,
+	onSuccess
+} : ChangePasswordFormProps) {
 	const t = useTranslations("");
 
 	const { apiClient } = useAuth();
@@ -53,28 +57,37 @@ export default function ChangePasswordForm({
 			Object.values(debounced).every((d) => d === true);
 		const allFilled = Object.values(formData).every((v) => v !== "");
 
-		if (hasErrors || !allTouched || !allFilled || !allDebounced) return;
+		if (hasErrors || !allTouched || !allFilled || !allDebounced) {
+			setCanSave(false);
+			return;
+		}
 
-		setButtonHidden(false);
-	}, [formData, errors, debounced, touched, setButtonHidden]);
+		setCanSave(true);
+	}, [formData, errors, debounced, touched, setCanSave]);
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
+
+		console.group('handleSubmit ChangePasswordForm');
+		console.log('You just called handleSubmit of ChangePasswordForm');
+		console.groupEnd();
 
 		const isValid = validateAll();
 		if (!isValid) return;
 
 		try {
-			setButtonDisabled(true);
-			await executeAPICall(() =>
-				apiClient.auth.changePassword(formData.current_password, formData.new_password)
-			);
+			setIsSubmitting(true);
+			// await executeAPICall(() =>
+			// 	apiClient.auth.changePassword(formData.current_password, formData.new_password)
+			// );
+			await simulateBackendCall(1000);
 
 			toastSuccess("Password changed successfully");
+			onSuccess();
 		} catch (err: any) {
 			toastError(err.message || "Something went wrong, please try again later");
 		} finally {
-			setButtonDisabled(false);
+			setIsSubmitting(false);
 			resetForm();
 		}
 	}
@@ -92,7 +105,7 @@ export default function ChangePasswordForm({
 					getValidationErrors={getValidationErrors}
 					validateAll={validateAll}
 				>
-					<form id={formId} onSubmit={handleSubmit} className="flex flex-col gap-5">
+					<form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-5">
 						<InputField
 							className="field box-border flex flex-col gap-0.5"
 							iconSrc="/icons/lock.svg"

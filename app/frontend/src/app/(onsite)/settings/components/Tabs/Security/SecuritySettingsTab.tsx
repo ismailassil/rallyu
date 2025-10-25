@@ -1,20 +1,24 @@
 import SettingsCard from "../../SettingsCard";
-import { Fingerprint, Check, LoaderCircle, X } from "lucide-react";
+import { Fingerprint, Check, LoaderCircle, X, PiIcon, Lock, CheckCheck, Loader, LogOut } from "lucide-react";
 import ChangePasswordForm from "./ChangePasswordForm";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Sessions from "./Sessions";
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { useTranslations } from "next-intl";
+import Collapsible from "../../Collapsible";
 
 export default function SecuritySettingsTab() {
+	const router = useRouter();
+
 	const t = useTranslations('settings.security.cards');
 
-	const router = useRouter();
-	const changePasswordFormId = 'change-password-form';
-	const [buttonDisabled, setButtonDisabled] = useState(false);
-	const [buttonHidden, setButtonHidden] = useState(true);
+	const changePasswordFormRef = useRef<HTMLFormElement | null>(null);
+
+	const [isEditing, setIsEditing] = useState(false);
+	const [canSave, setCanSave] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const {
 		loggedInUser
@@ -33,45 +37,53 @@ export default function SecuritySettingsTab() {
 				<SettingsCard
 					title={t('twoFactor.title')}
 					subtitle={t('twoFactor.subtitle')}
-					actionLabel={t('twoFactor.button')}
-					actionIcon={<Fingerprint size={16} />}
-					onAction={() => router.push('/2fa-manager')}
-				>
-				</SettingsCard>
+					actionButtonOptions={{
+						title: t('twoFactor.button'),
+						icon: <Fingerprint size={16} />,
+						onClick: () => router.push('2fa-manager')
+					}}
+				/>
 				<SettingsCard
 					title={t('change_password_form.title')}
 					subtitle={t('change_password_form.subtitle')}
-					actionIcon={buttonDisabled ? <LoaderCircle size={16} className='animate-spin' /> : <Check size={16} />}
-					formId={changePasswordFormId}
-					isButtonDisabled={buttonDisabled}
-					isButtonHidden={buttonHidden}
-					isFoldable={true}
-					defaultExpanded={false}
+					actionButtonOptions={{
+						title: 'Change Password',
+						icon: isSubmitting ? <LoaderCircle size={16} className="animate-spin" /> : isEditing ? (canSave ? <CheckCheck size={16} /> : <X size={16} />) : <Lock size={16} /> ,
+						iconKey: isSubmitting ? 'loader' : isEditing ? (canSave ? 'check-check' : 'x') : 'lock' ,
+						onClick: isEditing ? (canSave ? () => changePasswordFormRef.current?.requestSubmit() : () => setIsEditing(false)) : () => setIsEditing(true),
+						disabled: isSubmitting
+					}}
 				>
-					<ChangePasswordForm
-						formId={changePasswordFormId}
-						setButtonDisabled={setButtonDisabled}
-						setButtonHidden={setButtonHidden}
-					/>
+					{isEditing &&
+						<ChangePasswordForm
+							formRef={changePasswordFormRef}
+							setCanSave={(bool) => setCanSave(bool)}
+							setIsSubmitting={(bool) => setIsSubmitting(bool)}
+							onSuccess={() => setIsEditing(false)}
+						/>
+					}
 				</SettingsCard>
 				</>
 			)}
 			<SettingsCard
 				title={t('sessions.title')}
 				subtitle={t('sessions.subtitle')}
+				isFoldable
 			>
 				<Sessions />
 			</SettingsCard>
+			<Collapsible title="Collapsible">
+				<Sessions />
+			</Collapsible>
+
 			<SettingsCard
 				title={t('delete_account.title')}
 				subtitle={t('delete_account.subtitle')}
-				actionLabel={t('delete_account.button')}
-				actionIcon={<X size={16} />}
-				isButtonHidden={false}
-				isButtonDisabled={false}
-				onAction={() => router.push('/delete-account')}
+				actionButtonOptions={{
+					title: 'Delete Account',
+					icon: <X size={16} />
+				}}
 			>
-
 			</SettingsCard>
 		</motion.div>
 	);

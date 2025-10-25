@@ -7,7 +7,7 @@ import LoadingComponent, {
 	PlaceholderComponent,
 } from "@/app/(auth)/components/UI/LoadingComponents";
 import useAPICall from "@/app/hooks/useAPICall";
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 
 export interface Session {
@@ -41,7 +41,7 @@ function SessionCard({ session, onRevoke }: { session: Session; onRevoke: (id: s
 	const lastActive = relativeTimeAgoFromNow(session.updated_at);
 
 	return (
-		<li className="rounded-xl border border-white/10 bg-white/4 p-4 transition-colors hover:bg-white/6 sm:rounded-2xl sm:px-6 sm:py-4">
+		<div className="rounded-xl border border-white/10 bg-white/4 p-4 transition-colors hover:bg-white/6 sm:rounded-2xl sm:px-6 sm:py-4">
 			{/* Mobile Layout */}
 			<div className="flex flex-col gap-4 md:hidden">
 				<div className="flex items-center justify-between">
@@ -137,7 +137,7 @@ function SessionCard({ session, onRevoke }: { session: Session; onRevoke: (id: s
 					<LogOut className="h-6 w-6" />
 				</button>
 			</div>
-		</li>
+		</div>
 	);
 }
 
@@ -187,22 +187,14 @@ export default function Sessions() {
 	if (sessions.length === 0) return <PlaceholderComponent content="No active sessions found." />;
 
 	return (
-		<div className="font-funnel-display flex flex-col gap-6">
-			<motion.ul
-				initial={{ opacity: 0, height: 0 }}
-				animate={{ opacity: 1, height: "auto" }}
-				exit={{ opacity: 0, height: 0 }}
-				transition={{ duration: 0.4, ease: "easeOut" }}
-				className="flex flex-col gap-4"
-			>
-				{sessions.map((session) => (
-					<SessionCard
-						key={session.session_id}
-						session={session}
-						onRevoke={handleRevokeSession}
-					/>
-				))}
-			</motion.ul>
+		<div className="flex flex-col gap-4">
+			{sessions.map((session) => (
+				<SessionCard
+					key={session.session_id}
+					session={session}
+					onRevoke={handleRevokeSession}
+				/>
+			))}
 		</div>
 	);
 }
