@@ -5,6 +5,7 @@ import { useChat } from '../context/ChatContext';
 import { AlertCircle } from 'lucide-react';
 import ConversationHeader from './ConversationHeader';
 import { useTranslations } from 'next-intl';
+import { LoggedUser, MessageType } from '../types/chat.types';
 
 const ConversationBody = () => {
 	const [message, setMessage] = useState("");
@@ -15,28 +16,33 @@ const ConversationBody = () => {
 	const messageRef = useRef<HTMLDivElement | null>(null);
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 	const t = useTranslations("chat");
-	const { socket, BOSS, messages, selectedUser, formatMessageDateTime, setMessages, apiClient } = useChat();
+	const { displayUsers, setDisplayUsers, socket, BOSS, messages, selectedUser, formatMessageDateTime, setMessages, apiClient } = useChat();
 
 	const loadMessages = async (pageNum: number) => {
 		if (!BOSS?.id || !selectedUser?.id || loading) return;
 
 		setLoading(true);
+		const prevmessages = messages;
+		const prevPageNum = pageNum;
 		try {
 			if (!scrollRef.current) return;
 
 			const prevScrollTop = scrollRef.current.scrollTop;
 			const prevScrollHeight = scrollRef.current.scrollHeight;
-			const response = await apiClient.instance.get(`/chat/history?senderId=${BOSS.id}&receiverId=${selectedUser.id}&limit=30&offset=${pageNum * 30}`);
+			const response = await apiClient.instance.get(
+				`/chat/history?senderId=${BOSS.id}&receiverId=${selectedUser.id}&limit=30&offset=${pageNum * 30}`);
 			setMessages(prev => [...response.data, ...prev]);
 			requestAnimationFrame(() => {
 				if (!scrollRef.current) return;
 				scrollRef.current.scrollTop = scrollRef.current.scrollHeight - prevScrollHeight + prevScrollTop;
 			});
 
-			if (!response.data.length) setHasMore(false);
+			if (response.data.length === 0 || response.data.length < 30) setHasMore(false);
 
 		} catch (error) {
 			console.error("Error fetching messages:", error);
+			setMessages(prevmessages)
+			setPage(Math.max(0, prevPageNum - 1))
 		} finally {
 			setLoading(false);
 		}
@@ -69,13 +75,42 @@ const ConversationBody = () => {
 	const sendData = () => {
 		const text = message.trim();
 		if (text && BOSS && selectedUser?.id) {
+			const sentMessage: MessageType = {
+				senderId: BOSS.id,
+				receiverId: selectedUser.id,
+				text: text,
+				created_at: new Date().toISOString()
+			};
+
+			
+			setMessage("");
+			const friendId = sentMessage.senderId === BOSS?.id ? sentMessage.receiverId : sentMessage.senderId;
+			const previousDisplayUsers = displayUsers;
+			const prevmessages = messages;
+
+			setDisplayUsers(prevUsers => {
+				const updatedFriend = prevUsers.find(user => user.id === friendId);
+				if (!updatedFriend)
+					return prevUsers;
+				return [{ ...updatedFriend, last_message: sentMessage },...prevUsers.filter(user => user.id !== friendId)];
+			});
+
 			socket.emit('chat_send_msg', {
 				senderId: BOSS.id,
 				receiverId: selectedUser.id,
 				text: text,
+			}, (response: any) => {
+				if (response?.error) {
+					console.error('Message send failed:', response.error);
+					setDisplayUsers(previousDisplayUsers);
+					setMessage(text);
+					setMessages(prevmessages);
+				}
 			});
-			setMessage("");
-			setTimeout(() => { messageRef.current?.scrollIntoView({ behavior: 'smooth' }); }, 100);
+
+			setTimeout(() => {
+				messageRef.current?.scrollIntoView({ behavior: 'smooth' });
+			}, 100);
 		}
 	};
 
@@ -100,7 +135,6 @@ const ConversationBody = () => {
 
 						return (
 							<React.Fragment key={index}>
-								{/* {<span className='text-xs text-white/50 m-auto'>{date}</span>} */}
 								{date && <span className='text-xs text-white/50 m-auto'>{date}</span>}
 								<div className={`flex ${msg.senderId === BOSS?.id ? 'justify-end' : 'justify-start'}`}>
 									<div className={`max-w-[75%] border-white/30 border px-3 py-1.5 min-w-0 flex flex-col rounded-lg  break-words 

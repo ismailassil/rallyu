@@ -15,7 +15,7 @@ import { useTranslations } from "next-intl";
 
 const ConversationHeader = () => {
 	const [option, setOption] = useState(false);
-	const { setShowConversation, setSelectedUser, selectedUser } = useChat();
+	const { setShowConversation, setSelectedUser, selectedUser, setDisplayUsers, displayUsers } = useChat();
 	const route = useRouter();
 	const { apiClient, isBusy } = useAuth();
 	const [timer, setTimer] = useState<boolean>(false);
@@ -28,6 +28,29 @@ const ConversationHeader = () => {
 		setOption(false);
 		setTimer(true);
 		requestBattleFriend(event, selectedUser?.id, gameType);
+	}
+
+	const onBlock = async () => {
+		if (!selectedUser?.id) return;
+		
+		const blockedUser = selectedUser;
+		const previousUsers = displayUsers;
+		
+		try {
+			setDisplayUsers(users => 
+				users.filter(user => user.id !== blockedUser.id)
+			);
+			setSelectedUser(null);
+			setShowConversation(false);
+			await apiClient.blockUser(blockedUser.id);
+			
+		} catch (error) {
+			console.error('Failed to block user:', error);
+
+			setDisplayUsers(previousUsers);
+			setSelectedUser(blockedUser);
+			setShowConversation(true);
+		}
 	}
 
 	// online status
@@ -110,11 +133,7 @@ const ConversationHeader = () => {
 				<Link
 					href={`/chat`}
 					className="group/button flex h-10 w-10 scale-100 cursor-pointer items-center overflow-hidden rounded-full border border-white/5 bg-white/4 p-[9px] transition-all duration-500 ease-in-out hover:bg-white/8 active:scale-105"
-					onClick={async () => {
-						await apiClient.blockUser(selectedUser?.id as number);
-						setSelectedUser(null);
-						setShowConversation(false);
-					}}
+					onClick={onBlock}
 				>
 					<UserX />
 				</Link>

@@ -7,9 +7,7 @@ export type LoggedUser = {
 	last_message : MessageType
 	email: string,
 	bio: string,
-
 };
-
 
 export type MessageType = {
 	senderId: number;
