@@ -3,7 +3,18 @@ import type { Room, Player, PingPongGameState, PingPongStatus, GameType } from '
 import ws from 'ws';
 import { closeRoom } from './roomManager';
 import axios from 'axios';
-import { MS_AUTH_PORT, MS_AUTH_API_KEY } from '../plugins/game';
+import dotenv from 'dotenv'
+dotenv.config
+
+// AUTH
+const MS_AUTH_PORT = process.env.MS_AUTH_PORT;
+const MS_AUTH_HOST = process.env.MS_AUTH_HOST;
+const MS_AUTH_API_KEY = process.env.MS_AUTH_API_KEY;
+
+// TOURNAMENT
+const MS_TOURN_PORT = process.env.MS_TOURN_PORT;
+const MS_TOURN_HOST = process.env.MS_TOURN_HOST;
+const MS_TOURN_API_KEY = process.env.MS_TOURN_API_KEY;
 
 const GAME_UPDATE_INTERVAL = 16.67; // 60hz
 const GAME_START_DELAY = 3000; // 3 sec
@@ -71,6 +82,8 @@ export class PingPongPlayer implements Player {
 export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	id: string;
 	gameType: GameType;
+	isTournament: boolean = false;
+	tournGameId?: number | undefined;
 	startTime: number = 0;
 	players: PingPongPlayer[] = [];
 	running = false;
@@ -80,9 +93,14 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	gameTimerId: NodeJS.Timeout | undefined = undefined;
 	state: PingPongGameState;
 
-	constructor(id: string, ) {
+	constructor(id: string, gameId: number | undefined) {
 		this.id = id;
 		this.gameType = 'pingpong';
+
+		if (gameId) {
+			this.tournGameId = gameId;
+			this.isTournament = true;
+		}
 
 		const initialAngle = angles[Math.floor(Math.random() * angles.length)];
 		this.state = {
@@ -186,9 +204,8 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 
     }
 
-	private async saveGameData() {
-		try {
-			await axios.post(`http://ms-auth:${MS_AUTH_PORT}/users/matches`, {
+	private sendData(url: string, api_key: string, extra?: Record<any, any>) {
+		return axios.post(url, {
 				player1: {
 					ID: this.players[0].id, 
 					score: this.state.score[0]
@@ -199,11 +216,24 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				},
 				gameStartedAt: Math.floor(this.startTime / 1000),
 				gameFinishedAt: Math.floor(Date.now() / 1000),
-				gameType:  'PONG'
+				gameType:  'PONG',
+				...extra
 			}, {
 				headers: {
-					'Authorization': `Bearer ${MS_AUTH_API_KEY}`
+					'Authorization': `Bearer ${api_key}`
 			}});
+	}
+
+	private async saveGameData() {
+		try {
+			await this.sendData(`http://${MS_AUTH_HOST}:${MS_AUTH_PORT}/users/matches`, MS_AUTH_API_KEY!);
+		} catch (err) {
+			console.log("error from user management: ", err);
+		}
+		try {
+			await this.sendData(`http://${MS_TOURN_HOST}:${MS_TOURN_PORT}/users/matches`, MS_TOURN_API_KEY!, {
+				gameId: this.tournGameId
+			});
 		} catch (err) {
 			console.log("error from user management: ", err);
 		}

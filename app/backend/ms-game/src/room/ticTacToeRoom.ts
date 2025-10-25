@@ -2,8 +2,18 @@ import type { Room, Player, TicTacToeGameState, TicTacToeStatus, GameType, XOSig
 import ws from 'ws';
 import { closeRoom } from './roomManager';
 import axios from 'axios'
-import { MS_AUTH_PORT, MS_AUTH_API_KEY } from '../plugins/game'
+import dotenv from 'dotenv'
+dotenv.config
 
+// AUTH
+const MS_AUTH_PORT = process.env.MS_AUTH_PORT;
+const MS_AUTH_HOST = process.env.MS_AUTH_HOST;
+const MS_AUTH_API_KEY = process.env.MS_AUTH_API_KEY;
+
+// TOURNAMENT
+const MS_TOURN_PORT = process.env.MS_TOURN_PORT;
+const MS_TOURN_HOST = process.env.MS_TOURN_HOST;
+const MS_TOURN_API_KEY = process.env.MS_TOURN_API_KEY;
 
 const TOTAL_ROUNDS: number = 3;
 const TURN_TIMEOUT: number = 15000;
@@ -78,6 +88,8 @@ export class TicTacToePlayer implements Player<TicTacToeRoom> {
 
 export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> {
 	id: string;
+	isTournament: boolean = false;
+	tournGameId?: number | undefined;
 	gameType: GameType;
 	startTime: number | null = null;
 	players: TicTacToePlayer[] = [];
@@ -90,10 +102,14 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	timerStartTimeStamp: number = 0;
 	status: string = 'genesis'
 
-	constructor(id: string, ) {
+	constructor(id: string, gameId: number | undefined) {
 		this.id = id;
 		this.gameType = 'tictactoe';
 		this.startOfRoundPlayer = Math.random() > 0.5 ? 'X' : 'O'
+		if (gameId) {
+			this.tournGameId = gameId;
+			this.isTournament = true;
+		}
 
 		this.state = {
 			cells: ['', '', '', '', '', '', '', '', ''],
@@ -311,10 +327,8 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		});
 	}
 
-	private async saveGameData() {
-		try {
-			console.log('Sending Game Data to Database...');
-			await axios.post(`http://ms-auth:${MS_AUTH_PORT}/users/matches`, {
+	private sendData(url: string, api_key: string, extra?: Record<any, any>) {
+		return axios.post(url, {
 				player1: { 
 					ID: this.players[0].id, 
 					score: this.players[0].score
@@ -325,12 +339,26 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 				},
 				gameStartedAt: this.startTime,
 				gameFinishedAt: Math.floor(Date.now() / 1000),
-				gameType: 'XO'
+				gameType: 'XO',
+				...extra
 			}, {
 				headers: {
-					'Authorization': `Bearer ${MS_AUTH_API_KEY}`
+					'Authorization': `Bearer ${api_key}`
 			}});
-			console.log('Game Data sent successfully');
+	}
+
+	private async saveGameData() {
+		try {
+			await this.sendData(`http://${MS_AUTH_HOST}:${MS_AUTH_PORT}/users/matches`, MS_AUTH_API_KEY!);
+			console.log('Game Data sent successfully to auth service');
+		} catch (err) {
+			console.log("error from user management: ", err);
+		}
+		try {
+			await this.sendData(`http://${MS_TOURN_HOST}:${MS_TOURN_PORT}/users/matches`, MS_TOURN_API_KEY!, {
+				gameId: this.tournGameId
+			});
+			console.log('Game Data sent successfully to tournament service');
 		} catch (err) {
 			console.log("error from user management: ", err);
 		}
