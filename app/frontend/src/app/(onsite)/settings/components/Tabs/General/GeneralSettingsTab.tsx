@@ -60,8 +60,8 @@ export default function GeneralSettingsTab() {
 		{ debounceMs: { email: 1200, username: 1200 } }
 	);
 
-	const usernameStatus = useAvailabilityCheck('username', formData.username, loggedInUser!.username, debounced.username, errors.username);
-	const emailStatus = useAvailabilityCheck('email', formData.email, loggedInUser!.email, debounced.email, errors.email);
+	const { status: usernameStatus, setStatus: setUsernameStatus } = useAvailabilityCheck('username', formData.username, loggedInUser!.username, debounced.username, errors.username);
+	const { status: emailStatus, setStatus: setEmailStatus } = useAvailabilityCheck('email', formData.email, loggedInUser!.email, debounced.email, errors.email);
 	const canSave = useCanSave(formData, debounced, errors, avatarFile, usernameStatus, emailStatus, loggedInUser!, getValidationErrors);
 
 	function handleAvatarFileChange(e: ChangeEvent<HTMLInputElement>) {
