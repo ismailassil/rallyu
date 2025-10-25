@@ -180,6 +180,7 @@ const Brackets = function (props) {
 												startTime={!joined ? null : getStartTime(tournament.matches, loggedInUser?.id)}
 												waiting={amIwaiting(tournament.matches[2], loggedInUser?.id)}
 												matchId={currentUserMatch(tournament.matches, loggedInUser?.id)}
+												tournamentMode={tournament.tournament.mode}
 											/>
 									}
 								</>

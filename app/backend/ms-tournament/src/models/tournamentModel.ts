@@ -179,7 +179,7 @@ class TournamentModel {
 							.toString()
 							.padStart(2, "0")}-${now.getDate()
 							.toString()
-							.padStart(2, "0")}T${now.getHours()
+							.padStart(2, "0")}T${(now.getHours() + 1)
 							.toString()
 							.padStart(2, "0")}:${now.getMinutes()
 							.toString()
@@ -202,7 +202,7 @@ class TournamentModel {
 				UPDATE ${this.modelName} SET state='cancelled', cancellation_reason=? WHERE start_date<='${strDate}' AND 
 				state='pending' AND contenders_size<>contenders_joined
 				`,
-				[this.cancellation_reason["not-enough-players"]],
+				[this.cancellation_reason.get("not-enough-players")],
 				(err) => {
 					console.log(err);
 				}

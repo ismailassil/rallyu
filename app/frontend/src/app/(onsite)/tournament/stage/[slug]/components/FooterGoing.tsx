@@ -3,17 +3,19 @@ import { AxiosResponse } from "axios";
 import { ParamValue } from "next/dist/server/request/params";
 import { useState } from "react";
 import MatchTimer from "./MatchTimer";
-import { p } from "framer-motion/client";
 import unicaOne from "@/app/fonts/unicaOne";
+import { useRouter } from "next/navigation";
+
+let pollingGame: NodeJS.Timeout | null = null;
 
 const FooterGoing = function (
-    { readyProp, joined, startTime, waiting, matchId } :
-    { readyProp: boolean, joined: boolean, startTime: string | null, waiting: boolean, matchId: number}
+    { readyProp, joined, startTime, waiting, matchId, tournamentMode } :
+    { readyProp: boolean, joined: boolean, startTime: string | null, waiting: boolean, matchId: number, tournamentMode: string}
 ) {
     const [ready, setReady] = useState<boolean>(readyProp);
     const { apiClient } = useAuth();
     const [timeRunsOut, setTimeRunsOut] = useState<boolean>(true);
-
+    const router = useRouter();
 
     const playerReadyHandler = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
@@ -22,12 +24,43 @@ const FooterGoing = function (
             return ;
 
         try {
-            const res: AxiosResponse = await apiClient.instance.patch(`/v1/tournament/match/ready`, { matchId: matchId });
-
-            console.log(res);
+            const res = await apiClient.instance.patch(`/v1/tournament/match/ready`, { matchId: matchId });
+            console.error(res);
 
             setReady(!ready);
+
+            if (!pollingGame) {
+
+                pollingGame = setInterval(async () => {
+                    try {
+                        const res = await apiClient.instance.get(`/v1/tournament/match/match_id?match_id=${matchId}`);
+                        
+                        const data = res.data;
+
+                        if (!data || !data.match_id.match_id)
+                            return ;
+
+                        // HOW TO SEND THE PAGE BACK
+                        router.replace(`/game/${tournamentMode === "ping-pong" ? "pingpong" : "tictactoe"}/${data.match_id.match_id}`);
+                        if (pollingGame)
+                            clearInterval(pollingGame);
+                        pollingGame = null;
+                        
+                    } catch (err) {
+                        console.error(err);
+                    }
+                    
+                }, 1000 * 2);
+
+            } else {
+                clearInterval(pollingGame);
+                pollingGame = null;
+            }
+
         } catch (err: unknown) {
+            if (pollingGame)
+                clearInterval(pollingGame);
+            pollingGame = null;
             console.error(err);
         }
     };
