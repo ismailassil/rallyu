@@ -1,65 +1,109 @@
-import React, { ChangeEvent, ReactNode } from 'react';
-import funnelDisplay from '@/app/fonts/FunnelDisplay';
+import React, { ChangeEvent, RefObject, useEffect, useRef, useState, useImperativeHandle } from 'react';
 import { Upload, X } from 'lucide-react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import Avatar from '@/app/(onsite)/users/components/Avatar';
 import { useFormContext } from '@/app/(auth)/components/Form/FormContext';
 import { useTranslations } from 'next-intl';
+import useAPICall from '@/app/hooks/useAPICall';
 
 interface ProfilePreviewProps {
-	avatarFile: File | null;
-	avatarBlobPreview: string | null;
-	onAddAvatarFile: (e: ChangeEvent<HTMLInputElement>) => void;
-	onRemoveAvatarFile: () => void;
+	ref: RefObject<any>;
+	onChange: (hasUnsavedChanges: boolean) => void;
 }
 
 type ButtonProps = {
-	children: ReactNode;
-	actionIcon?: ReactNode;
+	children: React.ReactNode;
+	actionIcon?: React.ReactNode;
 	onClick?: () => void;
 	disabled?: boolean;
 	asLabel?: boolean;
-	htmlFor?: string; // only used when asLabel is true
+	htmlFor?: string;
 };
 
-function Button({ children, actionIcon, onClick, disabled = false, asLabel = false, htmlFor  } : ButtonProps) {
+function Button({ children, actionIcon, onClick, disabled = false } : ButtonProps) {
 	const className = `flex gap-2 justify-center items-center px-5 py-1.5 rounded-full h-10 select-none
-						bg-white/6 border border-white/8 transition-all duration-800 ease-in-out
-						font-funnel-display font-medium
-						${disabled
+					   bg-white/6 border border-white/8 transition-all duration-700 ease-in-out
+					   font-funnel-display font-medium
+					   ${disabled
 						? 'opacity-0 pointer-events-none translate-y-0.5'
-						: 'opacity-100 hover:bg-white hover:text-black cursor-pointer'
-					}`;
-
-	if (asLabel) {
-		return (
-			<label htmlFor={htmlFor} className={className}>
-				{actionIcon}
-				{children}
-			</label>
-		);
-	}
+						: 'opacity-100 hover:bg-white hover:text-black cursor-pointer'}`;
 
 	return (
-		<button
-			onClick={onClick}
-			className={className}
-			disabled={disabled}
-		>
+		<button onClick={onClick} className={className} disabled={disabled}>
 			{actionIcon}
 			{children}
 		</button>
 	);
 }
 
-export default function ProfilePreview({ avatarFile, avatarBlobPreview, onAddAvatarFile, onRemoveAvatarFile } : ProfilePreviewProps) {
+export default function ProfilePreview({ ref, onChange } : ProfilePreviewProps) {
 	const t = useTranslations('auth.common');
 
-	const { loggedInUser } = useAuth();
+	const {
+		loggedInUser,
+		apiClient
+	} = useAuth();
+
+	const {
+		executeAPICall
+	} = useAPICall();
 
 	const {
 		formData
 	} = useFormContext();
+
+	const [avatarFile, setAvatarFile] = useState<File | null>(null);
+	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+	function handleChange(e: ChangeEvent<HTMLInputElement>) {
+		const file = e.target.files?.[0];
+		if (!file) return ;
+		setAvatarFile(file);
+		setAvatarPreview(URL.createObjectURL(file));
+		onChange(true);
+	}
+
+	function handleRemove() {
+		if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+		setAvatarFile(null);
+		setAvatarPreview(null);
+		onChange(false);
+	}
+
+	function openFilePicker() {
+		fileInputRef.current?.click();
+	}
+
+	async function handleSubmit() {
+		if (!avatarFile) return ;
+		const formData = new FormData();
+		formData.append('file', avatarFile);
+
+		try {
+			await executeAPICall(() => apiClient.user.updateUserAvatar(
+				loggedInUser!.id,
+				formData
+			));
+			setAvatarFile(null);
+		} catch (err: any) {
+
+		} finally {
+			onChange(false);
+		}
+	}
+
+	useEffect(() => {
+		return () => {
+			if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+		};
+	}, [avatarPreview]);
+
+	useImperativeHandle(ref, () => ({
+		submit: handleSubmit
+	}));
+
+	const displayAvatar = avatarPreview || loggedInUser?.avatar_url;
 
 	return (
 		<div className="bg-white/2 border border-white/8
@@ -76,7 +120,7 @@ export default function ProfilePreview({ avatarFile, avatarBlobPreview, onAddAva
 						</div>
 					</label>
 					<Avatar
-						avatar={avatarBlobPreview || loggedInUser!.avatar_url}
+						avatar={displayAvatar}
 						className='h-27 w-27 ring-4 ring-white/10 relative'
 					/>
 				</div>
@@ -84,13 +128,13 @@ export default function ProfilePreview({ avatarFile, avatarBlobPreview, onAddAva
 					<h1 className="font-bold text-xl text-white/90 capitalize">
 						{formData.first_name || loggedInUser!.first_name} {formData.last_name || loggedInUser!.last_name}
 					</h1>
-					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
+					<p className='text-white/70'>
 						@{formData.username || loggedInUser!.username}
 					</p>
-					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
+					<p className='text-white/70'>
 						{formData.email || loggedInUser!.email}
 					</p>
-					<p className={`text-base text-white/70 ${funnelDisplay.className}`}>
+					<p className='text-white/70'>
 						{formData.bio || loggedInUser!.bio}
 					</p>
 				</div>
@@ -101,25 +145,25 @@ export default function ProfilePreview({ avatarFile, avatarBlobPreview, onAddAva
 			{avatarFile ? (
 				<Button
 					actionIcon={<X size={16} />}
-					onClick={onRemoveAvatarFile}
+					onClick={handleRemove}
 				>
 					{t('remove_pic')}
 				</Button>
 			) : (
 				<Button
 					actionIcon={<Upload size={16} />}
-					asLabel
-					htmlFor='profile-upload'
+					onClick={openFilePicker}
 				>
 					{t('change_pic')}
 				</Button>
 			)}
 			<input
+				ref={fileInputRef}
 				id="profile-upload"
 				type="file"
 				accept="image/*"
 				className="hidden"
-				onChange={onAddAvatarFile}
+				onChange={handleChange}
 			/>
 		</div>
 	);

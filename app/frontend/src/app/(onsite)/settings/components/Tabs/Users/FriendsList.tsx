@@ -26,23 +26,22 @@ export default function FriendsList() {
 
 	useEffect(() => {
 		function handleRelationUpdate(event: { eventType: string; data: Record<string, any> }) {
-			if (!socket || !loggedInUser) return;
-
-			if (event.eventType !== "RELATION_UPDATE") return;
-
+			if (!socket || !loggedInUser)
+				return;
 			if (
-				event.data.requesterId === loggedInUser.id ||
-				event.data.receiverId === loggedInUser.id
-			)
-				refetch();
+				event.eventType === "RELATION_UPDATE" &&
+				(event.data.requesterId === loggedInUser.id ||
+				event.data.receiverId === loggedInUser.id) &&
+				(event.data.status === 'FRIENDS' ||
+				event.data.status === 'NONE')
+			) refetch();
 		}
 
 		socket.on("user", handleRelationUpdate);
-
 		return () => {
 			socket.off("user", handleRelationUpdate);
 		};
-	}, []);
+	}, [socket]);
 
 	async function handleUnfriend(id: number) {
 		try {

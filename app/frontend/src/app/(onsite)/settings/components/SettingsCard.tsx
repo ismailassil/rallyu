@@ -32,7 +32,6 @@ export const ActionButton = ({
 			disabled={disabled}
 		>
 			<AnimatePresence mode='popLayout'>
-
 				<motion.div
 					key={iconKey}
 					initial={{ y: 35, opacity: 0 }}
@@ -70,14 +69,15 @@ export default function SettingsCard({
 }: SettingsCardProps) {
 	const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 	const [height, setHeight] = useState(0);
-	const contentRef = useRef(null);
+	const contentRef = useRef<HTMLDivElement | null>(null);
 
 	const toggleExpanded = () => setIsExpanded(prev => !prev);
 
 	useEffect(() => {
 		if (contentRef.current) {
 			const resizeObserver = new ResizeObserver(() => {
-				setHeight(contentRef.current.scrollHeight);
+				if (contentRef.current)
+					setHeight(contentRef.current.scrollHeight);
 			});
 
 			resizeObserver.observe(contentRef.current);
@@ -146,7 +146,7 @@ export default function SettingsCard({
 			}}>
 				<div ref={contentRef}>
 					{children && (
-						<div className='py-5 px-5 lg:px-14'>
+						<div className='pb-5 px-5 lg:px-14'>
 							{children}
 						</div>
 					)}

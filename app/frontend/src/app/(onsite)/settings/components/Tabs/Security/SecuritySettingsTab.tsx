@@ -1,13 +1,12 @@
 import SettingsCard from "../../SettingsCard";
-import { Fingerprint, Check, LoaderCircle, X, PiIcon, Lock, CheckCheck, Loader, LogOut } from "lucide-react";
+import { Fingerprint, LoaderCircle, X, Lock, CheckCheck } from "lucide-react";
 import ChangePasswordForm from "./ChangePasswordForm";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import Sessions from "./Sessions";
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { useTranslations } from "next-intl";
-import Collapsible from "../../Collapsible";
 
 export default function SecuritySettingsTab() {
 	const router = useRouter();
@@ -28,7 +27,7 @@ export default function SecuritySettingsTab() {
 		<motion.div
 			initial={{ opacity: 0, x: 15 }}
 			animate={{ opacity: 1, x: 0 }}
-			exit={{ opacity: 1, x: -15 }}
+			exit={{ opacity: 0, x: -15 }}
 			transition={{ duration: 0.5 }}
 			className='flex flex-col gap-4'
 		>
@@ -72,10 +71,6 @@ export default function SecuritySettingsTab() {
 			>
 				<Sessions />
 			</SettingsCard>
-			<Collapsible title="Collapsible">
-				<Sessions />
-			</Collapsible>
-
 			<SettingsCard
 				title={t('delete_account.title')}
 				subtitle={t('delete_account.subtitle')}

@@ -14,15 +14,14 @@ export default function UsersSettingsTab() {
 		<motion.div
 			initial={{ opacity: 0, x: 15 }}
 			animate={{ opacity: 1, x: 0 }}
-			exit={{ opacity: 1, x: -15 }}
+			exit={{ opacity: 0, x: -15 }}
 			transition={{ duration: 0.5 }}
 			className='flex flex-col gap-4'
 		>
 			<SettingsCard
 				title={t('cards.friends.title')}
 				subtitle={t('cards.friends.subtitle')}
-				isFoldable={true}
-				defaultExpanded={true}
+				isFoldable
 			>
 				<FriendsList />
 			</SettingsCard>
@@ -30,8 +29,7 @@ export default function UsersSettingsTab() {
 			<SettingsCard
 				title={t('cards.outgoing.title')}
 				subtitle={t('cards.outgoing.subtitle')}
-				isFoldable={true}
-				defaultExpanded={true}
+				isFoldable
 			>
 				<OutgoingFriendRequestsList />
 			</SettingsCard>
@@ -39,8 +37,7 @@ export default function UsersSettingsTab() {
 			<SettingsCard
 				title={t('cards.incoming.title')}
 				subtitle={t('cards.incoming.subtitle')}
-				isFoldable={true}
-				defaultExpanded={true}
+				isFoldable
 			>
 				<IncomingFriendRequestsList />
 			</SettingsCard>
@@ -48,8 +45,7 @@ export default function UsersSettingsTab() {
 			<SettingsCard
 				title={t('cards.blocked.title')}
 				subtitle={t('cards.blocked.subtitle')}
-				isFoldable={true}
-				defaultExpanded={true}
+				isFoldable
 			>
 				<BlockedList />
 			</SettingsCard>

@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { simulateBackendCall } from "../(api)/utils";
 
 export default function useAPIQuery(queryFn: () => Promise<any>) {
 	const router = useRouter();
@@ -17,6 +18,7 @@ export default function useAPIQuery(queryFn: () => Promise<any>) {
 			}
 			setError(null);
 			try {
+				// await simulateBackendCall(2000);
 				const result = await queryFn();
 				setData(result);
 				return result;

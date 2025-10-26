@@ -31,23 +31,23 @@ export default function OutgoingFriendRequestsList() {
 	} = useAPICall();
 
 	useEffect(() => {
-		function handleRelationUpdate(event: { eventType: string, data: Record<string, any> }) {
+		function handleRelationUpdate(event: { eventType: string; data: Record<string, any> }) {
 			if (!socket || !loggedInUser)
-				return ;
-
-			if (event.eventType !== 'RELATION_UPDATE')
-				return ;
-
-			if ((event.data.requesterId === loggedInUser.id || event.data.receiverId === loggedInUser.id))
-				refetch();
+				return;
+			if (
+				event.eventType === "RELATION_UPDATE" &&
+				(event.data.requesterId === loggedInUser.id ||
+				event.data.receiverId === loggedInUser.id) &&
+				(event.data.status === 'PENDING' ||
+				event.data.status === 'NONE')
+			) refetch();
 		}
 
-		socket.on('user', handleRelationUpdate);
-
+		socket.on("user", handleRelationUpdate);
 		return () => {
-			socket.off('user', handleRelationUpdate);
+			socket.off("user", handleRelationUpdate);
 		};
-	}, []);
+	}, [socket]);
 
 	async function handleCancel(id: number) {
 		try {

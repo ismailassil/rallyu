@@ -28,7 +28,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 		return () => {
 			socket.off('user', handleUpdate);
 		};
-	}, []);
+	}, [socket]);
 
 	useEffect(() => {
 		console.group("ProtectedRouteAuthGuard");
