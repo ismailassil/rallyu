@@ -20,7 +20,7 @@ const getStartTime = function(matches, player) {
 	for (const match of matches) {
 		if (match.winner)
 			continue ;
-
+		
 		if (player === match.player_1 || player === match.player_2)
 			return (match.start_time);
 	}
@@ -91,22 +91,24 @@ const Brackets = function (props) {
 	}, [slug]);
 
 	const isPlayerJoined = (data) => {
-		for (let i = 0; i < data.matches.length - 1; i++) {
-			// I need user id 1
+		for (let i = 0; i < data.matches.length; i++) {
+			if (data.matches[i].player_1 === loggedInUser?.id || data.matches[i].player_2 === loggedInUser?.id)
+				setJoined(true);
+
+			if (data.matches[i].winner)
+				continue ;
+
 			if (data.matches[i].player_1 === loggedInUser?.id) {
 				if (data.matches[i].player_1_ready)
 					setReady(true);
-				setJoined(true);
 				return ;
 			}
 			if (data.matches[i].player_2 === loggedInUser?.id) {
 				if (data.matches[i].player_2_ready)
 					setReady(true);
-				setJoined(true);
 				return ;
 			}
 		}
-		return setJoined(false);
 	};
 
 	return (

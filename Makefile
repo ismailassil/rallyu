@@ -18,7 +18,7 @@ down_all: down_app down_devops
 clean_all: clean_app clean_devops
 
 ### Only the application
-up_app: docker env
+up_app: env
 	@docker-compose up --build --watch
 
 down_app:

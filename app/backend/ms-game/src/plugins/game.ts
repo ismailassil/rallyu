@@ -113,6 +113,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 
 	fastify.post('/room/create', { schema: createRoomSchema}, (req, res) => {
 		const { playersIds, gameType, tournament } = req.body as { playersIds: number[], gameType: GameType, tournament: { gameId: number } };
+
 		const tournGameId = tournament?.gameId;
 		if (!playersIds) {
 			return res.code(400).send({

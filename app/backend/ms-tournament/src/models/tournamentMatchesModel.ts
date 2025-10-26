@@ -234,7 +234,7 @@ class TournamentMatchesModel {
 	async progressMatchTournament(data) {
 		const res = await new Promise((resolve, reject) => {
 			this.DB.run(`UPDATE ${this.modelName} SET winner=?, results=? WHERE id=?`,
-				[data.winner, data.id, data.results],
+				[data.winner, data.results, data.id],
 				(err) => err ? reject(err) : resolve(this.DB)
 			);
 		});

@@ -243,19 +243,6 @@ class TournamentController {
 		req: FastifyRequest,
 		rep: FastifyReply
 	) {
-		// {
-		// 	player1: {
-		// 		ID: this.players[0].id, 
-		// 		score: this.state.score[0]
-		// 	},
-		// 	player2: {
-		// 		ID: this.players[1].id, 
-		// 		score: this.state.score[1]
-		// 	},
-		// 	gameStartedAt: Math.floor(this.startTime / 1000),
-		// 	gameFinishedAt: Math.floor(Date.now() / 1000),
-		// 	gameType:  'PONG'
-		// }
 		try {
 			const data = req.body;
 			const progress = {
@@ -263,11 +250,9 @@ class TournamentController {
 				results: `${data.player1.score}|${data.player2.score}`,
 				id: data.gameId
 			}
-
 			// Handle auth token Bearer
 
 			await req.server.tournamentMatchesModel.progressMatchTournament(progress);
-			console.log("PROGRESS MATCH")
 
 			return rep.code(201).send({ status: true, message: "Tournament updated!" });
 		} catch (err) {
