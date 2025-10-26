@@ -71,9 +71,11 @@ class RemotePong extends APong {
                 case 'ready':
                     this.state.index = data.i
                     this.eventHandlers?.updateTimer!(data.t);
+                    this.eventHandlers?.updateOverlayStatus('countdown');
                     break;
                 case 'start':
                     this.eventHandlers?.updateTimer!(data.t);
+                    this.eventHandlers?.updateOverlayStatus('play');
                     break;
                 case 'state':
                     this.state.serverBall = data.state.b
