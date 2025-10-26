@@ -9,11 +9,12 @@ import Image from "next/image";
 
 const LobbyPanel = () => {
 	const [mode, setMode] = useState('remote');
+	const [type, setType] = useState('pingpong');
 
 	return (
 		<>
-			<div className="flex items-center justify-center flex-col flex-6 w-full px-8 lg:px-20 py-7 h-full gap-4 border rounded-lg bg-card border-card">
-				<div className="flex gap-10 w-full h-[70px] min-h-0">
+			<div className="flex items-center justify-center flex-col flex-6 w-full px-8 lg:px-20 py-10 h-full gap-4 border rounded-lg bg-card border-card">
+				<div className="flex gap-4 w-full max-w-[1000px] h-[70px] min-h-0">
 					<button
 						className={`flex flex-1 items-center justify-center transition-all duration-200 cursor-pointer active:scale-97 rounded-md bg-white/1 hover:bg-white/2 hover:border-b-4 px-10 h-full ${mode === 'remote' ? 'bg-white/3 border-b-4' : ' border-white/30'}`}
 						onClick={() => setMode('remote')}
@@ -28,19 +29,33 @@ const LobbyPanel = () => {
 					</button>
 				</div>
 				<div className="flex flex-col *:transition-all *:duration-250 lg:flex-row py-5 max-w-[1000px] gap-4 w-full flex-1">
-					<div className={`flex relative flex-1 border border-bg hover:scale-102 cursor-pointer`}>
-						{/* <div className="absolute inset-0 w-full h-full bg-blue-900/50"/> */}
+					<div
+						className={`flex rounded-lg flex-1 cursor-pointer ${type === 'pingpong' ? 'border-6' : 'hover:scale-102 border border-white/30'}`}
+						onClick={() => setType('pingpong')}
+					>
 						<Image
 							src="/design/pong.png"
 							alt="PONG"
 							width={1080}
 							height={1920}
 							style={{ width: "auto", height: "auto" }}
-							className="rounded-lg w-full h-full object-cover opcaity-70 bg-blue-900/50"
+							className="rounded-lg w-full h-full object-cover bg-blue-800/30"
+							draggable={false}
 						/>
 					</div>
-					<div className={`flex flex-1 border border-bg hover:scale-102 cursor-pointer`}>
-
+					<div
+						className={`flex rounded-lg flex-1 cursor-pointer ${type === 'tictactoe' ? 'border-6' : 'hover:scale-102 border border-white/30'}`}
+						onClick={() => setType('tictactoe')}
+					>
+						<Image
+							src="/design/pong.png"
+							alt="PONG"
+							width={1080}
+							height={1920}
+							style={{ width: "auto", height: "auto" }}
+							className="rounded-lg w-full h-full object-cover opcaity-70 bg-blue-800/30"
+							draggable={false}
+						/>
 					</div>
 				</div>
 				<QueueToggleButton />
