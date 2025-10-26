@@ -24,13 +24,31 @@ services:
             - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
             - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
             - PROMETHEUS_HOST_URL=${PROMETHEUS_HOST_URL}
+            - GF_SERVER_PROTOCOL=https
+            - GF_SERVER_CERT_FILE=/etc/grafana/certs/grafana.crt
+            - GF_SERVER_CERT_KEY=/etc/grafana/certs/grafana.key
         networks:
             - monitoring
-            - web-app
         env_file:
             - .env
+        user: "0"
+        ports:
+            - 3035:3000
+        entrypoint: >
+            sh -c "
+            mkdir -p /etc/grafana/certs &&
+            if [ ! -f /etc/grafana/certs/grafana.crt ]; then
+            apk add --no-cache openssl && openssl req -x509 -nodes -days 365 \
+            -newkey rsa:2048 \
+            -keyout '/etc/grafana/certs/grafana.key' \
+            -out '/etc/grafana/certs/grafana.crt' \
+            -subj '/C=MA/ST=KH/L=KH/O=grafana/OU=IT/CN=grafana';
+            fi &&
+            chown -R 472:472 /etc/grafana/certs &&
+            exec /run.sh
+            "
         healthcheck:
-            test: ["CMD-SHELL", "curl -f http://localhost:3000"]
+            test: ["CMD-SHELL", "curl -k -f https://localhost:3000 || exit 1"]
             interval: 30s
             timeout: 10s
             retries: 10
@@ -50,8 +68,6 @@ services:
             - "--storage.tsdb.path=/prometheus"
             - "--storage.tsdb.retention.time=20d"
             - "--storage.tsdb.retention.size=10GB"
-        ports: # TODO: TO BE REMOVED
-            - 9090:9090
 
     alertmanager:
         image: prom/alertmanager:v0.28.0

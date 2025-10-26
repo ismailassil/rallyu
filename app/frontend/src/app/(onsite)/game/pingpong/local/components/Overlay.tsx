@@ -1,5 +1,7 @@
 import { Pause, Play, RotateCcw } from "lucide-react";
 import { GameOverLocal } from "../../../components/Items/GameOver";
+import { useTranslations } from "next-intl";
+import Countdown from "../../../components/Items/CountDown";
 
 const PauseIcon = ({ className }: { className: string }) => {
     return (
@@ -11,11 +13,14 @@ const PauseIcon = ({ className }: { className: string }) => {
 }
 
 const Overlay = ({ pauseHandler, resetHandler, status }: { pauseHandler: () => void, resetHandler: () => void, status: string }) => { // status: pause countdown none gameover
+    const t = useTranslations("game");
+    
     return (
         <div className="absolute inset-0 w-full h-full">
             <div className={`absolute inset-0 rounded-lg transition-all duration-150 w-full h-full ${status === 'pause' || status === 'gameover' ? 'bg-neutral-800/30 ': ''}`}>
                 <PauseIcon className={`absolute inset-0 m-auto w-[clamp(50px,8%,100%)] h-[clamp(65px,15%,100%)] transition-all duration-100 ease-in-out ${status === 'pause' ? 'opacity-90 translate-y-0': 'translate-y-4 opacity-0'}`}/>
                 {status === 'gameover' && <GameOverLocal resetHandler={resetHandler} display="gameover" />}
+                {status === 'countdown' && <Countdown text={`${t("ingame.start")}`} />}
             </div>
 
             <div className="absolute flex justify-center items-center gap-3 right-2 top-1 md:right-4 md:top-2 lg:right-8 lg:top-5 w-[100px] h-[50px] xl:w-[120px] xl:h-[60px]">
@@ -24,7 +29,7 @@ const Overlay = ({ pauseHandler, resetHandler, status }: { pauseHandler: () => v
                     onClick={pauseHandler}
                 >
                     {status === 'pause' ? (
-                        <Play className="w-[20px] h[20px] md:w-[25px] md:h-[25px] lg:w-[30px] lg:[h-30px] xl:w-[35px] xl:h-[35px] scale-105" />
+                        <Play className={`w-[20px] h[20px] md:w-[25px] md:h-[25px] lg:w-[30px] lg:[h-30px] xl:w-[35px] xl:h-[35px] scale-105`}/>
                     ) : (
                         <Pause className="w-[20px] h[20px] md:w-[25px] md:h-[25px] lg:w-[30px] lg:[h-30px] xl:w-[35px] xl:h-[35px]" />
                     )}

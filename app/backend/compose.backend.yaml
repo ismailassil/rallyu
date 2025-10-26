@@ -213,21 +213,6 @@ services:
       - .env
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
 
-  redis_ui:
-    image: redis/redisinsight:2.70
-    container_name: redis_insight
-    # ports:
-    #   - 5540:5540
-    networks:
-      - backend
-      - web-app
-    env_file:
-      - .env
-    environment:
-      - RI_REDIS_HOST=redis
-      - RI_REDIS_ALIAS=BackendConnection
-      - RI_REDIS_PASSWORD=${REDIS_PASSWORD}
-
   nats:
     image: nats:alpine3.22
     container_name: nats

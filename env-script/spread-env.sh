@@ -23,8 +23,9 @@ ENV_MAPPINGS=(
 	"./env-script/.notif.env:app/backend/ms-notif/.notif.env"
 
 	## Logging & Monitoring
-	"./env-script/.logging.env:logging/.env"
-	"./env-script/.monitoring.env:monitoring/.env"
+	"./env-script/.logging.env:devops/logging/.env"
+	"./env-script/.monitoring.env:devops/monitoring/.env"
+	"./env-script/mail.key:devops/monitoring/prometheus/mail.key"
 )
 
 copy_env_file() {

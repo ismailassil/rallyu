@@ -1,0 +1,3 @@
+include:
+  - ./logging/compose.logging.yaml
+  - ./monitoring/compose.monitoring.yaml

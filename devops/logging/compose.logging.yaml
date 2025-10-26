@@ -30,8 +30,8 @@ services:
             -H 'Content-Type: application/json' \
             -d '{\"password\":\"${KIBANA_PASSWORD}\"}' \
             ${ELASTIC_HOST}/_security/user/${KIBANA_USERNAME}/_password; do
-              echo 'Waiting for Elasticsearch...';
-              sleep 5;
+            echo 'Waiting for Elasticsearch...';
+            sleep 5;
             done;
             echo \"\\nPassword set successfully.\";
             "
@@ -87,7 +87,6 @@ services:
         restart: always
         networks:
             - elk
-            - web-app
         env_file:
             - .env
         ports:
@@ -97,15 +96,15 @@ services:
             - ./kibana/dashboards:/dashboards/:ro
         environment:
             - SERVERNAME=kibana
-            - ELASTICSEARCH_HOSTS="http://elasticsearch:9200"
+            - ELASTICSEARCH_HOSTS=http://${ELASTIC_HOST}
             - ELASTICSEARCH_USERNAME=${KIBANA_USERNAME}
             - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
         mem_limit: 1g
         healthcheck:
             test: [
                     "CMD-SHELL",
-                    "curl -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
-                    -I http://localhost:5601/app/home 2>/dev/null \
+                    "curl -k -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD} \
+                    -I https://localhost:5601/app/home 2>/dev/null \
                     | grep -qE '^HTTP/(1\\.1|2) 200'",
                 ]
             interval: 10s
@@ -124,7 +123,7 @@ services:
         volumes:
             - logstash-data:/usr/share/logstash/data
             - ./logstash/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
-            - ../nginx/logs/access.log:/usr/share/logstash/data/access.log:ro
+            - ../../nginx/logs/access.log:/usr/share/logstash/data/access.log:ro
         env_file:
             - .env
         environment:

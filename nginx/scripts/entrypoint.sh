@@ -8,7 +8,6 @@ RESET="\033[0m"
 
 export CERT_PATH="/certs/"
 export HTPASSWD_PATH="/etc/nginx/.htpasswd"
-export HTPASSWD_REDIS_PATH="/etc/nginx/.redis_ui"
 
 if [ -z "${NGINX_METRICS_USER}" ] || [ -z "${NGINX_METRICS_PASSWORD}" ]; then
 	printf "${RED}Error: NGINX_METRICS_USER and NGINX_METRICS_PASSWORD must be set.${RESET}\n"
@@ -16,13 +15,6 @@ if [ -z "${NGINX_METRICS_USER}" ] || [ -z "${NGINX_METRICS_PASSWORD}" ]; then
 fi
 
 mkdir -p ${CERT_PATH}/private
-
-## Create User/Password for REDIS_UI
-if [ ! -f "${HTPASSWD_REDIS_PATH}" ]; then
-	htpasswd -b -c ${HTPASSWD_REDIS_PATH} ${NGINX_REDIS_USER} ${NGINX_REDIS_PASSWORD}
-	chmod 640 ${HTPASSWD_REDIS_PATH}
-	chown root:nginx ${HTPASSWD_REDIS_PATH}
-fi
 
 if [ ! -f "${HTPASSWD_PATH}" ]; then
 	htpasswd -b -c ${HTPASSWD_PATH} ${NGINX_METRICS_USER} ${NGINX_METRICS_PASSWORD}
