@@ -49,6 +49,17 @@ const currentUserMatch = function(matches, player) {
 	return (-1);
 };
 
+const isMatchRoomEstablished = function (matches, player) {
+	for (const match of matches) {
+		if (match.winner)
+			continue ;
+		if ((match.player_1 === player || match.player_2 === player) && match.match_id)
+			return (true);
+	}
+	
+	return (false);
+}
+
 const Brackets = function (props) {
 	const { loggedInUser, apiClient } = useAuth();
 	const { slug } = useParams();
@@ -180,6 +191,7 @@ const Brackets = function (props) {
 												waiting={amIwaiting(tournament.matches[2], loggedInUser?.id)}
 												matchId={currentUserMatch(tournament.matches, loggedInUser?.id)}
 												tournamentMode={tournament.tournament.mode}
+												matchRoom={isMatchRoomEstablished(tournament.matches, loggedInUser?.id)}
 											/>
 									}
 								</>

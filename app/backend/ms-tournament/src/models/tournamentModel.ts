@@ -185,6 +185,7 @@ class TournamentModel {
 							.toString()
 							.padStart(2, "0")}`;
 
+			console.log(strDate)
 			// Change state of tournaments to ongoing
 			this.DB.run(
 				`

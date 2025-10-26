@@ -57,6 +57,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 				setValue(false);
 			}, 2000);
 		} catch (err) {
+			console.error(err)
 			setErrDate(true);
 		}
 	};

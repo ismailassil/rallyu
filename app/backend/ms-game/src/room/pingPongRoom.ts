@@ -231,7 +231,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 			console.log("error from user management: ", err);
 		}
 		try {
-			await this.sendData(`http://${MS_TOURN_HOST}:${MS_TOURN_PORT}/users/matches`, MS_TOURN_API_KEY!, {
+			await this.sendData(`http://${MS_TOURN_HOST}:${MS_TOURN_PORT}/api/v1/tournament/match/progress`, MS_TOURN_API_KEY!, {
 				gameId: this.tournGameId
 			});
 		} catch (err) {

@@ -10,7 +10,7 @@ env:
 docker:
 	@if ! docker-compose -v | grep 2.30.0; then bash install-docker.sh; fi
 
-up: docker env
+up: env
 	@docker-compose up --build --watch
 
 down:
