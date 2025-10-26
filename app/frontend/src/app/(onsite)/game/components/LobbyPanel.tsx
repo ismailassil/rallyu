@@ -1,12 +1,12 @@
 import unicaOne from "@/app/fonts/unicaOne";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import QueueToggleButton from "./QueueButton";
-import Image from "next/image";
 import { GameMode, GameType } from "../types/types";
 import { Check } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
-const GameCard = ({ selected, setType, img }: { selected: boolean, setType: () => void, img: string}) => {
+const GameCard = ({ selected, setType, img, alt, imgClassName }: { selected: boolean, setType: () => void, img: string, alt: string, imgClassName?: string }) => {
 	return (
 		<div
 			className={`relative flex flex-1 rounded-lg cursor-pointer overflow-hidden active:scale-98 ${
@@ -18,9 +18,9 @@ const GameCard = ({ selected, setType, img }: { selected: boolean, setType: () =
 		>
 			<Image
 				src={img}
-				alt="PONG"
+				alt={alt}
 				fill
-				className={`object-contain border transition-all duration-300 ease-out lg:object-cover opacity-90 object-left bg-blue-800/30 ${selected ? 'scale-[180%] lg:scale-[120%]' : 'scale-[160%] lg:scale-[100%]'}`}
+				className={`object-contain transition-all duration-300 ease-out lg:object-cover opacity-90 object-left ${imgClassName} ${selected ? 'scale-[180%] lg:scale-[120%]' : 'scale-[160%] lg:scale-[100%]'}`}
 				style={{ transformOrigin: 'left center'}}
 				draggable={false}
 			/>
@@ -33,7 +33,7 @@ const GameCard = ({ selected, setType, img }: { selected: boolean, setType: () =
 					className="absolute -right-1.5 -bottom-1.5"
 				>
 					<div className="w-8 h-8 bg-white/90 rounded-tl-lg flex items-center justify-center">
-					<Check strokeWidth={4} className="text-black w-5 h-5" />
+						<Check strokeWidth={4} className="text-black w-5 h-5" />
 					</div>
 				</motion.div>
 			)}
@@ -62,8 +62,8 @@ const LobbyPanel = () => {
 				</button>
 			</div>
 			<div className="flex flex-col *:transition-all *:duration-250 lg:flex-row py-5 max-w-[1000px] gap-4 w-full flex-1">
-				<GameCard selected={type === 'pingpong'} setType={() => setType('pingpong')} img={"/design/pong.png"} />
-				<GameCard selected={type === 'tictactoe'} setType={() => setType('tictactoe')} img={"/design/pong.png"} />
+				<GameCard selected={type === 'pingpong'} setType={() => setType('pingpong')} img={"/design/pong.png"} alt="pong" imgClassName={"bg-blue-800/30"} />
+				<GameCard selected={type === 'tictactoe'} setType={() => setType('tictactoe')} img={"/design/xo.png"} alt='xo' imgClassName={"bg-red-500"} />
 			</div>
 			<QueueToggleButton gameType={type} gameMode={mode} />
 		</div>

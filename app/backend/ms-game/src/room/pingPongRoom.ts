@@ -224,21 +224,6 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 			}});
 	}
 
-	private async saveGameData() {
-		try {
-			await this.sendData(`http://${MS_AUTH_HOST}:${MS_AUTH_PORT}/users/matches`, MS_AUTH_API_KEY!);
-		} catch (err) {
-			console.log("error from user management: ", err);
-		}
-		try {
-			await this.sendData(`http://${MS_TOURN_HOST}:${MS_TOURN_PORT}/api/v1/tournament/match/progress`, MS_TOURN_API_KEY!, {
-				gameId: this.tournGameId
-			});
-		} catch (err) {
-			console.log("error from user management: ", err);
-		}
-	}
-
 	reconnect(player: PingPongPlayer): void {
 		player.setupEventListeners(this);
 		const opponent = this.players.find(p => p !== player);
@@ -311,5 +296,48 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 		clearTimeout(this.timeoutId!);
 		clearInterval(this.intervalId!);
 		clearTimeout(this.gameTimerId!);
+	}
+
+	private async saveGameData() {
+		try {
+			await axios.post(`http://${MS_AUTH_HOST}:${MS_AUTH_PORT}/users/matches`, {
+				player1: {
+					ID: this.players[0].id, 
+					score: this.state.score[0]
+				},
+				player2: {
+					ID: this.players[1].id, 
+					score: this.state.score[1]
+				},
+				gameStartedAt: Math.floor(this.startTime / 1000),
+				gameFinishedAt: Math.floor(Date.now() / 1000),
+				gameType:  'PONG',
+			}, {
+				headers: {
+					'Authorization': `Bearer ${MS_AUTH_API_KEY}`
+			}});
+
+			if (!this.isTournament) return;
+			
+			await axios.patch(`http://${MS_TOURN_HOST}:${MS_TOURN_PORT}/api/v1/tournament/match/progress`, {
+				player1: {
+					ID: this.players[0].id, 
+					score: this.state.score[0]
+				},
+				player2: {
+					ID: this.players[1].id, 
+					score: this.state.score[1]
+				},
+				gameStartedAt: Math.floor(this.startTime / 1000),
+				gameFinishedAt: Math.floor(Date.now() / 1000),
+				gameType:  'PONG',
+				gameId: this.tournGameId
+			}, {
+				headers: {
+					'Authorization': `Bearer ${MS_TOURN_API_KEY}`
+			}});
+		} catch (err) {
+			console.log("error from user management: ", err);
+		}
 	}
 }
