@@ -1,5 +1,5 @@
 import SettingsCard from "../../SettingsCard";
-import { Fingerprint, LoaderCircle, X, Lock, CheckCheck } from "lucide-react";
+import { Fingerprint, LoaderCircle, X, Lock, CheckCheck, CircleOff, Save } from "lucide-react";
 import ChangePasswordForm from "./ChangePasswordForm";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -47,7 +47,7 @@ export default function SecuritySettingsTab() {
 					subtitle={t('change_password_form.subtitle')}
 					actionButtonOptions={{
 						title: 'Change Password',
-						icon: isSubmitting ? <LoaderCircle size={16} className="animate-spin" /> : isEditing ? (canSave ? <CheckCheck size={16} /> : <X size={16} />) : <Lock size={16} /> ,
+						icon: isSubmitting ? <LoaderCircle size={16} className="animate-spin" /> : isEditing ? (canSave ? <Save size={16} /> : <CircleOff size={16} />) : <Lock size={16} /> ,
 						iconKey: isSubmitting ? 'loader' : isEditing ? (canSave ? 'check-check' : 'x') : 'lock' ,
 						onClick: isEditing ? (canSave ? () => changePasswordFormRef.current?.requestSubmit() : () => setIsEditing(false)) : () => setIsEditing(true),
 						disabled: isSubmitting

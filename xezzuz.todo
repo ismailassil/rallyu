@@ -1,0 +1,9 @@
+verify validation functions other that validate field -- validateAll...
+change the handleSubmit function to use the backend instead of mockBackend in the forms affected with the new changes introduced to useForm
+modify in reset password form to use the new deps option in useForm
+
+review the padding in SettingsCard
+
+delete old schemas if not needed anymore
+
+test personal info form, change password form

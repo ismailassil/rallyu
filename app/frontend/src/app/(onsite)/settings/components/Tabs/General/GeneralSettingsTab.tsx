@@ -5,7 +5,7 @@ import ProfilePreview from './ProfilePreview';
 import PersonalInformationsForm from './PersonalInformationsForm';
 import useForm from '@/app/hooks/useForm';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
-import { CheckCheck, LoaderCircle, X } from 'lucide-react';
+import { Ban, Check, CheckCheck, CircleOff, CircleSlash, LoaderCircle, Save, SaveOff, SquareX, X } from 'lucide-react';
 import { FormProvider } from '@/app/(auth)/components/Form/FormContext';
 import { motion } from 'framer-motion';
 import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
@@ -169,7 +169,9 @@ export default function GeneralSettingsTab() {
 		setIsSubmitting(true);
 		await avatarUploadRef.current.submit();
 		await personalInfoFormRef.current.submit();
-		setIsSubmitting(false);
+		setTimeout(() => {
+			setIsSubmitting(false);
+		}, 500);
 	}
 
 	const hasUnsavedChanges = avatarHasChanges || formHasChanges;
@@ -187,7 +189,7 @@ export default function GeneralSettingsTab() {
 				subtitle={t("subtitle")}
 				actionButtonOptions={{
 					title: 'Save Changes',
-					icon: isSubmitting ? <LoaderCircle size={16} className="animate-spin" /> : hasUnsavedChanges ? <CheckCheck size={16} /> : <X size={16} />,
+					icon: isSubmitting ? <LoaderCircle size={16} className="animate-spin" /> : hasUnsavedChanges ? <Save size={16} /> : <CircleOff size={16} />,
 					iconKey: isSubmitting ? 'loader' : hasUnsavedChanges ? 'check-check' : 'x',
 					onClick: handleSubmit,
 					disabled: !hasUnsavedChanges || isSubmitting
