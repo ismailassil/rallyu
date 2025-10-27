@@ -5,13 +5,14 @@
       "lobby": "Lobby",
       "tournament": "Torna al torneo",
       "rematch": "Rivincita",
-      "back": "Torna alla lobby"
+      "back": "Torna alla lobby",
+      "start": "Avvia partita"
     },
     "lobby": {
-      "in_queue": "In coda",
+      "searching": "Ricerca",
       "match_found": "Partita trovata",
-      "remote_play": "Gioco online",
-      "local_play": "Gioco locale"
+      "remote_play": "Remoto",
+      "local_play": "Locale"
     },
     "gameover": {
       "display": "{text, select, gameover {Partita finita} win {Hai vinto!} loss {Hai perso} draw {Pareggio} cross {Vince la X} circle {Vince la O} other {Partita finita}}"

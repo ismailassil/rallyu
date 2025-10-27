@@ -19,7 +19,7 @@ const FRONT_PORT = process.env.FRONT_PORT ?? "";
 
 // ** CORS Plugin
 await fastify.register(cors, {
-	origin: ['https://localhost', '/https:\/\/e[1-3]r[1-9]{1,2}p[1-9]{1,2}\.1337\.ma/'],
+	origin: ['https://localhost', '/^https:\/\/e[1-3]r[1-9]{1,2}p[1-9]{1,2}\.1337\.ma$/'],
 	allowedHeaders: ["Content-Type", "Authorization"],
 	methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
 	credentials: true,
@@ -64,7 +64,6 @@ await fastify.register(proxiesPlugin, {
 	NOTIF_PORT: process.env.NOTIF_PORT ?? "",
 	AUTH_PORT: process.env.AUTH_PORT ?? "",
 	CHAT_PORT: process.env.CHAT_PORT ?? "",
-	XO_PORT: process.env.XO_PORT ?? "",
 	TOURNAMENT_PORT: process.env.TOURNAMENT_PORT ?? "",
 	MATCHMAKING_PORT: process.env.MATCHMAKING_PORT ?? "",
 	GAME_PORT: process.env.GAME_PORT ?? "",

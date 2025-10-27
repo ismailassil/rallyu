@@ -207,8 +207,6 @@ services:
     restart: always
     networks:
       - backend
-    ports:
-      - 6379:6379
     env_file:
       - .env
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
@@ -221,8 +219,6 @@ services:
       - backend
     env_file:
       - .env
-    ports:
-      - 4222:4222
     command: --user ${NATS_USER} --pass ${NATS_PASSWORD} -js -m 8222 -n internal-server
     healthcheck:
       test: wget http://localhost:8222/healthz -q -S -O -

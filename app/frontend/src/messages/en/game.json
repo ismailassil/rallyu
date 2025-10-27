@@ -5,13 +5,14 @@
       "lobby": "Lobby",
       "tournament": "Return to tournament",
       "rematch": "Rematch",
-      "back": "Go back to lobby"
+      "back": "Go back to lobby",
+      "start": "Start Game"
     },
     "lobby": {
-      "in_queue": "In Queue",
+      "searching": "Searching",
       "match_found": "Match Found",
-      "remote_play": "Remote Play",
-      "local_play": "Local Play"
+      "remote": "Remote",
+      "local": "Local"
     },
     "gameover": {
       "display": "{text, select, gameover {Game Over} win {You Won!} loss {You lost} draw {Draw} cross {Cross Wins} circle {Circle Wins} other {Game Over}}"
