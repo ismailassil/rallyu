@@ -126,7 +126,7 @@ make up_app
 This will:
 - Build and start all application services (frontend, backend microservices, NGINX)
 - Enable watch mode for automatic rebuilds on code changes
-- Services will be accessible at `http://localhost`
+- Services will be accessible at `http://localhost` or `https://localhost`
 
 #### Start Application + DevOps Services
 
@@ -237,10 +237,8 @@ Once the application is running, you can access:
 
 - **Frontend**: http://localhost (port 80) or https://localhost (port 443)
 - **API Gateway**: http://localhost:4025 (internal)
-- **Prometheus**: http://localhost:9090 (when DevOps is running)
-- **Grafana**: http://localhost:3001 (when DevOps is running)
-- **Kibana**: http://localhost:5601 (when DevOps is running)
-- **NGINX Metrics**: http://localhost:8443 (basic auth required)
+- **Grafana**: https://localhost:3035 (when DevOps is running)
+- **Kibana**: https://localhost:5601 (when DevOps is running)
 - **Redis**: localhost:6379 (internal)
 - **NATS**: localhost:4222 (internal)
 
@@ -287,8 +285,6 @@ Prometheus collects metrics from:
 - Backend services (custom metrics via fastify-metrics)
 - System metrics
 
-Access Prometheus at http://localhost:9090 after running `make up_devops`.
-
 ### Grafana Dashboards
 
 Grafana provides pre-configured dashboards for:
@@ -297,7 +293,7 @@ Grafana provides pre-configured dashboards for:
 - Error rates
 - Resource utilization
 
-Access Grafana at http://localhost:3001 after running `make up_devops`.
+Access Grafana at https://localhost:3035 after running `make up_devops`.
 
 ### ELK Stack Logging
 
@@ -306,7 +302,7 @@ Centralized logging with Elasticsearch, Logstash, and Kibana:
 - **Elasticsearch** stores and indexes logs
 - **Kibana** provides search and visualization
 
-Access Kibana at http://localhost:5601 after running `make up_devops`.
+Access Kibana at https://localhost:5601 after running `make up_devops`.
 
 ## 🔐 Security
 
@@ -340,7 +336,6 @@ Ensure the following ports are available:
 - 4025 (API Gateway - internal)
 - 4222 (NATS - internal)
 - 6379 (Redis - internal)
-- 8443, 8444 (NGINX metrics)
 
 ### Clean slate restart
 
@@ -363,8 +358,11 @@ This project is proprietary software.
 
 ## 👥 Authors
 
-- Ismail Assil
-- Azouz
+- @ismailassil
+- @xezzuz
+- @Terex881
+- @Flux73
+- @AmineMaila
 
 ## 🙏 Acknowledgments
 
