@@ -1,5 +1,5 @@
 import useMatchmaking from '@/app/hooks/useMatchMaking';
-import { GameMode, GameType } from '../types/types';
+import { GameMode, GameType } from '../../types/types';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';

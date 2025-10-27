@@ -1,6 +1,6 @@
 import unicaOne from "@/app/fonts/unicaOne";
 import { ReactNode, useState } from "react";
-import QueueToggleButton from "./QueueButton";
+import QueueToggleButton from "./Items/QueueButton";
 import { GameMode, GameType } from "../types/types";
 import { Check, Globe, Monitor } from "lucide-react";
 import { motion } from "framer-motion";
