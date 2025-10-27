@@ -2,11 +2,13 @@ import useMatchmaking from '@/app/hooks/useMatchMaking';
 import { GameMode, GameType } from '../types/types';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 const QueueToggleButton = ({ gameType, gameMode }: { gameType: GameType, gameMode: GameMode}) => {
 	const { isSearching, queueTime, toggleSearch } = useMatchmaking(gameType);
 	const router = useRouter();
 	const [clicked, setClicked] =  useState(false);
+	const t = useTranslations("game");
 
 	console.log('queuetime: ', queueTime)
 
@@ -17,10 +19,10 @@ const QueueToggleButton = ({ gameType, gameMode }: { gameType: GameType, gameMod
 	};
 
 	const getButtonContent = () => {
-		if (isSearching) return `Searching ${formatTime(queueTime)}`;
+		if (isSearching) return `${t("lobby.searching")} ${formatTime(queueTime)}`;
 		else if (clicked)
 			return ''
-		return "Start Game";
+		return t("buttons.start");
 	};
 
 	const getButtonStyles = () => {

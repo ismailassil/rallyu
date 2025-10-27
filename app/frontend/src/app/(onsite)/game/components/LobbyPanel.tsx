@@ -5,6 +5,7 @@ import { GameMode, GameType } from "../types/types";
 import { Check, Globe, Monitor } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 const GameCard = ({ selected, setType, children }: { selected: boolean, setType: () => void, children: ReactNode }) => {
 	return (
@@ -37,6 +38,7 @@ const GameCard = ({ selected, setType, children }: { selected: boolean, setType:
 const LobbyPanel = () => {
 	const [mode, setMode] = useState<GameMode>('remote');
 	const [type, setType] = useState<GameType>('pingpong');
+	const t = useTranslations();
 
 	return (
 		<div className="flex items-center justify-center flex-col flex-4 w-full px-8 lg:px-20 py-10 h-full gap-4 border rounded-lg bg-card border-card">
@@ -46,14 +48,14 @@ const LobbyPanel = () => {
 					onClick={() => setMode('remote')}
 				>
 					<Globe className="w-8" strokeWidth={1.5} />
-					<span className={`text-2xl md:text-3xl text-nowrap ${unicaOne.className}`}>REMOTE</span>
+					<span className={`text-2xl md:text-3xl text-nowrap uppercase ${unicaOne.className}`}>{t("lobby.remote")}</span>
 				</button>
 				<button
 					className={`flex flex-1 items-center justify-center transition-all duration-250 cursor-pointer active:scale-97 rounded-md bg-white/1 hover:bg-white/2 hover:border-b-5 px-10 h-full ${mode === 'local' ? 'bg-white/3 border-b-4' : ' border-white/30'}`}
 					onClick={() => setMode('local')}
 				>
 					<Monitor className="w-8" strokeWidth={1.5} />
-					<span className={`text-2xl md:text-3xl text-nowrap ${unicaOne.className}`}>LOCAL</span>
+					<span className={`text-2xl md:text-3xl text-nowrap uppercase ${unicaOne.className}`}>{t("lobby.local")}</span>
 				</button>
 			</div>
 			<div className="flex flex-col *:transition-all *:duration-250 lg:flex-row py-5 max-w-[1000px] gap-4 w-full flex-1">
