@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation";
 let pollingGame: NodeJS.Timeout | null = null;
 
 const FooterGoing = function (
-    { readyProp, joined, startTime, waiting, matchId, tournamentMode } :
-    { readyProp: boolean, joined: boolean, startTime: string | null, waiting: boolean, matchId: number, tournamentMode: string}
+    { readyProp, joined, startTime, waiting, matchId, tournamentMode, matchRoom } :
+    { readyProp: boolean, joined: boolean, startTime: string | null, waiting: boolean, matchId: number, tournamentMode: string, matchRoom: boolean }
 ) {
     const [ready, setReady] = useState<boolean>(readyProp);
     const { apiClient } = useAuth();
@@ -19,7 +19,7 @@ const FooterGoing = function (
     const playerReadyHandler = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
 
-        if (timeRunsOut)
+        if (timeRunsOut || matchRoom)
             return ;
 
         try {

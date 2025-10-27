@@ -105,12 +105,12 @@ class TournamentMatchesModel {
   }
 
   async matchesGet(tournament_id: number) {
-    const data = await new Promise<TournamentMatchesSchema[]>(
+    const data = await new Promise(
       (resolve, reject) => {
         this.DB.all(
-          `SELECT * FROM ${this.modelName} WHERE tournament_id=?`,
+          `SELECT m.*, t.state FROM ${this.modelName} AS m INNER JOIN Tournaments AS t ON m.tournament_id=t.id WHERE tournament_id=?`,
           [tournament_id],
-          (err: Error, rows: TournamentMatchesSchema[]) => {
+          (err: Error, rows) => {
             if (err) reject(err);
             else resolve(rows);
           }
@@ -156,7 +156,7 @@ class TournamentMatchesModel {
 						CASE WHEN player_2_ready=1 THEN 0 ELSE 1 END
 						ELSE player_2_ready
 					END
-				WHERE id = ?`,
+				WHERE id = ? AND match_id IS NULL`,
 				[playerId, playerId, id],
 				(err) => {
 					if (err) reject(err)
@@ -188,7 +188,9 @@ class TournamentMatchesModel {
 					);
 				});
 
+				console.log("===========")
 				console.log(data);
+				console.log("===========")
 			
 				data.forEach(async (match: any) => {
 					const game_room = await fetch(`http://ms-game:${process.env.MS_GAME_PORT ?? '5010'}/game/room/create`, 
@@ -232,7 +234,7 @@ class TournamentMatchesModel {
 	async progressMatchTournament(data) {
 		const res = await new Promise((resolve, reject) => {
 			this.DB.run(`UPDATE ${this.modelName} SET winner=?, results=? WHERE id=?`,
-				[data.winner, data.id, data.results],
+				[data.winner, data.results, data.id],
 				(err) => err ? reject(err) : resolve(this.DB)
 			);
 		});
@@ -242,7 +244,8 @@ class TournamentMatchesModel {
 	async monitorTimeoutMatches() {
 		setInterval(async () => {
 			const matches: TournamentMatchesSchema [] = await new Promise<TournamentMatchesSchema []>((resolve, reject) => {
-				this.DB.all(`SELECT * FROM ${this.modelName} WHERE results IS NULL AND datetime('now', 'localtime')>=datetime(start_time, '+5 minutes')`,
+				this.DB.all(`SELECT * FROM ${this.modelName}
+					WHERE results IS NULL AND start_time IS NOT NULL AND datetime('now', 'localtime')>=datetime(start_time, '+5 minutes')`,
 					[],
 					(err, rows: TournamentMatchesSchema []) => err ? reject(err) : resolve(rows)
 				);

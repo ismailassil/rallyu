@@ -144,14 +144,12 @@ services:
       - .env
     develop:
       watch:
-        - path: ./ms-tournament/
+        - path: ./ms-tournament/src/
           action: sync
-          target: /app/
+          target: /app/src/
           ignore:
             - ./ms-tournament/node_modules/
             - ./ms-tournament/database
-        - path: ./ms-tournament/src/package.json
-          action: rebuild
 
   ms-matchmaking:
     build:

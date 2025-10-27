@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
-const Countdown = ({ round }: { round: number }) => {
+const Countdown = ({ text }: { text: string }) => {
     const t = useTranslations("game");
-    const sequence = [3, 2, 1, `${t("ingame.round")} ${round}`];
+    const sequence = [3, 2, 1, text];
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ const Countdown = ({ round }: { round: number }) => {
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.4, opacity: 0 }}
                     transition={{ duration: 0.25, ease: "easeInOut" }}
-                    className={`text-5xl lg:text-7xl font-funnel-display font-bold`}
+                    className={`text-5xl lg:text-7xl 2xl:text-9xl font-funnel-display font-bold`}
                 >
                     {sequence[index]}
                 </motion.span>

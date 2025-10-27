@@ -20,7 +20,7 @@ const getStartTime = function(matches, player) {
 	for (const match of matches) {
 		if (match.winner)
 			continue ;
-
+		
 		if (player === match.player_1 || player === match.player_2)
 			return (match.start_time);
 	}
@@ -48,6 +48,17 @@ const currentUserMatch = function(matches, player) {
 	
 	return (-1);
 };
+
+const isMatchRoomEstablished = function (matches, player) {
+	for (const match of matches) {
+		if (match.winner)
+			continue ;
+		if ((match.player_1 === player || match.player_2 === player) && match.match_id)
+			return (true);
+	}
+	
+	return (false);
+}
 
 const Brackets = function (props) {
 	const { loggedInUser, apiClient } = useAuth();
@@ -80,22 +91,24 @@ const Brackets = function (props) {
 	}, [slug]);
 
 	const isPlayerJoined = (data) => {
-		for (let i = 0; i < data.matches.length - 1; i++) {
-			// I need user id 1
+		for (let i = 0; i < data.matches.length; i++) {
+			if (data.matches[i].player_1 === loggedInUser?.id || data.matches[i].player_2 === loggedInUser?.id)
+				setJoined(true);
+
+			if (data.matches[i].winner)
+				continue ;
+
 			if (data.matches[i].player_1 === loggedInUser?.id) {
 				if (data.matches[i].player_1_ready)
 					setReady(true);
-				setJoined(true);
 				return ;
 			}
 			if (data.matches[i].player_2 === loggedInUser?.id) {
 				if (data.matches[i].player_2_ready)
 					setReady(true);
-				setJoined(true);
 				return ;
 			}
 		}
-		return setJoined(false);
 	};
 
 	return (
@@ -180,6 +193,7 @@ const Brackets = function (props) {
 												waiting={amIwaiting(tournament.matches[2], loggedInUser?.id)}
 												matchId={currentUserMatch(tournament.matches, loggedInUser?.id)}
 												tournamentMode={tournament.tournament.mode}
+												matchRoom={isMatchRoomEstablished(tournament.matches, loggedInUser?.id)}
 											/>
 									}
 								</>

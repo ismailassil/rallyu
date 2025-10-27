@@ -173,18 +173,20 @@ class TournamentModel {
 
 	startTournaments() {
 		setInterval(async () => {
-			const now = (new Date());
+			const now = (new Date(Date.now() + (1000 * 60 * 60)));
 
 			const strDate = `${now.getFullYear()}-${(now.getMonth() + 1)
 							.toString()
 							.padStart(2, "0")}-${now.getDate()
 							.toString()
-							.padStart(2, "0")}T${(now.getHours() + 1)
+							.padStart(2, "0")}T${(now.getHours())
 							.toString()
 							.padStart(2, "0")}:${now.getMinutes()
 							.toString()
 							.padStart(2, "0")}`;
 
+			console.log(strDate)
+			console.log(strDate)
 			// Change state of tournaments to ongoing
 			this.DB.run(
 				`

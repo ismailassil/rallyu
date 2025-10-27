@@ -171,7 +171,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.saveGameData();
 	}
 
-	playMove(move: number, sign: XOSign): boolean {
+	public playMove(move: number, sign: XOSign): boolean {
 		if (move < 0 || move > 9 || this.state.cells[move] !== '')
 			return false;
 
@@ -327,43 +327,6 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		});
 	}
 
-	private sendData(url: string, api_key: string, extra?: Record<any, any>) {
-		return axios.post(url, {
-				player1: { 
-					ID: this.players[0].id, 
-					score: this.players[0].score
-				},
-				player2: {
-					ID: this.players[1].id, 
-					score: this.players[1].score
-				},
-				gameStartedAt: this.startTime,
-				gameFinishedAt: Math.floor(Date.now() / 1000),
-				gameType: 'XO',
-				...extra
-			}, {
-				headers: {
-					'Authorization': `Bearer ${api_key}`
-			}});
-	}
-
-	private async saveGameData() {
-		try {
-			await this.sendData(`http://${MS_AUTH_HOST}:${MS_AUTH_PORT}/users/matches`, MS_AUTH_API_KEY!);
-			console.log('Game Data sent successfully to auth service');
-		} catch (err) {
-			console.log("error from user management: ", err);
-		}
-		try {
-			await this.sendData(`http://${MS_TOURN_HOST}:${MS_TOURN_PORT}/users/matches`, MS_TOURN_API_KEY!, {
-				gameId: this.tournGameId
-			});
-			console.log('Game Data sent successfully to tournament service');
-		} catch (err) {
-			console.log("error from user management: ", err);
-		}
-	}
-
 	reconnect(player: TicTacToePlayer): void {
 		player.setupEventListeners(this);
 		const opponent = this.players.find(p => p !== player);
@@ -409,5 +372,48 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		clearTimeout(this.gameTimerId);
 		clearTimeout(this.timeoutId);
 		clearInterval(this.expirationTimer);
+	}
+
+	private async saveGameData() {
+		try {
+			await axios.post(`http://${MS_AUTH_HOST}:${MS_AUTH_PORT}/users/matches`, {
+				player1: { 
+					ID: this.players[0].id, 
+					score: this.players[0].score
+				},
+				player2: {
+					ID: this.players[1].id, 
+					score: this.players[1].score
+				},
+				gameStartedAt: this.startTime,
+				gameFinishedAt: Math.floor(Date.now() / 1000),
+				gameType: 'XO',
+			}, {
+				headers: {
+					'Authorization': `Bearer ${MS_AUTH_API_KEY}`
+			}});
+
+			if (!this.isTournament) return;
+			
+			await axios.patch(`http://${MS_TOURN_HOST}:${MS_TOURN_PORT}/api/v1/tournament/match/progress`, {
+				player1: { 
+					ID: this.players[0].id, 
+					score: this.players[0].score
+				},
+				player2: {
+					ID: this.players[1].id, 
+					score: this.players[1].score
+				},
+				gameStartedAt: this.startTime,
+				gameFinishedAt: Math.floor(Date.now() / 1000),
+				gameType: 'XO',
+				gameId: this.tournGameId
+			}, {
+				headers: {
+					'Authorization': `Bearer ${MS_TOURN_API_KEY}`
+			}});
+		} catch (err) {
+			console.log("error from user management: ", err);
+		}
 	}
 }

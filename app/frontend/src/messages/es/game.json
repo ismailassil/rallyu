@@ -4,13 +4,14 @@
       "play_again": "Jugar de Nuevo",
       "lobby": "Sala",
       "rematch": "Revancha",
-      "back": "Volver al lobby"
+      "back": "Volver al lobby",
+      "start": "Comenzar juego"
     },
     "lobby": {
-      "in_queue": "En Cola",
+      "searching": "Buscando",
       "match_found": "Partida Encontrada",
-      "remote_play": "Juego Online",
-      "local_play": "Juego Local"
+      "remote": "Remoto",
+      "local": "Local"
     },
     "gameover": {
       "display": "{text, select, gameover {Fin del Juego} win {¡Has Ganado!} loss {Has Perdido} draw {Empate} cross {Gana la Cruz} circle {Gana el Círculo} other {Fin del Juego}}"
@@ -20,6 +21,7 @@
       "error_codes": "{code, select, error_code_1 {ID de sesión y sala no coinciden} error_code_2 {Sala de partida no encontrada} error_code_3 {El jugador no está en la sala} error_code_4 {La misma cuenta inició sesión en otro dispositivo. Reconéctate si quieres usar este dispositivo.} error_code_5 {La sala ha expirado} other {Algo salió mal}}"
     },
     "ingame": {
+      "start": "¡Vamos!",
       "round": "Ronda",
       "resign": "Rendirse",
       "resignmsg": "Estás seguro de que quieres rendirte?",
