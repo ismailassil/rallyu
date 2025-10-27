@@ -114,11 +114,13 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 			},
 			players: [
 				{
+					ID: this.players[0].id,
 					coords: { x: 20, y: 450 },
 					movement: 'still',
 					speed: 12
 				},
 				{
+					ID: this.players[1].id,
 					coords: { x: 1580, y: 450 },
 					movement: 'still',
 					speed: 12
@@ -203,26 +205,6 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 		})
 
     }
-
-	private sendData(url: string, api_key: string, extra?: Record<any, any>) {
-		return axios.post(url, {
-				player1: {
-					ID: this.players[0].id, 
-					score: this.state.score[0]
-				},
-				player2: {
-					ID: this.players[1].id, 
-					score: this.state.score[1]
-				},
-				gameStartedAt: Math.floor(this.startTime / 1000),
-				gameFinishedAt: Math.floor(Date.now() / 1000),
-				gameType:  'PONG',
-				...extra
-			}, {
-				headers: {
-					'Authorization': `Bearer ${api_key}`
-			}});
-	}
 
 	reconnect(player: PingPongPlayer): void {
 		player.setupEventListeners(this);

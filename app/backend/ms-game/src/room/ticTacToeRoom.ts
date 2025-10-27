@@ -171,7 +171,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.saveGameData();
 	}
 
-	playMove(move: number, sign: XOSign): boolean {
+	public playMove(move: number, sign: XOSign): boolean {
 		if (move < 0 || move > 9 || this.state.cells[move] !== '')
 			return false;
 

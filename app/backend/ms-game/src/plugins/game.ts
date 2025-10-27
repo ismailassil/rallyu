@@ -1,44 +1,14 @@
 import type { FastifyInstance, FastifyPluginOptions, FastifyRequest } from 'fastify';
 import WebSocket from 'ws'
-import jwt from 'jsonwebtoken'
 import type { GameType } from '../types/types';
 import { createRoomSchema, joinRoomSchema, roomStatusSchema, userStatusSchema } from '../schemas/schemas';
 import { roomManager, userSessions, closeRoom } from '../room/roomManager';
-import dotenv from 'dotenv'
-dotenv.config();
-
-const MS_MATCHMAKING_API_KEY = process.env.MS_MATCHMAKING_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
-const MS_NOTIF_API_KEY = process.env.MS_NOTIF_API_KEY || 'DEFAULT_MS_MATCHMAKING_SECRET_';
-const JWT_ACCESS_SECRET = process.env['JWT_ACCESS_SECRET'] || ''
+import apiInterface from './interface';
 
 const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
 	const ROOM_EXPIRATION_TIME = 30000; // 30 sec
 
-	fastify.addHook('preHandler', async (req, res) => {
-		let token;
-		const authHeader = req.headers.authorization;
-
-		if (authHeader) {
-			token = authHeader.startsWith('Bearer ') 
-				? authHeader.slice(7)
-				: authHeader;
-		}
-		else if (req.query && (req.query as any).accessToken) {
-			token = (req.query as any).accessToken;
-		}
-	
-		if (!token) {
-			return res.code(401).send({ message: 'Unauthorized' });
-		}
-		
-		if (token !== MS_MATCHMAKING_API_KEY && token !== MS_NOTIF_API_KEY) {
-			try {
-				jwt.verify(token, JWT_ACCESS_SECRET, { algorithms: ['HS256'] });
-			} catch (err) {
-				return res.code(401).send({ message: 'Unauthorized' });
-			}
-		}
-	});
+	fastify.register(apiInterface, { prefix: '/interface' });
 
 	fastify.get('/room/join/:roomid', { websocket: true, schema: joinRoomSchema }, (socket: WebSocket.WebSocket, req: FastifyRequest) => {
 		try {
