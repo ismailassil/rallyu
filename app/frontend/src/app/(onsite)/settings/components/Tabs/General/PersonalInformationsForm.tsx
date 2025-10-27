@@ -4,9 +4,7 @@ import LanguageSwitcher from '../../items/LanguageSwitcher';
 import AvailabilityIndicator from '@/app/(auth)/components/Form/AvailabilityIndicator';
 import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
 import { useTranslations } from 'next-intl';
-import useForm from '@/app/hooks/useForm';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import useValidationSchema from '@/app/hooks/useValidationSchema';
 import useAPICall from '@/app/hooks/useAPICall';
 import { toastError } from '@/app/components/CustomToast';
 import { useFormContext } from '@/app/(auth)/components/Form/FormContext';
@@ -37,14 +35,14 @@ export default function PersonalInformationsForm({ ref, onChange } : PersonalInf
 	} = useFormContext();
 
 	const { status: usernameStatus, setStatus: setUsernameStatus } = useAvailabilityCheck(
-		"username",
+		'username',
 		formData.username,
 		loggedInUser!.username,
 		debounced.username,
 		errors.username
 	);
 	const { status: emailStatus, setStatus: setEmailStatus } = useAvailabilityCheck(
-		"email",
+		'email',
 		formData.email,
 		loggedInUser!.email,
 		debounced.email,
@@ -91,9 +89,9 @@ export default function PersonalInformationsForm({ ref, onChange } : PersonalInf
 					payloadToSubmit
 			));
 		} catch (err: any) {
-			if (err.message === "AUTH_USERNAME_TAKEN") setUsernameStatus("unavailable");
-			else if (err.message === "AUTH_EMAIL_TAKEN") setEmailStatus("unavailable");
-			else toastError(tautherr("errorCodes", { code: err.message }));
+			if (err.message === 'AUTH_USERNAME_TAKEN') setUsernameStatus('unavailable');
+			else if (err.message === 'AUTH_EMAIL_TAKEN') setEmailStatus('unavailable');
+			else toastError(tautherr('errorCodes', { code: err.message }));
 		}
 	}
 
@@ -149,7 +147,7 @@ export default function PersonalInformationsForm({ ref, onChange } : PersonalInf
 	}));
 
 	return (
-		<div className="flex flex-col gap-4">
+		<div className='flex flex-col gap-4'>
 			<div className='flex flex-col gap-5'>
 				<InputField
 					className='field flex flex-col gap-0.5 min-w-0 flex-1'
@@ -172,7 +170,7 @@ export default function PersonalInformationsForm({ ref, onChange } : PersonalInf
 					field='username'
 					inputPlaceholder='xezzuz'
 				>
-					{debounced.username && !errors.username && formData.username !== loggedInUser!.username && <AvailabilityIndicator key="username-availability" label={t('username')} status={usernameStatus} />}
+					{debounced.username && !errors.username && formData.username !== loggedInUser!.username && <AvailabilityIndicator key='username-availability' label={t('username')} status={usernameStatus} />}
 				</InputField>
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'
@@ -181,7 +179,7 @@ export default function PersonalInformationsForm({ ref, onChange } : PersonalInf
 					field='email'
 					inputPlaceholder='iassil@1337.student.ma'
 				>
-					{debounced.email && !errors.email && formData.email !== loggedInUser!.email && <AvailabilityIndicator key="email-availability" label={t('email')} status={emailStatus} />}
+					{debounced.email && !errors.email && formData.email !== loggedInUser!.email && <AvailabilityIndicator key='email-availability' label={t('email')} status={emailStatus} />}
 				</InputField>
 				<InputField
 					className='field flex flex-col gap-0.5 box-border'

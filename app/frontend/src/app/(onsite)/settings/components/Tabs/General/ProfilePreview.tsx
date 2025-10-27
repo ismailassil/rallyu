@@ -86,9 +86,7 @@ export default function ProfilePreview({ ref, onChange } : ProfilePreviewProps) 
 				formData
 			));
 			setAvatarFile(null);
-		} catch (err: any) {
-
-		} finally {
+		} catch {} finally {
 			onChange(false);
 		}
 	}
@@ -106,12 +104,12 @@ export default function ProfilePreview({ ref, onChange } : ProfilePreviewProps) 
 	const displayAvatar = avatarPreview || loggedInUser?.avatar_url;
 
 	return (
-		<div className="bg-white/2 border border-white/8
-						flex flex-col md:flex-row gap-10 items-center w-full rounded-3xl py-7 px-9 justify-between">
-			<div className="flex flex-col md:flex-row items-center md:text-start text-center gap-8">
+		<div className='bg-white/2 border border-white/8
+						flex flex-col md:flex-row gap-10 items-center w-full rounded-3xl py-7 px-9 justify-between'>
+			<div className='flex flex-col md:flex-row items-center md:text-start text-center gap-8'>
 				{/* AVATAR + USER INFO */}
 				<div className='relative'>
-					<label htmlFor="profile-upload">
+					<label htmlFor='profile-upload'>
 						<div className='absolute rounded-full w-full h-full flex justify-center items-center
 									bg-black/60 opacity-0 hover:opacity-100 cursor-pointer
 									z-1 transition-all duration-500'
@@ -125,7 +123,7 @@ export default function ProfilePreview({ ref, onChange } : ProfilePreviewProps) 
 					/>
 				</div>
 				<div>
-					<h1 className="font-bold text-xl text-white/90 capitalize">
+					<h1 className='font-bold text-xl text-white/90 capitalize'>
 						{formData.first_name || loggedInUser!.first_name} {formData.last_name || loggedInUser!.last_name}
 					</h1>
 					<p className='text-white/70'>
@@ -159,10 +157,10 @@ export default function ProfilePreview({ ref, onChange } : ProfilePreviewProps) 
 			)}
 			<input
 				ref={fileInputRef}
-				id="profile-upload"
-				type="file"
-				accept="image/*"
-				className="hidden"
+				id='profile-upload'
+				type='file'
+				accept='image/*'
+				className='hidden'
 				onChange={handleChange}
 			/>
 		</div>

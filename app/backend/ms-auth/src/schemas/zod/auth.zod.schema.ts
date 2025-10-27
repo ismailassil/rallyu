@@ -10,11 +10,17 @@ const register = z.object({
 });
 
 const changepassword = z.object({
+	oldPassword: z.string(),
 	newPassword: passwordField
 });
 
 const resetpassword = z.object({
 	email: emailField
+});
+
+const resetpasswordupdate = z.object({
+	token: z.string(),
+	newPassword: passwordField
 });
 
 const verifyemail = z.object({
@@ -32,7 +38,8 @@ export const authRoutesZodSchemas = {
 	password: {
 		change: changepassword,
 		reset: {
-			request: resetpassword
+			request: resetpassword,
+			use: resetpasswordupdate
 		}
 	},
 	verify: {

@@ -1,5 +1,5 @@
 import { Check, ChevronDown, ChevronUp } from 'lucide-react';
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, RefObject, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import MainCardWrapper from '../../components/UI/MainCardWrapper';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -49,26 +49,30 @@ export const ActionButton = ({
 };
 
 type SettingsCardProps = {
+	ref?: RefObject<any>;
 	title: string;
 	subtitle: string;
 	actionButtonOptions?: ActionButtonProps
 	isFoldable?: boolean;
 	defaultExpanded?: boolean;
+	initialHeight?: 'none' | 'full' | 'loading';
 	children?: ReactNode; // content
 	className?: string; // of settings card
 };
 
 export default function SettingsCard({
+	ref,
 	title,
 	subtitle,
 	actionButtonOptions,
 	isFoldable = false,
 	defaultExpanded = true,
+	initialHeight = 'none',
 	children,
 	className = '',
 }: SettingsCardProps) {
 	const [isExpanded, setIsExpanded] = useState(defaultExpanded);
-	const [height, setHeight] = useState(0);
+	const [height, setHeight] = useState(initialHeight === 'none' ? 0 : initialHeight === 'loading' ? 168 : 3000);
 	const contentRef = useRef<HTMLDivElement | null>(null);
 
 	const toggleExpanded = () => setIsExpanded(prev => !prev);
@@ -86,6 +90,21 @@ export default function SettingsCard({
 			return () => resizeObserver.disconnect();
 		}
 	}, [children]);
+
+	useImperativeHandle(ref, () => ({
+		toggle: () => {
+			console.log('toggle triggered via useImperativeHandle');
+			setIsExpanded(prev => !prev);
+		},
+		expand: () => {
+			console.log('expand triggered via useImperativeHandle');
+			setIsExpanded(true);
+		},
+		collapse: () => {
+			console.log('collapse triggered via useImperativeHandle');
+			setIsExpanded(false);
+		}
+	}));
 
 	return (
 		<MainCardWrapper className={className}>
@@ -108,19 +127,8 @@ export default function SettingsCard({
 
 					{/* FOLD/ACTION BUTTON */}
 					<div className="flex items-start gap-3">
-						<div className={children ? 'max-md:hidden' : ''}>
-							{/* {(onAction || formId) && (
-								<ActionButton
-									actionIcon={actionIcon}
-									onClick={onAction}
-									hidden={isButtonHidden}
-									disabled={isButtonDisabled}
-									type={formId ? 'submit' : 'button'}
-									formId={formId}
-								>
-									{actionLabel}
-								</ActionButton>
-							)} */}
+						{/* <div className={children ? 'max-md:hidden' : ''}> */}
+						<div className={children ? 'hidden md:block' : ''} >
 							{actionButtonOptions && (
 								<ActionButton {...actionButtonOptions} />
 							)}
@@ -141,13 +149,18 @@ export default function SettingsCard({
 			{/* CONTENT */}
 			<div style={{
 				height: isExpanded ? `${height}px` : '0px',
-				transition: 'height 0.3s ease-in-out',
+				transition: 'height .5s ease-in-out',
 				overflow: 'hidden'
 			}}>
 				<div ref={contentRef}>
 					{children && (
-						<div className='pb-5 px-5 lg:px-14'>
+						<div className='py-6 pb-12 px-5 lg:px-14'>
 							{children}
+							<div className='mt-4 md:hidden'>
+								{actionButtonOptions && (
+									<ActionButton {...actionButtonOptions} />
+								)}
+							</div>
 						</div>
 					)}
 				</div>

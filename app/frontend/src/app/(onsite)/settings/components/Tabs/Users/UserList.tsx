@@ -73,14 +73,16 @@ function UserCard({ user, actions } : UserCardProps) {
 
 export default function UserList({ users, actions = [] } : UserListProps) {
 	return (
-		<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-			{users.map((user) =>
-				<UserCard
-					key={user.id}
-					user={user}
-					actions={actions}
-				/>
-			)}
+		<div className='min-h-24 flex items-center'>
+			<div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+				{users.map((user) =>
+					<UserCard
+						key={user.id}
+						user={user}
+						actions={actions}
+					/>
+				)}
+			</div>
 		</div>
 	);
 }

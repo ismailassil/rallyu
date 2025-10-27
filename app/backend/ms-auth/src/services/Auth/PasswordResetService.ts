@@ -7,8 +7,9 @@ import UserService from "../User/UserService";
 import { generateOTP, generateUUID, nowInSeconds, nowPlusSeconds, verifyOTP } from "../TwoFactorAuth/utils";
 import AuthChallengesRepository from "../../repositories/AuthChallengesRepository";
 import { UUID } from "crypto";
-import { NoEmailIsAssociated, UserNotFoundError } from "../../types/exceptions/user.exceptions";
+import { UserNotFoundError } from "../../types/exceptions/user.exceptions";
 import { AuthChallengeExpired, InvalidCodeError, TooManyAttemptsError, TooManyResendsError } from "../../types/exceptions/verification.exceptions";
+import logger from "../../utils/misc/logger";
 
 const passwordResetConfig = {
 	codeExpirySeconds: 5 * 60, // 5 minutes
@@ -32,7 +33,7 @@ class PasswordResetService {
 	async setup(email: string) {
 		const targetUser = await this.userService.getUserByEmail(email);
 		if (!targetUser || !targetUser.email)
-			throw new NoEmailIsAssociated();
+			throw new UserNotFoundError();
 
 		// CLEANUP PENDING
 		await this.challengeRepository.cleanupPendingByUserID(
@@ -168,8 +169,10 @@ class PasswordResetService {
 	}
 
 	private async notifyUser(targetEmail: string, OTP: string) {
-		if (!targetEmail)
-			throw new NoEmailIsAssociated();
+		if (!targetEmail) {
+			logger.error({ targetEmail }, '[NOTIFY] Password Reset Service: targetEmail is null -- This should never happen');
+			return ;
+		}
 
 		await this.mailingService.sendEmail({
 			from: this.mailingService.config.mailingServiceUser,

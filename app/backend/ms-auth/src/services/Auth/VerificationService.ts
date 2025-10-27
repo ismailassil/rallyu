@@ -6,7 +6,7 @@ import { generateOTP, generateUUID, nowInSeconds, nowPlusSeconds, verifyOTP } fr
 import MailingService from "../Communication/MailingService";
 import WhatsAppService from "../Communication/WhatsAppService";
 import { mailingConfig } from "../../config/mailing";
-import { NoEmailIsAssociated, NoPhoneIsAssociated, UserAlreadyExistsError, UserNotFoundError } from "../../types/exceptions/user.exceptions";
+import { UserAlreadyExistsError, UserNotFoundError } from "../../types/exceptions/user.exceptions";
 import { AuthChallengeExpired, InvalidCodeError, TooManyAttemptsError, TooManyResendsError } from "../../types/exceptions/verification.exceptions";
 
 const verificationConfig = {

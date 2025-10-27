@@ -118,19 +118,19 @@ function validateAllFields(zodSchema: z.ZodSchema, values: Record<string, string
 		return {};
 	} catch (err) {
 		if (err instanceof z.ZodError) {
-		const currentErrors : Record<string, string> = {};
+			const currentErrors : Record<string, string> = {};
 
-		console.log('ZodError:', err.issues);
+			console.log('ZodError:', err.issues);
 
-		for (const issue of err.issues) {
-			const fieldName = issue.path[0];
-			if (typeof fieldName === 'string') {
-			if (currentErrors[fieldName]) continue; // only keep the first error per field
-			currentErrors[fieldName] = issue.message;
+			for (const issue of err.issues) {
+				const fieldName = issue.path[0];
+				if (typeof fieldName === 'string') {
+					if (currentErrors[fieldName]) continue; // only keep the first error per field
+					currentErrors[fieldName] = issue.message;
+				}
 			}
-		}
 
-		return currentErrors;
+			return currentErrors;
 		}
 	}
 	return {};
@@ -219,17 +219,15 @@ function useForm(
 	}
 
 	function getValidationErrors() : Record<string, string> | null {
-		const currentErrors = validateAllFields(zodSchema, state.values);
+		const currentState = stateRef.current;
+		const currentErrors = validateAllFields(zodSchema, currentState.values);
 
 		return Object.keys(currentErrors).length === 0 ? null : currentErrors;
 	}
 
 	function validateAll() : boolean {
-		const currentErrors = validateAllFields(zodSchema, state.values);
-
-		console.log('ValidateAll Current Values:', state.values);
-
-		console.log('ValidateAll Current Errors:', currentErrors);
+		const currentState = stateRef.current;
+		const currentErrors = validateAllFields(zodSchema, currentState.values);
 
 		dispatch({ type: 'VALIDATE_ALL', updatedErrors: currentErrors });
 

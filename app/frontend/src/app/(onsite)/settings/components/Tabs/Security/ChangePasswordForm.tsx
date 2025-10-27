@@ -24,6 +24,7 @@ export default function ChangePasswordForm({
 	onSuccess
 } : ChangePasswordFormProps) {
 	const t = useTranslations('');
+	const tautherr = useTranslations('auth');
 
 	const {
 		apiClient
@@ -51,7 +52,7 @@ export default function ChangePasswordForm({
 			debounceMs: 1200,
 			fieldsDependencies: {
 				new_password: ['confirm_new_password', 'current_password'],
-        		current_password: ['new_password']
+				current_password: ['new_password']
 			}
 		}
 	);
@@ -86,15 +87,17 @@ export default function ChangePasswordForm({
 
 		try {
 			setIsSubmitting(true);
-			// await executeAPICall(() =>
-			// 	apiClient.auth.changePassword(formData.current_password, formData.new_password)
-			// );
 			await simulateBackendCall(1000);
+			await executeAPICall(() => apiClient.auth.changePassword(
+				formData.current_password,
+				formData.new_password
+			));
 
 			toastSuccess('Password changed successfully');
 			onSuccess();
 		} catch (err: any) {
-			toastError(err.message || 'Something went wrong, please try again later');
+			if (err.message === 'AUTH_INVALID_CREDENTIALS') err.message = 'AUTH_INVALID_CURRENT_PASSWORD';
+			toastError(tautherr('errorCodes', { code: err.message }));
 		} finally {
 			setIsSubmitting(false);
 			resetForm();
@@ -113,6 +116,7 @@ export default function ChangePasswordForm({
 					handleChange={handleChange}
 					getValidationErrors={getValidationErrors}
 					validateAll={validateAll}
+					resetForm={resetForm}
 				>
 					<form ref={formRef} onSubmit={handleSubmit} className='flex flex-col gap-5'>
 						<InputField
@@ -145,7 +149,7 @@ export default function ChangePasswordForm({
 
 			{/* Rules Section */}
 			<div className='order-1 lg:order-2'>
-				<div className='h-full rounded-2xl border border-white/6 bg-gradient-to-br from-white/0 to-white/4 p-5 sm:p-6 lg:p-7'>
+				<div className='h-full rounded-2xl border border-white/6 bg-linear-to-br from-white/0 to-white/4 p-5 sm:p-6 lg:p-7'>
 					<div className='mb-4 flex items-center gap-3'>
 						<Lock className='h-5 w-5 shrink-0' />
 						<div>

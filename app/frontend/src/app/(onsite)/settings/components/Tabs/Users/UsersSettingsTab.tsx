@@ -21,6 +21,7 @@ export default function UsersSettingsTab() {
 			<SettingsCard
 				title={t('cards.friends.title')}
 				subtitle={t('cards.friends.subtitle')}
+				initialHeight='loading'
 				isFoldable
 			>
 				<FriendsList />
@@ -29,6 +30,7 @@ export default function UsersSettingsTab() {
 			<SettingsCard
 				title={t('cards.outgoing.title')}
 				subtitle={t('cards.outgoing.subtitle')}
+				initialHeight='loading'
 				isFoldable
 			>
 				<OutgoingFriendRequestsList />
@@ -37,6 +39,7 @@ export default function UsersSettingsTab() {
 			<SettingsCard
 				title={t('cards.incoming.title')}
 				subtitle={t('cards.incoming.subtitle')}
+				initialHeight='loading'
 				isFoldable
 			>
 				<IncomingFriendRequestsList />
@@ -45,6 +48,7 @@ export default function UsersSettingsTab() {
 			<SettingsCard
 				title={t('cards.blocked.title')}
 				subtitle={t('cards.blocked.subtitle')}
+				initialHeight='loading'
 				isFoldable
 			>
 				<BlockedList />

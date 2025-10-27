@@ -50,7 +50,9 @@ export default function TwoFAManagerPage() {
 	}
 
 	async function handleEnableAfterVerification(m: 'TOTP' | 'SMS' | 'EMAIL') {
-		try { await executeAPICall(() => apiClient.mfa.enableMethod(m)); } catch {}
+		try {
+			await executeAPICall(() => apiClient.mfa.enableMethod(m));
+		} catch {}
 	}
 
 	function renderCurrentStep() {
