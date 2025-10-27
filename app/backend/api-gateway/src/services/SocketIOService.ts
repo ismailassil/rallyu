@@ -3,6 +3,7 @@ import { Server, Socket } from "socket.io";
 import type { socketioOpts } from "@/plugin/socketio/socketio.types.js";
 import type { JWT_ACCESS_PAYLOAD } from "@/types/jwt.types.js";
 import type { MessageType } from "@/types/chat.types.js";
+import socketRateLimiter from "@/plugin/socketio-rate-limiter/RateLimiter.js";
 
 class SocketIOService {
 	private readonly io: Server;
@@ -18,7 +19,7 @@ class SocketIOService {
 		this.io = new Server(fastify.server, {
 			path: "/socketio-api",
 			cors: {
-				origin: "*",
+				origin: ["https://localhost", "/^https://e[1-3]r[1-9]{1,2}p[1-9]{1,2}.1337.ma$/"],
 				methods: ["GET", "POST"],
 				credentials: true,
 			},
@@ -36,13 +37,15 @@ class SocketIOService {
 
 	public setupConnection(): void {
 		this.io.on("connection", async (socket: Socket) => {
+			socket.use(socketRateLimiter({ maxBurst: 10, perSecond: 1 }));
+
 			await this.handleConnection(socket);
 
 			socket.on("chat_send_msg", async (data: MessageType) => {
 				this.handleChat(socket, data);
 			});
 
-			socket.on('notification', async(data: any) => {
+			socket.on("notification", async (data: any) => {
 				this.handleIncomingNotification(socket, data);
 			});
 
@@ -65,8 +68,8 @@ class SocketIOService {
 			userId: socket.data.userId,
 			userSocket: socket.id,
 			load: data,
-		}
-		this.fastify.js.publish('notification.gateway', this.fastify.jsCodec.encode(payload));
+		};
+		this.fastify.js.publish("notification.gateway", this.fastify.jsCodec.encode(payload));
 	}
 
 	private async handleConnection(socket: Socket) {
@@ -100,12 +103,11 @@ class SocketIOService {
 		this.onlineUsers.set(userId, currentCount + 1);
 
 		// if first connection notify other users
-		if (currentCount === 0)
-			socket.broadcast.emit('is_online', { userId });
+		if (currentCount === 0) socket.broadcast.emit("is_online", { userId });
 
 		// send a full list as first status
-		socket.on('request_online_users_list', () => {
-			socket.emit('online_users_list', Array.from(this.onlineUsers.keys()));
+		socket.on("request_online_users_list", () => {
+			socket.emit("online_users_list", Array.from(this.onlineUsers.keys()));
 		});
 	}
 
@@ -121,7 +123,7 @@ class SocketIOService {
 			// user has no more connections
 			this.onlineUsers.delete(userId);
 			// notify all that this user went offline
-			this.io.emit('is_offline', { userId });
+			this.io.emit("is_offline", { userId });
 		} else {
 			// user has other connections
 			this.onlineUsers.set(userId, newCount);
@@ -136,6 +138,9 @@ class SocketIOService {
 				const res = this.fastify.jwt.verify(jwtToken) as JWT_ACCESS_PAYLOAD;
 
 				socket.data.userId = res.sub.toString();
+				if (!socket.data.userId) {
+					throw new Error("userId missing");
+				}
 
 				next();
 			} catch (error) {
