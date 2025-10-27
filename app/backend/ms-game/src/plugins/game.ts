@@ -112,9 +112,10 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 	})
 
 	fastify.post('/room/create', { schema: createRoomSchema}, (req, res) => {
-		const { playersIds, gameType, tournament } = req.body as { playersIds: number[], gameType: GameType, tournament: { gameId: number } };
-
+		const { playersIds, gameType, tournament } = req.body as { playersIds: number[], gameType: GameType, tournament: { gameId: number, tournamentURL: number } };
 		const tournGameId = tournament?.gameId;
+		const tournURL = tournament?.tournamentURL;
+
 		if (!playersIds) {
 			return res.code(400).send({
 				message: 'players ids not provided.'
@@ -128,7 +129,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			})
 		}
 
-		const { roomid, room }  = roomManager.createRoom(gameType, tournGameId);
+		const { roomid, room }  = roomManager.createRoom(gameType, tournGameId, tournURL);
 		room.attachPlayers(playersIds);
 
 		room.expirationTimer = setTimeout(() => {

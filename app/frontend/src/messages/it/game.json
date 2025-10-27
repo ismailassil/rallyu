@@ -3,6 +3,7 @@
     "buttons": {
       "play_again": "Gioca ancora",
       "lobby": "Lobby",
+      "tournament": "Torna al torneo",
       "rematch": "Rivincita",
       "back": "Torna alla lobby"
     },

@@ -3,6 +3,7 @@
     "buttons": {
       "play_again": "Play Again",
       "lobby": "Lobby",
+      "tournament": "Return to tournament",
       "rematch": "Rematch",
       "back": "Go back to lobby"
     },

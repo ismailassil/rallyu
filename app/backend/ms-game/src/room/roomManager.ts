@@ -24,11 +24,11 @@ class RoomManager {
         this.rooms = new Map<string, Room<any, any>>() // <roomid, room>
     }
 
-    createRoom(type: string, gameId: number | undefined): { roomid: string, room: Room<any, any> } {
+    createRoom(type: string, gameId: number | undefined, tournamentURL: number | undefined): { roomid: string, room: Room<any, any> } {
         const roomid = uuidv4();
         const room = type === 'pingpong'
-            ? new PingPongRoom(roomid, gameId)
-            : new TicTacToeRoom(roomid, gameId);
+            ? new PingPongRoom(roomid, gameId, tournamentURL)
+            : new TicTacToeRoom(roomid, gameId, tournamentURL);
         
         this.rooms.set(roomid, room);
         return { roomid, room };

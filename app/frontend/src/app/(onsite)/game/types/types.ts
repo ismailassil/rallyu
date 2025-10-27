@@ -36,6 +36,7 @@ export interface PongState {
 			score: number
 		}
 	],
+	tournamentURL: number,
 }
 
 export interface EventHandlers {

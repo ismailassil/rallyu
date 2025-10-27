@@ -84,6 +84,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	gameType: GameType;
 	isTournament: boolean = false;
 	tournGameId?: number | undefined;
+	tournURL?: number | undefined;
 	startTime: number = 0;
 	players: PingPongPlayer[] = [];
 	running = false;
@@ -93,12 +94,13 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	gameTimerId: NodeJS.Timeout | undefined = undefined;
 	state: PingPongGameState;
 
-	constructor(id: string, gameId: number | undefined) {
+	constructor(id: string, gameId: number | undefined, tournamentURL: number | undefined) {
 		this.id = id;
 		this.gameType = 'pingpong';
 
 		if (gameId) {
 			this.tournGameId = gameId;
+			this.tournURL = tournamentURL;
 			this.isTournament = true;
 		}
 
@@ -125,7 +127,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				}
 			],
 			score: [0, 0],
-			pause: true
+			pause: true,
 		};
 	}
 
@@ -171,7 +173,8 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
             	player.socket.send(JSON.stringify({
 					type: 'gameover',
 					result: results[i],
-					score: this.state.score
+					score: this.state.score,
+					tournamentURL: this.tournURL
 				}))
 			}
 		})
@@ -188,7 +191,8 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
             	player.socket.send(JSON.stringify({
 					type: 'gameover',
 					result: yeilder === i ? 'loss' : 'win',
-					score: this.state.score
+					score: this.state.score,
+					tournamentURL: this.tournURL
 				}))
 			}
 		})

@@ -90,6 +90,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	id: string;
 	isTournament: boolean = false;
 	tournGameId?: number | undefined;
+	tournURL?: number | undefined;
 	gameType: GameType;
 	startTime: number | null = null;
 	players: TicTacToePlayer[] = [];
@@ -102,12 +103,13 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	timerStartTimeStamp: number = 0;
 	status: string = 'genesis'
 
-	constructor(id: string, gameId: number | undefined) {
+	constructor(id: string, gameId: number | undefined, tournURL: number | undefined) {
 		this.id = id;
 		this.gameType = 'tictactoe';
 		this.startOfRoundPlayer = Math.random() > 0.5 ? 'X' : 'O'
 		if (gameId) {
 			this.tournGameId = gameId;
+			this.tournURL = tournURL;
 			this.isTournament = true;
 		}
 
@@ -165,6 +167,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 			forfeitingPlayer: forfeiter.sign,
 			winner: winner.sign,
 			score: this.players.map(p => p.score),
+			tournamentURL: this.tournURL,
 		});
 	
 		closeRoom(this, 1000, 'Forfeit');
@@ -264,7 +267,8 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.broadcastToPlayers({
 			type: 'gameover',
 			winner: overallWinner,
-			score: this.players.map(p => p.score)
+			score: this.players.map(p => p.score),
+			tournamentURl: this.tournURL
 		});
 
 		closeRoom(this, 1000, 'Game Over');

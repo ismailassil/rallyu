@@ -76,7 +76,7 @@ const GameField = () => {
                         />
                         <div className="relative inline-block">
                             <Pong socketProxy={socketProxy.current} pong={pong.current} />
-                            <Overlay status={overlayStatus} result={result} />
+                            <Overlay status={overlayStatus} result={result} tournamentURL={pong.current.state.tournamentURL} />
                         </div>
                     </div>
                 </>
