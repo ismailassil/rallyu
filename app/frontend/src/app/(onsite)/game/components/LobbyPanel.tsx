@@ -38,7 +38,7 @@ const GameCard = ({ selected, setType, children }: { selected: boolean, setType:
 const LobbyPanel = () => {
 	const [mode, setMode] = useState<GameMode>('remote');
 	const [type, setType] = useState<GameType>('pingpong');
-	const t = useTranslations();
+	const t = useTranslations("game");
 
 	return (
 		<div className="flex items-center justify-center flex-col flex-4 w-full px-8 lg:px-20 py-10 h-full gap-4 border rounded-lg bg-card border-card">
@@ -58,23 +58,23 @@ const LobbyPanel = () => {
 					<span className={`text-2xl md:text-3xl text-nowrap uppercase ${unicaOne.className}`}>{t("lobby.local")}</span>
 				</button>
 			</div>
-			<div className="flex flex-col *:transition-all *:duration-250 lg:flex-row py-5 max-w-[1000px] gap-4 w-full flex-1">
+			<div className="flex flex-col lg:flex-row *:transition-all *:duration-300 *:ease-out py-5 max-w-[1000px] gap-4 w-full flex-1">
 				<GameCard selected={type === 'pingpong'} setType={() => setType('pingpong')} >
 					<Image
 						src={"/design/pong.png"}
 						alt={'pong'}
 						fill
-						className={`object-contain transition-all duration-300 ease-out lg:object-cover object-top-left opacity-90 bg-blue-800/30 ${type === 'pingpong' ? 'scale-[170%] lg:scale-[110%]' : 'scale-[160%] lg:scale-[100%]'}`}
+						className={`object-contain lg:object-cover transition-all duration-300 ease-out object-top-left opacity-90 bg-blue-800/30 ${type === 'pingpong' ? 'scale-[170%] lg:scale-[110%]' : 'scale-[160%] lg:scale-[100%]'}`}
 						style={{ transformOrigin: 'left center'}}
 						draggable={false}
 					/>
 				</GameCard>
 				<GameCard selected={type === 'tictactoe'} setType={() => setType('tictactoe')} >
-				<Image
+					<Image
 						src={"/design/xo.png"}
 						alt={'xo'}
 						fill
-						className={`object-contain transition-all duration-300 ease-out lg:object-cover opacity-90 object-top-left bg-[#EA2228] ${type === 'tictactoe' ? 'scale-[240%] lg:scale-[120%]' : 'scale-[230%] lg:scale-[110%]'}`}
+						className={`object-contain lg:object-cover transition-all duration-300 ease-out opacity-90 object-top-left bg-[#EA2228] ${type === 'tictactoe' ? 'scale-[240%] lg:scale-[120%]' : 'scale-[230%] lg:scale-[110%]'}`}
 						style={{ transformOrigin: 'top left'}}
 						draggable={false}
 					/>

@@ -8,7 +8,7 @@
       "start": "Start Game"
     },
     "lobby": {
-      "in_queue": "Searching",
+      "searching": "Searching",
       "match_found": "Match Found",
       "remote": "Remote",
       "local": "Local"
