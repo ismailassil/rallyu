@@ -23,7 +23,7 @@ const FooterPending = function (
         try {
             await apiClient.instance.patch(`/v1/tournament/match/join/${slug}`, { id: loggedInUser?.id });
 
-            toastSuccess("bracket.pending.join");
+            toastSuccess(translate("bracket.pending.join"));
             setJoined(true);
             setError({ status: false, message: "" });
         } catch (err: unknown) {
