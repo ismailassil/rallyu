@@ -10,7 +10,6 @@ import { useChat } from "../context/ChatContext";
 import { useTranslations } from "next-intl";
 import { LoggedUser } from "../types/chat.types";
 import LoadingComponent from "@/app/(auth)/components/UI/LoadingComponents";
-import { simulateBackendCall } from '@/app/(api)/utils';
 
 const Chat = ({ username }: { username?: string }) => {
 

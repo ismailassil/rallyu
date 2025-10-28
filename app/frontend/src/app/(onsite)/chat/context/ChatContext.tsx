@@ -5,7 +5,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { LoggedUser, MessageType } from "../types/chat.types";
 import { format, isToday, isYesterday, parseISO, isSameDay } from "date-fns";
 import { useTranslations } from "next-intl";
-import { simulateBackendCall } from '@/app/(api)/utils';
 
 type ChatContextType = {
 	showConversation: boolean;
