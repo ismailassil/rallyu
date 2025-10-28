@@ -21,6 +21,8 @@ import { oauthConfig } from '../../config/oauth';
 import { UUID, randomBytes } from 'crypto';
 import { AuthChallengeMethod } from '../../repositories/AuthChallengesRepository';
 import CDNService from '../CDN/CDNService';
+import fastify from '../../server';
+import logger from '../../utils/misc/logger';
 
 class AuthService {
 	private cdnService: CDNService;
@@ -313,6 +315,8 @@ class AuthService {
 		const existingUser = await this.userService.getUserById(user_id);
 		if (!existingUser)
 			throw new UserNotFoundError();
+
+		logger.debug({ user_id, oldPassword, newPassword }, '[CHANGE PASSWORD ARGS]')
 
 		const isValidPassword =
 			await bcrypt.compare(oldPassword, existingUser.password);

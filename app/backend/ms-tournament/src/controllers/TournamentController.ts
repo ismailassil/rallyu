@@ -145,8 +145,14 @@ class TournamentController {
 			const { tournamentId } = req.params;
 			const { id: playerId } = req.body;
 
-			const tournamentMatches: TournamentMatchesSchema[] = 
+			const tournamentMatches: any = 
 				await req.server.tournamentMatchesModel.matchesGet(tournamentId);
+
+							console.log(tournamentMatches)
+
+			
+			if (tournamentMatches[0].state !== "pending")
+				return (rep.code(401).send({ status: true, message: "Unfortunetly you cannot access nor leave the tournament now." }))
 
 			for (let i = 0; i < tournamentMatches.length - 1; i++) {
 				if (!tournamentMatches[i].player_1 || !tournamentMatches[i].player_2) {
@@ -180,8 +186,13 @@ class TournamentController {
 			const { tournamentId } = req.params;
 			const { id: playerId } = req.body;
 
-			const tournamentMatches: TournamentMatchesSchema[] =
+			const tournamentMatches: any =
 				await req.server.tournamentMatchesModel.matchesGet(tournamentId);
+
+			console.log(tournamentMatches)
+
+			if (tournamentMatches[0].state !== "pending")
+				return (rep.code(401).send({ status: true, message: "Unfortnetly you cannot access nor leave the tournament now." }))
 
 			for (let i = 0; i < tournamentMatches.length - 1; i++) {
 				const playerSlot: number | null = tournamentMatches[i].player_1 === playerId ? 1 :
@@ -218,7 +229,6 @@ class TournamentController {
 			if (!playerId || !matchId)
 				return rep.code(400).send({ status: false, message: "Bad request!" });
 
-			console.log("==============")
 			await req.server.tournamentMatchesModel.playerReadyMatch(matchId, playerId);
 
 			return rep.code(201).send({ status: true, message: "Ready for match!" });
@@ -233,19 +243,6 @@ class TournamentController {
 		req: FastifyRequest,
 		rep: FastifyReply
 	) {
-		// {
-		// 	player1: {
-		// 		ID: this.players[0].id, 
-		// 		score: this.state.score[0]
-		// 	},
-		// 	player2: {
-		// 		ID: this.players[1].id, 
-		// 		score: this.state.score[1]
-		// 	},
-		// 	gameStartedAt: Math.floor(this.startTime / 1000),
-		// 	gameFinishedAt: Math.floor(Date.now() / 1000),
-		// 	gameType:  'PONG'
-		// }
 		try {
 			const data = req.body;
 			const progress = {
@@ -253,7 +250,6 @@ class TournamentController {
 				results: `${data.player1.score}|${data.player2.score}`,
 				id: data.gameId
 			}
-
 			// Handle auth token Bearer
 
 			await req.server.tournamentMatchesModel.progressMatchTournament(progress);

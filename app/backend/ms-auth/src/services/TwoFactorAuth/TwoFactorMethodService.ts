@@ -6,7 +6,7 @@ import WhatsAppService from '../Communication/WhatsAppService';
 import { mailingConfig } from '../../config/mailing';
 import AuthChallengesRepository, { AuthChallengeMethod } from '../../repositories/AuthChallengesRepository';
 import { UUID } from 'crypto';
-import { NoEmailIsAssociated, NoPhoneIsAssociated, UserNotFoundError } from '../../types/exceptions/user.exceptions';
+import { UserNotFoundError } from '../../types/exceptions/user.exceptions';
 import { TwoFAAlreadyEnabled, TwoFANotEnabledError } from '../../types/exceptions/twofa.exception';
 import { AuthChallengeExpired, InvalidCodeError, TooManyAttemptsError } from '../../types/exceptions/verification.exceptions';
 import { BadRequestError } from '../../types/exceptions/AAuthError';
@@ -148,27 +148,27 @@ class TwoFactorMethodService {
 		return ;
 	}
 
-	private async notifyUser(targetUser: any, method: AuthChallengeMethod, OTP: string | { secret_base32: string, secret_qrcode_url: string }) {
-		if (method === 'TOTP')
-			return ;
-		if (method === 'EMAIL' && !targetUser.email)
-			throw new NoEmailIsAssociated();
-		if (method === 'SMS' && !targetUser.phone)
-			throw new NoPhoneIsAssociated();
+	// private async notifyUser(targetUser: any, method: AuthChallengeMethod, OTP: string | { secret_base32: string, secret_qrcode_url: string }) {
+	// 	if (method === 'TOTP')
+	// 		return ;
+	// 	if (method === 'EMAIL' && !targetUser.email)
+	// 		throw new NoEmailIsAssociated();
+	// 	if (method === 'SMS' && !targetUser.phone)
+	// 		throw new NoPhoneIsAssociated();
 
-		if (method === 'EMAIL')
-			return await this.mailingService.sendEmail({
-				from: mailingConfig.mailingServiceUser,
-				to: targetUser.email,
-				subject: 'Your 2FA Setup OTP Code',
-				text: `Your 2FA Setup OTP code is: ${OTP}. It will expire in 5 minutes.`
-			});
-		if (method === 'SMS')
-			return await this.smsService.sendMessage(
-				targetUser.phone,
-				`Your OTP code is: ${OTP}. It will expire in 5 minutes.`
-			);
-	}
+	// 	if (method === 'EMAIL')
+	// 		return await this.mailingService.sendEmail({
+	// 			from: mailingConfig.mailingServiceUser,
+	// 			to: targetUser.email,
+	// 			subject: 'Your 2FA Setup OTP Code',
+	// 			text: `Your 2FA Setup OTP code is: ${OTP}. It will expire in 5 minutes.`
+	// 		});
+	// 	if (method === 'SMS')
+	// 		return await this.smsService.sendMessage(
+	// 			targetUser.phone,
+	// 			`Your OTP code is: ${OTP}. It will expire in 5 minutes.`
+	// 		);
+	// }
 
 	// async createPending(method: AuthChallengeMethod, userID: number) {
 	// 	const targetUser = await this.userService.getUserById(userID);

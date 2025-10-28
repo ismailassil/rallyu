@@ -9,7 +9,7 @@ import { PlaceholderComponent } from '@/app/(auth)/components/UI/LoadingComponen
 import { LoadingSkeletonList } from './LeaderBoardSkeleton';
 
 export default function LeaderboardCard() {
-	const t = useTranslations("dashboard.titles");
+	const t = useTranslations('dashboard.titles');
 
 	const {
 		apiClient
@@ -26,16 +26,14 @@ export default function LeaderboardCard() {
 		async function fetchLeaderboard() {
 			try {
 				await executeAPICall(() => apiClient.user.fetchLeaderboard());
-			} catch (err) {
-				void err;
-			}
+			} catch {}
 		}
 		fetchLeaderboard();
 	}, []);
 
 	return (
-		<MainCardWithHeader headerName={t("leaderboard")} className='font-funnel-display flex-3 scroll-smooth'>
-			<div className="group flex flex-col gap-3 px-6">
+		<MainCardWithHeader headerName={t('leaderboard')} className='font-funnel-display flex-3 scroll-smooth'>
+			<div className='group flex flex-col gap-3 px-6'>
 				{isLoading ? (
 					<LoadingSkeletonList
 						count={10}

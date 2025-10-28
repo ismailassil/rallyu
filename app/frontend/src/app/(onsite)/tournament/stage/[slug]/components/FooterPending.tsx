@@ -25,6 +25,7 @@ const FooterPending = function (
             setJoined(true);
             setError({ status: false, message: "" });
         } catch (err: unknown) {
+            console.error(err);
             setError({ status: true, message: "Something went wrong; Try again later!" });
         }
     };
@@ -33,11 +34,12 @@ const FooterPending = function (
         e.preventDefault();
         try {
             await apiClient.instance.patch(`/v1/tournament/match/leave/${slug}`, { id: loggedInUser?.id });
-
+            
             toastSuccess("Left the tournament successfully");
             setJoined(false);
             setError({ status: false, message: "" });
         } catch (err: unknown) {
+            console.error(err);
             setError({ status: true, message: "Something went wrong; Try again later!" });
         }
     };

@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import fastify, { FastifyReply, FastifyRequest } from "fastify";
 import AuthService from "../services/Auth/AuthService";
 import { ILoginRequest, IRegisterRequest } from "../types";
 import AuthResponseFactory from "./AuthResponseFactory";
@@ -6,6 +6,7 @@ import SessionsService from "../services/Auth/SessionsService";
 import { UUID } from "crypto";
 import { AuthChallengeMethod } from "../repositories/AuthChallengesRepository";
 import { JSONCodec } from "nats";
+import logger from "../utils/misc/logger";
 
 
 class AuthController {
@@ -226,6 +227,7 @@ class AuthController {
 	async changePasswordHandler(request: FastifyRequest, reply: FastifyReply) {
 		const user_id = request.user?.sub;
 		const { oldPassword, newPassword } = request.body as { oldPassword: string, newPassword: string };
+		logger.debug({ body: request.body }, '[changePasswordHandler]');
 
 		await this.authService.changePassword(user_id!, oldPassword, newPassword);
 

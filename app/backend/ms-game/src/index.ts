@@ -1,6 +1,7 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import fastifyWebsocket from '@fastify/websocket';
 import game from './plugins/game';
+import { AuthHandler } from './hooks/Auth';
 
 const fastify: FastifyInstance = Fastify({
 	logger: {
@@ -15,6 +16,7 @@ const fastify: FastifyInstance = Fastify({
   	},
 });
 
+fastify.addHook('preHandler', AuthHandler)
 fastify.register(fastifyWebsocket);
 fastify.register(game, { prefix: '/game' });
 

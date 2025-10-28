@@ -21,7 +21,7 @@ const connectDatabase = function (app: FastifyInstance, options, done) {
 		sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE,
 		(err) => {
 			if (err) {
-				app.log.error("Database connection failed:", err);
+				app.log.error(DBPath);
 				throw err;
 			}
 			app.log.info("Database connected!");

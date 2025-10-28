@@ -144,14 +144,12 @@ services:
       - .env
     develop:
       watch:
-        - path: ./ms-tournament/
+        - path: ./ms-tournament/src/
           action: sync
-          target: /app/
+          target: /app/src/
           ignore:
             - ./ms-tournament/node_modules/
             - ./ms-tournament/database
-        - path: ./ms-tournament/src/package.json
-          action: rebuild
 
   ms-matchmaking:
     build:
@@ -209,8 +207,6 @@ services:
     restart: always
     networks:
       - backend
-    ports:
-      - 6379:6379
     env_file:
       - .env
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
@@ -223,8 +219,6 @@ services:
       - backend
     env_file:
       - .env
-    ports:
-      - 4222:4222
     command: --user ${NATS_USER} --pass ${NATS_PASSWORD} -js -m 8222 -n internal-server
     healthcheck:
       test: wget http://localhost:8222/healthz -q -S -O -

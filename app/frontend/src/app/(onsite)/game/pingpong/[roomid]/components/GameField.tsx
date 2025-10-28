@@ -20,6 +20,7 @@ const GameField = () => {
 	const [ oppdisconnect, setOppdisconnect ] = useState(false);
     const [ result, setResult ] = useState<string | null>(null);
     const [ overlayStatus, setOverlayStatus ] = useState('none');
+    const [ tournamentId, setTournamentId ] = useState<number | null>(null);
 	const socketProxy = useRef<SocketProxy>(new SocketProxy((reason: string) => {
         router.push(`/game/disconnected?reason=${reason}`)
     }));
@@ -27,7 +28,8 @@ const GameField = () => {
         updateTimer: setTimeLeft,
         updateOverlayStatus: setOverlayStatus,
         updateConnection: setOppdisconnect,
-        updateDisplayedResult: setResult
+        updateDisplayedResult: setResult,
+        updateTournamentId: setTournamentId
     }));
 
     useEffect(() => {
@@ -38,7 +40,6 @@ const GameField = () => {
 				const res = await apiClient.fetchGameRoomStatus(roomid);
 
 				if (!isMounted) return;
-                console.log('%cResult: ', 'color: red; font-size: 20px', res);
 
 				setOpponentId(res.players.find(p => p.ID !== loggedInUser!.id)?.ID);
 				setIsLoading(false);
@@ -76,7 +77,7 @@ const GameField = () => {
                         />
                         <div className="relative inline-block">
                             <Pong socketProxy={socketProxy.current} pong={pong.current} />
-                            <Overlay status={overlayStatus} result={result} />
+                            {overlayStatus !== "none" && <Overlay status={overlayStatus} result={result} tournamentId={tournamentId} />}
                         </div>
                     </div>
                 </>

@@ -11,13 +11,13 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 		if (!socket) return;
 
 		async function handleUpdate(event: { eventType: string, data: Record<string, any> }) {
-			console.group('/********** USER UPDATE **********/');
+			console.group('/********** REAL-TIME UPDATE **********/');
 
 			console.log("EVENT: ", event);
 
-			if (event.eventType !== 'USER_UPDATE' && event.data.status === 'REFRESH_REQUIRED')
+			if (event.eventType === 'USER_UPDATE' && event.data.status === 'REFRESH_REQUIRED')
 				await triggerLoggedInUserRefresh();
-			else if (event.eventType !== 'SESSION_UPDATE' && event.data.status === 'REFRESH_REQUIRED')
+			else if (event.eventType === 'SESSION_UPDATE' && event.data.status === 'REFRESH_REQUIRED')
 				await triggerRefreshToken();
 
 			console.groupEnd();
@@ -28,7 +28,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 		return () => {
 			socket.off('user', handleUpdate);
 		};
-	}, []);
+	}, [socket]);
 
 	useEffect(() => {
 		console.group("ProtectedRouteAuthGuard");

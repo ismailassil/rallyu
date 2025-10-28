@@ -11,14 +11,22 @@ docker:
 	@if ! docker-compose -v | grep 2.30.0; then bash install-docker.sh; fi
 
 ### All Project
-up_all: up_app up_devops
+up_all:
+	@docker-compose -f './compose.all.yaml' up --build -d
 
-down_all: down_app down_devops
+down_all:
+	@docker-compose -f './compose.all.yaml' down
 
-clean_all: clean_app clean_devops
+clean_all:
+	@docker-compose -f './compose.all.yaml' down -v
+
+ps_all:
+	@docker-compose -f './compose.all.yaml' ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+re_all: clean_all up_all
 
 ### Only the application
-up_app: docker env
+up_app: env
 	@docker-compose up --build --watch
 
 down_app:
@@ -30,7 +38,7 @@ clean_app:
 ps_app:
 	@docker-compose ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
-re_app: clean_app up_app
+re_app: down_app up_app
 
 ### Only the devops
 up_devops: docker env
@@ -45,7 +53,7 @@ clean_devops:
 ps_devops:
 	@docker-compose -f './devops/compose.devops.yaml' ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
-re_devops: clean_devops up_devops
+re_devops: down_devops up_devops
 
 ### For all
 fclean: clean_devops clean_app
@@ -82,6 +90,6 @@ help:
 	@echo "  make up_all         - Start both application and DevOps services"
 	@echo "  make down_all       - Stop both application and DevOps services"
 	@echo "  make clean_all      - Clean all containers and volumes for app and DevOps"
+	@echo "  make re_all         - Clean and restart all services"
 	@echo "  make fclean         - Clean all containers, volumes, and images"
-	@echo "  make re             - Clean and restart all services"
 	@echo "  make prune          - Remove unused images, volumes, and system data"

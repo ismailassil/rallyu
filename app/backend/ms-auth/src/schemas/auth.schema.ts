@@ -145,9 +145,10 @@ const resetpasswordupdate = {
 	body: {
 		type: 'object',
 		properties: {
-			token: { type: 'string' }
+			token: { type: 'string' },
+			newPassword: { type: 'string' }
 		},
-		required: ['token'],
+		required: ['token', 'newPassword'],
 		additionalProperties: false
 	}
 }

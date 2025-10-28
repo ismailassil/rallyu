@@ -156,6 +156,9 @@ async function authRouter(fastify: FastifyInstance, opts: {
 	});
 	fastify.post('/reset-password/update', {
 		schema: schemas.password.reset.update,
+		preHandler: [
+			zodPreHandler(zodSchemas.password.reset.use)
+		],
 		handler: opts.passwordResetController.useHandler.bind(opts.passwordResetController)
 	});
 	fastify.post('/reset-password/resend', {

@@ -71,9 +71,11 @@ class RemotePong extends APong {
                 case 'ready':
                     this.state.index = data.i
                     this.eventHandlers?.updateTimer!(data.t);
+                    this.eventHandlers?.updateOverlayStatus('countdown');
                     break;
                 case 'start':
                     this.eventHandlers?.updateTimer!(data.t);
+                    this.eventHandlers?.updateOverlayStatus('play');
                     break;
                 case 'state':
                     this.state.serverBall = data.state.b
@@ -89,6 +91,7 @@ class RemotePong extends APong {
                     this.proxy.disconnect();
                     this.state.players[0].score = data.score[this.state.index!]
                     this.state.players[1].score = data.score[this.state.index! ^ 1]
+                    if (data.tournamentId) this.eventHandlers?.updateTournamentId!(data.tournamentId);
                     this.eventHandlers?.updateDisplayedResult!(data.result);
                     this.eventHandlers?.updateOverlayStatus('gameover');
                     this.eventHandlers?.updateTimer!(0);

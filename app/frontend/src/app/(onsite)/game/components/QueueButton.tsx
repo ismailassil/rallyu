@@ -1,9 +1,22 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import useMatchmaking from '@/app/hooks/useMatchMaking';
+import { GameMode, GameType } from '../types/types';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Zap } from 'lucide-react';
 
-const QueueToggleButton = () => {
-	const { isSearching, queueTime, toggleSearch } = useMatchmaking('pingpong');
+const QueueToggleButton = ({ gameType, gameMode }: { gameType: GameType, gameMode: GameMode}) => {
+	const { isSearching, found, queueTime, toggleSearch, stopSearch } = useMatchmaking(gameType);
+	const router = useRouter();
+	const [clicked, setClicked] =  useState(false);
+	const t = useTranslations("game");
 
-	console.log('queuetime: ', queueTime)
+	useEffect(() => {
+		return () => {
+			stopSearch();
+		}
+	}, [gameMode, gameType])
 
 	const formatTime = (seconds: number) => {
 		const mins = Math.floor(seconds / 60);
@@ -12,36 +25,42 @@ const QueueToggleButton = () => {
 	};
 
 	const getButtonContent = () => {
-		if (!isSearching) return "Start Game";
-		else return `In Queue... ${formatTime(queueTime)}`;
+		if (isSearching) return `${t("lobby.searching")} ${formatTime(queueTime)}`;
+		else if (found) return `${t("lobby.match_found")}`
+		else if (clicked) return ''
+		return t("buttons.start");
 	};
 
 	const getButtonStyles = () => {
-		const baseStyles = "w-full max-w-[1000px] min-w-0 mt-auto cursor-pointer relative px-8 py-5 rounded-xl font-semibold text-base transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99] focus:outline-none w-80 shadow-lg";
+		const baseStyles = "w-full min-h-[30px] max-w-[1000px] h-[60px] min-h-0 min-w-0 mt-auto relative rounded-xl font-semibold text-base transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99] focus:outline-none";
 		if (isSearching) {
-				return `${baseStyles} bg-black/50 text-gray-200 text-sm border-2 border-gray-500/30  hover:bg-gray-600/10`;
+			return `${baseStyles} bg-black/50 text-gray-200 text-sm border-2 border-gray-500/30  hover:bg-gray-600/10 cursor-pointer`;
+		} else if (clicked) {
+			return `${baseStyles} bg-black/50 text-gray-200 text-sm border-2 border-gray-500/30  hover:bg-gray-600/10 cursor-not-allowed`;
 		}
-		return `${baseStyles} bg-white/80 backdrop-blur-sm text-black text-sm border-2 border-gray-400/50 hover:border-gray-300/70 focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50`;
+		return `${baseStyles} bg-white/80 backdrop-blur-sm cursor-pointer text-black text-sm border-2 border-gray-400/50 hover:border-gray-300/70 focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50`;
 	};
+
+	const joinMatch = () => {
+		gameMode === 'local' && setClicked(!clicked);
+		gameMode === 'remote'? toggleSearch() : router.push(`/game/${gameType}/local`);
+	}
 
 	return (
 		<button
-			onClick={toggleSearch}
+			onClick={joinMatch}
 			className={`${getButtonStyles()}`}
 		>
-			{isSearching && (
+			{(isSearching || clicked) && (
 				<div className="absolute inset-0 rounded-xl">
 					<div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-gray-300/20 to-transparent opacity-15 animate-pulse"></div>
 				</div>
 			)}
-			
-			<span className="relative z-10 flex items-center justify-center space-x-2">
-				{isSearching
-					? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
 
-					: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-					</svg>
+			<span className="relative z-10 flex items-center justify-center space-x-2">
+				{isSearching || clicked
+					? <div className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+					: <Zap className='w-6 h-6' />
 				}
 				<span className={`text-xl font-funnel-display`}>{getButtonContent()}</span>
 			</span>

@@ -28,7 +28,9 @@ const MatchTimer = function (
                 setTimeRunsOut(false);
         }, 1000);
 
-        return () => clearInterval(timer);
+        return () => {    
+            return clearInterval(timer)
+        };
     }, []);
 
     return (

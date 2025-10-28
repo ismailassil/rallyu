@@ -18,13 +18,3 @@ export class UsersNotFoundError extends NotFoundError {
 		super(message, 'AUTH_USERS_NOT_FOUND', details);
 	}
 }
-export class NoEmailIsAssociated extends BadRequestError {
-	constructor(message: string = 'No email is associated with this account', details: any = {}) {
-		super(message, 'AUTH_NO_EMAIL_ASSOCIATED', details);
-	}
-}
-export class NoPhoneIsAssociated extends BadRequestError {
-	constructor(message: string = 'No phone number is associated with this account', details: any = {}) {
-		super(message, 'AUTH_NO_PHONE_ASSOCIATED', details);
-	}
-}

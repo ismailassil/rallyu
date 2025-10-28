@@ -1,62 +1,87 @@
-import Ping from "./Items/Ping";
-import Pong from "./Items/Pong";
-import X from "./Items/X";
-import O from "./Items/O";
 import unicaOne from "@/app/fonts/unicaOne";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import QueueToggleButton from "./QueueButton";
+import { GameMode, GameType } from "../types/types";
+import { Check, Globe, Monitor } from "lucide-react";
+import { motion } from "framer-motion";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
+
+const GameCard = ({ selected, setType, children }: { selected: boolean, setType: () => void, children: ReactNode }) => {
+	return (
+		<div
+			className={`relative flex flex-1 shadow-2xl shadow-black/30 rounded-lg cursor-pointer overflow-hidden active:scale-98 ${
+				selected
+				? 'border-6'
+				: 'hover:scale-102 border border-white/30'
+			}`}
+			onClick={() => setType()}
+		>
+			{children}
+			{selected && (
+				<motion.div
+					initial={{ opacity: 0, x: 12, y: 12 }}
+					animate={{ opacity: 1, x: 0, y: 0 }}
+					exit={{ opacity: 0, x: 12, y: 12 }}
+					transition={{ duration: 0.3, ease: "easeOut" }}
+					className="absolute -right-1.5 -bottom-1.5"
+				>
+					<div className="w-8 h-8 bg-white/90 rounded-tl-lg flex items-center justify-center">
+						<Check strokeWidth={4} className="text-black w-5 h-5" />
+					</div>
+				</motion.div>
+			)}
+		</div>
+	)
+}
 
 const LobbyPanel = () => {
-	const [mode, setMode] = useState('remote');
+	const [mode, setMode] = useState<GameMode>('remote');
+	const [type, setType] = useState<GameType>('pingpong');
+	const t = useTranslations("game");
 
 	return (
-		<>
-			<div className="flex items-center justify-center flex-col flex-6 w-full px-8 lg:px-20 py-7 h-full gap-4 border rounded-lg bg-card border-card">
-				<div className="flex gap-10 w-full h-[70px] min-h-0">
-					<button
-						className={`flex flex-1 items-center justify-center transition-all duration-200 cursor-pointer active:scale-97 rounded-md bg-white/1 hover:bg-white/2 hover:border-b-4 px-10 h-full ${mode === 'remote' ? 'bg-white/3 border-b-4' : ' border-white/30'}`}
-						onClick={() => setMode('remote')}
-					>
-						<span className={`text-2xl md:text-3xl text-nowrap ${unicaOne.className}`}>Remote</span>
-					</button>
-					<button
-						className={`flex flex-1 items-center justify-center transition-all duration-250 cursor-pointer active:scale-97 rounded-md bg-white/1 hover:bg-white/2 hover:border-b-5 px-10 h-full ${mode === 'local' ? 'bg-white/3 border-b-4' : ' border-white/30'}`}
-						onClick={() => setMode('local')}
-					>
-						<span className={`text-2xl md:text-3xl text-nowrap ${unicaOne.className}`}>Local</span>
-					</button>
-				</div>
-				<div className="flex flex-col *:transition-all *:duration-250 lg:flex-row py-5 max-w-[1000px] gap-4 w-full flex-1">
-					<div className={`flex relative flex-1 border border-bg hover:scale-102 cursor-pointer`}>
-						{/* <div className="absolute inset-0 w-full h-full bg-blue-900/50"/> */}
-						<Image
-							src="/design/pong.png"
-							alt="PONG"
-							width={1080}
-							height={1920}
-							style={{ width: "auto", height: "auto" }}
-							className="rounded-lg w-full h-full object-cover opcaity-70 bg-blue-900/50"
-						/>
-					</div>
-					<div className={`flex flex-1 border border-bg hover:scale-102 cursor-pointer`}>
-
-					</div>
-				</div>
-				<QueueToggleButton />
-				{/* <div className="relative rounded-xl w-full h-full">
-					<Ping />
-					<Pong />
-					<svg className="absolute inset-0 w-full h-full pointer-events-none">
-						<line x1="55%" y1="0%" x2="45%" y2="100%" stroke="white" strokeWidth="3" strokeDasharray="14 18"/>
-					</svg>
-				</div>
-				<div className="relative rounded-xl w-full h-full">
-					<X/>
-					<O/>
-				</div> */}
+		<div className="flex items-center justify-center flex-col flex-4 w-full px-8 lg:px-20 py-10 h-full gap-4 border rounded-lg bg-card border-card">
+			<div className="flex gap-4 w-full max-w-[1000px] h-[70px] min-h-0">
+				<button
+					className={`flex flex-1 items-center justify-center transition-all duration-200 cursor-pointer active:scale-97 rounded-md bg-white/1 hover:bg-white/2 hover:border-b-4 px-10 h-full ${mode === 'remote' ? 'bg-white/3 border-b-4' : ' border-white/30'}`}
+					onClick={() => setMode('remote')}
+				>
+					<Globe className="w-8" strokeWidth={1.5} />
+					<span className={`text-2xl md:text-3xl text-nowrap uppercase ${unicaOne.className}`}>{t("lobby.remote")}</span>
+				</button>
+				<button
+					className={`flex flex-1 items-center justify-center transition-all duration-250 cursor-pointer active:scale-97 rounded-md bg-white/1 hover:bg-white/2 hover:border-b-5 px-10 h-full ${mode === 'local' ? 'bg-white/3 border-b-4' : ' border-white/30'}`}
+					onClick={() => setMode('local')}
+				>
+					<Monitor className="w-8" strokeWidth={1.5} />
+					<span className={`text-2xl md:text-3xl text-nowrap uppercase ${unicaOne.className}`}>{t("lobby.local")}</span>
+				</button>
 			</div>
-		</>
+			<div className="flex flex-col lg:flex-row *:transition-all *:duration-300 *:ease-out py-5 max-w-[1000px] gap-4 w-full flex-1">
+				<GameCard selected={type === 'pingpong'} setType={() => setType('pingpong')} >
+					<Image
+						src={"/design/pong.png"}
+						alt={'pong'}
+						fill
+						className={`object-contain lg:object-cover transition-all duration-300 ease-out object-top-left opacity-90 bg-blue-800/30 ${type === 'pingpong' ? 'scale-[170%] lg:scale-[110%]' : 'scale-[160%] lg:scale-[100%]'}`}
+						style={{ transformOrigin: 'left center'}}
+						draggable={false}
+					/>
+				</GameCard>
+				<GameCard selected={type === 'tictactoe'} setType={() => setType('tictactoe')} >
+					<Image
+						src={"/design/xo.png"}
+						alt={'xo'}
+						fill
+						className={`object-contain lg:object-cover transition-all duration-300 ease-out opacity-90 object-top-left bg-[#EA2228] ${type === 'tictactoe' ? 'scale-[240%] lg:scale-[120%]' : 'scale-[230%] lg:scale-[110%]'}`}
+						style={{ transformOrigin: 'top left'}}
+						draggable={false}
+					/>
+				</GameCard>
+			</div>
+			<QueueToggleButton gameType={type} gameMode={mode} />
+		</div>
 	);
 }
 

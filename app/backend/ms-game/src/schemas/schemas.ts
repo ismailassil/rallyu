@@ -40,8 +40,13 @@ export const createRoomSchema = {
                 properties: {
                     gameId: {
                         type: 'number',
+                    },
+                    id: {
+                        type: 'number',
                     }
-                }
+                },
+                required: ['gameId', 'id'],
+                additionalProperties: false
             }
         },
         required: ['playersIds', 'gameType'],
@@ -67,6 +72,39 @@ export const userStatusSchema = {
             userid: { type: 'number' }
         },
         required: ['userid'],
+        additionalProperties: false
+    },
+}
+
+export const pongInterfaceSchema = {
+    params: {
+        type: 'object',
+        properties: {
+            roomid: { type: 'string' },
+            userid: { type: 'number' },
+            dir: {
+                type: 'string',
+                enum: ['up', 'down', 'still']
+            }
+        },
+        required: ['roomid', 'userid', 'dir'],
+        additionalProperties: false
+    },
+}
+
+export const xoInterfaceSchema = {
+    params: {
+        type: 'object',
+        properties: {
+            roomid: { type: 'string' },
+            userid: { type: 'number' },
+            cellnum: {
+                type: 'number',
+                minimum: 1,
+                maximum: 9
+            }
+        },
+        required: ['roomid', 'userid', 'action', 'dir'],
         additionalProperties: false
     },
 }

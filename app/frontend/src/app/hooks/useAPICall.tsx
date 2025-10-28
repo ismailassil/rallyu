@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { simulateBackendCall } from "../(api)/utils";
 import axios from "axios";
 
@@ -8,7 +7,7 @@ function handleAPICallError(err: any) {
 	console.log(err);
 	console.groupEnd();
 	if (axios.isAxiosError(err)) {
-		if (err.response) {
+		if (err?.response) {
 			// server responded with status other that 2xx
 			if (err.response?.status >= 500) {
 				if (err.response?.status === 503)
@@ -16,7 +15,7 @@ function handleAPICallError(err: any) {
 				return new Error('AUTH_GENERIC_ERR');
 			}
 			return new Error(err.response?.data?.error?.code || 'AUTH_GENERIC_ERR');
-		} else if (err.request) {
+		} else if (err?.request) {
 			// network issue
 			return new Error('AUTH_NETWORK_ERR');
 		} else {
@@ -37,7 +36,7 @@ export default function useAPICall() {
 		setError(null);
 		setIsLoading(true);
 		try {
-			// await simulateBackendCall(2000);
+			await simulateBackendCall(2000);
 			const result = await apiCall();
 			setData(result);
 			return result;

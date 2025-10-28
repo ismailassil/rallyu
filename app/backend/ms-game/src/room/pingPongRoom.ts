@@ -18,18 +18,20 @@ const MS_TOURN_API_KEY = process.env.MS_TOURN_API_KEY;
 
 const GAME_UPDATE_INTERVAL = 16.67; // 60hz
 const GAME_START_DELAY = 3000; // 3 sec
-const GAME_TIME = 30000;
+const GAME_TIME = 60000;
 
 export class PingPongPlayer implements Player {
     id: number;
+    index: number;
     roomId: string;
     socket: ws.WebSocket | null = null;
     connected: boolean = false;
 	status: string = 'countdown'; // ingame
 
-    constructor(roomId: string, id: number) {
+    constructor(roomId: string, id: number, index: number) {
         this.id = id;
         this.roomId = roomId;
+		this.index = index
     }
 
     attachSocket(socket: ws.WebSocket): void {
@@ -82,8 +84,7 @@ export class PingPongPlayer implements Player {
 export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	id: string;
 	gameType: GameType;
-	isTournament: boolean = false;
-	tournGameId?: number | undefined;
+	tournament?: { gameId: number, id: number } | undefined;
 	startTime: number = 0;
 	players: PingPongPlayer[] = [];
 	running = false;
@@ -93,14 +94,11 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	gameTimerId: NodeJS.Timeout | undefined = undefined;
 	state: PingPongGameState;
 
-	constructor(id: string, gameId: number | undefined) {
+	constructor(id: string, tournament: { gameId: number, id: number } | undefined) {
 		this.id = id;
 		this.gameType = 'pingpong';
 
-		if (gameId) {
-			this.tournGameId = gameId;
-			this.isTournament = true;
-		}
+		if (tournament) this.tournament = tournament;
 
 		const initialAngle = angles[Math.floor(Math.random() * angles.length)];
 		this.state = {
@@ -125,12 +123,12 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				}
 			],
 			score: [0, 0],
-			pause: true
+			pause: true,
 		};
 	}
 
 	attachPlayers(playersIds: number[]): void {
-		playersIds.forEach(playerid => this.players.push(new PingPongPlayer(this.id, playerid)));
+		playersIds.forEach((playerid, index) => this.players.push(new PingPongPlayer(this.id, playerid, index)));
 	}
 
 	
@@ -171,7 +169,8 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
             	player.socket.send(JSON.stringify({
 					type: 'gameover',
 					result: results[i],
-					score: this.state.score
+					score: this.state.score,
+					tournamentId: this.tournament?.id
 				}))
 			}
 		})
@@ -188,7 +187,8 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
             	player.socket.send(JSON.stringify({
 					type: 'gameover',
 					result: yeilder === i ? 'loss' : 'win',
-					score: this.state.score
+					score: this.state.score,
+					tournamentId: this.tournament?.id
 				}))
 			}
 		})
@@ -203,41 +203,6 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 		})
 
     }
-
-	private sendData(url: string, api_key: string, extra?: Record<any, any>) {
-		return axios.post(url, {
-				player1: {
-					ID: this.players[0].id, 
-					score: this.state.score[0]
-				},
-				player2: {
-					ID: this.players[1].id, 
-					score: this.state.score[1]
-				},
-				gameStartedAt: Math.floor(this.startTime / 1000),
-				gameFinishedAt: Math.floor(Date.now() / 1000),
-				gameType:  'PONG',
-				...extra
-			}, {
-				headers: {
-					'Authorization': `Bearer ${api_key}`
-			}});
-	}
-
-	private async saveGameData() {
-		try {
-			await this.sendData(`http://${MS_AUTH_HOST}:${MS_AUTH_PORT}/users/matches`, MS_AUTH_API_KEY!);
-		} catch (err) {
-			console.log("error from user management: ", err);
-		}
-		try {
-			await this.sendData(`http://${MS_TOURN_HOST}:${MS_TOURN_PORT}/users/matches`, MS_TOURN_API_KEY!, {
-				gameId: this.tournGameId
-			});
-		} catch (err) {
-			console.log("error from user management: ", err);
-		}
-	}
 
 	reconnect(player: PingPongPlayer): void {
 		player.setupEventListeners(this);
@@ -311,5 +276,48 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 		clearTimeout(this.timeoutId!);
 		clearInterval(this.intervalId!);
 		clearTimeout(this.gameTimerId!);
+	}
+
+	private async saveGameData() {
+		try {
+			await axios.post(`http://${MS_AUTH_HOST}:${MS_AUTH_PORT}/users/matches`, {
+				player1: {
+					ID: this.players[0].id, 
+					score: this.state.score[0]
+				},
+				player2: {
+					ID: this.players[1].id, 
+					score: this.state.score[1]
+				},
+				gameStartedAt: Math.floor(this.startTime / 1000),
+				gameFinishedAt: Math.floor(Date.now() / 1000),
+				gameType:  'PONG',
+			}, {
+				headers: {
+					'Authorization': `Bearer ${MS_AUTH_API_KEY}`
+			}});
+
+			if (!this.tournament) return;
+			
+			await axios.patch(`http://${MS_TOURN_HOST}:${MS_TOURN_PORT}/api/v1/tournament/match/progress`, {
+				player1: {
+					ID: this.players[0].id, 
+					score: this.state.score[0]
+				},
+				player2: {
+					ID: this.players[1].id, 
+					score: this.state.score[1]
+				},
+				gameStartedAt: Math.floor(this.startTime / 1000),
+				gameFinishedAt: Math.floor(Date.now() / 1000),
+				gameType:  'PONG',
+				gameId: this.tournament?.gameId
+			}, {
+				headers: {
+					'Authorization': `Bearer ${MS_TOURN_API_KEY}`
+			}});
+		} catch (err) {
+			console.log("error from user management: ", err);
+		}
 	}
 }
