@@ -3,7 +3,7 @@
     "title": "Chat",
     "search": "Inizia a cercare...",
     "no_conv": {
-      "title": "👋 Benvenuto in Chat!",
+      "title": "👋 Benvenuto nella chat!",
       "sub": "Seleziona un utente dalla barra laterale per iniziare a chattare"
     },
     "status": {
@@ -16,6 +16,8 @@
       "yesterday": "Ieri"
     },
     "no_friends": "Nessun amico trovato",
-    "maximum": "Massimo"
+    "maximum": "Massimo",
+    "loading": "Caricamento...",
+    "load_more": "Carica altro"
   }
 }

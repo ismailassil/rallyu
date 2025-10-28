@@ -5,7 +5,7 @@ import { useChat } from '../context/ChatContext';
 import { AlertCircle } from 'lucide-react';
 import ConversationHeader from './ConversationHeader';
 import { useTranslations } from 'next-intl';
-import { LoggedUser, MessageType } from '../types/chat.types';
+import { MessageType } from '../types/chat.types';
 
 const ConversationBody = () => {
 	const [message, setMessage] = useState("");
@@ -82,7 +82,6 @@ const ConversationBody = () => {
 				created_at: new Date().toISOString()
 			};
 
-			
 			setMessage("");
 			const friendId = sentMessage.senderId === BOSS?.id ? sentMessage.receiverId : sentMessage.senderId;
 			const previousDisplayUsers = displayUsers;
@@ -90,9 +89,8 @@ const ConversationBody = () => {
 
 			setDisplayUsers(prevUsers => {
 				const updatedFriend = prevUsers.find(user => user.id === friendId);
-				if (!updatedFriend)
-					return prevUsers;
-				return [{ ...updatedFriend, last_message: sentMessage },...prevUsers.filter(user => user.id !== friendId)];
+				if (!updatedFriend) return prevUsers;
+				return [{ ...updatedFriend, last_message: sentMessage }, ...prevUsers.filter(user => user.id !== friendId)]
 			});
 
 			socket.emit('chat_send_msg', {
@@ -119,15 +117,17 @@ const ConversationBody = () => {
 			<ConversationHeader />
 			<div ref={scrollRef} onScroll={handleScroll} className='overflow-y-auto custom-scrollbar p-4 flex-1 overflow-x-hidden flex flex-col justify-end mb-2 relative'>
 				{hasMore && showLoadMore && (
-					<div className='sticky top-0 z-10 flex items-center justify-center py-2'>
-						<button
-							onClick={handleLoadMore}
-							disabled={loading}
-							className='w-fit text-xs text-white/50 px-3 py-1.5 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20 
+					<>
+						<div className='sticky top-0 z-10 flex items-center justify-center py-2'>
+							<button
+								onClick={handleLoadMore}
+								disabled={loading}
+								className='w-fit text-xs text-white/50 px-3 py-1.5 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20 
 							disabled:opacity-50 disabled:cursor-not-allowed transition-all'>
-							{loading ? 'Loading...' : 'Load More'}
-						</button>
-					</div>
+								{loading ? t('Loading...') : t('Load More')}
+							</button>
+						</div>
+					</>
 				)}
 				<div className='flex flex-col gap-4 min-h-0'>
 					{messages.map((msg, index) => {
@@ -146,16 +146,16 @@ const ConversationBody = () => {
 							</React.Fragment>
 						);
 					}
-					)}
+				)}
 					<div ref={messageRef} />
 				</div>
 			</div>
 
 			{/* ----------------------------------------------------typing message and send ---------------------------------------------------- */}
 
-			<div className=' flex flex-col border-t border-t-white/30 p-4 '>
+			<div className=' flex flex-col border-t border-t-white/30 p-4'>
 				<div className='flex focus-within:bg-white/12 duration-200 transition-all bg-white/8 p-3 rounded-lg justify-between gap-3 focus-within:ring-2
-					 focus-within:ring-white/18'>
+				focus-within:ring-white/18'>
 					<input
 						id='input-text'
 						type='text'
@@ -185,4 +185,3 @@ const ConversationBody = () => {
 };
 
 export default ConversationBody;
-

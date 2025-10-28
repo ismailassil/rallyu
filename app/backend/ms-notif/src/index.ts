@@ -27,7 +27,6 @@ fastify.register(fastifyRedis, {
 // fastify.register(CronJobPlugin); // TODO: Activate this in Production
 fastify.register(natsPlugin, {
 	NATS_URL: process.env.NATS_URL ?? undefined,
-	NATS_PORT: process.env.NATS_PORT ?? '',
 	NATS_USER: process.env.NATS_USER ?? '',
 	NATS_PASSWORD: process.env.NATS_PASSWORD ?? '',
 });

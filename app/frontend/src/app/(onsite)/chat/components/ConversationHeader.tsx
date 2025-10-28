@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import { ArrowCircleLeftIcon } from "@phosphor-icons/react";
 import { useChat } from "../context/ChatContext";
 import { useRouter } from "next/navigation";
 import Avatar from "../../users/components/Avatar";
@@ -9,7 +8,7 @@ import useRequestBattleFriend from "@/app/hooks/useRequestBattleFriend";
 import { useAuth } from "../../contexts/AuthContext";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Swords, UserX } from "lucide-react";
+import { CircleArrowLeft, Swords, UserX } from "lucide-react";
 import useIsOnline from "@/app/hooks/useIsOnline";
 import { useTranslations } from "next-intl";
 
@@ -59,8 +58,7 @@ const ConversationHeader = () => {
 	return (
 		<div className="flex justify-start gap-4 border-b border-b-white/30 p-4 pl-6">
 			<div className="flex cursor-pointer items-center md:hidden">
-				<ArrowCircleLeftIcon
-					size={28}
+				<CircleArrowLeft
 					onClick={() => {
 						setShowConversation(false);
 						route.replace("/chat");

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Clock } from 'lucide-react';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { relativeTimeAgoFromNow } from '@/app/(api)/utils';
 import Avatar from '@/app/(onsite)/users/components/Avatar';
@@ -37,7 +36,7 @@ function UserCard({ user, actions } : UserCardProps) {
 	return (
 		<div
 			key={id}
-			className='rounded-2xl bg-gradient-to-br from-white/0 to-white/4 border border-white/10
+			className='rounded-2xl bg-linear-to-br from-white/0 to-white/4 border border-white/10
 				flex items-center justify-between py-3 px-5'
 		>
 			<Link href={`/users/${username}`} className='flex gap-3 items-center'>
@@ -74,20 +73,16 @@ function UserCard({ user, actions } : UserCardProps) {
 
 export default function UserList({ users, actions = [] } : UserListProps) {
 	return (
-		<motion.div
-			initial={{ opacity: 0, height: 0 }}
-			animate={{ opacity: 1, height: "auto" }}
-			exit={{ opacity: 0, height: 0 }}
-			transition={{ duration: 0.4, ease: "easeOut" }}
-			className="grid grid-cols-1 sm:grid-cols-2 gap-3"
-		>
-			{users.map((user) => 
-				<UserCard
-					key={user.id}
-					user={user}
-					actions={actions}
-				/>
-			)}
-		</motion.div>
+		<div className='min-h-24 flex items-center'>
+			<div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+				{users.map((user) =>
+					<UserCard
+						key={user.id}
+						user={user}
+						actions={actions}
+					/>
+				)}
+			</div>
+		</div>
 	);
 }

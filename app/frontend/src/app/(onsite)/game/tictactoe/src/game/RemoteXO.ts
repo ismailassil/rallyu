@@ -36,7 +36,6 @@ class RemoteXO {
                     this.eventHandlers?.updateConnection!(true);
                     break;
                 case 'opp_joined':
-                    console.log('%cOPP_JOINED', ' font-color: red;')
                     this.eventHandlers?.updateConnection!(false);
                     break;
                 case 'reconnected':
@@ -83,6 +82,9 @@ class RemoteXO {
                 case 'round_result':
 					this.state.score![0] = data.score[this.index!];
 					this.state.score![1] = data.score[this.index! ^ 1];
+                    // if (data.combo) {
+                    //     this.eventHandlers.updateCombo()
+                    // }
 					this.eventHandlers?.updateScore!(this.state.score!);
                     break;
 				case 'gameover':
@@ -92,6 +94,7 @@ class RemoteXO {
 					this.eventHandlers?.updateScore!(this.state.score!);
 					this.eventHandlers?.updateOverlayStatus(this.status)
                     const displayedResult = data.winner === this.state.mySign ? 'win' : data.winner === 'draw' ? 'draw' : data.winner === 'X' ? `cross` : 'circle'
+                    if (data.tournamentId) this.eventHandlers?.updateTournamentId!(data.tournamentId);
                     this.eventHandlers?.updateDisplayedResult!(displayedResult);
                     this.eventHandlers?.updateTournamentURL!(data.tournamentURL);
 					this.eventHandlers?.updateTimer(0);

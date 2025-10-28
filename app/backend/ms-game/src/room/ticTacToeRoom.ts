@@ -88,9 +88,7 @@ export class TicTacToePlayer implements Player<TicTacToeRoom> {
 
 export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> {
 	id: string;
-	isTournament: boolean = false;
-	tournGameId?: number | undefined;
-	tournURL?: number | undefined;
+	tournament?: { gameId: number, id: number } | undefined
 	gameType: GameType;
 	startTime: number | null = null;
 	players: TicTacToePlayer[] = [];
@@ -103,15 +101,11 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	timerStartTimeStamp: number = 0;
 	status: string = 'genesis'
 
-	constructor(id: string, gameId: number | undefined, tournURL: number | undefined) {
+	constructor(id: string, tournament: { gameId: number, id: number } | undefined) {
 		this.id = id;
 		this.gameType = 'tictactoe';
 		this.startOfRoundPlayer = Math.random() > 0.5 ? 'X' : 'O'
-		if (gameId) {
-			this.tournGameId = gameId;
-			this.tournURL = tournURL;
-			this.isTournament = true;
-		}
+		this.tournament = tournament
 
 		this.state = {
 			cells: ['', '', '', '', '', '', '', '', ''],
@@ -167,7 +161,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 			forfeitingPlayer: forfeiter.sign,
 			winner: winner.sign,
 			score: this.players.map(p => p.score),
-			tournamentURL: this.tournURL,
+			tournamentId: this.tournament?.id
 		});
 	
 		closeRoom(this, 1000, 'Forfeit');
@@ -188,9 +182,9 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 			currentPlayer: this.state.currentPlayer
 		});
 
-		const winner = this.checkWin();
-		if (winner) {
-			this.handleWin(winner);
+		const combo = this.checkWin();
+		if (combo) {
+			this.handleWin(combo, sign);
 		} else if (this.checkDraw()) {
 			this.handleDraw();
 		} else {
@@ -200,14 +194,14 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		return true;
 	}
 	
-	private checkWin(): XOSign | null {
-		for (const [a, b, c] of WINNING_COMBOS) {
+	private checkWin(): number[] | null {
+		for (const combo of WINNING_COMBOS) {
 			if (
-				this.state.cells[a] !== '' &&
-				this.state.cells[a] === this.state.cells[b] &&
-				this.state.cells[a] === this.state.cells[c]
+				this.state.cells[combo[0]] !== '' &&
+				this.state.cells[combo[0]] === this.state.cells[combo[1]] &&
+				this.state.cells[combo[0]] === this.state.cells[combo[2]]
 			) {
-				return this.state.cells[a];
+				return combo;
 			}
 		}
 		return null;
@@ -217,7 +211,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		return this.state.cells.every(cell => cell !== '');
 	}
 	
-	private handleWin(winner: XOSign): void {
+	private handleWin(combo: number[] | null, winner: XOSign): void {
 		const winnerPlayer = this.players.find(p => p.sign === winner);
 		if (winnerPlayer) {
 			winnerPlayer.score++;
@@ -228,6 +222,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.broadcastToPlayers({
 			type: 'round_result',
 			winner: winner,
+			combo: combo,
 			score: this.players.map(p => p.score),
 			currentRound: this.state.currentRound
 		});
@@ -268,7 +263,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 			type: 'gameover',
 			winner: overallWinner,
 			score: this.players.map(p => p.score),
-			tournamentURL: this.tournURL
+			tournamentId: this.tournament?.id
 		});
 
 		closeRoom(this, 1000, 'Game Over');
@@ -314,7 +309,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	
 	private handleTurnTimeout(): void {
 		const winnerSign = this.state.currentPlayer === 'X' ? 'O' : 'X';
-		this.handleWin(winnerSign);
+		this.handleWin(null, winnerSign);
 	}
 	
 	private determineOverallWinner(): XOSign | 'draw' {
@@ -397,8 +392,8 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 				headers: {
 					'Authorization': `Bearer ${MS_AUTH_API_KEY}`
 			}});
-			
-			if (!this.isTournament) return;
+
+			if (!this.tournament) return;
 			
 			await axios.patch(`http://${MS_TOURN_HOST}:${MS_TOURN_PORT}/api/v1/tournament/match/progress`, {
 				player1: { 
@@ -412,7 +407,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 				gameStartedAt: this.startTime,
 				gameFinishedAt: Math.floor(Date.now() / 1000),
 				gameType: 'XO',
-				gameId: this.tournGameId
+				gameId: this.tournament.gameId
 			}, {
 				headers: {
 					'Authorization': `Bearer ${MS_TOURN_API_KEY}`

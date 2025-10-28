@@ -1,23 +1,23 @@
-"use client";
-import React from "react";
-import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { toastError } from "../../../components/CustomToast";
-import { useRouter } from "next/navigation";
-import InputField from "../../components/Form/InputField";
-import useForm from "@/app/hooks/useForm";
-import PasswordStrengthIndicator from "../../components/Form/PasswordStrengthIndicator";
-import FormButton from "../../components/UI/FormButton";
-import { LogIn } from "lucide-react";
-import { FormProvider } from "../../components/Form/FormContext";
-import AvailabilityIndicator from "../../components/Form/AvailabilityIndicator";
-import useAPICall from "@/app/hooks/useAPICall";
-import useAvailabilityCheck from "@/app/hooks/useAvailabilityCheck";
-import { useTranslations } from "next-intl";
-import useValidationSchema from "@/app/hooks/useValidationSchema";
+'use client';
+import React from 'react';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
+import { toastError } from '../../../components/CustomToast';
+import { useRouter } from 'next/navigation';
+import InputField from '../../components/Form/InputField';
+import useForm from '@/app/hooks/useForm';
+import PasswordStrengthIndicator from '../../components/Form/PasswordStrengthIndicator';
+import FormButton from '../../components/UI/FormButton';
+import { LogIn } from 'lucide-react';
+import { FormProvider } from '../../components/Form/FormContext';
+import AvailabilityIndicator from '../../components/Form/AvailabilityIndicator';
+import useAPICall from '@/app/hooks/useAPICall';
+import useAvailabilityCheck from '@/app/hooks/useAvailabilityCheck';
+import { useTranslations } from 'next-intl';
+import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export default function SignUpForm() {
-	const t = useTranslations("auth.common");
-	const tautherr = useTranslations("auth");
+	const t = useTranslations('auth.common');
+	const tautherr = useTranslations('auth');
 
 	const router = useRouter();
 
@@ -38,19 +38,19 @@ export default function SignUpForm() {
 		resetForm,
 	] = useForm(
 		signupFormSchema,
-		{ first_name: "", last_name: "", username: "", email: "", password: "" },
+		{ first_name: '', last_name: '', username: '', email: '', password: '' },
 		{ debounceMs: { email: 1200, username: 1200, password: 1200 } }
 	);
 
 	const { status: usernameStatus, setStatus: setUsernameStatus } = useAvailabilityCheck(
-		"username",
+		'username',
 		formData.username,
 		null,
 		debounced.username,
 		errors.username
 	);
 	const { status: emailStatus, setStatus: setEmailStatus } = useAvailabilityCheck(
-		"email",
+		'email',
 		formData.email,
 		null,
 		debounced.email,
@@ -65,9 +65,9 @@ export default function SignUpForm() {
 		if (
 			!(
 				debounced.username &&
-				usernameStatus === "available" &&
+				usernameStatus === 'available' &&
 				debounced.email &&
-				emailStatus === "available"
+				emailStatus === 'available'
 			)
 		)
 			return;
@@ -82,11 +82,11 @@ export default function SignUpForm() {
 					formData.password
 				)
 			);
-			router.push("/login");
+			router.push('/login');
 		} catch (err: any) {
-			if (err.message === "AUTH_USERNAME_TAKEN") setUsernameStatus("unavailable");
-			else if (err.message === "AUTH_EMAIL_TAKEN") setEmailStatus("unavailable");
-			else toastError(tautherr("errorCodes", { code: err.message }));
+			if (err.message === 'AUTH_USERNAME_TAKEN') setUsernameStatus('unavailable');
+			else if (err.message === 'AUTH_EMAIL_TAKEN') setEmailStatus('unavailable');
+			else toastError(tautherr('errorCodes', { code: err.message }));
 		}
 	}
 
@@ -101,73 +101,73 @@ export default function SignUpForm() {
 			getValidationErrors={getValidationErrors}
 			resetForm={resetForm}
 		>
-			<form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-				<div className="flex flex-col gap-5 sm:flex-row sm:gap-2">
+			<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+				<div className='flex flex-col gap-5 sm:flex-row sm:gap-2'>
 					<InputField
-						className="field flex min-w-0 flex-1 flex-col gap-0.5"
-						iconSrc="/icons/firstname.svg"
-						label={t("first_name")}
-						field="first_name"
-						inputPlaceholder="Achraf"
+						className='field flex min-w-0 flex-1 flex-col gap-0.5'
+						iconSrc='/icons/firstname.svg'
+						label={t('first_name')}
+						field='first_name'
+						inputPlaceholder='Achraf'
 						autoFocus
 					/>
 					<InputField
-						className="field flex min-w-0 flex-1 flex-col gap-0.5"
-						iconSrc="/icons/lastname.svg"
-						label={t("last_name")}
-						field="last_name"
-						inputPlaceholder="Demnati"
+						className='field flex min-w-0 flex-1 flex-col gap-0.5'
+						iconSrc='/icons/lastname.svg'
+						label={t('last_name')}
+						field='last_name'
+						inputPlaceholder='Demnati'
 					/>
 				</div>
 				<InputField
-					className="field box-border flex flex-col gap-0.5"
-					iconSrc="/icons/at.svg"
-					label={t("username")}
-					field="username"
-					inputPlaceholder="xezzuz"
+					className='field box-border flex flex-col gap-0.5'
+					iconSrc='/icons/at.svg'
+					label={t('username')}
+					field='username'
+					inputPlaceholder='xezzuz'
 				>
 					{debounced.username && !errors.username && (
 						<AvailabilityIndicator
-							key="username-availability"
-							label={t("username")}
+							key='username-availability'
+							label={t('username')}
 							status={usernameStatus}
 						/>
 					)}
 				</InputField>
 				<InputField
-					className="field box-border flex flex-col gap-0.5"
-					iconSrc="/icons/mail.svg"
-					label={t("email")}
-					field="email"
-					inputPlaceholder="iassil@1337.student.ma"
+					className='field box-border flex flex-col gap-0.5'
+					iconSrc='/icons/mail.svg'
+					label={t('email')}
+					field='email'
+					inputPlaceholder='iassil@1337.student.ma'
 				>
 					{debounced.email && !errors.email && (
 						<AvailabilityIndicator
-							key="email-availability"
-							label={t("email")}
+							key='email-availability'
+							label={t('email')}
 							status={emailStatus}
 						/>
 					)}
 				</InputField>
 				<InputField
-					className="field box-border flex flex-col gap-0.5"
-					iconSrc="/icons/lock.svg"
-					label={t("password")}
-					field="password"
-					inputPlaceholder="••••••••••••••••"
+					className='field box-border flex flex-col gap-0.5'
+					iconSrc='/icons/lock.svg'
+					label={t('password')}
+					field='password'
+					inputPlaceholder='••••••••••••••••'
 					inputHidden={true}
 				>
 					{formData.password && (
 						<PasswordStrengthIndicator
-							key="password-strength"
+							key='password-strength'
 							value={formData.password}
 						/>
 					)}
 				</InputField>
 				<FormButton
-					text={t("signup")}
+					text={t('signup')}
 					icon={<LogIn size={16} />}
-					type="submit"
+					type='submit'
 					isSubmitting={isLoading}
 				/>
 			</form>

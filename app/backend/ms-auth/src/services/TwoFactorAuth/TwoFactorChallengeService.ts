@@ -6,10 +6,11 @@ import WhatsAppService from '../Communication/WhatsAppService';
 import { mailingConfig } from '../../config/mailing';
 import AuthChallengesRepository, { AuthChallengeMethod } from '../../repositories/AuthChallengesRepository';
 import { UUID } from 'crypto';
-import { NoEmailIsAssociated, NoPhoneIsAssociated, UserNotFoundError } from '../../types/exceptions/user.exceptions';
+import { UserNotFoundError } from '../../types/exceptions/user.exceptions';
 import { TwoFANotEnabledError } from '../../types/exceptions/twofa.exception';
 import { AuthChallengeExpired, InvalidCodeError, TooManyAttemptsError, TooManyResendsError } from '../../types/exceptions/verification.exceptions';
 import { BadRequestError } from '../../types/exceptions/AAuthError';
+import logger from '../../utils/misc/logger';
 
 const twoFAConfig = {
 	pendingExpirySeconds: 5 * 60,
@@ -206,10 +207,14 @@ class TwoFactorChallengeService {
 	private async notifyUser(targetUser: any, method: AuthChallengeMethod, OTP: string | { secret_base32: string, secret_qrcode_url: string }) {
 		if (method === 'TOTP')
 			return ;
-		if (method === 'EMAIL' && !targetUser.email)
-			throw new NoEmailIsAssociated();
-		if (method === 'SMS' && !targetUser.phone)
-			throw new NoPhoneIsAssociated();
+		if (method === 'EMAIL' && !targetUser.email) {
+			logger.error({ method, targetUser, targetEmail: targetUser.email }, '[NOTIFY] TwoFactorChallengeService: targetEmail is null -- This should never happen');
+			return ;
+		}
+		if (method === 'SMS' && !targetUser.phone) {
+			logger.error({ method, targetUser, targetPhone: targetUser.phone }, '[NOTIFY] TwoFactorChallengeService: targetPhone is null -- This should never happen');
+			return ;
+		}
 
 		if (method === 'EMAIL')
 			return await this.mailingService.sendEmail({

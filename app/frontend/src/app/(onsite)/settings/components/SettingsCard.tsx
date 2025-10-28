@@ -1,71 +1,110 @@
 import { Check, ChevronDown, ChevronUp } from 'lucide-react';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, RefObject, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import MainCardWrapper from '../../components/UI/MainCardWrapper';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type ActionButtonProps = {
-	children: ReactNode;
-	actionIcon?: React.ReactNode;
+	title?: string;
+	icon?: React.ReactNode;
+	iconKey?: string;
 	onClick?: () => void;
 	hidden?: boolean;
 	disabled?: boolean;
-	type?: 'button' | 'submit';
-	formId?: string;
 };
 
 export const ActionButton = ({
-	children,
-	actionIcon,
-	onClick,
+	title = 'Action Button',
+	icon = <Check size={16} />,
+	iconKey = 'check-icon',
+	onClick = undefined,
 	hidden = false,
-	disabled = false,
-	type = 'button',
-	formId,
-}: ActionButtonProps) => {
-	const baseClasses = 'w-full flex gap-2 justify-center items-center px-3 md:px-5 py-0 md:py-1.5 text-sm md:text-base rounded-full h-10 select-none font-funnel-display font-medium transition-all duration-500 ease-in-out';
+	disabled = false
+} : ActionButtonProps) => {
+	const baseClasses = 'relative w-full flex gap-2 justify-center items-center px-3 md:px-5 py-0 md:py-1.5 text-sm md:text-base rounded-full h-10 select-none font-funnel-display font-medium transition-all duration-500 ease-in-out';
 	const hiddenClasses = hidden ? 'opacity-0 pointer-events-none scale-99 translate-y-0.5' : '';
 	const disabledClasses = !hidden && disabled ? 'opacity-50 pointer-events-none' : 'hover:bg-white hover:text-black cursor-pointer';
-	const combinedClasses = `${baseClasses} bg-white/6 border border-white/8 ${hiddenClasses} ${disabledClasses}`;
+	const combinedClasses = `${baseClasses} bg-white/6 border border-white/8 overflow-hidden ${hiddenClasses} ${disabledClasses}`;
 
 	return (
-		<button type={type} form={formId} onClick={onClick} className={combinedClasses} disabled={disabled}>
-			{actionIcon}
-			{children}
+		<button
+			onClick={onClick}
+			className={combinedClasses}
+			disabled={disabled}
+		>
+			<AnimatePresence mode='popLayout'>
+				<motion.div
+					key={iconKey}
+					initial={{ y: 35, opacity: 0 }}
+					animate={{ y: 0, opacity: 1 }}
+					exit={{ y: -35, opacity: 0 }}
+					transition={{ duration: 0.35, ease: 'easeInOut' }}
+					className='h-full flex items-center'
+				>
+					{icon}
+				</motion.div>
+			</AnimatePresence>
+			{title}
 		</button>
 	);
 };
 
 type SettingsCardProps = {
-	children?: ReactNode;
+	ref?: RefObject<any>;
 	title: string;
 	subtitle: string;
-	actionLabel?: string;
-	actionIcon?: React.ReactNode;
-	onAction?: () => void;
-	isButtonHidden?: boolean;
-	isButtonDisabled?: boolean;
+	actionButtonOptions?: ActionButtonProps
 	isFoldable?: boolean;
 	defaultExpanded?: boolean;
-	formId?: string;
-	className?: string;
+	initialHeight?: 'none' | 'full' | 'loading';
+	children?: ReactNode; // content
+	className?: string; // of settings card
 };
 
 export default function SettingsCard({
-	children,
+	ref,
 	title,
 	subtitle,
-	actionLabel = 'Save Changes',
-	actionIcon = <Check size={16} />,
-	onAction,
-	isButtonHidden = false,
-	isButtonDisabled = false,
+	actionButtonOptions,
 	isFoldable = false,
 	defaultExpanded = true,
-	formId,
-	className,
+	initialHeight = 'none',
+	children,
+	className = '',
 }: SettingsCardProps) {
 	const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+	const [height, setHeight] = useState(initialHeight === 'none' ? 0 : initialHeight === 'loading' ? 168 : 3000);
+	const contentRef = useRef<HTMLDivElement | null>(null);
 
 	const toggleExpanded = () => setIsExpanded(prev => !prev);
+
+	useEffect(() => {
+		if (contentRef.current) {
+			const resizeObserver = new ResizeObserver(() => {
+				if (contentRef.current)
+					setHeight(contentRef.current.scrollHeight);
+			});
+
+			resizeObserver.observe(contentRef.current);
+			setHeight(contentRef.current.scrollHeight);
+
+			return () => resizeObserver.disconnect();
+		}
+	}, [children]);
+
+	useImperativeHandle(ref, () => ({
+		toggle: () => {
+			console.log('toggle triggered via useImperativeHandle');
+			setIsExpanded(prev => !prev);
+		},
+		expand: () => {
+			console.log('expand triggered via useImperativeHandle');
+			setIsExpanded(true);
+		},
+		collapse: () => {
+			console.log('collapse triggered via useImperativeHandle');
+			setIsExpanded(false);
+		}
+	}));
 
 	return (
 		<MainCardWrapper className={className}>
@@ -88,18 +127,10 @@ export default function SettingsCard({
 
 					{/* FOLD/ACTION BUTTON */}
 					<div className="flex items-start gap-3">
-						<div className={children ? 'max-md:hidden' : ''}>
-							{(onAction || formId) && (
-								<ActionButton
-									actionIcon={actionIcon}
-									onClick={onAction}
-									hidden={isButtonHidden}
-									disabled={isButtonDisabled}
-									type={formId ? 'submit' : 'button'}
-									formId={formId}
-								>
-									{actionLabel}
-								</ActionButton>
+						{/* <div className={children ? 'max-md:hidden' : ''}> */}
+						<div className={children ? 'hidden md:block' : ''} >
+							{actionButtonOptions && (
+								<ActionButton {...actionButtonOptions} />
 							)}
 						</div>
 
@@ -116,32 +147,24 @@ export default function SettingsCard({
 			</div>
 
 			{/* CONTENT */}
-			{children && (
-				<div
-					className={`transition-all duration-600 ease-in-out ${
-						isFoldable ? (isExpanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0') : 'max-h-none opacity-100'
-					}`}
-				>
-					<div className="py-5 h-full px-5 lg:px-14">
-						{children}
-
-						{(onAction || formId) && (
-							<div className='mt-6 w-full md:hidden'>
-								<ActionButton
-									actionIcon={actionIcon}
-									onClick={onAction}
-									hidden={isButtonHidden}
-									disabled={isButtonDisabled}
-									type={formId ? 'submit' : 'button'}
-									formId={formId}
-								>
-									{actionLabel}
-								</ActionButton>
+			<div style={{
+				height: isExpanded ? `${height}px` : '0px',
+				transition: 'height .5s ease-in-out',
+				overflow: 'hidden'
+			}}>
+				<div ref={contentRef}>
+					{children && (
+						<div className='py-6 pb-12 px-5 lg:px-14'>
+							{children}
+							<div className='mt-4 md:hidden'>
+								{actionButtonOptions && (
+									<ActionButton {...actionButtonOptions} />
+								)}
 							</div>
-						)}
-					</div>
+						</div>
+					)}
 				</div>
-			)}
+			</div>
 		</MainCardWrapper>
 	);
 }

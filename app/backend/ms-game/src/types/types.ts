@@ -51,7 +51,6 @@ export interface BallState {
 }
 
 export interface PongPlayerState {
-	ID: number;
 	coords: Coords,
 	movement: 'up' | 'down' | 'still',
 	speed: number
@@ -91,8 +90,7 @@ export interface Player<TRoom = Room<any, any>> {
 
 export interface Room<TState, TStatus> {
 	id: string;
-	isTournament: boolean;
-	tournGameId?: number;
+	tournament?: { gameId: number, id: number } | undefined, 
 	gameType: GameType;
 	startTime: number | null;
 	players: Player<any>[];

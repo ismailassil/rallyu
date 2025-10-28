@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import useMatchmaking from '@/app/hooks/useMatchMaking';
 import { GameMode, GameType } from '../types/types';
 import { useRouter } from 'next/navigation';
@@ -55,7 +56,7 @@ const QueueToggleButton = ({ gameType, gameMode }: { gameType: GameType, gameMod
 					<div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-gray-300/20 to-transparent opacity-15 animate-pulse"></div>
 				</div>
 			)}
-			
+
 			<span className="relative z-10 flex items-center justify-center space-x-2">
 				{isSearching || clicked
 					? <div className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin"></div>

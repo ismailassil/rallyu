@@ -22,9 +22,9 @@ const GameField = () => {
 	const [ timeLeft, setTimeLeft ] = useState(0);
     const [ score, setScore ] = useState<[number, number]>([0, 0]);
     const [ result, setResult ] = useState<string | null>(null);
-    const [ tournamentURL, setTournamentURL ] = useState<number | null>(null);
 	const [ cells, setCells ] = useState<XOSign[]>(Array(9).fill(''));
     const router = useRouter();
+    const [ tournamentId, setTournamentId ] = useState<number | null>(null);
 
     const { roomid }: { roomid: string} = useParams();
     const { apiClient, loggedInUser } = useAuth();
@@ -41,7 +41,7 @@ const GameField = () => {
         updateDisplayedResult: setResult,
         updateCurrentPlayer: setCurrentPlayer,
         updateSign: setSign,
-        updateTournamentURL: setTournamentURL,
+        updateTournamentId: setTournamentId
     }));
 
     useEffect(() => {
@@ -98,7 +98,7 @@ const GameField = () => {
                         />
                         <div className="relative w-full max-w-[750px]">
                             <TicTacToe tictactoe={tictactoe.current} board={cells} />
-                            <Overlay status={overlayStatus} result={result} tournamentURL={tournamentURL} round={currentRound} />
+                            <Overlay status={overlayStatus} result={result} round={currentRound} tournamentId={tournamentId} />
                         </div>
                     </div>
             )}

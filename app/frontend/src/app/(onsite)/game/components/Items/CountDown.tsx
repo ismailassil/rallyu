@@ -1,10 +1,8 @@
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 const Countdown = ({ text }: { text: string }) => {
-    const t = useTranslations("game");
     const sequence = [3, 2, 1, text];
     const [index, setIndex] = useState(0);
 
