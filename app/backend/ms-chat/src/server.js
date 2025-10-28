@@ -29,9 +29,9 @@ fastify.get('/chat/history', async (req, res) => {
   try {
     const statement = fastify.db.prepare(
       `SELECT * FROM message
-       WHERE ((senderId = ? AND receiverId = ?) OR (senderId = ? AND receiverId = ?))
-       ORDER BY created_at DESC
-       LIMIT ? OFFSET ?`
+      WHERE ((senderId = ? AND receiverId = ?) OR (senderId = ? AND receiverId = ?))
+      ORDER BY created_at DESC
+      LIMIT ? OFFSET ?`
     );
     
     const result = statement.all(senderId, receiverId, receiverId, senderId, limit, offset);
@@ -53,9 +53,7 @@ fastify.get('/chat/friend_list', async (req, res) => {
   try {
     const friendsResponse = await fastify.nats.request(
       "user.friends",
-      fastify.jc.encode({ user_id: userId }),
-      { timeout: 3000 }
-    );
+      fastify.jc.encode({ user_id: userId }));
     
     const friendsOfUserId = fastify.jc.decode(friendsResponse.data).friends;
 
@@ -66,18 +64,14 @@ fastify.get('/chat/friend_list', async (req, res) => {
     const getLastMessage = fastify.db.prepare(`
       SELECT * FROM message
       WHERE (senderId = ? AND receiverId = ?)
-         OR (receiverId = ? AND senderId = ?)
+         OR (senderId = ? AND receiverId = ?)
       ORDER BY created_at DESC
       LIMIT 1
     `);
-
     const friendsWithMessages = friendsOfUserId.map(friend => {
-      const lastMessage = getLastMessage.get(userId, friend.id, userId, friend.id);
-      return {
-        ...friend,
-        last_message: lastMessage || null
-      };
-    });
+      const lastMessage = getLastMessage.get(userId, friend.id, friend.id, userId);
+      return lastMessage ? {...friend, last_message : lastMessage} : null;
+    }).filter(Boolean)
 
     friendsWithMessages.sort((a, b) => {
       if (a.last_message && b.last_message) {
@@ -87,7 +81,6 @@ fastify.get('/chat/friend_list', async (req, res) => {
       if (b.last_message) return 1;
       return 0;
     });
-
     res.send(friendsWithMessages);
 
   } catch (error) {

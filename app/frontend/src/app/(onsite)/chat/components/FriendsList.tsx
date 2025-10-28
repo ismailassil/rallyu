@@ -1,12 +1,11 @@
 "use client";
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { LoggedUser } from '../types/chat.types';
 import { useChat } from '../context/ChatContext';
 import Avatar from '../../users/components/Avatar';
 import { useTranslations } from 'next-intl';
 import LoadingComponent from '@/app/(auth)/components/UI/LoadingComponents';
-import { simulateBackendCall } from '@/app/(api)/utils';
 
 const FriendsList = () => {
 	const [prefix, setPrefix] = useState("");
@@ -27,10 +26,13 @@ const FriendsList = () => {
 	const handleSelectUser = (user: LoggedUser) => {
 		if (!user?.id) return;
 	
-		setSelectedUser(user);
+		setSelectedUser((prev) => {
+			const newSelected = prev?.id === user.id ? null : user;
+			setShowConversation(!!newSelected);
+			return newSelected;
+		});
 		setFilteredSuggestions([]);
 		setPrefix("");
-		setShowConversation(true);
 		window.history.pushState(null, "", `/chat/${user.username}`);
 	};
 

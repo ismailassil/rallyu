@@ -51,8 +51,10 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	const t = useTranslations("chat");
 
 	useEffect(() => {
-		if (!BOSS?.id) return;
-		apiClient.instance.get('/chat/friend_list')
+		const getFriendsList = async () => {
+			if (!BOSS?.id) return;
+			// await simulateBackendCall(100000);
+			apiClient.instance.get('/chat/friend_list')
 			.then((response: any) => {
 				setDisplayUsers(response.data);
 			})
@@ -61,6 +63,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			}).finally(() => {
 				setIsLoadingFriends(false);
 			});
+		}
+		getFriendsList();
 	}, [BOSS?.id, apiClient]);
 
 	useEffect(() => {
@@ -75,31 +79,25 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	};
 
 	useEffect(() => {
-		function handleMessage(data: MessageType) {
+		function handleMessage(receivedMessage: MessageType) {
 
-			if (!data || !data.senderId || !data.receiverId || !data.text) {
-				console.error('Invalid message data received:', data);
+			if (!receivedMessage || !receivedMessage.senderId || !receivedMessage.receiverId || !receivedMessage.text) {
+				console.error('Invalid message receivedMessage received:', receivedMessage);
 				return;
 			}
-
 			playMessageSound();
-			setMessages((prev) => [...prev, data]);
+			setMessages((prev) => [...prev, receivedMessage]);
 
-			const friendId = data.senderId === BOSS?.id ? data.receiverId : data.senderId;
-
+			const friendId = receivedMessage.senderId === BOSS?.id ? receivedMessage.receiverId : receivedMessage.senderId;
 			setDisplayUsers(prevUsers => {
 				const updatedFriend = prevUsers.find(user => user.id === friendId);
 				if (!updatedFriend) return prevUsers;
-
-				return [
-					{ ...updatedFriend, last_message: data },
-					...prevUsers.filter(user => user.id !== friendId)
-				];
-			});
+				return [{ ...updatedFriend, last_message: receivedMessage }, ...prevUsers.filter(user => user.id !== friendId)]
+			})
 		}
 
-		function handleUpdateMessage(data: MessageType) {
-			setMessages((prev) => [...prev, data]);
+		function handleUpdateMessage(receivedMessage: MessageType) {
+			setMessages((prev) => [...prev, receivedMessage]);
 		}
 
 		socket.on("chat_receive_msg", handleMessage);
@@ -109,7 +107,6 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			socket.off("chat_update_msg", handleUpdateMessage);
 		};
 	}, [socket, BOSS?.id]);
-
 
 	const formatMessageDateTime = (currentMsg: string | undefined, mode: 'conversation' | 'list', prevMsg?: string,) => {
 

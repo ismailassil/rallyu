@@ -16,6 +16,8 @@
       "yesterday": "Yesterday"
     },
     "no_friends": "No friends found",
-    "maximum": "Maximum"
+    "maximum": "Maximum",
+    "loading": "Loading...",
+    "load_more": "Load More"
   }
 }

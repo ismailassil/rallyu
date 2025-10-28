@@ -121,7 +121,7 @@ services:
       watch:
         - path: ./ms-chat/src/
           action: sync
-          target: /app
+          target: /app/src
           ignore:
             - ./ms-chat/node_modules/
             - ./ms-chat/database/
