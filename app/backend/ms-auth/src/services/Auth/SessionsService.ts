@@ -1,11 +1,10 @@
 import { ISessionFingerprint } from "../../types";
-import JWTUtils, { JWT_ACCESS_PAYLOAD, JWT_REFRESH_PAYLOAD } from "../../utils/auth/JWTUtils";
+import JWTUtils, { JWT_REFRESH_PAYLOAD } from "../../utils/auth/JWTUtils";
 import { AuthConfig } from "../../config/auth";
 import SessionsRepository from "../../repositories/SessionsRepository";
-import { nowInSeconds } from "../TwoFactorAuth/utils";
-import { SessionExpiredError, SessionNotFoundError, SessionRevokedError, TokenInvalidError } from "../../types/exceptions/auth.exceptions";
 import { UnauthorizedError } from "../../types/exceptions/AAuthError";
-import { setEngine } from "crypto";
+import logger from "../../utils/misc/logger";
+const geoip = require('geoip-lite');
 
 class SessionsService {
 	constructor(
@@ -105,7 +104,28 @@ class SessionsService {
 	async getActiveSessions(sub: number, currentSessionID: string) {
 		const sessions = await this.sessionRepository.findAllActive(sub);
 
-		return sessions.map(session => ({ ...session, is_current: session.session_id === currentSessionID }));
+		return sessions.map((session) => {
+			logger.debug({ ip: session.ip_address, res: geoip.lookup(session.ip_address) });
+			const sessionGeo = geoip.lookup(session.ip_address) || {};
+			return {
+				session_id: session.session_id,
+				version: session.version,
+				is_revoked: session.is_revoked,
+				reason: session.reason,
+				device: session.device,
+				browser: session.browser,
+				geo: {
+					country: sessionGeo.country,
+					region: sessionGeo.region,
+					city: sessionGeo.city
+				},
+				created_at: session.created_at,
+				expires_at: session.expires_at,
+				updated_at: session.updated_at,
+				user_id: session.user_id,
+				is_current: session.session_id === currentSessionID,
+			};
+		});
 	}
 
 	// /**

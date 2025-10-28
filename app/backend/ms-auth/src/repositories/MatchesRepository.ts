@@ -227,9 +227,9 @@ class MatchesRepository extends ARepository {
 					CASE WHEN m.player_home_id = ? THEN m.player_home_xp_gain ELSE m.player_away_xp_gain END AS user_xp_gain,
 					CASE WHEN m.player_home_id = ? THEN m.player_away_xp_gain ELSE m.player_home_xp_gain END AS opp_xp_gain,
 					CASE WHEN m.player_home_id = ? THEN m.player_away_score ELSE m.player_home_score END AS opp_score,
-					u_opp.id AS opponent_id,
-					u_opp.username AS opponent_username,
-					u_opp.avatar_url AS opponent_avatar_url,
+					COALESCE(u_opp.id, 0) AS opponent_id,
+					COALESCE(u_opp.username, 'Deleted User') AS opponent_username,
+					COALESCE(u_opp.avatar_url, '/users/avatars/deleted-user.png') AS opponent_avatar_url,
 					(m.finished_at - m.started_at) AS duration,
 					CASE
 						WHEN (m.player_home_id = ? AND m.player_home_score > m.player_away_score)
@@ -240,7 +240,7 @@ class MatchesRepository extends ARepository {
 					END AS outcome
 				FROM matches m
 				JOIN users u_self ON u_self.id = ?
-				JOIN users u_opp ON u_opp.id = CASE
+				LEFT JOIN users u_opp ON u_opp.id = CASE
 					WHEN m.player_home_id = ? THEN m.player_away_id
 					ELSE m.player_home_id
 				END

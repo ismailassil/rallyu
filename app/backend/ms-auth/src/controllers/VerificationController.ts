@@ -28,7 +28,7 @@ class VerificationController {
 		const { token, code } = request.body as { token: string, code: string };
 
 		const verifiedUserId = await this.verificationService.verify(token as UUID, code);
-		this.publishRefreshRequiredToUser(verifiedUserId);
+		this.publishUserRefreshRequiredToUser(verifiedUserId);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 		return reply.code(status).send(body);
@@ -43,7 +43,10 @@ class VerificationController {
 		return reply.code(status).send(body);
 	}
 
-	private publishRefreshRequiredToUser(userId: number) {
+	private publishUserRefreshRequiredToUser(userId: number) {
+		if (!this.nats || !this.js)
+			return ;
+
 		const _JSONCodec = JSONCodec();
 		this.nats.publish('gateway.user.data', _JSONCodec.encode({
 			eventType: 'USER_UPDATE',

@@ -171,6 +171,7 @@ export const usersRoutesSchemas = {
 			matches: usermatches
 		},
 		update: userupdate,
+		anonymize: useruserid,
 		delete: useruserid
 	},
 	relations: {

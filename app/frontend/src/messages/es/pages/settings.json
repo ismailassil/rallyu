@@ -7,7 +7,8 @@
       "cards": {
         "personal_infos": {
           "title": "Información personal",
-          "subtitle": "Actualiza la información de tu perfil y tu dirección de correo electrónico"
+          "subtitle": "Actualiza la información de tu perfil y tu dirección de correo electrónico",
+          "button": "Guardar cambios"
         }
       }
     },
@@ -16,19 +17,19 @@
       "cards": {
         "friends": {
           "title": "Amigos",
-          "subtitle": "Ver y gestionar tus relaciones con todos tus amigos"
+          "subtitle": "Consulta y gestiona tus relaciones con todos tus amigos"
         },
         "incoming": {
-          "title": "Solicitudes de amistad recibidas",
-          "subtitle": "Ver y rechazar todas las solicitudes de amistad pendientes que has recibido"
+          "title": "Solicitudes de amistad entrantes",
+          "subtitle": "Consulta y rechaza todas las solicitudes de amistad pendientes que has recibido"
         },
         "outgoing": {
-          "title": "Solicitudes de amistad enviadas",
-          "subtitle": "Ver y cancelar todas las solicitudes de amistad pendientes que has enviado"
+          "title": "Solicitudes de amistad salientes",
+          "subtitle": "Consulta y cancela todas las solicitudes de amistad pendientes que has enviado"
         },
         "blocked": {
           "title": "Usuarios bloqueados",
-          "subtitle": "Ver y desbloquear a todos los usuarios que has bloqueado"
+          "subtitle": "Consulta y desbloquea a todos los usuarios que has bloqueado"
         }
       }
     },
@@ -37,7 +38,7 @@
       "cards": {
         "twoFactor": {
           "title": "Autenticación en dos pasos",
-          "subtitle": "Añade una capa adicional de seguridad a tu cuenta eligiendo tu método de verificación preferido",
+          "subtitle": "Añade una capa adicional de seguridad a tu cuenta eligiendo tu método de verificación preferido.",
           "button": "Gestionar 2FA"
         },
         "change_password_form": {
@@ -52,16 +53,60 @@
             "text5": "Al menos una letra mayúscula",
             "text6": "Al menos un dígito"
           },
-          "button": "Guardar cambios"
+          "button": "Cambiar contraseña"
         },
         "sessions": {
           "title": "Navegadores y dispositivos",
-          "subtitle": "Estos navegadores y dispositivos están actualmente conectados a tu cuenta. Elimina cualquier dispositivo no autorizado"
+          "subtitle": "Estos navegadores y dispositivos tienen actualmente acceso a tu cuenta. Elimina cualquier dispositivo no autorizado."
         },
         "delete_account": {
           "title": "Eliminar cuenta",
-          "subtitle": "Esto eliminará permanentemente tu cuenta y todos los datos asociados. Esta acción es irreversible",
-          "button": "Eliminar cuenta"
+          "subtitle": "Esto eliminará permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
+          "button": "Eliminar cuenta",
+          "modal": {
+            "title": "Eliminar cuenta",
+            "text1": "Esto",
+            "text2": "eliminará permanentemente",
+            "text3": "tu cuenta y todos tus datos personales.",
+            "text4": "El historial de tus partidas seguirá siendo visible para tus oponentes, pero tu nombre aparecerá como",
+            "text5": "Usuario eliminado",
+            "warning1": "No podrás iniciar sesión después de esta acción.",
+            "warning2": "Esta acción no se puede deshacer.",
+            "button1": "Cancelar",
+            "button2": "Eliminar"
+          }
+        },
+        "anonymize_data": {
+          "title": "Anonimizar datos",
+          "subtitle": "Esto anonimizará permanentemente tu cuenta y todos tus datos personales. Esta acción no se puede deshacer.",
+          "button": "Anonimizar datos",
+          "modal": {
+            "title": "Anonimizar datos",
+            "text1": "Esto",
+            "text2": "anonimizará permanentemente",
+            "text3": "todos tus datos personales (nombre completo, nombre de usuario, correo electrónico, número de teléfono...)",
+            "text4": "El historial de tus partidas seguirá siendo visible para tus oponentes, pero tu nombre aparecerá como",
+            "text5": "Usuario anónimo",
+            "warning1": "No podrás iniciar sesión después de esta acción.",
+            "warning2": "Esta acción no se puede deshacer.",
+            "button1": "Cancelar",
+            "button2": "Anonimizar"
+          }
+        },
+        "clear_local_data": {
+          "title": "Borrar datos locales",
+          "subtitle": "Esto eliminará permanentemente los datos almacenados localmente en tu navegador. Esta acción no se puede deshacer.",
+          "button": "Borrar datos locales",
+          "modal": {
+            "title": "Borrar datos locales",
+            "text1": "Esto",
+            "text2": "eliminará permanentemente",
+            "text3": "los datos locales almacenados en tu navegador, como las preferencias de idioma.",
+            "warning1": "Perderás tus preferencias actuales.",
+            "warning2": "Esta acción no se puede deshacer.",
+            "button1": "Cancelar",
+            "button2": "Borrar datos"
+          }
         }
       }
     }

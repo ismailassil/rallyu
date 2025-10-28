@@ -7,7 +7,8 @@
       "cards": {
         "personal_infos": {
           "title": "Informazioni personali",
-          "subtitle": "Aggiorna le informazioni del tuo profilo e l'indirizzo email"
+          "subtitle": "Aggiorna le informazioni del tuo profilo e l'indirizzo email",
+          "button": "Salva modifiche"
         }
       }
     },
@@ -20,11 +21,11 @@
         },
         "incoming": {
           "title": "Richieste di amicizia in arrivo",
-          "subtitle": "Visualizza e rifiuta tutte le richieste di amicizia in sospeso ricevute"
+          "subtitle": "Visualizza e rifiuta tutte le richieste di amicizia in sospeso che hai ricevuto"
         },
         "outgoing": {
           "title": "Richieste di amicizia inviate",
-          "subtitle": "Visualizza e annulla tutte le richieste di amicizia in sospeso inviate"
+          "subtitle": "Visualizza e annulla tutte le richieste di amicizia in sospeso che hai inviato"
         },
         "blocked": {
           "title": "Utenti bloccati",
@@ -37,14 +38,14 @@
       "cards": {
         "twoFactor": {
           "title": "Autenticazione a due fattori",
-          "subtitle": "Aggiungi un ulteriore livello di sicurezza al tuo account scegliendo il tuo metodo di verifica preferito",
+          "subtitle": "Aggiungi un ulteriore livello di sicurezza al tuo account scegliendo il tuo metodo di verifica preferito.",
           "button": "Gestisci 2FA"
         },
         "change_password_form": {
           "title": "Cambia password",
           "subtitle": "Modifica la tua password attuale",
           "sidecard": {
-            "title": "Requisiti password",
+            "title": "Requisiti della password",
             "text1": "Per creare una nuova password,",
             "text2": "devi soddisfare tutti i seguenti requisiti:",
             "text3": "Minimo 8 caratteri",
@@ -52,16 +53,60 @@
             "text5": "Almeno una lettera maiuscola",
             "text6": "Almeno una cifra"
           },
-          "button": "Salva modifiche"
+          "button": "Cambia password"
         },
         "sessions": {
           "title": "Browser e dispositivi",
-          "subtitle": "Questi browser e dispositivi sono attualmente connessi al tuo account. Rimuovi quelli non autorizzati"
+          "subtitle": "Questi browser e dispositivi sono attualmente connessi al tuo account. Rimuovi eventuali dispositivi non autorizzati."
         },
         "delete_account": {
           "title": "Elimina account",
-          "subtitle": "Questa azione eliminerà permanentemente il tuo account e tutti i dati associati. È irreversibile",
-          "button": "Elimina account"
+          "subtitle": "Questa azione eliminerà definitivamente il tuo account e tutti i dati associati. L'operazione non può essere annullata.",
+          "button": "Elimina account",
+          "modal": {
+            "title": "Elimina account",
+            "text1": "Questa azione",
+            "text2": "eliminerà definitivamente",
+            "text3": "il tuo account e tutti i tuoi dati personali.",
+            "text4": "La cronologia delle tue partite rimarrà visibile agli avversari, ma il tuo nome apparirà come",
+            "text5": "Utente eliminato",
+            "warning1": "Non potrai più accedere dopo questa azione.",
+            "warning2": "Questa azione non può essere annullata.",
+            "button1": "Annulla",
+            "button2": "Elimina"
+          }
+        },
+        "anonymize_data": {
+          "title": "Anonimizza dati",
+          "subtitle": "Questa azione anonimizzerà definitivamente il tuo account e tutti i tuoi dati personali. L'operazione non può essere annullata.",
+          "button": "Anonimizza dati",
+          "modal": {
+            "title": "Anonimizza dati",
+            "text1": "Questa azione",
+            "text2": "anonimizzerà definitivamente",
+            "text3": "tutti i tuoi dati personali (nome completo, nome utente, email, numero di telefono...)",
+            "text4": "La cronologia delle tue partite rimarrà visibile agli avversari, ma il tuo nome apparirà come",
+            "text5": "Utente anonimo",
+            "warning1": "Non potrai più accedere dopo questa azione.",
+            "warning2": "Questa azione non può essere annullata.",
+            "button1": "Annulla",
+            "button2": "Anonimizza"
+          }
+        },
+        "clear_local_data": {
+          "title": "Cancella dati locali",
+          "subtitle": "Questa azione eliminerà definitivamente i dati memorizzati localmente nel tuo browser. L'operazione non può essere annullata.",
+          "button": "Cancella dati locali",
+          "modal": {
+            "title": "Cancella dati locali",
+            "text1": "Questa azione",
+            "text2": "eliminerà definitivamente",
+            "text3": "i dati locali memorizzati nel tuo browser, come le preferenze linguistiche.",
+            "warning1": "Perderai le tue preferenze attuali.",
+            "warning2": "Questa azione non può essere annullata.",
+            "button1": "Annulla",
+            "button2": "Cancella dati"
+          }
         }
       }
     }

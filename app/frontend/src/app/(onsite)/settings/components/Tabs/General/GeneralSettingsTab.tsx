@@ -83,7 +83,7 @@ export default function GeneralSettingsTab() {
 				title={t('title')}
 				subtitle={t('subtitle')}
 				actionButtonOptions={{
-					title: 'Save Changes',
+					title: t('button'),
 					icon: isSubmitting ? <LoaderCircle size={16} className='animate-spin' /> : hasUnsavedChanges ? <Save size={16} /> : <CircleOff size={16} />,
 					iconKey: isSubmitting ? 'loader' : hasUnsavedChanges ? 'save' : 'circle-off',
 					onClick: handleSubmit,
