@@ -1,7 +1,10 @@
 import { Hash, PingPong } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 function GameChoice({ game, setGame, error, setError }) {
+	const translate = useTranslations("tournament");
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: -100 }}
@@ -10,11 +13,11 @@ function GameChoice({ game, setGame, error, setError }) {
 			className="min-h-11 flex flex-col items-center justify-between gap-2 text-sm md:flex-row lg:gap-20 lg:text-base md:mb-0 mb-5"
 		>
 			<label className="w-full flex-1" htmlFor="picture">
-				Pick Your Game
+				{ translate("panel.new-tournament.t-type") }
 			</label>
 			<div className="flex-2 w-full">
 				{error && (
-					<p className="mb-1 text-red-500">Choose between the available game modes below.</p>
+					<p className="mb-1 text-red-500">{ translate("panel.new-tournament.t-type-error") }</p>
 				)}
 				<div
 					className={`*:flex *:justify-center *:items-center *:px-1

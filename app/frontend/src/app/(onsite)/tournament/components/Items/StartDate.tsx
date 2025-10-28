@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 const getDateByHour = function (added = 1) {
@@ -22,6 +23,7 @@ const StartDate = function ({
 	const [minDate, setMinDate] = useState<Date>(getDateByHour());
 	const inputDate = useRef<HTMLInputElement | null>(null);
 	const [isOpen, setIsOpen] = useState(false);
+	const translate = useTranslations("tournament");
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -61,12 +63,12 @@ const StartDate = function ({
 			className="min-h-11 flex flex-col items-center justify-between gap-2 text-sm md:flex-row lg:gap-20 lg:text-base md:mb-0 mb-5"
 		>
 			<label className="w-full flex-1" htmlFor="picture">
-				Start Date
+				{translate("panel.new-tournament.t-date")}
 			</label>
 			<div className="flex-2 w-full">
 				{error && (
 					<p className="mb-1 text-red-500">
-						Invalid date provided. The minimum allowed date is one hour from now.
+						{ translate("panel.new-tournament.t-date-error") }
 					</p>
 				)}
 				<div

@@ -5,6 +5,7 @@ import { CloudWarningIcon, MaskSad } from "@phosphor-icons/react";
 import { ParamValue } from "next/dist/server/request/params";
 import { Dispatch, SetStateAction, useState } from "react";
 import { Toaster } from "sonner";
+import { useTranslations } from "next-intl";
 
 const FooterPending = function (
     { joined, setJoined, slug, title, full }:
@@ -13,20 +14,21 @@ const FooterPending = function (
     const { apiClient, loggedInUser } = useAuth();
     const [error, setError] = useState({
         status: false,
-        message: "Something went wrong; Try again later!"
+        message: ""
     });
+    const translate = useTranslations("tournament")
 
     const joinTournamentHandler = async (e) => {
         e.preventDefault();
         try {
             await apiClient.instance.patch(`/v1/tournament/match/join/${slug}`, { id: loggedInUser?.id });
 
-            toastSuccess("Joined the tournament successfully");
+            toastSuccess("bracket.pending.join");
             setJoined(true);
             setError({ status: false, message: "" });
         } catch (err: unknown) {
             console.error(err);
-            setError({ status: true, message: "Something went wrong; Try again later!" });
+            setError({ status: true, message: translate("bracket.pending.error") });
         }
     };
     
@@ -35,12 +37,12 @@ const FooterPending = function (
         try {
             await apiClient.instance.patch(`/v1/tournament/match/leave/${slug}`, { id: loggedInUser?.id });
             
-            toastSuccess("Left the tournament successfully");
+            toastSuccess(translate("bracket.pending.leave"));
             setJoined(false);
             setError({ status: false, message: "" });
         } catch (err: unknown) {
             console.error(err);
-            setError({ status: true, message: "Something went wrong; Try again later!" });
+            setError({ status: true, message: translate("bracket.pending.error") });
         }
     };
 
@@ -48,9 +50,9 @@ const FooterPending = function (
         <div className="flex flex-col gap-5">
             <div>
                 <p className="text-gray-300 text-center sm:text-left">
-                    Join
+                    { translate("bracket.pending.header.join") }
                     <span className={`font-black ${unicaOne.className} text-white`}> { title } </span>
-                    Tournament and compete for the trophy! &#129351;
+                    { translate("bracket.pending.header.join-welcoming") } &#129351;
                 </p>
                 <>
                     {
@@ -76,7 +78,7 @@ const FooterPending = function (
                             "
                                             onClick={joinTournamentHandler}
                         >
-                            Join
+                            {translate("bracket.pending.buttons.join")}
                         </button>
                 } 
                 {   
@@ -90,7 +92,7 @@ const FooterPending = function (
                             "
                             onClick={leaveTournamentHandler}
                         >
-                            Leave
+                            {translate("bracket.pending.buttons.leave")}
                         </button>
                 }
                 {
@@ -102,7 +104,7 @@ const FooterPending = function (
                                         text-sm
                             "
                         >
-                            <span>Full</span>
+                            <span>{translate("bracket.pending.buttons.full")}</span>
                             <MaskSad size={18} />
                         </div>
                 }

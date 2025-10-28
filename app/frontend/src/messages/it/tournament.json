@@ -1,0 +1,89 @@
+{
+    "tournament": {
+        "panel": {
+            "title": "Arene Aperte",
+            "not-found": "Nessun torneo disponibile al momento.",
+            "error": "Qualcosa è andato storto",
+            "ad-header": "Battaglia per la Corona",
+            "ad-description": "Accetta la sfida. Competi, conquista e reclama la vittoria.",
+            "search": "Cerca",
+            "button": "Avvia un Torneo",
+
+            "new-tournament": {
+                "title": "Prepara la Scena",
+                "button": "Crea Torneo",
+                "t-title": "Titolo del Torneo",
+                "t-title-error": "La lunghezza del titolo del torneo deve essere compresa tra 2 e 15 caratteri.",
+                "t-type": "Scegli il tuo Gioco",
+                "t-type-error": "Scegli tra le modalità di gioco disponibili qui sotto.",
+                "t-date": "Data di Inizio",
+                "t-date-error": "Data non valida. La data minima consentita è tra un'ora.",
+                "t-join": "Unisciti al Torneo",
+                "t-in": "Dentro",
+                "t-out": "Fuori",
+                "t-created": "Il torneo è stato creato con successo"
+            },
+
+            "card": {
+                "contenders": "Partecipanti",
+                "full": "Pieno",
+                "join": "Unisciti",
+                "entered": "Iscritto",
+                "ongoing": "In corso",
+                "completed": "Completato",
+                "cancelled": "Annullato"
+            }
+        },
+        "bracket": {
+            "error": "Il servizio tornei potrebbe non essere disponibile al momento",
+            "tournament": "Torneo",
+            "state": {
+                "pending": "Il torneo non è ancora iniziato",
+                "progress": "Torneo in corso",
+                "complete": "Il torneo è terminato",
+                "cancel": "Il torneo è stato annullato"
+            },
+            "stat": {
+                "host": "Organizzatore",
+                "date": "Data di Inizio",
+                "contenders": "Numero di Partecipanti",
+                "mode": "Modalità"
+            },
+            "bracket": "Tabellone",
+            "semi-final": "Semifinale",
+            "final": "Finale",
+            "pending": {
+                "join": "Ti sei unito al torneo con successo",
+                "error": "Qualcosa è andato storto; riprova più tardi!",
+                "leave": "Hai lasciato il torneo con successo",
+                "header": {
+                    "join": "Unisciti",
+                    "join-welcoming": "Partecipa al torneo e competi per il trofeo!"
+                },
+                "buttons": {
+                    "join": "Unisciti",
+                    "leave": "Lascia",
+                    "full": "Pieno"
+                }
+            },
+            "progress": {
+                "error-play": "Stai già partecipando a un altro torneo; finiscilo e poi torna",
+                "error": "Qualcosa è andato storto",
+                "ready": "Non restare lì fermo... Clicca Pronto così il tuo avversario lo saprà",
+                "loss": "Purtroppo sei stato eliminato dal torneo... Buona fortuna la prossima volta",
+                "win": "Congratulazioni! Hai vinto la tua prima partita... ne manca solo una per il trofeo",
+                "buttons": {
+                    "ready": "Sono Pronto!",
+                    "cancel": "Annulla VELOCE...",
+                    "game-over": "Gioco Finito",
+                    "waiting": "In attesa dell'avversario..."
+                },
+                "spectate": "Non partecipi a questo torneo… ma puoi comunque guardare"
+            },
+            "cancel": {
+                "header": "Il torneo è stato purtroppo annullato",
+                "reason-label": "Motivo"
+            }
+        }
+    } 
+}

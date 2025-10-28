@@ -1,9 +1,9 @@
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { AxiosResponse } from "axios";
 import { useState } from "react";
 import MatchTimer from "./MatchTimer";
 import unicaOne from "@/app/fonts/unicaOne";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 let pollingGame: NodeJS.Timeout | null = null;
 
@@ -15,6 +15,8 @@ const FooterGoing = function (
     const { apiClient } = useAuth();
     const [timeRunsOut, setTimeRunsOut] = useState<boolean>(true);
     const router = useRouter();
+    const [error, setError] = useState({ status: false, message: "" })
+    const translate = useTranslations("tournament")
 
     const playerReadyHandler = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
@@ -23,9 +25,8 @@ const FooterGoing = function (
             return ;
 
         try {
-            const res = await apiClient.instance.patch(`/v1/tournament/match/ready`, { matchId: matchId });
-            console.error(res);
-
+            await apiClient.instance.patch(`/v1/tournament/match/ready`, { matchId: matchId });
+            
             setReady(!ready);
 
             if (!pollingGame) {
@@ -56,11 +57,18 @@ const FooterGoing = function (
                 pollingGame = null;
             }
 
+            setError({ status: false, message: "" })
+
         } catch (err: unknown) {
             if (pollingGame)
                 clearInterval(pollingGame);
             pollingGame = null;
-            console.error(err);
+            
+            if (err.status === 400)
+                setError({ status: true, message: translate("bracket.progress.error-play")  });
+            else 
+                setError({ status: true, message: translate("bracket.progress.error") });
+
         }
     };
 
@@ -73,17 +81,18 @@ const FooterGoing = function (
                         <p className="text-gray-300">
                             {
                                 !waiting && (!timeRunsOut ?
-                                    "Don’t just sit there looking ready… Click Ready so your opponent knows too ⌛"
+                                    `${translate("bracket.progress.ready")} ⌛`
                                     :
-                                    "Unfortunately you are out of the tournament… Good luck next time 👾")
+                                    `${translate("bracket.progress.loss")} 👾`)
                             }
                             {
                                 waiting &&
-                                    "Congrats you've won your first match... now only one match left for the trophy 🎉"
+                                    `${translate("bracket.progress.win")} 🎉`
                             }
                         </p>
                         <MatchTimer startTime={startTime} timeRunsOut={timeRunsOut} setTimeRunsOut={setTimeRunsOut} />
                     </div>
+                    { error.status && <p className="text-red-400">{ error.message }</p> }
                     <>
                         {
                             !waiting && (!timeRunsOut ? (!ready ?
@@ -95,7 +104,7 @@ const FooterGoing = function (
                                                 self-stretch sm:self-center"
                                 onClick={playerReadyHandler}
                             >
-                                I am Ready!
+                                {translate("bracket.progress.buttons.ready")}
                             </button> :
                             <button 
                                 className="bg-card outline-white/20 outline-1 hover:scale-102 py-3 px-24
@@ -105,14 +114,14 @@ const FooterGoing = function (
                                                 self-stretch sm:self-center"
                                 onClick={playerReadyHandler}
                             >
-                                Cancel FAST...
+                                {translate("bracket.progress.buttons.cancel")}
                             </button>) :
                              <div 
                                 className="bg-purple-700 py-3 px-24
                                                 rounded-lg text-sm
                                                 self-stretch sm:self-center text-center"
                             >
-                                <p>Game Over</p>
+                                <p>{translate("bracket.progress.buttons.game-over")}</p>
                             </div>)
 
                         }
@@ -123,7 +132,7 @@ const FooterGoing = function (
                                                 rounded-lg text-xl
                                                 self-stretch sm:self-center`}
                                 >
-                                    <p className="text-yellow-400">Waiting for opponent...</p>
+                                    <p className="text-yellow-400">{translate("bracket.progress.buttons.waiting")}</p>
                                 </div>
                         }
                     </>
@@ -134,7 +143,7 @@ const FooterGoing = function (
                 <>
                     <div className="flex flex-wrap items-center justify-between">
                         <p className="text-gray-300">
-                            You are not participating in this tournament… But you still can spectate &#128064;
+                            {translate("bracket.progress.buttons.spectate")} &#128064;
                         </p>
                     </div> 
                 </> 

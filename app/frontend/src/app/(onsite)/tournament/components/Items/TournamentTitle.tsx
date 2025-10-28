@@ -1,7 +1,10 @@
 import { Trash } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 function TournamentTitle({ value, setValue, error, setError }) {
+	const translate = useTranslations("tournament")
+
 	return (
 		<>
 			<motion.div
@@ -12,12 +15,12 @@ function TournamentTitle({ value, setValue, error, setError }) {
 					text-sm md:flex-row lg:gap-20 lg:text-base"
 			>
 				<label className="w-full flex-1" htmlFor="title">
-					Tournament Title
+					{translate("panel.new-tournament.t-title")}
 				</label>
 				<div className="flex-2 w-full select-none">
 					{error && (
 						<p className="mb-1 text-red-500">
-							Tournament title length must be between 2 - 15 characters.
+							{translate("panel.new-tournament.t-title-error")}
 						</p>
 					)}
 					<div

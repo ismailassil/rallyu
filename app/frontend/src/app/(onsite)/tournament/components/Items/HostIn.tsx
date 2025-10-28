@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { SmileyMeltingIcon, SmileyNervousIcon } from "@phosphor-icons/react";
 import { Dispatch, SetStateAction } from "react";
+import { useTranslations } from "next-intl";
 
 function HostIn({ hostIn, setHostIn }: { hostIn: boolean, setHostIn: Dispatch<SetStateAction<boolean>> }) {
+    const translate = useTranslations("tournament")
+
     return (
         <motion.div
             initial={{ opacity: 0, x: -100 }}
@@ -11,7 +14,7 @@ function HostIn({ hostIn, setHostIn }: { hostIn: boolean, setHostIn: Dispatch<Se
             className="min-h-11 flex flex-col items-center justify-between gap-2 text-sm md:flex-row lg:gap-20 lg:text-base md:mb-0 mb-5"
         >
             <label className="w-full flex-1" htmlFor="picture">
-                Join Tournament
+                { translate("panel.new-tournament.t-join") }
             </label>
             <div className="flex-2 w-full">
                 <div
@@ -29,7 +32,7 @@ function HostIn({ hostIn, setHostIn }: { hostIn: boolean, setHostIn: Dispatch<Se
                         }`}
                     >
                         <SmileyMeltingIcon size={18} />
-                        In
+                        { translate("panel.new-tournament.t-in") }
                     </div>
                     <div
                         onClick={(e) => {
@@ -41,7 +44,7 @@ function HostIn({ hostIn, setHostIn }: { hostIn: boolean, setHostIn: Dispatch<Se
                         }`}
                     >
                         <SmileyNervousIcon size={18} />
-                        Out
+                        { translate("panel.new-tournament.t-out") }
                     </div>
                 </div>
             </div>

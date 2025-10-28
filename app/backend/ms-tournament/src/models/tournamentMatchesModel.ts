@@ -165,6 +165,22 @@ class TournamentMatchesModel {
         });
     }
 
+    async checkForAvailability(matchId: number, playerId: number) {
+        const data = await new Promise((resolve, reject) => {
+			this.DB.get(`SELECT id FROM ${this.modelName}
+				WHERE id <> ? AND
+				((player_1=? AND player_1_ready=1) OR (player_2=? AND player_2_ready=1))
+				AND winner IS NULL`,
+				[matchId, playerId, playerId],
+				(err, row) => {
+					if (err) reject(err)
+						else resolve(row)
+				});
+        });
+
+		return (data)
+    }
+
     async getMatchRoomId(id: number) {
         return (await new Promise((resolve, reject) => {
 			this.DB.get(`SELECT match_id FROM ${this.modelName} WHERE id = ?`,

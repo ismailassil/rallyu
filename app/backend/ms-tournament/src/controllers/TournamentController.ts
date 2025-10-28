@@ -229,6 +229,13 @@ class TournamentController {
 			if (!playerId || !matchId)
 				return rep.code(400).send({ status: false, message: "Bad request!" });
 
+			const data = await req.server.tournamentMatchesModel.checkForAvailability(matchId, playerId);
+			console.log("===============")
+			console.log(matchId)
+			console.log("===============")
+			if (data)
+				return rep.code(400).send({ status: false, message: "You are already playing in a match tournament; Finish it then come back!" })
+
 			await req.server.tournamentMatchesModel.playerReadyMatch(matchId, playerId);
 
 			return rep.code(201).send({ status: true, message: "Ready for match!" });

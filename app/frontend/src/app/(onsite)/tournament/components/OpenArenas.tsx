@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSearchParams } from "next/navigation";
 import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react";
+import { useTranslations } from "next-intl";
 
 interface errorObj {
 	status: boolean;
@@ -35,6 +36,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 	const [searchVal, setSearchVal] = useState<string>("");
 	const { apiClient, loggedInUser } = useAuth();
 	const param: string | null = useSearchParams().get('mode');
+	const translate = useTranslations("tournament");
 
 	useEffect(() => {
 	
@@ -63,7 +65,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 		} catch (err) {
 			setError({
 				status: true,
-				message: "Something went wrong"
+				message: translate("panel.error")
 			});
 		}
 	};
@@ -79,7 +81,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 			>
 				<div>
 					<h2 className={`${unicaOne.className} text-base uppercase sm:text-2xl`}>
-						<span className="font-semibold">Open Arenas</span>
+						<span className="font-semibold">{ translate("panel.title") }</span>
 					</h2>
 				</div>
 				<div className="flex gap-3 grow flex-wrap">
@@ -92,7 +94,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 							id="search"
 							type="text"
 							className="peer w-full h-full border-none focus:outline-none focus:placeholder:text-background focus:text-black"
-							placeholder="Search"
+							placeholder={ translate("panel.search") }
 							onChange={searchTournament}
 							maxLength={20}
 							value={searchVal}
@@ -121,7 +123,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 						mode={param === "ping-pong" ? 1 : (param === "tic-tac-toe" ? 2 : 0)}
 						setError={setError}
 					/>
-					<StartButton setValue={setValue} />
+					<StartButton setValue={setValue} label={ translate("panel.button") } />
 				</div>
 			</motion.div>
 			{error.status && (
@@ -144,7 +146,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 						transition={{ type: "spring", stiffness: 120 }}
 						className="text-wrap flex gap-2 rounded-full bg-card outline-white/20 outline-1 px-8 py-4"
 					>
-						<p className="text-lg">No available tournaments currently.</p>
+						<p className="text-lg">{ translate("panel.not-found") }</p>
 					</motion.div>
 				)
 			}

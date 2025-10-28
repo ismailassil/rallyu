@@ -1,8 +1,11 @@
 import unicaOne from "@/app/fonts/unicaOne";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 function Banner() {
+	const translate = useTranslations("tournament");
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: -20, scale: 0.9 }}
@@ -16,10 +19,10 @@ function Banner() {
 				className={`${unicaOne.className}
 					group-hover:text-main group-hover:scale-101 duration-900 z-10 mb-5 text-5xl uppercase transition-all md:w-[50%] lg:w-full lg:text-6xl`}
 			>
-				<span className="font-semibold">Battle for the Crown</span>
+				<span className="font-semibold">{ translate("panel.ad-header") }</span>
 			</h1>
 			<p className="group-hover:text-main group-hover:scale-101 duration-900 z-10 pl-1 text-base font-light transition-all md:w-[50%] lg:w-full lg:text-lg">
-				Rise to the challenge. Compete, conquer, and claim victory.
+				{ translate("panel.ad-description") }
 			</p>
 			<div
 				className="tournament-bg group-hover:scale-101 duration-900 absolute left-0 top-0

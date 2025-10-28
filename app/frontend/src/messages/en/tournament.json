@@ -1,0 +1,89 @@
+{
+    "tournament": {
+        "panel": {
+            "title": "Open Arenas",
+            "not-found": "No available tournaments currently.",
+            "error": "Something went wrong",
+            "ad-header": "Battle for the Crown",
+            "ad-description": "Rise to the challenge. Compete, conquer, and claim victory.",
+            "search": "Search",
+            "button": "Start a Tournament",
+
+            "new-tournament": {
+                "title": "Set the Stage",
+                "button": "Create Tournament",
+                "t-title": "Tournament Title",
+                "t-title-error": "Tournament title length must be between 2 - 15 characters.",
+                "t-type": "Pick Your Game",
+                "t-type-error": "Choose between the available game modes below.",
+                "t-date": "Start Date",
+                "t-date-error": "Invalid date provided. The minimum allowed date is one hour from now.",
+                "t-join": "Join Tournament",
+                "t-in": "In",
+                "t-out": "Out",
+                "t-created": "Tournament has been created successfully"
+            },
+
+            "card": {
+                "contenders": "Contenders",
+                "full": "Full",
+                "join": "Join",
+                "entered": "Entered",
+                "ongoing": "Ongoing",
+                "completed": "Completed",
+                "cancelled": "cancelled"
+            }
+        },
+        "bracket": {
+            "error": "Tournament service might not be available at the moment",
+            "tournament": "Tournament",
+            "state": {
+                "pending": "Tournament has not started",
+                "progress": "Tournament in progress",
+                "complete": "Tournament is completed",
+                "cancel": "Tournament is cancelled"
+            },
+            "stat": {
+                "host": "Host",
+                "date": "Start Date",
+                "contenders": "Contenders Size",
+                "mode": "Mode"
+            },
+            "bracket": "Bracket",
+            "semi-final": "Semi-final",
+            "final": "Final",
+            "pending": {
+                "join": "Joined the tournament successfully",
+                "error": "Something went wrong; Try again later!",
+                "leave": "Left the tournament successfully",
+                "header": {
+                    "join": "Join",
+                    "join-welcoming": "Tournament and compete for the trophy!"
+                },
+                "buttons": {
+                    "join": "Join",
+                    "leave": "Leave",
+                    "full": "Full"
+                }
+            },
+            "progress": {
+                "error-play": "You are already playing in a match tournament; Finish it then come back",
+                "error": "Something went wrong",
+                "ready": "Don’t just sit there looking ready… Click Ready so your opponent knows too",
+                "loss": "Unfortunately you are out of the tournament… Good luck next time",
+                "win": "Congrats you've won your first match... now only one match left for the trophy",
+                "buttons": {
+                    "ready": "I am Ready!",
+                    "cancel": "Cancel FAST...",
+                    "game-over": "Game Over",
+                    "waiting": "Waiting for opponent..."
+                },
+                "spectate": "You are not participating in this tournament… But you still can spectate"
+            },
+            "cancel": {
+                "header": "Tournament got cancelled unfortunately",
+                "reason-label": "Reason"
+            }
+        }
+    } 
+}

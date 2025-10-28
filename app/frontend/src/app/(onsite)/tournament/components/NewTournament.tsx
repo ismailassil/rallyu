@@ -11,6 +11,7 @@ import { AxiosResponse } from "axios";
 import { Toaster } from "sonner";
 import { toastSuccess } from '@/app/components/CustomToast';
 import HostIn from "./Items/HostIn";
+import { useTranslations } from "next-intl";
 
 function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 	const { loggedInUser, apiClient } = useAuth();
@@ -23,6 +24,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 	const [errGame, setErrGame] = useState(false);
 	const [errAcess, setErrAccess] = useState(false);
 	const [errDate, setErrDate] = useState(false);
+	const translate = useTranslations("tournament")
 
 	const createTournamentHandler = async function (e) {
 		try {
@@ -45,7 +47,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 				host_id: loggedInUser?.id,
 			});
 
-			toastSuccess(res.data.message);
+			toastSuccess(translate("panel.new-tournament.t-created"));
 
 			setDate("");
 			setAccess(0);
@@ -83,17 +85,16 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 						<ArrowLeft size={24} className="flex-1" />
 					</div>
 					<h2 className={`${unicaOne.className} text-xl uppercase md:text-2xl`}>
-						<span className="font-semibold">Set the Stage</span>
+						<span className="font-semibold">{ translate("panel.new-tournament.title") }</span>
 					</h2>
 				</div>
 				<StartButtonTournament
-					label="Create Tournament"
+					label={ translate("panel.new-tournament.button") }
 					createTournamentHandler={createTournamentHandler}
 				/>
 			</motion.div>
 			<TournamentTitle value={title} setValue={setTitle} error={errTitle} setError={setErrTitle} />
 			<GameChoice game={game} setGame={setGame} error={errGame} setError={setErrGame} />
-			{/* <Access access={access} setAccess={setAccess} error={errAcess} setError={setErrAccess} /> */}
 			<StartDate date={date} setDate={setDate} error={errDate} setError={setErrDate} />
 			<HostIn hostIn={hostIn} setHostIn={setHostIn} />
 			<Toaster position='bottom-right' visibleToasts={1} />

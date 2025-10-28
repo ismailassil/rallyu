@@ -93,8 +93,10 @@ class RemoteXO {
 					this.eventHandlers?.updateOverlayStatus(this.status)
                     const displayedResult = data.winner === this.state.mySign ? 'win' : data.winner === 'draw' ? 'draw' : data.winner === 'X' ? `cross` : 'circle'
                     this.eventHandlers?.updateDisplayedResult!(displayedResult);
+                    this.eventHandlers?.updateTournamentURL!(data.tournamentURL);
 					this.eventHandlers?.updateTimer(0);
 					this.proxy.disconnect();
+                    console.error(data);
 					break;
             }
         })

@@ -139,7 +139,7 @@ services:
     networks:
       - backend
     volumes:
-      - ./ms-tournament/database/tournament.db:/app/database/tournament.db
+      - ./ms-tournament/database/:/app/database/
     env_file:
       - .env
     develop:

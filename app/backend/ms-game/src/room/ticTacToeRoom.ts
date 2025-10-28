@@ -268,10 +268,11 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 			type: 'gameover',
 			winner: overallWinner,
 			score: this.players.map(p => p.score),
-			tournamentURl: this.tournURL
+			tournamentURL: this.tournURL
 		});
 
 		closeRoom(this, 1000, 'Game Over');
+		this.saveGameData();
 	}
 	
 	private startRound(): void {
@@ -396,7 +397,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 				headers: {
 					'Authorization': `Bearer ${MS_AUTH_API_KEY}`
 			}});
-
+			
 			if (!this.isTournament) return;
 			
 			await axios.patch(`http://${MS_TOURN_HOST}:${MS_TOURN_PORT}/api/v1/tournament/match/progress`, {

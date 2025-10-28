@@ -2,12 +2,12 @@ import { ArrowRight, Plus } from "@phosphor-icons/react";
 
 function StartButton({
 	setValue,
-	label = "Start a Tournament",
+	label,
 }: {
 	setValue: (value: boolean) => void;
 	label?: string;
 }) {
-	const isArena = label.includes("Arena");
+	const isArena = label!.includes("Arena");
 	return (
 		<button
 			className={`bg-main min-w-45 min-h-10 "hover:scale-102"

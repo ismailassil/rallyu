@@ -15,6 +15,7 @@ import { ArrowLeft } from "lucide-react";
 import TournamentUnFound from "./components/TournamentUnFound";
 import BracketViewDesktop from "./components/BracketViewDesktop";
 import BracketViewMobile from "./components/BracketViewMobile";
+import { useTranslations } from "next-intl";
 
 const getStartTime = function(matches, player) {
 	for (const match of matches) {
@@ -68,6 +69,7 @@ const Brackets = function (props) {
 	const [ready, setReady] = useState<boolean>(false);
 	const [error, setError] = useState({ status: false, message: "" });
 	const router = useRouter();
+	const translate = useTranslations("tournament")
 
 	useEffect(() => {
 		const loadData = async function () {
@@ -83,7 +85,7 @@ const Brackets = function (props) {
 				}
 				setError({ status: false, message: "" });
 			} catch (err) {
-				setError({ status: true, message: "Tournament service might not be available at the moment" });
+				setError({ status: true, message: translate("bracket.error") });
 			}
 		};
 
@@ -137,24 +139,24 @@ const Brackets = function (props) {
 										</div>
 									</div>
 									<h1 className="lg:text-3xl md:text-2xl text-xl font-medium mr-auto">
-										{`${tournament?.tournament.title} - Tournament ${tournament.tournament.mode === "ping-pong" ? "🏓" : "🌌"}`}
+										{`${tournament?.tournament.title} - ${translate("bracket.tournament")} ${tournament.tournament.mode === "ping-pong" ? "🏓" : "🌌"}`}
 									</h1>
 									<div>
 										{
 											tournament.tournament.state == "pending" && 
-												<StateStat color="text-purple-400" statement="Tournament has not started" />
+												<StateStat color="text-purple-400" statement={translate("bracket.state.pending")} />
 										}
 										{
 											tournament.tournament.state == "ongoing" && 
-												<StateStat color="text-yellow-400" statement="Tournament in progress" />
+												<StateStat color="text-yellow-400" statement={translate("bracket.state.progress")} />
 										}
 										{
 											tournament.tournament.state == "finished" &&
-												<StateStat color="text-blue-400" statement="Tournament is completed" />
+												<StateStat color="text-blue-400" statement={translate("bracket.state.complete")} />
 										}
 										{
 											tournament.tournament.state == "cancelled" &&
-												<StateStat color="text-red-400" statement="Tournament is cancelled" />
+												<StateStat color="text-red-400" statement={translate("bracket.state.cancel")} />
 										}
 									</div>
 								</div>
@@ -162,14 +164,14 @@ const Brackets = function (props) {
 									className=" grid w-full grid-cols-1 items-center justify-between md:grid-cols-2
 												lg:grid-rows-none gap-4 mb-10"
 								>
-									<Stat subject="Host" result={tournament.tournament.host_username} />
-									<Stat subject="Start Date" result={tournament.tournament.start_date.replace("T", " ")} />
-									<Stat subject="Contenders Size" result=
+									<Stat subject={translate("bracket.stat.host")} result={tournament.tournament.host_username} />
+									<Stat subject={translate("bracket.stat.date")} result={tournament.tournament.start_date.replace("T", " ")} />
+									<Stat subject={translate("bracket.stat.contenders")} result=
 										{`${tournament.tournament.contenders_joined}/${tournament.tournament.contenders_size}`}
 									/>
-									<Stat subject="Mode" result={tournament.tournament.mode} />
+									<Stat subject={translate("bracket.stat.mode")} result={tournament.tournament.mode} />
 								</div>
-								<h2 className="text-xl font-bold text-gray-300">Bracket</h2>
+								<h2 className="text-xl font-bold text-gray-300">{translate("bracket.bracket")}</h2>
 								<BracketViewDesktop matches={tournament.matches} />
 								<BracketViewMobile matches={tournament.matches} />
 								<>
@@ -180,7 +182,7 @@ const Brackets = function (props) {
 											setJoined={setJoined}
 											slug={slug}
 											title={tournament?.tournament.title}
-											full={tournament.tournament.contenders_size === tournament.tournament.contenders_joined}										/>
+											full={tournament.tournament.contenders_size === tournament.tournament.contenders_joined}/>
 									}
 								</>
 								<>

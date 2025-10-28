@@ -40,6 +40,9 @@ export const createRoomSchema = {
                 properties: {
                     gameId: {
                         type: 'number',
+                    },
+                    tournamentURL: {
+                        type: 'number',
                     }
                 }
             }

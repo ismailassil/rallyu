@@ -5,6 +5,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { AxiosResponse } from "axios";
+import { useTranslations } from "next-intl";
 
 function TournamentCard({
 	id,
@@ -26,6 +27,7 @@ function TournamentCard({
 	const { loggedInUser, apiClient } = useAuth();
 	const router = useRouter();
 	const [joined, setJoined] = useState(isUserIn);
+	const translate = useTranslations("tournament")
 
 	if (name && name.length > 25) {
 		name = name.substring(0, 23) + "...";
@@ -66,7 +68,7 @@ function TournamentCard({
 				<p className="font-semibold">{name}</p>
 				<div className="flex flex-col gap-2">
 					<div className="relative flex justify-between text-sm">
-						<p className="font-light">Contenders</p>
+						<p className="font-light">{ translate("panel.card.contenders") }</p>
 						{/* Active players */}
 						<p>{active}/{size}</p>
 					</div>
@@ -77,7 +79,7 @@ function TournamentCard({
 								id="full-id" 
 								className="flex items-center justify-center gap-2 rounded-sm cursor-auto py-0.5 outline-white/10 outline"
 							>
-								<span className="text-sm">Full</span>
+								<span className="text-sm">{ translate("panel.card.full") }</span>
 								<MaskSad size={16} />
 							</div>
 						) :
@@ -90,7 +92,7 @@ function TournamentCard({
 										key={1}
 										className="hover:bg-main flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm bg-white/20 py-0.5"
 									>
-										<span className="text-sm">Join</span>
+										<span className="text-sm">{ translate("panel.card.join") }</span>
 										<ArrowUUpRight size={16} />
 									</motion.button>
 								) : (
@@ -102,7 +104,7 @@ function TournamentCard({
 										id="entered-id"
 										className="bg-main flex cursor-auto items-center justify-center gap-2 rounded-sm py-0.5"
 										>
-										<span className="text-sm">Entered</span>
+										<span className="text-sm">{ translate("panel.card.entered") }</span>
 										<Check size={16} />
 									</motion.div>
 								)}
@@ -115,7 +117,7 @@ function TournamentCard({
 								id="ongoing-id"
 								className="flex items-center justify-center gap-2 rounded-sm cursor-auto py-0.5 outline-yellow-400/10 outline"
 							>
-								<span className="text-sm text-yellow-400">Ongoing</span>
+								<span className="text-sm text-yellow-400">{ translate("panel.card.ongoing") }</span>
 								<HourglassSimpleMediumIcon size={16} className="text-yellow-400" />
 							</div>
 					}
@@ -125,7 +127,7 @@ function TournamentCard({
 								id="finished-id"
 								className="flex items-center justify-center gap-2 rounded-sm cursor-auto py-0.5 outline-blue-400/10 outline"	
 							>
-								<span className="text-sm text-blue-400">Completed</span>
+								<span className="text-sm text-blue-400">{ translate("panel.card.completed") }</span>
 								<TrophyIcon size={16} className="text-blue-400" />
 							</div>
 					}
@@ -135,7 +137,7 @@ function TournamentCard({
 								id="cancelled-id"
 								className="flex items-center justify-center gap-2 rounded-sm cursor-auto py-0.5 outline-red-400/10 outline"
 							>
-								<span className="text-sm text-red-400">Cancelled</span>
+								<span className="text-sm text-red-400">{ translate("panel.card.cancelled") }</span>
 								<SmileyXEyesIcon size={16} className="text-red-400" />
 							</div>
 					}
