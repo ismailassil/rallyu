@@ -115,7 +115,7 @@ class SocketClient {
 			payload = {
 				eventType,
 				data: {
-					updateAll: false,
+					updateAll,
 					notificationId: data.id,
 					status: data.status,
 					state: data.state,
@@ -125,6 +125,7 @@ class SocketClient {
 			payload = {
 				eventType,
 				data: {
+					updateAll,
 					status: data.status,
 				},
 			};
