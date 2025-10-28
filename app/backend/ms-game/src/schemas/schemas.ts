@@ -40,8 +40,13 @@ export const createRoomSchema = {
                 properties: {
                     gameId: {
                         type: 'number',
+                    },
+                    id: {
+                        type: 'number',
                     }
-                }
+                },
+                required: ['gameId', 'id'],
+                additionalProperties: false
             }
         },
         required: ['playersIds', 'gameType'],

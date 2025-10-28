@@ -82,9 +82,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 	})
 
 	fastify.post('/room/create', { schema: createRoomSchema}, (req, res) => {
-		const { playersIds, gameType, tournament } = req.body as { playersIds: number[], gameType: GameType, tournament: { gameId: number, tournamentURL: number } };
-		const tournGameId = tournament?.gameId;
-		const tournURL = tournament?.tournamentURL;
+		const { playersIds, gameType, tournament } = req.body as { playersIds: number[], gameType: GameType, tournament: { gameId: number, id: number } };
 
 		if (!playersIds) {
 			return res.code(400).send({
@@ -99,7 +97,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			})
 		}
 
-		const { roomid, room }  = roomManager.createRoom(gameType, tournGameId, tournURL);
+		const { roomid, room }  = roomManager.createRoom(gameType, tournament);
 		room.attachPlayers(playersIds);
 
 		room.expirationTimer = setTimeout(() => {

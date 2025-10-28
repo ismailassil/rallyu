@@ -82,9 +82,7 @@ export class PingPongPlayer implements Player {
 export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	id: string;
 	gameType: GameType;
-	isTournament: boolean = false;
-	tournGameId?: number | undefined;
-	tournURL?: number | undefined;
+	tournament?: { gameId: number, id: number } | undefined;
 	startTime: number = 0;
 	players: PingPongPlayer[] = [];
 	running = false;
@@ -94,15 +92,11 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	gameTimerId: NodeJS.Timeout | undefined = undefined;
 	state: PingPongGameState;
 
-	constructor(id: string, gameId: number | undefined, tournamentURL: number | undefined) {
+	constructor(id: string, tournament: { gameId: number, id: number } | undefined) {
 		this.id = id;
 		this.gameType = 'pingpong';
 
-		if (gameId) {
-			this.tournGameId = gameId;
-			this.tournURL = tournamentURL;
-			this.isTournament = true;
-		}
+		if (tournament) this.tournament = tournament;
 
 		const initialAngle = angles[Math.floor(Math.random() * angles.length)];
 		this.state = {
@@ -176,7 +170,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 					type: 'gameover',
 					result: results[i],
 					score: this.state.score,
-					tournamentURL: this.tournURL
+					tournamentId: this.tournament?.id
 				}))
 			}
 		})
@@ -194,7 +188,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 					type: 'gameover',
 					result: yeilder === i ? 'loss' : 'win',
 					score: this.state.score,
-					tournamentURL: this.tournURL
+					tournamentId: this.tournament?.id
 				}))
 			}
 		})
@@ -303,7 +297,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 					'Authorization': `Bearer ${MS_AUTH_API_KEY}`
 			}});
 
-			if (!this.isTournament) return;
+			if (!this.tournament) return;
 			
 			await axios.patch(`http://${MS_TOURN_HOST}:${MS_TOURN_PORT}/api/v1/tournament/match/progress`, {
 				player1: {
@@ -317,7 +311,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 				gameStartedAt: Math.floor(this.startTime / 1000),
 				gameFinishedAt: Math.floor(Date.now() / 1000),
 				gameType:  'PONG',
-				gameId: this.tournGameId
+				gameId: this.tournament?.gameId
 			}, {
 				headers: {
 					'Authorization': `Bearer ${MS_TOURN_API_KEY}`

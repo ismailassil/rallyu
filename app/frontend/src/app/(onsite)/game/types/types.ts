@@ -36,7 +36,6 @@ export interface PongState {
 			score: number
 		}
 	],
-	tournamentURL: number,
 }
 
 export interface EventHandlers {
@@ -49,7 +48,7 @@ export interface EventHandlers {
 	updateDisplayedResult?: React.Dispatch<React.SetStateAction<string | null>>; 
 	updateCurrentPlayer?: React.Dispatch<React.SetStateAction<XOSign>>; 
 	updateSign?: React.Dispatch<React.SetStateAction<XOSign>>; 
-
+	updateTournamentId?: React.Dispatch<React.SetStateAction<number | null>>
 }
 
 export interface RemotePongState extends PongState {

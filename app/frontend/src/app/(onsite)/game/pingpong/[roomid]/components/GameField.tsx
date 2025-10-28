@@ -20,6 +20,7 @@ const GameField = () => {
 	const [ oppdisconnect, setOppdisconnect ] = useState(false);
     const [ result, setResult ] = useState<string | null>(null);
     const [ overlayStatus, setOverlayStatus ] = useState('none');
+    const [ tournamentId, setTournamentId ] = useState<number | null>(null);
 	const socketProxy = useRef<SocketProxy>(new SocketProxy((reason: string) => {
         router.push(`/game/disconnected?reason=${reason}`)
     }));
@@ -27,7 +28,8 @@ const GameField = () => {
         updateTimer: setTimeLeft,
         updateOverlayStatus: setOverlayStatus,
         updateConnection: setOppdisconnect,
-        updateDisplayedResult: setResult
+        updateDisplayedResult: setResult,
+        updateTournamentId: setTournamentId
     }));
 
     useEffect(() => {
@@ -76,7 +78,7 @@ const GameField = () => {
                         />
                         <div className="relative inline-block">
                             <Pong socketProxy={socketProxy.current} pong={pong.current} />
-                            <Overlay status={overlayStatus} result={result} tournamentURL={pong.current.state.tournamentURL} />
+                            {overlayStatus !== "none" && <Overlay status={overlayStatus} result={result} tournamentId={tournamentId} />}
                         </div>
                     </div>
                 </>
