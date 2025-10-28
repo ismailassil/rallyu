@@ -59,7 +59,7 @@ const FooterGoing = function (
 
             setError({ status: false, message: "" })
 
-        } catch (err: unknown) {
+        } catch (err: any) {
             if (pollingGame)
                 clearInterval(pollingGame);
             pollingGame = null;
