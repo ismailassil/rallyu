@@ -1,10 +1,10 @@
 {
   "chat": {
     "title": "Chat",
-    "search": "Comienza a buscar...",
+    "search": "Empieza a buscar...",
     "no_conv": {
       "title": "👋 ¡Bienvenido al chat!",
-      "sub": "Selecciona un usuario de la barra lateral para empezar a chatear"
+      "sub": "Selecciona un usuario del panel lateral para empezar a chatear"
     },
     "status": {
       "online": "En línea",
@@ -16,6 +16,8 @@
       "yesterday": "Ayer"
     },
     "no_friends": "No se encontraron amigos",
-    "maximum": "Máximo"
+    "maximum": "Máximo",
+    "loading": "Cargando...",
+    "load_more": "Cargar más"
   }
 }
