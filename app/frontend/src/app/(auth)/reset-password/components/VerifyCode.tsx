@@ -7,7 +7,6 @@ import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import useAPICall from "@/app/hooks/useAPICall";
 import { toastError } from "@/app/components/CustomToast";
 import AnimatedComponent from "../../components/UI/AnimatedComponent";
-import { APIError } from "@/app/(api)/APIClient";
 import ResendCode from "../../components/Verification/ResendCode";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -63,9 +62,9 @@ export function VerifyCode({ token, onSuccess, onFailure, onGoBack }: VerifyCode
 	async function handleResend() {
 		try {
 			await resendCode(() => apiClient.resetPasswordResend(token));
-		} catch (err) {
+		} catch (err: any) {
 			onFailure();
-			toastError((err as APIError).message);
+			toastError(tautherr("errorCodes", { code: err.message }));
 		}
 	}
 

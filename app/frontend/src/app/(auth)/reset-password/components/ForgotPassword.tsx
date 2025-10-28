@@ -1,16 +1,16 @@
-"use client";
-import { ArrowLeft, RotateCw } from "lucide-react";
-import { useRouter } from "next/navigation";
-import FormButton from "../../components/UI/FormButton";
-import InputField from "../../components/Form/InputField";
-import useAPICall from "@/app/hooks/useAPICall";
-import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { toastError } from "@/app/components/CustomToast";
-import useForm from "@/app/hooks/useForm";
-import { FormProvider } from "../../components/Form/FormContext";
-import AnimatedComponent from "../../components/UI/AnimatedComponent";
-import { useTranslations } from "next-intl";
-import useValidationSchema from "@/app/hooks/useValidationSchema";
+'use client';
+import { ArrowLeft, RotateCw } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import FormButton from '../../components/UI/FormButton';
+import InputField from '../../components/Form/InputField';
+import useAPICall from '@/app/hooks/useAPICall';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
+import { toastError } from '@/app/components/CustomToast';
+import useForm from '@/app/hooks/useForm';
+import { FormProvider } from '../../components/Form/FormContext';
+import AnimatedComponent from '../../components/UI/AnimatedComponent';
+import { useTranslations } from 'next-intl';
+import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export function ForgotPassword({
 	onNext,
@@ -19,8 +19,8 @@ export function ForgotPassword({
 	onNext: (token: string) => void;
 	onGoBack: () => void;
 }) {
-	const t = useTranslations("");
-	const tautherr = useTranslations("auth");
+	const t = useTranslations('');
+	const tautherr = useTranslations('auth');
 
 	const router = useRouter();
 
@@ -35,7 +35,7 @@ export function ForgotPassword({
 		validateAll,
 		getValidationErrors,
 		resetForm,
-	] = useForm(emailOnlySchema, { email: "" }, { debounceMs: { email: 1200 } });
+	] = useForm(emailOnlySchema, { email: '' }, { debounceMs: { email: 1200 } });
 
 	const { apiClient } = useAuth();
 
@@ -53,35 +53,36 @@ export function ForgotPassword({
 			);
 			onNext(token);
 		} catch (err: any) {
-			toastError(tautherr("errorCodes", { code: err.message }));
+			if (err.message === 'AUTH_USER_NOT_FOUND') err.message = 'AUTH_NO_SUCH_EMAIL';
+			toastError(tautherr('errorCodes', { code: err.message }));
 		}
 	}
 
 	return (
 		<AnimatedComponent
-			componentKey="forgot-password"
-			className="flex w-full max-w-lg flex-col gap-5 p-11"
+			componentKey='forgot-password'
+			className='flex w-full max-w-lg flex-col gap-5 p-11'
 		>
 			{/* Header + Go Back */}
-			<div className="mb-2 flex items-center gap-4">
+			<div className='mb-2 flex items-center gap-4'>
 				<button
 					onClick={onGoBack}
-					className="cursor-pointer rounded-2xl bg-blue-500/25 p-2 transition-all duration-300 hover:bg-blue-500/90"
+					className='cursor-pointer rounded-2xl bg-blue-500/25 p-2 transition-all duration-300 hover:bg-blue-500/90'
 				>
 					<ArrowLeft size={40} />
 				</button>
 				<div>
-					<h1 className="inline-block text-lg font-semibold sm:text-3xl">
-						{t("auth.reset_password.forgotPassword.title")}
+					<h1 className='inline-block text-lg font-semibold sm:text-3xl'>
+						{t('auth.reset_password.forgotPassword.title')}
 					</h1>
-					<p className="text-sm text-gray-300 sm:text-balance">
-						{t("auth.reset_password.forgotPassword.subtitle")}
+					<p className='text-sm text-gray-300 sm:text-balance'>
+						{t('auth.reset_password.forgotPassword.subtitle')}
 					</p>
 				</div>
 			</div>
 
 			{/* Email Input + Reset Password Button */}
-			<form className="flex flex-col gap-3" onSubmit={handleSubmit}>
+			<form className='flex flex-col gap-3' onSubmit={handleSubmit}>
 				<FormProvider
 					formData={formData}
 					errors={errors}
@@ -93,28 +94,28 @@ export function ForgotPassword({
 					resetForm={resetForm}
 				>
 					<InputField
-						className="field flex min-w-0 flex-1 flex-col gap-0.5"
-						iconSrc="/icons/mail.svg"
-						label=""
-						field="email"
-						inputPlaceholder="iassil@1337.student.ma"
+						className='field flex min-w-0 flex-1 flex-col gap-0.5'
+						iconSrc='/icons/mail.svg'
+						label=''
+						field='email'
+						inputPlaceholder='iassil@1337.student.ma'
 						autoFocus
 					/>
 				</FormProvider>
 				<FormButton
-					text={t("auth.common.reset_password")}
-					type="submit"
+					text={t('auth.common.reset_password')}
+					type='submit'
 					icon={<RotateCw size={16} />}
 					isSubmitting={isLoading}
 				/>
 			</form>
-			<p className="mt-2 self-center">
-				{t("auth.reset_password.forgotPassword.instruction")}{" "}
+			<p className='mt-2 self-center'>
+				{t('auth.reset_password.forgotPassword.instruction')}{' '}
 				<span
-					onClick={() => router.push("/signup")}
-					className="cursor-pointer font-semibold text-blue-500 hover:underline"
+					onClick={() => router.push('/signup')}
+					className='cursor-pointer font-semibold text-blue-500 hover:underline'
 				>
-					{t("auth.common.signin")}
+					{t('auth.common.signin')}
 				</span>
 			</p>
 		</AnimatedComponent>

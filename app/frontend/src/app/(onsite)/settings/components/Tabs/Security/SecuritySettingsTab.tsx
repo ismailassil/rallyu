@@ -1,77 +1,96 @@
 import SettingsCard from "../../SettingsCard";
-import { Fingerprint, Check, LoaderCircle, X } from "lucide-react";
+import { Fingerprint, LoaderCircle, X, Lock, CircleOff, Save } from "lucide-react";
 import ChangePasswordForm from "./ChangePasswordForm";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Sessions from "./Sessions";
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { useTranslations } from "next-intl";
 
 export default function SecuritySettingsTab() {
+	const router = useRouter();
+
 	const t = useTranslations('settings.security.cards');
 
-	const router = useRouter();
-	const changePasswordFormId = 'change-password-form';
-	const [buttonDisabled, setButtonDisabled] = useState(false);
-	const [buttonHidden, setButtonHidden] = useState(true);
+	const changePasswordFormRef = useRef<HTMLFormElement | null>(null);
+	const changePasswordCardRef = useRef<any | null>(null);
+
+	const [isEditing, setIsEditing] = useState(false);
+	const [canSave, setCanSave] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const {
 		loggedInUser
 	} = useAuth();
 
+	function expandCard() {
+		setIsEditing(true);
+		changePasswordCardRef.current?.expand();
+	}
+	function collapseCard() {
+		setIsEditing(false);
+		changePasswordCardRef.current?.collapse();
+	}
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: 15 }}
 			animate={{ opacity: 1, x: 0 }}
-			exit={{ opacity: 1, x: -15 }}
+			exit={{ opacity: 0, x: -15 }}
 			transition={{ duration: 0.5 }}
 			className='flex flex-col gap-4'
 		>
 			{loggedInUser!.auth_provider === 'Local' && (
 				<>
-				<SettingsCard
-					title={t('twoFactor.title')}
-					subtitle={t('twoFactor.subtitle')}
-					actionLabel={t('twoFactor.button')}
-					actionIcon={<Fingerprint size={16} />}
-					onAction={() => router.push('/2fa-manager')}
-				>
-				</SettingsCard>
-				<SettingsCard
-					title={t('change_password_form.title')}
-					subtitle={t('change_password_form.subtitle')}
-					actionIcon={buttonDisabled ? <LoaderCircle size={16} className='animate-spin' /> : <Check size={16} />}
-					formId={changePasswordFormId}
-					isButtonDisabled={buttonDisabled}
-					isButtonHidden={buttonHidden}
-					isFoldable={true}
-					defaultExpanded={false}
-				>
-					<ChangePasswordForm
-						formId={changePasswordFormId}
-						setButtonDisabled={setButtonDisabled}
-						setButtonHidden={setButtonHidden}
+					<SettingsCard
+						title={t('twoFactor.title')}
+						subtitle={t('twoFactor.subtitle')}
+						actionButtonOptions={{
+							title: t('twoFactor.button'),
+							icon: <Fingerprint size={16} />,
+							onClick: () => router.push('2fa-manager')
+						}}
 					/>
-				</SettingsCard>
+					<SettingsCard
+						ref={changePasswordCardRef}
+						title={t('change_password_form.title')}
+						subtitle={t('change_password_form.subtitle')}
+						actionButtonOptions={{
+							title: 'Change Password',
+							icon: isSubmitting ? <LoaderCircle size={16} className="animate-spin" /> : isEditing ? (canSave ? <Save size={16} /> : <CircleOff size={16} />) : <Lock size={16} /> ,
+							iconKey: isSubmitting ? 'loader' : isEditing ? (canSave ? 'check-check' : 'x') : 'lock' ,
+							onClick: isEditing ? (canSave ? () => changePasswordFormRef.current?.requestSubmit() : collapseCard) : expandCard,
+							disabled: isSubmitting
+						}}
+						defaultExpanded={false}
+					>
+
+							<ChangePasswordForm
+								formRef={changePasswordFormRef}
+								setCanSave={(bool) => setCanSave(bool)}
+								setIsSubmitting={(bool) => setIsSubmitting(bool)}
+								onSuccess={() => setIsEditing(false)}
+							/>
+
+					</SettingsCard>
 				</>
 			)}
 			<SettingsCard
 				title={t('sessions.title')}
 				subtitle={t('sessions.subtitle')}
+				initialHeight='loading'
 			>
 				<Sessions />
 			</SettingsCard>
 			<SettingsCard
 				title={t('delete_account.title')}
 				subtitle={t('delete_account.subtitle')}
-				actionLabel={t('delete_account.button')}
-				actionIcon={<X size={16} />}
-				isButtonHidden={false}
-				isButtonDisabled={false}
-				onAction={() => router.push('/delete-account')}
+				actionButtonOptions={{
+					title: 'Delete Account',
+					icon: <X size={16} />
+				}}
 			>
-
 			</SettingsCard>
 		</motion.div>
 	);

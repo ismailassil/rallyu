@@ -52,7 +52,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	// THIS USE EFFECT WILL ONLY RUN ON PAGE FIRSTLOAD/REFRESH
 	useEffect(() => {
-		console.log('AuthProvider useEffect - Checking authentication status...');
+		console.log('AuthContext useEffect - Trying to refresh');
 		initializeAuth();
 	}, []);
 

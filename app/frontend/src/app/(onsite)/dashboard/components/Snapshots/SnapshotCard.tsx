@@ -80,8 +80,8 @@ export default function SnapshotCard() {
 
 	if (isLoading) {
 		return (
-			<MainCardWithHeader headerName={t("titles.snapshots")} color="notwhite" className="font-funnel-display flex-3 select-none">
-				<div className="group flex flex-col gap-4">
+			<MainCardWithHeader headerName={t('titles.snapshots')} color='notwhite' className='font-funnel-display flex-3 select-none'>
+				<div className='group flex flex-col gap-4'>
 				<SnapshotSkeleton />
 				</div>
 			</MainCardWithHeader>
@@ -90,8 +90,8 @@ export default function SnapshotCard() {
 
   	if (isError) {
 		return (
-			<MainCardWithHeader headerName={t("titles.snapshots")} color="notwhite" className="font-funnel-display flex-3 select-none">
-				<div className="group flex flex-col gap-4">
+			<MainCardWithHeader headerName={t('titles.snapshots')} color='notwhite' className='font-funnel-display flex-3 select-none'>
+				<div className='group flex flex-col gap-4'>
 				<PlaceholderComponent content={isError} />
 				</div>
 			</MainCardWithHeader>
@@ -105,7 +105,6 @@ export default function SnapshotCard() {
 		date: item.day,
 		value: item.total_duration,
 	})) || [];
-	console.log('timeSpentData: ', timeSpentData);
 
 	const currentRecord = records[index];
 	const currentTotal = totals[index];
@@ -114,16 +113,16 @@ export default function SnapshotCard() {
 
 
 	return (
-		<MainCardWithHeader headerName={t("titles.snapshots")} color="notwhite" className="font-funnel-display flex-3 select-none">
-			<div className="group flex flex-col gap-4">
+		<MainCardWithHeader headerName={t('titles.snapshots')} color='notwhite' className='font-funnel-display flex-3 select-none'>
+			<div className='group flex flex-col gap-4'>
 				{matchToShow && (
-				<div className="relative px-6 py-0.5 overflow-hidden">
-					<AnimatePresence mode="popLayout">
+				<div className='relative px-6 py-0.5 overflow-hidden'>
+					<AnimatePresence mode='popLayout'>
 						<motion.div
 							key={matchToShow.match_id}
-							initial={{ opacity: 0, y: 100, filter: "blur(5px)", scale: 0.9 }}
-							animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
-							exit={{ opacity: 0, y: -20, filter: "blur(5px)", scale: 0.9 }}
+							initial={{ opacity: 0, y: 100, filter: 'blur(5px)', scale: 0.9 }}
+							animate={{ opacity: 1, y: 0, filter: 'blur(0px)', scale: 1 }}
+							exit={{ opacity: 0, y: -20, filter: 'blur(5px)', scale: 0.9 }}
 							transition={{ duration: 0.5, ease: 'easeInOut' }}
 						>
 							<GameCard {...matchToShow} />
@@ -132,41 +131,41 @@ export default function SnapshotCard() {
 				</div>
 				)}
 
-				<div className="px-6 flex flex-col gap-3">
+				<div className='px-6 flex flex-col gap-3'>
 					{currentRecord && (
-					<div className="profile-inner-stat-card-animated flex-1 relative">
-						<FullWidthStatDisplay stat={currentRecord} direction="left" />
+					<div className='profile-inner-stat-card-animated flex-1 relative'>
+						<FullWidthStatDisplay stat={currentRecord} direction='left' />
 					</div>
 					)}
 
-					<div className="flex w-full gap-4 text-center">
+					<div className='flex w-full gap-4 text-center'>
 					{currentTotal && (
-						<div className="profile-inner-stat-card-animated flex-1 relative">
-						<HalfWidthStatDisplay stat={currentTotal} direction="down" delay={0.9} />
+						<div className='profile-inner-stat-card-animated flex-1 relative'>
+						<HalfWidthStatDisplay stat={currentTotal} direction='down' delay={0.9} />
 						</div>
 					)}
 					{currentScore && (
-						<div className="profile-inner-stat-card-animated flex-1 relative">
-						<HalfWidthStatDisplay stat={currentScore} direction="up" delay={0.3} />
+						<div className='profile-inner-stat-card-animated flex-1 relative'>
+						<HalfWidthStatDisplay stat={currentScore} direction='up' delay={0.3} />
 						</div>
 					)}
 					</div>
 
 					{currentDuration && (
-						<div className="profile-inner-stat-card-animated flex-1 relative">
-							<FullWidthStatDisplay stat={currentDuration} direction="right" delay={0.6} />
+						<div className='profile-inner-stat-card-animated flex-1 relative'>
+							<FullWidthStatDisplay stat={currentDuration} direction='right' delay={0.6} />
 						</div>
 					)}
 
 					<ChartCardWrapper
 						chartTitle={t('common.time_spent')}
-						className="h-110"
+						className='h-110'
 						isEmpty={timeSpentData.length === 0}
 					>
 						<CustomAreaChart
 							data={timeSpentData}
-							dataKeyX="date"
-							dataKeyY="value"
+							dataKeyX='date'
+							dataKeyY='value'
 							tooltipFormatter={secondsToHMS}
 						/>
 					</ChartCardWrapper>

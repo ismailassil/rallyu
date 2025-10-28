@@ -32,15 +32,16 @@ export default function FriendsCard() {
 			if (!socket || !loggedInUser)
 				return ;
 
-			if (event.eventType !== 'RELATION_UPDATE')
-				return ;
-
-			if ((event.data.status === 'FRIENDS' || event.data.status === 'NONE') && (event.data.requesterId === loggedInUser.id || event.data.receiverId === loggedInUser.id))
-				refetch();
+			if (
+				event.eventType === "RELATION_UPDATE" &&
+				(event.data.requesterId === loggedInUser.id ||
+				event.data.receiverId === loggedInUser.id) &&
+				(event.data.status === 'FRIENDS' ||
+				event.data.status === 'NONE')
+			) refetch();
 		}
 
 		socket.on('user', handleRelationUpdate);
-
 		return () => {
 			socket.off('user', handleRelationUpdate);
 		};

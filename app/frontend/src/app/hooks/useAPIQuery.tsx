@@ -1,10 +1,11 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { simulateBackendCall } from "../(api)/utils";
 
 export default function useAPIQuery(queryFn: () => Promise<any>) {
 	const router = useRouter();
 	const [data, setData] = useState<any | null>(null);
-	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [isRefetching, setIsRefetching] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -17,6 +18,7 @@ export default function useAPIQuery(queryFn: () => Promise<any>) {
 			}
 			setError(null);
 			try {
+				await simulateBackendCall(2000);
 				const result = await queryFn();
 				setData(result);
 				return result;
