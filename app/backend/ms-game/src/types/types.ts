@@ -51,7 +51,6 @@ export interface BallState {
 }
 
 export interface PongPlayerState {
-	ID: number;
 	coords: Coords,
 	movement: 'up' | 'down' | 'still',
 	speed: number

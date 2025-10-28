@@ -24,7 +24,7 @@ class RoomManager {
         this.rooms = new Map<string, Room<any, any>>() // <roomid, room>
     }
 
-    createRoom(type: string, tournament: { gameId: number, id: number }): { roomid: string, room: Room<any, any>} {
+    createRoom(type: string, tournament: { gameId: number, id: number } | undefined): { roomid: string, room: Room<any, any>} {
         const roomid = uuidv4();
         const room = type === 'pingpong'
             ? new PingPongRoom(roomid, tournament)

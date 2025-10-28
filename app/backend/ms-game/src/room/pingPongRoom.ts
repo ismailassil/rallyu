@@ -18,18 +18,20 @@ const MS_TOURN_API_KEY = process.env.MS_TOURN_API_KEY;
 
 const GAME_UPDATE_INTERVAL = 16.67; // 60hz
 const GAME_START_DELAY = 3000; // 3 sec
-const GAME_TIME = 30000;
+const GAME_TIME = 60000;
 
 export class PingPongPlayer implements Player {
     id: number;
+    index: number;
     roomId: string;
     socket: ws.WebSocket | null = null;
     connected: boolean = false;
 	status: string = 'countdown'; // ingame
 
-    constructor(roomId: string, id: number) {
+    constructor(roomId: string, id: number, index: number) {
         this.id = id;
         this.roomId = roomId;
+		this.index = index
     }
 
     attachSocket(socket: ws.WebSocket): void {
@@ -110,13 +112,11 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 			},
 			players: [
 				{
-					ID: this.players[0].id,
 					coords: { x: 20, y: 450 },
 					movement: 'still',
 					speed: 12
 				},
 				{
-					ID: this.players[1].id,
 					coords: { x: 1580, y: 450 },
 					movement: 'still',
 					speed: 12
@@ -128,7 +128,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	}
 
 	attachPlayers(playersIds: number[]): void {
-		playersIds.forEach(playerid => this.players.push(new PingPongPlayer(this.id, playerid)));
+		playersIds.forEach((playerid, index) => this.players.push(new PingPongPlayer(this.id, playerid, index)));
 	}
 
 	

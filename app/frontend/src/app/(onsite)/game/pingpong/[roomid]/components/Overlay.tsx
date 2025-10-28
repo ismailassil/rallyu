@@ -10,7 +10,7 @@ const Overlay = ({ status, result, tournamentId }: { status: string, result: str
         <AnimatePresence>
             <motion.div
                 key="overlay"
-                className="absolute inset-0 rounded-lg transition-all duration-150 w-full h-full bg-neutral-800/30"
+                className={`absolute inset-0 rounded-lg transition-all duration-150 w-full h-full ${status === 'gameover' && 'bg-neutral-800/30'}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
