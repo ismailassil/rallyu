@@ -34,11 +34,10 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 			const dateTime = new Date(date).getTime();
 
 			if (title.trim().length > 15 || title.trim().length < 2) return setErrTitle(true);
-			// if (![0, 1].includes(access)) return setErrAccess(true);
 			if (![0, 1].includes(game)) return setErrGame(true);
-			if (!date || (dateTime - time) / (1000 * 60) < 30) return setErrDate(true);
+			// if (!date || (dateTime - time) / (1000 * 60) < 30) return setErrDate(true);
 
-			const res: AxiosResponse = await apiClient.instance.post('/v1/tournament/create', {
+			await apiClient.instance.post('/v1/tournament/create', {
 				title,
 				game,
 				access,

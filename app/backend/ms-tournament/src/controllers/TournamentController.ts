@@ -96,7 +96,6 @@ class TournamentController {
 		req: FastifyRequest<{
 			Body: {
 				title: string;
-				access: number;
 				game: number;
 				date: string;
 				hostIn: boolean;
@@ -106,7 +105,7 @@ class TournamentController {
 		rep: FastifyReply
 	) {
 		try {
-			const { title, game, access, date, hostIn, host_id } = req.body;
+			const { title, game, date, hostIn, host_id } = req.body;
 			const now = Date.now();
 			const dateTime = new Date(date).getTime();
 
@@ -117,7 +116,6 @@ class TournamentController {
 			const newTournament = await req.server.tournamentModel.tournamentAdd({
 				title,
 				game,
-				access,
 				date,
 				host_id,
 				hostIn

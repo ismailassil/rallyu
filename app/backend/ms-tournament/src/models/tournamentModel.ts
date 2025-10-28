@@ -13,7 +13,6 @@ class TournamentModel {
             contenders_size INTEGER DEFAULT 4 NOT NULL,
             contenders_joined INTEGER DEFAULT 0 NOT NULL,
 			state varchar(255) DEFAULT pending NOT NULL,
-            access varchar(255) NOT NULL,
             start_date timestamp NOT NULL,
             notified INTEGER DEFAULT 0 NOT NULL,
 			cancellation_reason varchar(255)
@@ -49,8 +48,8 @@ class TournamentModel {
 	async prepareStatement() {
 		return new Promise<sqlite3.Statement>((resolve, reject) => {
 				this.DB.prepare(
-				`INSERT INTO ${this.modelName} (title, host_id, mode, contenders_size, access, start_date, contenders_joined)
-						VALUES (?, ?, ?, ?, ?, ?, ?)`,
+				`INSERT INTO ${this.modelName} (title, host_id, mode, contenders_size, start_date, contenders_joined)
+						VALUES (?, ?, ?, ?, ?, ?)`,
 				function (err) {
 					if (err) reject(err);
 					else resolve(this);
@@ -59,7 +58,7 @@ class TournamentModel {
 		});
   }
 
-	async tournamentAdd({ title, game, access, date, host_id, hostIn = false }) {
+	async tournamentAdd({ title, game, date, host_id, hostIn = false }) {
 		const statement: sqlite3.Statement = await this.prepareStatement();
 
 		const id: number = await new Promise((resolve, reject) => {
@@ -68,7 +67,6 @@ class TournamentModel {
 				host_id,
 				!game ? "ping-pong" : "tic-tac-toe",
 				4,
-				!access ? "public" : "private",
 				date,
 				hostIn ? 1 : 0,
 				function (err: unknown) {
@@ -80,7 +78,6 @@ class TournamentModel {
 
 		const data: TournamentSchema = {
 			id,
-			access,
 			title,
 			start_date: date,
 			mode: game,

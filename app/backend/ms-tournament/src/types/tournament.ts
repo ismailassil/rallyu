@@ -9,7 +9,6 @@ export interface TournamentSchema {
 	contenders_size: number;
 	contenders_joined: number;
 	state?: string;
-	access: string;
 	start_date: string;
 	notified: number;
 	isUserIn?: boolean;

@@ -56,6 +56,7 @@ const StartDate = function ({
 	const blurDateHandler = () => setIsOpen(false);
 
 	const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		console.log(e.target.value)
 		setDateInput(e.target.value);
 		setError(false);
 		updateFullDate(e.target.value, timeInput);
@@ -70,9 +71,8 @@ const StartDate = function ({
 	const updateFullDate = (dateStr: string, timeStr: string) => {
 		const [year, month, day] = dateStr.split("-").map(Number);
 		const [hours, minutes] = timeStr.split(":").map(Number);
-
-		const localDate = new Date(year, month - 1, day, hours, minutes);
-		setDate(localDate.toISOString());
+		
+		setDate(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`);
 	};
 
 	return (
