@@ -2,9 +2,9 @@ import SettingsCard from "../../SettingsCard";
 import { Fingerprint, LoaderCircle, X, Lock, CircleOff, Save } from "lucide-react";
 import ChangePasswordForm from "./ChangePasswordForm";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Sessions from "./Sessions";
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import { useTranslations } from "next-intl";
 
