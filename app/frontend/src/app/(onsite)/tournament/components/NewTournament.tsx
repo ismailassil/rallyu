@@ -1,5 +1,5 @@
 import unicaOne from "@/app/fonts/unicaOne";
-import { ArrowLeft } from "@phosphor-icons/react";
+import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import GameChoice from "./Items/GameChoice";
@@ -21,7 +21,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 	const [hostIn, setHostIn] = useState<boolean>(true);
 	const [errTitle, setErrTitle] = useState(false);
 	const [errGame, setErrGame] = useState(false);
-	const [errAcess, setErrAccess] = useState(false);
+	// const [errAcess, setErrAccess] = useState(false);
 	const [errDate, setErrDate] = useState(false);
 
 	const createTournamentHandler = async function (e) {
@@ -32,9 +32,9 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 			const dateTime = new Date(date).getTime();
 
 			if (title.trim().length > 15 || title.trim().length < 2) return setErrTitle(true);
-			if (![0, 1].includes(access)) return setErrAccess(true);
+			// if (![0, 1].includes(access)) return setErrAccess(true);
 			if (![0, 1].includes(game)) return setErrGame(true);
-			// if (!date || (dateTime - time) / (1000 * 60) < 30) return setErrDate(true);
+			if (!date || (dateTime - time) / (1000 * 60) < 30) return setErrDate(true);
 
 			const res: AxiosResponse = await apiClient.instance.post('/v1/tournament/create', {
 				title,
@@ -55,7 +55,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 
 			setTimeout(() => {
 				setValue(false);
-			}, 2000);
+			}, 50);
 		} catch (err) {
 			console.error(err)
 			setErrDate(true);
@@ -80,7 +80,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 							setValue(false);
 						}}
 					>
-						<ArrowLeft size={24} className="flex-1" />
+						<ArrowLeftIcon size={24} className="flex-1" />
 					</div>
 					<h2 className={`${unicaOne.className} text-xl uppercase md:text-2xl`}>
 						<span className="font-semibold">Set the Stage</span>
