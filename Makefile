@@ -26,7 +26,7 @@ ps_all:
 re_all: clean_all up_all
 
 ### Only the application
-up_app: env
+up_app: docker env
 	@docker-compose up --build -d
 
 down_app:
