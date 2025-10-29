@@ -5,6 +5,7 @@ import Overview from "./components/Overview";
 import VerifyCode from "../components/Verification/Two-Factor/VerifyCode";
 import { toastError } from "@/app/components/CustomToast";
 import AuthPageWrapper from "../components/UI/AuthPageWrapper";
+import { useTranslations } from "next-intl";
 
 enum STEP {
 	OVERVIEW = "OVERVIEW",
@@ -54,14 +55,17 @@ function getTwoFAChallengeSession() {
 
 export default function TwoFaChallengePage() {
 	const router = useRouter();
+
+	const tautherr = useTranslations('auth');
+
 	const [step, setStep] = useState<STEP>(STEP.OVERVIEW);
 	const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
 	const [session] = useState(() => getTwoFAChallengeSession());
 
 	useEffect(() => {
 		if (!session) {
-			toastError("Please sign in again.");
 			router.replace("/login");
+			toastError(tautherr('errorCodes', { code: 'AUTH_SIGN_IN_AGAIN' }));
 		}
 	}, []);
 	if (!session) return null;

@@ -1,15 +1,13 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Gamepad, Swords, UserRound } from 'lucide-react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { APIError } from '@/app/(api)/APIClient';
-import { toastError } from '@/app/components/CustomToast';
-import { UserAnalytics, UserAnalyticsByDay } from './types';
 import Overview from './components/Tabs/Overview';
 import { motion, AnimatePresence } from 'framer-motion';
 import Games from './components/Tabs/Games';
 import Opponent from './components/Tabs/Opponent';
 import { useTranslations } from 'next-intl';
+import useAPIQuery from '@/app/hooks/useAPIQuery';
 
 const TABS = [
 	{ label: 'overview', icon: <Gamepad size={18} /> },
@@ -39,37 +37,23 @@ function TabSelector({ activeTab, onSelect } : { activeTab: string, onSelect: (t
 			))}
 		</div>
 	);
-} 
+}
 
 export default function PerformancePage() {
 	const { apiClient, loggedInUser } = useAuth();
 	const t = useTranslations('performance_dashboard');
 	const [activeTab, setActiveTab] = useState<'overview' | 'games' | 'opponent'>('overview');
-	const [userAnalytics, setUserAnalytics] = useState<UserAnalytics | null>(null);
-	const [userAnalyticsByDay, setUserAnalyticsByDay] = useState<UserAnalyticsByDay[] | null>(null);
-	const [isLoading, setIsLoading] = useState(true);
-	
-	useEffect(() => {
-		async function fetchUserAnalytics() {
-			try {
-				setIsLoading(true);
-				const analytics = await apiClient.fetchUserAnalytics(loggedInUser!.id);
-				const analyticsByDay = await apiClient.fetchUserAnalyticsByDay(loggedInUser!.id);
-				setUserAnalytics(analytics);
-				setUserAnalyticsByDay(analyticsByDay);
-				setIsLoading(false);
-			} catch (err) {
-				const apiErr = err as APIError;
-				toastError(apiErr.message);
-			} finally {
-				setIsLoading(false);
-			}
-		}
 
-		fetchUserAnalytics();
-	}, [apiClient, loggedInUser]);
+	const {
+		isLoading: isLoadingA,
+		data: userAnalytics,
+	} = useAPIQuery(() => apiClient.user.fetchUserAnalytics(loggedInUser!.id));
+	const {
+		isLoading: isLoadingB,
+		data: userAnalyticsByDay,
+	} = useAPIQuery(() => apiClient.user.fetchUserAnalyticsByDay(loggedInUser!.id));
 
-	if (isLoading || !userAnalytics || !userAnalyticsByDay)
+	if ((isLoadingA || isLoadingB) || !userAnalytics || !userAnalyticsByDay)
 		return null;
 
 	function renderActiveTab() {
@@ -102,7 +86,7 @@ export default function PerformancePage() {
 						</header>
 						<p className="px-14 text-white/65 text-sm lg:text-lg">{t('subtitle')}</p>
 					</div>
-					
+
 					<TabSelector activeTab={activeTab} onSelect={setActiveTab} />
 				</div>
 

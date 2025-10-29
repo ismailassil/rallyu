@@ -41,19 +41,15 @@
           "subtitle": "Aggiungi un ulteriore livello di sicurezza al tuo account scegliendo il tuo metodo di verifica preferito.",
           "button": "Gestisci 2FA"
         },
-        "change_password_form": {
+        "change_password": {
           "title": "Cambia password",
           "subtitle": "Modifica la tua password attuale",
-          "sidecard": {
-            "title": "Requisiti della password",
-            "text1": "Per creare una nuova password,",
-            "text2": "devi soddisfare tutti i seguenti requisiti:",
-            "text3": "Minimo 8 caratteri",
-            "text4": "Almeno una lettera minuscola",
-            "text5": "Almeno una lettera maiuscola",
-            "text6": "Almeno una cifra"
-          },
-          "button": "Cambia password"
+          "button": "Cambia password",
+          "modal": {
+            "title": "Cambia password",
+            "button1": "Annulla",
+            "button2": "Cambia password"
+          }
         },
         "sessions": {
           "title": "Browser e dispositivi",

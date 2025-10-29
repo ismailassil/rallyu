@@ -12,6 +12,7 @@ import { useTranslations } from 'next-intl';
 
 export default function BlockedList() {
 	const t = useTranslations('placeholders.data.blocked');
+	const trelcom = useTranslations('relations.common');
 	const tautherr = useTranslations('auth');
 
 	const { loggedInUser, apiClient, socket } = useAuth();
@@ -47,7 +48,7 @@ export default function BlockedList() {
 	async function handleUnblock(id: number) {
 		try {
 			await executeAPICall(() => apiClient.unblockUser(id));
-			toastSuccess('Unblocked');
+			toastSuccess(trelcom('unblocked'));
 		} catch (err: any) {
 			toastError(tautherr('errorCodes', { code: err.message }));
 		}

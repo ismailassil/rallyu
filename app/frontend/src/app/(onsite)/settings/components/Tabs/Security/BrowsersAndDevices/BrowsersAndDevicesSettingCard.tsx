@@ -1,15 +1,14 @@
-import { useState, useEffect } from 'react';
 import { Monitor, Smartphone, Tablet, MapPin, Clock, LogOut } from 'lucide-react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import LoadingComponent, {
 	PlaceholderComponent,
 } from '@/app/(auth)/components/UI/LoadingComponents';
-import useAPICall from '@/app/hooks/useAPICall';
 import { useLocale, useTranslations } from 'next-intl';
 import SettingsCard from '../../../SettingsCard';
 import { Locale, enUS, es, it } from 'date-fns/locale';
 import { formatDistanceToNow } from 'date-fns';
+import useAPIQuery from '@/app/hooks/useAPIQuery';
 
 export interface Session {
 	session_id: string;
@@ -164,49 +163,28 @@ function SessionCard({ session, onRevoke }: { session: Session; onRevoke: (id: s
 
 export default function BrowsersAndDevicesSettingCard() {
 	const t = useTranslations('settings.security.cards');
+	const tph = useTranslations('placeholders.data.generic');
+	const tauthsucc = useTranslations('auth');
+	const tautherr = useTranslations('auth');
 
 	const { apiClient } = useAuth();
-	const { executeAPICall } = useAPICall();
 
-	const [sessions, setSessions] = useState<Session[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
+	const {
+		isLoading,
+		error,
+		data: sessions,
+		refetch,
+	} = useAPIQuery(() => apiClient.auth.fetchActiveSessions());
 
 	async function handleRevokeSession(sessionId: string) {
 		try {
 			await apiClient.revokeSession(sessionId);
-			setSessions((prev) => prev.filter((s) => s.session_id !== sessionId));
-			toastSuccess('Session revoked');
+			refetch();
+			toastSuccess(tauthsucc('successCodes', { code: 'AUTH_SESSION_REVOKED' }));
 		} catch (err: any) {
-			toastError(err.message);
+			toastError(tautherr('errorCodes', { code: err.message }));
 		}
 	}
-
-	useEffect(() => {
-		async function fetchActiveSessions() {
-			try {
-				setIsLoading(true);
-				const data = await executeAPICall(() => apiClient.fetchActiveSessions());
-				// const data = await apiClient.fetchActiveSessions();
-				setSessions(data);
-				setError(null);
-			} catch {
-				setError('Failed to load active sessions.');
-			} finally {
-				setIsLoading(false);
-			}
-		}
-
-		fetchActiveSessions();
-	}, [apiClient, executeAPICall]);
-
-	// if (isLoading) return <LoadingComponent />;
-
-	// if (error) return <PlaceholderComponent content={error} />;
-
-	// if (!sessions) return null;
-
-	// if (sessions.length === 0) return <PlaceholderComponent content='No active sessions found.' />;
 
 	return (
 		<SettingsCard
@@ -217,7 +195,7 @@ export default function BrowsersAndDevicesSettingCard() {
 			{isLoading ? (
 				<LoadingComponent />
 			) : error ? (
-				<PlaceholderComponent content={error} />
+				<PlaceholderComponent content={tph('error')} />
 			) : !sessions || sessions.length === 0 ? (
 				null
 			) : (

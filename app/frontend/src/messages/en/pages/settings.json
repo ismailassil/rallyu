@@ -41,20 +41,6 @@
           "subtitle": "Add an extra layer of security to your account by choosing your preferred verification method.",
           "button": "Manage 2FA"
         },
-        "change_password_form": {
-          "title": "Change Password",
-          "subtitle": "Modify your current password",
-          "sidecard": {
-            "title": "Password Requirements",
-            "text1": "To create a new password,",
-            "text2": "you have to meet all of the following requirements:",
-            "text3": "Minimum 8 characters long",
-            "text4": "At least one lowercase letter",
-            "text5": "At least one uppercase letter",
-            "text6": "At least one digit"
-          },
-          "button": "Change Password"
-        },
         "change_password": {
           "title": "Change Password",
           "subtitle": "Modify your current password",

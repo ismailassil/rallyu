@@ -28,8 +28,8 @@ export default function Overview({ loginSessionMeta, onSuccess, onFailure }: Met
 
 	async function handleSelect(m: 'TOTP' | 'SMS' | 'EMAIL') {
 		if (!['TOTP', 'SMS', 'EMAIL'].includes(m)) {
-			toastError('Please sign in again.');
-			router.replace('/login');
+			router.replace("/login");
+			toastError(tautherr('errorCodes', { code: 'AUTH_SIGN_IN_AGAIN' }));
 			return;
 		}
 

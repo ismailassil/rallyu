@@ -56,7 +56,7 @@ class AuthService {
 	async LogIn(username: string, password: string, reqFingerprint: ISessionFingerprint) {
 		const existingUser = await this.userService.getUserByUsername(username);
 		if (existingUser && existingUser.auth_provider !== 'Local')
-			throw new InvalidAuthProviderError(existingUser.auth_provider);
+			throw new InvalidCredentialsError();
 
 		const isValidPassword =
 			await bcrypt.compare(password, existingUser ? existingUser.password : this.authConfig.bcryptTimingHash);

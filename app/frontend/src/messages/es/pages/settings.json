@@ -41,19 +41,15 @@
           "subtitle": "Añade una capa adicional de seguridad a tu cuenta eligiendo tu método de verificación preferido.",
           "button": "Gestionar 2FA"
         },
-        "change_password_form": {
+        "change_password": {
           "title": "Cambiar contraseña",
           "subtitle": "Modifica tu contraseña actual",
-          "sidecard": {
-            "title": "Requisitos de la contraseña",
-            "text1": "Para crear una nueva contraseña,",
-            "text2": "debes cumplir con todos los siguientes requisitos:",
-            "text3": "Mínimo 8 caracteres",
-            "text4": "Al menos una letra minúscula",
-            "text5": "Al menos una letra mayúscula",
-            "text6": "Al menos un dígito"
-          },
-          "button": "Cambiar contraseña"
+          "button": "Cambiar contraseña",
+          "modal": {
+            "title": "Cambiar contraseña",
+            "button1": "Cancelar",
+            "button2": "Cambiar contraseña"
+          }
         },
         "sessions": {
           "title": "Navegadores y dispositivos",

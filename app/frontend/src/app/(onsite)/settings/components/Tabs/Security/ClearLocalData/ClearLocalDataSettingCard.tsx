@@ -15,6 +15,13 @@ function ClearLocalDataModal({ onCloseModal }: { onCloseModal: () => void }) {
 		return () => document.removeEventListener('keydown', handleKeyDown);
 	}, [onCloseModal]);
 
+	async function handleSubmit() {
+		localStorage.clear();
+		sessionStorage.clear();
+		document.cookie = "NEXT_LOCALE_INT=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+		onCloseModal();
+	}
+
 	return (
 		<motion.div
 			initial={{ opacity: 0 }}
@@ -63,7 +70,7 @@ function ClearLocalDataModal({ onCloseModal }: { onCloseModal: () => void }) {
 							className="flex-1 bg-blue-500/10 hover:bg-blue-500/60 border border-blue-500/20 text-white
 								flex gap-2 justify-center items-center px-3 md:px-5 py-0 md:py-1.5 text-sm md:text-base
 								rounded-full h-10 select-none font-medium transition-all duration-500 ease-in-out cursor-pointer"
-							onClick={() => alert('DEV - CLEAR LOCAL DATA')}
+							onClick={handleSubmit}
 						>
 							{t('button2')}
 						</button>

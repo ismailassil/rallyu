@@ -12,6 +12,7 @@ import { useTranslations } from 'next-intl';
 
 export default function FriendsList() {
 	const t = useTranslations('placeholders.data.friends');
+	const trelcom = useTranslations('relations.common');
 	const tautherr = useTranslations('auth');
 
 	const { loggedInUser, apiClient, socket } = useAuth();
@@ -47,7 +48,7 @@ export default function FriendsList() {
 	async function handleUnfriend(id: number) {
 		try {
 			await executeAPICall(() => apiClient.user.unfriend(id));
-			toastSuccess('Unfriended');
+			toastSuccess(trelcom('unfriended'));
 		} catch (err: any) {
 			toastError(tautherr('errorCodes', { code: err.message }));
 		}

@@ -1,14 +1,12 @@
-import React, { RefObject, useEffect } from 'react';
+import React from 'react';
 import InputField from '@/app/(auth)/components/Form/InputField';
 import { FormProvider } from '@/app/(auth)/components/Form/FormContext';
 import useForm from '@/app/hooks/useForm';
-import { toastError, toastSuccess } from '@/app/components/CustomToast';
+import { toastError } from '@/app/components/CustomToast';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { Check, Lock } from 'lucide-react';
 import useAPICall from '@/app/hooks/useAPICall';
 import { useTranslations } from 'next-intl';
 import useValidationSchema from '@/app/hooks/useValidationSchema';
-import { simulateBackendCall } from '@/app/(api)/utils';
 
 interface ChangePasswordFormProps {
 	onCancel: () => void;
@@ -28,7 +26,8 @@ export default function ChangePasswordForm({
 	} = useAuth();
 
 	const {
-		executeAPICall
+		executeAPICall,
+		isLoading: isSubmitting
 	} = useAPICall();
 
 	const {
@@ -54,50 +53,21 @@ export default function ChangePasswordForm({
 		}
 	);
 
-	useEffect(() => {
-		const hasErrors = Object.keys(errors).length > 0;
-		const allTouched =
-			Object.keys(touched).length === Object.keys(formData).length &&
-			Object.values(touched).every((t) => t === true);
-		const allDebounced =
-			Object.keys(debounced).length === Object.keys(formData).length &&
-			Object.values(debounced).every((d) => d === true);
-		const allFilled = Object.values(formData).every((v) => v !== '');
-
-		if (hasErrors || !allTouched || !allFilled || !allDebounced) {
-			// setCanSave(false);
-			return;
-		}
-
-		// setCanSave(true);
-	}, [formData, errors, debounced, touched]);
-	// }, [formData, errors, debounced, touched, setCanSave]);
-
-	async function handleSubmit(e: React.FormEvent) {
-		e.preventDefault();
-
-		console.group('handleSubmit ChangePasswordForm');
-		console.log('You just called handleSubmit of ChangePasswordForm');
-		console.groupEnd();
-
+	async function handleSubmit() {
 		const isValid = validateAll();
 		if (!isValid) return;
 
 		try {
-			// setIsSubmitting(true);
-			await simulateBackendCall(1000);
-			// await executeAPICall(() => apiClient.auth.changePassword(
-			// 	formData.current_password,
-			// 	formData.new_password
-			// ));
+			await executeAPICall(() => apiClient.auth.changePassword(
+				formData.current_password,
+				formData.new_password
+			));
 
-			toastSuccess('Password changed successfully');
 			onSuccess();
 		} catch (err: any) {
 			if (err.message === 'AUTH_INVALID_CREDENTIALS') err.message = 'AUTH_INVALID_CURRENT_PASSWORD';
 			toastError(tautherr('errorCodes', { code: err.message }));
 		} finally {
-			// setIsSubmitting(false);
 			resetForm();
 		}
 	}
@@ -117,7 +87,7 @@ export default function ChangePasswordForm({
 						validateAll={validateAll}
 						resetForm={resetForm}
 					>
-						<form onSubmit={handleSubmit} className='flex flex-col gap-5'>
+						<form className='flex flex-col gap-5'>
 							<InputField
 								className='field box-border flex flex-col gap-0.5'
 								iconSrc='/icons/lock.svg'
@@ -149,19 +119,21 @@ export default function ChangePasswordForm({
 
 			{/* ACTION BUTTONS */}
 			<div className='flex w-full mt-16 gap-4'>
-				<button className='flex-1 bg-white/4 hover:bg-white/10 border border-white/10
+				<button className={`flex-1 bg-white/4 hover:bg-white/10 border border-white/10
 								flex gap-2 justify-center items-center px-3 md:px-5 py-0 md:py-1.5 text-sm md:text-base
 								rounded-full h-10 select-none font-medium
-								transition-all duration-500 ease-in-out cursor-pointer'
+								transition-all duration-500 ease-in-out ${isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer'}`}
 						onClick={onCancel}
+						disabled={isSubmitting}
 				>
 					{tmodal('button1')}
 				</button>
-				<button className='flex-1 bg-blue-500/10 hover:bg-blue-500/60 border border-blue-500/20 text-white
+				<button className={`flex-1 bg-blue-500/10 hover:bg-blue-500/60 border border-blue-500/20 text-white
 								flex gap-2 justify-center items-center px-3 md:px-5 py-0 md:py-1.5 text-sm md:text-base
 								rounded-full h-10 select-none font-medium
-								transition-all duration-500 ease-in-out cursor-pointer'
-						onClick={() => alert('DEV - DELETE ACCOUNT')}
+								transition-all duration-500 ease-in-out ${isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+						onClick={handleSubmit}
+						disabled={isSubmitting}
 				>
 					{tmodal('button2')}
 				</button>

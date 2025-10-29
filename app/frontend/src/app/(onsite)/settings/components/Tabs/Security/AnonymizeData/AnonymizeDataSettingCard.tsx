@@ -3,9 +3,21 @@ import SettingsCard from '../../../SettingsCard';
 import { Shredder, TriangleAlert } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import useAPICall from '@/app/hooks/useAPICall';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 
 function AnonymizeDataModal({ onCloseModal } : { onCloseModal: () => void }) {
 	const t = useTranslations('settings.security.cards.anonymize_data.modal');
+
+	const {
+		apiClient,
+		loggedInUser
+	} = useAuth();
+
+	const {
+		executeAPICall,
+		isLoading: isSubmitting
+	} = useAPICall();
 
 	useEffect(() => {
 		function handleKeyDown(e: KeyboardEvent) {
@@ -14,6 +26,18 @@ function AnonymizeDataModal({ onCloseModal } : { onCloseModal: () => void }) {
 		document.addEventListener('keydown', handleKeyDown);
 		return () => document.removeEventListener('keydown', handleKeyDown);
 	}, [onCloseModal]);
+
+	async function handleSubmit() {
+		if (!loggedInUser) return ;
+
+		try {
+			await executeAPICall(() => apiClient.user.anonymizeUser(loggedInUser.id));
+		} catch {
+
+		} finally {
+			onCloseModal();
+		}
+	}
 
 	return (
 		<motion.div
@@ -53,19 +77,21 @@ function AnonymizeDataModal({ onCloseModal } : { onCloseModal: () => void }) {
 
 					{/* ACTION BUTTONS */}
 					<div className='flex w-full mt-8 gap-4'>
-						<button className='flex-1 bg-white/4 hover:bg-white/10 border border-white/10
+					<button className={`flex-1 bg-white/4 hover:bg-white/10 border border-white/10
 										flex gap-2 justify-center items-center px-3 md:px-5 py-0 md:py-1.5 text-sm md:text-base
 										rounded-full h-10 select-none font-medium
-										transition-all duration-500 ease-in-out cursor-pointer'
+										transition-all duration-500 ease-in-out ${isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer'}`}
 								onClick={onCloseModal}
+								disabled={isSubmitting}
 						>
 							{t('button1')}
 						</button>
-						<button className='flex-1 bg-blue-500/10 hover:bg-blue-500/60 border border-blue-500/20 text-white
+						<button className={`flex-1 bg-blue-500/10 hover:bg-blue-500/60 border border-blue-500/20 text-white
 										flex gap-2 justify-center items-center px-3 md:px-5 py-0 md:py-1.5 text-sm md:text-base
 										rounded-full h-10 select-none font-medium
-										transition-all duration-500 ease-in-out cursor-pointer'
-								onClick={() => alert('DEV - ANONYMIZE ACCOUNT')}
+										transition-all duration-500 ease-in-out ${isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+								onClick={handleSubmit}
+								disabled={isSubmitting}
 						>
 							{t('button2')}
 						</button>

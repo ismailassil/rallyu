@@ -1,11 +1,11 @@
 import { useTranslations } from "next-intl";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SettingsCard from "../../../SettingsCard";
 import { Lock } from "lucide-react";
 import { AnimatePresence, motion } from 'framer-motion';
 import ChangePasswordForm from "./ChangePasswordForm";
 
-function ChangePasswordModal({ onCloseModal, children } : { onCloseModal: () => void, children: ReactNode }) {
+function ChangePasswordModal({ onCloseModal } : { onCloseModal: () => void }) {
 	const t = useTranslations('settings.security.cards.change_password.modal');
 
 	useEffect(() => {
@@ -39,7 +39,10 @@ function ChangePasswordModal({ onCloseModal, children } : { onCloseModal: () => 
 							{t('title')}
 						</h2>
 					</div>
-					{children}
+					<ChangePasswordForm
+						onSuccess={onCloseModal}
+						onCancel={onCloseModal}
+					/>
 				</div>
 			</div>
 		</motion.div>
@@ -63,13 +66,7 @@ export default function ChangePasswordSettingCard() {
 		>
 		</SettingsCard>
 		<AnimatePresence>
-			{isModalOpen &&
-				<ChangePasswordModal onCloseModal={() => setIsModalOpen(false)}>
-					<ChangePasswordForm
-						onSuccess={() => setIsModalOpen(true)}
-						onCancel={() => setIsModalOpen(false)}
-					/>
-				</ChangePasswordModal>}
+			{isModalOpen && <ChangePasswordModal onCloseModal={() => setIsModalOpen(false)} />}
 		</AnimatePresence>
 		</>
 	);
