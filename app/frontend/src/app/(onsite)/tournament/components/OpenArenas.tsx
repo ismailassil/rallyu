@@ -63,6 +63,8 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 
 			setTournaments(data.data);
 		} catch (err) {
+			void err;
+
 			setError({
 				status: true,
 				message: translate("panel.error")

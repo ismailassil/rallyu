@@ -141,6 +141,7 @@ services:
     volumes:
       - ./ms-tournament/database/:/app/database/
     env_file:
+      - ./ms-tournament/.tournament.env
       - .env
     develop:
       watch:

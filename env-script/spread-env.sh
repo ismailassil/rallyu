@@ -19,6 +19,7 @@ ENV_MAPPINGS=(
 	"./env-script/.auth.env:app/backend/ms-auth/.auth.env"
 	"./env-script/.chat.env:app/backend/ms-chat/.chat.env"
 	"./env-script/.game.env:app/backend/ms-game/.game.env"
+	"./env-script/.tournament.env:app/backend/ms-tournament/.tournament.env"
 	"./env-script/.matchmaking.env:app/backend/ms-matchmaking/.matchmaking.env"
 	"./env-script/.notif.env:app/backend/ms-notif/.notif.env"
 
