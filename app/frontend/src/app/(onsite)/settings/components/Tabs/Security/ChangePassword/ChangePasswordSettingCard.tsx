@@ -4,6 +4,7 @@ import SettingsCard from "../../../SettingsCard";
 import { Lock } from "lucide-react";
 import { AnimatePresence, motion } from 'framer-motion';
 import ChangePasswordForm from "./ChangePasswordForm";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 
 function ChangePasswordModal({ onCloseModal } : { onCloseModal: () => void }) {
 	const t = useTranslations('settings.security.cards.change_password.modal');
@@ -52,6 +53,13 @@ function ChangePasswordModal({ onCloseModal } : { onCloseModal: () => void }) {
 export default function ChangePasswordSettingCard() {
 	const t = useTranslations('settings.security.cards.change_password');
 	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	const {
+		loggedInUser
+	} = useAuth();
+
+	if (!loggedInUser || loggedInUser.auth_provider !== 'Local')
+		return null;
 
 	return (
 		<>

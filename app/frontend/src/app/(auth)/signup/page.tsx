@@ -1,21 +1,33 @@
 'use client';
 import Image from "next/image";
 import SignUpForm from "./components/SignUpForm";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthPageWrapper from "../components/UI/AuthPageWrapper";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
+import { toastError } from "@/app/components/CustomToast";
 
 export default function SignUpPage() {
 	const t = useTranslations('auth');
+	const tautherr = useTranslations('auth');
 
+	const searchParams = useSearchParams();
 	const router = useRouter();
 
 	async function handleGoogleLogin() {
-		window.location.href = `${window.location.origin}/api/auth/google`;
+		window.location.href = `${window.location.origin}/api/auth/google?frontendOrigin=${window.location.origin}/signup`;
 	}
 	async function handleIntra42Login() {
-		window.location.href = `${window.location.origin}/api/auth/42`;
+		window.location.href = `${window.location.origin}/api/auth/42?frontendOrigin=${window.location.origin}/signup`;
 	}
+
+	useEffect(() => {
+		if (searchParams.has('error')) {
+			let err = searchParams.get('error');
+			if (!err || err === 'access_denied') err = 'AUTH_OAUTH_FAILED';
+			toastError(tautherr('errorCodes', { code: err }));
+		}
+	}, []);
 
 	return (
 		<AuthPageWrapper wrapperKey="signup-page-wrapper">
