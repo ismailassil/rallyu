@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { AxiosResponse } from "axios";
 import { useTranslations } from "next-intl";
 
 function TournamentCard({
@@ -38,7 +37,7 @@ function TournamentCard({
 
 		if (target.closest("button")) {
 			try {
-				const res: AxiosResponse = await apiClient.instance.patch(`/v1/tournament/match/join/${id}`, { id: loggedInUser?.id });
+				await apiClient.instance.patch(`/v1/tournament/match/join/${id}`, { id: loggedInUser?.id });
 				setJoined(true);
 			} catch (err: unknown) {
 				console.error(err);

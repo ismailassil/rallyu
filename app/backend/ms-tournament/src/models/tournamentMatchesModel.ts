@@ -167,10 +167,10 @@ class TournamentMatchesModel {
 
     async checkForAvailability(matchId: number, playerId: number) {
         const data = await new Promise((resolve, reject) => {
-			this.DB.get(`SELECT id FROM ${this.modelName}
-				WHERE id <> ? AND
-				((player_1=? AND player_1_ready=1) OR (player_2=? AND player_2_ready=1))
-				AND winner IS NULL`,
+			this.DB.get(`SELECT m.id FROM ${this.modelName} AS m INNER JOIN Tournaments AS t ON m.tournament_id=t.id
+				WHERE m.id <> ? AND
+				((m.player_1=? AND m.player_1_ready=1) OR (m.player_2=? AND m.player_2_ready=1))
+				AND m.winner IS NULL AND t.state='ongoing'`,
 				[matchId, playerId, playerId],
 				(err, row) => {
 					if (err) reject(err)
@@ -204,38 +204,42 @@ class TournamentMatchesModel {
 					);
 				});
 				data.forEach(async (match: any) => {
-					const game_room = await fetch(`http://ms-game:${process.env.MS_GAME_PORT ?? '5010'}/game/room/create`, 
-						{
-							method: "POST",
-							body: JSON.stringify({
-								playersIds: [match.player_1, match.player_2],
-								gameType: match.mode === "ping-pong" ? "pingpong" : "tictactoe",
-								tournament: {
-									gameId: match.id,
-									id: match.tournament_id
+					try {
+						const game_room = await fetch(`http://ms-game:${process.env.GAME_PORT ?? '5010'}/game/room/create`, 
+							{
+								method: "POST",
+								body: JSON.stringify({
+									playersIds: [match.player_1, match.player_2],
+									gameType: match.mode === "ping-pong" ? "pingpong" : "tictactoe",
+									tournament: {
+										gameId: match.id,
+										id: match.tournament_id
+									}
+								}),
+								headers: {
+									'Content-Type': 'application/json',
+									'Authorization': `Bearer ${process.env.MS_MATCHMAKING_API_KEY}`
 								}
-							}),
-							headers: {
-								'Content-Type': 'application/json',
-								'Authorization': `Bearer acb7e300b5f196fd19ed978e32d3bf60365f0186fa420de7624aa14eaa90d143`
 							}
+						);
+						// Unauthorized ms-game 3andak tansah
+						if (!game_room.ok) {
+							throw new Error("Something went wrong")
 						}
-					);
-					// Unauthorized ms-game 3andak tansah
-					if (!game_room.ok) {
-						throw new Error("Something went wrong")
+						
+						const data = await game_room.json();
+						
+						if (!data || !data.roomId) {
+							throw new Error('Game room created but no roomId returned');
+						}
+						
+						this.DB.run(`UPDATE ${this.modelName} SET match_id=? WHERE id=?`,
+							[data.roomId, match.id],
+							(err) => app.log.fatal(err)
+						)
+					} catch (err) {
+						app.log.fatal(err);
 					}
-
-					const data = await game_room.json();
-					
-					if (!data || !data.roomId) {
-						throw new Error('Game room created but no roomId returned');
-					}
-					
-					this.DB.run(`UPDATE ${this.modelName} SET match_id=? WHERE id=?`,
-						[data.roomId, match.id],
-						(err) => app.log.fatal(err)
-					)
 				});
 			} catch (err) {
 				app.log.fatal(err);

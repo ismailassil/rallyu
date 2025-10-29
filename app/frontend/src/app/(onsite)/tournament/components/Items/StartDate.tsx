@@ -28,8 +28,8 @@ const StartDate = function ({
 }: {
 	date: string;
 	setDate: (value: string) => void;
-	error: boolean;
-	setError: (value: boolean) => void;
+	error: {status: boolean, message: string};
+	setError: ({ status, message }: { status: boolean, message: string }) => void;
 }) {
 	const [minDate, setMinDate] = useState<Date>(getDateByHour());
 	const [dateInput, setDateInput] = useState(formatDate(minDate));
@@ -58,13 +58,13 @@ const StartDate = function ({
 	const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		console.log(e.target.value)
 		setDateInput(e.target.value);
-		setError(false);
+		setError({status: false, message: ""});
 		updateFullDate(e.target.value, timeInput);
 	};
 
 	const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setTimeInput(e.target.value);
-		setError(false);
+		setError({status: false, message: ""});
 		updateFullDate(dateInput, e.target.value);
 	};
 
@@ -86,13 +86,13 @@ const StartDate = function ({
 				{translate("panel.new-tournament.t-date")}
 			</label>
 			<div className="w-full flex-2">
-				{error && (
+				{error.status && (
 					<p className="mb-1 text-red-500">
-						{ translate("panel.new-tournament.t-date-error") }
+						{ error.message }
 					</p>
 				)}
 				<div
-					className={`flex gap-2 *:rounded-md *:border-2 ${error ? "*:border-red-700" : "*:border-white/10"} *:transform *:cursor-pointer *:p-2 *:transition-all *:duration-200 *:hover:scale-101`}
+					className={`flex gap-2 *:rounded-md *:border-2 ${error.status ? "*:border-red-700" : "*:border-white/10"} *:transform *:cursor-pointer *:p-2 *:transition-all *:duration-200 *:hover:scale-101`}
 				>
 					<input
 						ref={inputDate}

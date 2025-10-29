@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
 import FooterPending from "./components/FooterPending";
@@ -62,6 +62,8 @@ const isMatchRoomEstablished = function (matches, player) {
 }
 
 const Brackets = function (props) {
+	void props;
+
 	const { loggedInUser, apiClient } = useAuth();
 	const { slug } = useParams();
 	const [tournament, setTournament] = useState<any>({});
@@ -85,6 +87,7 @@ const Brackets = function (props) {
 				}
 				setError({ status: false, message: "" });
 			} catch (err) {
+				void err;
 				setError({ status: true, message: translate("bracket.error") });
 			}
 		};

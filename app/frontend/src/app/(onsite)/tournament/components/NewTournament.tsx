@@ -7,7 +7,6 @@ import TournamentTitle from "./Items/TournamentTitle";
 import StartDate from "./Items/StartDate";
 import StartButtonTournament from "./Items/StartButtonTournament";
 import { useAuth } from "../../contexts/AuthContext";
-import { AxiosResponse } from "axios";
 import { Toaster } from "sonner";
 import { toastSuccess } from '@/app/components/CustomToast';
 import HostIn from "./Items/HostIn";
@@ -23,7 +22,8 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 	const [errTitle, setErrTitle] = useState(false);
 	const [errGame, setErrGame] = useState(false);
 	// const [errAcess, setErrAccess] = useState(false);
-	const [errDate, setErrDate] = useState(false);
+	const [errDate, setErrDate] = useState({ status: false, message: "" });
+	const [error, setError] = useState({ status: true, message: "" })
 	const translate = useTranslations("tournament")
 
 	const createTournamentHandler = async function (e) {
@@ -35,7 +35,9 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 
 			if (title.trim().length > 15 || title.trim().length < 2) return setErrTitle(true);
 			if (![0, 1].includes(game)) return setErrGame(true);
-			// if (!date || (dateTime - time) / (1000 * 60) < 30) return setErrDate(true);
+
+			// Comment This to test date without having to wait for an hour to do
+			if (!date || (dateTime - time) / (1000 * 60) < 3) return setErrDate({status: true, message: translate("panel.new-tournament.t-date-error-time")});
 
 			await apiClient.instance.post('/v1/tournament/create', {
 				title,
@@ -53,13 +55,28 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 			setGame(0);
 			setTitle("");
 			setHostIn(true);
+			setError({ status: false, message: "" })
+			setErrDate({ status: false, message: "" })
+			setErrTitle(false);
+			setErrGame(false);
 
 			setTimeout(() => {
 				setValue(false);
-			}, 50);
-		} catch (err) {
+			}, 1000);
+		} catch (err: any) {
 			console.error(err)
-			setErrDate(true);
+			if (!err.response.data?.code)
+				setError({ status: true, message: translate("panel.new-tournament.t-date-error") })
+			else if (err.response.data.code === 1)
+				setErrDate({ status: true, message: translate("panel.new-tournament.t-date-error-nan") });
+			else if (err.response.data.code === 2)
+				setErrDate({ status: true, message: translate("panel.new-tournament.t-date-error-format") });
+			else if (err.response.data.code === 3)
+				setErrDate({ status: true, message: translate("panel.new-tournament.t-date-error-time") });
+			else if (err.response.data.code === 4)
+				setErrGame(true);
+			else if (err.response.data.code === 5)
+				setErrTitle(true);
 		}
 	};
 
@@ -92,6 +109,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 					createTournamentHandler={createTournamentHandler}
 				/>
 			</motion.div>
+			{ error.status && <p className=" text-red-500">{ error.message }</p> }
 			<TournamentTitle value={title} setValue={setTitle} error={errTitle} setError={setErrTitle} />
 			<GameChoice game={game} setGame={setGame} error={errGame} setError={setErrGame} />
 			<StartDate date={date} setDate={setDate} error={errDate} setError={setErrDate} />
