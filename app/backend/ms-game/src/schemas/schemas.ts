@@ -104,7 +104,7 @@ export const xoInterfaceSchema = {
                 maximum: 9
             }
         },
-        required: ['roomid', 'userid', 'action', 'dir'],
+        required: ['roomid', 'userid', 'cellnum'],
         additionalProperties: false
     },
 }
