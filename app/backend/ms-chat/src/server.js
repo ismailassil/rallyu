@@ -72,6 +72,9 @@ fastify.get('/chat/friend_list', async (req, res) => {
       const lastMessage = getLastMessage.get(userId, friend.id, friend.id, userId);
       return lastMessage ? {...friend, last_message : lastMessage} : null;
     }).filter(Boolean)
+    
+    if (!friendsWithMessages || friendsWithMessages.length === 0)
+        return res.send(friendsOfUserId);
 
     friendsWithMessages.sort((a, b) => {
       if (a.last_message && b.last_message) {
