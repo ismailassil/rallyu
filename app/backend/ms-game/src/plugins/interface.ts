@@ -37,6 +37,7 @@ const apiInterface = async (fastify: FastifyInstance, options: FastifyPluginOpti
 
         const index = room.players.find(p => p.id === userid)?.index;
         room.state.players[index!].movement = dir;
+        return res.code(202);
 	})
 
     fastify.patch('/tictactoe/:roomid/:userid/mark/:cellnum', { schema: xoInterfaceSchema }, (req, res) => {
@@ -70,6 +71,7 @@ const apiInterface = async (fastify: FastifyInstance, options: FastifyPluginOpti
 
         const sign = room.players.find(player => player.id === userid)!.sign;
         room.playMove(cellnum, sign);
+        return res.code(202);
 	})
 }
 

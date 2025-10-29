@@ -88,7 +88,7 @@ const endpointsPlugin = fp(async (fastify: FastifyInstance, opts: proxiesOpts) =
 
 	const commonGameOptions = {
 		upstream: `http://ms-game:${GAME_PORT}`,
-		httpMethods: ["GET", "POST"],
+		httpMethods: ["GET", "POST", "PATCH"],
 		rewritePrefix: "/game",
 		websocket: true,
 		...unv_response,
