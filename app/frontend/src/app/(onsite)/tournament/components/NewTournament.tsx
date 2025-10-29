@@ -37,7 +37,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 			if (![0, 1].includes(game)) return setErrGame(true);
 
 			// Comment This to test date without having to wait for an hour to do
-			if (!date || (dateTime - time) / (1000 * 60) < 3) return setErrDate({status: true, message: translate("panel.new-tournament.t-date-error-time")});
+			if (!date || (dateTime - time) / (1000 * 60) < 3) return setErrDate({ status: true, message: translate("panel.new-tournament.t-date-error-time") });
 
 			await apiClient.instance.post('/v1/tournament/create', {
 				title,
@@ -87,7 +87,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 				animate={{ opacity: 1, x: 0 }}
 				exit={{ opacity: 0, x: 100 }}
 				transition={{ type: "spring", stiffness: 120 }}
-				className="min-h-11 flex items-center justify-between"
+				className="min-h-11 flex gap-10 items-center justify-between"
 			>
 				<div className="flex items-center gap-3 md:gap-5">
 					<div
@@ -101,20 +101,22 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 						<ArrowLeftIcon size={24} className="flex-1" />
 					</div>
 					<h2 className={`${unicaOne.className} text-xl uppercase md:text-2xl`}>
-						<span className="font-semibold">{ translate("panel.new-tournament.title") }</span>
+						<span className="font-semibold">{translate("panel.new-tournament.title")}</span>
 					</h2>
 				</div>
 				<StartButtonTournament
-					label={ translate("panel.new-tournament.button") }
+					label={translate("panel.new-tournament.button")}
 					createTournamentHandler={createTournamentHandler}
 				/>
 			</motion.div>
-			{ error.status && <p className=" text-red-500">{ error.message }</p> }
-			<TournamentTitle value={title} setValue={setTitle} error={errTitle} setError={setErrTitle} />
-			<GameChoice game={game} setGame={setGame} error={errGame} setError={setErrGame} />
-			<StartDate date={date} setDate={setDate} error={errDate} setError={setErrDate} />
-			<HostIn hostIn={hostIn} setHostIn={setHostIn} />
-			<Toaster position='bottom-right' visibleToasts={1} />
+			{error.status && <p className=" text-red-500">{error.message}</p>}
+			<div className="space-y-2">
+				<TournamentTitle value={title} setValue={setTitle} error={errTitle} setError={setErrTitle} />
+				<GameChoice game={game} setGame={setGame} error={errGame} setError={setErrGame} />
+				<StartDate date={date} setDate={setDate} error={errDate} setError={setErrDate} />
+				<HostIn hostIn={hostIn} setHostIn={setHostIn} />
+				<Toaster position='bottom-right' visibleToasts={1} />
+			</div>
 		</>
 	);
 }

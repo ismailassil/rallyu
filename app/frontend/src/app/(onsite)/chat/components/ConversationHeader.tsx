@@ -73,18 +73,19 @@ const ConversationHeader = () => {
 					className="h-full w-full"
 				/>
 			</div>
-			<div className="flex flex-col justify-center">
+			<div className="flex flex-col justify-center relative group">
 				<span
 					className="hover:cursor-pointer"
 					onClick={() => route.push(`/users/${selectedUser?.username}`)}
 				>
 					{selectedUser?.first_name + " " + selectedUser?.last_name}
+					<span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-[0.8px] bg-gray-500"/>
 				</span>
 				<div className="flex items-center gap-2">
 					<span
 						className={`h-3 w-3 rounded-full ${isOnline ? "bg-green-400" : "bg-gray-400"}`}
 					/>
-					<span className="font-funnel-display text-gray-400">
+					<span className="font-funnel-display text-gray-400 text-sm">
 						{isOnline ? t("online") : t("offline")}
 					</span>
 				</div>

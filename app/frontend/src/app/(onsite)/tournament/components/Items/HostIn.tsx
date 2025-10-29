@@ -11,7 +11,7 @@ function HostIn({ hostIn, setHostIn }: { hostIn: boolean, setHostIn: Dispatch<Se
             initial={{ opacity: 0, x: -100 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.2, delay: 0.1 }}
-            className="min-h-11 flex flex-col items-center justify-between gap-2 text-sm md:flex-row lg:gap-20 lg:text-base md:mb-0 mb-5"
+            className="min-h-11 flex flex-col items-center justify-between gap-2 text-sm md:flex-row lg:gap-20 lg:text-base"
         >
             <label className="w-full flex-1" htmlFor="picture">
                 { translate("panel.new-tournament.t-join") }

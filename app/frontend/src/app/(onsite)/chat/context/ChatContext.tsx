@@ -53,7 +53,6 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 	useEffect(() => {
 		const getFriendsList = async () => {
 			if (!BOSS?.id) return;
-			// await simulateBackendCall(100000);
 			apiClient.instance.get('/chat/friend_list')
 			.then((response: any) => {
 				setDisplayUsers(response.data);
@@ -87,15 +86,16 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 			}
 			playMessageSound();
 			setMessages((prev) => [...prev, receivedMessage]);
-
+			
 			const friendId = receivedMessage.senderId === BOSS?.id ? receivedMessage.receiverId : receivedMessage.senderId;
+			
 			setDisplayUsers(prevUsers => {
 				const updatedFriend = prevUsers.find(user => user.id === friendId);
 				if (!updatedFriend) return prevUsers;
 				return [{ ...updatedFriend, last_message: receivedMessage }, ...prevUsers.filter(user => user.id !== friendId)]
 			})
 		}
-
+		
 		function handleUpdateMessage(receivedMessage: MessageType) {
 			setMessages((prev) => [...prev, receivedMessage]);
 		}

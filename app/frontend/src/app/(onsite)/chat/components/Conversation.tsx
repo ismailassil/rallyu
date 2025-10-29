@@ -124,7 +124,7 @@ const ConversationBody = () => {
 								disabled={loading}
 								className='w-fit text-xs text-white/50 px-3 py-1.5 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20 
 							disabled:opacity-50 disabled:cursor-not-allowed transition-all'>
-								{loading ? t('loading') : t('load_more')}
+								{loading ? t('Loading...') : t('Load More')}
 							</button>
 						</div>
 					</>
