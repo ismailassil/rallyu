@@ -39,6 +39,11 @@ const StartDate = function ({
 	const translate = useTranslations("tournament");
 
 	useEffect(() => {
+		updateFullDate(formatDate(minDate), formatTime(minDate));
+	}, []);
+	
+
+	useEffect(() => {
 		const timer = setInterval(() => {
 			const minutesLeft = (minDate.getTime() - Date.now()) / (1000 * 60);
 			if (Number(minutesLeft) <= 30) setMinDate(getDateByHour(2));

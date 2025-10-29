@@ -62,7 +62,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 
 			setTimeout(() => {
 				setValue(false);
-			}, 1000);
+			}, 150);
 		} catch (err: any) {
 			console.error(err)
 			if (!err.response.data?.code)
