@@ -11,8 +11,8 @@
     "lobby": {
       "searching": "Ricerca",
       "match_found": "Partita trovata",
-      "remote_play": "Remoto",
-      "local_play": "Locale"
+      "remote": "Remoto",
+      "local": "Locale"
     },
     "gameover": {
       "display": "{text, select, gameover {Partita finita} win {Hai vinto!} loss {Hai perso} draw {Pareggio} cross {Vince la X} circle {Vince la O} other {Partita finita}}"
