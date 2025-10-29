@@ -17,7 +17,10 @@
                 "t-type": "Elige tu Juego",
                 "t-type-error": "Elige entre los modos de juego disponibles a continuación.",
                 "t-date": "Fecha de Inicio",
-                "t-date-error": "Fecha no válida. La fecha mínima permitida es dentro de una hora.",
+                "t-date-error": "Algo salió mal",
+                "t-date-error-nan": "Valor de fecha no válido",
+                "t-date-error-format": "Formato de fecha no válido. Formato esperado: YYYY-MM-DDTHH:mm (por ejemplo: 2025-10-28T21:18)",
+                "t-date-error-time": "El torneo debe programarse al menos con 30 minutos de anticipación",
                 "t-join": "Unirse al Torneo",
                 "t-in": "Dentro",
                 "t-out": "Fuera",
@@ -46,7 +49,7 @@
             "stat": {
                 "host": "Anfitrión",
                 "date": "Fecha de Inicio",
-                "contenders": "Número de Participantes",
+                "contenders": "Tamaño de Participantes",
                 "mode": "Modo"
             },
             "bracket": "Cuadro",
@@ -54,7 +57,7 @@
             "final": "Final",
             "pending": {
                 "join": "Te has unido al torneo correctamente",
-                "error": "Algo salió mal; ¡intenta de nuevo más tarde!",
+                "error": "Algo salió mal; inténtalo de nuevo más tarde!",
                 "leave": "Has salido del torneo correctamente",
                 "header": {
                     "join": "Unirse",
@@ -69,7 +72,7 @@
             "progress": {
                 "error-play": "Ya estás participando en otro torneo; termínalo y luego regresa",
                 "error": "Algo salió mal",
-                "ready": "No te quedes ahí... Haz clic en Listo para que tu oponente también lo sepa",
+                "ready": "No te quedes ahí... Haz clic en Listo para que tu oponente lo sepa",
                 "loss": "Lamentablemente has sido eliminado del torneo... Suerte la próxima vez",
                 "win": "¡Felicidades! Has ganado tu primer partido... solo queda uno más para el trofeo",
                 "buttons": {
@@ -85,7 +88,6 @@
                 "reason-label": "Razón",
                 "reason-not-player": "No hay suficientes jugadores para participar",
                 "reason-forfeit": "Dos jugadores se retiraron de su partido durante el torneo"
-
             }
         }
     } 

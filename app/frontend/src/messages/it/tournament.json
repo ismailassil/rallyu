@@ -17,7 +17,10 @@
                 "t-type": "Scegli il tuo Gioco",
                 "t-type-error": "Scegli tra le modalità di gioco disponibili qui sotto.",
                 "t-date": "Data di Inizio",
-                "t-date-error": "Data non valida. La data minima consentita è tra un'ora.",
+                "t-date-error": "Qualcosa è andato storto",
+                "t-date-error-nan": "Valore della data non valido",
+                "t-date-error-format": "Formato data non valido. Formato previsto: YYYY-MM-DDTHH:mm (es. 2025-10-28T21:18)",
+                "t-date-error-time": "Il torneo deve essere programmato almeno 30 minuti prima",
                 "t-join": "Unisciti al Torneo",
                 "t-in": "Dentro",
                 "t-out": "Fuori",
@@ -85,7 +88,6 @@
                 "reason-label": "Motivo",
                 "reason-not-player": "Non ci sono abbastanza giocatori per partecipare",
                 "reason-forfeit": "Due giocatori hanno rinunciato alla loro partita durante il torneo"
-
             }
         }
     } 

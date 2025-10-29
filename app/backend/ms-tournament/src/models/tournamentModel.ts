@@ -121,7 +121,7 @@ class TournamentModel {
 						);
 					} else {
 						this.DB.all(
-							`SELECT * FROM ${this.modelName} WHERE state='pending' AND mode=? ORDER BY id`,
+							`SELECT * FROM ${this.modelName} WHERE (state='pending' OR state='ongoing') AND mode=? ORDER BY id`,
 							[mode],
 							(err, rows: TournamentSchema[]) => {
 								if (err) reject(err);

@@ -11,7 +11,7 @@ import tournamentRoutes from "./routes/tournamentRoutes";
 
 const app = fastify(serverConfig);
 
-dotenv.config({ path: '../../api-gateway/.env' });
+dotenv.config();
 
 declare module "fastify" {
 	interface FastifyInstance {

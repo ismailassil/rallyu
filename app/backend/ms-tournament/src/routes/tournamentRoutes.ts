@@ -16,10 +16,9 @@ const tournamentRoutes = function(app: FastifyInstance, options, done: HookHandl
 			schema: {
 				body: {
 					type: "object",
-					required: ["title", "access", "game", "date"],
+					required: ["title", "game", "date"],
 					properties: {
 						title: { type: "string", minLength: 2, maxLength: 15 },
-						access: { type: "integer", enum: [0, 1] },
 						game: { type: "integer", enum: [0, 1] },
 						date: { type: "string" },
 						host_id: { type: "integer" },

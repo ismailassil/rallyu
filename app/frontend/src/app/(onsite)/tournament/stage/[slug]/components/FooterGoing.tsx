@@ -143,7 +143,7 @@ const FooterGoing = function (
                 <>
                     <div className="flex flex-wrap items-center justify-between">
                         <p className="text-gray-300">
-                            {translate("bracket.progress.buttons.spectate")} &#128064;
+                            {translate("bracket.progress.spectate")} &#128064;
                         </p>
                     </div> 
                 </> 
