@@ -58,6 +58,11 @@ async function userRouter(fastify: FastifyInstance, opts: {
 		],
 		handler: opts.userController.updateUserHandler.bind(opts.userController)
 	});
+	fastify.put('/:id/anonymize', {
+		schema: schemas.users.anonymize,
+		preHandler: fastify.accessTokenAuth,
+		handler: opts.userController.anonymizeUserHandler.bind(opts.userController)
+	});
 	fastify.delete('/:id', {
 		schema: schemas.users.delete,
 		preHandler: fastify.accessTokenAuth,

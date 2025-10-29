@@ -99,7 +99,7 @@ class AuthController {
 			request.refreshTokenPayload!.session_id!,
 			request.refreshTokenPayload!.sub!,
 			`Logout requested by user`
-		); this.publishRefreshRequiredToUser(request.refreshTokenPayload!.sub!);
+		); this.publishSessionRefreshRequiredToUser(request.refreshTokenPayload!.sub!);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 		return reply.code(status).setCookie(
@@ -194,7 +194,7 @@ class AuthController {
 			session_id,
 			user_id!,
 			`Revokation requested by user`
-		); this.publishRefreshRequiredToUser(user_id!);
+		); this.publishSessionRefreshRequiredToUser(user_id!);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 		if (session_id! === request.refreshTokenPayload!.session_id) {
@@ -235,7 +235,10 @@ class AuthController {
 		return reply.code(status).send(body);
 	}
 
-	private publishRefreshRequiredToUser(userId: number) {
+	private publishSessionRefreshRequiredToUser(userId: number) {
+		if (!this.nats || !this.js)
+			return ;
+
 		const _JSONCodec = JSONCodec();
 		this.nats.publish('gateway.user.session', _JSONCodec.encode({
 			eventType: 'SESSION_UPDATE',

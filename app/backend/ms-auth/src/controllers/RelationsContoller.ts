@@ -150,6 +150,9 @@ class RelationsController {
 	}
 
 	private publishRelationUpdate(relationEvent: RELATION_EVENT_TYPE, userId: number, targetId: number) {
+		if (!this.nats || !this.js)
+			return ;
+
 		const SUBJECT = 'gateway.user.relation';
 		const _JSONCodec = JSONCodec();
 

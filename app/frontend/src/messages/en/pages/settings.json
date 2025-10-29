@@ -7,7 +7,8 @@
       "cards": {
         "personal_infos": {
           "title": "Personal Informations",
-          "subtitle": "Update your account profile information and email address"
+          "subtitle": "Update your account profile information and email address",
+          "button":"Save Changes"
         }
       }
     },
@@ -37,31 +38,71 @@
       "cards": {
         "twoFactor": {
           "title": "Two-factor Authentication",
-          "subtitle": "Add an extra layer of security to your account by choosing your preferred verification method",
+          "subtitle": "Add an extra layer of security to your account by choosing your preferred verification method.",
           "button": "Manage 2FA"
         },
-        "change_password_form": {
+        "change_password": {
           "title": "Change Password",
           "subtitle": "Modify your current password",
-          "sidecard": {
-            "title": "Password Requirements",
-            "text1": "To create a new password,",
-            "text2": "you have to meet all of the following requirements:",
-            "text3": "Minimum 8 characters long",
-            "text4": "At least one lowercase letter",
-            "text5": "At least one uppercase letter",
-            "text6": "At least one digit"
-          },
-          "button": "Save Changes"
+          "button": "Change Password",
+          "modal": {
+            "title": "Change Password",
+            "button1": "Cancel",
+            "button2": "Change Password"
+          }
         },
         "sessions": {
           "title": "Browsers and devices",
-          "subtitle": "These browsers and devices are currently signed in to you account. Remove any unauthorized devices"
+          "subtitle": "These browsers and devices are currently signed in to you account. Remove any unauthorized devices."
         },
         "delete_account": {
           "title": "Delete Account",
-          "subtitle": "This will permanently delete your account and all associated data. This action is irreversible",
-          "button": "Delete Account"
+          "subtitle": "This will permanently delete your account and all associated data. This action cannot be undone.",
+          "button": "Delete Account",
+          "modal": {
+            "title": "Delete Account",
+            "text1": "This will",
+            "text2": "permanently delete",
+            "text3": "your account and all personal data.",
+            "text4": "Your games history will remain visible to opponents, but your name will appear as",
+            "text5": "Deleted User",
+            "warning1": "You will not be able to log in after this action.",
+            "warning2": "This action cannot be undone.",
+            "button1": "Cancel",
+            "button2": "Delete"
+          }
+        },
+        "anonymize_data": {
+          "title": "Anonymize Data",
+          "subtitle": "This will permanently anonymize your account and all your personal data. This action cannot be undone.",
+          "button": "Anonymize Data",
+          "modal": {
+            "title": "Anonymize Data",
+            "text1": "This will",
+            "text2": "permanently anonymize",
+            "text3": "all of your personal data (full name, username, email, phone number...)",
+            "text4": "Your games history will remain visible to opponents, but your name will appear as",
+            "text5": "Anonymous User",
+            "warning1": "You will not be able to log in after this action.",
+            "warning2": "This action cannot be undone.",
+            "button1": "Cancel",
+            "button2": "Anonymize"
+          }
+        },
+        "clear_local_data": {
+          "title": "Clear Local Data",
+          "subtitle": "This will permanently delete local data stored in your browser. This action cannot be undone.",
+          "button": "Clear Local Data",
+          "modal": {
+            "title": "Clear Local Data",
+            "text1": "This will",
+            "text2": "permanently delete",
+            "text3": "the local data stored in your browser such as language preferences.",
+            "warning1": "You will loose your current preferences.",
+            "warning2": "This action cannot be undone.",
+            "button1": "Cancel",
+            "button2": "Clear Data"
+          }
         }
       }
     }

@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
 import { Monitor, Smartphone, Tablet, MapPin, Clock, LogOut } from 'lucide-react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { relativeTimeAgoFromNow } from '@/app/(api)/utils';
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import LoadingComponent, {
 	PlaceholderComponent,
 } from '@/app/(auth)/components/UI/LoadingComponents';
-import useAPICall from '@/app/hooks/useAPICall';
-// import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import SettingsCard from '../../../SettingsCard';
+import { Locale, enUS, es, it } from 'date-fns/locale';
+import { formatDistanceToNow } from 'date-fns';
+import useAPIQuery from '@/app/hooks/useAPIQuery';
 
 export interface Session {
 	session_id: string;
@@ -17,12 +17,18 @@ export interface Session {
 	reason: string | null;
 	device: 'Desktop' | 'Mobile' | 'Tablet' | string;
 	browser: string;
-	ip_address: string;
+	geo: { country: string, region: string, city: string };
 	created_at: number;
 	expires_at: number;
 	updated_at: number;
 	user_id: number;
 	is_current: boolean;
+}
+
+const localeMap: Record<string, Locale> = {
+	en: enUS,
+	es,
+	it
 }
 
 function DeviceIcon({ type }: { type: string }) {
@@ -38,7 +44,9 @@ function SessionCard({ session, onRevoke }: { session: Session; onRevoke: (id: s
 	const t = useTranslations('');
 
 	const isCurrent = session.is_current;
-	const lastActive = relativeTimeAgoFromNow(session.updated_at);
+
+	const locale = useLocale();
+	const dateLocale = localeMap[locale] || enUS;
 
 	return (
 		<div className='rounded-xl border border-white/10 bg-white/4 p-4 transition-colors hover:bg-white/6 sm:rounded-2xl sm:px-6 sm:py-4'>
@@ -80,11 +88,19 @@ function SessionCard({ session, onRevoke }: { session: Session; onRevoke: (id: s
 				<div className='flex items-center justify-between pl-[52px] text-xs sm:pl-[58px]'>
 					<div className='flex min-w-0 flex-1 items-center gap-1.5'>
 						<MapPin className='h-3.5 w-3.5 flex-shrink-0 text-white/75' />
-						<p className='truncate font-light text-white/75'>{session.ip_address}</p>
+						<p className='truncate font-light text-white/75'>
+							{session.geo.country
+								? `${session.geo.city ? `${session.geo.city}, ` : ''}${session.geo.country}`
+								: session.geo.city || 'Local'}
+						</p>
 					</div>
 					<div className='ml-4 flex flex-shrink-0 items-center gap-1.5'>
-						<Clock className='h-3 w-3 text-white/75' />
-						<p className='font-light whitespace-nowrap text-white/75'>{lastActive}</p>
+						<Clock className='h-3 w-3 text-white/75 shrink-0' />
+						<p className='font-light whitespace-nowrap text-white/75'>
+							{formatDistanceToNow(new Date(session.updated_at * 1000), {
+								locale: dateLocale
+							})}
+						</p>
 					</div>
 				</div>
 			</div>
@@ -113,14 +129,18 @@ function SessionCard({ session, onRevoke }: { session: Session; onRevoke: (id: s
 				<div className='flex max-w-[200px] min-w-0 flex-1 items-center gap-1.5'>
 					<MapPin className='h-4 w-4 flex-shrink-0 text-white/75' />
 					<p className='truncate text-sm font-light text-white/75'>
-						{session.ip_address}
+						{session.geo.country
+							? `${session.geo.city ? `${session.geo.city}, ` : ''}${session.geo.country}`
+							: session.geo.city || 'Local'}
 					</p>
 				</div>
 
 				<div className='flex w-24 flex-shrink-0 items-center gap-1.5 lg:w-32'>
-					<Clock className='h-3 w-3 text-white/75' />
+					<Clock className='h-3 w-3 text-white/75 shrink-0' />
 					<p className='text-sm font-light whitespace-nowrap text-white/75'>
-						{lastActive}
+						{formatDistanceToNow(new Date(session.updated_at * 1000), {
+							locale: dateLocale
+						})}
 					</p>
 				</div>
 
@@ -141,59 +161,54 @@ function SessionCard({ session, onRevoke }: { session: Session; onRevoke: (id: s
 	);
 }
 
-export default function Sessions() {
-	const { apiClient } = useAuth();
-	const { executeAPICall } = useAPICall();
+export default function BrowsersAndDevicesSettingCard() {
+	const t = useTranslations('settings.security.cards');
+	const tph = useTranslations('placeholders.data.generic');
+	const tauthsucc = useTranslations('auth');
+	const tautherr = useTranslations('auth');
 
-	const [sessions, setSessions] = useState<Session[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
+	const { apiClient } = useAuth();
+
+	const {
+		isLoading,
+		error,
+		data: sessions,
+		refetch,
+	} = useAPIQuery(() => apiClient.auth.fetchActiveSessions());
 
 	async function handleRevokeSession(sessionId: string) {
 		try {
 			await apiClient.revokeSession(sessionId);
-			setSessions((prev) => prev.filter((s) => s.session_id !== sessionId));
-			toastSuccess('Session revoked');
+			refetch();
+			toastSuccess(tauthsucc('successCodes', { code: 'AUTH_SESSION_REVOKED' }));
 		} catch (err: any) {
-			toastError(err.message);
+			toastError(tautherr('errorCodes', { code: err.message }));
 		}
 	}
 
-	useEffect(() => {
-		async function fetchActiveSessions() {
-			try {
-				setIsLoading(true);
-				const data = await executeAPICall(() => apiClient.fetchActiveSessions());
-				// const data = await apiClient.fetchActiveSessions();
-				setSessions(data);
-				setError(null);
-			} catch {
-				setError('Failed to load active sessions.');
-			} finally {
-				setIsLoading(false);
-			}
-		}
-
-		fetchActiveSessions();
-	}, [apiClient, executeAPICall]);
-
-	if (isLoading) return <LoadingComponent />;
-
-	if (error) return <PlaceholderComponent content={error} />;
-
-	if (!sessions) return null;
-
-	if (sessions.length === 0) return <PlaceholderComponent content='No active sessions found.' />;
-
 	return (
-		<div className='flex flex-col gap-4'>
-			{sessions.map((session) => (
-				<SessionCard
-					key={session.session_id}
-					session={session}
-					onRevoke={handleRevokeSession}
-				/>
-			))}
-		</div>
+		<SettingsCard
+			title={t('sessions.title')}
+			subtitle={t('sessions.subtitle')}
+			initialHeight='loading'
+		>
+			{isLoading ? (
+				<LoadingComponent />
+			) : error ? (
+				<PlaceholderComponent content={tph('error')} />
+			) : !sessions || sessions.length === 0 ? (
+				null
+			) : (
+				<div className='flex flex-col gap-4'>
+					{sessions.map((session) => (
+						<SessionCard
+							key={session.session_id}
+							session={session}
+							onRevoke={handleRevokeSession}
+						/>
+					))}
+				</div>
+			)}
+		</SettingsCard>
 	);
 }

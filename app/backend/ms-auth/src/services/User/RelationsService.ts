@@ -9,7 +9,7 @@ import {
 	CannotUnblockError,
 	NoPendingRequestError,
 } from '../../types/exceptions/relations.exceptions';
-import { UsersNotFoundError } from "../../types/exceptions/user.exceptions";
+import { UserNotFoundError } from "../../types/exceptions/user.exceptions";
 
 class RelationsService {
 	constructor(
@@ -65,7 +65,7 @@ class RelationsService {
 		]);
 
 		if (!fromUser || !toUser)
-			throw new UsersNotFoundError();
+			throw new UserNotFoundError();
 
 		const existingTwoWayRelation = await this.relationsRepository.findBetweenUsers(
 			fromUserID,
@@ -93,7 +93,7 @@ class RelationsService {
 		]);
 
 		if (!fromUser || !toUser)
-			throw new UsersNotFoundError();
+			throw new UserNotFoundError();
 
 		const existingTwoWayRelation = await this.relationsRepository.findBetweenUsers(
 			fromUserID,
@@ -115,7 +115,7 @@ class RelationsService {
 		]);
 
 		if (!fromUser || !toUser)
-			throw new UsersNotFoundError();
+			throw new UserNotFoundError();
 
 		const existingTwoWayRelation = await this.relationsRepository.findBetweenUsers(
 			fromUserID,
@@ -140,7 +140,7 @@ class RelationsService {
 		]);
 
 		if (!fromUser || !toUser)
-			throw new UsersNotFoundError();
+			throw new UserNotFoundError();
 
 		const existingTwoWayRelation = await this.relationsRepository.findBetweenUsers(
 			fromUserID,
@@ -163,7 +163,7 @@ class RelationsService {
 		]);
 
 		if (!fromUser || !toUser)
-			throw new UsersNotFoundError();
+			throw new UserNotFoundError();
 
 		const existingTwoWayRelation = await this.relationsRepository.findBetweenUsers(
 			blockerID,
@@ -194,7 +194,7 @@ class RelationsService {
 		]);
 
 		if (!fromUser || !toUser)
-			throw new UsersNotFoundError();
+			throw new UserNotFoundError();
 
 		const existingTwoWayRelation = await this.relationsRepository.findBetweenUsers(
 			unblockerID,
@@ -218,7 +218,7 @@ class RelationsService {
 		]);
 
 		if (!fromUser || !toUser)
-			throw new UsersNotFoundError();
+			throw new UserNotFoundError();
 
 		const existingTwoWayRelation = await this.relationsRepository.findBetweenUsers(
 			unfrienderUserID,

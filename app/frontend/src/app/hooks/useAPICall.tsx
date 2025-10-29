@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { simulateBackendCall } from "../(api)/utils";
 import axios from "axios";
 
 function handleAPICallError(err: any) {
@@ -36,7 +35,6 @@ export default function useAPICall() {
 		setError(null);
 		setIsLoading(true);
 		try {
-			await simulateBackendCall(2000);
 			const result = await apiCall();
 			setData(result);
 			return result;
