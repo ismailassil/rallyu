@@ -1,6 +1,8 @@
 {
   "profile": {
     "common": {
+      "online": "Online",
+      "offline": "Offline",
       "level": "Level",
       "time_spent": "Time Spent in the Platform"
     },

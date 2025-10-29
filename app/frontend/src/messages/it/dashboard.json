@@ -28,8 +28,8 @@
   "common": {
     "play": "Gioca",
     "chat": "Chat",
-    "online": "Online",
-    "offline": "Offline",
+    "online": "In linea",
+    "offline": "Non in linea",
     "victory": "Vittoria",
     "defeat": "Sconfitta",
     "draw": "Pareggio"

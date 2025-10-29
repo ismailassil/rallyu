@@ -2,6 +2,8 @@
   "profile": {
     "common": {
       "level": "Livello",
+      "online": "In linea",
+      "offline": "Non in linea",
       "time_spent": "Tempo trascorso sulla piattaforma"
     },
     "cards": {

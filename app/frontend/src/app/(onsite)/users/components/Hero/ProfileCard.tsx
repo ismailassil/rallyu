@@ -8,7 +8,8 @@ import { useRouter } from 'next/navigation';
 import { TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import useIsOnline from '@/app/hooks/useIsOnline';
-// import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
+import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
+import { useEffect, useState } from 'react';
 
 type ProfileCardProps = {
 	userId: number,
@@ -25,11 +26,45 @@ type ProfileCardProps = {
 
 export default function ProfileCard({ userId, fullName, username, bio, avatar, friendshipStatus, level, globalRank, winRate, currentStreak } : ProfileCardProps) {
 	const t = useTranslations('profile');
-
 	const router = useRouter();
-
+	const [friendshipCurrentStatus, setCurrentFriendshipStatus] = useState(friendshipStatus);
 	const isOnline = useIsOnline(userId);
-	const showOnline = friendshipStatus === 'FRIENDS';
+
+	const {
+		loggedInUser,
+		socket
+	} = useAuth();
+
+	useEffect(() => {
+		if (!loggedInUser || loggedInUser.id === userId)
+			return ;
+
+		function handleRelationUpdate(event: { eventType: string, data: Record<string, any> }) {
+			console.group('/********** RELATION UPDATE **********/');
+
+			console.log('EVENT: ', event);
+
+			if (event.eventType !== 'RELATION_UPDATE')
+				return ;
+			console.log('loggedInUserId', loggedInUser?.id);
+			if (event.data.status === 'BLOCKED' && event.data.receiverId === loggedInUser?.id) {
+				router.push('/404');
+				console.groupEnd();
+				return ;
+			}
+			setCurrentFriendshipStatus(event.data.status);
+
+			console.groupEnd();
+		}
+
+		socket.on('user', handleRelationUpdate);
+
+		return () => {
+			socket.off('user', handleRelationUpdate);
+		};
+	}, [loggedInUser, router, socket, userId]);
+
+	const showOnline = friendshipCurrentStatus === 'FRIENDS';
 
 	return (
 		<MainCardWrapper className='flex flex-col items-center gap-8
@@ -58,7 +93,7 @@ export default function ProfileCard({ userId, fullName, username, bio, avatar, f
 							<Relations
 								username={username}
 								userId={userId}
-								currentStatus={friendshipStatus as FriendshipStatus}
+								currentStatus={friendshipCurrentStatus as FriendshipStatus}
 							/>
 						) : (
 							<div className='flex flex-col sm:flex-row gap-3'>
@@ -79,7 +114,7 @@ export default function ProfileCard({ userId, fullName, username, bio, avatar, f
 							<div className="absolute bottom-[8%] right-[9%] group/status h-[12%] w-[12%] hover:w-[78px] flex items-center bg-white/20 rounded-full p-[2.5px] hover:p-[8px] hover:bg-gray-700/90 overflow-hidden transition-all duration-500 ease-in-out cursor-pointer select-none">
 								<div className={`h-full aspect-square rounded-full flex-shrink-0 transition-all duration-1000 ${isOnline ? 'bg-green-400' : 'bg-gray-400'}`}></div>
 								<span className="ml-2 whitespace-nowrap font-bold text-white text-sm opacity-0 group-hover/status:opacity-100 transition-opacity duration-500 ease-in-out">
-									{isOnline ? 'Online' : 'Offline'}
+									{isOnline ? t('common.online') : t('common.offline')}
 								</span>
 							</div>
 						)}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
 import Button from './Button';
 import { LocalChatIcon, LocalUserMinusIcon, LocalUserPlusIcon, LocalUserXIcon } from './LocalIcon';
@@ -21,54 +21,21 @@ export default function Relations({ userId, username, currentStatus } : Relation
 
 	const router = useRouter();
 
-	const [friendshipStatus, setFriendshipStatus] = useState<FriendshipStatus>(currentStatus);
 	const {
-		loggedInUser,
-		apiClient,
-		socket
+		apiClient
 	} = useAuth();
 
 	const {
 		executeAPICall
 	} = useAPICall();
 
-	useEffect(() => {
-		if (!loggedInUser || loggedInUser.id === userId)
-			return ;
-
-		function handleRelationUpdate(event: { eventType: string, data: Record<string, any> }) {
-			console.group('/********** RELATION UPDATE **********/');
-
-			console.log('EVENT: ', event);
-
-			if (event.eventType !== 'RELATION_UPDATE')
-				return ;
-			console.log('loggedInUserId', loggedInUser?.id);
-			if (event.data.status === 'BLOCKED' && event.data.receiverId === loggedInUser?.id) {
-				router.push('/404');
-				console.groupEnd();
-				return ;
-			}
-			setFriendshipStatus(event.data.status);
-
-
-			console.groupEnd();
-		}
-
-		socket.on('user', handleRelationUpdate);
-
-		return () => {
-			socket.off('user', handleRelationUpdate);
-		};
-	}, [loggedInUser, router, socket, userId]);
-
-	if (!friendshipStatus)
+	if (!currentStatus)
 		return null;
 
 	async function executeAction(action: () => Promise<void>, next: FriendshipStatus, message: string) {
 		try {
 			await executeAPICall(action);
-			setFriendshipStatus(next);
+			// setFriendshipStatus(next);
 			toastSuccess(message);
 		} catch (err: any) {
 			if (err.message === 'AUTH_USER_NOT_FOUND') router.replace('/404');
@@ -99,8 +66,8 @@ export default function Relations({ userId, username, currentStatus } : Relation
 
 	return (
 		<div className="flex gap-3">
-			{BUTTONS[friendshipStatus]}
-			{friendshipStatus !== 'BLOCKED' && (
+			{BUTTONS[currentStatus]}
+			{currentStatus !== 'BLOCKED' && (
 				<Button text={t('block')} icon={LocalUserXIcon} onClick={ACTIONS.block} />
 			)}
 		</div>
