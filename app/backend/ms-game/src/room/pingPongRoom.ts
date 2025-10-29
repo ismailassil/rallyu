@@ -18,7 +18,7 @@ const MS_TOURN_API_KEY = process.env.MS_TOURN_API_KEY;
 
 const GAME_UPDATE_INTERVAL = 16.67; // 60hz
 const GAME_START_DELAY = 3000; // 3 sec
-const GAME_TIME = 120000;
+const GAME_TIME = 20000;
 
 export class PingPongPlayer implements Player {
     id: number;
