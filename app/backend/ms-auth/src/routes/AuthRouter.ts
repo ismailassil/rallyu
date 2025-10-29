@@ -3,7 +3,7 @@ import AuthController from "../controllers/AuthController";
 import { zodPreHandler } from "../utils/validation/zodFormValidator";
 import TwoFactorController from "../controllers/TwoFactorController";
 import PasswordResetController from "../controllers/PasswordResetController";
-import { authRoutesSchemas as schemas } from "../schemas/auth.schema";
+import { authRoutesSchemas, authRoutesSchemas as schemas } from "../schemas/auth.schema";
 import { authRoutesZodSchemas as zodSchemas } from "../schemas/zod/auth.zod.schema";
 import { oauthConfig } from "../config/oauth";
 import VerificationController from "../controllers/VerificationController";
@@ -45,46 +45,23 @@ async function authRouter(fastify: FastifyInstance, opts: {
 
 
 	/*---------------------------------------- OAuth ----------------------------------------*/
-	fastify.get('/google', (request: FastifyRequest, reply: FastifyReply) => {
-		const { frontendOrigin } = request.query as { frontendOrigin: string };
-
-		const scope = ['openid', 'profile', 'email'];
-
-		const googleOAuthConsentURL = oauthConfig.google.auth_uri + '?' +
-		new URLSearchParams({
-			client_id: oauthConfig.google.client_id,
-			redirect_uri: oauthConfig.google.redirect_uri,
-			response_type: 'code',
-			scope: scope.join(' '),
-			access_type: 'offline',
-			prompt: 'consent',
-			state: frontendOrigin
-		});
-
-		fastify.log.trace({ googleOAuthConsentURL, frontendOrigin }, '[OAUTH] GoogleOAuthConsent Redirect');
-
-		reply.redirect(googleOAuthConsentURL);
+	fastify.get('/google', {
+		schema: authRoutesSchemas.core.oauth.google.consent_redirect,
+		handler: opts.authController.googleOAuthConsentRedirectHandler.bind(opts.authController)
 	});
 
 	fastify.get('/google/callback', {
+		schema: authRoutesSchemas.core.oauth.google.callback_handler,
 		handler: opts.authController.googleOAuthCallbackHandler.bind(opts.authController)
 	});
 
-	fastify.get('/42', (request: FastifyRequest, reply: FastifyReply) => {
-		const scope = 'public';
-
-		const intra42OAuthConsentURL = oauthConfig.intra42.auth_uri + '?' +
-		new URLSearchParams({
-			client_id: oauthConfig.intra42.client_id,
-			redirect_uri: oauthConfig.intra42.redirect_uri,
-			response_type: 'code',
-			scope: scope
-		});
-
-		reply.redirect(intra42OAuthConsentURL);
+	fastify.get('/42', {
+		schema: authRoutesSchemas.core.oauth.intra42.consent_redirect,
+		handler: opts.authController.intra42OAuthConsentRedirectHandler.bind(opts.authController)
 	});
 
 	fastify.get('/42/callback', {
+		schema: authRoutesSchemas.core.oauth.intra42.callback_handler,
 		handler: opts.authController.intra42OAuthCallbackHandler.bind(opts.authController)
 	});
 

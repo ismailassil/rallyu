@@ -2,13 +2,16 @@
 import Image from "next/image";
 import LoginForm from "./components/LoginForm";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthPageWrapper from "../components/UI/AuthPageWrapper";
 import { useTranslations } from "next-intl";
+import { toastError } from "@/app/components/CustomToast";
 
 export default function LoginPage() {
 	const t = useTranslations('auth');
+	const tautherr = useTranslations('auth');
 
+	const searchParams = useSearchParams();
 	const router = useRouter();
 
 	useEffect(() => {
@@ -17,11 +20,21 @@ export default function LoginPage() {
 	}, []);
 
 	async function handleGoogleLogin() {
-		window.location.href = `${window.location.origin}/api/auth/google?frontendOrigin=${window.location.origin}`;
+		window.location.href = `${window.location.origin}/api/auth/google?frontendOrigin=${window.location.origin}/login`;
 	}
 	async function handleIntra42Login() {
-		window.location.href = `${window.location.origin}/api/auth/42`;
+		window.location.href = `${window.location.origin}/api/auth/42?frontendOrigin=${window.location.origin}/login`;
 	}
+
+	useEffect(() => {
+		if (searchParams.has('error')) {
+			let err = searchParams.get('error');
+			if (!err) return ;
+			if (err === 'access_denied') err = 'AUTH_OAUTH_FAILED';
+			if (!err.startsWith('AUTH_')) return ;
+			toastError(tautherr('errorCodes', { code: err }));
+		}
+	}, []);
 
 	return (
 		<AuthPageWrapper wrapperKey="login-page-wrapper">
