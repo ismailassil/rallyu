@@ -5,6 +5,7 @@ import { LocalChatIcon, LocalUserMinusIcon, LocalUserPlusIcon, LocalUserXIcon } 
 import { toastError, toastSuccess } from '@/app/components/CustomToast';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import useAPICall from '@/app/hooks/useAPICall';
 
 export type FriendshipStatus = 'NONE' | 'OUTGOING' | 'INCOMING' | 'FRIENDS' | 'BLOCKED' | null;
 
@@ -16,6 +17,7 @@ interface RelationsProps {
 
 export default function Relations({ userId, username, currentStatus } : RelationsProps) {
 	const t = useTranslations('relations.common');
+	const tautherr = useTranslations('auth');
 
 	const router = useRouter();
 
@@ -25,6 +27,10 @@ export default function Relations({ userId, username, currentStatus } : Relation
 		apiClient,
 		socket
 	} = useAuth();
+
+	const {
+		executeAPICall
+	} = useAPICall();
 
 	useEffect(() => {
 		if (!loggedInUser || loggedInUser.id === userId)
@@ -61,11 +67,12 @@ export default function Relations({ userId, username, currentStatus } : Relation
 
 	async function executeAction(action: () => Promise<void>, next: FriendshipStatus, message: string) {
 		try {
-			await action();
+			await executeAPICall(action);
 			setFriendshipStatus(next);
 			toastSuccess(message);
 		} catch (err: any) {
-			toastError(err.message);
+			if (err.message === 'AUTH_USER_NOT_FOUND') router.replace('/404');
+			toastError(tautherr('errorCodes', { code: err.message }));
 		}
 	}
 

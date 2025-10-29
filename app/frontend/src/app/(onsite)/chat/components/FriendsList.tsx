@@ -25,7 +25,7 @@ const FriendsList = () => {
 
 	const handleSelectUser = (user: LoggedUser) => {
 		if (!user?.id) return;
-	
+
 		setSelectedUser((prev) => {
 			const newSelected = prev?.id === user.id ? null : user;
 			setShowConversation(!!newSelected);

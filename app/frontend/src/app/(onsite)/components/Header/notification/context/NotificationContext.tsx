@@ -172,6 +172,7 @@ export function NotificationProvider({ children }: Readonly<{ children: React.Re
 						status: "dismissed",
 						state: "finished",
 					});
+					router.push(data.actionUrl!);
 				}
 			} catch (err) {
 				console.error(err);

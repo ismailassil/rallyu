@@ -12,7 +12,7 @@ import TwoFactorChallengeService from '../TwoFactorAuth/TwoFactorChallengeServic
 import {
 	AuthChallengeExpired,
 } from '../../types/exceptions/verification.exceptions';
-import { InvalidAuthProviderError } from '../../types/exceptions/auth.exceptions';
+import { OAuthFailedError } from '../../types/exceptions/auth.exceptions';
 import { InvalidCredentialsError } from '../../types/exceptions/auth.exceptions';
 import { UserAlreadyExistsError } from '../../types/exceptions/user.exceptions';
 import { UserNotFoundError } from '../../types/exceptions/user.exceptions';
@@ -21,8 +21,6 @@ import { oauthConfig } from '../../config/oauth';
 import { UUID, randomBytes } from 'crypto';
 import { AuthChallengeMethod } from '../../repositories/AuthChallengesRepository';
 import CDNService from '../CDN/CDNService';
-import fastify from '../../server';
-import logger from '../../utils/misc/logger';
 
 class AuthService {
 	private cdnService: CDNService;
@@ -55,8 +53,8 @@ class AuthService {
 
 	async LogIn(username: string, password: string, reqFingerprint: ISessionFingerprint) {
 		const existingUser = await this.userService.getUserByUsername(username);
-		if (existingUser && existingUser.auth_provider !== 'Local')
-			throw new InvalidAuthProviderError(existingUser.auth_provider);
+		if (existingUser?.auth_provider !== 'Local')
+			throw new InvalidCredentialsError();
 
 		const isValidPassword =
 			await bcrypt.compare(password, existingUser ? existingUser.password : this.authConfig.bcryptTimingHash);
@@ -133,7 +131,7 @@ class AuthService {
 		let existingUser = await this.userService.getUserByAuthProvider(intra42User.auth_provider, intra42User.auth_provider_id);
 		if (!existingUser) {
 			if (await this.userService.isEmailTaken(intra42User.email))
-				throw new InvalidAuthProviderError('Local');
+				throw new UserAlreadyExistsError('Email');
 
 			const createdUserID = await this.userService.createUser(
 				intra42User.first_name,
@@ -158,28 +156,23 @@ class AuthService {
 	}
 
 	private async exchangeAuthCodeIntra42(authorizationCode: string) {
-		try {
-			const { data: exchangeResult } = await axios.post(oauthConfig.intra42.exchange_uri,
-				null,
-				{
-					params: {
-						code: authorizationCode,
-						client_id: oauthConfig.intra42.client_id,
-						client_secret: oauthConfig.intra42.client_secret,
-						redirect_uri: oauthConfig.intra42.redirect_uri,
-						grant_type: 'authorization_code'
-					}
+		const { data: exchangeResult } = await axios.post(oauthConfig.intra42.exchange_uri,
+			null,
+			{
+				params: {
+					code: authorizationCode,
+					client_id: oauthConfig.intra42.client_id,
+					client_secret: oauthConfig.intra42.client_secret,
+					redirect_uri: oauthConfig.intra42.redirect_uri,
+					grant_type: 'authorization_code'
 				}
-			);
+			}
+		);
 
-			if (!exchangeResult.access_token)
-				throw new Error('Cannot find access_token');
+		if (!exchangeResult.access_token)
+			throw new OAuthFailedError();
 
-			return await this.parseIntra42OAuthAccessToken(exchangeResult.access_token);
-		} catch (err) {
-			console.error('Google token exchange failed');
-			throw err;
-		}
+		return await this.parseIntra42OAuthAccessToken(exchangeResult.access_token);
 	}
 
 	private async parseIntra42OAuthAccessToken(accessToken: string) {
@@ -190,8 +183,6 @@ class AuthService {
 				}
 			}
 		);
-
-		console.log('Intra42User: ', intra42User);
 
 		return {
 			auth_provider_id: intra42User.id,
@@ -210,7 +201,7 @@ class AuthService {
 		let existingUser = await this.userService.getUserByAuthProvider(googleUser.auth_provider, googleUser.auth_provider_id);
 		if (!existingUser) {
 			if (await this.userService.isEmailTaken(googleUser.email))
-				throw new InvalidAuthProviderError('Local');
+				throw new UserAlreadyExistsError('Email');
 
 			const createdUserID = await this.userService.createUser(
 				googleUser.first_name,
@@ -235,28 +226,23 @@ class AuthService {
 	}
 
 	async exchangeAuthCodeGoogle(authorizationCode: string) {
-		try {
-			const { data: exchangeResult } = await axios.post(oauthConfig.google.exchange_uri,
-				null,
-				 {
-					params: {
-						code: authorizationCode,
-						client_id: oauthConfig.google.client_id,
-						client_secret: oauthConfig.google.client_secret,
-						redirect_uri: oauthConfig.google.redirect_uri,
-						grant_type: 'authorization_code',
-					}
+		const { data: exchangeResult } = await axios.post(oauthConfig.google.exchange_uri,
+			null,
+				{
+				params: {
+					code: authorizationCode,
+					client_id: oauthConfig.google.client_id,
+					client_secret: oauthConfig.google.client_secret,
+					redirect_uri: oauthConfig.google.redirect_uri,
+					grant_type: 'authorization_code',
 				}
-			);
+			}
+		);
 
-			if (!exchangeResult.id_token)
-				throw new Error("Cannot find id_token");
+		if (!exchangeResult.id_token)
+			throw new OAuthFailedError();
 
-			return await this.parseGoogleOAuthIDToken(exchangeResult.id_token);
-		} catch (err) {
-			console.error("Google token exchange failed");
-			throw err;
-		}
+		return await this.parseGoogleOAuthIDToken(exchangeResult.id_token);
 	}
 
 	private async parseGoogleOAuthIDToken(IDToken: string) {
@@ -278,12 +264,12 @@ class AuthService {
 			return 'user';
 
 		// everything except a-z, 0-9, _, -
-		let clean = baseUsername.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+		let clean = baseUsername.toLowerCase().replace(/[^a-z0-9._-]/g, '');
 
 		if (clean.length < 1)
 			clean = 'user';
 
-		return clean.substring(0, 10);
+		return clean.substring(0, 15);
 	}
 
 	private async generateUniqueUsername(baseUsername: string) {
@@ -297,7 +283,7 @@ class AuthService {
 			if (!await this.userService.isUsernameTaken(uniqueUsername))
 				return uniqueUsername;
 
-			uniqueUsername = `${sanitizedBase}${++counter}`;
+			uniqueUsername = `${sanitizedBase}_${++counter}`;
 		}
 
 		counter = 0;
@@ -305,7 +291,7 @@ class AuthService {
 			if (!await this.userService.isUsernameTaken(uniqueUsername))
 				return uniqueUsername;
 
-			uniqueUsername = `${sanitizedBase}${randomBytes(2).toString('hex')}`;
+			uniqueUsername = `${sanitizedBase}_${randomBytes(2).toString('hex')}`;
 		}
 
 		return uniqueUsername;
@@ -316,8 +302,6 @@ class AuthService {
 		if (!existingUser)
 			throw new UserNotFoundError();
 
-		logger.debug({ user_id, oldPassword, newPassword }, '[CHANGE PASSWORD ARGS]')
-
 		const isValidPassword =
 			await bcrypt.compare(oldPassword, existingUser.password);
 		if (!isValidPassword)
@@ -327,7 +311,6 @@ class AuthService {
 
 		await this.userService.updateUser(user_id, { password: newHashedPassword });
 	}
-
 }
 
 export default AuthService;

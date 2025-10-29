@@ -72,6 +72,16 @@ export class UserService {
 		return res.data;
 	}
 
+	async anonymizeUser(id: number) {
+		const { data: res } = await this.client.put(`/users/${id}/anonymize`);
+		return res.data;
+	}
+
+	async deleteUser(id: number) {
+		const { data: res } = await this.client.delete(`/users/${id}`);
+		return res.data;
+	}
+
 	/*--------------------------------- Users Relations ---------------------------------*/
 
 	async fetchFriends(){

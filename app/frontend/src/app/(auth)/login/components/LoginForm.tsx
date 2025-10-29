@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { toastError } from '../../../components/CustomToast';
+import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import InputField from '../../components/Form/InputField';
 import useForm from '@/app/hooks/useForm';
@@ -14,6 +14,7 @@ import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export default function LoginForm() {
 	const t = useTranslations('auth.common');
+	const tauthsucc = useTranslations('auth');
 	const tautherr = useTranslations('auth');
 
 	const router = useRouter();
@@ -43,7 +44,11 @@ export default function LoginForm() {
 
 		try {
 			const result = await executeAPICall(() => login(formData.username, formData.password));
-			if (result._2FARequired) router.push('/2fa');
+			if (result._2FARequired) {
+				toastSuccess(tauthsucc('successCodes', { code: 'AUTH_2FA_REQUIRED' }));
+				router.push('/2fa');
+			}
+			else toastSuccess(tauthsucc('successCodes', { code: 'AUTH_SIGNED_IN' }));
 		} catch (err: any) {
 			toastError(tautherr('errorCodes', { code: err.message }));
 		}

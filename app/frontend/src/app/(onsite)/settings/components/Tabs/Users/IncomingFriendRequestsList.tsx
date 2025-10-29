@@ -12,6 +12,7 @@ import { useTranslations } from 'next-intl';
 
 export default function IncomingFriendRequestsList() {
 	const t = useTranslations('placeholders.data.incoming');
+	const trelcom = useTranslations('relations.common');
 	const tautherr = useTranslations('auth');
 
 	const { loggedInUser, apiClient, socket } = useAuth();
@@ -47,7 +48,7 @@ export default function IncomingFriendRequestsList() {
 	async function handleDecline(id: number) {
 		try {
 			await executeAPICall(() => apiClient.rejectFriendRequest(id));
-			toastSuccess('Rejected');
+			toastSuccess(trelcom('declined'));
 		} catch (err: any) {
 			toastError(tautherr('errorCodes', { code: err.message }));
 		}
@@ -56,7 +57,7 @@ export default function IncomingFriendRequestsList() {
 	async function handleAccept(id: number) {
 		try {
 			await executeAPICall(() => apiClient.acceptFriendRequest(id));
-			toastSuccess('Accepted');
+			toastSuccess(trelcom('accepted'));
 		} catch (err: any) {
 			toastError(tautherr('errorCodes', { code: err.message }));
 		}

@@ -33,7 +33,7 @@ export function verifyTOTP(secret_base32: string, code: string) : boolean {
 export function verifyOTP(storedOTP: string, userOTP: string) : boolean {
 	if (!storedOTP || !userOTP)
 		return false;
-	
+
 	return storedOTP === userOTP;
 }
 
@@ -47,4 +47,8 @@ export function nowPlusSeconds(seconds: number) : number {
 
 export function nowInSeconds() {
 	return Math.floor(Date.now() / 1000);
+}
+
+export function nowInMilliseconds() {
+	return Date.now();
 }

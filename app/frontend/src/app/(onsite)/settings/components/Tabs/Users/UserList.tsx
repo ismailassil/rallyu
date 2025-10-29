@@ -1,8 +1,10 @@
 import React from 'react';
 import { Clock } from 'lucide-react';
 import Link from 'next/link';
-import { relativeTimeAgoFromNow } from '@/app/(api)/utils';
+import { useLocale } from 'next-intl';
 import Avatar from '@/app/(onsite)/users/components/Avatar';
+import { formatDistanceToNow } from 'date-fns';
+import { Locale, enUS, es, it } from 'date-fns/locale';
 
 export interface UserItem {
 	id: number;
@@ -30,8 +32,16 @@ interface UserCardProps {
 	actions: UserAction[]
 }
 
+const localeMap: Record<string, Locale> = {
+	en: enUS,
+	es,
+	it
+}
+
 function UserCard({ user, actions } : UserCardProps) {
 	const { id, username, first_name, last_name, created_at, avatar_url } = user;
+	const locale = useLocale();
+	const dateLocale = localeMap[locale] || enUS;
 
 	return (
 		<div
@@ -50,7 +60,10 @@ function UserCard({ user, actions } : UserCardProps) {
 						<h1 className='text-sm sm:text-base'>{first_name + ' ' + last_name}</h1>
 						<p className="text-xs sm:text-sm flex items-center gap-1 text-white/70">
 							<Clock size={14} />
-							{relativeTimeAgoFromNow(created_at)}
+							{formatDistanceToNow(new Date(created_at * 1000), {
+								addSuffix: true,
+								locale: dateLocale
+							})}
 						</p>
 					</div>
 			</Link>

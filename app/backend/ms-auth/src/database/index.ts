@@ -7,7 +7,7 @@ class Database {
 
 	async connect(DBFilePath: string) : Promise<void> {
 		return new Promise((resolve, reject) => {
-			this.db = new sqlite3.Database(DBFilePath, 
+			this.db = new sqlite3.Database(DBFilePath,
 				sqlite3.OPEN_CREATE | sqlite3.OPEN_READWRITE,
 				(err) => {
 					if (err) {
@@ -21,7 +21,7 @@ class Database {
 				});
 		});
 	}
-	
+
 	async close() : Promise<void> {
 		return new Promise((resolve, reject) => {
 			if (this.db) {
@@ -45,7 +45,7 @@ class Database {
 		return new Promise((resolve, reject) => {
 			if (!this.db)
 				reject(new Error('Database not connected.'));
-			
+
 			this.db?.run(sql, params, function (err) {
 				if (err)
 					return reject(err);
@@ -58,7 +58,7 @@ class Database {
 		return new Promise((resolve, reject) => {
 			if (!this.db)
 				reject(new Error('Database not connected.'));
-			
+
 			this.db?.get(sql, params, (err, row) => {
 				if (err)
 					return reject(err);
@@ -66,7 +66,7 @@ class Database {
 			});
 		});
 	}
-	
+
 	async all<T>(sql: string, params: any[] = []) : Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			if (!this.db)

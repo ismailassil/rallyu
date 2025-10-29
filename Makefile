@@ -27,7 +27,7 @@ re_all: clean_all up_all
 
 ### Only the application
 up_app: env
-	@docker-compose up --build --watch
+	@docker-compose up --build -d
 
 down_app:
 	@docker-compose down
@@ -64,7 +64,10 @@ fclean: clean_devops clean_app
 prune:
 	@docker system prune -a --volumes -f
 
-.PHONY: all up clean fclean re prune
+.PHONY: all up clean fclean re prune help \
+	up_app down_app clean_app ps_app re_app \
+	up_devops down_devops clean_devops ps_devops re_devops \
+	up_all down_all clean_all ps_all re_all
 
 help:
 	@echo "Makefile for RALLYU Deployment"

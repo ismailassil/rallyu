@@ -6,6 +6,7 @@ import MatchesRepository from "../../repositories/MatchesRepository";
 import RelationsService from "./RelationsService";
 import CDNService from "../CDN/CDNService";
 import { DatabaseQueryError } from "../../types/exceptions/database.exceptions";
+import { nowInMilliseconds } from "../TwoFactorAuth/utils";
 
 class UserService {
 	private cdnService: CDNService;
@@ -173,8 +174,6 @@ class UserService {
 				bio
 			);
 
-			// await this.statsService.createUserRecords(createdUserID);
-
 			return createdUserID;
 		} catch (err) {
 			if (err instanceof DatabaseQueryError) {
@@ -206,9 +205,20 @@ class UserService {
 		}
 	}
 
-	// TODO: UPDATE AVATAR
+	async anonymizeUser(userID: number) {
+		await this.updateUser(userID, this.generateAnonymousUserUpdate());
+	}
 
 	/*----------------------------------------------- DELETE -----------------------------------------------*/
+
+	async deleteUser(userID: number) {
+		const targetUser = await this.getUserById(userID);
+		if (!targetUser)
+			throw new UserNotFoundError();
+
+		await this.userRepository.delete(userID);
+	}
+
 
 	/*----------------------------------------------- SEARCH -----------------------------------------------*/
 
@@ -243,6 +253,26 @@ class UserService {
 			case 'email':
 				throw new UserAlreadyExistsError(parsed.column);
 		}
+	}
+
+	private generateAnonymousUserUpdate() {
+		const currentTimestamp = nowInMilliseconds();
+
+		return {
+			first_name: 'Anonymous',
+			last_name: 'User',
+			username: `anon_${currentTimestamp}`,
+			email: `anon_${currentTimestamp}@anonymous.rally.dev`,
+			password: null,
+			bio: `I am Mr.Robot. Sometimes I dream of saving the world. Saving everyone from the invisible hand, but I'm not that special.`,
+			avatar_url: '/users/avatars/mr-robot.png',
+			phone: null,
+			email_verified: false,
+			phone_verified: false,
+			auth_provider: 'None',
+			auth_provider_id: null,
+			role: 'user'
+		};
 	}
 }
 

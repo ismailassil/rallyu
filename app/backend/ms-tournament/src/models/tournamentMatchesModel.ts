@@ -205,7 +205,6 @@ class TournamentMatchesModel {
 				});
 				data.forEach(async (match: any) => {
 					try {
-
 						const game_room = await fetch(`http://ms-game:${process.env.GAME_PORT ?? '5010'}/game/room/create`, 
 							{
 								method: "POST",

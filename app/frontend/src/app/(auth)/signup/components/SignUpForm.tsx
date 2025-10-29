@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import { toastError } from '../../../components/CustomToast';
+import { toastError, toastSuccess } from '../../../components/CustomToast';
 import { useRouter } from 'next/navigation';
 import InputField from '../../components/Form/InputField';
 import useForm from '@/app/hooks/useForm';
@@ -17,6 +17,7 @@ import useValidationSchema from '@/app/hooks/useValidationSchema';
 
 export default function SignUpForm() {
 	const t = useTranslations('auth.common');
+	const tauthsucc = useTranslations('auth');
 	const tautherr = useTranslations('auth');
 
 	const router = useRouter();
@@ -82,6 +83,7 @@ export default function SignUpForm() {
 					formData.password
 				)
 			);
+			toastSuccess(tauthsucc('successCodes', { code: 'AUTH_SIGNED_UP' }));
 			router.push('/login');
 		} catch (err: any) {
 			if (err.message === 'AUTH_USERNAME_TAKEN') setUsernameStatus('unavailable');

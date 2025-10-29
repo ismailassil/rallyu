@@ -28,13 +28,6 @@ const MIGRATIONS = [
 				created_at INTEGER DEFAULT (strftime('%s','now')),
 				updated_at INTEGER DEFAULT (strftime('%s','now'))
 			);
-
-			CREATE TRIGGER IF NOT EXISTS trg_users_update_timestamp
-			AFTER UPDATE ON users
-			FOR EACH ROW
-			BEGIN
-				UPDATE users SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
-			END;
 		`
 	},
 	{
@@ -57,15 +50,8 @@ const MIGRATIONS = [
 				expires_at INTEGER NOT NULL,
 
 				user_id INTEGER NOT NULL,
-				FOREIGN KEY (user_id) REFERENCES users(id)
+				FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 			);
-
-			CREATE TRIGGER IF NOT EXISTS trg_sessions_update_timestamp
-			AFTER UPDATE ON sessions
-			FOR EACH ROW
-			BEGIN
-				UPDATE sessions SET updated_at = (strftime('%s','now')) WHERE session_id = OLD.session_id;
-			END;
 		`
 	},
 	{
@@ -79,7 +65,7 @@ const MIGRATIONS = [
 				totp_secret TEXT,
 
 				user_id INTEGER NOT NULL,
-				FOREIGN KEY (user_id) REFERENCES users(id)
+				FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 			);
 		`
 	},
@@ -98,16 +84,9 @@ const MIGRATIONS = [
 				created_at INTEGER DEFAULT (strftime('%s','now')),
 				updated_at INTEGER DEFAULT (strftime('%s','now')),
 
-				FOREIGN KEY (requester_user_id) REFERENCES users(id), -- ON DELETE CASCADE?
-				FOREIGN KEY (receiver_user_id) REFERENCES users(id)   -- ON DELETE CASCADE?
+				FOREIGN KEY (requester_user_id) REFERENCES users(id)  ON DELETE CASCADE,
+				FOREIGN KEY (receiver_user_id) REFERENCES users(id) ON DELETE CASCADE
 			);
-
-			CREATE TRIGGER IF NOT EXISTS trg_relations_update_timestamp
-			AFTER UPDATE ON relations
-			FOR EACH ROW
-			BEGIN
-				UPDATE relations SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
-			END;
 		`
 	},
 	{
@@ -123,7 +102,7 @@ const MIGRATIONS = [
 				longest_streak INTEGER DEFAULT 0,
 
 				user_id INTEGER NOT NULL,
-				FOREIGN KEY (user_id) REFERENCES users(id)
+				FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 			);
 		`
 	},
@@ -144,9 +123,7 @@ const MIGRATIONS = [
 				finished_at INTEGER DEFAULT ((strftime('%s','now'))),
 
 				player_home_id INTEGER NOT NULL,
-				player_away_id INTEGER NOT NULL,
-				FOREIGN KEY (player_home_id) REFERENCES users(id), -- ON DELETE CASCADE?
-				FOREIGN KEY (player_away_id) REFERENCES users(id)   -- ON DELETE CASCADE?
+				player_away_id INTEGER NOT NULL
 			);
 		`
 	},
@@ -173,15 +150,8 @@ const MIGRATIONS = [
 				expires_at INTEGER NOT NULL,
 
 				user_id INTEGER NOT NULL,
-				FOREIGN KEY (user_id) REFERENCES users(id) -- ON DELETE CASCADE?
+				FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 			);
-
-			CREATE TRIGGER IF NOT EXISTS trg_auth_challenges_update_timestamp
-			AFTER UPDATE ON auth_challenges
-			FOR EACH ROW
-			BEGIN
-				UPDATE auth_challenges SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
-			END;
 		`
 	},
 ];
@@ -316,12 +286,34 @@ const TRIGGERS = [
 				UPDATE auth_challenges SET updated_at = (strftime('%s','now')) WHERE id = OLD.id;
 			END;
 		`
-	}
+	},
+	{
+		id: 9,
+		name: 'trg_invalidate_user_sessions_after_auth_none',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_invalidate_user_sessions_after_auth_none
+			AFTER UPDATE OF auth_provider ON users
+			FOR EACH ROW
+			WHEN NEW.auth_provider = 'None'
+			BEGIN
+				UPDATE sessions
+				SET
+					is_revoked = TRUE,
+					reason = 'Anonymization requested by user',
+					device = '-',
+					browser = '-',
+					ip_address = '-'
+				WHERE user_id = NEW.id;
+			END;
+		`
+	},
 ];
 
 async function runMigrations() {
 
 	try {
+		await db.run('PRAGMA foreign_keys = ON;');
+
 		for (const migration of MIGRATIONS) {
 			await db.run(migration.sql);
 			console.log(`Completed migration: ${migration.name}`);

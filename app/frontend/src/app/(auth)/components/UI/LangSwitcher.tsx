@@ -30,7 +30,7 @@ export default function LangSwitcher() {
 	}, []);
 
 	function handleSwitch(lang: Langs) {
-		document.cookie = `NEXT_LOCALE_INT=${lang};`;
+		document.cookie = `NEXT_LOCALE_INT=${lang}; path=/;`;
 		router.refresh();
 	}
 

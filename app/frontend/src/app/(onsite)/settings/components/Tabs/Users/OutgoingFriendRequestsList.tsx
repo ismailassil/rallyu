@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 
 export default function OutgoingFriendRequestsList() {
 	const t = useTranslations('placeholders.data.incoming');
+	const trelcom = useTranslations('relations.common');
 	const tautherr = useTranslations('auth');
 
 	const {
@@ -53,7 +54,7 @@ export default function OutgoingFriendRequestsList() {
 	async function handleCancel(id: number) {
 		try {
 			await executeAPICall(() => apiClient.cancelFriendRequest(id));
-			toastSuccess('Canceled');
+			toastSuccess(trelcom('canceled'));
 		} catch (err: any) {
 			toastError(tautherr('errorCodes', { code: err.message }));
 		}

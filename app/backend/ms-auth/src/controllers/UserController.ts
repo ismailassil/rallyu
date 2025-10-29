@@ -123,21 +123,31 @@ class UserController {
 		const user_id = request.user?.sub;
 		const updates = request.body;
 
-		/*
-			updates can only contain: first_name, last_name, username, email, bio
-		*/
+		await this.userService.updateUser(user_id!, updates);
+		this.publishUserRefreshRequiredToUser(user_id!);
 
-		console.log('REQUEST BODY: ', request.body);
-
-		const newUser = await this.userService.updateUser(user_id!, updates);
-		this.publishRefreshRequiredToUser(user_id!);
-
-		return reply.code(200).send({ success: true, data: newUser });
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+		return reply.code(status).send(body);
 	}
 
-	// DELETE USER
-	async deleteUserHandler(request: FastifyRequest, reply: FastifyReply) {
+	async anonymizeUserHandler(request: FastifyRequest, reply: FastifyReply) {
+		const user_id = request.user?.sub;
 
+		await this.userService.anonymizeUser(user_id!);
+		this.publishSessionRefreshRequiredToUser(user_id!);
+
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+		return reply.code(status).send(body);
+	}
+
+	async deleteUserHandler(request: FastifyRequest, reply: FastifyReply) {
+		const user_id = request.user?.sub;
+
+		await this.userService.deleteUser(user_id!);
+		this.publishSessionRefreshRequiredToUser(user_id!);
+
+		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+		return reply.code(status).send(body);
 	}
 
 	async uploadAvatarHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -147,15 +157,35 @@ class UserController {
 		if (!fileData)
 			return reply.code(400);
 
-		const avatarUrl = await this.userService.updateAvatar(user_id!, fileData!);
+		await this.userService.updateAvatar(user_id!, fileData!);
 
-		return reply.code(201).send({ success: true, data: avatarUrl });
+		const { status, body } = AuthResponseFactory.getSuccessResponse(201, {});
+		return reply.code(status).send(body);
 	}
 
-	private publishRefreshRequiredToUser(userId: number) {
+	private publishUserRefreshRequiredToUser(userId: number) {
+		if (!this.nats || !this.js)
+			return ;
+
 		const _JSONCodec = JSONCodec();
 		this.nats.publish('gateway.user.data', _JSONCodec.encode({
 			eventType: 'USER_UPDATE',
+			recipientUserIds: [userId],
+			data: {
+				requesterId: userId,
+				receiverId: userId,
+				status: 'REFRESH_REQUIRED'
+			}
+		}));
+	}
+
+	private publishSessionRefreshRequiredToUser(userId: number) {
+		if (!this.nats || !this.js)
+			return ;
+
+		const _JSONCodec = JSONCodec();
+		this.nats.publish('gateway.user.session', _JSONCodec.encode({
+			eventType: 'SESSION_UPDATE',
 			recipientUserIds: [userId],
 			data: {
 				requesterId: userId,

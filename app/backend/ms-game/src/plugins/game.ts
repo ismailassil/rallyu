@@ -45,7 +45,7 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			socket.on('close', player.detachSocket);
 		} catch (e) {
 			const err = e as Error;
-			console.error("Match room error: ", err);
+			console.error("Match room error: ", err.message);
 
 			return socket.close(1001, `error_code_${err.message}`);
 		}
