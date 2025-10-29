@@ -21,7 +21,7 @@ const LanguageSwitcher = () => {
 
 	function changeLocale(newLocale: string) {
 		setLocale(newLocale);
-		document.cookie = `NEXT_LOCALE_INT=${newLocale};`;
+		document.cookie = `NEXT_LOCALE_INT=${newLocale}; path=/;`;
 		router.refresh();
 	}
 
