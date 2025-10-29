@@ -27,7 +27,8 @@ export default function FriendsList() {
 	const { executeAPICall } = useAPICall();
 
 	useEffect(() => {
-		function handleRelationUpdate(event: { eventType: string; data: Record<string, any> }) {
+		async function handleRelationUpdate(event: { eventType: string; data: Record<string, any> }) {
+			console.log('handleRelationUpdate friends: ', event);
 			if (!socket || !loggedInUser)
 				return;
 			if (
@@ -36,7 +37,7 @@ export default function FriendsList() {
 				event.data.receiverId === loggedInUser.id) &&
 				(event.data.status === 'FRIENDS' ||
 				event.data.status === 'NONE')
-			) refetch();
+			) await refetch();
 		}
 
 		socket.on('user', handleRelationUpdate);

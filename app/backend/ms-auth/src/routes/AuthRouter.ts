@@ -5,7 +5,6 @@ import TwoFactorController from "../controllers/TwoFactorController";
 import PasswordResetController from "../controllers/PasswordResetController";
 import { authRoutesSchemas, authRoutesSchemas as schemas } from "../schemas/auth.schema";
 import { authRoutesZodSchemas as zodSchemas } from "../schemas/zod/auth.zod.schema";
-import { oauthConfig } from "../config/oauth";
 import VerificationController from "../controllers/VerificationController";
 import { requestFingerprintHook } from "../middleware/hooks/fingerprintHook";
 

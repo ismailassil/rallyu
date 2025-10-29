@@ -28,7 +28,7 @@ export default function Dashboard() {
 							initial={{ opacity: 0, y: -50 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 1, delay: 0.2 }}
-							className="hide-scrollbar flex h-full w-full flex-col gap-3 overflow-y-scroll p-4 pl-3 md:gap-5"
+							className="hide-scrollbar space-y-4 p-4 pl-3 md:gap-5 overflow-y-scroll w-full"
 						>
 							<TournamentPanel />
 						</motion.div>

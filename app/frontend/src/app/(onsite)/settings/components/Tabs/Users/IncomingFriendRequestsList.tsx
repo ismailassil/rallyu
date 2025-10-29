@@ -27,16 +27,17 @@ export default function IncomingFriendRequestsList() {
 	const { executeAPICall } = useAPICall();
 
 	useEffect(() => {
-		function handleRelationUpdate(event: { eventType: string; data: Record<string, any> }) {
+		async function handleRelationUpdate(event: { eventType: string; data: Record<string, any> }) {
+			console.log('handleRelationUpdate incomingreq: ', event);
 			if (!socket || !loggedInUser)
 				return;
 			if (
 				event.eventType === 'RELATION_UPDATE' &&
 				(event.data.requesterId === loggedInUser.id ||
 				event.data.receiverId === loggedInUser.id) &&
-				(event.data.status === 'PENDING' ||
-				event.data.status === 'NONE')
-			) refetch();
+				(event.data.status === 'INCOMING' ||
+				event.data.status === 'NONE' || event.data.status === 'FRIENDS')
+			) await refetch();
 		}
 
 		socket.on('user', handleRelationUpdate);

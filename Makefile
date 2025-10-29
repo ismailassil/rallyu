@@ -27,7 +27,7 @@ re_all: clean_all up_all
 
 ### Only the application
 up_app: env
-	@docker-compose up --build -d
+	@docker-compose up --build --watch
 
 down_app:
 	@docker-compose down

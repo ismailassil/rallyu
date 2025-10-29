@@ -27,7 +27,8 @@ export default function BlockedList() {
 	const { executeAPICall } = useAPICall();
 
 	useEffect(() => {
-		function handleRelationUpdate(event: { eventType: string; data: Record<string, any> }) {
+		async function handleRelationUpdate(event: { eventType: string; data: Record<string, any> }) {
+			console.log('handleRelationUpdate blocked: ', event);
 			if (!socket || !loggedInUser)
 				return;
 			if (
@@ -36,7 +37,7 @@ export default function BlockedList() {
 				event.data.receiverId === loggedInUser.id) &&
 				(event.data.status === 'BLOCKED' ||
 				event.data.status === 'NONE')
-			) refetch();
+			) await refetch();
 		}
 
 		socket.on('user', handleRelationUpdate);

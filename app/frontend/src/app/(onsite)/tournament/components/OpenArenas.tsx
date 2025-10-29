@@ -39,7 +39,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 	const translate = useTranslations("tournament");
 
 	useEffect(() => {
-	
+
 		fetchData(apiClient, param, setTournaments, setError);
 	}, [apiClient.instance, loggedInUser?.id]);
 
@@ -62,7 +62,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 			const data = res.data;
 
 			setTournaments(data.data);
-		} catch (err) {
+		} catch {
 			setError({
 				status: true,
 				message: translate("panel.error")
@@ -85,12 +85,12 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 					</h2>
 				</div>
 				<div className="flex gap-3 grow flex-wrap">
-					<div 
+					<div
 						className="bg-card flex items-center gap-2
 								border-white/20 border px-2 py-2 rounded-md
 								has-[input:focus]:bg-white  duration-300 transition-all grow"
 					>
-						<input 
+						<input
 							id="search"
 							type="text"
 							className="peer w-full h-full border-none focus:outline-none focus:placeholder:text-background focus:text-black"
@@ -105,10 +105,10 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 						<button className="text-white peer-focus:text-black duration-300 transition-all">
 							{
 								searchVal &&
-									<XIcon 
+									<XIcon
 										onClick={(e) => {
 											e.preventDefault();
-											
+
 											fetchData(apiClient, param, setTournaments, setError);
 											setSearchVal("");
 										}}
@@ -133,7 +133,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 					exit={{ opacity: 0, x: -100 }}
 					transition={{ type: "spring", stiffness: 120 }}
 					className="text-wrap rounded-full bg-red-700 px-8 py-4"
-				>  
+				>
 					<p className="text-lg">{error.message}</p>
 				</motion.div>
 			)}
@@ -150,8 +150,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 					</motion.div>
 				)
 			}
-			{
-				tournaments.length > 0 && !error.status && (
+			{tournaments.length > 0 && !error.status && (
 					<motion.div
 						initial={{ opacity: 0, x: -100 }}
 						animate={{ opacity: 1, x: 0 }}
@@ -160,7 +159,7 @@ function OpenArenas({ setValue }: { setValue: (value: boolean) => void }) {
 						className="*:border-1 *:border-white/10 *:rounded-sm *:px-2
 							*:cursor-pointer *:hover:scale-101 *:duration-400
 							*:transition-all
-							grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 "
+							grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
 					>
 						{
 							tournaments.map((el: any) => {
