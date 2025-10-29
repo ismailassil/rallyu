@@ -1,32 +1,46 @@
 import { z } from "zod";
 
-const trim = (val: string) => val.trim();
+const trim = (val: any): string => {
+	return typeof val === 'string' ? val.trim() : '';
+};
 
-export const firstNameField = z.string()
-	.nonempty('first_name.required')
+const trimAndLowercase = (val: any): string => {
+	return typeof val === 'string' ? val.trim().toLowerCase() : '';
+};
+
+export const firstNameField = z.preprocess(
+	trim,
+	z.string()
+	.min(1, 'first_name.required')
 	.min(2, 'first_name.min')
 	.max(15, 'first_name.max')
 	.regex(/^[A-Za-z\s\-']+$/, 'first_name.format')
-	.transform(trim);
+);
 
-export const lastNameField = z.string()
-	.nonempty('last_name.required')
+export const lastNameField = z.preprocess(
+	trim,
+	z.string()
+	.min(1, 'last_name.required')
 	.min(2, 'last_name.min')
 	.max(15, 'last_name.max')
 	.regex(/^[A-Za-z\s\-']+$/, 'last_name.format')
-	.transform(trim);
+);
 
-export const usernameField = z.string()
-	.nonempty('username.required')
+export const usernameField = z.preprocess(
+	trim,
+	z.string()
+	.min(1, 'username.required')
 	.min(3, 'username.min')
 	.max(10, 'username.max')
 	.regex(/^[a-zA-Z0-9_]+$/, 'username.format')
-	.transform(trim);
+);
 
-export const emailField = z.string()
-	.nonempty('email.required')
+export const emailField = z.preprocess(
+	trimAndLowercase,
+	z.string()
+	.min(1, 'email.required')
 	.email('email.invalid')
-	.transform((val) => val.trim().toLowerCase());
+);
 
 export const passwordField = z.string()
 	.nonempty('password.required')
@@ -35,13 +49,17 @@ export const passwordField = z.string()
 	.regex(/(?=.*[A-Z])/, 'password.uppercase')
 	.regex(/(?=.*\d)/, 'password.digit');
 
-export const phoneNumberField = z.string()
-	.nonempty('phone.required')
+export const phoneNumberField = z.preprocess(
+	trim,
+	z.string()
+	.min(1, 'phone.required')
 	.e164('phone.format')
-	.transform(trim);
+);
 
-export const bioField = z.string()
-	.nonempty('bio.required')
+export const bioField = z.preprocess(
+	trim,
+	z.string()
+	.min(1, 'bio.required')
 	.min(3, 'bio.min')
-	.max(50, 'bio.max')
-	.transform(trim);
+	.max(150, 'bio.max')
+);
