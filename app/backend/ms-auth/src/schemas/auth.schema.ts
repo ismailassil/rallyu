@@ -214,11 +214,47 @@ const verifycontactresend = {
 	}
 }
 
+const consent_redirect = {
+	querystring: {
+		type: 'object',
+		properties: {
+			frontendOrigin: { type: 'string' }
+		},
+		required: ['frontendOrigin'],
+		additionalProperties: false
+	}
+}
+
+const callback_handler = {
+	querystring: {
+		type: 'object',
+		properties: {
+			code: { type: 'string' },
+			state: { type: 'string' },
+			error: { type: 'string' }
+		},
+		oneOf: [
+			{ required: ['code', 'state'] },	// successful auth case
+			{ required: ['error', 'state'] }	// denied or failed case
+		]
+	}
+}
+
 
 export const authRoutesSchemas = {
 	core: {
 		register: register,
 		login: login,
+		oauth: {
+			google: {
+				consent_redirect: consent_redirect,
+				callback_handler: callback_handler
+			},
+			intra42: {
+				consent_redirect: consent_redirect,
+				callback_handler: callback_handler
+			}
+		}
 	},
 	twoFactor: {
 		login: {

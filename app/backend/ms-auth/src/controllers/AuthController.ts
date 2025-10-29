@@ -7,6 +7,8 @@ import { UUID } from "crypto";
 import { AuthChallengeMethod } from "../repositories/AuthChallengesRepository";
 import { JSONCodec } from "nats";
 import logger from "../utils/misc/logger";
+import { oauthConfig } from "../config/oauth";
+import AuthError from "../types/exceptions/AAuthError";
 
 
 class AuthController {
@@ -140,38 +142,105 @@ class AuthController {
 		}
 	}
 
+	async googleOAuthConsentRedirectHandler(request: FastifyRequest, reply: FastifyReply) {
+		const { frontendOrigin } = request.query as { frontendOrigin: string };
+
+		const scope = ['openid', 'profile', 'email'];
+
+		const googleOAuthConsentURL = oauthConfig.google.auth_uri + '?' +
+		new URLSearchParams({
+			client_id: oauthConfig.google.client_id,
+			redirect_uri: oauthConfig.google.redirect_uri,
+			response_type: 'code',
+			scope: scope.join(' '),
+			access_type: 'offline',
+			prompt: 'consent',
+			state: frontendOrigin
+		});
+
+		logger.trace({ googleOAuthConsentURL, frontendOrigin }, '[OAUTH] GoogleOAuthConsent Redirect');
+
+		return reply.redirect(googleOAuthConsentURL);
+	}
+
 	async googleOAuthCallbackHandler(request: FastifyRequest, reply: FastifyReply) {
-		const { code, state: frontendOrigin } = request.query as { code: string, state: string }; // TODO: ADD SCHEMA
+		const { code, state: frontendOrigin, error } = request.query as { code?: string, state?: string, error?: string };
 
-		console.log({ frontendOrigin }, '[OAUTH] GoogleOAuthConsent Callback Handler');
+		logger.trace({ code, frontendOrigin, error }, '[OAUTH] GoogleOAuthConsent Callback Handler');
 
-		const { user, accessToken, refreshToken } = await this.authService.loginGoogleOAuth(code, request.fingerprint!);
+		if (error) {
+			logger.warn({ error }, '[OAUTH] GoogleOAuthProvider returned an error');
+			return reply.redirect(`${frontendOrigin}?error=${encodeURIComponent(error)}`);
+		}
 
-		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
-		return reply.setCookie(
-			'refreshToken', refreshToken, {
-				path: '/',
-				httpOnly: true,
-				secure: false,
-				sameSite: 'lax'
-			}
-		).redirect(`${frontendOrigin}`);
+		try {
+			const { user, accessToken, refreshToken } = await this.authService.loginGoogleOAuth(code!, request.fingerprint!);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+			return reply.setCookie(
+				'refreshToken', refreshToken, {
+					path: '/',
+					httpOnly: true,
+					secure: false,
+					sameSite: 'lax'
+				}
+			).redirect(`${frontendOrigin}`);
+		} catch (err) {
+			if (err instanceof AuthError)
+				return reply.redirect(`${frontendOrigin}?error=${encodeURIComponent(err.errorCode)}`);
+			else
+				return reply.redirect(`${frontendOrigin}?error=${encodeURIComponent('AUTH_OAUTH_FAILED')}`);
+		}
+	}
+
+	async intra42OAuthConsentRedirectHandler(request: FastifyRequest, reply: FastifyReply) {
+		const { frontendOrigin } = request.query as { frontendOrigin: string };
+
+		const scope = 'public';
+
+		const intra42OAuthConsentURL = oauthConfig.intra42.auth_uri + '?' +
+		new URLSearchParams({
+			client_id: oauthConfig.intra42.client_id,
+			redirect_uri: oauthConfig.intra42.redirect_uri,
+			response_type: 'code',
+			scope: scope,
+			state: frontendOrigin
+		});
+
+		logger.trace({ intra42OAuthConsentURL, frontendOrigin }, '[OAUTH] 42OAuthConsent Redirect');
+
+		return reply.redirect(intra42OAuthConsentURL);
 	}
 
 	async intra42OAuthCallbackHandler(request: FastifyRequest, reply: FastifyReply) {
-		const { code } = request.query as { code: string }; // TODO: ADD SCHEMA
+		const { code, state: frontendOrigin, error } = request.query as { code?: string, state?: string, error?: string };
 
-		const { user, accessToken, refreshToken } = await this.authService.loginIntra42(code, request.fingerprint!);
+		logger.trace({ code, frontendOrigin, error }, '[OAUTH] 42OAuthConsent Callback Handler');
 
-		const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
-		return reply.setCookie(
-			'refreshToken', refreshToken, {
-				path: '/',
-				httpOnly: true,
-				secure: false,
-				sameSite: 'lax'
-			}
-		).redirect(`${process.env['FRONTEND_URL']}`);
+		if (error) {
+			logger.warn({ error }, '[OAUTH] 42OAuthProvider returned an error');
+			return reply.redirect(`${frontendOrigin}?error=${encodeURIComponent(error)}`);
+		}
+
+		try {
+			const { user, accessToken, refreshToken } = await this.authService.loginIntra42(code!, request.fingerprint!);
+
+			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
+			return reply.setCookie(
+				'refreshToken', refreshToken, {
+					path: '/',
+					httpOnly: true,
+					secure: false,
+					sameSite: 'lax'
+				}
+			).redirect(`${frontendOrigin}`);
+		} catch (err) {
+			logger.error({ err }, '[OAUTH] 42OAuth failed');
+			if (err instanceof AuthError)
+				return reply.redirect(`${frontendOrigin}?error=${encodeURIComponent(err.errorCode)}`);
+			else
+				return reply.redirect(`${frontendOrigin}?error=${encodeURIComponent('AUTH_OAUTH_FAILED')}`);
+		}
 	}
 
 	async fetchSessionsHandler(request: FastifyRequest, reply: FastifyReply) {
