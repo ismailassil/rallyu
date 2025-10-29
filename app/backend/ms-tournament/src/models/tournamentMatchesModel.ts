@@ -212,7 +212,7 @@ class TournamentMatchesModel {
 								gameType: match.mode === "ping-pong" ? "pingpong" : "tictactoe",
 								tournament: {
 									gameId: match.id,
-									tournamentURL: match.tournament_id
+									id: match.tournament_id
 								}
 							}),
 							headers: {

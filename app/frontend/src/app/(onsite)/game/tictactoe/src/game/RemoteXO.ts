@@ -96,7 +96,7 @@ class RemoteXO {
                     const displayedResult = data.winner === this.state.mySign ? 'win' : data.winner === 'draw' ? 'draw' : data.winner === 'X' ? `cross` : 'circle'
                     if (data.tournamentId) this.eventHandlers?.updateTournamentId!(data.tournamentId);
                     this.eventHandlers?.updateDisplayedResult!(displayedResult);
-                    this.eventHandlers?.updateTournamentURL!(data.tournamentURL);
+                    // this.eventHandlers?.updateTournamentURL!(data.tournamentURL);
 					this.eventHandlers?.updateTimer(0);
 					this.proxy.disconnect();
                     console.error(data);
