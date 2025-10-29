@@ -59,8 +59,11 @@ export class TicTacToePlayer implements Player<TicTacToeRoom> {
                 const data = JSON.parse(message.toString());
 				switch (data.type) {
 					case 'move':
-						if (room.state.currentPlayer !== this.sign || !room.playMove(data.move, this.sign)) {
-							return;
+						try {
+							room.playMove(data.move, this.sign)
+						} catch (err) {
+							const error = err as Error;
+							console.log('rejected move: ', error.message);
 						}
 						break;
 					case 'forfeit':
@@ -168,9 +171,10 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.saveGameData();
 	}
 
-	public playMove(move: number, sign: XOSign): boolean {
-		if (move < 0 || move > 9 || this.state.cells[move] !== '')
-			return false;
+	public playMove(move: number, sign: XOSign) {
+		if (this.state.currentPlayer !== sign) throw Error('not your turn yet');
+		if (move < 0 || move > 8 ) throw Error('forbidden move');
+		if (this.state.cells[move] !== '') throw Error('cell already marked');
 
 		this.state.cells[move] = sign;
 		this.state.currentPlayer = this.state.currentPlayer === 'X' ? 'O' : 'X';
@@ -190,8 +194,6 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		} else {
 			this.resetTurnTimer();
 		}
-		
-		return true;
 	}
 	
 	private checkWin(): number[] | null {
