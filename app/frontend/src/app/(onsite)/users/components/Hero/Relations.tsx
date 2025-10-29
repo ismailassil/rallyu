@@ -54,18 +54,18 @@ export default function Relations({ userId, username, currentStatus } : Relation
 	};
 
 	const BUTTONS = {
-		NONE: [<Button key="add" text={t('add')} icon={LocalUserPlusIcon} onClick={ACTIONS.add} />],
-		OUTGOING: [<Button key="cancel" text={t('cancel')} icon={LocalUserMinusIcon} onClick={ACTIONS.cancel} />],
+		NONE: [<Button key='add' text={t('add')} icon={LocalUserPlusIcon} onClick={ACTIONS.add} />],
+		OUTGOING: [<Button key='cancel' text={t('cancel')} icon={LocalUserMinusIcon} onClick={ACTIONS.cancel} />],
 		INCOMING: [
-			<Button key="accept" text={t('accept')} icon={LocalUserPlusIcon} onClick={ACTIONS.accept} />,
-			<Button key="reject" text={t('decline')} icon={LocalUserMinusIcon} onClick={ACTIONS.reject} />,
+			<Button key='accept' text={t('accept')} icon={LocalUserPlusIcon} onClick={ACTIONS.accept} />,
+			<Button key='reject' text={t('decline')} icon={LocalUserMinusIcon} onClick={ACTIONS.reject} />,
 		],
-		FRIENDS: [<Button key="chat" text='Chat' icon={LocalChatIcon} onClick={() => router.push(`/chat/${username}`) } />, <Button key="unfriend" text={t('unfriend')} icon={LocalUserMinusIcon} onClick={ACTIONS.unfriend} />],
-		BLOCKED: [<Button key="unblock" text={t('unblock')} icon={LocalUserXIcon} onClick={ACTIONS.unblock} />]
+		FRIENDS: [<Button key='chat' text='Chat' icon={LocalChatIcon} onClick={() => router.push(`/chat/${username}`) } />, <Button key='unfriend' text={t('unfriend')} icon={LocalUserMinusIcon} onClick={ACTIONS.unfriend} />],
+		BLOCKED: [<Button key='unblock' text={t('unblock')} icon={LocalUserXIcon} onClick={ACTIONS.unblock} />]
 	};
 
 	return (
-		<div className="flex gap-3">
+		<div className='flex gap-3'>
 			{BUTTONS[currentStatus]}
 			{currentStatus !== 'BLOCKED' && (
 				<Button text={t('block')} icon={LocalUserXIcon} onClick={ACTIONS.block} />
