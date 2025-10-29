@@ -20,7 +20,7 @@
                 "t-date-error": "Something went wrong",
                 "t-date-error-nan": "Invalid date value",
                 "t-date-error-format": "Invalid date format. Expected format: YYYY-MM-DDTHH:mm (e.g., 2025-10-28T21:18)",
-                "t-date-error-time": "Tournament must be scheduled at least 30 min ahead",
+                "t-date-error-time": "Tournament must be scheduled at least 3 min ahead",
                 "t-join": "Join Tournament",
                 "t-in": "In",
                 "t-out": "Out",

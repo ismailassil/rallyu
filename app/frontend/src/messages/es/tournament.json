@@ -20,7 +20,7 @@
                 "t-date-error": "Algo salió mal",
                 "t-date-error-nan": "Valor de fecha no válido",
                 "t-date-error-format": "Formato de fecha no válido. Formato esperado: YYYY-MM-DDTHH:mm (por ejemplo: 2025-10-28T21:18)",
-                "t-date-error-time": "El torneo debe programarse al menos con 30 minutos de anticipación",
+                "t-date-error-time": "El torneo debe programarse al menos con 3 minutos de anticipación",
                 "t-join": "Unirse al Torneo",
                 "t-in": "Dentro",
                 "t-out": "Fuera",
