@@ -16,7 +16,7 @@ const MS_TOURN_HOST = process.env.MS_TOURN_HOST;
 const MS_TOURN_API_KEY = process.env.MS_TOURN_API_KEY;
 
 const MAX_SCORE: number = 3;
-const TOTAL_ROUNDS: number = 3;
+const TOTAL_ROUNDS: number = 2;
 const COUNTDOWN_TIME: number = 3000;
 const WINNING_COMBOS: number[][] = [
 	[0, 1, 2],
@@ -330,6 +330,8 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.handleWin(winnerSign);
 		if (this.overtimeSwitch)
 			this.handleGameOver();
+		else
+			this.startRound();
 	}
 	
 	private determineOverallWinner(): XOSign | 'draw' {
