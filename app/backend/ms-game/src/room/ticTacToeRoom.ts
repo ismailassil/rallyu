@@ -103,7 +103,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	startOfRoundPlayer: XOSign;
 	timerStartTimeStamp: number = 0;
 	status: string = 'genesis'
-	turnTimeStages = [10000, 5000, 3000, 1000];
+	turnTimeStages = [10000, 6000, 3000, 2000];
 	turnTimeIndex = 0;
 	overtimeSwitch = false;
 
