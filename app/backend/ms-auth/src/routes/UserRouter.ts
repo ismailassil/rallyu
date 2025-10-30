@@ -54,18 +54,25 @@ async function userRouter(fastify: FastifyInstance, opts: {
 		schema: schemas.users.update,
 		preHandler: [
 			fastify.accessTokenAuth,
+			fastify.resourceOwnershipAuth,
 			zodPreHandler(zodSchemas.users.update)
 		],
 		handler: opts.userController.updateUserHandler.bind(opts.userController)
 	});
 	fastify.put('/:id/anonymize', {
 		schema: schemas.users.anonymize,
-		preHandler: fastify.accessTokenAuth,
+		preHandler: [
+			fastify.accessTokenAuth,
+			fastify.resourceOwnershipAuth,
+		],
 		handler: opts.userController.anonymizeUserHandler.bind(opts.userController)
 	});
 	fastify.delete('/:id', {
 		schema: schemas.users.delete,
-		preHandler: fastify.accessTokenAuth,
+		preHandler: [
+			fastify.accessTokenAuth,
+			fastify.resourceOwnershipAuth,
+		],
 		handler: opts.userController.deleteUserHandler.bind(opts.userController)
 	});
 
@@ -92,7 +99,10 @@ async function userRouter(fastify: FastifyInstance, opts: {
 
 	fastify.post('/:id/avatar', {
 		schema: schemas.users.fetch.byId,
-		preHandler: fastify.accessTokenAuth,
+		preHandler: [
+			fastify.accessTokenAuth,
+			fastify.resourceOwnershipAuth,
+		],
 		handler: opts.userController.uploadAvatarHandler.bind(opts.userController)
 	});
 

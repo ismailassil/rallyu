@@ -132,6 +132,7 @@ declare module 'fastify' {
 		accessTokenAuth: any,
 		refreshTokenAuth: any,
 		apiKeyAuth: any,
+		resourceOwnershipAuth: any,
 		js: JetStreamClient,
 		jsonC: any,
 		nats: any
