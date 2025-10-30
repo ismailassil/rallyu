@@ -23,6 +23,7 @@ const GameField = () => {
     const [ score, setScore ] = useState<[number, number]>([0, 0]);
     const [ result, setResult ] = useState<string | null>(null);
 	const [ cells, setCells ] = useState<XOSign[]>(Array(9).fill(''));
+    const [ overtime, setOvertime] = useState<boolean>(false);
     const router = useRouter();
     const [ tournamentId, setTournamentId ] = useState<number | null>(null);
 
@@ -41,7 +42,8 @@ const GameField = () => {
         updateDisplayedResult: setResult,
         updateCurrentPlayer: setCurrentPlayer,
         updateSign: setSign,
-        updateTournamentId: setTournamentId
+        updateTournamentId: setTournamentId,
+        updateOvertime: setOvertime
     }));
 
     useEffect(() => {
@@ -95,6 +97,7 @@ const GameField = () => {
                             resignSwitch={overlayStatus === 'gameover' ? false : true}
                             playerSign={sign}
                             currentPlayer={currentPlayer}
+                            overTime={overtime}
                         />
                         <div className="relative w-full max-w-[750px]">
                             <TicTacToe tictactoe={tictactoe.current} board={cells} />

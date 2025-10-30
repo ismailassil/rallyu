@@ -22,6 +22,7 @@
       "error_codes": "{code, select, error_code_1 {Session and room ID mismatch} error_code_2 {Match room not found} error_code_3 {Player not in match room} error_code_4 {Same account launched game from different device Reconnect if you prefer to use this device.} error_code_5 {Match Room Expired} other {Something went wrong}}"
     },
     "ingame": {
+      "overtime": "Overtime",
       "start": "Go!",
       "round": "Round",
       "resign": "Resign",
