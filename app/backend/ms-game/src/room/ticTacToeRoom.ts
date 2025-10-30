@@ -16,7 +16,7 @@ const MS_TOURN_HOST = process.env.MS_TOURN_HOST;
 const MS_TOURN_API_KEY = process.env.MS_TOURN_API_KEY;
 
 const MAX_SCORE: number = 3;
-const TOTAL_ROUNDS: number = 2;
+const TOTAL_ROUNDS: number = 3;
 const COUNTDOWN_TIME: number = 3000;
 const WINNING_COMBOS: number[][] = [
 	[0, 1, 2],
@@ -176,6 +176,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	}
 
 	private overtime() {
+		this.overtimeSwitch = true;
 		if (this.turnTimeIndex < this.turnTimeStages.length - 1)
 			this.turnTimeIndex++;
 		this.broadcastToPlayers({
@@ -211,10 +212,8 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		}
 
 		if (this.state.currentRound > TOTAL_ROUNDS) {
-			if (this.tournament && this.players[0].score === this.players[1].score) {
+			if (this.tournament && this.players[0].score === this.players[1].score)
 				this.overtime();
-				this.overtimeSwitch = true;
-			}
 			else
 				this.handleGameOver();
 		} else {
@@ -328,10 +327,14 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	private handleTurnTimeout(): void {
 		const winnerSign = this.state.currentPlayer === 'X' ? 'O' : 'X';
 		this.handleWin(winnerSign);
-		if (this.overtimeSwitch)
-			this.handleGameOver();
-		else
+		if (this.state.currentRound > TOTAL_ROUNDS) {
+			if (this.tournament && this.players[0].score === this.players[1].score)
+				this.overtime();
+			else
+				this.handleGameOver();
+		} else {
 			this.startRound();
+		}
 	}
 	
 	private determineOverallWinner(): XOSign | 'draw' {
