@@ -1,6 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import UserService from "../services/User/UserService";
-import { IProfileRequest } from "../types";
 import AuthResponseFactory from "./AuthResponseFactory";
 import { JSONCodec } from "nats";
 

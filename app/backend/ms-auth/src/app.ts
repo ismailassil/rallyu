@@ -41,6 +41,7 @@ import refreshTokenAuth from './middleware/auth/refreshTokenAuth';
 import cookie from '@fastify/cookie';
 import { attachTokensHook } from './middleware/hooks/attachTokensHook';
 import apiKeyAuth from './middleware/auth/apiKeyAuth';
+import resourceOwnershipAuth from './middleware/auth/resourceOwnershipAuth';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
@@ -65,6 +66,7 @@ async function buildApp(): Promise<FastifyInstance> {
 	fastify.decorate('accessTokenAuth', accessTokenAuth);
 	fastify.decorate('refreshTokenAuth', refreshTokenAuth);
 	fastify.decorate('apiKeyAuth', apiKeyAuth);
+	fastify.decorate('resourceOwnershipAuth', resourceOwnershipAuth);
 	fastify.decorateRequest('bearerToken', null);
 	fastify.decorateRequest('accessToken', null);
 	fastify.decorateRequest('refreshToken', null);

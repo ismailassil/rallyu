@@ -144,13 +144,15 @@ class AuthController {
 
 	async googleOAuthConsentRedirectHandler(request: FastifyRequest, reply: FastifyReply) {
 		const { frontendOrigin } = request.query as { frontendOrigin: string };
+		const frontendURL = new URL(frontendOrigin);
+		const dynamicRedirectURI = `${frontendURL.origin}/auth/google/callback`;
 
 		const scope = ['openid', 'profile', 'email'];
 
 		const googleOAuthConsentURL = oauthConfig.google.auth_uri + '?' +
 		new URLSearchParams({
 			client_id: oauthConfig.google.client_id,
-			redirect_uri: oauthConfig.google.redirect_uri,
+			redirect_uri: dynamicRedirectURI, // this used to be taken from config but for demo purposes we're using dynamic redirect_uri
 			response_type: 'code',
 			scope: scope.join(' '),
 			access_type: 'offline',
@@ -165,6 +167,8 @@ class AuthController {
 
 	async googleOAuthCallbackHandler(request: FastifyRequest, reply: FastifyReply) {
 		const { code, state: frontendOrigin, error } = request.query as { code?: string, state?: string, error?: string };
+		const frontendURL = new URL(frontendOrigin!);
+		const dynamicRedirectURI = `${frontendURL.origin}/auth/google/callback`;
 
 		logger.trace({ code, frontendOrigin, error }, '[OAUTH] GoogleOAuthConsent Callback Handler');
 
@@ -174,7 +178,11 @@ class AuthController {
 		}
 
 		try {
-			const { user, accessToken, refreshToken } = await this.authService.loginGoogleOAuth(code!, request.fingerprint!);
+			const { user, accessToken, refreshToken } = await this.authService.loginGoogleOAuth(
+				code!,
+				dynamicRedirectURI, // this used to be taken from config but for demo purposes we're using dynamic redirect_uri
+				request.fingerprint!
+			);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 			return reply.setCookie(
@@ -195,13 +203,15 @@ class AuthController {
 
 	async intra42OAuthConsentRedirectHandler(request: FastifyRequest, reply: FastifyReply) {
 		const { frontendOrigin } = request.query as { frontendOrigin: string };
+		const frontendURL = new URL(frontendOrigin);
+		const dynamicRedirectURI = `${frontendURL.origin}/auth/42/callback`;
 
 		const scope = 'public';
 
 		const intra42OAuthConsentURL = oauthConfig.intra42.auth_uri + '?' +
 		new URLSearchParams({
 			client_id: oauthConfig.intra42.client_id,
-			redirect_uri: oauthConfig.intra42.redirect_uri,
+			redirect_uri: dynamicRedirectURI, // this used to be taken from config but for demo purposes we're using dynamic redirect_uri
 			response_type: 'code',
 			scope: scope,
 			state: frontendOrigin
@@ -214,6 +224,8 @@ class AuthController {
 
 	async intra42OAuthCallbackHandler(request: FastifyRequest, reply: FastifyReply) {
 		const { code, state: frontendOrigin, error } = request.query as { code?: string, state?: string, error?: string };
+		const frontendURL = new URL(frontendOrigin!);
+		const dynamicRedirectURI = `${frontendURL.origin}/auth/42/callback`;
 
 		logger.trace({ code, frontendOrigin, error }, '[OAUTH] 42OAuthConsent Callback Handler');
 
@@ -223,7 +235,11 @@ class AuthController {
 		}
 
 		try {
-			const { user, accessToken, refreshToken } = await this.authService.loginIntra42(code!, request.fingerprint!);
+			const { user, accessToken, refreshToken } = await this.authService.loginIntra42(
+				code!,
+				dynamicRedirectURI, // this used to be taken from config but for demo purposes we're using dynamic redirect_uri
+				request.fingerprint!
+			);
 
 			const { status, body } = AuthResponseFactory.getSuccessResponse(200, {});
 			return reply.setCookie(
