@@ -33,7 +33,7 @@ const GameField = () => {
     }
 
 	return (
-        <div className="flex min-h-0 w-full px-10 flex-1 flex-col items-center justify-center">
+        <div className="flex min-h-0 w-full px-10 flex-1 flex-col items-center overflow-auto justify-center">
             <div className="flex flex-col w-auto h-auto max-h-full max-w-full items-center justify-center">
                 <div className="flex flex-col w-full max-w-[1200px] h-auto aspect-[4/3] justify-center">
                     <div className="flex min-h-0 w-full relative justify-center">
