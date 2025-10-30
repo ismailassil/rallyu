@@ -156,7 +156,7 @@ function validateField(
 			console.log('ZodError: ', err);
 			console.log('Issues: ', err.issues);
 			const fieldError = err.issues.find(issue => issue.path[0] === fieldName);
-			err.issues.forEach(issue => console.log(`Current issue path[0]: `, issue.path[0]));
+			// err.issues.forEach(issue => console.log(`Current issue path[0]: `, issue.path[0]));
 			console.log('fieldError: ', fieldError);
 			console.groupEnd();
 			return fieldError ? fieldError.message : '';

@@ -319,19 +319,19 @@ class NotifSerives {
 	}
 
 	private async filterMessage(data: RAW_NOTIFICATION): Promise<USER_NOTIFICATION> {
-		const cachedAvatar = await fastify.redis.get(`avatar:${data.sender_id}`);
-		let avatar;
-		if (cachedAvatar !== null && cachedAvatar.length !== 0) {
-			avatar = cachedAvatar;
-		} else {
-			const res = await fastify.nats.request(
-				"user.avatar",
-				fastify.jc.encode({ user_id: data.sender_id }),
-			);
+		// const cachedAvatar = await fastify.redis.get(`avatar:${data.sender_id}`);
+		// let avatar;
+		// if (cachedAvatar !== null && cachedAvatar.length !== 0) {
+		// 	avatar = cachedAvatar;
+		// } else {
+		const res = await fastify.nats.request(
+			"user.avatar",
+			fastify.jc.encode({ user_id: data.sender_id }),
+		);
 
-			avatar = fastify.jc.decode(res.data).avatar_url;
-			fastify.redis.setex(`avatar:${data.sender_id}`, 15 * 60, avatar);
-		}
+		const avatar = fastify.jc.decode(res.data).avatar_url;
+		fastify.redis.setex(`avatar:${data.sender_id}`, 15 * 60, avatar);
+		// }
 
 		return {
 			id: data.id,
@@ -352,19 +352,19 @@ class NotifSerives {
 	private async registerNotification(payload: NOTIFY_USER_PAYLOAD): Promise<RAW_NOTIFICATION> {
 		const { senderId } = payload;
 
-		const cachedUsername = await fastify.redis.get(`username:${senderId}`);
-		let senderUsername;
+		// const cachedUsername = await fastify.redis.get(`username:${senderId}`);
+		// let senderUsername;
 
-		if (cachedUsername !== null) {
-			senderUsername = cachedUsername;
-		} else {
-			const senderUser = await fastify.nats.request(
-				"user.username",
-				fastify.jc.encode({ user_id: senderId }),
-			);
+		// if (cachedUsername !== null) {
+			// senderUsername = cachedUsername;
+		// } else {
+		const senderUser = await fastify.nats.request(
+			"user.username",
+			fastify.jc.encode({ user_id: senderId }),
+		);
 
-			senderUsername = fastify.jc.decode(senderUser.data).username;
-		}
+		const senderUsername = fastify.jc.decode(senderUser.data).username;
+		// }
 
 		const data: RAW_NOTIFICATION = await this.notifRepository.registerMessage(
 			payload,

@@ -11,7 +11,7 @@ docker:
 	@if ! docker-compose -v | grep 2.30.0; then bash install-docker.sh; fi
 
 ### All Project
-up_all:
+up_all: docker env
 	@docker-compose -f './compose.all.yaml' up --build -d
 
 down_all:
@@ -26,7 +26,7 @@ ps_all:
 re_all: clean_all up_all
 
 ### Only the application
-up_app: env
+up_app: docker env
 	@docker-compose up --build -d
 
 down_app:
