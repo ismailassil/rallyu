@@ -96,7 +96,6 @@ class AuthController {
 	}
 
 	async logoutHandler(request: FastifyRequest, reply: FastifyReply) {
-		// await this.authService.LogOut(request.refreshTokenPayload!);
 		await this.sessionsService.revokeSession(
 			request.refreshTokenPayload!.session_id!,
 			request.refreshTokenPayload!.sub!,

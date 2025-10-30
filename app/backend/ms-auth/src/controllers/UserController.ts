@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import UserService from "../services/User/UserService";
 import AuthResponseFactory from "./AuthResponseFactory";
 import { JSONCodec } from "nats";
+import { BadRequestError } from "../types/exceptions/AAuthError";
 
 class UserController {
 	constructor(
@@ -154,9 +155,10 @@ class UserController {
 		const fileData = await request.file();
 
 		if (!fileData)
-			return reply.code(400);
+			throw new BadRequestError();
 
 		await this.userService.updateAvatar(user_id!, fileData!);
+		this.publishUserRefreshRequiredToUser(user_id!);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(201, {});
 		return reply.code(status).send(body);

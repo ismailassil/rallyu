@@ -4,6 +4,7 @@ import { MultipartFile } from '@fastify/multipart';
 import { pipeline } from 'stream/promises';
 import { writeFile } from 'fs/promises';
 import axios from 'axios';
+import { BadRequestError } from '../../types/exceptions/AAuthError';
 const { v4: uuidv4 } = require('uuid');
 
 class CDNService {
@@ -18,7 +19,7 @@ class CDNService {
 
 	async storeFromMultipart(fileData: MultipartFile) {
 		if (!this.allowedMimeTypes.includes(fileData.mimetype))
-			throw new Error('MIME_TYPE_NOT_ALLOWED');
+			throw new BadRequestError('File type not allowed', 'AUTH_MIME_TYPE_NOT_ALLOWED');
 
 		try {
 			const fileExtension = fileData.mimetype.split('/')[1];
@@ -44,7 +45,7 @@ class CDNService {
 			const contentType = response.headers['content-type']?.toString().split(';')[0]?.trim().toLowerCase() || '';
 
 			if (!this.allowedMimeTypes.includes(contentType))
-				throw new Error('MIME_TYPE_NOT_ALLOWED');
+				throw new BadRequestError('File type not allowed', 'AUTH_MIME_TYPE_NOT_ALLOWED');
 
 			const fileExtension = contentType.split('/')[1];
 			const fileName = `${uuidv4()}.${fileExtension}`;

@@ -5,6 +5,7 @@ import Avatar from '@/app/(onsite)/users/components/Avatar';
 import { useFormContext } from '@/app/(auth)/components/Form/FormContext';
 import { useTranslations } from 'next-intl';
 import useAPICall from '@/app/hooks/useAPICall';
+import { toastError } from '@/app/components/CustomToast';
 
 interface ProfilePreviewProps {
 	ref: RefObject<any>;
@@ -38,6 +39,7 @@ function Button({ children, actionIcon, onClick, disabled = false } : ButtonProp
 
 export default function ProfilePreview({ ref, onChange } : ProfilePreviewProps) {
 	const t = useTranslations('auth.common');
+	const tautherr = useTranslations('auth');
 
 	const {
 		loggedInUser,
@@ -59,6 +61,15 @@ export default function ProfilePreview({ ref, onChange } : ProfilePreviewProps) 
 	function handleChange(e: ChangeEvent<HTMLInputElement>) {
 		const file = e.target.files?.[0];
 		if (!file) return ;
+
+		if (file.size > 2 * 1024 * 1024) {
+			toastError(tautherr('errorCodes', { code: 'AUTH_FILE_MAX_2MB' }));
+			return ;
+		}
+		if (!['image/jpg', 'image/jpeg', 'image/png'].includes(file.type)) {
+			toastError(tautherr('errorCodes', { code: 'AUTH_INVALID_FILE_TYPE' }));
+			return ;
+		}
 		setAvatarFile(file);
 		setAvatarPreview(URL.createObjectURL(file));
 		onChange(true);
