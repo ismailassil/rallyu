@@ -3,6 +3,7 @@ import { APIClient } from '@/app/(api)/APIClient';
 import SocketClient from '@/app/(api)/SocketClient';
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { AuthContextType, LoggedInUser } from './auth.context.types';
+import { useRouter } from 'next/navigation';
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -21,6 +22,7 @@ type AuthProviderType = {
 }
 
 export default function AuthProvider({ children } : AuthProviderType ) {
+	const router = useRouter();
 	const [loggedInUser, setLoggedInUser] = useState<LoggedInUser | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -33,9 +35,19 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		}
 	}, []);
 
+	useEffect(() => {
+		if (!loggedInUser) return ;
+		setIsLoading(true);
+		document.cookie = `NEXT_LOCALE_INT=${loggedInUser.lang}; path=/;`;
+		router.refresh();
+		setIsLoading(false);
+	}, [loggedInUser]);
+
 	const initializeAuth = async () => {
 		console.group('initializeAuth');
 		try {
+			setIsLoading(true);
+
 			const { user, accessToken } = await apiClient.auth.refreshToken();
 
 			socket.connect(accessToken);
@@ -58,7 +70,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	async function login(username: string, password: string) {
 		try {
-			// setIsLoading(true);
+			setIsLoading(true);
 			const res = await apiClient.auth.login(
 				username,
 				password
@@ -79,13 +91,14 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		} catch (err) {
 			throw err;
 		} finally {
-			// setIsLoading(false);
+			setIsLoading(false);
 		}
 	}
 
 	async function loginUsing2FA(token: string, code: string) {
 		try {
-			// setIsLoading(true);
+			setIsLoading(true);
+
 			const { user, accessToken } = await apiClient.auth.loginUsing2FA(
 				token,
 				code
@@ -99,7 +112,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		} finally {
 			sessionStorage.removeItem('token');
 			sessionStorage.removeItem('enabledMethods');
-			// setIsLoading(false);
+			setIsLoading(false);
 		}
 	}
 

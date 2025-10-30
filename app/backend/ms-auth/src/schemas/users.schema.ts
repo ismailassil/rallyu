@@ -70,7 +70,8 @@ const userupdate = {
 			username: { type: 'string' },
 			email: { type: 'string' },
 			phone: { type: 'string' },
-			bio: { type: 'string' }
+			bio: { type: 'string' },
+			lang: { type: 'string', enum: ['en', 'es', 'it'] }
 		},
 		required: [],
 		additionalProperties: false

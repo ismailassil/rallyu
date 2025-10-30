@@ -8,6 +8,7 @@ const userupdate = z.object({
 	email: emailField.optional(),
 	phone: phoneNumberField.optional(),
 	bio: bioField.optional(),
+	lang: z.enum(['en', 'es', 'it']).optional()
 }).refine(data => Object.keys(data).length > 0, {
 	message: "update.min"
 });

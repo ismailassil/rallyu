@@ -67,7 +67,7 @@ export class UserService {
 		return res.data;
 	}
 
-	async updateUser(id: number, payload: { first_name?: string, last_name?: string, username?: string, email?: string, bio?: string }) {
+	async updateUser(id: number, payload: { first_name?: string, last_name?: string, username?: string, email?: string, bio?: string, lang?: 'en' | 'es' | 'it' }) {
 		const { data: res } = await this.client.put(`/users/${id}`, payload);
 		return res.data;
 	}

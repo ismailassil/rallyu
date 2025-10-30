@@ -24,6 +24,7 @@ const MIGRATIONS = [
 				auth_provider TEXT DEFAULT 'Local',
 				auth_provider_id INTEGER,
 				role TEXT DEFAULT 'user',
+				lang TEXT DEFAULT 'en',
 
 				created_at INTEGER DEFAULT (strftime('%s','now')),
 				updated_at INTEGER DEFAULT (strftime('%s','now'))

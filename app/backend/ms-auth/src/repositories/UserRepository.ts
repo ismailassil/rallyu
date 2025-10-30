@@ -18,6 +18,7 @@ interface User {
 	phone_verified: number;
 	created_at: string;
 	updated_at: string;
+	lang: string;
 }
 
 /**

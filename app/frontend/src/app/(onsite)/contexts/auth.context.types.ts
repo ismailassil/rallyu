@@ -18,6 +18,7 @@ export type LoggedInUser = {
 	auth_provider_id: string | null;
 	email_verified: 0 | 1;
 	phone_verified: 0 | 1;
+	lang: 'en' | 'es' | 'it';
 	last_message: MessageType;
 };
 

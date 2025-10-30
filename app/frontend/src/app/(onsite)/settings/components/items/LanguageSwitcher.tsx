@@ -1,3 +1,5 @@
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import useAPICall from "@/app/hooks/useAPICall";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -6,7 +8,14 @@ const LanguageSwitcher = () => {
 	const [locale, setLocale] = useState("en");
 	const router = useRouter();
 	const t = useTranslations('auth.common');
-	
+
+	const {
+		loggedInUser,
+		apiClient
+	} = useAuth();
+	const {
+		executeAPICall
+	} = useAPICall();
 
 	useEffect(() => {
 		const cookieLocale = document.cookie
@@ -19,10 +28,15 @@ const LanguageSwitcher = () => {
 		router.refresh();
 	}, [router]);
 
-	function changeLocale(newLocale: string) {
+	async function changeLocale(newLocale: string) {
 		setLocale(newLocale);
 		document.cookie = `NEXT_LOCALE_INT=${newLocale}; path=/;`;
 		router.refresh();
+
+		try {
+			if (!loggedInUser) return ;
+			await executeAPICall(() => apiClient.user.updateUser(loggedInUser.id, { lang: newLocale as 'en' | 'es' | 'it' }));
+		} catch {}
 	}
 
 	return (
@@ -30,27 +44,27 @@ const LanguageSwitcher = () => {
 			<h3 className="w-full flex-1">{t("language")}</h3>
 			<ul className="bg-card border-br-card top-13 z-10 flex w-full rounded-md border-2 py-1 backdrop-blur-3xl *:mx-1 *:w-full *:cursor-pointer *:rounded-md *:px-4 *:py-1.5 *:text-center *:transition-colors *:duration-300 *:hover:bg-black/30">
 				<button
-					onClick={(e) => {
+					onClick={async (e) => {
 						e.preventDefault();
-						changeLocale("en");
+						await changeLocale("en");
 					}}
 					className={`${locale === "en" ? "bg-black/10 ring-2" : "ring-0"} ring-white/30`}
 				>
 					🇬🇧 <span className="pl-3">English</span>
 				</button>
 				<button
-					onClick={(e) => {
+					onClick={async (e) => {
 						e.preventDefault();
-						changeLocale("es");
+						await changeLocale("es");
 					}}
 					className={`${locale === "es" ? "bg-black/10 ring-2" : "ring-0"} ring-white/30`}
 				>
 					🇪🇸 <span className="pl-3">Spanish</span>
 				</button>
 				<button
-					onClick={(e) => {
+					onClick={async (e) => {
 						e.preventDefault();
-						changeLocale("it");
+						await changeLocale("it");
 					}}
 					className={`${locale === "it" ? "bg-black/10 ring-2" : "ring-0"} ring-white/30`}
 				>
