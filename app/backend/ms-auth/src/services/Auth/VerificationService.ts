@@ -159,6 +159,14 @@ class VerificationService {
 		await this.notifyUser(targetChall.target!, targetChall.method!, newOTP);
 	}
 
+	async unverify(_for: 'email' | 'phone', userID: number) {
+		const targetUser = await this.userService.getUserById(userID);
+		if (!targetUser)
+			throw new UserNotFoundError();
+
+		await this.userService.updateUser(userID, _for === 'email' ? { email_verified: false } : _for === 'phone' ? { phone_verified: false } : {});
+	}
+
 	private async notifyUser(target: string, method: AuthChallengeMethod, OTP: string) {
 		if (method === 'EMAIL')
 			return await this.mailingService.sendEmail({

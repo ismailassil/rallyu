@@ -193,6 +193,11 @@ async function authRouter(fastify: FastifyInstance, opts: {
 		preHandler: fastify.accessTokenAuth,
 		handler: opts.verificationController.resendHandler.bind(opts.verificationController)
 	});
+	fastify.post('/verify-:contact/unverify', {
+		schema: schemas.verifyContact.unverify,
+		preHandler: fastify.accessTokenAuth,
+		handler: opts.verificationController.unverifyHandler.bind(opts.verificationController)
+	});
 }
 
 export default authRouter;
