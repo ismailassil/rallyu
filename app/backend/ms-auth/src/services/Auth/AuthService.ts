@@ -16,7 +16,7 @@ import { OAuthFailedError } from '../../types/exceptions/auth.exceptions';
 import { InvalidCredentialsError } from '../../types/exceptions/auth.exceptions';
 import { UserAlreadyExistsError } from '../../types/exceptions/user.exceptions';
 import { UserNotFoundError } from '../../types/exceptions/user.exceptions';
-import axios, { create } from 'axios';
+import axios from 'axios';
 import { oauthConfig } from '../../config/oauth';
 import { UUID, randomBytes } from 'crypto';
 import { AuthChallengeMethod } from '../../repositories/AuthChallengesRepository';
@@ -125,8 +125,8 @@ class AuthService {
 		await this.twoFAChallengeService.resendChallenge(token);
 	}
 
-	async loginIntra42(authorizationCode: string, sessionFingerprint: ISessionFingerprint) {
-		const intra42User = await this.exchangeAuthCodeIntra42(authorizationCode);
+	async loginIntra42(authorizationCode: string, dynamicRedirectURI: string, sessionFingerprint: ISessionFingerprint) {
+		const intra42User = await this.exchangeAuthCodeIntra42(authorizationCode, dynamicRedirectURI);
 
 		let existingUser = await this.userService.getUserByAuthProvider(intra42User.auth_provider, intra42User.auth_provider_id);
 		if (!existingUser) {
@@ -155,7 +155,7 @@ class AuthService {
 		return { user: userWithoutPassword, accessToken: sessionTokens.accessToken, refreshToken: sessionTokens.refreshToken };
 	}
 
-	private async exchangeAuthCodeIntra42(authorizationCode: string) {
+	private async exchangeAuthCodeIntra42(authorizationCode: string, dynamicRedirectURI: string) {
 		const { data: exchangeResult } = await axios.post(oauthConfig.intra42.exchange_uri,
 			null,
 			{
@@ -163,7 +163,7 @@ class AuthService {
 					code: authorizationCode,
 					client_id: oauthConfig.intra42.client_id,
 					client_secret: oauthConfig.intra42.client_secret,
-					redirect_uri: oauthConfig.intra42.redirect_uri,
+					redirect_uri: dynamicRedirectURI, // this used to be taken from config but for demo purposes we're using dynamic redirect_uri
 					grant_type: 'authorization_code'
 				}
 			}
@@ -195,8 +195,8 @@ class AuthService {
 		};
 	}
 
-	async loginGoogleOAuth(authorizationCode: string, sessionFingerprint: ISessionFingerprint) {
-		const googleUser = await this.exchangeAuthCodeGoogle(authorizationCode);
+	async loginGoogleOAuth(authorizationCode: string, dynamicRedirectURI: string, sessionFingerprint: ISessionFingerprint) {
+		const googleUser = await this.exchangeAuthCodeGoogle(authorizationCode, dynamicRedirectURI);
 
 		let existingUser = await this.userService.getUserByAuthProvider(googleUser.auth_provider, googleUser.auth_provider_id);
 		if (!existingUser) {
@@ -225,7 +225,7 @@ class AuthService {
 		return { user: userWithoutPassword, accessToken: sessionTokens.accessToken, refreshToken: sessionTokens.refreshToken };
 	}
 
-	async exchangeAuthCodeGoogle(authorizationCode: string) {
+	async exchangeAuthCodeGoogle(authorizationCode: string, dynamicRedirectURI: string) {
 		const { data: exchangeResult } = await axios.post(oauthConfig.google.exchange_uri,
 			null,
 				{
@@ -233,7 +233,7 @@ class AuthService {
 					code: authorizationCode,
 					client_id: oauthConfig.google.client_id,
 					client_secret: oauthConfig.google.client_secret,
-					redirect_uri: oauthConfig.google.redirect_uri,
+					redirect_uri: dynamicRedirectURI, // this used to be taken from config but for demo purposes we're using dynamic redirect_uri
 					grant_type: 'authorization_code',
 				}
 			}
