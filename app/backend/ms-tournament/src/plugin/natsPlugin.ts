@@ -9,7 +9,9 @@ const natsPlugin = async function (app: FastifyInstance, options) {
         const nc: NatsConnection = await connect({
 			servers: NATSURL,
 			user: NATSUSER,
-			pass: NATSPASS
+			pass: NATSPASS,
+			maxReconnectAttempts: -1,
+			reconnectTimeWait: 2000,
 		});
         app.log.info("NATS Server: ", nc.getServer());
 

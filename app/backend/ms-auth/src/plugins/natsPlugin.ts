@@ -22,6 +22,8 @@ async function natsPlugin(fastify: FastifyInstance, opts: NatsOpts) {
 		user: NATS_USER,
 		pass: NATS_PASSWORD,
 		name: 'User Management',
+		maxReconnectAttempts: -1,
+		reconnectTimeWait: 2000,
 	});
 
 	logger.info('[NATS] Connection established on ' + nats.getServer());

@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Flag, Unplug } from "lucide-react";
 import { AnimatePresence, motion } from 'framer-motion'
 import smoochSans from "@/app/fonts/smosh";
-import { VersusCardProps, XOSign } from "../../types/types";
+import { VersusCardProps } from "../../types/types";
 import TurnIndicator from "./TurnIndicator";
 import { useTranslations } from "next-intl";
 

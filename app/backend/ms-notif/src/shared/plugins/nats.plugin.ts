@@ -12,6 +12,8 @@ export const natsPlugin = fp(async (fastify: FastifyInstance, opts: NatsOpts) =>
 		user: opts.NATS_USER,
 		pass: opts.NATS_PASSWORD,
 		name: "Notification",
+		maxReconnectAttempts: -1,
+		reconnectTimeWait: 2000,
 	});
 
 	fastify.log.info("[NATS] Server Connection Established");

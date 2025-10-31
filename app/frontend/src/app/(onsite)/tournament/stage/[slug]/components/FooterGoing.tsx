@@ -1,5 +1,5 @@
 import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MatchTimer from "./MatchTimer";
 import unicaOne from "@/app/fonts/unicaOne";
 import { useRouter } from "next/navigation";
@@ -20,27 +20,43 @@ const FooterGoing = function (
 
     const playerReadyHandler = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-
+        console.log("RUNNNNN")
+        
         if (timeRunsOut || matchRoom)
             return ;
-
+        
+        console.log("RUNNNNN22")
         try {
             await apiClient.instance.patch(`/v1/tournament/match/ready`, { matchId: matchId });
             
             setReady(!ready);
 
-            if (!pollingGame) {
+            console.log(pollingGame)
+            console.log(ready)
 
+            if (!pollingGame) {
                 pollingGame = setInterval(async () => {
                     try {
                         const res = await apiClient.instance.get(`/v1/tournament/match/match_id?match_id=${matchId}`);
                         
                         const data = res.data;
 
-                        if (!data || !data.match_id.match_id)
+                        console.log("=====")
+                        console.log(data);
+                        console.log("=====")
+                        if (data.data.state !== 'ongoing') {
+                            console.log("==========================");
+                            if (pollingGame)
+                                clearInterval(pollingGame);
+                            pollingGame = null;
+                            return ;
+                        }
+
+                        if (!data || !data.data.match_id)
                             return ;
 
                         // HOW TO SEND THE PAGE BACK
+                        console.error("KHOKKFDF");
                         router.replace(`/game/${tournamentMode === "ping-pong" ? "pingpong" : "tictactoe"}/${data.match_id.match_id}`);
                         if (pollingGame)
                             clearInterval(pollingGame);
