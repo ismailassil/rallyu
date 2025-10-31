@@ -19,6 +19,7 @@ import { oauthConfig } from '../../config/oauth';
 import { UUID, randomBytes } from 'crypto';
 import { AuthChallengeMethod } from '../../repositories/AuthChallengesRepository';
 import CDNService from '../CDN/CDNService';
+import { BadRequestError } from '../../types/exceptions/AAuthError';
 
 class AuthService {
 	constructor(
@@ -295,6 +296,9 @@ class AuthService {
 		const existingUser = await this.userService.getUserById(user_id);
 		if (!existingUser)
 			throw new UserNotFoundError();
+
+		if (existingUser.auth_provider !== 'Local')
+			throw new BadRequestError();
 
 		const isValidPassword =
 			await bcrypt.compare(oldPassword, existingUser.password);

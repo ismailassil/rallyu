@@ -8,6 +8,7 @@ import { UUID } from "crypto";
 import { UserNotFoundError } from "../../types/exceptions/user.exceptions";
 import { AuthChallengeExpired, InvalidCodeError, TooManyAttemptsError, TooManyResendsError } from "../../types/exceptions/verification.exceptions";
 import logger from "../../utils/misc/logger";
+import { BadRequestError } from '../../types/exceptions/AAuthError';
 
 const passwordResetConfig = {
 	codeExpirySeconds: 5 * 60, // 5 minutes
@@ -26,6 +27,9 @@ class PasswordResetService {
 	async setup(email: string) {
 		const targetUser = await this.userService.getUserByEmail(email);
 		if (!targetUser || !targetUser.email)
+			throw new UserNotFoundError();
+
+		if (targetUser.auth_provider !== 'Local')
 			throw new UserNotFoundError();
 
 		// CLEANUP PENDING
