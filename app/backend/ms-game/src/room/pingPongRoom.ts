@@ -160,7 +160,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	  
 		if (p1 > p2) return ["win", "loss"];
 		if (p1 < p2) return ["loss", "win"];
-		return ["tie", "tie"];
+		return ["draw", "draw"];
 	}
 
     private handleGameOver = () => {
