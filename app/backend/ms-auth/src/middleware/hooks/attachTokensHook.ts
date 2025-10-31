@@ -1,8 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { getBearerToken } from "../auth/utils";
+import logger from "../../utils/misc/logger";
 
 export async function attachTokensHook(request: FastifyRequest, reply: FastifyReply) {
-	request.server.log.trace('[HOOK] ATTACHING TOKENS: STARTED');
+	logger.trace('[HOOK] ATTACHING TOKENS: STARTED');
 
 	const bearerToken = getBearerToken(request.headers.authorization) || null;
 	const refreshToken = request.cookies?.['refreshToken'] || null;
@@ -10,7 +11,7 @@ export async function attachTokensHook(request: FastifyRequest, reply: FastifyRe
 	request.bearerToken = bearerToken;
 	request.refreshToken = refreshToken;
 
-	request.server.log.trace({
+	logger.trace({
 		bearerToken: request.bearerToken,
 		refreshToken: request.refreshToken
 	}, '[HOOK] ATTACHING TOKENS: SUCCESS');

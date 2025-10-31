@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
-import { TokenInvalidError, TokenExpiredError } from '../../types/exceptions/auth.exceptions';
-import { generateUUID, nowInSeconds, nowPlusSeconds } from '../../services/TwoFactorAuth/utils';
+import { generateUUID } from './utils';
 
 export interface JWT_ACCESS_PAYLOAD {
 	sub: number

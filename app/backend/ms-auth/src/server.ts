@@ -1,15 +1,16 @@
 import initializeApp from "./app";
 import fastify, { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { env } from "./config/env";
+import logger from "./utils/misc/logger";
 
 async function main() {
 	process.on('uncaughtException', err => {
-		console.error('Uncaught Exception:', err);
+		logger.error({ err }, '[PROCESS] Uncaught Exception');
 		// process.exit(1);
 	});
 
 	process.on('unhandledRejection', err => {
-		console.error('Unhandled Rejection:', err);
+		logger.error({ err }, '[PROCESS] Uncaught Rejection');
 		// process.exit(1);
 	});
 
@@ -24,7 +25,7 @@ async function main() {
 			fastify.log.error({ err }, '[SERVER] Cannot start HTTP Server');
 			process.exit(1);
 		}
-		fastify.log.info(`Server listening at ${address}:${env.PORT}`);
+		fastify.log.info(`[SERVER] Server listening at ${address}:${env.PORT}`);
 	});
 }
 

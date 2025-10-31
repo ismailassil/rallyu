@@ -1,8 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { BadRequestError, ForbiddenError, UnauthorizedError } from "../../types/exceptions/AAuthError";
+import logger from "../../utils/misc/logger";
 
 export default async function resourceOwnershipAuth(request: FastifyRequest, reply: FastifyReply) {
-	request.server.log.trace('[HOOK] RESOURCE OWNERSHIP AUTH: STARTED');
+	logger.trace('[HOOK] RESOURCE OWNERSHIP AUTH: STARTED');
 
 	if (!request.accessTokenPayload)
 		throw new UnauthorizedError();
@@ -18,7 +19,7 @@ export default async function resourceOwnershipAuth(request: FastifyRequest, rep
 	if (resourceOwnerUserId !== requesterUserId)
 		throw new ForbiddenError();
 
-	request.server.log.trace({
+	logger.trace({
 		resourceOwnerUserId,
 		requesterUserId,
 		accPayload: request.accessTokenPayload

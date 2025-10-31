@@ -25,7 +25,6 @@ import MatchesRepository from './repositories/MatchesRepository';
 import WhatsAppService from './services/Communication/WhatsAppService';
 import MailingService from './services/Communication/MailingService';
 import PasswordResetController from './controllers/PasswordResetController';
-import ResetPasswordRepository from './repositories/ResetPasswordRepository';
 import PasswordResetService from './services/Auth/PasswordResetService';
 import TwoFactorMethodService from './services/TwoFactorAuth/TwoFactorMethodService';
 import TwoFactorChallengeService from './services/TwoFactorAuth/TwoFactorChallengeService';
@@ -42,6 +41,9 @@ import cookie from '@fastify/cookie';
 import { attachTokensHook } from './middleware/hooks/attachTokensHook';
 import apiKeyAuth from './middleware/auth/apiKeyAuth';
 import resourceOwnershipAuth from './middleware/auth/resourceOwnershipAuth';
+import CDNService from './services/CDN/CDNService';
+import AuthChallengesRepository from './repositories/AuthChallengesRepository';
+import logger from './utils/misc/logger';
 
 async function buildApp(): Promise<FastifyInstance> {
 	const fastify: FastifyInstance = Fastify({
@@ -49,9 +51,6 @@ async function buildApp(): Promise<FastifyInstance> {
 		ajv: { customOptions: { removeAdditional: false, allErrors: true }}
 	});
 
-
-	// REGISTER DATABASE PLUGIN
-	// fastify.register(SQLitePlugin);
 	await fastify.register(cors, {
 		origin: true,
 		credentials: true,
@@ -86,20 +85,21 @@ async function buildApp(): Promise<FastifyInstance> {
 	const relationsRepository = new RelationsRepository();
 	const statsRepository = new StatsRepository();
 	const matchesRepository = new MatchesRepository();
-	const resetPasswordRepository = new ResetPasswordRepository();
+	const authChallengesRepository = new AuthChallengesRepository();
 
 	// INIT SERVICES
-	const whatsAppService = new WhatsAppService({ authDir: 'wp-session', adminJid: '212636299820@s.whatsapp.net', logger: fastify.log });
+	const cdnService = new CDNService();
+	const whatsAppService = new WhatsAppService({ authDir: 'wp-session', adminJid: '212636299820@s.whatsapp.net' });
 	const mailingService = new MailingService(appConfig.mailing);
 	const sessionsService = new SessionService(authConfig, jwtUtils, sessionsRepository);
 	const statsService = new StatsService(userRepository, statsRepository);
 	const relationsService = new RelationsService(userRepository, relationsRepository);
-	const userService = new UserService(userRepository, relationsService, statsService, matchesRepository);
-	const twoFAMethodService = new TwoFactorMethodService(twoFactorRepository, userService, mailingService, whatsAppService);
-	const twoFAChallengeService = new TwoFactorChallengeService(twoFactorRepository, userService, mailingService, whatsAppService);
-	const authService = new AuthService(authConfig, jwtUtils, userService, sessionsService, twoFAMethodService, twoFAChallengeService, mailingService, whatsAppService);
-	const passwordResetService = new PasswordResetService(authConfig, userService, resetPasswordRepository, mailingService, whatsAppService);
-	const verificationService = new VerificationService(userService, mailingService, whatsAppService);
+	const userService = new UserService(userRepository, relationsService, statsService, matchesRepository, cdnService);
+	const twoFAMethodService = new TwoFactorMethodService(twoFactorRepository, userService, authChallengesRepository);
+	const twoFAChallengeService = new TwoFactorChallengeService(twoFactorRepository, userService, mailingService, whatsAppService, authChallengesRepository);
+	const authService = new AuthService(authConfig, jwtUtils, userService, sessionsService, twoFAMethodService, twoFAChallengeService, cdnService);
+	const passwordResetService = new PasswordResetService(authConfig, userService, mailingService, authChallengesRepository);
+	const verificationService = new VerificationService(userService, mailingService, whatsAppService, authChallengesRepository);
 	const matchesService = new MatchesService(statsService, matchesRepository);
 
 	await fastify.register(natsPlugin, {
@@ -143,7 +143,7 @@ async function initializeApp() : Promise<FastifyInstance> {
 		await runMigrations();
 		return await buildApp();
 	} catch (err) {
-		console.log('APP BUILD ERROR:', err);
+		logger.error({ err }, '[APP] Build Error');
 		process.exit(1);
 	}
 }

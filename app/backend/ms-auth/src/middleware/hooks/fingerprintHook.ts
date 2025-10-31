@@ -1,8 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { UAParser } from "ua-parser-js";
+import logger from "../../utils/misc/logger";
 
 export async function requestFingerprintHook(request: FastifyRequest, reply: FastifyReply) {
-	request.server.log.trace('[HOOK] ATTACHING FINGERPRINT: STARTED');
+	logger.trace('[HOOK] ATTACHING FINGERPRINT: STARTED');
 
 	const userAgentParser = new UAParser(request.headers['user-agent'] || '');
 
@@ -16,7 +17,7 @@ export async function requestFingerprintHook(request: FastifyRequest, reply: Fas
 		ip_address: request.ip
 	}
 
-	request.server.log.trace({
+	logger.trace({
 		fingerprint: request.fingerprint
 	}, '[HOOK] ATTACHING FINGERPRINT: SUCCESS');
 }

@@ -42,9 +42,9 @@ class MatchesRepository extends ARepository {
 			);
 			return getResult ?? null;
 		} catch (err: any) {
-			console.error('SQLite Error: ', err);
-			throw new Error('Internal Server Error');
+			this.handleDatabaseError(err, 'finding match');
 		}
+		return null;
 	}
 
 	/**

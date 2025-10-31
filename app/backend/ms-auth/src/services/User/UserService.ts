@@ -6,19 +6,16 @@ import MatchesRepository from "../../repositories/MatchesRepository";
 import RelationsService from "./RelationsService";
 import CDNService from "../CDN/CDNService";
 import { DatabaseQueryError } from "../../types/exceptions/database.exceptions";
-import { nowInMilliseconds } from "../TwoFactorAuth/utils";
+import { nowInMilliseconds } from "../../utils/auth/utils";
 
 class UserService {
-	private cdnService: CDNService;
-
 	constructor(
 		private userRepository: UserRepository,
 		private relationsService: RelationsService,
 		private statsService: StatsService,
-		private matchesRepository: MatchesRepository
-	) {
-		this.cdnService = new CDNService();
-	}
+		private matchesRepository: MatchesRepository,
+		private cdnService: CDNService
+	) {}
 
 	/*----------------------------------------------- GETTERS -----------------------------------------------*/
 
@@ -41,8 +38,6 @@ class UserService {
 	async getUserProfile(viewerID: number, targetUserID?: number, targetUsername?: string) {
 		let targetUser = null;
 
-		console.log('==============> targetUserID: ', targetUserID);
-		console.log('==============> targetUsername: ', targetUsername);
 		if (targetUserID)
 			targetUser = await this.getUserById(targetUserID);
 		else if (targetUsername)
@@ -50,9 +45,6 @@ class UserService {
 
 		if (!targetUser)
 			throw new UserNotFoundError();
-
-		console.log('==============> targetUser: ', targetUser);
-		console.log('==============> viewerID: ', viewerID);
 
 		const isAllowed = await this.relationsService.canViewUser(viewerID, targetUser.id);
 		if (!isAllowed)

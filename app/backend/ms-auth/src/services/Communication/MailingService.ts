@@ -42,6 +42,8 @@ class MailingService {
 	}
 
 	async sendEmail(emailOptions: EmailOptions): Promise<void> {
+		if (!emailOptions.from || !emailOptions.to)
+			return ;
 		return await this.transporter.sendMail(emailOptions);
 	}
 }

@@ -189,6 +189,9 @@ class RelationsController {
 	}
 
 	private async publishNotification(relationEvent: RELATION_EVENT_TYPE, userId: number, targetId: number) {
+		if (!this.nats || !this.js)
+			return ;
+
 		const _JSONCodec = JSONCodec();
 
 		const actionsMap = {

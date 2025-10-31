@@ -94,7 +94,6 @@ class UserController {
 		const validTimeFilters = ['0d','1d','7d','30d','90d','1y','all'];
 		const timeFilterValidated = validTimeFilters.includes(timeFilter) ? timeFilter : undefined;
 
-		console.log('REQUEST QUERY: ', request.query);
 		const { id } = request.params as { id: number };
 
 		const userMatches = await this.userService.getUserMatches(user_id!, id, timeFilterValidated, gameFilterValidated, paginationFilterValidated);
