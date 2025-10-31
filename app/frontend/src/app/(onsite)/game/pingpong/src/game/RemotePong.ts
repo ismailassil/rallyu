@@ -88,7 +88,7 @@ class RemotePong extends APong {
                     this.state.players[1].score = data.state.s[this.state.index! ^ 1]
                     break;
                 case 'overtime':
-                    this.eventHandlers?.updateTimer(0);
+                    this.eventHandlers?.updateTimer(1);
                     this.eventHandlers?.updateOvertime?.(true);
                     this.eventHandlers?.updateTimerType?.('clock');
                     break;

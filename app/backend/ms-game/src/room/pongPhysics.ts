@@ -8,6 +8,8 @@ const PADDLE_WIDTH = 15
 const PADDLE_HEIGHT = 100
 const HALF_PADDLE = 50;
 const BALL_RADIUS = 10
+const MIN_BALL_SPEED = 14;
+const MAX_BALL_SPEED = 19;
 export const angles = [2.61799, 3.66519, 3.14159 ,0, 0.523599, 5.75959];
 
 const clamp = (value: number, min: number, max: number) => {
@@ -20,7 +22,7 @@ const bounceBall = (ball: BallState, paddle: Coords) => {
 	ball.angle = ball.dir === 'right'
 		? Math.PI - (normalized * maxBounceAngle)
 		: normalized * maxBounceAngle
-	ball.speed = clamp(ball.speed * (Math.abs(normalized) * (0.7 - 0.3) + 0.7), 14, 19)
+	ball.speed = clamp(ball.speed * (Math.abs(normalized) * (0.7 - 0.3) + 0.7), MIN_BALL_SPEED, MAX_BALL_SPEED)
 	ball.velocity = getVelocity(ball.angle, ball.speed)
 	ball.dir = ball.dir === 'right' ? 'left' : 'right'
 }
@@ -50,9 +52,9 @@ const resetBall = (dir: 'left' | 'right') => {
 		x: 800,
 		y: 450,
 		dir,
-		speed: 14,
+		speed: MIN_BALL_SPEED,
 		angle: initialAngle,
-		velocity: getVelocity(initialAngle, 14)
+		velocity: getVelocity(initialAngle, MIN_BALL_SPEED)
 	})
 }
 
