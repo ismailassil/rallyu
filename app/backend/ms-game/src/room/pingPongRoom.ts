@@ -93,6 +93,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	expirationTimer: NodeJS.Timeout | undefined = undefined;
 	gameTimerId: NodeJS.Timeout | undefined = undefined;
 	state: PingPongGameState;
+	MAX_SCORE = 7;
 
 	constructor(id: string, tournament: { gameId: number, id: number } | undefined) {
 		this.id = id;
@@ -122,8 +123,9 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 					speed: 12
 				}
 			],
+			overtimeSwitch: false,
 			score: [0, 0],
-			pause: true,
+			pause: true
 		};
 	}
 
@@ -198,8 +200,14 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 
     private setupPackets() {
         this.players.forEach((player, index) => {
-            if (player.socket?.readyState === ws.OPEN)
-                player.socket.send(JSON.stringify({ type: 'ready', i: index, t: GAME_START_DELAY }));
+            if (player.socket?.readyState === ws.OPEN) {
+                player.socket.send(JSON.stringify({
+					type: 'ready',
+					i: index,
+					t: GAME_START_DELAY,
+					best_of: this.MAX_SCORE
+				}));
+			}
 		})
 
     }
@@ -228,8 +236,47 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 	}
 
 	private gameloop() {
+		this.gameTimerId = setTimeout(async () => {
+			this.handleGameOver();
+		}, GAME_TIME);
 		this.intervalId = setInterval(() => {
-			updateState(this.state);
+			updateState(this.state, this.handleGameOver);
+
+			this.players.forEach((player, index) => {
+				if (player.socket?.readyState === ws.OPEN)
+                {
+                    player.socket.send(JSON.stringify({
+                        type: 'state',
+                        state: {
+                            b: { x: this.state.ball.x, y: this.state.ball.y },
+                            opp: this.state.players[index ^ 1].coords.y,
+                            p: this.state.players[index].coords.y,
+                            s: this.state.score
+                        }
+				    }))
+                }
+			});
+		}, GAME_UPDATE_INTERVAL);
+	}
+
+	private overtimeGameloop() {
+		this.gameTimerId = setTimeout(async () => {
+			if (this.state.score[0] === this.state.score[1]) {
+				this.state.overtimeSwitch = true;
+				this.players.forEach(player => {
+					if (player.socket?.readyState === ws.OPEN)
+					{
+						player.socket.send(JSON.stringify({
+							type: 'overtime'
+						}))
+					}
+				});
+			} else {
+				this.handleGameOver();
+			}
+		}, GAME_TIME);
+		this.intervalId = setInterval(() => {
+			updateState(this.state, this.handleGameOver);
 
 			this.players.forEach((player, index) => {
 				if (player.socket?.readyState === ws.OPEN)
@@ -265,10 +312,11 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
                     player.socket.send(JSON.stringify({ type: 'start', t: GAME_TIME }))
 			})
 			this.state.pause = false
-			this.gameTimerId = setTimeout(async () => {
-				this.handleGameOver();
-			}, GAME_TIME);
-			this.gameloop();
+			if (this.tournament) {
+				this.overtimeGameloop();
+			} else {
+				this.gameloop();
+			}
 		}, GAME_START_DELAY);
 	}
 

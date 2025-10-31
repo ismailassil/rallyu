@@ -115,6 +115,8 @@ class LocalXO {
 		this.status = 'gameover'
 		this.eventHandlers?.updateOverlayStatus('gameover');
 		this.eventHandlers?.updateTimer(0);
+		clearTimeout(this.countdownId)
+		clearTimeout(this.turnTimeoutId);
 		let displayedResult;
 		switch (overallWinner) {
 			case 'draw':

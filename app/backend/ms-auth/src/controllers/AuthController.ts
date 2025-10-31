@@ -1,4 +1,4 @@
-import fastify, { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import AuthService from "../services/Auth/AuthService";
 import { ILoginRequest, IRegisterRequest } from "../types";
 import AuthResponseFactory from "./AuthResponseFactory";
@@ -47,8 +47,8 @@ class AuthController {
 			'refreshToken', refreshToken!, {
 				path: '/',
 				httpOnly: true,
-				secure: false,
-				sameSite: 'lax'
+				secure: true,
+				sameSite: 'strict'
 			}
 		).send(body);
 	}
@@ -80,8 +80,8 @@ class AuthController {
 			'refreshToken', refreshToken, {
 				path: '/',
 				httpOnly: true,
-				secure: false,
-				sameSite: 'lax'
+				secure: true,
+				sameSite: 'strict'
 			}
 		).send(body);
 	}
@@ -107,8 +107,8 @@ class AuthController {
 			'refreshToken', '', {
 				path: '/',
 				httpOnly: true,
-				secure: false,
-				sameSite: 'lax',
+				secure: true,
+				sameSite: 'strict',
 				expires: new Date(0)
 			}
 		).send(body);
@@ -124,8 +124,8 @@ class AuthController {
 				'refreshToken', refreshToken, {
 					path: '/',
 					httpOnly: true,
-					secure: false,
-					sameSite: 'lax'
+					secure: true,
+					sameSite: 'strict'
 				}
 			).send(body);
 		} catch (err) {
@@ -133,8 +133,8 @@ class AuthController {
 				'refreshToken', '', {
 					path: '/',
 					httpOnly: true,
-					secure: false,
-					sameSite: 'lax',
+					secure: true,
+					sameSite: 'strict',
 					expires: new Date(0)
 				}
 			); throw err;
@@ -188,8 +188,8 @@ class AuthController {
 				'refreshToken', refreshToken, {
 					path: '/',
 					httpOnly: true,
-					secure: false,
-					sameSite: 'lax'
+					secure: true,
+					sameSite: 'strict'
 				}
 			).redirect(`${frontendOrigin}`);
 		} catch (err) {
@@ -245,8 +245,8 @@ class AuthController {
 				'refreshToken', refreshToken, {
 					path: '/',
 					httpOnly: true,
-					secure: false,
-					sameSite: 'lax'
+					secure: true,
+					sameSite: 'strict'
 				}
 			).redirect(`${frontendOrigin}`);
 		} catch (err) {
@@ -286,8 +286,8 @@ class AuthController {
 				'refreshToken', '', {
 					path: '/',
 					httpOnly: true,
-					secure: false,
-					sameSite: 'lax',
+					secure: true,
+					sameSite: 'strict',
 					expires: new Date(0)
 				}
 			);

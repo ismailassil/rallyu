@@ -2,13 +2,13 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { UnauthorizedError } from "../../types/exceptions/AAuthError";
 import JWTUtils from "../../utils/auth/JWTUtils";
 import { authConfig } from "../../config/auth";
+import logger from "../../utils/misc/logger";
 
 export default async function refreshTokenAuth(request: FastifyRequest, reply: FastifyReply) {
-	request.server.log.trace('[HOOK] REFRESH TOKEN AUTH: STARTED');
+	logger.trace('[HOOK] REFRESH TOKEN AUTH: STARTED');
 
 	const refreshToken = request.refreshToken;
-	if (!refreshToken)
-		throw new UnauthorizedError();
+	if (!refreshToken) throw new UnauthorizedError();
 
 	const _JWTUtils = new JWTUtils(authConfig);
 
@@ -17,20 +17,19 @@ export default async function refreshTokenAuth(request: FastifyRequest, reply: F
 		request.refreshToken = refreshToken;
 		request.refreshTokenPayload = decodedJWTRefreshPayload;
 
-		request.server.log.trace({
+		logger.trace({
 			refToken: request.refreshToken,
 			user: request.user,
 			refPayload: request.refreshTokenPayload
 		}, '[HOOK] REFRESH TOKEN AUTH: SUCCESS');
 	} catch {
-		reply.setCookie(
-			'refreshToken', '', {
-				path: '/',
-				httpOnly: true,
-				secure: false,
-				sameSite: 'lax',
-				expires: new Date(0)
-			}
-		); throw new UnauthorizedError();
+		reply.setCookie("refreshToken", "", {
+			path: "/",
+			httpOnly: true,
+			secure: true,
+			sameSite: "strict",
+			expires: new Date(0),
+		});
+		throw new UnauthorizedError();
 	}
 }

@@ -1,9 +1,10 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { UnauthorizedError } from "../../types/exceptions/AAuthError";
 import { env } from "../../config/env";
+import logger from "../../utils/misc/logger";
 
 export default async function apiKeyAuth(request: FastifyRequest, reply: FastifyReply) {
-	request.server.log.trace('[HOOK] API KEY AUTH: STARTED');
+	logger.trace('[HOOK] API KEY AUTH: STARTED');
 
 	const apiKey = request.bearerToken;
 	if (!apiKey)
@@ -15,7 +16,7 @@ export default async function apiKeyAuth(request: FastifyRequest, reply: Fastify
 
 		request.apiKey = apiKey;
 
-		request.server.log.trace({
+		logger.trace({
 			apiKey: request.apiKey
 		}, '[HOOK] API KEY AUTH: SUCCESS');
 	} catch {

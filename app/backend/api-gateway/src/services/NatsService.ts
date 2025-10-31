@@ -63,6 +63,8 @@ class NatsService {
 			user: NATS_USER,
 			pass: NATS_PASSWORD,
 			name: 'Gateway',
+			maxReconnectAttempts: -1,
+			reconnectTimeWait: 2000,
 		});
 
 		this.fastify.log.info(

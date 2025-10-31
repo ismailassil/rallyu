@@ -4,6 +4,7 @@ import { handleUserRequests } from '../services/Nats/natsHandlers';
 import fastifyPlugin from 'fastify-plugin';
 import UserService from '../services/User/UserService';
 import RelationsService from '../services/User/RelationsService';
+import logger from '../utils/misc/logger';
 
 interface NatsOpts {
 	NATS_URL: string;
@@ -21,12 +22,14 @@ async function natsPlugin(fastify: FastifyInstance, opts: NatsOpts) {
 		user: NATS_USER,
 		pass: NATS_PASSWORD,
 		name: 'User Management',
+		maxReconnectAttempts: -1,
+		reconnectTimeWait: 2000,
 	});
-	fastify.log.info('[NATS] Connection established on ' + nats.getServer());
+
+	logger.info('[NATS] Connection established on ' + nats.getServer());
 
 	const js = nats.jetstream(); // JetStream Client
 	const jsonC = JSONCodec(); // for objects
-	// const stringC = StringCodec(); // for strings
 
 	fastify.decorate('nats', nats);
 	fastify.decorate('js', js);

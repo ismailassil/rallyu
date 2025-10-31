@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Flag, Unplug } from "lucide-react";
 import { AnimatePresence, motion } from 'framer-motion'
 import smoochSans from "@/app/fonts/smosh";
-import { XOSign } from "../../types/types";
+import { VersusCardProps } from "../../types/types";
 import TurnIndicator from "./TurnIndicator";
 import { useTranslations } from "next-intl";
 
@@ -134,20 +134,20 @@ const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
     );
 }
 
-const VersusCard = (
-    { opponentId, timeLeft, handleResign, disconnect, round, score, resignSwitch, currentPlayer, playerSign, overTime }:
-    { opponentId? : number | undefined,
-        timeLeft: number,
-        handleResign: () => void,
-        disconnect?: boolean,
-        round?: number,
-        score?: [number, number],
-        resignSwitch?: boolean,
-        currentPlayer?: XOSign,
-        playerSign?: XOSign,
-        overTime?: boolean
-      }
-) => {
+const VersusCard = ({ 
+    opponentId, 
+    timeLeft, 
+    handleResign, 
+    disconnect, 
+    round, 
+    score, 
+    resignSwitch, 
+    currentPlayer, 
+    playerSign, 
+    overTime,
+    bestof,
+    timerType
+} : VersusCardProps) => {
     const { apiClient, loggedInUser } = useAuth();
     const [loggedInUserInfo, setLoggedInUserInfo] = useState<PlayerInfo | null>(null);
     const [opponentInfo, setOpponentInfo] = useState<PlayerInfo | null>(null);
@@ -206,9 +206,10 @@ const VersusCard = (
                 </div>
 
                 <div className={`flex flex-col ${round ? 'justify-between py-2' : 'justify-end'} items-center h-full shrink-0`}>
-                    {overTime && <span className="text-sm lg:text-md xl:text-lg text-red-600 font-funnel-display font-extrabold uppercase">{t("ingame.overtime")}</span>}
+                    {overTime && <span className="text-sm lg:text-md xl:text-lg text-red-600 font-funnel-display font-bold uppercase">{t("ingame.overtime")}</span>}
+                    {bestof && <span className="text-md lg:text-lg xl:text-xl font-funnel-display font-extrabold italic">{t("ingame.bestof")} {bestof}</span>}
                     {round && <span className="text-md lg:text-lg xl:text-xl font-funnel-display font-extrabold italic">{t("ingame.round")} {round}</span>}
-                    <GameTimer time={timeLeft} className={`${round && 'rounded-2xl'}`} />
+                    <GameTimer time={timeLeft} type={timerType} className={`${round && 'rounded-2xl'}`} />
                 </div>
                 <div className="flex h-full w-auto flex-col py-2 justify-end items-center">
                     

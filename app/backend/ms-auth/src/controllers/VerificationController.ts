@@ -2,8 +2,6 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import VerificationService from "../services/Auth/VerificationService";
 import AuthResponseFactory from "./AuthResponseFactory";
 import { UUID } from "crypto";
-import { authRoutesZodSchemas as zodSchemas } from "../schemas/zod/auth.zod.schema";
-import logger from "../utils/misc/logger";
 import { JSONCodec } from "nats";
 
 class VerificationController {
@@ -38,6 +36,17 @@ class VerificationController {
 		const { token } = request.body as { token: string };
 
 		await this.verificationService.resend(token as UUID);
+
+		const { status, body } = AuthResponseFactory.getSuccessResponse(201, {});
+		return reply.code(status).send(body);
+	}
+
+	async unverifyHandler(request: FastifyRequest, reply: FastifyReply) {
+		const user_id = request.user?.sub;
+		const contact = request.raw.url?.includes('email') ? 'email' : 'phone';
+
+		await this.verificationService.unverify(contact, user_id!);
+		this.publishUserRefreshRequiredToUser(user_id!);
 
 		const { status, body } = AuthResponseFactory.getSuccessResponse(201, {});
 		return reply.code(status).send(body);

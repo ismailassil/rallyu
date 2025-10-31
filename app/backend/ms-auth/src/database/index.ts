@@ -1,4 +1,5 @@
 import sqlite3 from "sqlite3";
+import logger from "../utils/misc/logger";
 
 type DatabaseInstance = sqlite3.Database;
 
@@ -11,11 +12,10 @@ class Database {
 				sqlite3.OPEN_CREATE | sqlite3.OPEN_READWRITE,
 				(err) => {
 					if (err) {
-						console.log(`Error connecting to SQLite Database.`);
-						console.log(err);
+						logger.error({ err }, '[SQLITE3] Error connectring to SQLite Database');
 						return reject(err);
 					} else {
-						console.log(`Connected to SQLite Database.`);
+						logger.info('[SQLITE3] Connected to SQLite Database');
 						resolve();
 					}
 				});
@@ -27,11 +27,11 @@ class Database {
 			if (this.db) {
 				this.db.close((err) => {
 					if (err) {
-						console.log(`Error closing SQLite Database connection.`);
+						logger.error({ err }, '[SQLITE3] Error closing SQLite Database connection');
 						return reject(err);
 					} else {
 						this.db = null;
-						console.log(`Closed SQLite Database connection.`);
+						logger.info('[SQLITE3] Closed SQLite Database connection');
 						resolve();
 					}
 				});
@@ -44,7 +44,7 @@ class Database {
 	async run(sql: string, params: any[] = []) : Promise<{ lastID: number, changes: number }> {
 		return new Promise((resolve, reject) => {
 			if (!this.db)
-				reject(new Error('Database not connected.'));
+				reject(new Error('SQLite3 Database is not connected.'));
 
 			this.db?.run(sql, params, function (err) {
 				if (err)
@@ -57,7 +57,7 @@ class Database {
 	async get<T>(sql: string, params: any[] = []) : Promise<T | any> {
 		return new Promise((resolve, reject) => {
 			if (!this.db)
-				reject(new Error('Database not connected.'));
+				reject(new Error('SQLite3 Database is not connected.'));
 
 			this.db?.get(sql, params, (err, row) => {
 				if (err)
@@ -70,7 +70,7 @@ class Database {
 	async all<T>(sql: string, params: any[] = []) : Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			if (!this.db)
-				reject(new Error('Database not connected.'));
+				reject(new Error('SQLite3 Database is not connected.'));
 
 			this.db?.all(sql, params, (err, rows) => {
 				if (err)

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
+import logger from '../utils/misc/logger';
 
 dotenv.config();
 
@@ -42,12 +43,12 @@ try {
 	env = envSchema.parse(process.env);
 } catch (err) {
 	if (err instanceof z.ZodError) {
-		console.error("ENV VARS VALIDATION ERROR:");
+		logger.error({ err }, '[APP] Enviroment Variables Validation Error');
 		for (const issue of err.issues) {
 			console.error(`- ${issue.path.join(".") || "(root)"}: ${issue.message}`);
 		}
 	} else {
-		console.error(err);
+		logger.error({ err }, '[APP] Enviroment Variables Validation Error !== ZodError');
 	}
 	process.exit(1);
 }

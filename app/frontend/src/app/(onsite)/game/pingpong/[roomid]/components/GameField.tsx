@@ -21,6 +21,8 @@ const GameField = () => {
     const [ result, setResult ] = useState<string | null>(null);
     const [ overlayStatus, setOverlayStatus ] = useState('none');
     const [ tournamentId, setTournamentId ] = useState<number | null>(null);
+    const [ bestof, setBestOf ] = useState<number>(0);
+    const [ timerType, setTimerType ] = useState<'clock' | 'timer'>('timer');
 
 	const socketProxy = useRef<SocketProxy>(new SocketProxy((reason: string) => {
         router.push(`/game/disconnected?reason=${reason}`)
@@ -30,7 +32,9 @@ const GameField = () => {
         updateOverlayStatus: setOverlayStatus,
         updateConnection: setOppdisconnect,
         updateDisplayedResult: setResult,
-        updateTournamentId: setTournamentId
+        updateTournamentId: setTournamentId,
+        updateBestOf: setBestOf,
+        updateTimerType: setTimerType
     }));
 
     useEffect(() => {
@@ -61,7 +65,7 @@ const GameField = () => {
 	}, [])
 
 	return (
-        <div className="flex min-h-0 w-full px-10 flex-1 flex-col items-center justify-center">
+        <div className="flex min-h-0 w-full px-10 flex-1 flex-col items-center overflow-auto justify-center">
             { isLoading ? (
 				<LoadingComponent />
             ) : notFound ? (
@@ -75,6 +79,8 @@ const GameField = () => {
                             handleResign={() => pong.current.forfeit()}
                             disconnect={oppdisconnect}
                             resignSwitch={overlayStatus === 'gameover' ? false : true}
+                            bestof={bestof}
+                            timerType={timerType}
                         />
                         <div className="relative inline-block">
                             <Pong socketProxy={socketProxy.current} pong={pong.current} />

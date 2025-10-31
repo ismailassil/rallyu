@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const GameTimer = ({ time, pause, className }: { time: number, pause?: boolean | null, className?: string }) => {
+const GameTimer = ({ time, pause, type, className }: { time: number, pause?: boolean | null, type?: 'clock' | 'timer', className?: string }) => {
     const [displayTime, setDisplayTime] = useState(time);
 
     useEffect(() => {
@@ -10,16 +10,24 @@ const GameTimer = ({ time, pause, className }: { time: number, pause?: boolean |
     useEffect(() => {
         if (pause) return;
 
-        const intervalMs = 100;
-        const interval = setInterval(() => {
-            setDisplayTime(prev => {
-                const newTime = prev - intervalMs;
-                return newTime >= 0 ? newTime : 0;
-            });
-        }, intervalMs);
+        let interval;
+        console.log('type: ', type);
+        if (type === 'clock') {
+            interval = setInterval(() => {
+                setDisplayTime(prev => prev + 1000);
+            }, 1000);
+        } else {
+            const intervalMs = 100;
+            interval = setInterval(() => {
+                setDisplayTime(prev => {
+                    const newTime = prev - intervalMs;
+                    return newTime >= 0 ? newTime : 0;
+                });
+            }, intervalMs);
+        }
 
         return () => clearInterval(interval);
-    }, [pause]);
+    }, [pause, type]);
 
     const formatTime = (ms: number) => {
         const totalSeconds = Math.ceil(ms / 1000);
@@ -32,10 +40,10 @@ const GameTimer = ({ time, pause, className }: { time: number, pause?: boolean |
         <div
             className={`flex font-funnel-display items-center justify-center font-bold text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-right tracking-widest
                 rounded-t-2xl mb-[1px] w-[95px] h-[35px] lg:w-[100px] lg:h-[40px] xl:w-[120px] xl:h-[50px] 2xl:w-[140px] 2xl:h-[60px] min-w-0
-                transition-all duration-300 ${displayTime <= 5000 && displayTime > 0 ? 'bg-red-600 text-white animate-pulse' : 'bg-white/90 text-black'}
+                transition-all duration-300 ${(displayTime <= 5000 && displayTime > 0) || type === 'clock' ? 'bg-red-600 text-white animate-pulse' : 'bg-white/90 text-black'}
                 ${className || ''}`}
         >
-            {formatTime(displayTime)}
+            {(type === 'clock' && '+')} {formatTime(displayTime)}
         </div>
     );
 }

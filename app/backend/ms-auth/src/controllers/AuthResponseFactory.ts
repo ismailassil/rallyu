@@ -1,15 +1,5 @@
-import { TokenExpiredError } from "jsonwebtoken";
 import { ErrorResponse, SuccessResponse } from "../types";
 import { AuthError } from "../types/exceptions/AAuthError";
-
-// export interface ErrorResponse {
-// 	success: boolean,
-// 	error: {
-// 		code: string;
-// 		message: string;
-// 		details?: any;
-// 	}
-// }
 
 class AuthResponseFactory {
 

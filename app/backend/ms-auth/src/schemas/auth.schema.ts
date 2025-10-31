@@ -214,6 +214,17 @@ const verifycontactresend = {
 	}
 }
 
+const verifycontactunverify = {
+	params: {
+		type: 'object',
+		properties: {
+			contact: { type: 'string', enum: ['email', 'phone'] }
+		},
+		required: ['contact'],
+		additionalProperties: false
+	}
+}
+
 const consent_redirect = {
 	querystring: {
 		type: 'object',
@@ -288,6 +299,7 @@ export const authRoutesSchemas = {
 	verifyContact: {
 		request: verifycontact,
 		verify: verifycontactverify,
-		resend: verifycontactresend
+		resend: verifycontactresend,
+		unverify: verifycontactunverify
 	}
 };

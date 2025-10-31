@@ -38,6 +38,21 @@ export interface PongState {
 	],
 }
 
+export interface VersusCardProps {
+    opponentId? : number | undefined;
+    timeLeft: number;
+    handleResign: () => void;
+    disconnect?: boolean;
+    round?: number;
+    score?: [number, number];
+    resignSwitch?: boolean;
+    currentPlayer?: XOSign;
+    playerSign?: XOSign;
+    overTime?: boolean;
+	bestof?: number;
+	timerType?: 'clock' | 'timer'
+}
+
 export interface EventHandlers {
 	updateTimer: React.Dispatch<React.SetStateAction<number>>;
 	updateOverlayStatus: React.Dispatch<React.SetStateAction<string>>;
@@ -50,6 +65,8 @@ export interface EventHandlers {
 	updateCurrentPlayer?: React.Dispatch<React.SetStateAction<XOSign>>; 
 	updateSign?: React.Dispatch<React.SetStateAction<XOSign>>; 
 	updateTournamentId?: React.Dispatch<React.SetStateAction<number | null>>
+	updateBestOf?: React.Dispatch<React.SetStateAction<number>>
+	updateTimerType?: React.Dispatch<React.SetStateAction<'clock' | 'timer'>>
 }
 
 export interface RemotePongState extends PongState {

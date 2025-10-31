@@ -1,12 +1,13 @@
 import { JSONCodec } from 'nats';
 import UserService from '../User/UserService';
 import RelationsService from '../User/RelationsService';
+import logger from '../../utils/misc/logger';
 
 export async function handleUserRequests(msg: any, userService: UserService, relationsService: RelationsService) {
 	const jsonC = JSONCodec();
 	const data = jsonC.decode(msg.data) as any;
 
-	console.log(`[NATS] Received a message on [${msg.subject}] subject`);
+	logger.info(`[NATS] Received a message on [${msg.subject}] subject`);
 	switch (msg.subject) {
 		case 'user.username': {
 			const targetUser = await userService.getUserById(data.user_id);
@@ -26,5 +27,5 @@ export async function handleUserRequests(msg: any, userService: UserService, rel
 		default:
 			break ;
 	}
-	console.log(`[NATS] Replied to message on [${msg.subject}] subject`);
+	logger.info(`[NATS] Replied to message on [${msg.subject}] subject`);
 }

@@ -3,10 +3,11 @@ import { FastifyPluginAsync } from 'fastify';
 import createError from '@fastify/error';
 import AuthResponseFactory from '../controllers/AuthResponseFactory';
 import AuthError from '../types/exceptions/AAuthError';
+import logger from '../utils/misc/logger';
 
 const errorHandlerPlugin: FastifyPluginAsync = async (fastify) => {
 	fastify.setErrorHandler((error, request, reply) => {
-		fastify.log.error({
+		logger.error({
 			reqId: request.id,
 			url: request.url,
 			method: request.method,

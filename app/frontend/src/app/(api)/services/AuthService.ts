@@ -152,6 +152,11 @@ export class AuthService {
 		return res.data;
 	}
 
+	async unverifyEmail() {
+		const { data: res } = await this.client.post(`/auth/verify-email/unverify`);
+		return res.data;
+	}
+
 	async requestVerifyPhone(newPhone?: string) {
 		const { data: res } = await this.client.post(`/auth/verify-phone`, { target: newPhone });
 		return res.data;
@@ -161,4 +166,10 @@ export class AuthService {
 		const { data: res } = await this.client.post(`/auth/verify-phone/verify`, { token, code });
 		return res.data;
 	}
+
+	async unverifyPhone() {
+		const { data: res } = await this.client.post(`/auth/verify-phone/unverify`);
+		return res.data;
+	}
+
 }

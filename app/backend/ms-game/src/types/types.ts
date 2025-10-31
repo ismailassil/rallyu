@@ -66,6 +66,7 @@ export interface PingPongGameState {
 	players: PongPlayerState[];
 	score: [number, number];
 	pause: boolean;
+	overtimeSwitch: boolean;
 }
 
 export interface TicTacToeGameState {

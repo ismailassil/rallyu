@@ -27,6 +27,8 @@ async function natsPlugin(fastify, options) {
 			user: NATS_USER,
 			pass: NATS_PASSWORD,
 			name: 'Chat',
+			maxReconnectAttempts: -1,
+			reconnectTimeWait: 2000,
 		});
 
 		fastify.decorate("nats", nc);

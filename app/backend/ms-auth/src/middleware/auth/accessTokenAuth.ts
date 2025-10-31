@@ -2,9 +2,10 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { UnauthorizedError } from "../../types/exceptions/AAuthError";
 import JWTUtils from "../../utils/auth/JWTUtils";
 import { authConfig } from "../../config/auth";
+import logger from "../../utils/misc/logger";
 
 export default async function accessTokenAuth(request: FastifyRequest, reply: FastifyReply) {
-	request.server.log.trace('[HOOK] ACCESS TOKEN AUTH: STARTED');
+	logger.trace('[HOOK] ACCESS TOKEN AUTH: STARTED');
 
 	const accessToken = request.bearerToken;
 	if (!accessToken)
@@ -18,7 +19,7 @@ export default async function accessTokenAuth(request: FastifyRequest, reply: Fa
 		request.accessToken = accessToken;
 		request.accessTokenPayload = decodedJWTAccessPayload;
 
-		request.server.log.trace({
+		logger.trace({
 			accToken: request.accessToken,
 			user: request.user,
 			accPayload: request.accessTokenPayload

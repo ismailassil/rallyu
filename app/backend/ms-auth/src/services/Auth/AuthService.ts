@@ -5,8 +5,6 @@ import UserService from "../User/UserService";
 import SessionService from "./SessionsService";
 import { AuthConfig } from "../../config/auth";
 import JWTUtils from "../../utils/auth/JWTUtils";
-import MailingService from '../Communication/MailingService';
-import WhatsAppService from '../Communication/WhatsAppService';
 import TwoFactorMethodService from '../TwoFactorAuth/TwoFactorMethodService';
 import TwoFactorChallengeService from '../TwoFactorAuth/TwoFactorChallengeService';
 import {
@@ -23,8 +21,6 @@ import { AuthChallengeMethod } from '../../repositories/AuthChallengesRepository
 import CDNService from '../CDN/CDNService';
 
 class AuthService {
-	private cdnService: CDNService;
-
 	constructor(
 		private authConfig: AuthConfig,
 		private jwtUtils: JWTUtils,
@@ -32,11 +28,9 @@ class AuthService {
 		private sessionService: SessionService,
 		private twoFAMethodService: TwoFactorMethodService,
 		private twoFAChallengeService: TwoFactorChallengeService,
-		private mailingService: MailingService,
-		private smsService: WhatsAppService
-	) {
-		this.cdnService = new CDNService();
-	}
+		private cdnService: CDNService
+
+	) {}
 
 	async SignUp(first_name: string, last_name: string, username: string, email: string, password: string) : Promise<void> {
 		const hashedPassword = await bcrypt.hash(password!, this.authConfig.bcryptHashRounds);

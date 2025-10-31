@@ -2,18 +2,16 @@ import pino, { BaseLogger } from 'pino';
 import { ServiceUnavailableError } from '../../types/exceptions/AAuthError';
 import qrcodeTerminal from 'qrcode-terminal';
 import makeWASocket, { WASocket, useMultiFileAuthState, DisconnectReason } from '@whiskeysockets/baileys';
-import { FastifyBaseLogger } from 'fastify';
+import logger from '../../utils/misc/logger';
 import { rmSync } from 'fs';
 import path from 'path';
 
 export interface WhatsAppServiceOptions {
 	authDir?: string;
 	adminJid?: string;
-	logger?: BaseLogger;
 }
 
 export class WhatsAppService {
-	private logger: BaseLogger;
 	private authDir: string;
 	private adminJid: string | undefined;
 	private socket: WASocket | null = null;
@@ -22,7 +20,6 @@ export class WhatsAppService {
 	constructor(options: WhatsAppServiceOptions = {}) {
 		this.authDir = options.authDir || 'wp-session';
 		this.adminJid = options.adminJid;
-		this.logger = options.logger || pino({ transport: { target: 'pino-pretty', options: { colorize: true, translateTime: 'SYS:standard', ignore: 'pid,hostname' } } });
 
 	  	// non-blocking
 	  	this.initializeInBackground();
@@ -33,9 +30,9 @@ export class WhatsAppService {
 	}
 
 	private async createSocket() {
-		this.logger.info('[WHATSAPP] Creating a new socket...');
+		logger.info('[WHATSAPP] Creating a new socket...');
 		if (this.isReady) {
-			this.logger.info('[WHATSAPP] Socket is already initialized...');
+			logger.info('[WHATSAPP] Socket is already initialized...');
 			return ;
 		}
 
@@ -53,7 +50,7 @@ export class WhatsAppService {
 				const { connection, lastDisconnect, qr } = update;
 
 				if (qr) {
-					this.logger.info('[WHATSAPP] QR Code ready. Scan to authenticate.');
+					logger.info('[WHATSAPP] QR Code ready. Scan to authenticate.');
 					qrcodeTerminal.generate(qr, { small: true });
 				}
 
@@ -64,21 +61,21 @@ export class WhatsAppService {
 					const isLogout = statusCode === DisconnectReason.loggedOut;
 
 					if (!isLogout) {
-						this.logger.warn('[WHATSAPP] Connection lost. Attempting to reconnect...');
+						logger.warn('[WHATSAPP] Connection lost. Attempting to reconnect...');
 						this.createSocket();
 					}
 					else {
 						try {
 							rmSync(path.resolve(this.authDir), { recursive: true, force: true });
-							this.logger.info('[WHATSAPP] Removed session files successfully...');
+							logger.info('[WHATSAPP] Removed session files successfully...');
 						} catch (err) {
-							this.logger.error({ err }, '[WHATSAPP] Failed to remove session files...');
+							logger.error({ err }, '[WHATSAPP] Failed to remove session files...');
 						}
 						this.createSocket();
 					}
 				} else if (connection === 'open') {
 					this.isReady = true;
-					this.logger.info('[WHATSAPP] Service is up and running...');
+					logger.info('[WHATSAPP] Service is up and running...');
 					this.sendReadyNotification().catch(() => {
 						/* im ignoring this */
 					});
@@ -88,7 +85,7 @@ export class WhatsAppService {
 			this.socket.ev.on('connection.update', connectionUpdateHandler);
        		this.socket.ev.on('creds.update', credsUpdateHandler);
 		} catch (err) {
-			this.logger.error({ err }, '[WHATSAPP] Failed to create socket');
+			logger.error({ err }, '[WHATSAPP] Failed to create socket');
 		}
 	}
 
@@ -100,9 +97,9 @@ export class WhatsAppService {
 			await this.socket.sendMessage(this.adminJid, {
 				text: '🟢 WhatsApp service is up and running!',
 			});
-			this.logger.info('[WHATSAPP] Successfully sent ready notification to Admin');
+			logger.info('[WHATSAPP] Successfully sent ready notification to Admin');
 		} catch (err) {
-		  	this.logger.warn({ err, to: this.adminJid }, '[WHATSAPP] Failed to send ready notification to Admin');
+		  	logger.warn({ err, to: this.adminJid }, '[WHATSAPP] Failed to send ready notification to Admin');
 		}
 	}
 
@@ -114,15 +111,16 @@ export class WhatsAppService {
 
 		const exists = await this.isOnWhatsApp(to);
 		if (!exists)
-			throw new ServiceUnavailableError('Phone number is not registered on WhatsApp');
+			return ;
+			// throw new ServiceUnavailableError('Phone number is not registered on WhatsApp');
 
 		try {
 			await this.socket.sendMessage(jid, {
 				text: message
 			});
-			this.logger.info({ to: jid }, '[WHATSAPP] Message sent!');
+			logger.info({ to: jid }, '[WHATSAPP] Message sent!');
 		} catch (err) {
-			this.logger.info({ err, to }, '[WHATSAPP] Failed to send message!');
+			logger.info({ err, to }, '[WHATSAPP] Failed to send message!');
 			throw new ServiceUnavailableError('Failed to send WhatsApp message');
 		}
 	}
@@ -137,7 +135,7 @@ export class WhatsAppService {
 			const result = await this.socket.onWhatsApp(jid);
 			return Array.isArray(result) && result.length > 0 && result[0]?.exists === true;
 		} catch (err) {
-			this.logger.warn({ err, number }, '[WHATSAPP] Failed to check number existence');
+			logger.warn({ err, number }, '[WHATSAPP] Failed to check number existence');
 			return false;
 		}
 	}

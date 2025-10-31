@@ -1,8 +1,7 @@
 import { UUID } from "crypto";
 import AuthChallengesRepository, { AuthChallenge, AuthChallengeMethod } from "../../repositories/AuthChallengesRepository";
-import { User } from "../../types";
 import UserService from "../User/UserService";
-import { generateOTP, generateUUID, nowInSeconds, nowPlusSeconds, verifyOTP } from "../TwoFactorAuth/utils";
+import { generateOTP, generateUUID, nowInSeconds, nowPlusSeconds, verifyOTP } from "../../utils/auth/utils";
 import MailingService from "../Communication/MailingService";
 import WhatsAppService from "../Communication/WhatsAppService";
 import { mailingConfig } from "../../config/mailing";
@@ -16,15 +15,12 @@ const verificationConfig = {
 }
 
 class VerificationService {
-	private challengeRepository: AuthChallengesRepository;
-
 	constructor(
 		private userService: UserService,
 		private mailingService: MailingService,
-		private smsService: WhatsAppService
-	) {
-		this.challengeRepository = new AuthChallengesRepository();
-	}
+		private smsService: WhatsAppService,
+		private challengeRepository: AuthChallengesRepository
+	) {}
 
 	async request(_for: 'email' | 'phone', userID: number, providedTarget: string) {
 		const targetUser = await this.userService.getUserById(userID);
@@ -159,7 +155,18 @@ class VerificationService {
 		await this.notifyUser(targetChall.target!, targetChall.method!, newOTP);
 	}
 
+	async unverify(_for: 'email' | 'phone', userID: number) {
+		const targetUser = await this.userService.getUserById(userID);
+		if (!targetUser)
+			throw new UserNotFoundError();
+
+		await this.userService.updateUser(userID, _for === 'email' ? { email_verified: false } : _for === 'phone' ? { phone_verified: false } : {});
+	}
+
 	private async notifyUser(target: string, method: AuthChallengeMethod, OTP: string) {
+		if (!target)
+			return ;
+
 		if (method === 'EMAIL')
 			return await this.mailingService.sendEmail({
 				from: mailingConfig.mailingServiceUser,

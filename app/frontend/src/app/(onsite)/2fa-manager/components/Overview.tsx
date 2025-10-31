@@ -81,8 +81,52 @@ export default function Overview({ onSetup }: OverviewProps) {
 		}
 	}
 
+	async function handleUnverify(m: 'TOTP' | 'EMAIL' | 'SMS') {
+		try {
+			if (m === 'EMAIL')
+				await executeAPICall(() => apiClient.auth.unverifyEmail());
+			else if (m === 'SMS')
+				await executeAPICall(() => apiClient.auth.unverifyPhone());
+		} catch (err: any) {
+			toastError(tautherr('errorCodes', { code: err.message }));
+		}
+	}
+
 	async function handleSetup(m: 'TOTP' | 'EMAIL' | 'SMS') {
 		onSetup(m);
+	}
+
+	function getMethodSubtitleDisplay(m: 'TOTP' | 'EMAIL' | 'SMS') {
+		const isEmail = m === 'EMAIL';
+		const isSMS = m === 'SMS';
+
+		const verified =
+			(isEmail && loggedInUser?.email_verified && loggedInUser.email) ||
+			(isSMS && loggedInUser?.phone_verified && loggedInUser.phone);
+
+		if (m === 'TOTP' || !verified) {
+			return <>{t('auth.twoFactorManager.overview.cards.subtitle', { method: m })}</>;
+		}
+
+		const contactInfo: Record<string, string> = { method: m };
+		if (isEmail && typeof loggedInUser?.email === 'string') {
+			contactInfo.email = loggedInUser.email;
+		}
+		if (isSMS && typeof loggedInUser?.phone === 'string') {
+			contactInfo.phone = loggedInUser.phone;
+		}
+
+		return (
+			<>
+				{t('auth.twoFactorManager.overview.cards.usingVerified', contactInfo)}
+				<span
+					onClick={() => handleUnverify(m)}
+					className="font-semibold ml-2 text-blue-500/80 hover:underline cursor-pointer"
+				>
+					{t('auth.twoFactorManager.overview.cards.remove')}
+				</span>
+			</>
+		);
 	}
 
 	return (
@@ -118,9 +162,7 @@ export default function Overview({ onSetup }: OverviewProps) {
 									{t('auth.twoFactorManager.overview.cards.title', { method: m })}
 								</h1>
 								<p className='text-sm font-light text-white/75 lg:text-base'>
-									{t('auth.twoFactorManager.overview.cards.subtitle', {
-										method: m,
-									})}
+									{getMethodSubtitleDisplay(m as 'TOTP' | 'SMS' | 'EMAIL')}
 								</p>
 							</div>
 							<ToggleSwitch

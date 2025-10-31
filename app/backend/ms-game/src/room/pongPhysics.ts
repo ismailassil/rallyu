@@ -1,5 +1,6 @@
 import { BallState, Coords, PingPongGameState, PongPlayerState } from "../types/types";
 
+const MAX_SCORE = 7;
 const ARENA_WIDTH = 1600;
 const ARENA_HEIGHT = 900;
 const maxBounceAngle = 0.785398 // RAD / 45 degrees
@@ -78,7 +79,7 @@ const updatePlayers = (players: PongPlayerState[]) => {
     }
 }
 
-export const updateState = (gameState: PingPongGameState) => {
+export const updateState = (gameState: PingPongGameState, gameOverHandler: () => void) => {
 	updatePlayers(gameState.players);
 	if (gameState.pause) return ;
 	const newBall: Coords = updateBall(gameState.ball)
@@ -117,7 +118,9 @@ export const updateState = (gameState: PingPongGameState) => {
 		gameState.ball = resetBall("left")
 		gameState.pause = true
 		setTimeout(() => gameState.pause = false, 1200)
-		return
+		if (gameState.overtimeSwitch || gameState.score[1] >= MAX_SCORE)
+			gameOverHandler();
+		return;
 	}
 	
 	// left player scored
@@ -126,7 +129,9 @@ export const updateState = (gameState: PingPongGameState) => {
 		gameState.ball = resetBall("right")
 		gameState.pause = true
 		setTimeout(() => gameState.pause = false, 1200)
-		return
+		if (gameState.overtimeSwitch || gameState.score[0] >= MAX_SCORE)
+			gameOverHandler();
+		return;
 	}
 
 	gameState.ball.x = newBall.x

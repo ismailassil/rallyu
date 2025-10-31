@@ -46,7 +46,7 @@ class SocketProxy {
 		}
 
 		this.socket.onerror = (error: Event): void => {
-			console.error("WebSocket error: ", error);
+			console.log("WebSocket error: ", error);
 		}
 		return this.disconnect.bind(this);
 	}
