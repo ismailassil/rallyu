@@ -17,6 +17,7 @@ import { STAT_CONFIG } from './constants';
 
 export default function SnapshotCard() {
 	const t = useTranslations('dashboard');
+	const tautherr = useTranslations('auth');
 	const [index, setIndex] = useState(0);
 
 	const {
@@ -44,8 +45,18 @@ export default function SnapshotCard() {
 	useEffect(() => {
 		if (!loggedInUser)
 			return;
-		fetchUserProfile(() => apiClient.user.fetchUser(loggedInUser.id));
-		fetchUserAnalytics(() => apiClient.user.fetchUserAnalytics(loggedInUser.id));
+
+		async function fetchSnapshots() {
+			if (!loggedInUser)
+				return;
+
+			try {
+				fetchUserProfile(() => apiClient.user.fetchUser(loggedInUser.id));
+				fetchUserAnalytics(() => apiClient.user.fetchUserAnalytics(loggedInUser.id));
+			} catch {}
+		}
+
+		fetchSnapshots();
 	}, [apiClient.user, fetchUserAnalytics, fetchUserProfile, loggedInUser]);
 
 	function flattenStats(obj: Record<string, any> = {}) {
@@ -92,7 +103,7 @@ export default function SnapshotCard() {
 		return (
 			<MainCardWithHeader headerName={t('titles.snapshots')} color='notwhite' className='font-funnel-display flex-3 select-none'>
 				<div className='group flex flex-col gap-4'>
-				<PlaceholderComponent content={isError} />
+				<PlaceholderComponent content={tautherr('errorCodes', { code: isError })} />
 				</div>
 			</MainCardWithHeader>
 		);

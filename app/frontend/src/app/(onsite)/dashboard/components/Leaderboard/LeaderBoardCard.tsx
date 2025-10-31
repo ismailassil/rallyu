@@ -10,6 +10,7 @@ import { LoadingSkeletonList } from './LeaderBoardSkeleton';
 
 export default function LeaderboardCard() {
 	const t = useTranslations('dashboard.titles');
+	const tautherr = useTranslations('auth');
 
 	const {
 		apiClient
@@ -39,7 +40,7 @@ export default function LeaderboardCard() {
 						count={10}
 					/>
 				) : error ? (
-					<PlaceholderComponent content={error} />
+					<PlaceholderComponent content={tautherr('errorCodes', { code: error })} />
 				) : !leaderboard ? (
 					null
 				) : leaderboard.length === 0 ? (

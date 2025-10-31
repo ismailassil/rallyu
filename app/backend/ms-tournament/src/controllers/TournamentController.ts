@@ -75,8 +75,6 @@ class TournamentController {
 						tournament["isUserIn"] = true;
 				}
 			}
-
-			console.log(tournaments);
 			
 			return rep.code(200).send({
 				status: true,
@@ -181,9 +179,6 @@ class TournamentController {
 
 			const tournamentMatches: any = 
 				await req.server.tournamentMatchesModel.matchesGet(tournamentId);
-
-							console.log(tournamentMatches)
-
 			
 			if (tournamentMatches[0].state !== "pending")
 				return (rep.code(401).send({ status: true, message: "Unfortunetly you cannot access nor leave the tournament now." }))
@@ -222,8 +217,6 @@ class TournamentController {
 
 			const tournamentMatches: any =
 				await req.server.tournamentMatchesModel.matchesGet(tournamentId);
-
-			console.log(tournamentMatches)
 
 			if (tournamentMatches[0].state !== "pending")
 				return (rep.code(401).send({ status: true, message: "Unfortnetly you cannot access nor leave the tournament now." }))
@@ -264,7 +257,7 @@ class TournamentController {
 				return rep.code(400).send({ status: false, message: "Bad request!" });
 
 			const data = await req.server.tournamentMatchesModel.checkForAvailability(matchId, playerId);
-			console.log(data);
+
 			if (data)
 				return rep.code(400).send({ status: false, message: "You are already playing in a match tournament; Finish it then come back!" })
 
