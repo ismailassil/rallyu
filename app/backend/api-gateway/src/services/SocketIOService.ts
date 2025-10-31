@@ -37,7 +37,7 @@ class SocketIOService {
 
 	public setupConnection(): void {
 		this.io.on("connection", async (socket: Socket) => {
-			socket.use(socketRateLimiter({ maxBurst: 10, perSecond: 1 }));
+			socket.use(socketRateLimiter({ maxBurst: 80, perSecond: 1 }));
 
 			await this.handleConnection(socket);
 
