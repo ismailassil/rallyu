@@ -239,17 +239,17 @@ class TournamentMatchesModel {
 						)
 					} catch (err) {
 						if (err.state >= 500)
-							this.DB.run(`Update Tournaments SET state='cancelled', cancellation_reason='LOL' WHERE id=?`, [match.tournament_id])
+							this.DB.run(`Update Tournaments SET state='cancelled', cancellation_reason='Game service is currently unavailable; We apologize for the inconvinience' WHERE id=?`, [match.tournament_id])
 						else if (err.state === 403) {
 							if (err.body.player_ids === 2) {
 								this.DB.run(`Update Tournaments SET state='cancelled', cancellation_reason='Two players forfeited their match during the tournament' WHERE id=?`, [match.tournament_id])
 							}
 							if (err.body.player_ids === 1) {
-								this.DB.run(`Update ${this.modelName} SET winner=?, results='' WHERE id=?`,
+								this.DB.run(`Update ${this.modelName} SET winner=?, results=? WHERE id=?`,
 								[err.body.player_ids[0], err.body.player_ids[0] === match.player_1 ? '7|F' : 'F|7', match.id])
 							}
 						} else {
-							this.DB.run(`Update Tournaments SET state='cancelled', cancellation_reason='LOL' WHERE id=?`, [match.tournament_id])
+							this.DB.run(`Update Tournaments SET state='cancelled', cancellation_reason='Game service is currently unavailable; We apologize for the inconvinience' WHERE id=?`, [match.tournament_id])
 						}
 						app.log.fatal(err);
 					}

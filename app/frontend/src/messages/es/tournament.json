@@ -87,7 +87,8 @@
                 "header": "El torneo fue cancelado desafortunadamente",
                 "reason-label": "Razón",
                 "reason-not-player": "No hay suficientes jugadores para participar",
-                "reason-forfeit": "Dos jugadores se retiraron de su partido durante el torneo"
+                "reason-forfeit": "Dos jugadores se retiraron de su partido durante el torneo",
+                "reason-internal": "El servicio de juego no está disponible actualmente; disculpe las molestias"
             }
         }
     } 
