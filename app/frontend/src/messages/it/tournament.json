@@ -87,7 +87,8 @@
                 "header": "Il torneo è stato purtroppo annullato",
                 "reason-label": "Motivo",
                 "reason-not-player": "Non ci sono abbastanza giocatori per partecipare",
-                "reason-forfeit": "Due giocatori hanno rinunciato alla loro partita durante il torneo"
+                "reason-forfeit": "Due giocatori hanno rinunciato alla loro partita durante il torneo",
+                "reason-internal": "Il servizio di gioco non è attualmente disponibile; ci scusiamo per l’inconveniente"
             }
         }
     } 

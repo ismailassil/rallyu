@@ -87,7 +87,8 @@
                 "header": "Tournament got cancelled unfortunately",
                 "reason-label": "Reason",
                 "reason-not-player": "Not enough players to participate",
-                "reason-forfeit": "Two players forfeited their match during the tournament"
+                "reason-forfeit": "Two players forfeited their match during the tournament",
+                "reason-internal": "Game service is currently unavailable; we apologize for the inconvenience"
             }
         }
     } 

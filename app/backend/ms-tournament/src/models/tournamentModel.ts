@@ -182,8 +182,6 @@ class TournamentModel {
 							.toString()
 							.padStart(2, "0")}`;
 
-			console.log(strDate)
-			console.log(strDate)
 			// Change state of tournaments to ongoing
 			this.DB.run(
 				`
@@ -191,7 +189,7 @@ class TournamentModel {
 				state='pending' AND contenders_size=contenders_joined
 				`,
 				(err) => {
-					console.log(err);
+					// console.log(err);
 				}
 			);
 
@@ -203,7 +201,7 @@ class TournamentModel {
 				`,
 				[this.cancellation_reason.get("not-enough-players")],
 				(err) => {
-					console.log(err);
+					// console.log(err);
 				}
 			);
 			
