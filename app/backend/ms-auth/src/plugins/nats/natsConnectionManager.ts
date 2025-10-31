@@ -21,6 +21,8 @@ class NatsConnectionManager {
 			user: this.opts.NATS_USER,
 			pass: this.opts.NATS_PASSWORD,
 			name: 'User Management',
+			maxReconnectAttempts: -1,
+			reconnectTimeWait: 2000,
 		});
 
 		this.js = this.nc.jetstream();
