@@ -2,9 +2,10 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { UnauthorizedError } from "../../types/exceptions/AAuthError";
 import JWTUtils from "../../utils/auth/JWTUtils";
 import { authConfig } from "../../config/auth";
+import logger from "../../utils/misc/logger";
 
 export default async function refreshTokenAuth(request: FastifyRequest, reply: FastifyReply) {
-	request.server.log.trace('[HOOK] REFRESH TOKEN AUTH: STARTED');
+	logger.trace('[HOOK] REFRESH TOKEN AUTH: STARTED');
 
 	const refreshToken = request.refreshToken;
 	if (!refreshToken)
@@ -17,7 +18,7 @@ export default async function refreshTokenAuth(request: FastifyRequest, reply: F
 		request.refreshToken = refreshToken;
 		request.refreshTokenPayload = decodedJWTRefreshPayload;
 
-		request.server.log.trace({
+		logger.trace({
 			refToken: request.refreshToken,
 			user: request.user,
 			refPayload: request.refreshTokenPayload

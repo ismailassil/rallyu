@@ -198,8 +198,6 @@ class UserRepository extends ARepository {
 				[userID, userID, likeQuery, likeQuery, likeQuery]
 			);
 
-			console.log('SEARCH RESULTS: ', allResults);
-
 			return allResults as User[];
 		} catch (err: any) {
 			this.handleDatabaseError(err, 'searching users');

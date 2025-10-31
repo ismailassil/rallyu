@@ -1,8 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import AuthResponseFactory from "./AuthResponseFactory";
 import MatchesService from "../services/GameAndStats/MatchesService";
-import { UnauthorizedError } from "../types/exceptions/AAuthError";
-import { env } from "../config/env";
 
 class MatchesController {
 	constructor(

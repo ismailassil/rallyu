@@ -1,4 +1,4 @@
-import { generateOTP, generateTOTPSecrets, verifyOTP, verifyTOTP, nowPlusSeconds, nowInSeconds, generateUUID } from './utils';
+import { generateOTP, generateTOTPSecrets, verifyOTP, verifyTOTP, nowPlusSeconds, nowInSeconds, generateUUID } from '../../utils/auth/utils';
 import TwoFactorRepository from '../../repositories/TwoFactorRepository';
 import UserService from '../User/UserService';
 import MailingService from '../Communication/MailingService';
@@ -19,16 +19,13 @@ const twoFAConfig = {
 }
 
 class TwoFactorChallengeService {
-	private challengeRepository: AuthChallengesRepository;
-
 	constructor(
 		private twoFactorRepository: TwoFactorRepository,
 		private userService: UserService,
 		private mailingService: MailingService,
-		private smsService: WhatsAppService
-	) {
-		this.challengeRepository = new AuthChallengesRepository();
-	}
+		private smsService: WhatsAppService,
+		private challengeRepository: AuthChallengesRepository
+	) {}
 
 	// async getChallengeByID(challengeID: number) {
 	// 	const targetChallenge = await this.twoFactorRepository.findPendingLoginSessionByID(challengeID);

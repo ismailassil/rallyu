@@ -1,9 +1,10 @@
+import logger from "../utils/misc/logger";
 import { db } from "./index";
 
 const MIGRATIONS = [
 	{
 		id: 1,
-		name: 'create-users-table',
+		name: 'create_users_table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS users (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,7 +34,7 @@ const MIGRATIONS = [
 	},
 	{
 		id: 2,
-		name: 'create-sessions-table',
+		name: 'create_sessions_table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS sessions (
 				session_id TEXT PRIMARY KEY NOT NULL,
@@ -57,7 +58,7 @@ const MIGRATIONS = [
 	},
 	{
 		id: 3,
-		name: 'create-two-factor-auth-table',
+		name: 'create_two_factor_auth_table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS _2fa_methods (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,8 +72,8 @@ const MIGRATIONS = [
 		`
 	},
 	{
-		id: 6,
-		name: 'create-relations-table',
+		id: 4,
+		name: 'create_relations_table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS relations (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,8 +92,8 @@ const MIGRATIONS = [
 		`
 	},
 	{
-		id: 8,
-		name: 'create-users-stats-table',
+		id: 5,
+		name: 'create_users_stats_table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS users_stats (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -108,8 +109,8 @@ const MIGRATIONS = [
 		`
 	},
 	{
-		id: 9,
-		name: 'create-matches-table',
+		id: 6,
+		name: 'create_matches_table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS matches (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -129,8 +130,8 @@ const MIGRATIONS = [
 		`
 	},
 	{
-		id: 11,
-		name: 'create-auth-challenges-table',
+		id: 7,
+		name: 'create_auth_challenges_table',
 		sql: `
 			CREATE TABLE IF NOT EXISTS auth_challenges (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -204,7 +205,7 @@ const TRIGGERS = [
 		`
 	},
 	{
-		id: 3,
+		id: 4,
 		name: 'trg_on_email_unverified',
 		sql: `
 			CREATE TRIGGER IF NOT EXISTS trg_on_email_unverified
@@ -226,7 +227,7 @@ const TRIGGERS = [
 		`
 	},
 	{
-		id: 4,
+		id: 5,
 		name: 'trg_on_phone_change',
 		sql: `
 			CREATE TRIGGER IF NOT EXISTS trg_on_phone_change
@@ -241,7 +242,7 @@ const TRIGGERS = [
 		`
 	},
 	{
-		id: 4,
+		id: 6,
 		name: 'trg_on_phone_unverified',
 		sql: `
 			CREATE TRIGGER IF NOT EXISTS trg_on_phone_unverified
@@ -262,7 +263,7 @@ const TRIGGERS = [
 		`
 	},
 	{
-		id: 5,
+		id: 7,
 		name: 'trg_users_update_timestamp',
 		sql: `
 			CREATE TRIGGER IF NOT EXISTS trg_users_update_timestamp
@@ -274,7 +275,7 @@ const TRIGGERS = [
 		`
 	},
 	{
-		id: 6,
+		id: 8,
 		name: 'trg_sessions_update_timestamp',
 		sql: `
 			CREATE TRIGGER IF NOT EXISTS trg_sessions_update_timestamp
@@ -286,7 +287,7 @@ const TRIGGERS = [
 		`
 	},
 	{
-		id: 7,
+		id: 9,
 		name: 'trg_relations_update_timestamp',
 		sql: `
 			CREATE TRIGGER IF NOT EXISTS trg_relations_update_timestamp
@@ -298,7 +299,7 @@ const TRIGGERS = [
 		`
 	},
 	{
-		id: 8,
+		id: 10,
 		name: 'trg_auth_challenges_update_timestamp',
 		sql: `
 			CREATE TRIGGER IF NOT EXISTS trg_auth_challenges_update_timestamp
@@ -310,7 +311,7 @@ const TRIGGERS = [
 		`
 	},
 	{
-		id: 9,
+		id: 11,
 		name: 'trg_invalidate_user_sessions_after_auth_none',
 		sql: `
 			CREATE TRIGGER IF NOT EXISTS trg_invalidate_user_sessions_after_auth_none
@@ -338,18 +339,18 @@ async function runMigrations() {
 
 		for (const migration of MIGRATIONS) {
 			await db.run(migration.sql);
-			console.log(`Completed migration: ${migration.name}`);
+			logger.trace(`[MIGRATIONS] Completed migration: ${migration.name}`);
 		}
-		console.log(`Completed all migrations successfully.`);
+		logger.info('[MIGRATIONS] Completed all migrations successfully');
 
 		for (const trigger of TRIGGERS) {
 			await db.run(trigger.sql);
-			console.log(`Completed trigger: ${trigger.name}`);
+			logger.trace(`[TRIGGERS] Completed trigger: ${trigger.name}`);
 		}
-		console.log(`Completed all trigger successfully.`);
+		logger.info('[TRIGGERS] Completed all triggers successfully');
 	} catch (err) {
 		await db.close();
-		console.log(`Migration failed: ${err}`);
+		logger.error({ err }, '[MIGRATIONS/TRIGGERS] Failure');
 		process.exit(1);
 	}
 }

@@ -12,9 +12,3 @@ export class UserNotFoundError extends NotFoundError {
 		super(message, 'AUTH_USER_NOT_FOUND', details);
 	}
 }
-export class UsersNotFoundError extends NotFoundError {
-	// where we don't want to reveal which specific user doesn't exist (relations)
-	constructor(message: string = 'One or both users do not exist', details: any = {}) {
-		super(message, 'AUTH_USERS_NOT_FOUND', details);
-	}
-}

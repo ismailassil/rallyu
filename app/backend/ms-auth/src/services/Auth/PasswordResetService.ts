@@ -1,10 +1,8 @@
-import ResetPasswordRepository from "../../repositories/ResetPasswordRepository";
 import bcrypt from 'bcrypt';
 import MailingService from "../Communication/MailingService";
-import WhatsAppService from "../Communication/WhatsAppService";
 import { AuthConfig } from "../../config/auth";
 import UserService from "../User/UserService";
-import { generateOTP, generateUUID, nowInSeconds, nowPlusSeconds, verifyOTP } from "../TwoFactorAuth/utils";
+import { generateOTP, generateUUID, nowInSeconds, nowPlusSeconds, verifyOTP } from "../../utils/auth/utils";
 import AuthChallengesRepository from "../../repositories/AuthChallengesRepository";
 import { UUID } from "crypto";
 import { UserNotFoundError } from "../../types/exceptions/user.exceptions";
@@ -18,17 +16,12 @@ const passwordResetConfig = {
 }
 
 class PasswordResetService {
-	private challengeRepository: AuthChallengesRepository;
-
 	constructor(
 		private authConfig: AuthConfig,
 		private userService: UserService,
-		private resetRepository: ResetPasswordRepository,
 		private mailingService: MailingService,
-		private smsService: WhatsAppService
-	) {
-		this.challengeRepository = new AuthChallengesRepository();
-	}
+		private challengeRepository: AuthChallengesRepository
+	) {}
 
 	async setup(email: string) {
 		const targetUser = await this.userService.getUserByEmail(email);

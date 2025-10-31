@@ -305,7 +305,6 @@ class StatsRepository extends ARepository {
 				ORDER BY matches DESC
 				LIMIT 1
 			`, CTE.params);
-			console.log("mostFreq: ", mostFrequentOpponent);
 
 			const mostWinsOpponent = await db.get(`
 				${CTE.sql}
