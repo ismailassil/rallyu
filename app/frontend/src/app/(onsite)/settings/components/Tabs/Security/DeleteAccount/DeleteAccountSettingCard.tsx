@@ -1,39 +1,33 @@
-import React, { useEffect, useState } from 'react'
-import SettingsCard from '../../../SettingsCard';
-import { Trash2, TriangleAlert } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
-import { useAuth } from '@/app/(onsite)/contexts/AuthContext';
-import useAPICall from '@/app/hooks/useAPICall';
+import React, { useEffect, useState } from "react";
+import SettingsCard from "../../../SettingsCard";
+import { Trash2, TriangleAlert } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "next-intl";
+import { useAuth } from "@/app/(onsite)/contexts/AuthContext";
+import useAPICall from "@/app/hooks/useAPICall";
 
-function DeleteAccountModal({ onCloseModal } : { onCloseModal: () => void }) {
-	const t = useTranslations('settings.security.cards.delete_account.modal');
+function DeleteAccountModal({ onCloseModal }: { onCloseModal: () => void }) {
+	const t = useTranslations("settings.security.cards.delete_account.modal");
 
-	const {
-		apiClient,
-		loggedInUser
-	} = useAuth();
+	const { apiClient, loggedInUser, logout } = useAuth();
 
-	const {
-		executeAPICall,
-		isLoading: isSubmitting
-	} = useAPICall();
+	const { executeAPICall, isLoading: isSubmitting } = useAPICall();
 
 	useEffect(() => {
 		function handleKeyDown(e: KeyboardEvent) {
-			if (e.key === 'Escape') onCloseModal();
+			if (e.key === "Escape") onCloseModal();
 		}
-		document.addEventListener('keydown', handleKeyDown);
-		return () => document.removeEventListener('keydown', handleKeyDown);
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
 	}, [onCloseModal]);
 
 	async function handleSubmit() {
-		if (!loggedInUser) return ;
+		if (!loggedInUser) return;
 
 		try {
 			await executeAPICall(() => apiClient.user.deleteUser(loggedInUser.id));
+			await logout();
 		} catch {
-
 		} finally {
 			onCloseModal();
 		}
@@ -49,51 +43,50 @@ function DeleteAccountModal({ onCloseModal } : { onCloseModal: () => void }) {
 			onClick={onCloseModal}
 		>
 			<div
-				className="w-full max-w-lg bg-neutral-900 rounded-2xl border border-white/8 overflow-hidden"
+				className="w-full max-w-lg overflow-hidden rounded-2xl border border-white/8 bg-neutral-900"
 				onClick={(e) => e.stopPropagation()}
 			>
 				{/* CONTENT */}
 				<div className="p-6 sm:p-8">
-					<div className="flex items-center gap-3 mb-8">
-						<div className="p-3 bg-red-500/20 rounded-xl">
+					<div className="mb-8 flex items-center gap-3">
+						<div className="rounded-xl bg-red-500/20 p-3">
 							<Trash2 className="text-red-400" size={24} />
 						</div>
 						<h2 id="modal-title" className="text-2xl font-bold text-white">
-							{t('title')}
+							{t("title")}
 						</h2>
 					</div>
 
-					<div className="bg-red-950/30 border border-red-900/50 rounded-xl p-5">
-						<p className="text-gray-300 leading-relaxed">
-							{t('text1')} <span className="text-red-400 font-semibold">{t('text2')}</span> {t('text3')} <br></br>{t('text4')} <code className="text-gray-400">{t('text5')}</code>.
+					<div className="rounded-xl border border-red-900/50 bg-red-950/30 p-5">
+						<p className="leading-relaxed text-gray-300">
+							{t("text1")}{" "}
+							<span className="font-semibold text-red-400">{t("text2")}</span>{" "}
+							{t("text3")} <br></br>
+							{t("text4")} <code className="text-gray-400">{t("text5")}</code>.
 						</p>
-						<p className="text-red-400 font-bold mt-3 text-base flex items-center gap-1">
-							<TriangleAlert size={16} /> {t('warning1')}
+						<p className="mt-3 flex items-center gap-1 text-base font-bold text-red-400">
+							<TriangleAlert size={16} /> {t("warning1")}
 						</p>
-						<p className="text-red-400 font-bold mt-3 text-base flex items-center gap-1">
-							<TriangleAlert size={16} /> {t('warning2')}
+						<p className="mt-3 flex items-center gap-1 text-base font-bold text-red-400">
+							<TriangleAlert size={16} /> {t("warning2")}
 						</p>
 					</div>
 
 					{/* ACTION BUTTONS */}
-					<div className='flex w-full mt-8 gap-4'>
-						<button className={`flex-1 bg-white/4 hover:bg-white/10 border border-white/10
-										flex gap-2 justify-center items-center px-3 md:px-5 py-0 md:py-1.5 text-sm md:text-base
-										rounded-full h-10 select-none font-medium
-										transition-all duration-500 ease-in-out ${isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-								onClick={onCloseModal}
-								disabled={isSubmitting}
+					<div className="mt-8 flex w-full gap-4">
+						<button
+							className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/4 px-3 py-0 text-sm font-medium transition-all duration-500 ease-in-out select-none hover:bg-white/10 md:px-5 md:py-1.5 md:text-base ${isSubmitting ? "cursor-not-allowed" : "cursor-pointer"}`}
+							onClick={onCloseModal}
+							disabled={isSubmitting}
 						>
-							{t('button1')}
+							{t("button1")}
 						</button>
-						<button className={`flex-1 bg-red-500/10 hover:bg-red-500/60 border border-red-500/20 text-white
-										flex gap-2 justify-center items-center px-3 md:px-5 py-0 md:py-1.5 text-sm md:text-base
-										rounded-full h-10 select-none font-medium
-										transition-all duration-500 ease-in-out ${isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-								onClick={handleSubmit}
-								disabled={isSubmitting}
+						<button
+							className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-full border border-red-500/20 bg-red-500/10 px-3 py-0 text-sm font-medium text-white transition-all duration-500 ease-in-out select-none hover:bg-red-500/60 md:px-5 md:py-1.5 md:text-base ${isSubmitting ? "cursor-not-allowed" : "cursor-pointer"}`}
+							onClick={handleSubmit}
+							disabled={isSubmitting}
 						>
-							{t('button2')}
+							{t("button2")}
 						</button>
 					</div>
 				</div>
@@ -102,26 +95,24 @@ function DeleteAccountModal({ onCloseModal } : { onCloseModal: () => void }) {
 	);
 }
 
-
 export default function DeleteAccountSettingCard() {
-	const t = useTranslations('settings.security.cards.delete_account');
+	const t = useTranslations("settings.security.cards.delete_account");
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	return (
 		<>
-		<SettingsCard
-			title={t('title')}
-			subtitle={t('subtitle')}
-			actionButtonOptions={{
-				title: t('button'),
-				icon: <Trash2 size={16} />,
-				onClick: () => setIsModalOpen(true)
-			}}
-		>
-		</SettingsCard>
-		<AnimatePresence>
-			{isModalOpen && <DeleteAccountModal onCloseModal={() => setIsModalOpen(false)} />}
-		</AnimatePresence>
+			<SettingsCard
+				title={t("title")}
+				subtitle={t("subtitle")}
+				actionButtonOptions={{
+					title: t("button"),
+					icon: <Trash2 size={16} />,
+					onClick: () => setIsModalOpen(true),
+				}}
+			></SettingsCard>
+			<AnimatePresence>
+				{isModalOpen && <DeleteAccountModal onCloseModal={() => setIsModalOpen(false)} />}
+			</AnimatePresence>
 		</>
 	);
 }
