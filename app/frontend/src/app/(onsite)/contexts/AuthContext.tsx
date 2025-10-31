@@ -45,7 +45,7 @@ export default function AuthProvider({ children }: AuthProviderType) {
 	const initializeAuth = async () => {
 		console.group("initializeAuth");
 		try {
-			setIsLoading(true);
+			// setIsLoading(true);
 
 			const { user, accessToken } = await apiClient.auth.refreshToken();
 
@@ -90,7 +90,7 @@ export default function AuthProvider({ children }: AuthProviderType) {
 		} catch (err) {
 			throw err;
 		} finally {
-			// setIsLoading(false);
+			setIsLoading(false);
 			// setIsLoading(false);
 		}
 	}
@@ -109,7 +109,7 @@ export default function AuthProvider({ children }: AuthProviderType) {
 		} finally {
 			sessionStorage.removeItem('token');
 			sessionStorage.removeItem('enabledMethods');
-			// setIsLoading(false);
+			setIsLoading(false);
 		}
 	}
 

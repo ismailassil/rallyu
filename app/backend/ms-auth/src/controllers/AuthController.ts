@@ -144,7 +144,7 @@ class AuthController {
 	async googleOAuthConsentRedirectHandler(request: FastifyRequest, reply: FastifyReply) {
 		const { frontendOrigin } = request.query as { frontendOrigin: string };
 		const frontendURL = new URL(frontendOrigin);
-		const dynamicRedirectURI = `${frontendURL.origin}/auth/google/callback`;
+		const dynamicRedirectURI = `${frontendURL.origin}/api/auth/google/callback`;
 
 		const scope = ['openid', 'profile', 'email'];
 
@@ -167,7 +167,7 @@ class AuthController {
 	async googleOAuthCallbackHandler(request: FastifyRequest, reply: FastifyReply) {
 		const { code, state: frontendOrigin, error } = request.query as { code?: string, state?: string, error?: string };
 		const frontendURL = new URL(frontendOrigin!);
-		const dynamicRedirectURI = `${frontendURL.origin}/auth/google/callback`;
+		const dynamicRedirectURI = `${frontendURL.origin}/api/auth/google/callback`;
 
 		logger.trace({ code, frontendOrigin, error }, '[OAUTH] GoogleOAuthConsent Callback Handler');
 
@@ -203,7 +203,7 @@ class AuthController {
 	async intra42OAuthConsentRedirectHandler(request: FastifyRequest, reply: FastifyReply) {
 		const { frontendOrigin } = request.query as { frontendOrigin: string };
 		const frontendURL = new URL(frontendOrigin);
-		const dynamicRedirectURI = `${frontendURL.origin}/auth/42/callback`;
+		const dynamicRedirectURI = `${frontendURL.origin}/api/auth/42/callback`;
 
 		const scope = 'public';
 
@@ -224,7 +224,7 @@ class AuthController {
 	async intra42OAuthCallbackHandler(request: FastifyRequest, reply: FastifyReply) {
 		const { code, state: frontendOrigin, error } = request.query as { code?: string, state?: string, error?: string };
 		const frontendURL = new URL(frontendOrigin!);
-		const dynamicRedirectURI = `${frontendURL.origin}/auth/42/callback`;
+		const dynamicRedirectURI = `${frontendURL.origin}/api/auth/42/callback`;
 
 		logger.trace({ code, frontendOrigin, error }, '[OAUTH] 42OAuthConsent Callback Handler');
 

@@ -1,9 +1,6 @@
-import { generateOTP, generateTOTPSecrets, verifyOTP, verifyTOTP, nowPlusSeconds, nowInSeconds, generateUUID } from '../../utils/auth/utils';
+import { generateTOTPSecrets, verifyTOTP, nowPlusSeconds, nowInSeconds, generateUUID } from '../../utils/auth/utils';
 import TwoFactorRepository from '../../repositories/TwoFactorRepository';
 import UserService from '../User/UserService';
-import MailingService from '../Communication/MailingService';
-import WhatsAppService from '../Communication/WhatsAppService';
-import { mailingConfig } from '../../config/mailing';
 import AuthChallengesRepository, { AuthChallengeMethod } from '../../repositories/AuthChallengesRepository';
 import { UUID } from 'crypto';
 import { UserNotFoundError } from '../../types/exceptions/user.exceptions';
@@ -28,6 +25,8 @@ class TwoFactorMethodService {
 		const targetUser = await this.userService.getUserById(userID);
 		if (!targetUser)
 			throw new UserNotFoundError();
+		if (targetUser.auth_provider !== 'Local')
+			throw new BadRequestError();
 
 		return (await this.twoFactorRepository.findEnabledMethodsByUserID(userID)).map(m => m.method);
 	}
@@ -36,6 +35,8 @@ class TwoFactorMethodService {
 		const targetUser = await this.userService.getUserById(userID);
 		if (!targetUser)
 			throw new UserNotFoundError();
+		if (targetUser.auth_provider !== 'Local')
+			throw new BadRequestError();
 
 		const isMethodEnabled = await this.twoFactorRepository.findEnabledMethodByType(userID, method);
 		if (isMethodEnabled)
@@ -117,6 +118,9 @@ class TwoFactorMethodService {
 		const targetUser = await this.userService.getUserById(userID);
 		if (!targetUser)
 			throw new UserNotFoundError();
+
+		if (targetUser.auth_provider !== 'Local')
+			throw new BadRequestError();
 
 		const isAlreadyEnabled = await this.twoFactorRepository.findEnabledMethodByType(userID, method);
 		if (isAlreadyEnabled)
