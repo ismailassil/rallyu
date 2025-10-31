@@ -257,10 +257,7 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
 		});
 		
 		this.setupPackets();
-		this.gameTimerId = setTimeout(async () => {
-			this.handleGameOver();
-			
-		}, GAME_TIME);
+		
 
 		this.timeoutId = setTimeout(() => {
 			this.players.forEach(player => {
@@ -268,6 +265,9 @@ export class PingPongRoom implements Room<PingPongGameState, PingPongStatus> {
                     player.socket.send(JSON.stringify({ type: 'start', t: GAME_TIME }))
 			})
 			this.state.pause = false
+			this.gameTimerId = setTimeout(async () => {
+				this.handleGameOver();
+			}, GAME_TIME);
 			this.gameloop();
 		}, GAME_START_DELAY);
 	}

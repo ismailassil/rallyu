@@ -135,7 +135,7 @@ const ResignButton = ({ handleResign }: { handleResign?: () => void }) => {
 }
 
 const VersusCard = (
-    { opponentId, timeLeft, handleResign, disconnect, round, score, resignSwitch, currentPlayer, playerSign }:
+    { opponentId, timeLeft, handleResign, disconnect, round, score, resignSwitch, currentPlayer, playerSign, overTime }:
     { opponentId? : number | undefined,
         timeLeft: number,
         handleResign: () => void,
@@ -143,8 +143,10 @@ const VersusCard = (
         round?: number,
         score?: [number, number],
         resignSwitch?: boolean,
-        currentPlayer?: XOSign
-        playerSign?: XOSign  }
+        currentPlayer?: XOSign,
+        playerSign?: XOSign,
+        overTime?: boolean
+      }
 ) => {
     const { apiClient, loggedInUser } = useAuth();
     const [loggedInUserInfo, setLoggedInUserInfo] = useState<PlayerInfo | null>(null);
@@ -168,12 +170,10 @@ const VersusCard = (
         })()
     }, []);
 
-    console.log('%cOpponentId', 'color: lime; font-size: 16px', opponentId);
     useEffect(() => {
         (async () => {
             if (!opponentId) return;
             try {
-                console.log('OpponentId', opponentId);
                 const res = await apiClient.fetchUser(opponentId);
                 setOpponentInfo({
                     username: res.user.username,
@@ -206,6 +206,7 @@ const VersusCard = (
                 </div>
 
                 <div className={`flex flex-col ${round ? 'justify-between py-2' : 'justify-end'} items-center h-full shrink-0`}>
+                    {overTime && <span className="text-sm lg:text-md xl:text-lg text-red-600 font-funnel-display font-extrabold uppercase">{t("ingame.overtime")}</span>}
                     {round && <span className="text-md lg:text-lg xl:text-xl font-funnel-display font-extrabold italic">{t("ingame.round")} {round}</span>}
                     <GameTimer time={timeLeft} className={`${round && 'rounded-2xl'}`} />
                 </div>

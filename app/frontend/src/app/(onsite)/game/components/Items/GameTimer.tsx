@@ -29,10 +29,11 @@ const GameTimer = ({ time, pause, className }: { time: number, pause?: boolean |
     };
 
     return (
-        <div 
-            className={`flex font-funnel-display text-black items-center
-                justify-center font-bold text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-right tracking-widest
-                rounded-t-2xl mb-[1px] bg-white/90 w-[95px] h-[35px] lg:w-[100px] lg:h-[40px] xl:w-[120px] xl:h-[50px] 2xl:w-[140px] 2xl:h-[60px] min-w-0 ${className || ''}`}
+        <div
+            className={`flex font-funnel-display items-center justify-center font-bold text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-right tracking-widest
+                rounded-t-2xl mb-[1px] w-[95px] h-[35px] lg:w-[100px] lg:h-[40px] xl:w-[120px] xl:h-[50px] 2xl:w-[140px] 2xl:h-[60px] min-w-0
+                transition-all duration-300 ${displayTime <= 5000 && displayTime > 0 ? 'bg-red-600 text-white animate-pulse' : 'bg-white/90 text-black'}
+                ${className || ''}`}
         >
             {formatTime(displayTime)}
         </div>

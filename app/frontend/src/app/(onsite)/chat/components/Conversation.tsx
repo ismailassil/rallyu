@@ -16,7 +16,7 @@ const ConversationBody = () => {
 	const messageRef = useRef<HTMLDivElement | null>(null);
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 	const t = useTranslations("chat");
-	const { displayUsers, setDisplayUsers, socket, BOSS, messages, selectedUser, formatMessageDateTime, setMessages, apiClient } = useChat();
+	const { setDisplayUsers, socket, BOSS, messages, selectedUser, formatMessageDateTime, setMessages, apiClient } = useChat();
 
 	const loadMessages = async (pageNum: number) => {
 		if (!BOSS?.id || !selectedUser?.id || loading) return;
@@ -84,8 +84,8 @@ const ConversationBody = () => {
 
 			setMessage("");
 			const friendId = sentMessage.senderId === BOSS?.id ? sentMessage.receiverId : sentMessage.senderId;
-			const previousDisplayUsers = displayUsers;
-			const prevmessages = messages;
+			// const previousDisplayUsers = displayUsers;
+			// const prevmessages = messages;
 
 			setDisplayUsers(prevUsers => {
 				const updatedFriend = prevUsers.find(user => user.id === friendId);
@@ -97,13 +97,6 @@ const ConversationBody = () => {
 				senderId: BOSS.id,
 				receiverId: selectedUser.id,
 				text: text,
-			}, (response: any) => {
-				if (response?.error) {
-					console.error('Message send failed:', response.error);
-					setDisplayUsers(previousDisplayUsers);
-					setMessage(text);
-					setMessages(prevmessages);
-				}
 			});
 
 			setTimeout(() => {

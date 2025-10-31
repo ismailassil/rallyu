@@ -46,7 +46,7 @@ export interface EventHandlers {
 	updateBoard?: React.Dispatch<React.SetStateAction<XOSign[]>>;
 	updateScore?: React.Dispatch<React.SetStateAction<[number, number]>>; 
 	updateDisplayedResult?: React.Dispatch<React.SetStateAction<string | null>>; 
-	// updateTournamentURL?: React.Dispatch<React.SetStateAction<number | null>>; 
+	updateOvertime?: React.Dispatch<React.SetStateAction<boolean>>
 	updateCurrentPlayer?: React.Dispatch<React.SetStateAction<XOSign>>; 
 	updateSign?: React.Dispatch<React.SetStateAction<XOSign>>; 
 	updateTournamentId?: React.Dispatch<React.SetStateAction<number | null>>

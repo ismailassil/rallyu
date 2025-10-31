@@ -1,27 +1,26 @@
-'use client';
-import { APIClient } from '@/app/(api)/APIClient';
-import SocketClient from '@/app/(api)/SocketClient';
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { AuthContextType, LoggedInUser } from './auth.context.types';
-import { useRouter } from 'next/navigation';
+"use client";
+import { APIClient } from "@/app/(api)/APIClient";
+import SocketClient from "@/app/(api)/SocketClient";
+import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { AuthContextType, LoggedInUser } from "./auth.context.types";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 let apiClient: APIClient;
 let socket: SocketClient;
 
-export function useAuth() : AuthContextType {
+export function useAuth(): AuthContextType {
 	const ctx = useContext(AuthContext);
-	if (!ctx)
-		throw new Error('useAuth must be used within an auth provider');
+	if (!ctx) throw new Error("useAuth must be used within an auth provider");
 	return ctx;
 }
 
 type AuthProviderType = {
 	children: ReactNode;
-}
+};
 
-export default function AuthProvider({ children } : AuthProviderType ) {
+export default function AuthProvider({ children }: AuthProviderType) {
 	const router = useRouter();
 	const [loggedInUser, setLoggedInUser] = useState<LoggedInUser | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +28,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	const [isBusy, setIsBusy] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (typeof window !== 'undefined') {
+		if (typeof window !== "undefined") {
 			apiClient = new APIClient(`${window.location.origin}/api`);
 			socket = new SocketClient(window.location.origin);
 		}
@@ -44,7 +43,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	}, [loggedInUser]);
 
 	const initializeAuth = async () => {
-		console.group('initializeAuth');
+		console.group("initializeAuth");
 		try {
 			setIsLoading(true);
 
@@ -64,7 +63,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	// THIS USE EFFECT WILL ONLY RUN ON PAGE FIRSTLOAD/REFRESH
 	useEffect(() => {
-		console.log('AuthContext useEffect - Trying to refresh');
+		console.log("AuthContext useEffect - Trying to refresh");
 		initializeAuth();
 	}, []);
 
@@ -77,9 +76,8 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			);
 
 			if (res._2FARequired) {
-				console.log('we are setting token and enabledMethods in login/authcontext', JSON.stringify(res.token), JSON.stringify(res.enabled2FAMethods));
-				sessionStorage.setItem('token', JSON.stringify(res.token));
-				sessionStorage.setItem('enabledMethods', JSON.stringify(res.enabled2FAMethods));
+				sessionStorage.setItem("token", JSON.stringify(res.token));
+				sessionStorage.setItem("enabledMethods", JSON.stringify(res.enabled2FAMethods));
 				return res;
 			}
 
@@ -93,6 +91,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 			throw err;
 		} finally {
 			// setIsLoading(false);
+			// setIsLoading(false);
 		}
 	}
 
@@ -100,10 +99,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		try {
 			// setIsLoading(true);
 
-			const { user, accessToken } = await apiClient.auth.loginUsing2FA(
-				token,
-				code
-			);
+			const { user, accessToken } = await apiClient.auth.loginUsing2FA(token, code);
 
 			socket.connect(accessToken);
 			setLoggedInUser(user);
@@ -132,8 +128,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 	}
 
 	async function triggerLoggedInUserRefresh() {
-		if (!loggedInUser)
-			return ;
+		if (!loggedInUser) return;
 
 		try {
 			const data = await apiClient.fetchUser(loggedInUser!.id);
@@ -160,12 +155,8 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 		// INTERNALS
 		apiClient,
-		socket
+		socket,
 	};
 
-	return (
-		<AuthContext.Provider value={value}>
-			{children}
-		</AuthContext.Provider>
-	);
+	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

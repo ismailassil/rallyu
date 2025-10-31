@@ -24,7 +24,7 @@ class LocalXO {
     turnTimeoutId: NodeJS.Timeout | undefined = undefined;
     countdownId: NodeJS.Timeout | undefined = undefined;
 	startOfRoundPlayer: XOSign;
-	status: string; // countdown gameover play
+	status: string;
     
     
     constructor(private eventHandlers?: EventHandlers) {

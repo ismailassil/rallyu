@@ -82,13 +82,14 @@ class RemoteXO {
                 case 'round_result':
 					this.state.score![0] = data.score[this.index!];
 					this.state.score![1] = data.score[this.index! ^ 1];
-                    // if (data.combo) {
-                    //     this.eventHandlers.updateCombo()
-                    // }
 					this.eventHandlers?.updateScore!(this.state.score!);
+                    break;
+                case 'overtime':
+                    this.eventHandlers?.updateOvertime?.(true);
                     break;
 				case 'gameover':
                     this.status = 'gameover';
+                    this.eventHandlers?.updateOvertime?.(false);
 					this.state.score![0] = data.score[this.index!];
 					this.state.score![1] = data.score[this.index! ^ 1];
 					this.eventHandlers?.updateScore!(this.state.score!);
@@ -96,10 +97,8 @@ class RemoteXO {
                     const displayedResult = data.winner === this.state.mySign ? 'win' : data.winner === 'draw' ? 'draw' : data.winner === 'X' ? `cross` : 'circle'
                     if (data.tournamentId) this.eventHandlers?.updateTournamentId!(data.tournamentId);
                     this.eventHandlers?.updateDisplayedResult!(displayedResult);
-                    // this.eventHandlers?.updateTournamentURL!(data.tournamentURL);
 					this.eventHandlers?.updateTimer(0);
 					this.proxy.disconnect();
-                    console.error(data);
 					break;
             }
         })

@@ -15,8 +15,8 @@ const MS_TOURN_PORT = process.env.MS_TOURN_PORT;
 const MS_TOURN_HOST = process.env.MS_TOURN_HOST;
 const MS_TOURN_API_KEY = process.env.MS_TOURN_API_KEY;
 
+const MAX_SCORE: number = 3;
 const TOTAL_ROUNDS: number = 3;
-const TURN_TIMEOUT: number = 15000;
 const COUNTDOWN_TIME: number = 3000;
 const WINNING_COMBOS: number[][] = [
 	[0, 1, 2],
@@ -103,6 +103,10 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	startOfRoundPlayer: XOSign;
 	timerStartTimeStamp: number = 0;
 	status: string = 'genesis'
+	turnTimeStages = [10000, 6000, 3000, 2000];
+	turnTimeIndex = 0;
+	overtimeSwitch = false;
+
 
 	constructor(id: string, tournament: { gameId: number, id: number } | undefined) {
 		this.id = id;
@@ -155,7 +159,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	
 		if (!winner) return;
 	
-		winner.score = TOTAL_ROUNDS;
+		winner.score = MAX_SCORE;
 		forfeiter.score = 0;
 	
 		this.status = 'gameover';
@@ -171,6 +175,16 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.saveGameData();
 	}
 
+	private overtime() {
+		this.overtimeSwitch = true;
+		if (this.turnTimeIndex < this.turnTimeStages.length - 1)
+			this.turnTimeIndex++;
+		this.broadcastToPlayers({
+			type: 'overtime',
+		})
+		this.startRound();
+	}
+
 	public playMove(move: number, sign: XOSign) {
 		if (this.state.currentPlayer !== sign) throw Error('not your turn yet');
 		if (move < 0 || move > 8 ) throw Error('forbidden move');
@@ -182,17 +196,28 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 			type: 'move',
 			move: move,
 			sign: sign,
-			duration: TURN_TIMEOUT,
+			duration: this.turnTimeStages[this.turnTimeIndex],
 			currentPlayer: this.state.currentPlayer
 		});
 
 		const combo = this.checkWin();
+		const cellsFull = this.checkDraw();
 		if (combo) {
-			this.handleWin(combo, sign);
-		} else if (this.checkDraw()) {
+			this.handleWin(sign);
+		} else if (cellsFull) {
 			this.handleDraw();
 		} else {
 			this.resetTurnTimer();
+			return;
+		}
+
+		if (this.state.currentRound > TOTAL_ROUNDS) {
+			if (this.tournament && this.players[0].score === this.players[1].score)
+				this.overtime();
+			else
+				this.handleGameOver();
+		} else {
+			this.startRound();
 		}
 	}
 	
@@ -213,29 +238,25 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		return this.state.cells.every(cell => cell !== '');
 	}
 	
-	private handleWin(combo: number[] | null, winner: XOSign): void {
+	private handleWin(winner: XOSign): void {
 		const winnerPlayer = this.players.find(p => p.sign === winner);
-		if (winnerPlayer) {
-			winnerPlayer.score++;
+
+		if (!winnerPlayer){
+			closeRoom(this, 1008, "Something Went Wrong");
+			return;
 		}
+		winnerPlayer.score++;
 
 		this.status = 'out_round';
 
 		this.broadcastToPlayers({
 			type: 'round_result',
 			winner: winner,
-			combo: combo,
 			score: this.players.map(p => p.score),
 			currentRound: this.state.currentRound
 		});
 
 		this.state.currentRound++;
-		
-		if (this.state.currentRound > TOTAL_ROUNDS) {
-			this.handleGameOver();
-		} else {
-			this.startRound();
-		}
 	}
 	
 	private handleDraw(): void {
@@ -248,12 +269,6 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 	
 		this.status = 'out_round';
 		this.state.currentRound++;
-		
-		if (this.state.currentRound > TOTAL_ROUNDS) {
-			this.handleGameOver();
-		} else {
-			this.startRound();
-		}
 	}
 	
 	
@@ -287,7 +302,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 			this.broadcastToPlayers({
 				type: 'round_start',
 				round: this.state.currentRound,
-				duration: TURN_TIMEOUT,
+				duration: this.turnTimeStages[this.turnTimeIndex],
 				currentPlayer: this.state.currentPlayer
 			});
 			this.status = 'in_round';
@@ -306,12 +321,20 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		this.timerStartTimeStamp = Date.now();
 		this.gameTimerId = setTimeout(() => {
 			this.handleTurnTimeout();
-		}, TURN_TIMEOUT);
+		}, this.turnTimeStages[this.turnTimeIndex]);
 	}
 	
 	private handleTurnTimeout(): void {
 		const winnerSign = this.state.currentPlayer === 'X' ? 'O' : 'X';
-		this.handleWin(null, winnerSign);
+		this.handleWin(winnerSign);
+		if (this.state.currentRound > TOTAL_ROUNDS) {
+			if (this.tournament && this.players[0].score === this.players[1].score)
+				this.overtime();
+			else
+				this.handleGameOver();
+		} else {
+			this.startRound();
+		}
 	}
 	
 	private determineOverallWinner(): XOSign | 'draw' {
@@ -339,7 +362,7 @@ export class TicTacToeRoom implements Room<TicTacToeGameState, TicTacToeStatus> 
 		if (this.status === 'countdown') {
 			currentTimer = Math.round(COUNTDOWN_TIME - (Date.now() - this.timerStartTimeStamp))
 		} else if (this.status === 'in_round') {
-			currentTimer = Math.round(TURN_TIMEOUT - (Date.now() - this.timerStartTimeStamp))
+			currentTimer = Math.round(this.turnTimeStages[this.turnTimeIndex] - (Date.now() - this.timerStartTimeStamp))
 		}
 
 		if (player.socket?.readyState === WebSocket.OPEN) {
