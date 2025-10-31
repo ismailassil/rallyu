@@ -26,7 +26,7 @@ const LanguageSwitcher = () => {
 		const initialLocale = cookieLocale || navigator.language.slice(0, 2) || "en";
 		setLocale(initialLocale);
 		router.refresh();
-	}, [router]);
+	}, []);
 
 	async function changeLocale(newLocale: string) {
 		setLocale(newLocale);

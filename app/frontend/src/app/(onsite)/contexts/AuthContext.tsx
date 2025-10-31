@@ -36,17 +36,13 @@ export default function AuthProvider({ children }: AuthProviderType) {
 
 	useEffect(() => {
 		if (!loggedInUser) return ;
-		// setIsLoading(true);
 		document.cookie = `NEXT_LOCALE_INT=${loggedInUser.lang}; path=/;`;
 		router.refresh();
-		// setIsLoading(false);
 	}, [loggedInUser]);
 
 	const initializeAuth = async () => {
 		console.group("initializeAuth");
 		try {
-			// setIsLoading(true);
-
 			const { user, accessToken } = await apiClient.auth.refreshToken();
 
 			socket.connect(accessToken);
@@ -69,7 +65,6 @@ export default function AuthProvider({ children }: AuthProviderType) {
 
 	async function login(username: string, password: string) {
 		try {
-			// setIsLoading(true);
 			const res = await apiClient.auth.login(
 				username,
 				password
@@ -91,14 +86,11 @@ export default function AuthProvider({ children }: AuthProviderType) {
 			throw err;
 		} finally {
 			setIsLoading(false);
-			// setIsLoading(false);
 		}
 	}
 
 	async function loginUsing2FA(token: string, code: string) {
 		try {
-			// setIsLoading(true);
-
 			const { user, accessToken } = await apiClient.auth.loginUsing2FA(token, code);
 
 			socket.connect(accessToken);

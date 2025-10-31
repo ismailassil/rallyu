@@ -88,7 +88,7 @@ export default function TwoFaChallengePage() {
 					<VerifyCode
 						selectedMethod={selectedMethod!}
 						loginSessionMeta={session!}
-						onSuccess={() => router.replace("/dashboard")}
+						onSuccess={() => undefined}
 						onFailure={() => router.replace("/login")}
 						onGoBack={() => setStep(STEP.OVERVIEW)}
 					/>
