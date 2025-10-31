@@ -37,7 +37,7 @@ function NewTournament({ setValue }: { setValue: (value: boolean) => void }) {
 			if (![0, 1].includes(game)) return setErrGame(true);
 
 			// Comment This to test date without having to wait for an hour to do
-			// if (!date || (dateTime - time) / (1000 * 60) < 3) return setErrDate({ status: true, message: translate("panel.new-tournament.t-date-error-time") });
+			if (!date || (dateTime - time) / (1000 * 60) < 3) return setErrDate({ status: true, message: translate("panel.new-tournament.t-date-error-time") });
 
 			await apiClient.instance.post('/v1/tournament/create', {
 				title,
