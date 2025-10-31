@@ -11,7 +11,8 @@ function AnonymizeDataModal({ onCloseModal } : { onCloseModal: () => void }) {
 
 	const {
 		apiClient,
-		loggedInUser
+		loggedInUser,
+		logout
 	} = useAuth();
 
 	const {
@@ -32,6 +33,7 @@ function AnonymizeDataModal({ onCloseModal } : { onCloseModal: () => void }) {
 
 		try {
 			await executeAPICall(() => apiClient.user.anonymizeUser(loggedInUser.id));
+			await logout();
 		} catch {
 
 		} finally {
