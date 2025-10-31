@@ -137,9 +137,9 @@ class TournamentController {
 			}
 
 			// Comment this if u want to test the creation of a tournament at any give time
-			if ((dateTime - now) / (1000 * 60) < 3) {
-				return rep.code(400).send({ status: false, message: "Tournament must be scheduled at least 3 min ahead.", code: 3 });
-			}
+			// if ((dateTime - now) / (1000 * 60) < 3) {
+			// 	return rep.code(400).send({ status: false, message: "Tournament must be scheduled at least 3 min ahead.", code: 3 });
+			// }
 
 			if (isNaN(dateTime)) {
 				return rep.code(400).send({ 
@@ -324,7 +324,7 @@ class TournamentController {
 		try {
 			const data = await req.server.tournamentMatchesModel.getMatchRoomId(req.query.match_id);
 
-			return rep.code(201).send({ status: true, match_id: data });
+			return rep.code(200).send({ status: true, data });
 		} catch (err) {
 			return rep.code(500).send({ status: false, message: "Something went wrong." });
 		}

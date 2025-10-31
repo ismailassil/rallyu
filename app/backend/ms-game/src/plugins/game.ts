@@ -90,10 +90,16 @@ const game = async (fastify: FastifyInstance, options: FastifyPluginOptions) => 
 			})
 		}
 
-		if (playersIds.some(id => userSessions.get(id))) {
-			console.log('403 player already in game');
+		const inGameUsers = []
+		for (const id of playersIds) {
+			if (userSessions.get(id)) {
+				inGameUsers.push(id);
+			}
+		}
+		if (inGameUsers.length > 0) {
 			return res.code(403).send({
-				message: 'player already in game'
+				message: 'player already in game',
+				player_ids: inGameUsers
 			})
 		}
 

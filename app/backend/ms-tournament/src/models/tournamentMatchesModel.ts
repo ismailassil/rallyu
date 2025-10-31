@@ -178,12 +178,12 @@ class TournamentMatchesModel {
 				});
         });
 
-		return (data)
+		return (data) 
     }
 
     async getMatchRoomId(id: number) {
         return (await new Promise((resolve, reject) => {
-			this.DB.get(`SELECT match_id FROM ${this.modelName} WHERE id = ?`,
+			this.DB.get(`SELECT m.match_id, t.state FROM ${this.modelName} AS m INNER JOIN Tournaments AS t ON m.tournament_id=t.id  WHERE m.id = ?`,
 				[id],
 				(err, rows) => {
 					if (err) reject(err)
@@ -198,7 +198,7 @@ class TournamentMatchesModel {
 				const data: any = await new Promise((resolve, reject) => {
 					this.DB.all(`SELECT m.player_1, m.player_2, m.id, m.tournament_id, t.mode FROM ${this.modelName} AS m
 								INNER JOIN Tournaments AS t ON m.tournament_id=t.id
-								WHERE m.player_1_ready=1 AND m.player_2_ready=1 AND m.results IS NULL AND m.match_id IS NULL`,
+								WHERE m.player_1_ready=1 AND m.player_2_ready=1 AND m.results IS NULL AND m.match_id IS NULL AND t.state='ongoing'`,
 						[],
 						(err, rows) => !err ? resolve(rows) : reject(err)
 					);
@@ -224,20 +224,33 @@ class TournamentMatchesModel {
 						);
 						// Unauthorized ms-game 3andak tansah
 						if (!game_room.ok) {
-							throw new Error("Something went wrong")
+							const errorBody = await game_room.text().catch(() => null);
+							throw { status: game_room.status, body: errorBody };
 						}
 						
 						const data = await game_room.json();
 						
-						if (!data || !data.roomId) {
-							throw new Error('Game room created but no roomId returned');
-						}
+						if (!data || !data.roomId)
+							throw { status: 500, body: {} };
 						
 						this.DB.run(`UPDATE ${this.modelName} SET match_id=? WHERE id=?`,
 							[data.roomId, match.id],
 							(err) => app.log.fatal(err)
 						)
 					} catch (err) {
+						if (err.state >= 500)
+							this.DB.run(`Update Tournaments SET state='cancelled', cancellation_reason='LOL' WHERE id=?`, [match.tournament_id])
+						else if (err.state === 403) {
+							if (err.body.player_ids === 2) {
+								this.DB.run(`Update Tournaments SET state='cancelled', cancellation_reason='Two players forfeited their match during the tournament' WHERE id=?`, [match.tournament_id])
+							}
+							if (err.body.player_ids === 1) {
+								this.DB.run(`Update ${this.modelName} SET winner=?, results='' WHERE id=?`,
+								[err.body.player_ids[0], err.body.player_ids[0] === match.player_1 ? '7|F' : 'F|7', match.id])
+							}
+						} else {
+							this.DB.run(`Update Tournaments SET state='cancelled', cancellation_reason='LOL' WHERE id=?`, [match.tournament_id])
+						}
 						app.log.fatal(err);
 					}
 				});
