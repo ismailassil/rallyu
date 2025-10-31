@@ -48,6 +48,13 @@ const FooterGoing = function (
                 
             }, 1000 * 2);
         }
+
+        return (() => {
+            if (pollingGame)
+                clearInterval(pollingGame)
+            pollingGame = null;
+            return ;
+        })
     }, [])
 
     const playerReadyHandler = async (event: React.MouseEvent<HTMLButtonElement>) => {

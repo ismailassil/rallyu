@@ -17,7 +17,7 @@ const FooterPending = function (
         message: ""
     });
     const translate = useTranslations("tournament")
-    const [cJoined, setCJoined] = useState(contenders_joined);
+    const [cJoined, setCJoined] = useState<number>(contenders_joined);
 
     const joinTournamentHandler = async (e) => {
         e.preventDefault();
@@ -27,7 +27,8 @@ const FooterPending = function (
             toastSuccess(translate("bracket.pending.join"));
             setJoined(true);
             setError({ status: false, message: "" });
-            setCJoined(prev => prev++);
+            setCJoined(prev => ++prev);
+            console.log(cJoined)
         } catch (err: unknown) {
             console.error(err);
             setError({ status: true, message: translate("bracket.pending.error") });
@@ -42,7 +43,8 @@ const FooterPending = function (
             toastSuccess(translate("bracket.pending.leave"));
             setJoined(false);
             setError({ status: false, message: "" });
-            setCJoined(prev => prev--)
+            setCJoined(prev => --prev)
+            console.error(cJoined)
         } catch (err: unknown) {
             console.error(err);
             setError({ status: true, message: translate("bracket.pending.error") });
