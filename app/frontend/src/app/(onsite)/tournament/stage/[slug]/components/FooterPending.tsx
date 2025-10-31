@@ -8,8 +8,8 @@ import { Toaster } from "sonner";
 import { useTranslations } from "next-intl";
 
 const FooterPending = function (
-    { joined, setJoined, slug, title, full }:
-    { joined: boolean | undefined, setJoined: Dispatch<SetStateAction<boolean>>, slug: ParamValue, title: string, full: boolean }
+    { joined, setJoined, slug, title, contenders_size, contenders_joined }:
+    { joined: boolean | undefined, setJoined: Dispatch<SetStateAction<boolean>>, slug: ParamValue, title: string, contenders_size: number, contenders_joined: number }
 ) {
     const { apiClient, loggedInUser } = useAuth();
     const [error, setError] = useState({
@@ -17,6 +17,7 @@ const FooterPending = function (
         message: ""
     });
     const translate = useTranslations("tournament")
+    const [cJoined, setCJoined] = useState(contenders_joined);
 
     const joinTournamentHandler = async (e) => {
         e.preventDefault();
@@ -26,6 +27,7 @@ const FooterPending = function (
             toastSuccess(translate("bracket.pending.join"));
             setJoined(true);
             setError({ status: false, message: "" });
+            setCJoined(prev => prev++);
         } catch (err: unknown) {
             console.error(err);
             setError({ status: true, message: translate("bracket.pending.error") });
@@ -40,6 +42,7 @@ const FooterPending = function (
             toastSuccess(translate("bracket.pending.leave"));
             setJoined(false);
             setError({ status: false, message: "" });
+            setCJoined(prev => prev--)
         } catch (err: unknown) {
             console.error(err);
             setError({ status: true, message: translate("bracket.pending.error") });
@@ -68,7 +71,7 @@ const FooterPending = function (
             </div>
             <>
                 {
-                    !joined && !full &&
+                    !joined && !(cJoined === contenders_size) &&
                         <button
                             className="bg-main hover:scale-102 py-3 px-24
                                         cursor-pointer
@@ -96,7 +99,7 @@ const FooterPending = function (
                         </button>
                 }
                 {
-                    !joined && full &&
+                    !joined && (cJoined === contenders_size) &&
                         <div
                             className="flex items-center justify-center gap-1 rounded-sm 
                                         cursor-auto py-3 px-22 outline-white/10 outline

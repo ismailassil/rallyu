@@ -36,7 +36,8 @@ const FooterGoing = function (
                     if (!data || !data.data.match_id)
                         return ;
 
-                    router.replace(`/game/${tournamentMode === "ping-pong" ? "pingpong" : "tictactoe"}/${data.data.match_id}`);
+                    if (!data.data.winner)
+                        router.replace(`/game/${tournamentMode === "ping-pong" ? "pingpong" : "tictactoe"}/${data.data.match_id}`);
                     if (pollingGame)
                         clearInterval(pollingGame);
                     pollingGame = null;
@@ -77,7 +78,8 @@ const FooterGoing = function (
                         if (!data || !data.data.match_id)
                             return ;
 
-                        router.replace(`/game/${tournamentMode === "ping-pong" ? "pingpong" : "tictactoe"}/${data.data.match_id}`);
+                        if (!data.data.winner)
+                            router.replace(`/game/${tournamentMode === "ping-pong" ? "pingpong" : "tictactoe"}/${data.data.match_id}`);
                         if (pollingGame)
                             clearInterval(pollingGame);
                         pollingGame = null;
