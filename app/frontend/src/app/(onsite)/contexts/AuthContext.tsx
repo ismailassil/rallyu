@@ -36,6 +36,13 @@ export default function AuthProvider({ children }: AuthProviderType) {
 
 	useEffect(() => {
 		if (!loggedInUser) return ;
+		const cookieLocale = document.cookie
+			.split("; ")
+			.find((row) => row.startsWith("NEXT_LOCALE_INT="))
+			?.split("=")[1];
+		if (cookieLocale === loggedInUser.lang)
+			return ;
+
 		document.cookie = `NEXT_LOCALE_INT=${loggedInUser.lang}; path=/;`;
 		router.refresh();
 	}, [loggedInUser]);
