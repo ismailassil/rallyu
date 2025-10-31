@@ -22,6 +22,7 @@
       "error_codes": "{code, select, error_code_1 {ID de sesión y sala no coinciden} error_code_2 {Sala de partida no encontrada} error_code_3 {El jugador no está en la sala} error_code_4 {La misma cuenta inició sesión en otro dispositivo. Reconéctate si quieres usar este dispositivo.} error_code_5 {La sala ha expirado} other {Algo salió mal}}"
     },
     "ingame": {
+      "bestof": "Al mejor de",
       "overtime": "¡Prórroga!",
       "start": "¡Vamos!",
       "round": "Ronda",
