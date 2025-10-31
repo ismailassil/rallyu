@@ -185,7 +185,9 @@ const Brackets = function (props) {
 											setJoined={setJoined}
 											slug={slug}
 											title={tournament?.tournament.title}
-											full={tournament.tournament.contenders_size === tournament.tournament.contenders_joined}/>
+											contenders_size={tournament.tournament.contenders_size}
+											contenders_joined={tournament.tournament.contenders_joined}
+											/>
 									}
 								</>
 								<>

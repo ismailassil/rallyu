@@ -170,7 +170,7 @@ class TournamentMatchesModel {
 			this.DB.get(`SELECT m.id FROM ${this.modelName} AS m INNER JOIN Tournaments AS t ON m.tournament_id=t.id
 				WHERE m.id <> ? AND
 				((m.player_1=? AND m.player_1_ready=1) OR (m.player_2=? AND m.player_2_ready=1))
-				AND m.winner IS NULL AND t.state='ongoing'`,
+				AND m.winner IS NULL AND t.state='ongoing' AND m.match_id IS NULL`,
 				[matchId, playerId, playerId],
 				(err, row) => {
 					if (err) reject(err)

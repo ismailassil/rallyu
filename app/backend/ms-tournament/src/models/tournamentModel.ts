@@ -19,7 +19,7 @@ class TournamentModel {
         );
 		CREATE TRIGGER IF NOT EXISTS tournament_finish AFTER UPDATE ON TournamentMatches
 			FOR EACH ROW
-			WHEN (OLD.stage='final' AND OLD.winner IS NULL AND NEW.winner IS NOT NULL)
+			WHEN (OLD.stage='final' AND OLD.winner IS NULL AND NEW.stage='final' AND NEW.winner IS NOT NULL)
 		BEGIN
 			UPDATE ${this.modelName} SET state='finished' WHERE id=NEW.tournament_id;
 		END;
