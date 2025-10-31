@@ -37,10 +37,10 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	useEffect(() => {
 		if (!loggedInUser) return ;
-		setIsLoading(true);
+		// setIsLoading(true);
 		document.cookie = `NEXT_LOCALE_INT=${loggedInUser.lang}; path=/;`;
 		router.refresh();
-		setIsLoading(false);
+		// setIsLoading(false);
 	}, [loggedInUser]);
 
 	const initializeAuth = async () => {
@@ -70,13 +70,14 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 
 	async function login(username: string, password: string) {
 		try {
-			setIsLoading(true);
+			// setIsLoading(true);
 			const res = await apiClient.auth.login(
 				username,
 				password
 			);
 
 			if (res._2FARequired) {
+				console.log('we are setting token and enabledMethods in login/authcontext', JSON.stringify(res.token), JSON.stringify(res.enabled2FAMethods));
 				sessionStorage.setItem('token', JSON.stringify(res.token));
 				sessionStorage.setItem('enabledMethods', JSON.stringify(res.enabled2FAMethods));
 				return res;
@@ -91,13 +92,13 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		} catch (err) {
 			throw err;
 		} finally {
-			setIsLoading(false);
+			// setIsLoading(false);
 		}
 	}
 
 	async function loginUsing2FA(token: string, code: string) {
 		try {
-			setIsLoading(true);
+			// setIsLoading(true);
 
 			const { user, accessToken } = await apiClient.auth.loginUsing2FA(
 				token,
@@ -112,7 +113,7 @@ export default function AuthProvider({ children } : AuthProviderType ) {
 		} finally {
 			sessionStorage.removeItem('token');
 			sessionStorage.removeItem('enabledMethods');
-			setIsLoading(false);
+			// setIsLoading(false);
 		}
 	}
 

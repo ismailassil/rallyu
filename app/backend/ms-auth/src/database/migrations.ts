@@ -200,11 +200,22 @@ const TRIGGERS = [
 				UPDATE users
 				SET email_verified = FALSE
 				WHERE id = NEW.id;
-
+			END;
+		`
+	},
+	{
+		id: 3,
+		name: 'trg_on_email_unverified',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_on_email_unverified
+			BEFORE UPDATE OF email_verified ON users
+			FOR EACH ROW
+			WHEN OLD.email_verified = TRUE AND NEW.email_verified = FALSE
+			BEGIN
 				UPDATE auth_challenges
 				SET status = 'EXPIRED'
 				WHERE user_id = NEW.id
-				AND challenge_type != 'email_verification'
+				AND challenge_type != 'password_reset'
 				AND method = 'EMAIL'
 				AND (status = 'PENDING' OR status = 'VERIFIED');
 
@@ -226,11 +237,21 @@ const TRIGGERS = [
 				UPDATE users
 				SET phone_verified = FALSE
 				WHERE id = NEW.id;
-
+			END;
+		`
+	},
+	{
+		id: 4,
+		name: 'trg_on_phone_unverified',
+		sql: `
+			CREATE TRIGGER IF NOT EXISTS trg_on_phone_unverified
+			BEFORE UPDATE OF phone_verified ON users
+			FOR EACH ROW
+			WHEN OLD.phone_verified = TRUE AND NEW.phone_verified = FALSE
+			BEGIN
 				UPDATE auth_challenges
 				SET status = 'EXPIRED'
 				WHERE user_id = NEW.id
-				AND challenge_type != 'phone_verification'
 				AND method = 'SMS'
 				AND (status = 'PENDING' OR status = 'VERIFIED');
 

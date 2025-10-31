@@ -64,6 +64,7 @@ export default function TwoFaChallengePage() {
 
 	useEffect(() => {
 		if (!session) {
+			console.log('session not found in use effect');
 			router.replace("/login");
 			toastError(tautherr('errorCodes', { code: 'AUTH_SIGN_IN_AGAIN' }));
 		}
