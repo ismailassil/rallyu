@@ -114,7 +114,8 @@ export class WhatsAppService {
 
 		const exists = await this.isOnWhatsApp(to);
 		if (!exists)
-			throw new ServiceUnavailableError('Phone number is not registered on WhatsApp');
+			return ;
+			// throw new ServiceUnavailableError('Phone number is not registered on WhatsApp');
 
 		try {
 			await this.socket.sendMessage(jid, {
