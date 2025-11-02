@@ -47,6 +47,9 @@ Rallyu follows a microservices architecture with the following components:
 - **Elasticsearch** - Log aggregation and search
 - **Logstash** - Log processing pipeline
 - **Kibana** - Log visualization and analysis
+- **HashiCorp Vault** – Secure secrets management for credentials and API keys.
+
+In this project, Vault is configured but not actively used.
 
 ## 🛠️ Technology Stack
 
