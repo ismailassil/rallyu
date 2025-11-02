@@ -1,5 +1,6 @@
 import unicaOne from "@/app/fonts/unicaOne";
 import AnimateLink from "./AnimateLink";
+import Avatar from "@/app/(onsite)/users/components/Avatar";
 
 const Stat = function ({ subject, result }: { subject: string, result: string }) {
 
@@ -7,8 +8,8 @@ const Stat = function ({ subject, result }: { subject: string, result: string })
         <div className=
                 {`overflow-hidden bg-card  relative text-base
                     ${unicaOne.className}
-                    rounded-lg min-h-13
-                    border-1 border-white/10 hover:scale-102 duration-400 transition-all
+                    rounded-lg min-h-20
+                    border border-white/10 hover:scale-102 duration-400 transition-all
                     flex flex-1 justify-between px-4 py-2 md:text-lg items-center
                 `}
         >

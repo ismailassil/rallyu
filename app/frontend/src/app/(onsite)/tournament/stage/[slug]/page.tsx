@@ -122,17 +122,17 @@ const Brackets = function (props) {
 				initial={{ opacity: 0, y: -50 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 1, delay: 0.5 }}
-				className="pt-30 sm:pl-30 h-[100vh] pb-24 pl-6 pr-6 sm:pb-6"
+				className="pt-30 sm:pl-30 h-screen pb-24 pl-6 pr-6 sm:pb-6"
 			>
 				<article className="bg-card border-br-card flex w-full h-full overflow-y-auto custom-scroll justify-center rounded-2xl border-2">
-					<div className=" max-w-300 w-full gap-10 p-4 flex flex-col min-h-fit">
+					<div className="w-full gap-10 p-4 flex flex-col min-h-fit">
 						{Object.keys(tournament).length > 0 && (
 							<>
 								<div className="mb-10 flex gap-4 flex-wrap items-center">
 									<div className="md:w-auto w-full">
 										<div
 											className="bg-white/1 ring-white/13 cursor-pointer rounded-sm ring-1 transition-all
-											duration-200 hover:bg-white/5 hover:ring-2 hover:ring-white/20 py-1 px-4 w-fit"
+											duration-200 hover:bg-white/5 hover:ring-2 hover:ring-white/20 py-2 px-4 w-fit"
 											onClick={(e) => {
 												e.preventDefault();
 												router.push("/tournament");
@@ -142,7 +142,7 @@ const Brackets = function (props) {
 										</div>
 									</div>
 									<h1 className="lg:text-3xl md:text-2xl text-xl font-medium mr-auto">
-										{`${tournament?.tournament.title} - ${translate("bracket.tournament")} ${tournament.tournament.mode === "ping-pong" ? "🏓" : "🌌"}`}
+										{`${tournament?.tournament.title} - ${translate("bracket.tournament")}`}
 									</h1>
 									<div>
 										{
@@ -174,7 +174,7 @@ const Brackets = function (props) {
 									/>
 									<Stat subject={translate("bracket.stat.mode")} result={tournament.tournament.mode} />
 								</div>
-								<h2 className="text-xl font-bold text-gray-300">{translate("bracket.bracket")}</h2>
+								{/* <h2 className="text-xl font-bold text-gray-300">{translate("bracket.bracket")}</h2> */}
 								<BracketViewDesktop matches={tournament.matches} />
 								<BracketViewMobile matches={tournament.matches} />
 								<>

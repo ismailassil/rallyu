@@ -25,7 +25,7 @@ const AnimateLink = function (
                     { children }
                 </Link>
                 <motion.div 
-                    className={`h-[2px] ${color} rounded-full mx-auto`}
+                    className={`h-0.5 ${color} rounded-full mx-auto`}
                     initial={{ width: 0 }}
                     animate={controls}
                     transition={{ stiffness: 300 }}
